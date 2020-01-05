@@ -1,0 +1,281 @@
+/*
+ * Copyright 2019 Gerald Curley
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.opsmatters.media.crawler;
+
+import java.io.IOException;
+import java.util.logging.Logger;
+import java.time.format.DateTimeParseException;
+import com.gargoylesoftware.htmlunit.html.DomNode;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.opsmatters.media.model.content.ContentField;
+import com.opsmatters.media.model.content.ContentFields;
+import com.opsmatters.media.model.content.EventSummary;
+import com.opsmatters.media.model.content.EventDetails;
+import com.opsmatters.media.model.content.Fields;
+import com.opsmatters.media.config.content.EventConfiguration;
+import com.opsmatters.media.config.content.WebPageConfiguration;
+import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.util.StringUtils;
+import com.opsmatters.media.util.TimeUtils;
+
+/**
+ * Class representing a crawler for events.
+ * 
+ * @author Gerald Curley (opsmatters)
+ */
+public class EventCrawler extends ContentCrawler<EventSummary>
+{
+    private static final Logger logger = Logger.getLogger(EventCrawler.class.getName());
+
+    private EventConfiguration config;
+
+    /**
+     * Constructor that takes a web page configuration.
+     */
+    public EventCrawler(EventConfiguration config, WebPageConfiguration page)
+    {
+        super(page);
+        this.config = config;
+    }
+
+    /**
+     * Returns the event configuration of the crawler.
+     */
+    public EventConfiguration getConfig()
+    {
+        return config;
+    }
+
+    /**
+     * Create an event summary from a selected node.
+     */
+    @Override
+    public EventSummary getContentSummary(DomNode root, ContentFields fields)
+        throws DateTimeParseException
+    {
+        EventSummary content = new EventSummary();
+        if(fields.hasValidator())
+            validateContent(content, fields.getValidator(), root, "teaser");
+        if(content.isValid())
+        {
+            if(debug() && fields.hasValidator())
+                logger.info("Validated event content: "+fields.getValidator());
+            populateSummaryFields(this.page, root, fields, content, "teaser");
+            if(fields.hasUrl())
+            {
+                ContentField field = fields.getUrl();
+                String url = getAnchor(field, root, page, "teaser", field.removeParameters());
+                if(url != null)
+                    content.setUrl(url, field.removeParameters());
+            }
+        }
+
+        return content;
+    }
+
+    /**
+     * Create an event content item from the given url.
+     */
+    public EventDetails getEvent(String url)
+        throws IOException, IllegalArgumentException, DateTimeParseException
+    {
+        return getEvent(new EventSummary(url, removeParameters()));
+    }
+
+    /**
+     * Populate the given event content.
+     */
+    public EventDetails getEvent(EventSummary summary)
+        throws IOException, IllegalArgumentException, DateTimeParseException
+    {
+        ContentFields fields = getContentFields();
+        EventDetails content = new EventDetails(summary);
+        HtmlPage page = getPage(content.getUrl(), isContentJavaScriptEnabled());
+        if(!fields.hasRoot())
+            throw new IllegalArgumentException("Root empty for event content");
+
+        // Wait for the javascript to load for the content
+        loadPage(page, getContentLoading());
+
+        // Trace to see the event page
+        if(trace(page))
+            logger.info("event-page="+page.asXml());
+
+        DomNode root = page.querySelector(fields.getRoot());
+        if(root != null)
+        {
+            if(debug())
+                logger.info("Root found for event content: "+fields.getRoot());
+            populateSummaryFields(page, root, fields, content, "content");
+        }
+        else
+        {
+            logger.severe("Root not found for event content: "+fields.getRoot());
+            throw new IllegalArgumentException("Root not found for event content");
+        }
+
+        // Trace to see the event root node
+        if(trace(root))
+            logger.info("event-node="+root.asXml());
+
+        // Default the published date to today if not found
+        if(!fields.hasPublishedDate() && content.getPublishedDate() == null)
+        {
+            content.setPublishedDateAsString(TimeUtils.toMidnightStringUTC());
+            if(debug())
+                logger.info("Defaulting published date: "+content.getPublishedDateAsString());
+        }
+
+        boolean hasTime = false;
+        if(content.getStartDate() != null)
+            hasTime = TimeUtils.hasTime(content.getStartDateMillis());
+
+        // Default the start date to today if not found
+        if(!fields.hasStartDate() && content.getStartDate() == null)
+        {
+            content.setStartDateAsString(TimeUtils.toMidnightStringUTC());
+            if(debug())
+                logger.info("Defaulting start date: "+content.getStartDateAsString());
+        }
+
+        long starttm = 0L;
+
+        if(fields.hasStartTime())
+        {
+            ContentField field = fields.getStartTime();
+            String start = getElement(field, root, page, "content");
+            if(start != null)
+            {
+                try
+                {
+                    // Try the 1st date pattern
+                    starttm = TimeUtils.toMillisTime(start, field.getDatePattern());
+                }
+                catch(DateTimeParseException e)
+                {
+                    // If the 1st date pattern fails, try the 2nd format
+                    if(field.hasDatePattern2())
+                        starttm = TimeUtils.toMillisTime(start, field.getDatePattern2());
+                    else
+                        throw e;
+                }
+
+                if(debug())
+                    logger.info("Found start time: "+starttm);
+            }
+        }
+
+        // If no start time was found, use the default
+        if(!hasTime && starttm == 0L && config.getFields().containsKey(Fields.START_TIME))
+        {
+            String start = config.getFields().get(Fields.START_TIME);
+            starttm = TimeUtils.toMillisTime(start, Formats.SHORT_TIME_FORMAT);
+            if(debug())
+                logger.info("Found default start time: "+starttm);
+        }
+
+        if(fields.hasTimeZone())
+        {
+            String timezone = getElement(fields.getTimeZone(), root, page, "content");
+            if(timezone != null)
+                content.setTimeZone(timezone);
+        }
+
+        if(root != null && fields.hasBody())
+        {
+            String body = getBody(fields.getBody(), root, page, "content");
+            if(body != null)
+                content.setDescription(body);
+        }
+
+        // Add the start time if it is a separate field
+        if(starttm > 0L)
+        {
+            content.setStartDateMillis(content.getStartDateMillis()+starttm);
+            if(debug())
+                logger.info("Added start time: "+content.getStartDateAsString());
+        }
+
+        return content;
+    }
+
+    /**
+     * Populate the content fields from the given node.
+     */
+    private void populateSummaryFields(HtmlPage page, DomNode root, 
+        ContentFields fields, EventSummary content, String type)
+        throws DateTimeParseException
+    {
+        if(fields.hasTitle())
+        {
+            ContentField field = fields.getTitle();
+            String title = getElements(field, root, page, type, field.isMultiple(), field.getSeparator());
+            if(title != null)
+            {
+                // Event title should always start with the organisation name
+                if(!title.startsWith(config.getOrganisation()))
+                {
+                    if(debug())
+                        logger.info("Adding organisation to event title: "+config.getOrganisation());
+                    content.setTitle(String.format("%s: %s", config.getOrganisation(), title));
+                    if(debug())
+                        logger.info("Added organisation to event title: "+content.getTitle());
+                }
+                else
+                {
+                    content.setTitle(title);
+                }
+            }
+        }
+
+        if(fields.hasStartDate())
+        {
+            ContentField field = fields.getStartDate();
+            String startDate = getElement(field, root, page, type);
+            if(startDate != null)
+            {
+                try
+                {
+                    try
+                    {
+                        // Try the 1st date pattern
+                        content.setStartDateAsString(startDate, field.getDatePattern());
+                    }
+                    catch(DateTimeParseException e)
+                    {
+                        // If the 1st date pattern fails, try the 2nd format
+                        if(field.hasDatePattern2())
+                            content.setStartDateAsString(startDate, field.getDatePattern2());
+                        else
+                            throw e;
+                    }
+                }
+                catch(DateTimeParseException e)
+                {
+                    logger.severe(StringUtils.serialize(e));
+                    logger.warning("Unparseable start date, using default instead: "+startDate);
+                    content.setStartDateAsString(TimeUtils.toMidnightStringUTC());
+                }
+            }
+            else //if(field.getSource().isMetatag()) // Date metatag not found
+            {
+                // Default date to today if not found
+                logger.warning("Published date not found, defaulting to today");
+                content.setStartDateAsString(TimeUtils.toMidnightStringUTC());
+            }
+        }
+    }
+}
