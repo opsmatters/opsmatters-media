@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSCredentials;
@@ -43,7 +44,7 @@ import com.amazonaws.services.s3.model.PutObjectResult;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class S3Client
+public class S3Client extends Client
 {
     private static final Logger logger = Logger.getLogger(S3Client.class.getName());
 
@@ -54,7 +55,6 @@ public class S3Client
     private boolean secure = false;
     private String accessKeyId = "";
     private String secretAccessKey = "";
-    private String keyfile = "";
     private String bucket = "";
 
     /**
@@ -67,51 +67,53 @@ public class S3Client
             .secure(Boolean.parseBoolean(System.getProperty("om-config.s3.secure", "false")))
             .accessKeyId(System.getProperty("om-config.s3.accessKeyId"))
             .secretAccessKey(System.getProperty("om-config.s3.secretAccessKey"))
-            .keyfile(System.getProperty("om-config.s3.keyfile"))
             .build();
 
-        // Connect to the remote S3 server
+        // Configure and create the S3 client
         ret.configure();
-        if(!ret.connect())
-            logger.severe("Unable to connect to S3 endpoint: "+ret.getEndpoint());
+        if(!ret.create())
+            logger.severe("Unable to create S3 client: "+ret.getEndpoint());
+
         return ret;
     }
 
     /**
      * Configure the client.
      */
+    @Override
     public void configure() throws IOException
     {
+        if(debug())
+            logger.info("Configuring S3 client: "+getEndpoint());
+
         String directory = System.getProperty("om-config.auth", ".");
 
         File auth = new File(directory, AUTH);
         try
         {
-            // Read secret key from auth directory
-            if(secretAccessKey == null)
-                secretAccessKey = FileUtils.readFileToString(auth, "UTF-8");
+            // Read file from auth directory
+            JSONObject obj = new JSONObject(FileUtils.readFileToString(auth, "UTF-8"));
+            setAccessKeyId(obj.optString("accessKeyId"));
+            setSecretAccessKey(obj.optString("secretAccessKey"));
         }
         catch(IOException e)
         {
-            logger.severe("Unable to read s3 password file: "+e.getClass().getName()+": "+e.getMessage());
+            logger.severe("Unable to read s3 auth file: "+e.getClass().getName()+": "+e.getMessage());
         }
 
-        // Authenticate using secret key or keyfile
-        if(secretAccessKey != null && secretAccessKey.length() > 0)
-        {
-            this.secretAccessKey = secretAccessKey;
-        }
-        else if(keyfile != null && keyfile.length() > 0)
-        {
-            this.secretAccessKey = FileUtils.readFileToString(new File(keyfile));
-        }
+        if(debug())
+            logger.info("Configured S3 client successfully: "+getEndpoint());
     }
 
     /**
-     * Connect the session and channel.
+     * Create the client using the configured credentials.
      */
-    public boolean connect() 
+    @Override
+    public boolean create() 
     {
+        if(debug())
+            logger.info("Creating S3 client: "+getEndpoint());
+
         // Get the client configuration
         ClientConfiguration config = new ClientConfiguration();
         config.setProtocol(secure ? Protocol.HTTPS : Protocol.HTTP);
@@ -136,6 +138,9 @@ public class S3Client
         s3client.getS3AccountOwner();
 
         client = s3client;
+
+        if(debug())
+            logger.info("Created S3 client successfully: "+getEndpoint());
 
         return isConnected();
     }
@@ -202,22 +207,6 @@ public class S3Client
     public void setSecretAccessKey(String secretAccessKey) 
     {
         this.secretAccessKey = secretAccessKey;
-    }
-
-    /**
-     * Returns the keyfile for the client.
-     */
-    public String getKeyfile() 
-    {
-        return keyfile;
-    }
-
-    /**
-     * Sets the keyfile for the client.
-     */
-    public void setKeyfile(String keyfile) 
-    {
-        this.keyfile = keyfile;
     }
 
     /**
@@ -524,17 +513,6 @@ public class S3Client
         public Builder secretAccessKey(String secretAccessKey)
         {
             client.setSecretAccessKey(secretAccessKey);
-            return this;
-        }
-
-        /**
-         * Sets the keyfile for the client.
-         * @param keyfile The keyfile for the client
-         * @return This object
-         */
-        public Builder keyfile(String keyfile)
-        {
-            client.setKeyfile(keyfile);
             return this;
         }
 

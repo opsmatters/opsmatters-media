@@ -16,13 +16,28 @@
 
 package com.opsmatters.media.client.video;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.time.Duration;
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.auth.oauth2.StoredCredential;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.store.DataStore;
+import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
@@ -40,6 +55,7 @@ import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import com.google.common.collect.Lists;
+import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.content.VideoSummary;
 import com.opsmatters.media.model.content.VideoDetails;
 import com.opsmatters.media.model.content.VideoProvider;
@@ -50,17 +66,37 @@ import com.opsmatters.media.util.StringUtils;
  *
  * @author Gerald Curley (opsmatters)
  */
-public class YouTubeClient implements VideoClient
+public class YouTubeClient extends Client implements VideoClient
 {
     private static final Logger logger = Logger.getLogger(YouTubeClient.class.getName());
 
-    private static YouTube youtube;
+    public static final String AUTH = ".youtube";
+    public static final String CREDENTIALS = ".oauth";
+
+    private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
+    private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 
     public static final String APPLICATION = "opsmatters";
     public static final String LIST_FIELDS = "id,snippet";
     public static final String DETAIL_FIELDS = "snippet,contentDetails";
 
-    private boolean debug = false;
+    private static YouTube client;
+    private Credential credential;
+
+    /**
+     * Returns a new youtube client using credentials.
+     */
+    static public YouTubeClient newClient() throws IOException
+    {
+        YouTubeClient ret = new YouTubeClient();
+
+        // Configure and create the youtube client
+        ret.configure();
+        if(!ret.create())
+            logger.severe("Unable to create youtube client");
+
+        return ret;
+    }
 
     /**
      * Returns the provider for this client.
@@ -71,49 +107,57 @@ public class YouTubeClient implements VideoClient
     }
 
     /**
-     * Check if the YouTube Data API needs initialising.
+     * Configure the client.
      */
-    public void checkInitialize() throws IOException
+    @Override
+    public void configure() throws IOException
     {
-        if(youtube == null)
-            initialize();
-    }
+        if(debug())
+            logger.info("Configuring youtube client");
 
-    /**
-     * Initialise the YouTube Data API using OAuth2.
-     */
-    public void initialize() throws IOException
-    {
+        String directory = System.getProperty("om-config.auth", ".");
+
+        // Load client secrets
+        File secrets = new File(directory, AUTH);
+        Reader clientSecretReader = new InputStreamReader(new FileInputStream(secrets));
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, clientSecretReader);
+
+        // Create the credentials datastore
+        FileDataStoreFactory fileDataStoreFactory = new FileDataStoreFactory(new File(directory, CREDENTIALS));
+        DataStore<StoredCredential> datastore = fileDataStoreFactory.getDataStore(APPLICATION);
+
         List<String> scopes = Lists.newArrayList("https://www.googleapis.com/auth/youtube.readonly");
+        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+            HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, scopes).setCredentialDataStore(datastore)
+            .build();
 
-        // Authorize the request.
-        Credential credential = YouTubeAuth.authorize(scopes, APPLICATION);
+        // Build the local server and bind it to port 8081
+        LocalServerReceiver localReceiver = new LocalServerReceiver.Builder().setPort(8081).build();
 
-        if(debug())
-            logger.info("Creating youtube client object");
-
-        // This object is used to make YouTube Data API requests.
-        youtube = new YouTube.Builder(YouTubeAuth.HTTP_TRANSPORT, YouTubeAuth.JSON_FACTORY, credential).setApplicationName(
-            APPLICATION).build();
+        credential = new AuthorizationCodeInstalledApp(flow, localReceiver).authorize("user");
 
         if(debug())
-            logger.info("Created youtube client object successfully");
+            logger.info("Configured youtube client successfully");
     }
 
     /**
-     * Returns <CODE>true</CODE> if debug is enabled.
+     * Create the client using the configured credentials.
      */
-    public boolean debug()
+    @Override
+    public boolean create() throws IOException
     {
-        return debug;
-    }
+        if(debug())
+            logger.info("Creating youtube client");
 
-    /**
-     * Set to <CODE>true</CODE> if debug is enabled.
-     */
-    public void setDebug(boolean debug)
-    {
-        this.debug = debug;
+        // Used to make YouTube Data API requests
+        client = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+            .setApplicationName(APPLICATION)
+            .build();
+
+        if(debug())
+            logger.info("Created youtube client successfully");
+
+        return true;
     }
 
     /**
@@ -127,9 +171,7 @@ public class YouTubeClient implements VideoClient
 
         try
         {
-            checkInitialize();
-
-            YouTube.Videos.List videoRequest = youtube.videos().list(DETAIL_FIELDS);
+            YouTube.Videos.List videoRequest = client.videos().list(DETAIL_FIELDS);
             videoRequest.setId(videoId);
 
             VideoListResponse videoResult = videoRequest.execute();
@@ -189,8 +231,7 @@ public class YouTubeClient implements VideoClient
 
         try
         {
-            checkInitialize();
-            YouTube.Search.List searchRequest = youtube.search().list(LIST_FIELDS);
+            YouTube.Search.List searchRequest = client.search().list(LIST_FIELDS);
             searchRequest.setChannelId(channelId);
             searchRequest.setMaxResults((long)maxResults);
             searchRequest.setType("video");
@@ -252,8 +293,7 @@ public class YouTubeClient implements VideoClient
 
         try
         {
-            checkInitialize();
-            YouTube.Channels.List channelRequest = youtube.channels().list(DETAIL_FIELDS);
+            YouTube.Channels.List channelRequest = client.channels().list(DETAIL_FIELDS);
             channelRequest.setId(channelId);
             channelRequest.setMaxResults((long)maxResults);
 
@@ -286,7 +326,7 @@ public class YouTubeClient implements VideoClient
             if(debug())
                 logger.info("Search for youtube videos for playlistId: "+playlistId);
 
-            YouTube.PlaylistItems.List itemRequest = youtube.playlistItems().list(LIST_FIELDS);
+            YouTube.PlaylistItems.List itemRequest = client.playlistItems().list(LIST_FIELDS);
             itemRequest.setPlaylistId(playlistId);
             itemRequest.setMaxResults((long)maxResults);
 

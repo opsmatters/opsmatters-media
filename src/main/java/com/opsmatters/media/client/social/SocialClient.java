@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.client.video;
+package com.opsmatters.media.client.social;
 
 import java.io.IOException;
 import java.util.List;
-import com.opsmatters.media.model.content.VideoSummary;
-import com.opsmatters.media.model.content.VideoDetails;
-import com.opsmatters.media.model.content.VideoProvider;
+import com.opsmatters.media.model.social.SocialProvider;
+import com.opsmatters.media.model.social.SocialPost;
 
 /**
- * Methods to interact with a user's video channel.
+ * Methods to interact with a user's social media channel.
  *
  * @author Gerald Curley (opsmatters)
  */
-public interface VideoClient
+public interface SocialClient
 {
     /**
      * Returns <CODE>true</CODE> if debug is enabled.
@@ -42,22 +41,24 @@ public interface VideoClient
     /**
      * Returns the provider for this client.
      */
-    public VideoProvider getProvider();
+    public SocialProvider getProvider();
 
     /**
-     * Returns the details of the video for the given video ID.
+     * Sends the given post.
      *
-     * @param videoId The ID of the video to be retrieved
+     * @param text The text of the post to be sent.
      */
-    public VideoDetails getVideo(String videoId) throws IOException;
+    public SocialPost sendPost(String text) throws Exception;
 
     /**
-     * Returns the list of most recent videos for the given channel ID.
+     * Deletes the given post.
      *
-     * @param channelId The ID of the channel for the videos
-     * @param userId The ID of the user for the videos
-     * @param maxResults The maximum number of results to retrieve
-     * @return The list of summary videos retrieved
+     * @param id The id of the post to be deleted.
      */
-    public List<VideoSummary> listVideos(String channelId, String userId, int maxResults) throws IOException;
+    public SocialPost deletePost(String id) throws Exception;
+
+    /**
+     * Returns the posts for the current user.
+     */
+    public List<SocialPost> getPosts() throws Exception;
 }

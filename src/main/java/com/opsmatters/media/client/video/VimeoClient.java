@@ -27,6 +27,7 @@ import com.clickntap.vimeo.VimeoResponse;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.json.JSONArray;
+import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.content.VideoSummary;
 import com.opsmatters.media.model.content.VideoDetails;
 import com.opsmatters.media.model.content.VideoProvider;
@@ -37,17 +38,31 @@ import com.opsmatters.media.util.FormatUtils;
  *
  * @author Gerald Curley (opsmatters)
  */
-public class VimeoClient implements VideoClient
+public class VimeoClient extends Client implements VideoClient
 {
     private static final Logger logger = Logger.getLogger(VimeoClient.class.getName());
-
-    private static Vimeo vimeo;
 
     public static final String AUTH = ".vimeo";
     public static final String LIST_FIELDS = "uri,name,created_time";
     public static final String DETAIL_FIELDS = "uri,name,created_time,description,duration,user.name,user.link";
 
-    private boolean debug = false;
+    private static Vimeo client;
+    private String accessToken = "";
+
+    /**
+     * Returns a new vimeo client using an access token.
+     */
+    static public VimeoClient newClient() throws IOException
+    {
+        VimeoClient ret = new VimeoClient();
+
+        // Configure and create the vimeo client
+        ret.configure();
+        if(!ret.create())
+            logger.severe("Unable to create vimeo client");
+
+        return ret;
+    }
 
     /**
      * Returns the provider for this client.
@@ -58,46 +73,48 @@ public class VimeoClient implements VideoClient
     }
 
     /**
-     * Check if the Vimeo client needs initialising.
+     * Configure the client.
      */
-    public void checkInitialize() throws IOException
+    @Override
+    public void configure() throws IOException
     {
-        if(vimeo == null)
-            initialize();
-    }
+        if(debug())
+            logger.info("Configuring vimeo client");
 
-    /**
-     * Initialise the Vimeo client using OAuth2.
-     */
-    public void initialize() throws IOException
-    {
         String directory = System.getProperty("om-config.auth", ".");
 
-        if(debug())
-            logger.info("Creating vimeo client object");
+        File auth = new File(directory, AUTH);
+        try
+        {
+            // Read access token from auth directory
+            accessToken = FileUtils.readFileToString(auth, "UTF-8");
+        }
+        catch(IOException e)
+        {
+            logger.severe("Unable to read vimeo access token: "+e.getClass().getName()+": "+e.getMessage());
+        }
 
-        // This object is used to make Vimeo API requests
-        File file = new File(directory, AUTH);
-        vimeo = new Vimeo(FileUtils.readFileToString(file, "UTF-8"));
-
         if(debug())
-            logger.info("Created vimeo client object successfully");
+            logger.info("Configured vimeo client successfully");
     }
 
     /**
-     * Returns <CODE>true</CODE> if debug is enabled.
+     * Create the client using the configured credentials.
      */
-    public boolean debug()
+    @Override
+    public boolean create() throws IOException
     {
-        return debug;
-    }
+        if(debug())
+            logger.info("Creating vimeo client");
 
-    /**
-     * Set to <CODE>true</CODE> if debug is enabled.
-     */
-    public void setDebug(boolean debug)
-    {
-        this.debug = debug;
+        // Authenticate using access token
+        if(accessToken != null && accessToken.length() > 0)
+            client = new Vimeo(accessToken);
+
+        if(debug())
+            logger.info("Created vimeo client successfully");
+
+        return true;
     }
 
     /**
@@ -111,14 +128,12 @@ public class VimeoClient implements VideoClient
 
         try
         {
-            checkInitialize();
-
             if(debug())
                 logger.info("Getting vimeo video for ID: "+videoId);
 
             String endpoint = String.format("/videos/%s?fields=%s",
                 videoId, DETAIL_FIELDS);
-            VimeoResponse response = vimeo.get(endpoint);
+            VimeoResponse response = client.get(endpoint);
             JSONObject item = response.getJson();
 
             if(item != null)
@@ -170,14 +185,12 @@ public class VimeoClient implements VideoClient
 
         try
         {
-            checkInitialize();
-
             if(debug())
                 logger.info("Search for vimeo videos for channel: "+channelId);
 
             String endpoint = String.format("/users/%s/videos?fields=%s&sort=date&direction=desc&per_page=%d",
                 userId, LIST_FIELDS, maxResults);
-            VimeoResponse response = vimeo.get(endpoint);
+            VimeoResponse response = client.get(endpoint);
             JSONArray data = response.getJson().getJSONArray("data");
 
             if(data != null && data.length() > 0)

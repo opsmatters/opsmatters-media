@@ -521,7 +521,6 @@ built.on=${TODAY}
   <version>${aws.sdk.version}</version>
 </dependency>
 
-<!-- GERALD: added -->
 <dependency>
   <groupId>org.twitter4j</groupId>
   <artifactId>twitter4j-stream</artifactId>

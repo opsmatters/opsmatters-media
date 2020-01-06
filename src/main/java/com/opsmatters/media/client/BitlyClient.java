@@ -27,7 +27,7 @@ import net.swisstech.bitly.model.v3.ShortenResponse;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class BitlyClient
+public class BitlyClient extends Client
 {
     private static final Logger logger = Logger.getLogger(BitlyClient.class.getName());
 
@@ -43,8 +43,10 @@ public class BitlyClient
     {
         BitlyClient ret = new BitlyClient();
 
-        // get the access token
+        // Configure and create the bitly client
         ret.configure();
+        if(!ret.create())
+            logger.severe("Unable to create bitly client");
 
         return ret;
     }
@@ -52,8 +54,12 @@ public class BitlyClient
     /**
      * Configure the client.
      */
+    @Override
     public void configure() throws IOException
     {
+        if(debug())
+            logger.info("Configuring bitly client");
+
         String directory = System.getProperty("om-config.auth", ".");
 
         File auth = new File(directory, AUTH);
@@ -67,9 +73,27 @@ public class BitlyClient
             logger.severe("Unable to read bitly access token: "+e.getClass().getName()+": "+e.getMessage());
         }
 
+        if(debug())
+            logger.info("Configured bitly client successfully");
+    }
+
+    /**
+     * Create the client using the configured credentials.
+     */
+    @Override
+    public boolean create() 
+    {
+        if(debug())
+            logger.info("Creating bitly client");
+
         // Authenticate using access token
         if(accessToken != null && accessToken.length() > 0)
             client = new net.swisstech.bitly.BitlyClient(accessToken);
+
+        if(debug())
+            logger.info("Created bitly client successfully");
+
+        return true;
     }
 
     /**

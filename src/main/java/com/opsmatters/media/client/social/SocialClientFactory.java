@@ -14,39 +14,39 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.client.video;
+package com.opsmatters.media.client.social;
 
-import java.io.IOException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.content.VideoProvider;
+import com.opsmatters.media.model.social.SocialProvider;
 
 /**
- * Factory class to create a client for a video provider.
+ * Factory class to create a client for a social media provider.
  *
  * @author Gerald Curley (opsmatters)
  */
-public class VideoClientFactory
+public class SocialClientFactory
 {
-    private static final Logger logger = Logger.getLogger(VideoClientFactory.class.getName());
+    private static final Logger logger = Logger.getLogger(SocialClientFactory.class.getName());
 
     /**
      * Private constructor.
      */
-    private VideoClientFactory()
+    private SocialClientFactory()
     {
     }
 
     /**
      * Returns a client for the given provider.
      */
-    public static VideoClient newClient(VideoProvider provider) throws IOException
+    public static SocialClient newClient(SocialProvider provider)
     {
-        if(provider == VideoProvider.YOUTUBE)
-            return YouTubeClient.newClient();
-        else if(provider == VideoProvider.VIMEO)
-            return VimeoClient.newClient();
-        else if(provider == VideoProvider.WISTIA)
-            return WistiaClient.newClient();
-        throw new IllegalArgumentException("Video provider not found: "+provider);
+        if(provider == SocialProvider.TWITTER)
+            return new TwitterClient();
+//GERALD: later
+//        else if(provider == SocialProvider.FACEBOOK)
+//            return new FacebookClient();
+//        else if(provider == SocialProvider.LINKEDIN)
+//            return new LinkedInClient();
+        throw new IllegalArgumentException("Social provider not found: "+provider);
     }
 }

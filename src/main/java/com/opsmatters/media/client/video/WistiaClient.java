@@ -27,6 +27,7 @@ import com.opsmatters.wistia.WistiaResponse;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.json.JSONArray;
+import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.content.VideoSummary;
 import com.opsmatters.media.model.content.VideoDetails;
 import com.opsmatters.media.model.content.VideoProvider;
@@ -37,15 +38,29 @@ import com.opsmatters.media.util.FormatUtils;
  *
  * @author Gerald Curley (opsmatters)
  */
-public class WistiaClient implements VideoClient
+public class WistiaClient extends Client implements VideoClient
 {
     private static final Logger logger = Logger.getLogger(WistiaClient.class.getName());
 
-    private static Wistia wistia;
-
     public static final String AUTH = ".wistia";
 
-    private boolean debug = false;
+    private static Wistia client;
+    private String accessToken = "";
+
+    /**
+     * Returns a new wistia client using an access token.
+     */
+    static public WistiaClient newClient() throws IOException
+    {
+        WistiaClient ret = new WistiaClient();
+
+        // Configure and create the wistia client
+        ret.configure();
+        if(!ret.create())
+            logger.severe("Unable to create wistia client");
+
+        return ret;
+    }
 
     /**
      * Returns the provider for this client.
@@ -56,46 +71,48 @@ public class WistiaClient implements VideoClient
     }
 
     /**
-     * Check if the Wistia client needs initialising.
+     * Configure the client.
      */
-    public void checkInitialize() throws IOException
+    @Override
+    public void configure() throws IOException
     {
-        if(wistia == null)
-            initialize();
-    }
+        if(debug())
+            logger.info("Configuring wistia client");
 
-    /**
-     * Initialise the Wistia client using OAuth2.
-     */
-    public void initialize() throws IOException
-    {
         String directory = System.getProperty("om-config.auth", ".");
 
-        if(debug())
-            logger.info("Creating wistia client object");
+        File auth = new File(directory, AUTH);
+        try
+        {
+            // Read access token from auth directory
+            accessToken = FileUtils.readFileToString(auth, "UTF-8");
+        }
+        catch(IOException e)
+        {
+            logger.severe("Unable to read wistia access token: "+e.getClass().getName()+": "+e.getMessage());
+        }
 
-        // This object is used to make Wistia API requests
-        File file = new File(directory, AUTH);
-        wistia = new Wistia(FileUtils.readFileToString(file, "UTF-8"));
-
         if(debug())
-            logger.info("Created wistia client object successfully");
+            logger.info("Configured wistia client successfully");
     }
 
     /**
-     * Returns <CODE>true</CODE> if debug is enabled.
+     * Create the client using the configured credentials.
      */
-    public boolean debug()
+    @Override
+    public boolean create() throws IOException
     {
-        return debug;
-    }
+        if(debug())
+            logger.info("Creating wistia client");
 
-    /**
-     * Set to <CODE>true</CODE> if debug is enabled.
-     */
-    public void setDebug(boolean debug)
-    {
-        this.debug = debug;
+        // Authenticate using access token
+        if(accessToken != null && accessToken.length() > 0)
+            client = new Wistia(accessToken);
+
+        if(debug())
+            logger.info("Created wistia client successfully");
+
+        return true;
     }
 
     /**
@@ -109,13 +126,11 @@ public class WistiaClient implements VideoClient
 
         try
         {
-            checkInitialize();
-
             if(debug())
                 logger.info("Getting wistia video for ID: "+videoId);
 
             String endpoint = String.format("/medias/%s.json", videoId);
-            WistiaResponse response = wistia.get(endpoint);
+            WistiaResponse response = client.get(endpoint);
             JSONObject item = response.getJson();
 
             if(item != null && item.has("project"))
@@ -166,14 +181,12 @@ public class WistiaClient implements VideoClient
 
         try
         {
-            checkInitialize();
-
             if(debug())
                 logger.info("Search for wistia videos for channel: "+channelId);
 
             String endpoint = String.format("/medias.json?project_id=%s&type=Video&sort_by=created&sort_direction=0&per_page=%d",
                 channelId, maxResults);
-            WistiaResponse response = wistia.get(endpoint);
+            WistiaResponse response = client.get(endpoint);
             JSONArray data = response.getJsonArray();
 
             if(data != null && data.length() > 0)

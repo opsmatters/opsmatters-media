@@ -33,7 +33,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SshClient
+public class SshClient extends Client
 {
     private static final Logger logger = Logger.getLogger(SshClient.class.getName());
 
@@ -42,15 +42,10 @@ public class SshClient
         JSch.setConfig("StrictHostKeyChecking", "no");
     }
 
-    /**
-     * The default secure ftp port.
-     */
+    public static final String AUTH = ".ssh";
     public static final int DEFAULT_SSH_PORT = 22;
 
-    public static final String AUTH = ".ssh";
-
     private static JSch jsch = new JSch();
-
     private String env = "";
     private String hostname = "";
     private int port = 0;
@@ -77,18 +72,23 @@ public class SshClient
             .keyfile(StringUtils.getEnvProperty("om-config.ssh.%s.keyfile", env))
             .build();
 
-        // Connect to the remote server using SSH
+        // Configure and create the SSH client
         ret.configure();
-        if(!ret.connect())
-            logger.severe("Unable to connect to SSH");
+        if(!ret.create())
+            logger.severe("Unable to create SSH client: "+ret.getHostname());
+
         return ret;
     }
 
     /**
      * Configure the client.
      */
+    @Override
     public void configure() throws JSchException, SftpException
     {
+        if(debug())
+            logger.info("Configuring SSH client: "+getHostname());
+
         String directory = System.getProperty("om-config.auth", ".");
 
         if(port == 0)
@@ -103,7 +103,7 @@ public class SshClient
         }
         catch(IOException e)
         {
-            logger.severe("Unable to read ssh password file: "+e.getClass().getName()+": "+e.getMessage());
+            logger.severe("Unable to read SSH password file: "+e.getClass().getName()+": "+e.getMessage());
         }
 
         // Use the auth directory for the keyfile if no path was given
@@ -125,17 +125,28 @@ public class SshClient
         }
 
         this.session = session;
+
+        if(debug())
+            logger.info("Configured SSH client successfully: "+getHostname());
     }
 
     /**
-     * Connect the session and channel.
+     * Create the client using the configured credentials.
      */
-    public boolean connect() 
+    @Override
+    public boolean create() 
         throws JSchException, SftpException
     {
+        if(debug())
+            logger.info("Creating SSH channel: "+getHostname());
+
         session.connect();
         channel = (ChannelSftp)session.openChannel("sftp");
         channel.connect();
+
+        if(debug())
+            logger.info("Created SSH channel successfully: "+getHostname());
+
         return channel.isConnected();
     }
 
