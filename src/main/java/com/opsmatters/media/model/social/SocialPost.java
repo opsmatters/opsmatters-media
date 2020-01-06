@@ -18,6 +18,8 @@ package com.opsmatters.media.model.social;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import twitter4j.Status;
+import facebook4j.Post;
+import com.echobox.api.linkedin.types.Share;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
@@ -48,6 +50,26 @@ public class SocialPost implements java.io.Serializable
         setId(Long.toString(status.getId()));
         setCreatedDateMillis(status.getCreatedAt().getTime());
         setText(status.getText());
+    }
+
+    /**
+     * Constructor that takes a Facebook post.
+     */
+    public SocialPost(Post post)
+    {
+        setId(post.getId());
+        setCreatedDateMillis(post.getCreatedTime().getTime());
+        setText(post.getMessage());
+    }
+
+    /**
+     * Constructor that takes a LinkedIn share.
+     */
+    public SocialPost(Share share)
+    {
+        setId(Long.toString(share.getId()));
+        setCreatedDateMillis(share.getCreated().getTime());
+        setText(share.getText().getText());
     }
 
     /**

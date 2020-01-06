@@ -52,7 +52,7 @@ public class TwitterClient extends Client implements SocialClient
     /**
      * Returns a new twitter client using credentials.
      */
-    static public TwitterClient newClient() throws IOException
+    static public TwitterClient newClient() throws IOException, TwitterException
     {
         TwitterClient ret = new TwitterClient();
 
@@ -109,7 +109,7 @@ public class TwitterClient extends Client implements SocialClient
      * Create the client using the configured credentials.
      */
     @Override
-    public boolean create() throws IOException
+    public boolean create() throws IOException, TwitterException
     {
         if(debug())
             logger.info("Creating twitter client");
@@ -122,15 +122,7 @@ public class TwitterClient extends Client implements SocialClient
         twitter.setOAuthAccessToken(accessToken);
 
         // Issue command to test connectivity
-        long id = 0L;
-        try
-        {
-            id = twitter.getId();
-        }
-        catch(TwitterException e)
-        {
-            throwException(e);
-        }
+        long id = twitter.getId();
 
         client = twitter;
 
@@ -181,7 +173,7 @@ public class TwitterClient extends Client implements SocialClient
     }
 
     /**
-     * Sets the acess token for the client.
+     * Sets the access token for the client.
      */
     public void setAccessToken(String accessToken) 
     {
@@ -197,7 +189,7 @@ public class TwitterClient extends Client implements SocialClient
     }
 
     /**
-     * Sets the acess token secret for the client.
+     * Sets the access token secret for the client.
      */
     public void setAccessTokenSecret(String accessTokenSecret) 
     {
@@ -205,32 +197,11 @@ public class TwitterClient extends Client implements SocialClient
     }
 
     /**
-     * Returns the given TwitterException as an IOException.
+     * Returns the screen name of the current account.
      */
-    private void throwException(TwitterException e) throws IOException
+    public String getName() throws IOException, TwitterException
     {
-        IOException ex = new IOException("Twitter Error: "+e.getStatusCode()+": "+e.getErrorCode());
-        ex.initCause(e);
-        throw ex;
-    }
-
-    /**
-     * Returns the screen name of the connected account.
-     */
-    public String getName() throws IOException
-    {
-        String ret = "";
-
-        try
-        {
-            ret = client.getScreenName();
-        }
-        catch(TwitterException e)
-        {
-            throwException(e);
-        }
-
-        return ret;
+        return client.getScreenName();
     }
 
     /**

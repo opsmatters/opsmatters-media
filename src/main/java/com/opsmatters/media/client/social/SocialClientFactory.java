@@ -42,11 +42,10 @@ public class SocialClientFactory
     {
         if(provider == SocialProvider.TWITTER)
             return new TwitterClient();
-//GERALD: later
-//        else if(provider == SocialProvider.FACEBOOK)
-//            return new FacebookClient();
-//        else if(provider == SocialProvider.LINKEDIN)
-//            return new LinkedInClient();
+        else if(provider == SocialProvider.FACEBOOK)
+            return new FacebookClient();
+        else if(provider == SocialProvider.LINKEDIN)
+            return new LinkedInClient();
         throw new IllegalArgumentException("Social provider not found: "+provider);
     }
 }

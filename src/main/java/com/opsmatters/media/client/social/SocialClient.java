@@ -44,6 +44,11 @@ public interface SocialClient
     public SocialProvider getProvider();
 
     /**
+     * Returns the name of the current account.
+     */
+    public String getName() throws Exception;
+
+    /**
      * Sends the given post.
      *
      * @param text The text of the post to be sent.
