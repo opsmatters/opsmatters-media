@@ -45,10 +45,18 @@ public class StringUtils
 
     public static final String EMPTY = "<p></p>";
 
+    // Pattern to detect URLs in strings
+    private static final String URL_REGEX = "\\(?\\b(https?://|www[.])[-A-Za-z0-9+&amp;@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&amp;@#/%=~_()|]";
+    private static final Pattern urlPattern = Pattern.compile(URL_REGEX);
+
     /**
      * The default depth for stack traces.
      */
     public static final int DEFAULT_DEPTH    = 20;
+
+    static
+    {
+    }
 
     /**
      * Private constructor as this class shouldn't be instantiated.
@@ -858,5 +866,14 @@ public class StringUtils
     public static String getEnvProperty(String name, String env)
     {
         return getEnvProperty(name, env, null);
+    }
+
+    /**
+     * Returns the first URL extracted from the given text.
+     */
+    public static String extractUrl(String text)
+    {
+        Matcher m = urlPattern.matcher(text);
+        return m.find() ? m.group() : null;
     }
 }

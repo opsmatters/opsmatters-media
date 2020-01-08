@@ -17,6 +17,7 @@ package com.opsmatters.media.client.social;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -26,11 +27,13 @@ import facebook4j.Facebook;
 import facebook4j.FacebookException;
 import facebook4j.FacebookFactory;
 import facebook4j.Post;
+import facebook4j.PostUpdate;
 import facebook4j.ResponseList;
 import facebook4j.auth.AccessToken;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.model.social.SocialPost;
+import com.opsmatters.media.util.StringUtils;
 
 /**
  * Class that represents a connection to Facebook for social media posts.
@@ -213,7 +216,12 @@ public class FacebookClient extends Client implements SocialClient
      */
     public SocialPost sendPost(String text) throws IOException, FacebookException
     {
-        String id = client.postStatusMessage(text);
+        String id = null;
+        String url = StringUtils.extractUrl(text);
+        if(url != null)
+            id = client.postFeed(new PostUpdate(new URL(url)).message(text));
+        else
+            id = client.postStatusMessage(text);
         Post post = client.getPost(id);
         return post != null ? new SocialPost(post) : null;
     }

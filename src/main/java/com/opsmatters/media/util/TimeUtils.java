@@ -381,6 +381,18 @@ public class TimeUtils
     }
 
     /**
+     * Returns the time portion from the given date.
+     * @param dt The date from which to extract the time
+     * @return the time portion
+     */
+    public static long getTime(long millis)
+    {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(millis);
+        return ((c.get(Calendar.HOUR_OF_DAY)*3600L)+(c.get(Calendar.MINUTE)*60L)+c.get(Calendar.SECOND))*1000L;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the given date has the time portion set.
      * @param dt The date to test
      * @return <CODE>true</CODE> if the given date has the time portion set

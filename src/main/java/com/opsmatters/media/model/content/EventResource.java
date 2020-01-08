@@ -197,17 +197,30 @@ public class EventResource extends Resource
         resource.setTitle(config.getOrganisation()+": New Event");
         resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
         resource.setStartDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        resource.addStartTime(config);
 
-        // Add the default start time
+        return resource;
+    }
+
+    /**
+     * Adds the default start time to the start date for the event.
+     */
+    public void addStartTime(EventConfiguration config)
+    {
         if(config.getFields().containsKey(Fields.START_TIME))
         {
             String start = config.getFields().get(Fields.START_TIME);
-            long starttm = TimeUtils.toMillisTime(start, Formats.SHORT_TIME_FORMAT);
-            if(starttm > 0L)
-                resource.setStartDateMillis(resource.getStartDateMillis()+starttm);
+            addStartTime(TimeUtils.toMillisTime(start, Formats.SHORT_TIME_FORMAT));
         }
+    }
 
-        return resource;
+    /**
+     * Adds the given start time to the start date for the event.
+     */
+    public void addStartTime(long starttm)
+    {
+        if(starttm > 0L)
+            setStartDateMillis(getStartDateMillis()+starttm);
     }
 
     /**
