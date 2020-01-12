@@ -34,18 +34,18 @@ public class ContentDAOFactory extends DAOFactory
         super(driver, conn);
 
         getOrganisationDAO();
-        getVideoDAO();
-        getRoundupDAO();
-        getPostDAO();
-        getEventDAO();
-        getWhitePaperDAO();
-        getEBookDAO();
-        getToolDAO();
-        getProjectDAO();
+        getVideoArticleDAO();
+        getRoundupArticleDAO();
+        getPostArticleDAO();
+        getEventResourceDAO();
+        getWhitePaperResourceDAO();
+        getEBookResourceDAO();
+        getToolResourceDAO();
+        getProjectResourceDAO();
     }
 
     /**
-     * Returns the organisation DAO.
+     * Returns the Organisation DAO.
      */
     public OrganisationDAO getOrganisationDAO()
     {
@@ -55,83 +55,83 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the video DAO.
+     * Returns the VideoArticle DAO.
      */
-    public VideoDAO getVideoDAO()
+    public VideoArticleDAO getVideoArticleDAO()
     {
-        if(videoDAO == null)
-            videoDAO = new VideoDAO(this);
-        return videoDAO;
+        if(videoArticleDAO == null)
+            videoArticleDAO = new VideoArticleDAO(this);
+        return videoArticleDAO;
     }
 
     /**
-     * Returns the roundup DAO.
+     * Returns the RoundupArticle DAO.
      */
-    public RoundupDAO getRoundupDAO()
+    public RoundupArticleDAO getRoundupArticleDAO()
     {
-        if(roundupDAO == null)
-            roundupDAO = new RoundupDAO(this);
-        return roundupDAO;
+        if(roundupArticleDAO == null)
+            roundupArticleDAO = new RoundupArticleDAO(this);
+        return roundupArticleDAO;
     }
 
     /**
-     * Returns the post DAO.
+     * Returns the PostArticle DAO.
      */
-    public PostDAO getPostDAO()
+    public PostArticleDAO getPostArticleDAO()
     {
-        if(postDAO == null)
-            postDAO = new PostDAO(this);
-        return postDAO;
+        if(postArticleDAO == null)
+            postArticleDAO = new PostArticleDAO(this);
+        return postArticleDAO;
     }
 
     /**
-     * Returns the event DAO.
+     * Returns the EventResource DAO.
      */
-    public EventDAO getEventDAO()
+    public EventResourceDAO getEventResourceDAO()
     {
-        if(eventDAO == null)
-            eventDAO = new EventDAO(this);
-        return eventDAO;
+        if(eventResourceDAO == null)
+            eventResourceDAO = new EventResourceDAO(this);
+        return eventResourceDAO;
     }
 
     /**
-     * Returns the white paper DAO.
+     * Returns the WhitePaperResource DAO.
      */
-    public WhitePaperDAO getWhitePaperDAO()
+    public WhitePaperResourceDAO getWhitePaperResourceDAO()
     {
-        if(whitePaperDAO == null)
-            whitePaperDAO = new WhitePaperDAO(this);
-        return whitePaperDAO;
+        if(whitePaperResourceDAO == null)
+            whitePaperResourceDAO = new WhitePaperResourceDAO(this);
+        return whitePaperResourceDAO;
     }
 
     /**
-     * Returns the ebook DAO.
+     * Returns the EBookResource DAO.
      */
-    public EBookDAO getEBookDAO()
+    public EBookResourceDAO getEBookResourceDAO()
     {
-        if(ebookDAO == null)
-            ebookDAO = new EBookDAO(this);
-        return ebookDAO;
+        if(ebookResourceDAO == null)
+            ebookResourceDAO = new EBookResourceDAO(this);
+        return ebookResourceDAO;
     }
 
     /**
-     * Returns the tool DAO.
+     * Returns the ToolResource DAO.
      */
-    public ToolDAO getToolDAO()
+    public ToolResourceDAO getToolResourceDAO()
     {
-        if(toolDAO == null)
-            toolDAO = new ToolDAO(this);
-        return toolDAO;
+        if(toolResourceDAO == null)
+            toolResourceDAO = new ToolResourceDAO(this);
+        return toolResourceDAO;
     }
 
     /**
-     * Returns the project DAO.
+     * Returns the ProjectResource DAO.
      */
-    public ProjectDAO getProjectDAO()
+    public ProjectResourceDAO getProjectResourceDAO()
     {
-        if(projectDAO == null)
-            projectDAO = new ProjectDAO(this);
-        return projectDAO;
+        if(projectResourceDAO == null)
+            projectResourceDAO = new ProjectResourceDAO(this);
+        return projectResourceDAO;
     }
 
     /**
@@ -142,23 +142,23 @@ public class ContentDAOFactory extends DAOFactory
     {
         super.close();
         organisationDAO = null;
-        videoDAO = null;
-        roundupDAO = null;
-        postDAO = null;
-        eventDAO = null;
-        whitePaperDAO = null;
-        ebookDAO = null;
-        toolDAO = null;
-        projectDAO = null;
+        videoArticleDAO = null;
+        roundupArticleDAO = null;
+        postArticleDAO = null;
+        eventResourceDAO = null;
+        whitePaperResourceDAO = null;
+        ebookResourceDAO = null;
+        toolResourceDAO = null;
+        projectResourceDAO = null;
     }
 
     private OrganisationDAO organisationDAO;
-    private VideoDAO videoDAO;
-    private RoundupDAO roundupDAO;
-    private PostDAO postDAO;
-    private EventDAO eventDAO;
-    private WhitePaperDAO whitePaperDAO;
-    private EBookDAO ebookDAO;
-    private ToolDAO toolDAO;
-    private ProjectDAO projectDAO;
+    private VideoArticleDAO videoArticleDAO;
+    private RoundupArticleDAO roundupArticleDAO;
+    private PostArticleDAO postArticleDAO;
+    private EventResourceDAO eventResourceDAO;
+    private WhitePaperResourceDAO whitePaperResourceDAO;
+    private EBookResourceDAO ebookResourceDAO;
+    private ToolResourceDAO toolResourceDAO;
+    private ProjectResourceDAO projectResourceDAO;
 }

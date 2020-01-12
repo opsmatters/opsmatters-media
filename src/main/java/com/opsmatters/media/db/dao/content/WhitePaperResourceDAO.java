@@ -23,51 +23,49 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
-import com.opsmatters.media.model.content.EventResource;
+import com.opsmatters.media.model.content.WhitePaperResource;
 
 /**
- * DAO that provides operations on the EVENTS table in the database.
+ * DAO that provides operations on the WHITE_PAPERS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EventDAO extends ContentDAO<EventResource>
+public class WhitePaperResourceDAO extends ContentDAO<WhitePaperResource>
 {
-    private static final Logger logger = Logger.getLogger(EventDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(WhitePaperResourceDAO.class.getName());
 
     /**
-     * The query to use to select a event from the EVENTS table by URL.
+     * The query to use to select a white paper from the WHITE_PAPERS table by URL.
      */
     private static final String GET_BY_URL_SQL =  
-      "SELECT ATTRIBUTES FROM EVENTS WHERE CODE=? AND URL=? AND (?=0 OR ABS(TIMESTAMPDIFF(DAY, ?, START_DATE)) < 2)";
+      "SELECT ATTRIBUTES FROM WHITE_PAPERS WHERE CODE=? AND URL=?";
 
     /**
-     * The query to use to insert an event into the EVENTS table.
+     * The query to use to insert a white paper into the WHITE_PAPERS table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO EVENTS"
-      + "( CODE, ID, PUBLISHED_DATE, START_DATE, UUID, URL, ACTIVITY_TYPE, "
-      + "PUBLISHED, CREATED_BY, ATTRIBUTES )"
+      "INSERT INTO WHITE_PAPERS"
+      + "( CODE, ID, PUBLISHED_DATE, UUID, URL, PUBLISHED, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update a event in the EVENTS table.
+     * The query to use to update a white paper in the WHITE_PAPERS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE EVENTS SET PUBLISHED_DATE=?, START_DATE=?, UUID=?, URL=?, ACTIVITY_TYPE=?, "
-      + "PUBLISHED=?, ATTRIBUTES=? "
+      "UPDATE WHITE_PAPERS SET PUBLISHED_DATE=?, UUID=?, URL=?, PUBLISHED=?, ATTRIBUTES=? "
       + "WHERE CODE=? AND ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public EventDAO(ContentDAOFactory factory)
+    public WhitePaperResourceDAO(ContentDAOFactory factory)
     {
-        super(factory, "EVENTS");
+        super(factory, "WHITE_PAPERS");
     }
 
     /**
-     * Defines the columns and indices for the EVENTS table.
+     * Defines the columns and indices for the WHITE_PAPERS table.
      */
     @Override
     protected void defineTable()
@@ -75,25 +73,23 @@ public class EventDAO extends ContentDAO<EventResource>
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
-        table.addColumn("START_DATE", Types.TIMESTAMP, true);
         table.addColumn("UUID", Types.VARCHAR, 36, true);
-        table.addColumn("URL", Types.VARCHAR, 512, true);
-        table.addColumn("ACTIVITY_TYPE", Types.VARCHAR, 30, true);
+        table.addColumn("URL", Types.VARCHAR, 256, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
-        table.setPrimaryKey("EVENTS_PK", new String[] {"CODE","ID"});
-        table.addIndex("EVENTS_UUID_IDX", new String[] {"CODE","UUID"});
-        table.addIndex("EVENTS_URL_IDX", new String[] {"CODE","URL"});
+        table.setPrimaryKey("WHITE_PAPERS_PK", new String[] {"CODE","ID"});
+        table.addIndex("WHITE_PAPERS_UUID_IDX", new String[] {"CODE","UUID"});
+        table.addIndex("WHITE_PAPERS_URL_IDX", new String[] {"CODE","URL"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns a event from the EVENTS table by URL.
+     * Returns a white paper from the WHITE_PAPERS table by URL.
      */
-    public EventResource getByUrl(String code, String url, long startDate) throws SQLException
+    public WhitePaperResource getByUrl(String code, String url) throws SQLException
     {
-        EventResource ret = null;
+        WhitePaperResource ret = null;
 
         if(!hasConnection())
             return ret;
@@ -109,14 +105,12 @@ public class EventDAO extends ContentDAO<EventResource>
         {
             getByUrlStmt.setString(1, code);
             getByUrlStmt.setString(2, url);
-            getByUrlStmt.setLong(3, startDate);
-            getByUrlStmt.setTimestamp(4, new Timestamp(startDate), UTC);
             getByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByUrlStmt.executeQuery();
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = new EventResource(attributes);
+                ret = new WhitePaperResource(attributes);
             }
         }
         finally
@@ -137,15 +131,15 @@ public class EventDAO extends ContentDAO<EventResource>
     }
 
     /**
-     * Stores the given event in the EVENTS table.
+     * Stores the given white paper in the WHITE_PAPERS table.
      */
-    public void add(EventResource content) throws SQLException
+    public void add(WhitePaperResource content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
 
         if(!content.hasUniqueId())
-            throw new IllegalArgumentException("event uuid null");
+            throw new IllegalArgumentException("white paper uuid null");
 
         if(insertStmt == null)
             insertStmt = prepareStatement(getConnection(), INSERT_SQL);
@@ -158,18 +152,16 @@ public class EventDAO extends ContentDAO<EventResource>
             insertStmt.setString(1, content.getCode());
             insertStmt.setInt(2, content.getId());
             insertStmt.setTimestamp(3, new Timestamp(content.getPublishedDateMillis()), UTC);
-            insertStmt.setTimestamp(4, new Timestamp(content.getStartDateMillis()), UTC);
-            insertStmt.setString(5, content.getUuid());
-            insertStmt.setString(6, content.getUrl());
-            insertStmt.setString(7, content.getActivityType());
-            insertStmt.setBoolean(8, content.isPublished());
-            insertStmt.setString(9, content.getCreatedBy());
+            insertStmt.setString(4, content.getUuid());
+            insertStmt.setString(5, content.getUrl());
+            insertStmt.setBoolean(6, content.isPublished());
+            insertStmt.setString(7, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(10, reader, attributes.length());
+            insertStmt.setCharacterStream(8, reader, attributes.length());
             insertStmt.executeUpdate();
 
-            logger.info("Created event '"+content.getTitle()+"' in EVENTS"
+            logger.info("Created white paper '"+content.getTitle()+"' in WHITE_PAPERS"
                 +" (id="+content.getId()+" uuid="+content.getUuid()+")");
         }
         catch(SQLException ex)
@@ -181,7 +173,7 @@ public class EventDAO extends ContentDAO<EventResource>
                 insertStmt = null;
             }
 
-            // Unique constraint violated means that the event already exists
+            // Unique constraint violated means that the white paper already exists
             if(!getDriver().isConstraintViolation(ex))
                 throw ex;
         }
@@ -193,15 +185,15 @@ public class EventDAO extends ContentDAO<EventResource>
     }
 
     /**
-     * Updates the given event in the EVENTS table.
+     * Updates the given white paper in the WHITE_PAPERS table.
      */
-    public void update(EventResource content) throws SQLException
+    public void update(WhitePaperResource content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
 
         if(!content.hasUniqueId())
-            throw new IllegalArgumentException("event uuid null");
+            throw new IllegalArgumentException("white paper uuid null");
 
         if(updateStmt == null)
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
@@ -212,19 +204,17 @@ public class EventDAO extends ContentDAO<EventResource>
         try
         {
             updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
-            updateStmt.setTimestamp(2, new Timestamp(content.getStartDateMillis()), UTC);
-            updateStmt.setString(3, content.getUuid());
-            updateStmt.setString(4, content.getUrl());
-            updateStmt.setString(5, content.getActivityType());
-            updateStmt.setBoolean(6, content.isPublished());
+            updateStmt.setString(2, content.getUuid());
+            updateStmt.setString(3, content.getUrl());
+            updateStmt.setBoolean(4, content.isPublished());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(7, reader, attributes.length());
-            updateStmt.setString(8, content.getCode());
-            updateStmt.setInt(9, content.getId());
+            updateStmt.setCharacterStream(5, reader, attributes.length());
+            updateStmt.setString(6, content.getCode());
+            updateStmt.setInt(7, content.getId());
             updateStmt.executeUpdate();
 
-            logger.info("Updated event '"+content.getTitle()+"' in EVENTS"
+            logger.info("Updated white paper '"+content.getTitle()+"' in WHITE_PAPERS"
                 +" (id="+content.getId()+" uuid="+content.getUuid()+")");
         }
         finally

@@ -30,9 +30,9 @@ import com.opsmatters.media.model.content.VideoArticle;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class VideoDAO extends ContentDAO<VideoArticle>
+public class VideoArticleDAO extends ContentDAO<VideoArticle>
 {
-    private static final Logger logger = Logger.getLogger(VideoDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(VideoArticleDAO.class.getName());
 
     /**
      * The query to use to select a video from the VIDEOS table by videoId.
@@ -59,7 +59,7 @@ public class VideoDAO extends ContentDAO<VideoArticle>
     /**
      * Constructor that takes a DAO factory.
      */
-    public VideoDAO(ContentDAOFactory factory)
+    public VideoArticleDAO(ContentDAOFactory factory)
     {
         super(factory, "VIDEOS");
     }

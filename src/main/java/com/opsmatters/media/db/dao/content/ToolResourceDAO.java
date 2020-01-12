@@ -30,9 +30,9 @@ import com.opsmatters.media.model.content.ToolResource;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ToolDAO extends ContentDAO<ToolResource>
+public class ToolResourceDAO extends ContentDAO<ToolResource>
 {
-    private static final Logger logger = Logger.getLogger(ToolDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(ToolResourceDAO.class.getName());
 
     /**
      * The query to use to insert a tool into the TOOLS table.
@@ -55,7 +55,7 @@ public class ToolDAO extends ContentDAO<ToolResource>
     /**
      * Constructor that takes a DAO factory.
      */
-    public ToolDAO(ContentDAOFactory factory)
+    public ToolResourceDAO(ContentDAOFactory factory)
     {
         super(factory, "TOOLS");
     }

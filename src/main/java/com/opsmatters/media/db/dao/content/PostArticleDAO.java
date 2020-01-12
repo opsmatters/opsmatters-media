@@ -23,49 +23,43 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
-import com.opsmatters.media.model.content.RoundupArticle;
+import com.opsmatters.media.model.content.PostArticle;
 
 /**
- * DAO that provides operations on the ROUNDUPS table in the database.
+ * DAO that provides operations on the POSTS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupDAO extends ContentDAO<RoundupArticle>
+public class PostArticleDAO extends ContentDAO<PostArticle>
 {
-    private static final Logger logger = Logger.getLogger(RoundupDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(PostArticleDAO.class.getName());
 
     /**
-     * The query to use to select a roundup from the ROUNDUPS table by URL.
-     */
-    private static final String GET_BY_URL_SQL =  
-      "SELECT ATTRIBUTES FROM ROUNDUPS WHERE CODE=? AND URL=? AND (?=0 OR ABS(TIMESTAMPDIFF(DAY, ?, PUBLISHED_DATE)) <= 7)";
-
-    /**
-     * The query to use to insert a roundup into the ROUNDUPS table.
+     * The query to use to insert a post into the POSTS table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO ROUNDUPS"
-      + "( CODE, ID, PUBLISHED_DATE, UUID, URL, PUBLISHED, CREATED_BY, ATTRIBUTES )"
+      "INSERT INTO POSTS"
+      + "( CODE, ID, PUBLISHED_DATE, UUID, PUBLISHED, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update a roundup in the ROUNDUPS table.
+     * The query to use to update a post in the POSTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE ROUNDUPS SET PUBLISHED_DATE=?, UUID=?, URL=?, PUBLISHED=?, ATTRIBUTES=? "
+      "UPDATE POSTS SET PUBLISHED_DATE=?, UUID=?, PUBLISHED=?, ATTRIBUTES=? "
       + "WHERE CODE=? AND ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public RoundupDAO(ContentDAOFactory factory)
+    public PostArticleDAO(ContentDAOFactory factory)
     {
-        super(factory, "ROUNDUPS");
+        super(factory, "POSTS");
     }
 
     /**
-     * Defines the columns and indices for the ROUNDUPS table.
+     * Defines the columns and indices for the POSTS table.
      */
     @Override
     protected void defineTable()
@@ -74,74 +68,24 @@ public class RoundupDAO extends ContentDAO<RoundupArticle>
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UUID", Types.VARCHAR, 36, true);
-        table.addColumn("URL", Types.VARCHAR, 256, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
-        table.setPrimaryKey("ROUNDUPS_PK", new String[] {"CODE","ID"});
-        table.addIndex("ROUNDUPS_UUID_IDX", new String[] {"CODE","UUID"});
-        table.addIndex("ROUNDUPS_URL_IDX", new String[] {"CODE","URL"});
+        table.setPrimaryKey("POSTS_PK", new String[] {"CODE","ID"});
+        table.addIndex("POSTS_UUID_IDX", new String[] {"CODE","UUID"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns a roundup from the ROUNDUPS table by URL.
+     * Stores the given post in the POSTS table.
      */
-    public RoundupArticle getByUrl(String code, String url, long publishedDate) throws SQLException
-    {
-        RoundupArticle ret = null;
-
-        if(!hasConnection())
-            return ret;
-
-        preQuery();
-        if(getByUrlStmt == null)
-            getByUrlStmt = prepareStatement(getConnection(), GET_BY_URL_SQL);
-        clearParameters(getByUrlStmt);
-
-        ResultSet rs = null;
-
-        try
-        {
-            getByUrlStmt.setString(1, code);
-            getByUrlStmt.setString(2, url);
-            getByUrlStmt.setLong(3, publishedDate);
-            getByUrlStmt.setTimestamp(4, new Timestamp(publishedDate), UTC);
-            getByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = getByUrlStmt.executeQuery();
-            while(rs.next())
-            {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = new RoundupArticle(attributes);
-            }
-        }
-        finally
-        {
-            try
-            {
-                if(rs != null)
-                    rs.close();
-            }
-            catch (SQLException ex) 
-            {
-            } 
-        }
-
-        postQuery();
-
-        return ret;
-    }
-
-    /**
-     * Stores the given roundup in the ROUNDUPS table.
-     */
-    public void add(RoundupArticle content) throws SQLException
+    public void add(PostArticle content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
 
         if(!content.hasUniqueId())
-            throw new IllegalArgumentException("roundup uuid null");
+            throw new IllegalArgumentException("post uuid null");
 
         if(insertStmt == null)
             insertStmt = prepareStatement(getConnection(), INSERT_SQL);
@@ -155,15 +99,14 @@ public class RoundupDAO extends ContentDAO<RoundupArticle>
             insertStmt.setInt(2, content.getId());
             insertStmt.setTimestamp(3, new Timestamp(content.getPublishedDateMillis()), UTC);
             insertStmt.setString(4, content.getUuid());
-            insertStmt.setString(5, content.getUrl());
-            insertStmt.setBoolean(6, content.isPublished());
-            insertStmt.setString(7, content.getCreatedBy());
+            insertStmt.setBoolean(5, content.isPublished());
+            insertStmt.setString(6, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(8, reader, attributes.length());
+            insertStmt.setCharacterStream(7, reader, attributes.length());
             insertStmt.executeUpdate();
 
-            logger.info("Created roundup '"+content.getTitle()+"' in ROUNDUPS"
+            logger.info("Created post '"+content.getTitle()+"' in POSTS"
                 +" (id="+content.getId()+" uuid="+content.getUuid()+")");
         }
         catch(SQLException ex)
@@ -175,7 +118,7 @@ public class RoundupDAO extends ContentDAO<RoundupArticle>
                 insertStmt = null;
             }
 
-            // Unique constraint violated means that the roundup already exists
+            // Unique constraint violated means that the post already exists
             if(!getDriver().isConstraintViolation(ex))
                 throw ex;
         }
@@ -187,15 +130,15 @@ public class RoundupDAO extends ContentDAO<RoundupArticle>
     }
 
     /**
-     * Updates the given roundup in the ROUNDUPS table.
+     * Updates the given post in the POSTS table.
      */
-    public void update(RoundupArticle content) throws SQLException
+    public void update(PostArticle content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
 
         if(!content.hasUniqueId())
-            throw new IllegalArgumentException("roundup uuid null");
+            throw new IllegalArgumentException("post uuid null");
 
         if(updateStmt == null)
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
@@ -207,16 +150,15 @@ public class RoundupDAO extends ContentDAO<RoundupArticle>
         {
             updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
             updateStmt.setString(2, content.getUuid());
-            updateStmt.setString(3, content.getUrl());
-            updateStmt.setBoolean(4, content.isPublished());
+            updateStmt.setBoolean(3, content.isPublished());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(5, reader, attributes.length());
-            updateStmt.setString(6, content.getCode());
-            updateStmt.setInt(7, content.getId());
+            updateStmt.setCharacterStream(4, reader, attributes.length());
+            updateStmt.setString(5, content.getCode());
+            updateStmt.setInt(6, content.getId());
             updateStmt.executeUpdate();
 
-            logger.info("Updated roundup '"+content.getTitle()+"' in ROUNDUPS"
+            logger.info("Updated post '"+content.getTitle()+"' in POSTS"
                 +" (id="+content.getId()+" uuid="+content.getUuid()+")");
         }
         finally
@@ -232,15 +174,12 @@ public class RoundupDAO extends ContentDAO<RoundupArticle>
     @Override
     protected void close()
     {
-        closeStatement(getByUrlStmt);
-        getByUrlStmt = null;
         closeStatement(insertStmt);
         insertStmt = null;
         closeStatement(updateStmt);
         updateStmt = null;
     }
 
-    private PreparedStatement getByUrlStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
 }

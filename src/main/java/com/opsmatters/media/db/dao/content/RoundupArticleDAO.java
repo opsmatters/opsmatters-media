@@ -23,49 +23,49 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
-import com.opsmatters.media.model.content.WhitePaperResource;
+import com.opsmatters.media.model.content.RoundupArticle;
 
 /**
- * DAO that provides operations on the WHITE_PAPERS table in the database.
+ * DAO that provides operations on the ROUNDUPS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class WhitePaperDAO extends ContentDAO<WhitePaperResource>
+public class RoundupArticleDAO extends ContentDAO<RoundupArticle>
 {
-    private static final Logger logger = Logger.getLogger(WhitePaperDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(RoundupArticleDAO.class.getName());
 
     /**
-     * The query to use to select a white paper from the WHITE_PAPERS table by URL.
+     * The query to use to select a roundup from the ROUNDUPS table by URL.
      */
     private static final String GET_BY_URL_SQL =  
-      "SELECT ATTRIBUTES FROM WHITE_PAPERS WHERE CODE=? AND URL=?";
+      "SELECT ATTRIBUTES FROM ROUNDUPS WHERE CODE=? AND URL=? AND (?=0 OR ABS(TIMESTAMPDIFF(DAY, ?, PUBLISHED_DATE)) <= 7)";
 
     /**
-     * The query to use to insert a white paper into the WHITE_PAPERS table.
+     * The query to use to insert a roundup into the ROUNDUPS table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO WHITE_PAPERS"
+      "INSERT INTO ROUNDUPS"
       + "( CODE, ID, PUBLISHED_DATE, UUID, URL, PUBLISHED, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update a white paper in the WHITE_PAPERS table.
+     * The query to use to update a roundup in the ROUNDUPS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE WHITE_PAPERS SET PUBLISHED_DATE=?, UUID=?, URL=?, PUBLISHED=?, ATTRIBUTES=? "
+      "UPDATE ROUNDUPS SET PUBLISHED_DATE=?, UUID=?, URL=?, PUBLISHED=?, ATTRIBUTES=? "
       + "WHERE CODE=? AND ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public WhitePaperDAO(ContentDAOFactory factory)
+    public RoundupArticleDAO(ContentDAOFactory factory)
     {
-        super(factory, "WHITE_PAPERS");
+        super(factory, "ROUNDUPS");
     }
 
     /**
-     * Defines the columns and indices for the WHITE_PAPERS table.
+     * Defines the columns and indices for the ROUNDUPS table.
      */
     @Override
     protected void defineTable()
@@ -78,18 +78,18 @@ public class WhitePaperDAO extends ContentDAO<WhitePaperResource>
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
-        table.setPrimaryKey("WHITE_PAPERS_PK", new String[] {"CODE","ID"});
-        table.addIndex("WHITE_PAPERS_UUID_IDX", new String[] {"CODE","UUID"});
-        table.addIndex("WHITE_PAPERS_URL_IDX", new String[] {"CODE","URL"});
+        table.setPrimaryKey("ROUNDUPS_PK", new String[] {"CODE","ID"});
+        table.addIndex("ROUNDUPS_UUID_IDX", new String[] {"CODE","UUID"});
+        table.addIndex("ROUNDUPS_URL_IDX", new String[] {"CODE","URL"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns a white paper from the WHITE_PAPERS table by URL.
+     * Returns a roundup from the ROUNDUPS table by URL.
      */
-    public WhitePaperResource getByUrl(String code, String url) throws SQLException
+    public RoundupArticle getByUrl(String code, String url, long publishedDate) throws SQLException
     {
-        WhitePaperResource ret = null;
+        RoundupArticle ret = null;
 
         if(!hasConnection())
             return ret;
@@ -105,12 +105,14 @@ public class WhitePaperDAO extends ContentDAO<WhitePaperResource>
         {
             getByUrlStmt.setString(1, code);
             getByUrlStmt.setString(2, url);
+            getByUrlStmt.setLong(3, publishedDate);
+            getByUrlStmt.setTimestamp(4, new Timestamp(publishedDate), UTC);
             getByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByUrlStmt.executeQuery();
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = new WhitePaperResource(attributes);
+                ret = new RoundupArticle(attributes);
             }
         }
         finally
@@ -131,15 +133,15 @@ public class WhitePaperDAO extends ContentDAO<WhitePaperResource>
     }
 
     /**
-     * Stores the given white paper in the WHITE_PAPERS table.
+     * Stores the given roundup in the ROUNDUPS table.
      */
-    public void add(WhitePaperResource content) throws SQLException
+    public void add(RoundupArticle content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
 
         if(!content.hasUniqueId())
-            throw new IllegalArgumentException("white paper uuid null");
+            throw new IllegalArgumentException("roundup uuid null");
 
         if(insertStmt == null)
             insertStmt = prepareStatement(getConnection(), INSERT_SQL);
@@ -161,7 +163,7 @@ public class WhitePaperDAO extends ContentDAO<WhitePaperResource>
             insertStmt.setCharacterStream(8, reader, attributes.length());
             insertStmt.executeUpdate();
 
-            logger.info("Created white paper '"+content.getTitle()+"' in WHITE_PAPERS"
+            logger.info("Created roundup '"+content.getTitle()+"' in ROUNDUPS"
                 +" (id="+content.getId()+" uuid="+content.getUuid()+")");
         }
         catch(SQLException ex)
@@ -173,7 +175,7 @@ public class WhitePaperDAO extends ContentDAO<WhitePaperResource>
                 insertStmt = null;
             }
 
-            // Unique constraint violated means that the white paper already exists
+            // Unique constraint violated means that the roundup already exists
             if(!getDriver().isConstraintViolation(ex))
                 throw ex;
         }
@@ -185,15 +187,15 @@ public class WhitePaperDAO extends ContentDAO<WhitePaperResource>
     }
 
     /**
-     * Updates the given white paper in the WHITE_PAPERS table.
+     * Updates the given roundup in the ROUNDUPS table.
      */
-    public void update(WhitePaperResource content) throws SQLException
+    public void update(RoundupArticle content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
 
         if(!content.hasUniqueId())
-            throw new IllegalArgumentException("white paper uuid null");
+            throw new IllegalArgumentException("roundup uuid null");
 
         if(updateStmt == null)
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
@@ -214,7 +216,7 @@ public class WhitePaperDAO extends ContentDAO<WhitePaperResource>
             updateStmt.setInt(7, content.getId());
             updateStmt.executeUpdate();
 
-            logger.info("Updated white paper '"+content.getTitle()+"' in WHITE_PAPERS"
+            logger.info("Updated roundup '"+content.getTitle()+"' in ROUNDUPS"
                 +" (id="+content.getId()+" uuid="+content.getUuid()+")");
         }
         finally

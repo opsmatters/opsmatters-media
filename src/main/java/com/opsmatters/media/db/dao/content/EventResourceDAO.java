@@ -23,49 +23,51 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
-import com.opsmatters.media.model.content.EBookResource;
+import com.opsmatters.media.model.content.EventResource;
 
 /**
- * DAO that provides operations on the EBOOKS table in the database.
+ * DAO that provides operations on the EVENTS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EBookDAO extends ContentDAO<EBookResource>
+public class EventResourceDAO extends ContentDAO<EventResource>
 {
-    private static final Logger logger = Logger.getLogger(EBookDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(EventResourceDAO.class.getName());
 
     /**
-     * The query to use to select a ebook from the EBOOKS table by URL.
+     * The query to use to select a event from the EVENTS table by URL.
      */
     private static final String GET_BY_URL_SQL =  
-      "SELECT ATTRIBUTES FROM EBOOKS WHERE CODE=? AND URL=?";
+      "SELECT ATTRIBUTES FROM EVENTS WHERE CODE=? AND URL=? AND (?=0 OR ABS(TIMESTAMPDIFF(DAY, ?, START_DATE)) < 2)";
 
     /**
-     * The query to use to insert a ebook into the EBOOKS table.
+     * The query to use to insert an event into the EVENTS table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO EBOOKS"
-      + "( CODE, ID, PUBLISHED_DATE, UUID, URL, PUBLISHED, CREATED_BY, ATTRIBUTES )"
+      "INSERT INTO EVENTS"
+      + "( CODE, ID, PUBLISHED_DATE, START_DATE, UUID, URL, ACTIVITY_TYPE, "
+      + "PUBLISHED, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update a ebook in the EBOOKS table.
+     * The query to use to update a event in the EVENTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE EBOOKS SET PUBLISHED_DATE=?, UUID=?, URL=?, PUBLISHED=?, ATTRIBUTES=? "
+      "UPDATE EVENTS SET PUBLISHED_DATE=?, START_DATE=?, UUID=?, URL=?, ACTIVITY_TYPE=?, "
+      + "PUBLISHED=?, ATTRIBUTES=? "
       + "WHERE CODE=? AND ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public EBookDAO(ContentDAOFactory factory)
+    public EventResourceDAO(ContentDAOFactory factory)
     {
-        super(factory, "EBOOKS");
+        super(factory, "EVENTS");
     }
 
     /**
-     * Defines the columns and indices for the EBOOKS table.
+     * Defines the columns and indices for the EVENTS table.
      */
     @Override
     protected void defineTable()
@@ -73,23 +75,25 @@ public class EBookDAO extends ContentDAO<EBookResource>
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
+        table.addColumn("START_DATE", Types.TIMESTAMP, true);
         table.addColumn("UUID", Types.VARCHAR, 36, true);
-        table.addColumn("URL", Types.VARCHAR, 256, true);
+        table.addColumn("URL", Types.VARCHAR, 512, true);
+        table.addColumn("ACTIVITY_TYPE", Types.VARCHAR, 30, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
-        table.setPrimaryKey("EBOOKS_PK", new String[] {"CODE","ID"});
-        table.addIndex("EBOOKS_UUID_IDX", new String[] {"CODE","UUID"});
-        table.addIndex("EBOOKS_URL_IDX", new String[] {"CODE","URL"});
+        table.setPrimaryKey("EVENTS_PK", new String[] {"CODE","ID"});
+        table.addIndex("EVENTS_UUID_IDX", new String[] {"CODE","UUID"});
+        table.addIndex("EVENTS_URL_IDX", new String[] {"CODE","URL"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns a ebook from the EBOOKS table by URL.
+     * Returns a event from the EVENTS table by URL.
      */
-    public EBookResource getByUrl(String code, String url) throws SQLException
+    public EventResource getByUrl(String code, String url, long startDate) throws SQLException
     {
-        EBookResource ret = null;
+        EventResource ret = null;
 
         if(!hasConnection())
             return ret;
@@ -105,12 +109,14 @@ public class EBookDAO extends ContentDAO<EBookResource>
         {
             getByUrlStmt.setString(1, code);
             getByUrlStmt.setString(2, url);
+            getByUrlStmt.setLong(3, startDate);
+            getByUrlStmt.setTimestamp(4, new Timestamp(startDate), UTC);
             getByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByUrlStmt.executeQuery();
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = new EBookResource(attributes);
+                ret = new EventResource(attributes);
             }
         }
         finally
@@ -131,15 +137,15 @@ public class EBookDAO extends ContentDAO<EBookResource>
     }
 
     /**
-     * Stores the given ebook in the EBOOKS table.
+     * Stores the given event in the EVENTS table.
      */
-    public void add(EBookResource content) throws SQLException
+    public void add(EventResource content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
 
         if(!content.hasUniqueId())
-            throw new IllegalArgumentException("ebook uuid null");
+            throw new IllegalArgumentException("event uuid null");
 
         if(insertStmt == null)
             insertStmt = prepareStatement(getConnection(), INSERT_SQL);
@@ -152,16 +158,18 @@ public class EBookDAO extends ContentDAO<EBookResource>
             insertStmt.setString(1, content.getCode());
             insertStmt.setInt(2, content.getId());
             insertStmt.setTimestamp(3, new Timestamp(content.getPublishedDateMillis()), UTC);
-            insertStmt.setString(4, content.getUuid());
-            insertStmt.setString(5, content.getUrl());
-            insertStmt.setBoolean(6, content.isPublished());
-            insertStmt.setString(7, content.getCreatedBy());
+            insertStmt.setTimestamp(4, new Timestamp(content.getStartDateMillis()), UTC);
+            insertStmt.setString(5, content.getUuid());
+            insertStmt.setString(6, content.getUrl());
+            insertStmt.setString(7, content.getActivityType());
+            insertStmt.setBoolean(8, content.isPublished());
+            insertStmt.setString(9, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(8, reader, attributes.length());
+            insertStmt.setCharacterStream(10, reader, attributes.length());
             insertStmt.executeUpdate();
 
-            logger.info("Created ebook '"+content.getTitle()+"' in EBOOKS"
+            logger.info("Created event '"+content.getTitle()+"' in EVENTS"
                 +" (id="+content.getId()+" uuid="+content.getUuid()+")");
         }
         catch(SQLException ex)
@@ -173,7 +181,7 @@ public class EBookDAO extends ContentDAO<EBookResource>
                 insertStmt = null;
             }
 
-            // Unique constraint violated means that the ebook already exists
+            // Unique constraint violated means that the event already exists
             if(!getDriver().isConstraintViolation(ex))
                 throw ex;
         }
@@ -185,15 +193,15 @@ public class EBookDAO extends ContentDAO<EBookResource>
     }
 
     /**
-     * Updates the given ebook in the EBOOKS table.
+     * Updates the given event in the EVENTS table.
      */
-    public void update(EBookResource content) throws SQLException
+    public void update(EventResource content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
 
         if(!content.hasUniqueId())
-            throw new IllegalArgumentException("ebook uuid null");
+            throw new IllegalArgumentException("event uuid null");
 
         if(updateStmt == null)
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
@@ -204,17 +212,19 @@ public class EBookDAO extends ContentDAO<EBookResource>
         try
         {
             updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
-            updateStmt.setString(2, content.getUuid());
-            updateStmt.setString(3, content.getUrl());
-            updateStmt.setBoolean(4, content.isPublished());
+            updateStmt.setTimestamp(2, new Timestamp(content.getStartDateMillis()), UTC);
+            updateStmt.setString(3, content.getUuid());
+            updateStmt.setString(4, content.getUrl());
+            updateStmt.setString(5, content.getActivityType());
+            updateStmt.setBoolean(6, content.isPublished());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(5, reader, attributes.length());
-            updateStmt.setString(6, content.getCode());
-            updateStmt.setInt(7, content.getId());
+            updateStmt.setCharacterStream(7, reader, attributes.length());
+            updateStmt.setString(8, content.getCode());
+            updateStmt.setInt(9, content.getId());
             updateStmt.executeUpdate();
 
-            logger.info("Updated ebook '"+content.getTitle()+"' in EBOOKS"
+            logger.info("Updated event '"+content.getTitle()+"' in EVENTS"
                 +" (id="+content.getId()+" uuid="+content.getUuid()+")");
         }
         finally

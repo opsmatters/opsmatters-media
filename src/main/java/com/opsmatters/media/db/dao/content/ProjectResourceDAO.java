@@ -30,9 +30,9 @@ import com.opsmatters.media.model.content.ProjectResource;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ProjectDAO extends ContentDAO<ProjectResource>
+public class ProjectResourceDAO extends ContentDAO<ProjectResource>
 {
-    private static final Logger logger = Logger.getLogger(ProjectDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(ProjectResourceDAO.class.getName());
 
     /**
      * The query to use to insert a project into the PROJECTS table.
@@ -53,7 +53,7 @@ public class ProjectDAO extends ContentDAO<ProjectResource>
     /**
      * Constructor that takes a DAO factory.
      */
-    public ProjectDAO(ContentDAOFactory factory)
+    public ProjectResourceDAO(ContentDAOFactory factory)
     {
         super(factory, "PROJECTS");
     }

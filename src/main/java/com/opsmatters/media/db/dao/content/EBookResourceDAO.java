@@ -23,43 +23,49 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
-import com.opsmatters.media.model.content.PostArticle;
+import com.opsmatters.media.model.content.EBookResource;
 
 /**
- * DAO that provides operations on the POSTS table in the database.
+ * DAO that provides operations on the EBOOKS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PostDAO extends ContentDAO<PostArticle>
+public class EBookResourceDAO extends ContentDAO<EBookResource>
 {
-    private static final Logger logger = Logger.getLogger(PostDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(EBookResourceDAO.class.getName());
 
     /**
-     * The query to use to insert a post into the POSTS table.
+     * The query to use to select a ebook from the EBOOKS table by URL.
+     */
+    private static final String GET_BY_URL_SQL =  
+      "SELECT ATTRIBUTES FROM EBOOKS WHERE CODE=? AND URL=?";
+
+    /**
+     * The query to use to insert a ebook into the EBOOKS table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO POSTS"
-      + "( CODE, ID, PUBLISHED_DATE, UUID, PUBLISHED, CREATED_BY, ATTRIBUTES )"
+      "INSERT INTO EBOOKS"
+      + "( CODE, ID, PUBLISHED_DATE, UUID, URL, PUBLISHED, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update a post in the POSTS table.
+     * The query to use to update a ebook in the EBOOKS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE POSTS SET PUBLISHED_DATE=?, UUID=?, PUBLISHED=?, ATTRIBUTES=? "
+      "UPDATE EBOOKS SET PUBLISHED_DATE=?, UUID=?, URL=?, PUBLISHED=?, ATTRIBUTES=? "
       + "WHERE CODE=? AND ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public PostDAO(ContentDAOFactory factory)
+    public EBookResourceDAO(ContentDAOFactory factory)
     {
-        super(factory, "POSTS");
+        super(factory, "EBOOKS");
     }
 
     /**
-     * Defines the columns and indices for the POSTS table.
+     * Defines the columns and indices for the EBOOKS table.
      */
     @Override
     protected void defineTable()
@@ -68,24 +74,72 @@ public class PostDAO extends ContentDAO<PostArticle>
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UUID", Types.VARCHAR, 36, true);
+        table.addColumn("URL", Types.VARCHAR, 256, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
-        table.setPrimaryKey("POSTS_PK", new String[] {"CODE","ID"});
-        table.addIndex("POSTS_UUID_IDX", new String[] {"CODE","UUID"});
+        table.setPrimaryKey("EBOOKS_PK", new String[] {"CODE","ID"});
+        table.addIndex("EBOOKS_UUID_IDX", new String[] {"CODE","UUID"});
+        table.addIndex("EBOOKS_URL_IDX", new String[] {"CODE","URL"});
         table.setInitialised(true);
     }
 
     /**
-     * Stores the given post in the POSTS table.
+     * Returns a ebook from the EBOOKS table by URL.
      */
-    public void add(PostArticle content) throws SQLException
+    public EBookResource getByUrl(String code, String url) throws SQLException
+    {
+        EBookResource ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(getByUrlStmt == null)
+            getByUrlStmt = prepareStatement(getConnection(), GET_BY_URL_SQL);
+        clearParameters(getByUrlStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            getByUrlStmt.setString(1, code);
+            getByUrlStmt.setString(2, url);
+            getByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = getByUrlStmt.executeQuery();
+            while(rs.next())
+            {
+                JSONObject attributes = new JSONObject(getClob(rs, 1));
+                ret = new EBookResource(attributes);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Stores the given ebook in the EBOOKS table.
+     */
+    public void add(EBookResource content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
 
         if(!content.hasUniqueId())
-            throw new IllegalArgumentException("post uuid null");
+            throw new IllegalArgumentException("ebook uuid null");
 
         if(insertStmt == null)
             insertStmt = prepareStatement(getConnection(), INSERT_SQL);
@@ -99,14 +153,15 @@ public class PostDAO extends ContentDAO<PostArticle>
             insertStmt.setInt(2, content.getId());
             insertStmt.setTimestamp(3, new Timestamp(content.getPublishedDateMillis()), UTC);
             insertStmt.setString(4, content.getUuid());
-            insertStmt.setBoolean(5, content.isPublished());
-            insertStmt.setString(6, content.getCreatedBy());
+            insertStmt.setString(5, content.getUrl());
+            insertStmt.setBoolean(6, content.isPublished());
+            insertStmt.setString(7, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(7, reader, attributes.length());
+            insertStmt.setCharacterStream(8, reader, attributes.length());
             insertStmt.executeUpdate();
 
-            logger.info("Created post '"+content.getTitle()+"' in POSTS"
+            logger.info("Created ebook '"+content.getTitle()+"' in EBOOKS"
                 +" (id="+content.getId()+" uuid="+content.getUuid()+")");
         }
         catch(SQLException ex)
@@ -118,7 +173,7 @@ public class PostDAO extends ContentDAO<PostArticle>
                 insertStmt = null;
             }
 
-            // Unique constraint violated means that the post already exists
+            // Unique constraint violated means that the ebook already exists
             if(!getDriver().isConstraintViolation(ex))
                 throw ex;
         }
@@ -130,15 +185,15 @@ public class PostDAO extends ContentDAO<PostArticle>
     }
 
     /**
-     * Updates the given post in the POSTS table.
+     * Updates the given ebook in the EBOOKS table.
      */
-    public void update(PostArticle content) throws SQLException
+    public void update(EBookResource content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
 
         if(!content.hasUniqueId())
-            throw new IllegalArgumentException("post uuid null");
+            throw new IllegalArgumentException("ebook uuid null");
 
         if(updateStmt == null)
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
@@ -150,15 +205,16 @@ public class PostDAO extends ContentDAO<PostArticle>
         {
             updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
             updateStmt.setString(2, content.getUuid());
-            updateStmt.setBoolean(3, content.isPublished());
+            updateStmt.setString(3, content.getUrl());
+            updateStmt.setBoolean(4, content.isPublished());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(4, reader, attributes.length());
-            updateStmt.setString(5, content.getCode());
-            updateStmt.setInt(6, content.getId());
+            updateStmt.setCharacterStream(5, reader, attributes.length());
+            updateStmt.setString(6, content.getCode());
+            updateStmt.setInt(7, content.getId());
             updateStmt.executeUpdate();
 
-            logger.info("Updated post '"+content.getTitle()+"' in POSTS"
+            logger.info("Updated ebook '"+content.getTitle()+"' in EBOOKS"
                 +" (id="+content.getId()+" uuid="+content.getUuid()+")");
         }
         finally
@@ -174,12 +230,15 @@ public class PostDAO extends ContentDAO<PostArticle>
     @Override
     protected void close()
     {
+        closeStatement(getByUrlStmt);
+        getByUrlStmt = null;
         closeStatement(insertStmt);
         insertStmt = null;
         closeStatement(updateStmt);
         updateStmt = null;
     }
 
+    private PreparedStatement getByUrlStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
 }
