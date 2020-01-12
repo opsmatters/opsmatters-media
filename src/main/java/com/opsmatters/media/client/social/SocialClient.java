@@ -19,6 +19,7 @@ package com.opsmatters.media.client.social;
 import java.io.IOException;
 import java.util.List;
 import com.opsmatters.media.model.social.SocialProvider;
+import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.SocialPost;
 
 /**
@@ -42,6 +43,11 @@ public interface SocialClient
      * Returns the provider for this client.
      */
     public SocialProvider getProvider();
+
+    /**
+     * Returns the social channel.
+     */
+    public SocialChannel getChannel();
 
     /**
      * Returns the name of the current account.

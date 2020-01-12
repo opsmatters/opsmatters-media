@@ -32,6 +32,7 @@ import facebook4j.ResponseList;
 import facebook4j.auth.AccessToken;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.social.SocialProvider;
+import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.SocialPost;
 import com.opsmatters.media.util.StringUtils;
 
@@ -52,18 +53,27 @@ public class FacebookClient extends Client implements SocialClient
     private String appSecret = "";
     private String token = "";
     private String permissions = "";
+    private SocialChannel channel;
 
     /**
-     * Returns a new facebook client using credentials.
+     * Private constructor.
      */
-    static public FacebookClient newClient() throws IOException, FacebookException
+    private FacebookClient(SocialChannel channel)
     {
-        FacebookClient ret = new FacebookClient();
+        setChannel(channel);
+    }
+
+    /**
+     * Returns a new facebook client using the given channel.
+     */
+    static public FacebookClient newClient(SocialChannel channel) throws IOException, FacebookException
+    {
+        FacebookClient ret = new FacebookClient(channel);
 
         // Configure and create the facebook client
         ret.configure();
         if(!ret.create())
-            logger.severe("Unable to create facebook client");
+            logger.severe("Unable to create facebook client: "+channel.getName());
 
         return ret;
     }
@@ -83,11 +93,11 @@ public class FacebookClient extends Client implements SocialClient
     public void configure() throws IOException
     {
         if(debug())
-            logger.info("Configuring facebook client");
+            logger.info("Configuring facebook client: "+channel.getName());
 
         String directory = System.getProperty("om-config.auth", ".");
 
-        File auth = new File(directory, AUTH);
+        File auth = new File(directory, channel.getName()+AUTH);
         try
         {
             // Read file from auth directory
@@ -106,7 +116,7 @@ public class FacebookClient extends Client implements SocialClient
             accessToken = new AccessToken(getAccessToken(), null);
 
         if(debug())
-            logger.info("Configured facebook client successfully");
+            logger.info("Configured facebook client successfully: "+channel.getName());
     }
 
     /**
@@ -116,7 +126,7 @@ public class FacebookClient extends Client implements SocialClient
     public boolean create() throws IOException, FacebookException
     {
         if(debug())
-            logger.info("Creating facebook client");
+            logger.info("Creating facebook client: "+channel.getName());
 
         FacebookFactory factory = new FacebookFactory();
 
@@ -132,7 +142,7 @@ public class FacebookClient extends Client implements SocialClient
         client = facebook;
 
         if(debug())
-            logger.info("Created facebook client successfully");
+            logger.info("Created facebook client successfully: "+channel.getName());
 
         return id != null;
     }
@@ -202,6 +212,22 @@ public class FacebookClient extends Client implements SocialClient
     }
 
     /**
+     * Returns the social channel.
+     */
+    public SocialChannel getChannel()
+    {
+        return channel;
+    }
+
+    /**
+     * Sets the social channel.
+     */
+    public void setChannel(SocialChannel channel)
+    {
+        this.channel = channel;
+    }
+
+    /**
      * Returns the name of the current account.
      */
     public String getName() throws IOException, FacebookException
@@ -223,7 +249,7 @@ public class FacebookClient extends Client implements SocialClient
         else
             id = client.postStatusMessage(text);
         Post post = client.getPost(id);
-        return post != null ? new SocialPost(post) : null;
+        return post != null ? new SocialPost(post, channel) : null;
     }
 
     /**
@@ -234,7 +260,7 @@ public class FacebookClient extends Client implements SocialClient
     public SocialPost deletePost(String id) throws IOException, FacebookException
     {
         Post post = client.getPost(id);
-        return post != null && client.deletePost(post.getId()) ? new SocialPost(post) : null;
+        return post != null && client.deletePost(post.getId()) ? new SocialPost(post, channel) : null;
     }
 
     /**
@@ -245,7 +271,7 @@ public class FacebookClient extends Client implements SocialClient
         List<SocialPost> ret = new ArrayList<SocialPost>();
         ResponseList<Post> posts = client.getPosts();
         for(Post post : posts)
-            ret.add(new SocialPost(post));
+            ret.add(new SocialPost(post, channel));
         return ret;
     }
 }

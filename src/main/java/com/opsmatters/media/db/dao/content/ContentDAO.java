@@ -39,7 +39,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
     private static final Logger logger = Logger.getLogger(ContentDAO.class.getName());
 
     /**
-     * The query to use to select a post from the table by UUID.
+     * The query to use to select a content item from the table by UUID.
      */
     private static final String GET_BY_UUID_SQL =  
       "SELECT ATTRIBUTES FROM %s WHERE CODE=? AND UUID=?";

@@ -36,6 +36,7 @@ import com.echobox.api.linkedin.connection.v2.OrganizationConnection;
 import com.echobox.api.linkedin.connection.v2.ShareConnection;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.social.SocialProvider;
+import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.SocialPost;
 
 /**
@@ -59,18 +60,27 @@ public class LinkedInClient extends Client implements SocialClient
     private String redirectUri = "";
     private String verificationCode;
     private String accessToken;
+    private SocialChannel channel;
 
     /**
-     * Returns a new linkedin client using credentials.
+     * Private constructor.
      */
-    static public LinkedInClient newClient() throws IOException, GeneralSecurityException
+    private LinkedInClient(SocialChannel channel)
     {
-        LinkedInClient ret = new LinkedInClient();
+        setChannel(channel);
+    }
+
+    /**
+     * Returns a new linkedin client using the given channel.
+     */
+    static public LinkedInClient newClient(SocialChannel channel) throws IOException, GeneralSecurityException
+    {
+        LinkedInClient ret = new LinkedInClient(channel);
 
         // Configure and create the linkedin client
         ret.configure();
         if(!ret.create())
-            logger.severe("Unable to create linkedin client");
+            logger.severe("Unable to create linkedin client: "+channel.getName());
 
         return ret;
     }
@@ -90,11 +100,11 @@ public class LinkedInClient extends Client implements SocialClient
     public void configure() throws IOException
     {
         if(debug())
-            logger.info("Configuring linkedin client");
+            logger.info("Configuring linkedin client: "+channel.getName());
 
         String directory = System.getProperty("om-config.auth", ".");
 
-        File auth = new File(directory, AUTH);
+        File auth = new File(directory, channel.getName()+AUTH);
         JSONObject obj = null;
         try
         {
@@ -126,7 +136,7 @@ public class LinkedInClient extends Client implements SocialClient
         }
 
         if(debug())
-            logger.info("Configured linkedin client successfully");
+            logger.info("Configured linkedin client successfully: "+channel.getName());
     }
 
     /**
@@ -136,7 +146,7 @@ public class LinkedInClient extends Client implements SocialClient
     public boolean create() throws IOException, GeneralSecurityException
     {
         if(debug())
-            logger.info("Creating linkedin client");
+            logger.info("Creating linkedin client: "+channel.getName());
 
         // Create the client
         DefaultLinkedInClient linkedin = new DefaultLinkedInClient(getAccessToken(), Version.DEFAULT_VERSION);
@@ -148,7 +158,7 @@ public class LinkedInClient extends Client implements SocialClient
         organization = organizationConnection.retrieveOrganization(organizationURN, null);
 
         if(debug())
-            logger.info("Created linkedin client successfully");
+            logger.info("Created linkedin client successfully: "+channel.getName());
 
         return organization != null && organization.getId() > 0L;
     }
@@ -250,6 +260,22 @@ public class LinkedInClient extends Client implements SocialClient
     }
 
     /**
+     * Returns the social channel.
+     */
+    public SocialChannel getChannel()
+    {
+        return channel;
+    }
+
+    /**
+     * Sets the social channel.
+     */
+    public void setChannel(SocialChannel channel)
+    {
+        this.channel = channel;
+    }
+
+    /**
      * Returns the screen name of the current account.
      */
     public String getName() throws IOException
@@ -269,7 +295,7 @@ public class LinkedInClient extends Client implements SocialClient
         shareText.setText(text);
         shareRequestBody.setText(shareText);
         Share share = shareConnection.postShare(shareRequestBody);
-        return share != null ? new SocialPost(share) : null;
+        return share != null ? new SocialPost(share, channel) : null;
     }
 
     /**
@@ -281,7 +307,7 @@ public class LinkedInClient extends Client implements SocialClient
     {
         Share share = shareConnection.getShare(Long.parseLong(id));
         shareConnection.deleteShare(share.getId());
-        return share != null ? new SocialPost(share) : null;
+        return share != null ? new SocialPost(share, channel) : null;
     }
 
     /**
@@ -292,7 +318,7 @@ public class LinkedInClient extends Client implements SocialClient
         List<SocialPost> ret = new ArrayList<SocialPost>();
         List<Share> shares = shareConnection.getShares(Lists.newArrayList(organizationURN), 30, null);
         for(Share share : shares)
-            ret.add(new SocialPost(share));
+            ret.add(new SocialPost(share, channel));
         return ret;
     }
 }

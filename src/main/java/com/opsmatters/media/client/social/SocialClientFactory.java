@@ -18,6 +18,7 @@ package com.opsmatters.media.client.social;
 
 import java.util.logging.Logger;
 import com.opsmatters.media.model.social.SocialProvider;
+import com.opsmatters.media.model.social.SocialChannel;
 
 /**
  * Factory class to create a client for a social media provider.
@@ -38,14 +39,15 @@ public class SocialClientFactory
     /**
      * Returns a client for the given provider.
      */
-    public static SocialClient newClient(SocialProvider provider)
+    public static SocialClient newClient(SocialChannel channel) throws Exception
     {
+        SocialProvider provider = channel.getProvider();
         if(provider == SocialProvider.TWITTER)
-            return new TwitterClient();
+            return TwitterClient.newClient(channel);
         else if(provider == SocialProvider.FACEBOOK)
-            return new FacebookClient();
+            return FacebookClient.newClient(channel);
         else if(provider == SocialProvider.LINKEDIN)
-            return new LinkedInClient();
+            return LinkedInClient.newClient(channel);
         throw new IllegalArgumentException("Social provider not found: "+provider);
     }
 }

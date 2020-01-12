@@ -640,7 +640,7 @@ public class TimeUtils
             ret = ret.replaceAll("(?<=\\d)( ?st| ?nd| ?rd| ?th)", "");
 
             // Replace "Sept" as it doesnt parse
-            ret = ret.replaceAll("Sept ", "Sep ");
+            ret = ret.replaceAll("Sept( |\\.)", "Sep$1");
         }
 
         return ret;

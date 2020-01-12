@@ -785,7 +785,17 @@ public class StringUtils
      */
     public static String getOrganisationUrl(String organisation)
     {
-        return organisation != null ? organisation.toLowerCase().replaceAll(" ","-").replaceAll("&","") : "";
+        String ret = "";
+
+        if(organisation != null)
+        {
+            ret = organisation.toLowerCase()
+                .replaceAll(" ","-")
+                .replaceAll("\\.","-")
+                .replaceAll("&","");
+        }
+
+        return ret;
     }
 
     /**

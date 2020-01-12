@@ -29,6 +29,7 @@ import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.social.SocialProvider;
+import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.SocialPost;
 
 /**
@@ -48,18 +49,27 @@ public class TwitterClient extends Client implements SocialClient
     private String consumerSecret = "";
     private String token = "";
     private String tokenSecret = "";
+    private SocialChannel channel;
 
     /**
-     * Returns a new twitter client using credentials.
+     * Private constructor.
      */
-    static public TwitterClient newClient() throws IOException, TwitterException
+    private TwitterClient(SocialChannel channel)
     {
-        TwitterClient ret = new TwitterClient();
+        setChannel(channel);
+    }
+
+    /**
+     * Returns a new twitter client using the given channel.
+     */
+    static public TwitterClient newClient(SocialChannel channel) throws IOException, TwitterException
+    {
+        TwitterClient ret = new TwitterClient(channel);
 
         // Configure and create the twitter client
         ret.configure();
         if(!ret.create())
-            logger.severe("Unable to create twitter client");
+            logger.severe("Unable to create twitter client: "+channel.getName());
 
         return ret;
     }
@@ -79,11 +89,11 @@ public class TwitterClient extends Client implements SocialClient
     public void configure() throws IOException
     {
         if(debug())
-            logger.info("Configuring twitter client");
+            logger.info("Configuring twitter client: "+channel.getName());
 
         String directory = System.getProperty("om-config.auth", ".");
 
-        File auth = new File(directory, AUTH);
+        File auth = new File(directory, channel.getName()+AUTH);
         try
         {
             // Read file from auth directory
@@ -102,7 +112,7 @@ public class TwitterClient extends Client implements SocialClient
             accessToken = new AccessToken(getAccessToken(), getAccessTokenSecret());
 
         if(debug())
-            logger.info("Configured twitter client successfully");
+            logger.info("Configured twitter client successfully: "+channel.getName());
     }
 
     /**
@@ -112,7 +122,7 @@ public class TwitterClient extends Client implements SocialClient
     public boolean create() throws IOException, TwitterException
     {
         if(debug())
-            logger.info("Creating twitter client");
+            logger.info("Creating twitter client: "+channel.getName());
 
         TwitterFactory factory = new TwitterFactory();
 
@@ -127,7 +137,7 @@ public class TwitterClient extends Client implements SocialClient
         client = twitter;
 
         if(debug())
-            logger.info("Created twitter client successfully");
+            logger.info("Created twitter client successfully: "+channel.getName());
 
         return id > 0L;
     }
@@ -197,6 +207,22 @@ public class TwitterClient extends Client implements SocialClient
     }
 
     /**
+     * Returns the social channel.
+     */
+    public SocialChannel getChannel()
+    {
+        return channel;
+    }
+
+    /**
+     * Sets the social channel.
+     */
+    public void setChannel(SocialChannel channel)
+    {
+        this.channel = channel;
+    }
+
+    /**
      * Returns the screen name of the current account.
      */
     public String getName() throws IOException, TwitterException
@@ -212,7 +238,7 @@ public class TwitterClient extends Client implements SocialClient
     public SocialPost sendPost(String text) throws IOException, TwitterException
     {
         Status status = client.updateStatus(text);
-        return status != null ? new SocialPost(status) : null;
+        return status != null ? new SocialPost(status, channel) : null;
     }
 
     /**
@@ -223,7 +249,7 @@ public class TwitterClient extends Client implements SocialClient
     public SocialPost deletePost(String id) throws IOException, TwitterException
     {
         Status status = client.destroyStatus(Long.parseLong(id));
-        return status != null ? new SocialPost(status) : null;
+        return status != null ? new SocialPost(status, channel) : null;
     }
 
     /**
@@ -232,9 +258,9 @@ public class TwitterClient extends Client implements SocialClient
     public List<SocialPost> getPosts() throws IOException, TwitterException
     {
         List<SocialPost> ret = new ArrayList<SocialPost>();
-        List<Status> tweets = client.getUserTimeline();
-        for(Status tweet : tweets)
-            ret.add(new SocialPost(tweet));
+        List<Status> statuses = client.getUserTimeline();
+        for(Status status : statuses)
+            ret.add(new SocialPost(status, channel));
         return ret;
     }
 }

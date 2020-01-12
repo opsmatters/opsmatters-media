@@ -23,22 +23,28 @@ package com.opsmatters.media.model.social;
  */
 public enum SocialProvider
 {
-    TWITTER("twitter", "Twitter"),
-    FACEBOOK("facebook", "Facebook"),
-    LINKEDIN("linkedin", "LinkedIn");
+    TWITTER("twitter", "Twitter", "twitter-thumb.png", 280),
+    FACEBOOK("facebook", "Facebook", "facebook-thumb.png", 2000),
+    LINKEDIN("linkedin", "LinkedIn", "linkedin-thumb.png", 1300);
 
     private String code;
     private String displayName;
+    private String thumbnail;
+    private int maxLength;
 
     /**
      * Constructor that takes the channel information.
      * @param code The code for the provider
      * @param displayName The display name for the provider
+     * @param thumbnail The thumbnail image for the provider
+     * @param maxLength The maximum message length for the provider
      */
-    SocialProvider(String code, String displayName)
+    SocialProvider(String code, String displayName, String thumbnail, int maxLength)
     {
         this.code = code;
         this.displayName = displayName;
+        this.thumbnail = thumbnail;
+        this.maxLength = maxLength;
     }
 
     /**
@@ -51,12 +57,30 @@ public enum SocialProvider
     }
 
     /**
-     * Returns the channel URL template.
-     * @return The channel URL template.
+     * Returns the provider display name.
+     * @return The provider display name.
      */
     public String displayName()
     {
         return displayName;
+    }
+
+    /**
+     * Returns the thumbnail image name.
+     * @return The thumbnail image name.
+     */
+    public String thumbnail()
+    {
+        return thumbnail;
+    }
+
+    /**
+     * Returns the maximum message length.
+     * @return The maximum message length.
+     */
+    public int maxLength()
+    {
+        return maxLength;
     }
 
     /**

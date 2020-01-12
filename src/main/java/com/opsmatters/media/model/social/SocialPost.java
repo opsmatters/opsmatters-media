@@ -31,9 +31,21 @@ import com.opsmatters.media.util.TimeUtils;
 public class SocialPost implements java.io.Serializable
 {
     private String id = "";
-    private String title = "";
     private Instant createdDate;
-    private String text = "";
+    private Instant updatedDate;
+    private String organisation = "";
+    private String message = "";
+    private SocialChannel channel;
+    private PostStatus status;
+    private String createdBy = "";
+
+    static public enum PostStatus
+    {
+        NEW,
+        PENDING,
+        SENT,
+        EXTERNAL;
+    };
 
     /**
      * Default constructor.
@@ -45,31 +57,40 @@ public class SocialPost implements java.io.Serializable
     /**
      * Constructor that takes a Twitter status.
      */
-    public SocialPost(Status status)
+    public SocialPost(Status status, SocialChannel channel)
     {
         setId(Long.toString(status.getId()));
         setCreatedDateMillis(status.getCreatedAt().getTime());
-        setText(status.getText());
+        setUpdatedDate(Instant.now());
+        setMessage(status.getText());
+        setChannel(channel);
+        setStatus(PostStatus.EXTERNAL);
     }
 
     /**
      * Constructor that takes a Facebook post.
      */
-    public SocialPost(Post post)
+    public SocialPost(Post post, SocialChannel channel)
     {
         setId(post.getId());
         setCreatedDateMillis(post.getCreatedTime().getTime());
-        setText(post.getMessage());
+        setUpdatedDate(Instant.now());
+        setMessage(post.getMessage());
+        setChannel(channel);
+        setStatus(PostStatus.EXTERNAL);
     }
 
     /**
      * Constructor that takes a LinkedIn share.
      */
-    public SocialPost(Share share)
+    public SocialPost(Share share, SocialChannel channel)
     {
         setId(Long.toString(share.getId()));
         setCreatedDateMillis(share.getCreated().getTime());
-        setText(share.getText().getText());
+        setUpdatedDate(Instant.now());
+        setMessage(share.getText().getText());
+        setChannel(channel);
+        setStatus(PostStatus.EXTERNAL);
     }
 
     /**
@@ -81,7 +102,12 @@ public class SocialPost implements java.io.Serializable
         {
             setId(obj.getId());
             setCreatedDate(obj.getCreatedDate());
-            setText(obj.getText());
+            setUpdatedDate(obj.getUpdatedDate());
+            setOrganisation(obj.getOrganisation());
+            setMessage(obj.getMessage());
+            setChannel(obj.getChannel());
+            setStatus(obj.getStatus());
+            setCreatedBy(obj.getCreatedBy());
         }
     }
 
@@ -115,6 +141,14 @@ public class SocialPost implements java.io.Serializable
     public Instant getCreatedDate()
     {
         return createdDate;
+    }
+
+    /**
+     * Returns the date the post was created.
+     */
+    public long getCreatedDateMillis()
+    {
+        return getCreatedDate() != null ? getCreatedDate().toEpochMilli() : 0L;
     }
 
     /**
@@ -167,18 +201,155 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Returns the post text.
+     * Returns the date the post status was last updated.
      */
-    public String getText()
+    public Instant getUpdatedDate()
     {
-        return text;
+        return updatedDate;
     }
 
     /**
-     * Sets the post text.
+     * Returns the date the post was last updated.
      */
-    public void setText(String text)
+    public long getUpdatedDateMillis()
     {
-        this.text = text;
+        return getUpdatedDate() != null ? getUpdatedDate().toEpochMilli() : 0L;
+    }
+
+    /**
+     * Returns the date the post status was last updated.
+     */
+    public String getUpdatedDateAsString(String pattern)
+    {
+        return TimeUtils.toStringUTC(updatedDate, pattern);
+    }
+
+    /**
+     * Returns the date the post status was last updated.
+     */
+    public String getUpdatedDateAsString()
+    {
+        return getUpdatedDateAsString(Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Sets the date the post was status was last updated.
+     */
+    public void setUpdatedDate(Instant updatedDate)
+    {
+        this.updatedDate = updatedDate;
+    }
+
+    /**
+     * Sets the date the post status was last updated.
+     */
+    public void setUpdatedDateMillis(long millis)
+    {
+        if(millis > 0L)
+            this.updatedDate = Instant.ofEpochMilli(millis);
+    }
+
+    /**
+     * Sets the date the post status was last updated.
+     */
+    public void setUpdatedDateAsString(String str, String pattern) throws DateTimeParseException
+    {
+        setUpdatedDate(TimeUtils.toInstantUTC(str, pattern));
+    }
+
+    /**
+     * Sets the date the post status was last updated.
+     */
+    public void setUpdatedDateAsString(String str) throws DateTimeParseException
+    {
+        setUpdatedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Returns the post organisation.
+     */
+    public String getOrganisation()
+    {
+        return organisation;
+    }
+
+    /**
+     * Sets the post organisation.
+     */
+    public void setOrganisation(String organisation)
+    {
+        this.organisation = organisation;
+    }
+
+    /**
+     * Returns the post message.
+     */
+    public String getMessage()
+    {
+        return message;
+    }
+
+    /**
+     * Sets the post message.
+     */
+    public void setMessage(String message)
+    {
+        this.message = message;
+    }
+
+    /**
+     * Returns the post status.
+     */
+    public PostStatus getStatus()
+    {
+        return status;
+    }
+
+    /**
+     * Returns the social channel.
+     */
+    public SocialChannel getChannel()
+    {
+        return channel;
+    }
+
+    /**
+     * Sets the social channel.
+     */
+    public void setChannel(SocialChannel channel)
+    {
+        this.channel = channel;
+    }
+
+    /**
+     * Sets the post status.
+     */
+    public void setStatus(String status)
+    {
+        setStatus(PostStatus.valueOf(status));
+    }
+
+    /**
+     * Sets the post status.
+     */
+    public void setStatus(PostStatus status)
+    {
+        this.status = status;
+    }
+
+    /**
+     * Returns the post creator.
+     */
+    public String getCreatedBy()
+    {
+        return createdBy;
+    }
+
+    /**
+     * Sets the post creator.
+     */
+    public void setCreatedBy(String createdBy)
+    {
+        this.createdBy = createdBy;
     }
 }
