@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 import com.opsmatters.media.config.YamlConfiguration;
 import com.opsmatters.media.model.content.Fields;
 import com.opsmatters.media.model.content.FieldSource;
+import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.FileUtils;
 
 /**
@@ -75,12 +76,10 @@ public abstract class ContentConfiguration extends YamlConfiguration implements 
     /**
      * Returns the type for this configuration.
      */
-    public abstract String getType();
-
-    /**
-     * Returns the title for this configuration.
-     */
-    public abstract String getTitle();
+    public ContentType getType()
+    {
+        return null;
+    }
 
     /**
      * Returns the organisation code for this configuration.

@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.Fields;
+import com.opsmatters.media.model.content.ContentType;
 
 /**
  * Class that represents the configuration for an organisation's content.
@@ -33,9 +34,7 @@ public class OrganisationContentConfiguration extends ContentConfiguration
 {
     private static final Logger logger = Logger.getLogger(OrganisationContentConfiguration.class.getName());
 
-    public static final String TYPE = "content";
-    public static final String TITLE = "Content";
-
+    public static final String SUFFIX = "-content.yml";
     private static final String DEFAULTS = "content.yml";
 
     private static OrganisationContentConfiguration defaults;
@@ -51,7 +50,7 @@ public class OrganisationContentConfiguration extends ContentConfiguration
     private ToolConfiguration tools;
     private ProjectConfiguration projects;
 
-    private Map<String,ContentConfiguration> configurations = new LinkedHashMap<String,ContentConfiguration>();
+    private Map<ContentType,ContentConfiguration> configurations = new LinkedHashMap<ContentType,ContentConfiguration>();
 
     /**
      * Default constructor.
@@ -59,24 +58,6 @@ public class OrganisationContentConfiguration extends ContentConfiguration
     public OrganisationContentConfiguration(String name)
     {
         super(name);
-    }
-
-    /**
-     * Returns the type for this configuration.
-     */
-    @Override
-    public String getType()
-    {
-        return TYPE;
-    }
-
-    /**
-     * Returns the title for this configuration.
-     */
-    @Override
-    public String getTitle()
-    {
-        return TITLE;
     }
 
     /**
@@ -142,9 +123,9 @@ public class OrganisationContentConfiguration extends ContentConfiguration
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given configuration type has been set.
+     * Returns <CODE>true</CODE> if the configuration for the given content type has been set.
      */
-    public boolean hasConfiguration(String type)
+    public boolean hasConfiguration(ContentType type)
     {
         return configurations.get(type) != null;
     }
@@ -163,7 +144,7 @@ public class OrganisationContentConfiguration extends ContentConfiguration
     public void setVideos(VideoConfiguration videos)
     {
         this.videos = videos;
-        configurations.put(VideoConfiguration.TYPE, videos);
+        configurations.put(videos.getType(), videos);
     }
 
     /**
@@ -180,7 +161,7 @@ public class OrganisationContentConfiguration extends ContentConfiguration
     public void setRoundups(RoundupConfiguration roundups)
     {
         this.roundups = roundups;
-        configurations.put(RoundupConfiguration.TYPE, roundups);
+        configurations.put(roundups.getType(), roundups);
     }
 
     /**
@@ -197,7 +178,7 @@ public class OrganisationContentConfiguration extends ContentConfiguration
     public void setPosts(PostConfiguration posts)
     {
         this.posts = posts;
-        configurations.put(PostConfiguration.TYPE, posts);
+        configurations.put(posts.getType(), posts);
     }
 
     /**
@@ -214,7 +195,7 @@ public class OrganisationContentConfiguration extends ContentConfiguration
     public void setEvents(EventConfiguration events)
     {
         this.events = events;
-        configurations.put(EventConfiguration.TYPE, events);
+        configurations.put(events.getType(), events);
     }
 
     /**
@@ -231,7 +212,7 @@ public class OrganisationContentConfiguration extends ContentConfiguration
     public void setWhitePapers(WhitePaperConfiguration whitePapers)
     {
         this.whitePapers = whitePapers;
-        configurations.put(WhitePaperConfiguration.TYPE, whitePapers);
+        configurations.put(whitePapers.getType(), whitePapers);
     }
 
     /**
@@ -248,7 +229,7 @@ public class OrganisationContentConfiguration extends ContentConfiguration
     public void setEBooks(EBookConfiguration ebooks)
     {
         this.ebooks = ebooks;
-        configurations.put(EBookConfiguration.TYPE, ebooks);
+        configurations.put(ebooks.getType(), ebooks);
     }
 
     /**
@@ -265,7 +246,7 @@ public class OrganisationContentConfiguration extends ContentConfiguration
     public void setTools(ToolConfiguration tools)
     {
         this.tools = tools;
-        configurations.put(ToolConfiguration.TYPE, tools);
+        configurations.put(tools.getType(), tools);
     }
 
     /**
@@ -282,7 +263,7 @@ public class OrganisationContentConfiguration extends ContentConfiguration
     public void setProjects(ProjectConfiguration projects)
     {
         this.projects = projects;
-        configurations.put(ProjectConfiguration.TYPE, projects);
+        configurations.put(projects.getType(), projects);
     }
 
     /**
@@ -300,67 +281,67 @@ public class OrganisationContentConfiguration extends ContentConfiguration
             if(map.containsKey(Fields.ORGANISATION))
                 setOrganisation((String)map.get(Fields.ORGANISATION));
 
-            if(map.containsKey(VideoConfiguration.TYPE))
+            if(map.containsKey(ContentType.VIDEO.value()))
             {
                 VideoConfiguration config = new VideoConfiguration(defaults.getVideos());
                 setContentDefaults(config, map);
-                config.parseDocument((Map<String,Object>)map.get(VideoConfiguration.TYPE));
+                config.parseDocument((Map<String,Object>)map.get(ContentType.VIDEO.value()));
                 setVideos(config);
             }
 
-            if(map.containsKey(RoundupConfiguration.TYPE))
+            if(map.containsKey(ContentType.ROUNDUP.value()))
             {
                 RoundupConfiguration config = new RoundupConfiguration(defaults.getRoundups());
                 setContentDefaults(config, map);
-                config.parseDocument((Map<String,Object>)map.get(RoundupConfiguration.TYPE));
+                config.parseDocument((Map<String,Object>)map.get(ContentType.ROUNDUP.value()));
                 setRoundups(config);
             }
 
-            if(map.containsKey(EventConfiguration.TYPE))
+            if(map.containsKey(ContentType.EVENT.value()))
             {
                 EventConfiguration config = new EventConfiguration(defaults.getEvents());
                 setContentDefaults(config, map);
-                config.parseDocument((Map<String,Object>)map.get(EventConfiguration.TYPE));
+                config.parseDocument((Map<String,Object>)map.get(ContentType.EVENT.value()));
                 setEvents(config);
             }
 
-            if(map.containsKey(WhitePaperConfiguration.TYPE))
+            if(map.containsKey(ContentType.WHITE_PAPER.value()))
             {
                 WhitePaperConfiguration config = new WhitePaperConfiguration(defaults.getWhitePapers());
                 setContentDefaults(config, map);
-                config.parseDocument((Map<String,Object>)map.get(WhitePaperConfiguration.TYPE));
+                config.parseDocument((Map<String,Object>)map.get(ContentType.WHITE_PAPER.value()));
                 setWhitePapers(config);
             }
 
-            if(map.containsKey(EBookConfiguration.TYPE))
+            if(map.containsKey(ContentType.EBOOK.value()))
             {
                 EBookConfiguration config = new EBookConfiguration(defaults.getEBooks());
                 setContentDefaults(config, map);
-                config.parseDocument((Map<String,Object>)map.get(EBookConfiguration.TYPE));
+                config.parseDocument((Map<String,Object>)map.get(ContentType.EBOOK.value()));
                 setEBooks(config);
             }
 
-            if(map.containsKey(PostConfiguration.TYPE))
+            if(map.containsKey(ContentType.POST.value()))
             {
                 PostConfiguration config = new PostConfiguration(defaults.getPosts());
                 setContentDefaults(config, map);
-                config.parseDocument((Map<String,Object>)map.get(PostConfiguration.TYPE));
+                config.parseDocument((Map<String,Object>)map.get(ContentType.POST.value()));
                 setPosts(config);
             }
 
-            if(map.containsKey(ProjectConfiguration.TYPE))
+            if(map.containsKey(ContentType.PROJECT.value()))
             {
                 ProjectConfiguration config = new ProjectConfiguration(defaults.getProjects());
                 setContentDefaults(config, map);
-                config.parseDocument((Map<String,Object>)map.get(ProjectConfiguration.TYPE));
+                config.parseDocument((Map<String,Object>)map.get(ContentType.PROJECT.value()));
                 setProjects(config);
             }
 
-            if(map.containsKey(ToolConfiguration.TYPE))
+            if(map.containsKey(ContentType.TOOL.value()))
             {
                 ToolConfiguration config = new ToolConfiguration(defaults.getTools());
                 setContentDefaults(config, map);
-                config.parseDocument((Map<String,Object>)map.get(ToolConfiguration.TYPE));
+                config.parseDocument((Map<String,Object>)map.get(ContentType.TOOL.value()));
                 setTools(config);
             }
         }

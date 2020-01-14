@@ -23,70 +23,72 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.social.SocialPost;
-import com.opsmatters.media.model.social.SocialChannels;
+import com.opsmatters.media.model.social.SocialUpdate;
+//GERALD
+//import com.opsmatters.media.model.social.SocialChannels;
 
 /**
- * DAO that provides operations on the SOCIAL_POSTS table in the database.
+ * DAO that provides operations on the SOCIAL_UPDATES table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialPostDAO extends SocialDAO<SocialPost>
+public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
 {
-    private static final Logger logger = Logger.getLogger(SocialPostDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(SocialUpdateDAO.class.getName());
 
     /**
-     * The query to use to select an item from the SOCIAL_POSTS table by id.
+     * The query to use to select an item from the SOCIAL_UPDATES table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, MESSAGE, CHANNEL, STATUS, CREATED_BY "
-      + "FROM SOCIAL_POSTS WHERE ID=?";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_TYPE, STATUS, CREATED_BY "
+      + "FROM SOCIAL_UPDATES WHERE ID=?";
 
     /**
-     * The query to use to insert a social post into the SOCIAL_POSTS table.
+     * The query to use to insert a social update into the SOCIAL_UPDATES table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO SOCIAL_POSTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, MESSAGE, CHANNEL, STATUS, CREATED_BY )"
+      "INSERT INTO SOCIAL_UPDATES"
+      + "( ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_TYPE, STATUS, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update a social post in the SOCIAL_POSTS table.
+     * The query to use to update a social update in the SOCIAL_UPDATES table.
      */
+/* GERALD
     private static final String UPDATE_SQL =  
-      "UPDATE SOCIAL_POSTS SET UPDATED_DATE=?, ORGANISATION=?, MESSAGE=?, STATUS=? "
+      "UPDATE SOCIAL_UPDATES SET UPDATED_DATE=?, ORGANISATION=?, STATUS=? "
       + "WHERE ID=?";
-
+*/
     /**
-     * The query to use to select the social posts from the SOCIAL_POSTS table.
+     * The query to use to select the social updates from the SOCIAL_UPDATES table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, MESSAGE, CHANNEL, STATUS, CREATED_BY "
-      + "FROM SOCIAL_POSTS ORDER BY CREATED_DATE";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_TYPE, STATUS, CREATED_BY "
+      + "FROM SOCIAL_UPDATES ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to get the count of social posts from the SOCIAL_POSTS table.
+     * The query to use to get the count of social updates from the SOCIAL_UPDATES table.
      */
     private static final String COUNT_SQL =  
-      "SELECT COUNT(*) FROM SOCIAL_POSTS";
+      "SELECT COUNT(*) FROM SOCIAL_UPDATES";
 
     /**
-     * The query to use to delete a social post from the SOCIAL_POSTS table.
+     * The query to use to delete a social update from the SOCIAL_UPDATES table.
      */
     private static final String DELETE_SQL =  
-      "DELETE FROM SOCIAL_POSTS WHERE ID=?";
+      "DELETE FROM SOCIAL_UPDATES WHERE ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public SocialPostDAO(SocialDAOFactory factory)
+    public SocialUpdateDAO(SocialDAOFactory factory)
     {
-        super(factory, "SOCIAL_POSTS");
+        super(factory, "SOCIAL_UPDATES");
     }
 
     /**
-     * Defines the columns and indices for the SOCIAL_POSTS table.
+     * Defines the columns and indices for the SOCIAL_UPDATES table.
      */
     @Override
     protected void defineTable()
@@ -95,21 +97,20 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("ORGANISATION", Types.VARCHAR, 5, false);
-        table.addColumn("MESSAGE", Types.VARCHAR, 512, true);
-        table.addColumn("CHANNEL", Types.VARCHAR, 15, true);
+        table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
-        table.setPrimaryKey("SOCIAL_POSTS_PK", new String[] {"ID"});
-        table.addIndex("SOCIAL_POSTS_STATUS_IDX", new String[] {"STATUS"});
+        table.setPrimaryKey("SOCIAL_UPDATES_PK", new String[] {"ID"});
+        table.addIndex("SOCIAL_UPDATES_STATUS_IDX", new String[] {"STATUS"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns a content item from the SOCIAL_POSTS table by id.
+     * Returns a content item from the SOCIAL_UPDATES table by id.
      */
-    public SocialPost getById(int id) throws SQLException
+    public SocialUpdate getById(int id) throws SQLException
     {
-        SocialPost ret = null;
+        SocialUpdate ret = null;
 
         if(!hasConnection())
             return ret;
@@ -128,16 +129,15 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
             rs = getByIdStmt.executeQuery();
             while(rs.next())
             {
-                SocialPost post = new SocialPost();
-                post.setId(rs.getString(1));
-                post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                post.setOrganisation(rs.getString(4));
-                post.setMessage(rs.getString(5));
-                post.setChannel(SocialChannels.get(rs.getString(6)));
-                post.setStatus(rs.getString(7));
-                post.setCreatedBy(rs.getString(8));
-                ret = post;
+                SocialUpdate update = new SocialUpdate();
+                update.setId(rs.getString(1));
+                update.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                update.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                update.setOrganisation(rs.getString(4));
+                update.setContentType(rs.getString(5));
+                update.setStatus(rs.getString(6));
+                update.setCreatedBy(rs.getString(7));
+                ret = update;
             }
         }
         finally
@@ -158,11 +158,11 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
     }
 
     /**
-     * Stores the given social post in the SOCIAL_POSTS table.
+     * Stores the given social update in the SOCIAL_UPDATES table.
      */
-    public void add(SocialPost post) throws SQLException
+    public void add(SocialUpdate update) throws SQLException
     {
-        if(!hasConnection() || post == null)
+        if(!hasConnection() || update == null)
             return;
 
         if(insertStmt == null)
@@ -171,17 +171,16 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
 
         try
         {
-            insertStmt.setString(1, post.getId());
-            insertStmt.setTimestamp(2, new Timestamp(post.getCreatedDateMillis()), UTC);
-            insertStmt.setTimestamp(3, new Timestamp(post.getUpdatedDateMillis()), UTC);
-            insertStmt.setString(4, post.getOrganisation());
-            insertStmt.setString(5, post.getMessage());
-            insertStmt.setString(6, post.getChannel().getName());
-            insertStmt.setString(7, post.getStatus().name());
-            insertStmt.setString(8, post.getCreatedBy());
+            insertStmt.setString(1, update.getId());
+            insertStmt.setTimestamp(2, new Timestamp(update.getCreatedDateMillis()), UTC);
+            insertStmt.setTimestamp(3, new Timestamp(update.getUpdatedDateMillis()), UTC);
+            insertStmt.setString(4, update.getOrganisation());
+            insertStmt.setString(5, update.getContentType().name());
+            insertStmt.setString(6, update.getStatus().name());
+            insertStmt.setString(7, update.getCreatedBy());
             insertStmt.executeUpdate();
 
-            logger.info("Created social post '"+post.getId()+"' in SOCIAL_POSTS");
+            logger.info("Created social update '"+update.getId()+"' in SOCIAL_UPDATES");
         }
         catch(SQLException ex)
         {
@@ -192,7 +191,7 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
                 insertStmt = null;
             }
 
-            // Unique constraint violated means that the post already exists
+            // Unique constraint violated means that the update already exists
             if(!getDriver().isConstraintViolation(ex))
                 throw ex;
         }
@@ -201,6 +200,7 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
     /**
      * Updates the given social post in the SOCIAL_POSTS table.
      */
+/* GERALD: needed?
     public void update(SocialPost post) throws SQLException
     {
         if(!hasConnection() || post == null)
@@ -219,13 +219,13 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
 
         logger.info("Updated social post '"+post.getId()+"' in SOCIAL_POSTS");
     }
-
+*/
     /**
-     * Returns the social posts from the SOCIAL_POSTS table.
+     * Returns the social updates from the SOCIAL_UPDATES table.
      */
-    public List<SocialPost> list() throws SQLException
+    public List<SocialUpdate> list() throws SQLException
     {
-        List<SocialPost> ret = null;
+        List<SocialUpdate> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -241,19 +241,18 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
         {
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
-            ret = new ArrayList<SocialPost>();
+            ret = new ArrayList<SocialUpdate>();
             while(rs.next())
             {
-                SocialPost post = new SocialPost();
-                post.setId(rs.getString(1));
-                post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                post.setOrganisation(rs.getString(4));
-                post.setMessage(rs.getString(5));
-                post.setChannel(SocialChannels.get(rs.getString(6)));
-                post.setStatus(rs.getString(7));
-                post.setCreatedBy(rs.getString(8));
-                ret.add(post);
+                SocialUpdate update = new SocialUpdate();
+                update.setId(rs.getString(1));
+                update.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                update.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                update.setOrganisation(rs.getString(4));
+                update.setContentType(rs.getString(5));
+                update.setStatus(rs.getString(6));
+                update.setCreatedBy(rs.getString(7));
+                ret.add(update);
             }
         }
         finally
@@ -274,7 +273,7 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
     }
 
     /**
-     * Returns the count of social posts from the table.
+     * Returns the count of social updates from the table.
      */
     public int count(String code) throws SQLException
     {
@@ -293,21 +292,21 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
     }
 
     /**
-     * Removes the given social post from the SOCIAL_POSTS table.
+     * Removes the given social update from the SOCIAL_UPDATES table.
      */
-    public void delete(SocialPost post) throws SQLException
+    public void delete(SocialUpdate update) throws SQLException
     {
-        if(!hasConnection() || post == null)
+        if(!hasConnection() || update == null)
             return;
 
         if(deleteStmt == null)
             deleteStmt = prepareStatement(getConnection(), DELETE_SQL);
         clearParameters(deleteStmt);
 
-        deleteStmt.setString(1, post.getId());
+        deleteStmt.setString(1, update.getId());
         deleteStmt.executeUpdate();
 
-        logger.info("Deleted social post '"+post.getId()+"' in SOCIAL_POSTS");
+        logger.info("Deleted social update '"+update.getId()+"' in SOCIAL_UPDATES");
     }
 
     /**
@@ -320,8 +319,9 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
         getByIdStmt = null;
         closeStatement(insertStmt);
         insertStmt = null;
-        closeStatement(updateStmt);
-        updateStmt = null;
+//GERALD
+//        closeStatement(updateStmt);
+//        updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
         closeStatement(countStmt);
@@ -332,7 +332,8 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
 
     private PreparedStatement getByIdStmt;
     private PreparedStatement insertStmt;
-    private PreparedStatement updateStmt;
+//GERALD
+//    private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;

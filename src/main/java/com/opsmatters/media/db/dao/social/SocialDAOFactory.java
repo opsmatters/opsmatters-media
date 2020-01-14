@@ -33,7 +33,18 @@ public class SocialDAOFactory extends DAOFactory
     {
         super(driver, conn);
 
+        getSocialUpdateDAO();
         getSocialPostDAO();
+    }
+
+    /**
+     * Returns the social update DAO.
+     */
+    public SocialUpdateDAO getSocialUpdateDAO()
+    {
+        if(socialUpdateDAO == null)
+            socialUpdateDAO = new SocialUpdateDAO(this);
+        return socialUpdateDAO;
     }
 
     /**
@@ -53,8 +64,10 @@ public class SocialDAOFactory extends DAOFactory
     public void close()
     {
         super.close();
+        socialUpdateDAO = null;
         socialPostDAO = null;
     }
 
+    private SocialUpdateDAO socialUpdateDAO;
     private SocialPostDAO socialPostDAO;
 }

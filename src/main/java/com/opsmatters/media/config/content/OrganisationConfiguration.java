@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import com.opsmatters.media.model.content.ContentType;
 
 /**
  * Class that represents the configuration for organisation content items.
@@ -31,8 +32,6 @@ public class OrganisationConfiguration extends ContentConfiguration
 {
     private static final Logger logger = Logger.getLogger(OrganisationConfiguration.class.getName());
 
-    public static final String TYPE = "organisations";
-    public static final String TITLE = "Organisations";
     public static final String FILENAME = "organisations.yml";
 
     /**
@@ -67,18 +66,9 @@ public class OrganisationConfiguration extends ContentConfiguration
      * Returns the type for this configuration.
      */
     @Override
-    public String getType()
+    public ContentType getType()
     {
-        return TYPE;
-    }
-
-    /**
-     * Returns the title for this configuration.
-     */
-    @Override
-    public String getTitle()
-    {
-        return TITLE;
+        return ContentType.ORGANISATION;
     }
 
     /**

@@ -21,6 +21,7 @@ import java.sql.*;
 import java.util.logging.Logger;
 import com.opsmatters.media.exception.MissingParameterException;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
+import com.opsmatters.media.db.dao.social.SocialDAOFactory;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -47,6 +48,7 @@ public class JDBCDatabaseConnection
     private DatabaseMetaData data;
     private JDBCDatabaseDriver driver;
     private ContentDAOFactory contentDAOFactory;
+    private SocialDAOFactory socialDAOFactory;
     private int lastConnectionStatus = NOT_CONNECTED;
     private Exception connectException;
     private boolean debug = false;
@@ -326,7 +328,7 @@ public class JDBCDatabaseConnection
      */
     protected boolean hasMissingTable() 
     {
-        return contentDAOFactory.hasMissingTable();
+        return contentDAOFactory.hasMissingTable() || socialDAOFactory.hasMissingTable();
     }
 
     /**
@@ -335,6 +337,7 @@ public class JDBCDatabaseConnection
     protected void createTables() 
     {
         contentDAOFactory.createTables();
+        socialDAOFactory.createTables();
     }
 
     /**
@@ -343,11 +346,14 @@ public class JDBCDatabaseConnection
     protected void createDAOFactories()
     {
         if(driver != null)
+        {
             contentDAOFactory = new ContentDAOFactory(driver, this);
+            socialDAOFactory = new SocialDAOFactory(driver, this);
+        }
     }
 
     /**
-     * Returns the DAO factory.
+     * Returns the content DAO factory.
      */
     public ContentDAOFactory getContentDAOFactory()
     {
@@ -355,11 +361,19 @@ public class JDBCDatabaseConnection
     }
 
     /**
+     * Returns the social media DAO factory.
+     */
+    public SocialDAOFactory getSocialDAOFactory()
+    {
+        return socialDAOFactory;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the dao factory exists.
      */
     protected boolean hasDAOFactories()
     {
-        return contentDAOFactory != null;
+        return contentDAOFactory != null && socialDAOFactory != null;
     }
 
     /**
@@ -369,6 +383,8 @@ public class JDBCDatabaseConnection
     {
         if(contentDAOFactory != null)
             contentDAOFactory.close();
+        if(socialDAOFactory != null)
+            socialDAOFactory.close();
     }
 
     /**

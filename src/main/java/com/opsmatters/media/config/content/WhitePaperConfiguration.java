@@ -16,6 +16,8 @@
 
 package com.opsmatters.media.config.content;
 
+import com.opsmatters.media.model.content.ContentType;
+
 /**
  * Class that represents a YAML configuration for white papers.
  * 
@@ -23,9 +25,6 @@ package com.opsmatters.media.config.content;
  */
 public class WhitePaperConfiguration extends PublicationConfiguration
 {
-    public static final String TYPE = "white-papers";
-    public static final String TITLE = "White Papers";
-
     /**
      * Default constructor.
      */
@@ -47,17 +46,8 @@ public class WhitePaperConfiguration extends PublicationConfiguration
      * Returns the type for this configuration.
      */
     @Override
-    public String getType()
+    public ContentType getType()
     {
-        return TYPE;
-    }
-
-    /**
-     * Returns the title for this configuration.
-     */
-    @Override
-    public String getTitle()
-    {
-        return TITLE;
+        return ContentType.WHITE_PAPER;
     }
 }

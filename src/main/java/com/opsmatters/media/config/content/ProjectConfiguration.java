@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import com.opsmatters.media.model.content.ContentType;
 
 /**
  * Class that represents the configuration for project content items.
@@ -29,9 +30,6 @@ import java.util.logging.Logger;
 public class ProjectConfiguration extends ContentConfiguration
 {
     private static final Logger logger = Logger.getLogger(ProjectConfiguration.class.getName());
-
-    public static final String TYPE = "projects";
-    public static final String TITLE = "Projects";
 
     /**
      * Default constructor.
@@ -65,18 +63,9 @@ public class ProjectConfiguration extends ContentConfiguration
      * Returns the type for this configuration.
      */
     @Override
-    public String getType()
+    public ContentType getType()
     {
-        return TYPE;
-    }
-
-    /**
-     * Returns the title for this configuration.
-     */
-    @Override
-    public String getTitle()
-    {
-        return TITLE;
+        return ContentType.PROJECT;
     }
 
     /**

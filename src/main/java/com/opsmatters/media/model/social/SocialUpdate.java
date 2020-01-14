@@ -15,88 +15,62 @@
  */
 package com.opsmatters.media.model.social;
 
+//GERALD: check
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
-import twitter4j.Status;
-import facebook4j.Post;
-import com.echobox.api.linkedin.types.Share;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
+import com.opsmatters.media.util.StringUtils;
+import com.opsmatters.media.model.content.Organisation;
+import com.opsmatters.media.model.content.ContentType;
 
 /**
- * Class representing a social media post.
+ * Class representing a social media update.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialPost implements java.io.Serializable
+public class SocialUpdate implements java.io.Serializable
 {
     private String id = "";
     private Instant createdDate;
+//GERALD: needed?
     private Instant updatedDate;
     private String organisation = "";
-    private String message = "";
-    private SocialChannel channel;
-    private PostStatus status;
+    private ContentType contentType;
+    private UpdateStatus status;
     private String createdBy = "";
 
-    static public enum PostStatus
+    static public enum UpdateStatus
     {
         NEW,
         PENDING,
-        SENT,
-        EXTERNAL;
+        PROCESSED,
+        SKIPPED;
     };
 
     /**
      * Default constructor.
      */
-    public SocialPost()
+    public SocialUpdate()
     {
     }
 
     /**
-     * Constructor that takes a Twitter status.
+     * Constructor that takes an organisation and content type.
      */
-    public SocialPost(Status status, SocialChannel channel)
+    public SocialUpdate(Organisation organisation, ContentType type)
     {
-        setId(Long.toString(status.getId()));
-        setCreatedDateMillis(status.getCreatedAt().getTime());
-        setUpdatedDate(Instant.now());
-        setMessage(status.getText());
-        setChannel(channel);
-        setStatus(PostStatus.EXTERNAL);
-    }
-
-    /**
-     * Constructor that takes a Facebook post.
-     */
-    public SocialPost(Post post, SocialChannel channel)
-    {
-        setId(post.getId());
-        setCreatedDateMillis(post.getCreatedTime().getTime());
-        setUpdatedDate(Instant.now());
-        setMessage(post.getMessage());
-        setChannel(channel);
-        setStatus(PostStatus.EXTERNAL);
-    }
-
-    /**
-     * Constructor that takes a LinkedIn share.
-     */
-    public SocialPost(Share share, SocialChannel channel)
-    {
-        setId(Long.toString(share.getId()));
-        setCreatedDateMillis(share.getCreated().getTime());
-        setUpdatedDate(Instant.now());
-        setMessage(share.getText().getText());
-        setChannel(channel);
-        setStatus(PostStatus.EXTERNAL);
+        setId(StringUtils.getUUID(null));
+        setCreatedDate(Instant.now());
+        setOrganisation(organisation.getCode());
+        setContentType(type);
+        setStatus(UpdateStatus.PENDING);
     }
 
     /**
      * Copy constructor.
      */
-    public SocialPost(SocialPost obj)
+    public SocialUpdate(SocialUpdate obj)
     {
         if(obj != null)
         {
@@ -104,8 +78,7 @@ public class SocialPost implements java.io.Serializable
             setCreatedDate(obj.getCreatedDate());
             setUpdatedDate(obj.getUpdatedDate());
             setOrganisation(obj.getOrganisation());
-            setMessage(obj.getMessage());
-            setChannel(obj.getChannel());
+            setContentType(obj.getContentType());
             setStatus(obj.getStatus());
             setCreatedBy(obj.getCreatedBy());
         }
@@ -120,7 +93,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Returns the post id.
+     * Returns the update id.
      */
     public String getId()
     {
@@ -128,7 +101,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Sets the post id.
+     * Sets the update id.
      */
     public void setId(String id)
     {
@@ -136,7 +109,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Returns the date the post was created.
+     * Returns the date the update was created.
      */
     public Instant getCreatedDate()
     {
@@ -144,7 +117,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Returns the date the post was created.
+     * Returns the date the update was created.
      */
     public long getCreatedDateMillis()
     {
@@ -152,7 +125,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Returns the date the post was created.
+     * Returns the date the update was created.
      */
     public String getCreatedDateAsString(String pattern)
     {
@@ -160,7 +133,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Returns the date the post was created.
+     * Returns the date the update was created.
      */
     public String getCreatedDateAsString()
     {
@@ -168,7 +141,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Sets the date the post was created.
+     * Sets the date the update was created.
      */
     public void setCreatedDate(Instant createdDate)
     {
@@ -176,7 +149,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Sets the date the post was created.
+     * Sets the date the update was created.
      */
     public void setCreatedDateMillis(long millis)
     {
@@ -185,7 +158,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Sets the date the post was created.
+     * Sets the date the update was created.
      */
     public void setCreatedDateAsString(String str, String pattern) throws DateTimeParseException
     {
@@ -193,7 +166,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Sets the date the post was created.
+     * Sets the date the update was created.
      */
     public void setCreatedDateAsString(String str) throws DateTimeParseException
     {
@@ -201,7 +174,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Returns the date the post status was last updated.
+     * Returns the date the update status was last updated.
      */
     public Instant getUpdatedDate()
     {
@@ -209,7 +182,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Returns the date the post was last updated.
+     * Returns the date the update was last updated.
      */
     public long getUpdatedDateMillis()
     {
@@ -217,7 +190,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Returns the date the post status was last updated.
+     * Returns the date the update status was last updated.
      */
     public String getUpdatedDateAsString(String pattern)
     {
@@ -225,7 +198,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Returns the date the post status was last updated.
+     * Returns the date the update status was last updated.
      */
     public String getUpdatedDateAsString()
     {
@@ -233,7 +206,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Sets the date the post status was last updated.
+     * Sets the date the update status was last updated.
      */
     public void setUpdatedDate(Instant updatedDate)
     {
@@ -241,7 +214,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Sets the date the post status was last updated.
+     * Sets the date the update status was last updated.
      */
     public void setUpdatedDateMillis(long millis)
     {
@@ -250,7 +223,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Sets the date the post status was last updated.
+     * Sets the date the update status was last updated.
      */
     public void setUpdatedDateAsString(String str, String pattern) throws DateTimeParseException
     {
@@ -258,7 +231,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Sets the date the post status was last updated.
+     * Sets the date the update status was last updated.
      */
     public void setUpdatedDateAsString(String str) throws DateTimeParseException
     {
@@ -266,7 +239,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Returns the post organisation.
+     * Returns the update organisation.
      */
     public String getOrganisation()
     {
@@ -274,7 +247,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Sets the post organisation.
+     * Sets the update organisation.
      */
     public void setOrganisation(String organisation)
     {
@@ -282,63 +255,55 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Returns the post message.
+     * Returns the update content type.
      */
-    public String getMessage()
+    public ContentType getContentType()
     {
-        return message;
+        return contentType;
     }
 
     /**
-     * Sets the post message.
+     * Sets the update content type.
      */
-    public void setMessage(String message)
+    public void setContentType(String contentType)
     {
-        this.message = message;
+        setContentType(ContentType.valueOf(contentType));
     }
 
     /**
-     * Returns the social channel.
+     * Sets the update content type.
      */
-    public SocialChannel getChannel()
+    public void setContentType(ContentType contentType)
     {
-        return channel;
+        this.contentType = contentType;
     }
 
     /**
-     * Sets the social channel.
+     * Returns the update status.
      */
-    public void setChannel(SocialChannel channel)
-    {
-        this.channel = channel;
-    }
-
-    /**
-     * Returns the post status.
-     */
-    public PostStatus getStatus()
+    public UpdateStatus getStatus()
     {
         return status;
     }
 
     /**
-     * Sets the post status.
+     * Sets the update status.
      */
     public void setStatus(String status)
     {
-        setStatus(PostStatus.valueOf(status));
+        setStatus(UpdateStatus.valueOf(status));
     }
 
     /**
-     * Sets the post status.
+     * Sets the update status.
      */
-    public void setStatus(PostStatus status)
+    public void setStatus(UpdateStatus status)
     {
         this.status = status;
     }
 
     /**
-     * Returns the post creator.
+     * Returns the update creator.
      */
     public String getCreatedBy()
     {
@@ -346,7 +311,7 @@ public class SocialPost implements java.io.Serializable
     }
 
     /**
-     * Sets the post creator.
+     * Sets the update creator.
      */
     public void setCreatedBy(String createdBy)
     {
