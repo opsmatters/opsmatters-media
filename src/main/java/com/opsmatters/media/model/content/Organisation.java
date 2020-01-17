@@ -417,12 +417,29 @@ public class Organisation extends ContentItem implements FieldSource
     }
 
     /**
+     * Returns the content type.
+     */
+    @Override
+    public ContentType getType()
+    {
+        return ContentType.ORGANISATION;
+    }
+
+    /**
      * Returns the organisation name.
      */
     @Override
     public String toString()
     {
         return getTitle();
+    }
+
+    /**
+     * Returns the URL for the organisation.
+     */
+    public String getUrl(String basePath)
+    {
+        return String.format("%s/organisations/%s", basePath, getNormalisedTitle());
     }
 
     /**
@@ -459,6 +476,24 @@ public class Organisation extends ContentItem implements FieldSource
     public void setTitle(String title)
     {
         this.title = title;
+    }
+
+    /**
+     * Returns the organisation title normalized for a URL context.
+     */
+    public String getNormalisedTitle()
+    {
+        String ret = title;
+
+        if(ret != null)
+        {
+            ret = ret.toLowerCase()
+                .replaceAll(" ","-")
+                .replaceAll("\\.","-")
+                .replaceAll("&","");
+        }
+
+        return ret;
     }
 
     /**

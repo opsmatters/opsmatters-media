@@ -781,32 +781,6 @@ public class StringUtils
     }
 
     /**
-     * Returns the URL for an organisation page.
-     */
-    public static String getOrganisationUrl(String organisation)
-    {
-        String ret = "";
-
-        if(organisation != null)
-        {
-            ret = organisation.toLowerCase()
-                .replaceAll(" ","-")
-                .replaceAll("\\.","-")
-                .replaceAll("&","");
-        }
-
-        return ret;
-    }
-
-    /**
-     * Returns the URL for an organisation page.
-     */
-    public static String getOrganisationUrl(String basePath, String organisation)
-    {
-        return String.format("%s/organisations/%s", basePath, getOrganisationUrl(organisation));
-    }
-
-    /**
      * Returns the UUID for the given string.
      */
     public static String getUUID(String str)

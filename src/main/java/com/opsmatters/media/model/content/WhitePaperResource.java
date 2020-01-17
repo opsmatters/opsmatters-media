@@ -93,4 +93,13 @@ public class WhitePaperResource extends PublicationResource
 
         return resource;
     }
+
+    /**
+     * Returns the content type.
+     */
+    @Override
+    public ContentType getType()
+    {
+        return ContentType.WHITE_PAPER;
+    }
 }

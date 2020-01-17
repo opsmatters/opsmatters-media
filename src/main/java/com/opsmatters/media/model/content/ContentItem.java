@@ -169,6 +169,11 @@ public abstract class ContentItem implements java.io.Serializable
     }
 
     /**
+     * Returns the content type.
+     */
+    public abstract ContentType getType();
+
+    /**
      * Sets the details from a summary.
      */
     public void setContentSummary(ContentSummary obj)

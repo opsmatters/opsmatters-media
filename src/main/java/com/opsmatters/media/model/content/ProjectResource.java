@@ -238,6 +238,15 @@ public class ProjectResource extends Resource
     }
 
     /**
+     * Returns the content type.
+     */
+    @Override
+    public ContentType getType()
+    {
+        return ContentType.PROJECT;
+    }
+
+    /**
      * Returns the project details.
      */
     public ProjectDetails getProjectDetails()

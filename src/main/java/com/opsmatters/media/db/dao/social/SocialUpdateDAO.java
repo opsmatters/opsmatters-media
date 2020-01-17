@@ -24,8 +24,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.social.SocialUpdate;
-//GERALD
-//import com.opsmatters.media.model.social.SocialChannels;
 
 /**
  * DAO that provides operations on the SOCIAL_UPDATES table in the database.
@@ -40,7 +38,7 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
      * The query to use to select an item from the SOCIAL_UPDATES table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_TYPE, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_ID, URL, CONTENT_TYPE, STATUS, CREATED_BY "
       + "FROM SOCIAL_UPDATES WHERE ID=?";
 
     /**
@@ -48,23 +46,22 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO SOCIAL_UPDATES"
-      + "( ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_TYPE, STATUS, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_ID, URL, CONTENT_TYPE, STATUS, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a social update in the SOCIAL_UPDATES table.
      */
-/* GERALD
     private static final String UPDATE_SQL =  
-      "UPDATE SOCIAL_UPDATES SET UPDATED_DATE=?, ORGANISATION=?, STATUS=? "
+      "UPDATE SOCIAL_UPDATES SET UPDATED_DATE=?, ORGANISATION=?, CONTENT_ID=?, URL=?, CONTENT_TYPE=?, STATUS=? "
       + "WHERE ID=?";
-*/
+
     /**
      * The query to use to select the social updates from the SOCIAL_UPDATES table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_TYPE, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_ID, URL, CONTENT_TYPE, STATUS, CREATED_BY "
       + "FROM SOCIAL_UPDATES ORDER BY CREATED_DATE";
 
     /**
@@ -97,6 +94,8 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("ORGANISATION", Types.VARCHAR, 5, false);
+        table.addColumn("CONTENT_ID", Types.INTEGER, false);
+        table.addColumn("URL", Types.VARCHAR, 128, true);
         table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
@@ -134,9 +133,11 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
                 update.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 update.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 update.setOrganisation(rs.getString(4));
-                update.setContentType(rs.getString(5));
-                update.setStatus(rs.getString(6));
-                update.setCreatedBy(rs.getString(7));
+                update.setContentId(rs.getInt(5));
+                update.setUrl(rs.getString(6));
+                update.setContentType(rs.getString(7));
+                update.setStatus(rs.getString(8));
+                update.setCreatedBy(rs.getString(9));
                 ret = update;
             }
         }
@@ -175,9 +176,11 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
             insertStmt.setTimestamp(2, new Timestamp(update.getCreatedDateMillis()), UTC);
             insertStmt.setTimestamp(3, new Timestamp(update.getUpdatedDateMillis()), UTC);
             insertStmt.setString(4, update.getOrganisation());
-            insertStmt.setString(5, update.getContentType().name());
-            insertStmt.setString(6, update.getStatus().name());
-            insertStmt.setString(7, update.getCreatedBy());
+            insertStmt.setInt(5, update.getContentId());
+            insertStmt.setString(6, update.getUrl());
+            insertStmt.setString(7, update.getContentType().name());
+            insertStmt.setString(8, update.getStatus().name());
+            insertStmt.setString(9, update.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created social update '"+update.getId()+"' in SOCIAL_UPDATES");
@@ -198,28 +201,29 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
     }
 
     /**
-     * Updates the given social post in the SOCIAL_POSTS table.
+     * Updates the given social update in the SOCIAL_UPDATES table.
      */
-/* GERALD: needed?
-    public void update(SocialPost post) throws SQLException
+    public void update(SocialUpdate update) throws SQLException
     {
-        if(!hasConnection() || post == null)
+        if(!hasConnection() || update == null)
             return;
 
         if(updateStmt == null)
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
         clearParameters(updateStmt);
 
-        updateStmt.setTimestamp(1, new Timestamp(post.getUpdatedDateMillis()), UTC);
-        updateStmt.setString(2, post.getOrganisation());
-        updateStmt.setString(3, post.getMessage());
-        updateStmt.setString(4, post.getStatus().name());
-        updateStmt.setString(5, post.getId());
+        updateStmt.setTimestamp(1, new Timestamp(update.getUpdatedDateMillis()), UTC);
+        updateStmt.setString(2, update.getOrganisation());
+        updateStmt.setInt(3, update.getContentId());
+        updateStmt.setString(4, update.getUrl());
+        updateStmt.setString(5, update.getContentType().name());
+        updateStmt.setString(6, update.getStatus().name());
+        updateStmt.setString(7, update.getId());
         updateStmt.executeUpdate();
 
-        logger.info("Updated social post '"+post.getId()+"' in SOCIAL_POSTS");
+        logger.info("Updated social update '"+update.getId()+"' in SOCIAL_UPDATES");
     }
-*/
+
     /**
      * Returns the social updates from the SOCIAL_UPDATES table.
      */
@@ -249,9 +253,11 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
                 update.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 update.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 update.setOrganisation(rs.getString(4));
-                update.setContentType(rs.getString(5));
-                update.setStatus(rs.getString(6));
-                update.setCreatedBy(rs.getString(7));
+                update.setContentId(rs.getInt(5));
+                update.setUrl(rs.getString(6));
+                update.setContentType(rs.getString(7));
+                update.setStatus(rs.getString(8));
+                update.setCreatedBy(rs.getString(9));
                 ret.add(update);
             }
         }
@@ -319,9 +325,8 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
         getByIdStmt = null;
         closeStatement(insertStmt);
         insertStmt = null;
-//GERALD
-//        closeStatement(updateStmt);
-//        updateStmt = null;
+        closeStatement(updateStmt);
+        updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
         closeStatement(countStmt);
@@ -332,8 +337,7 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
 
     private PreparedStatement getByIdStmt;
     private PreparedStatement insertStmt;
-//GERALD
-//    private PreparedStatement updateStmt;
+    private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;

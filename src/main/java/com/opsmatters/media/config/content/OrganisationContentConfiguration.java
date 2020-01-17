@@ -281,67 +281,67 @@ public class OrganisationContentConfiguration extends ContentConfiguration
             if(map.containsKey(Fields.ORGANISATION))
                 setOrganisation((String)map.get(Fields.ORGANISATION));
 
-            if(map.containsKey(ContentType.VIDEO.value()))
+            if(map.containsKey(ContentType.VIDEO.tag()))
             {
                 VideoConfiguration config = new VideoConfiguration(defaults.getVideos());
                 setContentDefaults(config, map);
-                config.parseDocument((Map<String,Object>)map.get(ContentType.VIDEO.value()));
+                config.parseDocument((Map<String,Object>)map.get(ContentType.VIDEO.tag()));
                 setVideos(config);
             }
 
-            if(map.containsKey(ContentType.ROUNDUP.value()))
+            if(map.containsKey(ContentType.ROUNDUP.tag()))
             {
                 RoundupConfiguration config = new RoundupConfiguration(defaults.getRoundups());
                 setContentDefaults(config, map);
-                config.parseDocument((Map<String,Object>)map.get(ContentType.ROUNDUP.value()));
+                config.parseDocument((Map<String,Object>)map.get(ContentType.ROUNDUP.tag()));
                 setRoundups(config);
             }
 
-            if(map.containsKey(ContentType.EVENT.value()))
+            if(map.containsKey(ContentType.EVENT.tag()))
             {
                 EventConfiguration config = new EventConfiguration(defaults.getEvents());
                 setContentDefaults(config, map);
-                config.parseDocument((Map<String,Object>)map.get(ContentType.EVENT.value()));
+                config.parseDocument((Map<String,Object>)map.get(ContentType.EVENT.tag()));
                 setEvents(config);
             }
 
-            if(map.containsKey(ContentType.WHITE_PAPER.value()))
+            if(map.containsKey(ContentType.WHITE_PAPER.tag()))
             {
                 WhitePaperConfiguration config = new WhitePaperConfiguration(defaults.getWhitePapers());
                 setContentDefaults(config, map);
-                config.parseDocument((Map<String,Object>)map.get(ContentType.WHITE_PAPER.value()));
+                config.parseDocument((Map<String,Object>)map.get(ContentType.WHITE_PAPER.tag()));
                 setWhitePapers(config);
             }
 
-            if(map.containsKey(ContentType.EBOOK.value()))
+            if(map.containsKey(ContentType.EBOOK.tag()))
             {
                 EBookConfiguration config = new EBookConfiguration(defaults.getEBooks());
                 setContentDefaults(config, map);
-                config.parseDocument((Map<String,Object>)map.get(ContentType.EBOOK.value()));
+                config.parseDocument((Map<String,Object>)map.get(ContentType.EBOOK.tag()));
                 setEBooks(config);
             }
 
-            if(map.containsKey(ContentType.POST.value()))
+            if(map.containsKey(ContentType.POST.tag()))
             {
                 PostConfiguration config = new PostConfiguration(defaults.getPosts());
                 setContentDefaults(config, map);
-                config.parseDocument((Map<String,Object>)map.get(ContentType.POST.value()));
+                config.parseDocument((Map<String,Object>)map.get(ContentType.POST.tag()));
                 setPosts(config);
             }
 
-            if(map.containsKey(ContentType.PROJECT.value()))
+            if(map.containsKey(ContentType.PROJECT.tag()))
             {
                 ProjectConfiguration config = new ProjectConfiguration(defaults.getProjects());
                 setContentDefaults(config, map);
-                config.parseDocument((Map<String,Object>)map.get(ContentType.PROJECT.value()));
+                config.parseDocument((Map<String,Object>)map.get(ContentType.PROJECT.tag()));
                 setProjects(config);
             }
 
-            if(map.containsKey(ContentType.TOOL.value()))
+            if(map.containsKey(ContentType.TOOL.tag()))
             {
                 ToolConfiguration config = new ToolConfiguration(defaults.getTools());
                 setContentDefaults(config, map);
-                config.parseDocument((Map<String,Object>)map.get(ContentType.TOOL.value()));
+                config.parseDocument((Map<String,Object>)map.get(ContentType.TOOL.tag()));
                 setTools(config);
             }
         }

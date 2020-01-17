@@ -253,6 +253,15 @@ public class RoundupArticle extends Article
     }
 
     /**
+     * Returns the content type.
+     */
+    @Override
+    public ContentType getType()
+    {
+        return ContentType.ROUNDUP;
+    }
+
+    /**
      * Returns the roundup details.
      */
     public RoundupDetails getRoundupDetails()

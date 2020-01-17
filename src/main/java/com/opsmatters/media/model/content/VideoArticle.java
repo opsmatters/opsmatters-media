@@ -273,6 +273,15 @@ public class VideoArticle extends Article
     }
 
     /**
+     * Returns the content type.
+     */
+    @Override
+    public ContentType getType()
+    {
+        return ContentType.VIDEO;
+    }
+
+    /**
      * Returns the video details.
      */
     public VideoDetails getVideoDetails()

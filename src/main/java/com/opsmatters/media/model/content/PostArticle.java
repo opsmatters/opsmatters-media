@@ -294,6 +294,15 @@ public class PostArticle extends Article
     }
 
     /**
+     * Returns the content type.
+     */
+    @Override
+    public ContentType getType()
+    {
+        return ContentType.POST;
+    }
+
+    /**
      * Returns the post details.
      */
     public PostDetails getPostDetails()

@@ -23,28 +23,42 @@ package com.opsmatters.media.model.content;
  */
 public enum ContentType
 {
-    ORGANISATION("organisations", "Organisations"),
-    VIDEO("videos", "Videos"),
-    ROUNDUP("roundups", "Roundups"),
-    POST("posts", "Posts"),
-    EVENT("events", "Events"),
-    WHITE_PAPER("white-papers", "White Papers"),
-    EBOOK("ebooks", "EBooks"),
-    PROJECT("projects", "Projects"),
-    TOOL("tools", "Tools");
+    ORGANISATION("ORG", "Organisation", "organisations"),
+    VIDEO("VD", "Video", "videos"),
+    ROUNDUP("RP", "Roundup", "roundups"),
+    POST("PO", "Post", "posts"),
+    EVENT("EV", "Event", "events"),
+    WHITE_PAPER("WP", "White Paper", "white-papers"),
+    EBOOK("EB", "EBook", "ebooks"),
+    PROJECT("PR", "Project", "projects"),
+    TOOL("TL", "Tool", "tools");
 
+    private String code;
     private String value;
+    private String tag;
     private String title;
 
     /**
-     * Constructor that takes the type value and title.
+     * Constructor that takes the type code, value and tag.
+     * @param code The code for the type
      * @param value The value for the type
-     * @param title The title for the type
+     * @param tag The tag for the type
      */
-    ContentType(String value, String title)
+    ContentType(String code, String value, String tag)
     {
+        this.code = code;
         this.value = value;
-        this.title = title;
+        this.tag = tag;
+        this.title = value+"s";
+    }
+
+    /**
+     * Returns the code of the type.
+     * @return The code of the type.
+     */
+    public String code()
+    {
+        return code;
     }
 
     /**
@@ -54,6 +68,15 @@ public enum ContentType
     public String value()
     {
         return value;
+    }
+
+    /**
+     * Returns the tag of the type.
+     * @return The tag of the type.
+     */
+    public String tag()
+    {
+        return tag;
     }
 
     /**

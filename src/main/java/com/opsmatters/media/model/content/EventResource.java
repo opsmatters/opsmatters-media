@@ -260,6 +260,15 @@ public class EventResource extends Resource
     }
 
     /**
+     * Returns the content type.
+     */
+    @Override
+    public ContentType getType()
+    {
+        return ContentType.EVENT;
+    }
+
+    /**
      * Returns the event details.
      */
     public EventDetails getEventDetails()

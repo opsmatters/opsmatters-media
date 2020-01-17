@@ -231,6 +231,15 @@ public class ToolResource extends Resource
     }
 
     /**
+     * Returns the content type.
+     */
+    @Override
+    public ContentType getType()
+    {
+        return ContentType.TOOL;
+    }
+
+    /**
      * Returns the tool details.
      */
     public ToolDetails getToolDetails()

@@ -15,30 +15,24 @@
  */
 package com.opsmatters.media.model.social;
 
-//GERALD: check
 import java.time.Instant;
-import java.time.format.DateTimeParseException;
-import com.opsmatters.media.util.Formats;
-import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.ContentItem;
 
 /**
  * Class representing a social media update.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialUpdate implements java.io.Serializable
+public class SocialUpdate extends SocialItem
 {
-    private String id = "";
-    private Instant createdDate;
-//GERALD: needed?
-    private Instant updatedDate;
     private String organisation = "";
+    private String url = "";
     private ContentType contentType;
+    private int contentId = -1;
     private UpdateStatus status;
-    private String createdBy = "";
 
     static public enum UpdateStatus
     {
@@ -56,14 +50,16 @@ public class SocialUpdate implements java.io.Serializable
     }
 
     /**
-     * Constructor that takes an organisation and content type.
+     * Constructor that takes an organisation and a content item.
      */
-    public SocialUpdate(Organisation organisation, ContentType type)
+    public SocialUpdate(Organisation organisation, ContentItem content)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setOrganisation(organisation.getCode());
-        setContentType(type);
+        setContentId(content.getId());
+        setUrl(organisation.getUrl(System.getProperty("om-config.site.prod")));
+        setContentType(content.getType());
         setStatus(UpdateStatus.PENDING);
     }
 
@@ -72,170 +68,23 @@ public class SocialUpdate implements java.io.Serializable
      */
     public SocialUpdate(SocialUpdate obj)
     {
+        copyAttributes(obj);
+    }
+
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(SocialUpdate obj)
+    {
         if(obj != null)
         {
-            setId(obj.getId());
-            setCreatedDate(obj.getCreatedDate());
-            setUpdatedDate(obj.getUpdatedDate());
+            super.copyAttributes(obj);
             setOrganisation(obj.getOrganisation());
+            setContentId(obj.getContentId());
+            setUrl(obj.getUrl());
             setContentType(obj.getContentType());
             setStatus(obj.getStatus());
-            setCreatedBy(obj.getCreatedBy());
         }
-    }
-
-    /**
-     * Returns the id.
-     */
-    public String toString()
-    {
-        return getId();
-    }
-
-    /**
-     * Returns the update id.
-     */
-    public String getId()
-    {
-        return id;
-    }
-
-    /**
-     * Sets the update id.
-     */
-    public void setId(String id)
-    {
-        this.id = id;
-    }
-
-    /**
-     * Returns the date the update was created.
-     */
-    public Instant getCreatedDate()
-    {
-        return createdDate;
-    }
-
-    /**
-     * Returns the date the update was created.
-     */
-    public long getCreatedDateMillis()
-    {
-        return getCreatedDate() != null ? getCreatedDate().toEpochMilli() : 0L;
-    }
-
-    /**
-     * Returns the date the update was created.
-     */
-    public String getCreatedDateAsString(String pattern)
-    {
-        return TimeUtils.toStringUTC(createdDate, pattern);
-    }
-
-    /**
-     * Returns the date the update was created.
-     */
-    public String getCreatedDateAsString()
-    {
-        return getCreatedDateAsString(Formats.CONTENT_DATE_FORMAT);
-    }
-
-    /**
-     * Sets the date the update was created.
-     */
-    public void setCreatedDate(Instant createdDate)
-    {
-        this.createdDate = createdDate;
-    }
-
-    /**
-     * Sets the date the update was created.
-     */
-    public void setCreatedDateMillis(long millis)
-    {
-        if(millis > 0L)
-            this.createdDate = Instant.ofEpochMilli(millis);
-    }
-
-    /**
-     * Sets the date the update was created.
-     */
-    public void setCreatedDateAsString(String str, String pattern) throws DateTimeParseException
-    {
-        setCreatedDate(TimeUtils.toInstantUTC(str, pattern));
-    }
-
-    /**
-     * Sets the date the update was created.
-     */
-    public void setCreatedDateAsString(String str) throws DateTimeParseException
-    {
-        setCreatedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
-    }
-
-    /**
-     * Returns the date the update status was last updated.
-     */
-    public Instant getUpdatedDate()
-    {
-        return updatedDate;
-    }
-
-    /**
-     * Returns the date the update was last updated.
-     */
-    public long getUpdatedDateMillis()
-    {
-        return getUpdatedDate() != null ? getUpdatedDate().toEpochMilli() : 0L;
-    }
-
-    /**
-     * Returns the date the update status was last updated.
-     */
-    public String getUpdatedDateAsString(String pattern)
-    {
-        return TimeUtils.toStringUTC(updatedDate, pattern);
-    }
-
-    /**
-     * Returns the date the update status was last updated.
-     */
-    public String getUpdatedDateAsString()
-    {
-        return getUpdatedDateAsString(Formats.CONTENT_DATE_FORMAT);
-    }
-
-    /**
-     * Sets the date the update status was last updated.
-     */
-    public void setUpdatedDate(Instant updatedDate)
-    {
-        this.updatedDate = updatedDate;
-    }
-
-    /**
-     * Sets the date the update status was last updated.
-     */
-    public void setUpdatedDateMillis(long millis)
-    {
-        if(millis > 0L)
-            this.updatedDate = Instant.ofEpochMilli(millis);
-    }
-
-    /**
-     * Sets the date the update status was last updated.
-     */
-    public void setUpdatedDateAsString(String str, String pattern) throws DateTimeParseException
-    {
-        setUpdatedDate(TimeUtils.toInstantUTC(str, pattern));
-    }
-
-    /**
-     * Sets the date the update status was last updated.
-     */
-    public void setUpdatedDateAsString(String str) throws DateTimeParseException
-    {
-        setUpdatedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
     }
 
     /**
@@ -252,6 +101,46 @@ public class SocialUpdate implements java.io.Serializable
     public void setOrganisation(String organisation)
     {
         this.organisation = organisation;
+    }
+
+    /**
+     * Returns the update content id.
+     */
+    public int getContentId()
+    {
+        return contentId;
+    }
+
+    /**
+     * Sets the update content id.
+     */
+    public void setContentId(int contentId)
+    {
+        this.contentId = contentId;
+    }
+
+    /**
+     * Returns the update content GUID.
+     */
+    public String getContentGuid()
+    {
+        return String.format("%s-%s-%05d", contentType.code(), organisation, contentId);
+    }
+
+    /**
+     * Returns the update URL.
+     */
+    public String getUrl()
+    {
+        return url;
+    }
+
+    /**
+     * Sets the update URL.
+     */
+    public void setUrl(String url)
+    {
+        this.url = url;
     }
 
     /**
@@ -300,21 +189,5 @@ public class SocialUpdate implements java.io.Serializable
     public void setStatus(UpdateStatus status)
     {
         this.status = status;
-    }
-
-    /**
-     * Returns the update creator.
-     */
-    public String getCreatedBy()
-    {
-        return createdBy;
-    }
-
-    /**
-     * Sets the update creator.
-     */
-    public void setCreatedBy(String createdBy)
-    {
-        this.createdBy = createdBy;
     }
 }
