@@ -134,7 +134,7 @@ public class WhitePaperCrawler extends ContentCrawler<PublicationSummary>
         // Default the published date to today if not found
         if(!fields.hasPublishedDate() && content.getPublishedDate() == null)
         {
-            content.setPublishedDateAsString(TimeUtils.toMidnightStringUTC());
+            content.setPublishedDate(TimeUtils.truncateTimeUTC());
             if(debug())
                 logger.info("Defaulting published date: "+content.getPublishedDateAsString());
         }
@@ -190,7 +190,7 @@ public class WhitePaperCrawler extends ContentCrawler<PublicationSummary>
                 {
                     logger.severe(StringUtils.serialize(e));
                     logger.warning("Unparseable published date, using default instead: "+publishedDate);
-                    content.setPublishedDateAsString(TimeUtils.toMidnightStringUTC());
+                    content.setPublishedDate(TimeUtils.truncateTimeUTC());
                 }
             }
         }

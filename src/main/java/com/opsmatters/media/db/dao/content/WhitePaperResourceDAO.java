@@ -161,8 +161,8 @@ public class WhitePaperResourceDAO extends ContentDAO<WhitePaperResource>
             insertStmt.setCharacterStream(8, reader, attributes.length());
             insertStmt.executeUpdate();
 
-            logger.info("Created white paper '"+content.getTitle()+"' in WHITE_PAPERS"
-                +" (id="+content.getId()+" uuid="+content.getUuid()+")");
+            logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
+                content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
         }
         catch(SQLException ex)
         {
@@ -214,8 +214,8 @@ public class WhitePaperResourceDAO extends ContentDAO<WhitePaperResource>
             updateStmt.setInt(7, content.getId());
             updateStmt.executeUpdate();
 
-            logger.info("Updated white paper '"+content.getTitle()+"' in WHITE_PAPERS"
-                +" (id="+content.getId()+" uuid="+content.getUuid()+")");
+            logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 
+                content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
         }
         finally
         {

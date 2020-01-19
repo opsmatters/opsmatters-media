@@ -280,6 +280,14 @@ public abstract class ContentItem implements java.io.Serializable
     }
 
     /**
+     * Returns the content GUID.
+     */
+    public String getGuid()
+    {
+        return String.format("%s-%s-%05d", getType().code(), code, id);
+    }
+
+    /**
      * Returns the organisation code.
      */
     public String getCode()

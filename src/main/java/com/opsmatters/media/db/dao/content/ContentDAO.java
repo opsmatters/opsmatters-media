@@ -281,8 +281,8 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
         deleteStmt.setInt(2, content.getId());
         deleteStmt.executeUpdate();
 
-        logger.info("Deleted content '"+content.getTitle()+"' in "+getTableName()
-            +" (code="+content.getCode()+", id="+content.getId()+")");
+        logger.info(String.format("Deleted content '%s' in %s (GUID=%s)", 
+            content.getTitle(), getTableName(), content.getGuid()));
     }
 
     /**
@@ -368,8 +368,8 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
             {
                 if(!content.isDeployed())
                 {
-                    logger.info("Organisation "+code+" "+getTableName()+" content "+" not deployed: "
-                        +content.getTitle()+" ("+content.getId()+")");
+                    logger.info(String.format("Organisation %s %s content not deployed: %s (GUID=%s)", 
+                        code, getTableName(), content.getTitle(), content.getGuid()));
                     ret = false;
                     break;
                 }

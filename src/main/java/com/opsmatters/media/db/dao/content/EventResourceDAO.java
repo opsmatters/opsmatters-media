@@ -169,8 +169,8 @@ public class EventResourceDAO extends ContentDAO<EventResource>
             insertStmt.setCharacterStream(10, reader, attributes.length());
             insertStmt.executeUpdate();
 
-            logger.info("Created event '"+content.getTitle()+"' in EVENTS"
-                +" (id="+content.getId()+" uuid="+content.getUuid()+")");
+            logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
+                content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
         }
         catch(SQLException ex)
         {
@@ -224,8 +224,8 @@ public class EventResourceDAO extends ContentDAO<EventResource>
             updateStmt.setInt(9, content.getId());
             updateStmt.executeUpdate();
 
-            logger.info("Updated event '"+content.getTitle()+"' in EVENTS"
-                +" (id="+content.getId()+" uuid="+content.getUuid()+")");
+            logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 
+                content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
         }
         finally
         {

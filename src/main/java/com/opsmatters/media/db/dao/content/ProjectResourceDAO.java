@@ -110,8 +110,8 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
             insertStmt.setCharacterStream(9, reader, attributes.length());
             insertStmt.executeUpdate();
 
-            logger.info("Created project '"+content.getTitle()+"' in PROJECTS"
-                +" (id="+content.getId()+" uuid="+content.getUuid()+")");
+            logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
+                content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
         }
         catch(SQLException ex)
         {
@@ -164,8 +164,8 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
             updateStmt.setInt(8, content.getId());
             updateStmt.executeUpdate();
 
-            logger.info("Updated project '"+content.getTitle()+"' in PROJECTS"
-                +" (id="+content.getId()+" uuid="+content.getUuid()+")");
+            logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 
+                content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
         }
         finally
         {

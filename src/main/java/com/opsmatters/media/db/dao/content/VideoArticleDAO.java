@@ -165,8 +165,8 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
             insertStmt.setCharacterStream(10, reader, attributes.length());
             insertStmt.executeUpdate();
 
-            logger.info("Created video '"+content.getTitle()+"' in VIDEOS"
-                +" (id="+content.getId()+" uuid="+content.getUuid()+")");
+            logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
+                content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
         }
         catch(SQLException ex)
         {
@@ -220,8 +220,8 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
             updateStmt.setInt(9, content.getId());
             updateStmt.executeUpdate();
 
-            logger.info("Updated video '"+content.getTitle()+"' in VIDEOS"
-                +" (id="+content.getId()+" uuid="+content.getUuid()+")");
+            logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 
+                content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
         }
         finally
         {

@@ -147,7 +147,7 @@ public class EventResource extends Resource
         setStartDateMillis(obj.optLong(Fields.START_DATE));
         setEndDateMillis(obj.optLong(Fields.END_DATE));
         if(getPublishedDateMillis() == 0L) // Default to start date
-            setPublishedDateAsString(TimeUtils.toMidnightStringUTC(getStartDateMillis()));
+            setPublishedDate(TimeUtils.truncateTimeUTC(getStartDate()));
         setTimeZone(obj.optString(Fields.TIMEZONE));
         setActivityType(obj.optString(Fields.ACTIVITY_TYPE));
         setLocation(obj.optString(Fields.LOCATION));

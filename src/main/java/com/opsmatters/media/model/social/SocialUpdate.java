@@ -36,7 +36,6 @@ public class SocialUpdate extends SocialItem
 
     static public enum UpdateStatus
     {
-        NEW,
         PENDING,
         PROCESSED,
         SKIPPED;
@@ -120,14 +119,6 @@ public class SocialUpdate extends SocialItem
     }
 
     /**
-     * Returns the update content GUID.
-     */
-    public String getContentGuid()
-    {
-        return String.format("%s-%s-%05d", contentType.code(), organisation, contentId);
-    }
-
-    /**
      * Returns the update URL.
      */
     public String getUrl()
@@ -189,5 +180,29 @@ public class SocialUpdate extends SocialItem
     public void setStatus(UpdateStatus status)
     {
         this.status = status;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the update status is PENDING.
+     */
+    public boolean isPending()
+    {
+        return status == UpdateStatus.PENDING;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the update status is PROCESSED.
+     */
+    public boolean isProcessed()
+    {
+        return status == UpdateStatus.PROCESSED;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the update status is SKIPPED.
+     */
+    public boolean isSkipped()
+    {
+        return status == UpdateStatus.SKIPPED;
     }
 }

@@ -134,7 +134,7 @@ public class EventCrawler extends ContentCrawler<EventSummary>
         // Default the published date to today if not found
         if(!fields.hasPublishedDate() && content.getPublishedDate() == null)
         {
-            content.setPublishedDateAsString(TimeUtils.toMidnightStringUTC());
+            content.setPublishedDate(TimeUtils.truncateTimeUTC());
             if(debug())
                 logger.info("Defaulting published date: "+content.getPublishedDateAsString());
         }
@@ -146,7 +146,7 @@ public class EventCrawler extends ContentCrawler<EventSummary>
         // Default the start date to today if not found
         if(!fields.hasStartDate() && content.getStartDate() == null)
         {
-            content.setStartDateAsString(TimeUtils.toMidnightStringUTC());
+            content.setStartDate(TimeUtils.truncateTimeUTC());
             if(debug())
                 logger.info("Defaulting start date: "+content.getStartDateAsString());
         }
@@ -267,14 +267,14 @@ public class EventCrawler extends ContentCrawler<EventSummary>
                 {
                     logger.severe(StringUtils.serialize(e));
                     logger.warning("Unparseable start date, using default instead: "+startDate);
-                    content.setStartDateAsString(TimeUtils.toMidnightStringUTC());
+                    content.setStartDate(TimeUtils.truncateTimeUTC());
                 }
             }
             else //if(field.getSource().isMetatag()) // Date metatag not found
             {
                 // Default date to today if not found
                 logger.warning("Published date not found, defaulting to today");
-                content.setStartDateAsString(TimeUtils.toMidnightStringUTC());
+                content.setStartDate(TimeUtils.truncateTimeUTC());
             }
         }
     }

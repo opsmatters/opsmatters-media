@@ -106,8 +106,8 @@ public class PostArticleDAO extends ContentDAO<PostArticle>
             insertStmt.setCharacterStream(7, reader, attributes.length());
             insertStmt.executeUpdate();
 
-            logger.info("Created post '"+content.getTitle()+"' in POSTS"
-                +" (id="+content.getId()+" uuid="+content.getUuid()+")");
+            logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
+                content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
         }
         catch(SQLException ex)
         {
@@ -158,8 +158,8 @@ public class PostArticleDAO extends ContentDAO<PostArticle>
             updateStmt.setInt(6, content.getId());
             updateStmt.executeUpdate();
 
-            logger.info("Updated post '"+content.getTitle()+"' in POSTS"
-                +" (id="+content.getId()+" uuid="+content.getUuid()+")");
+            logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 
+                content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
         }
         finally
         {

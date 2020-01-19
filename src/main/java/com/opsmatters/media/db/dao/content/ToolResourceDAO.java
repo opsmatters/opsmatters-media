@@ -110,8 +110,8 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
             insertStmt.setCharacterStream(8, reader, attributes.length());
             insertStmt.executeUpdate();
 
-            logger.info("Created tool '"+content.getTitle()+"' in TOOLS"
-                +" (id="+content.getId()+" uuid="+content.getUuid()+")");
+            logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
+                content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
         }
         catch(SQLException ex)
         {
@@ -163,8 +163,8 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
             updateStmt.setInt(7, content.getId());
             updateStmt.executeUpdate();
 
-            logger.info("Updated tool '"+content.getTitle()+"' in TOOLS"
-                +" (id="+content.getId()+" uuid="+content.getUuid()+")");
+            logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 
+                content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
         }
         finally
         {

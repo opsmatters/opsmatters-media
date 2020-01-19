@@ -23,6 +23,8 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
+import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.social.SocialUpdate;
 
 /**
@@ -40,6 +42,13 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
     private static final String GET_BY_ID_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_ID, URL, CONTENT_TYPE, STATUS, CREATED_BY "
       + "FROM SOCIAL_UPDATES WHERE ID=?";
+
+    /**
+     * The query to use to select pending items from the SOCIAL_UPDATES table.
+     */
+    private static final String GET_PENDING_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_ID, URL, CONTENT_TYPE, STATUS, CREATED_BY "
+      + "FROM SOCIAL_UPDATES WHERE ORGANISATION=? AND CONTENT_TYPE=? AND STATUS='PENDING'";
 
     /**
      * The query to use to insert a social update into the SOCIAL_UPDATES table.
@@ -100,12 +109,12 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("SOCIAL_UPDATES_PK", new String[] {"ID"});
-        table.addIndex("SOCIAL_UPDATES_STATUS_IDX", new String[] {"STATUS"});
+        table.addIndex("SOCIAL_UPDATES_ORG_IDX", new String[] {"ORGANISATION", "CONTENT_TYPE", "CREATED_DATE"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns a content item from the SOCIAL_UPDATES table by id.
+     * Returns a social update from the SOCIAL_UPDATES table by id.
      */
     public SocialUpdate getById(int id) throws SQLException
     {
@@ -139,6 +148,84 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
                 update.setStatus(rs.getString(8));
                 update.setCreatedBy(rs.getString(9));
                 ret = update;
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given content item has a pending social update in the SOCIAL_UPDATES table.
+     */
+    public boolean hasPending(ContentItem content) throws SQLException
+    {
+        boolean ret = false;
+
+        List<SocialUpdate> updates = getPending(content.getCode(), content.getType());
+        for(SocialUpdate update : updates)
+        {
+            // Roundups don't have a content id
+            if(content.getType() == ContentType.ROUNDUP 
+                || update.getContentId() == content.getId())
+            {
+                ret = true;
+                break;
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the pending social updates from the SOCIAL_UPDATES table for the given organisation and type.
+     */
+    public List<SocialUpdate> getPending(String organisation, ContentType type) throws SQLException
+    {
+        List<SocialUpdate> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(getPendingStmt == null)
+            getPendingStmt = prepareStatement(getConnection(), GET_PENDING_SQL);
+        clearParameters(getPendingStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            getPendingStmt.setString(1, organisation);
+            getPendingStmt.setString(2, type.name());
+            getPendingStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = getPendingStmt.executeQuery();
+            ret = new ArrayList<SocialUpdate>();
+            while(rs.next())
+            {
+                SocialUpdate update = new SocialUpdate();
+                update.setId(rs.getString(1));
+                update.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                update.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                update.setOrganisation(rs.getString(4));
+                update.setContentId(rs.getInt(5));
+                update.setUrl(rs.getString(6));
+                update.setContentType(rs.getString(7));
+                update.setStatus(rs.getString(8));
+                update.setCreatedBy(rs.getString(9));
+                ret.add(update);
             }
         }
         finally
@@ -323,6 +410,8 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
     {
         closeStatement(getByIdStmt);
         getByIdStmt = null;
+        closeStatement(getPendingStmt);
+        getPendingStmt = null;
         closeStatement(insertStmt);
         insertStmt = null;
         closeStatement(updateStmt);
@@ -336,6 +425,7 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
     }
 
     private PreparedStatement getByIdStmt;
+    private PreparedStatement getPendingStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;

@@ -33,6 +33,7 @@ import java.time.LocalTime;
 import java.time.LocalDateTime;
 import java.time.DateTimeException;
 import java.time.temporal.TemporalAccessor;
+import java.time.temporal.ChronoUnit;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
@@ -500,6 +501,22 @@ public class TimeUtils
     }
 
     /**
+     * Returns the given instant in UTC with the time part set to zero.
+     */
+    static public Instant truncateTimeUTC(Instant dt)
+    {
+        return dt != null ? toDateTimeUTC(dt).truncatedTo(ChronoUnit.DAYS).toInstant(ZoneOffset.UTC) : null;
+    }
+
+    /**
+     * Returns the current time in UTC with the time part set to zero.
+     */
+    static public Instant truncateTimeUTC()
+    {
+        return truncateTimeUTC(Instant.now());
+    }
+
+    /**
      * Returns the given instant as a string in UTC.
      */
     public static String toStringUTC(Instant dt, String pattern)
@@ -540,19 +557,11 @@ public class TimeUtils
     }
 
     /**
-     * Returns the given date as a string with the time set to midnight UTC.
+     * Returns the given LocaDateTime as millis in UTC.
      */
-    static public String toMidnightStringUTC(long millis)
+    public static long toMillisUTC(LocalDateTime dt)
     {
-        return toStringUTC(millis, "yyyy-MM-dd 00:00:00");
-    }
-
-    /**
-     * Returns the current date as a string with the time set to midnight UTC.
-     */
-    static public String toMidnightStringUTC()
-    {
-        return toStringUTC("yyyy-MM-dd 00:00:00");
+        return dt != null ? dt.toInstant(ZoneOffset.UTC).toEpochMilli() : 0L;
     }
 
     /**

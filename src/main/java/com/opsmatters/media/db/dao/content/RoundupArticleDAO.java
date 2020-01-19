@@ -163,8 +163,8 @@ public class RoundupArticleDAO extends ContentDAO<RoundupArticle>
             insertStmt.setCharacterStream(8, reader, attributes.length());
             insertStmt.executeUpdate();
 
-            logger.info("Created roundup '"+content.getTitle()+"' in ROUNDUPS"
-                +" (id="+content.getId()+" uuid="+content.getUuid()+")");
+            logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
+                content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
         }
         catch(SQLException ex)
         {
@@ -216,8 +216,8 @@ public class RoundupArticleDAO extends ContentDAO<RoundupArticle>
             updateStmt.setInt(7, content.getId());
             updateStmt.executeUpdate();
 
-            logger.info("Updated roundup '"+content.getTitle()+"' in ROUNDUPS"
-                +" (id="+content.getId()+" uuid="+content.getUuid()+")");
+            logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 
+                content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
         }
         finally
         {

@@ -105,7 +105,7 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
     }
 
     /**
-     * Returns a content item from the SOCIAL_POSTS table by id.
+     * Returns a social update from the SOCIAL_POSTS table by id.
      */
     public SocialPost getById(int id) throws SQLException
     {

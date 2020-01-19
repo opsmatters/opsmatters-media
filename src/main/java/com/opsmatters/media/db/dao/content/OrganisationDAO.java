@@ -397,8 +397,9 @@ public class OrganisationDAO extends ContentDAO<Organisation>
             insertStmt.setCharacterStream(10, reader, attributes.length());
             insertStmt.executeUpdate();
 
-            logger.info("Created organisation '"+organisation.getTitle()+"' in ORGANISATIONS"
-                +" (id="+organisation.getId()+" uuid="+organisation.getUuid()+" code="+organisation.getCode()+")");
+            logger.info(String.format("Created %s '%s' in %s (GUID=%s, code=%s)", 
+                organisation.getType().value(), organisation.getTitle(), getTableName(), 
+                organisation.getGuid(), organisation.getCode()));
         }
         catch(SQLException ex)
         {
@@ -453,8 +454,9 @@ public class OrganisationDAO extends ContentDAO<Organisation>
             updateStmt.setInt(9, organisation.getId());
             updateStmt.executeUpdate();
 
-            logger.info("Updated organisation '"+organisation.getTitle()+"' in ORGANISATIONS"
-                +" (id="+organisation.getId()+" uuid="+organisation.getUuid()+" code="+organisation.getCode()+")");
+            logger.info(String.format("Updated %s '%s' in %s (GUID=%s, code=%s)", 
+                organisation.getType().value(), organisation.getTitle(), getTableName(), 
+                organisation.getGuid(), organisation.getCode()));
         }
         finally
         {
@@ -479,8 +481,9 @@ public class OrganisationDAO extends ContentDAO<Organisation>
         deleteStmt.setInt(1, organisation.getId());
         deleteStmt.executeUpdate();
 
-        logger.info("Deleted organisation '"+organisation.getTitle()+"' in ORGANISATIONS"
-            +" (id="+organisation.getId()+" uuid="+organisation.getUuid()+" code="+organisation.getCode()+")");
+        logger.info(String.format("Deleted %s '%s' in %s (GUID=%s, code=%s)", 
+            organisation.getType().value(), organisation.getTitle(), getTableName(), 
+            organisation.getGuid(), organisation.getCode()));
     }
 
     /**

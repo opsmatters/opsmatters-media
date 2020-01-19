@@ -231,14 +231,14 @@ public class RoundupCrawler extends ContentCrawler<RoundupSummary>
                 {
                     logger.severe(StringUtils.serialize(e));
                     logger.warning("Unparseable published date, using default instead: "+publishedDate);
-                    content.setPublishedDateAsString(TimeUtils.toMidnightStringUTC());
+                    content.setPublishedDate(TimeUtils.truncateTimeUTC());
                 }
             }
             else if(field.getSource().isMetatag()) // Date metatag not found
             {
                 // Default date to today if not found
                 logger.warning("Published date not found, defaulting to today");
-                content.setPublishedDateAsString(TimeUtils.toMidnightStringUTC());
+                content.setPublishedDate(TimeUtils.truncateTimeUTC());
             }
         }
 
