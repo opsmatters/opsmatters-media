@@ -32,6 +32,7 @@ public class SocialUpdate extends SocialItem
     private String url = "";
     private ContentType contentType;
     private int contentId = -1;
+    private String message = "";
     private UpdateStatus status;
 
     static public enum UpdateStatus
@@ -82,6 +83,7 @@ public class SocialUpdate extends SocialItem
             setContentId(obj.getContentId());
             setUrl(obj.getUrl());
             setContentType(obj.getContentType());
+            setMessage(obj.getMessage());
             setStatus(obj.getStatus());
         }
     }
@@ -156,6 +158,30 @@ public class SocialUpdate extends SocialItem
     public void setContentType(ContentType contentType)
     {
         this.contentType = contentType;
+    }
+
+    /**
+     * Returns the update message.
+     */
+    public String getMessage()
+    {
+        return message;
+    }
+
+    /**
+     * Sets the update message.
+     */
+    public void setMessage(String message)
+    {
+        this.message = message;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the update message has been set.
+     */
+    public boolean hasMessage()
+    {
+        return message != null && message.length() > 0;
     }
 
     /**

@@ -33,8 +33,19 @@ public class SocialDAOFactory extends DAOFactory
     {
         super(driver, conn);
 
+        getSocialTemplateDAO();
         getSocialUpdateDAO();
         getSocialPostDAO();
+    }
+
+    /**
+     * Returns the social template DAO.
+     */
+    public SocialTemplateDAO getSocialTemplateDAO()
+    {
+        if(socialTemplateDAO == null)
+            socialTemplateDAO = new SocialTemplateDAO(this);
+        return socialTemplateDAO;
     }
 
     /**
@@ -64,10 +75,12 @@ public class SocialDAOFactory extends DAOFactory
     public void close()
     {
         super.close();
+        socialTemplateDAO = null;
         socialUpdateDAO = null;
         socialPostDAO = null;
     }
 
+    private SocialTemplateDAO socialTemplateDAO;
     private SocialUpdateDAO socialUpdateDAO;
     private SocialPostDAO socialPostDAO;
 }

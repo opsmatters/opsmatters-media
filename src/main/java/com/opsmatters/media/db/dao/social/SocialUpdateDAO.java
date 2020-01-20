@@ -40,14 +40,14 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
      * The query to use to select an item from the SOCIAL_UPDATES table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_ID, URL, CONTENT_TYPE, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_ID, URL, CONTENT_TYPE, MESSAGE, STATUS, CREATED_BY "
       + "FROM SOCIAL_UPDATES WHERE ID=?";
 
     /**
      * The query to use to select pending items from the SOCIAL_UPDATES table.
      */
     private static final String GET_PENDING_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_ID, URL, CONTENT_TYPE, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_ID, URL, CONTENT_TYPE, MESSAGE, STATUS, CREATED_BY "
       + "FROM SOCIAL_UPDATES WHERE ORGANISATION=? AND CONTENT_TYPE=? AND STATUS='PENDING'";
 
     /**
@@ -55,22 +55,22 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO SOCIAL_UPDATES"
-      + "( ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_ID, URL, CONTENT_TYPE, STATUS, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_ID, URL, CONTENT_TYPE, MESSAGE, STATUS, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a social update in the SOCIAL_UPDATES table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE SOCIAL_UPDATES SET UPDATED_DATE=?, ORGANISATION=?, CONTENT_ID=?, URL=?, CONTENT_TYPE=?, STATUS=? "
+      "UPDATE SOCIAL_UPDATES SET UPDATED_DATE=?, ORGANISATION=?, CONTENT_ID=?, URL=?, CONTENT_TYPE=?, MESSAGE=?, STATUS=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the social updates from the SOCIAL_UPDATES table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_ID, URL, CONTENT_TYPE, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, CONTENT_ID, URL, CONTENT_TYPE, MESSAGE, STATUS, CREATED_BY "
       + "FROM SOCIAL_UPDATES ORDER BY CREATED_DATE";
 
     /**
@@ -106,6 +106,7 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
         table.addColumn("CONTENT_ID", Types.INTEGER, false);
         table.addColumn("URL", Types.VARCHAR, 128, true);
         table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, true);
+        table.addColumn("MESSAGE", Types.VARCHAR, 512, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("SOCIAL_UPDATES_PK", new String[] {"ID"});
@@ -145,8 +146,9 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
                 update.setContentId(rs.getInt(5));
                 update.setUrl(rs.getString(6));
                 update.setContentType(rs.getString(7));
-                update.setStatus(rs.getString(8));
-                update.setCreatedBy(rs.getString(9));
+                update.setMessage(rs.getString(8));
+                update.setStatus(rs.getString(9));
+                update.setCreatedBy(rs.getString(10));
                 ret = update;
             }
         }
@@ -223,8 +225,9 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
                 update.setContentId(rs.getInt(5));
                 update.setUrl(rs.getString(6));
                 update.setContentType(rs.getString(7));
-                update.setStatus(rs.getString(8));
-                update.setCreatedBy(rs.getString(9));
+                update.setMessage(rs.getString(8));
+                update.setStatus(rs.getString(9));
+                update.setCreatedBy(rs.getString(10));
                 ret.add(update);
             }
         }
@@ -266,8 +269,9 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
             insertStmt.setInt(5, update.getContentId());
             insertStmt.setString(6, update.getUrl());
             insertStmt.setString(7, update.getContentType().name());
-            insertStmt.setString(8, update.getStatus().name());
-            insertStmt.setString(9, update.getCreatedBy());
+            insertStmt.setString(8, update.getMessage());
+            insertStmt.setString(9, update.getStatus().name());
+            insertStmt.setString(10, update.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created social update '"+update.getId()+"' in SOCIAL_UPDATES");
@@ -304,8 +308,9 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
         updateStmt.setInt(3, update.getContentId());
         updateStmt.setString(4, update.getUrl());
         updateStmt.setString(5, update.getContentType().name());
-        updateStmt.setString(6, update.getStatus().name());
-        updateStmt.setString(7, update.getId());
+        updateStmt.setString(6, update.getMessage());
+        updateStmt.setString(7, update.getStatus().name());
+        updateStmt.setString(8, update.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated social update '"+update.getId()+"' in SOCIAL_UPDATES");
@@ -343,8 +348,9 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
                 update.setContentId(rs.getInt(5));
                 update.setUrl(rs.getString(6));
                 update.setContentType(rs.getString(7));
-                update.setStatus(rs.getString(8));
-                update.setCreatedBy(rs.getString(9));
+                update.setMessage(rs.getString(8));
+                update.setStatus(rs.getString(9));
+                update.setCreatedBy(rs.getString(10));
                 ret.add(update);
             }
         }
@@ -368,7 +374,7 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
     /**
      * Returns the count of social updates from the table.
      */
-    public int count(String code) throws SQLException
+    public int count() throws SQLException
     {
         if(!hasConnection())
             return -1;
@@ -377,7 +383,6 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
             countStmt = prepareStatement(getConnection(), COUNT_SQL);
         clearParameters(countStmt);
 
-        countStmt.setString(1, code);
         countStmt.setQueryTimeout(QUERY_TIMEOUT);
         ResultSet rs = countStmt.executeQuery();
         rs.next();

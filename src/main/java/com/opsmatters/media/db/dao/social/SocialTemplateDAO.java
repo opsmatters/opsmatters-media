@@ -23,70 +23,69 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.social.SocialPost;
-import com.opsmatters.media.model.social.SocialChannels;
+import com.opsmatters.media.model.social.SocialTemplate;
 
 /**
- * DAO that provides operations on the SOCIAL_POSTS table in the database.
+ * DAO that provides operations on the SOCIAL_TEMPLATES table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialPostDAO extends SocialDAO<SocialPost>
+public class SocialTemplateDAO extends SocialDAO<SocialTemplate>
 {
-    private static final Logger logger = Logger.getLogger(SocialPostDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(SocialTemplateDAO.class.getName());
 
     /**
-     * The query to use to select an item from the SOCIAL_POSTS table by id.
+     * The query to use to select an item from the SOCIAL_TEMPLATES table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, MESSAGE, CHANNEL, STATUS, CREATED_BY "
-      + "FROM SOCIAL_POSTS WHERE ID=?";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, CONTENT_TYPE, IS_DEFAULT, CREATED_BY "
+      + "FROM SOCIAL_TEMPLATES WHERE ID=?";
 
     /**
-     * The query to use to insert a social post into the SOCIAL_POSTS table.
+     * The query to use to insert a social template into the SOCIAL_TEMPLATES table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO SOCIAL_POSTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, MESSAGE, CHANNEL, STATUS, CREATED_BY )"
+      "INSERT INTO SOCIAL_TEMPLATES"
+      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, CONTENT_TYPE, IS_DEFAULT, CREATED_BY )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update a social post in the SOCIAL_POSTS table.
+     * The query to use to update a social template in the SOCIAL_TEMPLATES table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE SOCIAL_POSTS SET UPDATED_DATE=?, ORGANISATION=?, MESSAGE=?, STATUS=? "
+      "UPDATE SOCIAL_TEMPLATES SET UPDATED_DATE=?, NAME=?, MESSAGE=?, CONTENT_TYPE=?, IS_DEFAULT=? "
       + "WHERE ID=?";
 
     /**
-     * The query to use to select the social posts from the SOCIAL_POSTS table.
+     * The query to use to select the social templates from the SOCIAL_TEMPLATES table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, MESSAGE, CHANNEL, STATUS, CREATED_BY "
-      + "FROM SOCIAL_POSTS ORDER BY CREATED_DATE";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, CONTENT_TYPE, IS_DEFAULT, CREATED_BY "
+      + "FROM SOCIAL_TEMPLATES";
 
     /**
-     * The query to use to get the count of social posts from the SOCIAL_POSTS table.
+     * The query to use to get the count of social templates from the SOCIAL_TEMPLATES table.
      */
     private static final String COUNT_SQL =  
-      "SELECT COUNT(*) FROM SOCIAL_POSTS";
+      "SELECT COUNT(*) FROM SOCIAL_TEMPLATES";
 
     /**
-     * The query to use to delete a social post from the SOCIAL_POSTS table.
+     * The query to use to delete a social template from the SOCIAL_TEMPLATES table.
      */
     private static final String DELETE_SQL =  
-      "DELETE FROM SOCIAL_POSTS WHERE ID=?";
+      "DELETE FROM SOCIAL_TEMPLATES WHERE ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public SocialPostDAO(SocialDAOFactory factory)
+    public SocialTemplateDAO(SocialDAOFactory factory)
     {
-        super(factory, "SOCIAL_POSTS");
+        super(factory, "SOCIAL_TEMPLATES");
     }
 
     /**
-     * Defines the columns and indices for the SOCIAL_POSTS table.
+     * Defines the columns and indices for the SOCIAL_TEMPLATES table.
      */
     @Override
     protected void defineTable()
@@ -94,22 +93,21 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
-        table.addColumn("ORGANISATION", Types.VARCHAR, 5, false);
+        table.addColumn("NAME", Types.VARCHAR, 30, true);
         table.addColumn("MESSAGE", Types.VARCHAR, 512, true);
-        table.addColumn("CHANNEL", Types.VARCHAR, 15, true);
-        table.addColumn("STATUS", Types.VARCHAR, 15, true);
+        table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, false);
+        table.addColumn("IS_DEFAULT", Types.BOOLEAN, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
-        table.setPrimaryKey("SOCIAL_POSTS_PK", new String[] {"ID"});
-        table.addIndex("SOCIAL_POSTS_STATUS_IDX", new String[] {"STATUS"});
+        table.setPrimaryKey("SOCIAL_TEMPLATES_PK", new String[] {"ID"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns a social update from the SOCIAL_POSTS table by id.
+     * Returns a social template from the SOCIAL_TEMPLATES table by id.
      */
-    public SocialPost getById(int id) throws SQLException
+    public SocialTemplate getById(int id) throws SQLException
     {
-        SocialPost ret = null;
+        SocialTemplate ret = null;
 
         if(!hasConnection())
             return ret;
@@ -128,16 +126,16 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
             rs = getByIdStmt.executeQuery();
             while(rs.next())
             {
-                SocialPost post = new SocialPost();
-                post.setId(rs.getString(1));
-                post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                post.setOrganisation(rs.getString(4));
-                post.setMessage(rs.getString(5));
-                post.setChannel(SocialChannels.get(rs.getString(6)));
-                post.setStatus(rs.getString(7));
-                post.setCreatedBy(rs.getString(8));
-                ret = post;
+                SocialTemplate template = new SocialTemplate();
+                template.setId(rs.getString(1));
+                template.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                template.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                template.setName(rs.getString(4));
+                template.setMessage(rs.getString(5));
+                template.setContentType(rs.getString(6));
+                template.setDefault(rs.getBoolean(7));
+                template.setCreatedBy(rs.getString(8));
+                ret = template;
             }
         }
         finally
@@ -158,11 +156,11 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
     }
 
     /**
-     * Stores the given social post in the SOCIAL_POSTS table.
+     * Stores the given social template in the SOCIAL_TEMPLATES table.
      */
-    public void add(SocialPost post) throws SQLException
+    public void add(SocialTemplate template) throws SQLException
     {
-        if(!hasConnection() || post == null)
+        if(!hasConnection() || template == null)
             return;
 
         if(insertStmt == null)
@@ -171,17 +169,17 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
 
         try
         {
-            insertStmt.setString(1, post.getId());
-            insertStmt.setTimestamp(2, new Timestamp(post.getCreatedDateMillis()), UTC);
-            insertStmt.setTimestamp(3, new Timestamp(post.getUpdatedDateMillis()), UTC);
-            insertStmt.setString(4, post.getOrganisation());
-            insertStmt.setString(5, post.getMessage());
-            insertStmt.setString(6, post.getChannel().getName());
-            insertStmt.setString(7, post.getStatus().name());
-            insertStmt.setString(8, post.getCreatedBy());
+            insertStmt.setString(1, template.getId());
+            insertStmt.setTimestamp(2, new Timestamp(template.getCreatedDateMillis()), UTC);
+            insertStmt.setTimestamp(3, new Timestamp(template.getUpdatedDateMillis()), UTC);
+            insertStmt.setString(4, template.getName());
+            insertStmt.setString(5, template.getMessage());
+            insertStmt.setString(6, template.getContentType() != null ? template.getContentType().name(): "");
+            insertStmt.setBoolean(7, template.isDefault());
+            insertStmt.setString(8, template.getCreatedBy());
             insertStmt.executeUpdate();
 
-            logger.info("Created social post '"+post.getId()+"' in SOCIAL_POSTS");
+            logger.info("Created social template '"+template.getId()+"' in SOCIAL_TEMPLATES");
         }
         catch(SQLException ex)
         {
@@ -192,40 +190,41 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
                 insertStmt = null;
             }
 
-            // Unique constraint violated means that the post already exists
+            // Unique constraint violated means that the template already exists
             if(!getDriver().isConstraintViolation(ex))
                 throw ex;
         }
     }
 
     /**
-     * Updates the given social post in the SOCIAL_POSTS table.
+     * Updates the given social template in the SOCIAL_TEMPLATES table.
      */
-    public void update(SocialPost post) throws SQLException
+    public void update(SocialTemplate template) throws SQLException
     {
-        if(!hasConnection() || post == null)
+        if(!hasConnection() || template == null)
             return;
 
         if(updateStmt == null)
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
         clearParameters(updateStmt);
 
-        updateStmt.setTimestamp(1, new Timestamp(post.getUpdatedDateMillis()), UTC);
-        updateStmt.setString(2, post.getOrganisation());
-        updateStmt.setString(3, post.getMessage());
-        updateStmt.setString(4, post.getStatus().name());
-        updateStmt.setString(5, post.getId());
+        updateStmt.setTimestamp(1, new Timestamp(template.getUpdatedDateMillis()), UTC);
+        updateStmt.setString(2, template.getName());
+        updateStmt.setString(3, template.getMessage());
+        updateStmt.setString(4, template.getContentType() != null ? template.getContentType().name(): "");
+        updateStmt.setBoolean(5, template.isDefault());
+        updateStmt.setString(6, template.getId());
         updateStmt.executeUpdate();
 
-        logger.info("Updated social post '"+post.getId()+"' in SOCIAL_POSTS");
+        logger.info("Updated social template '"+template.getId()+"' in SOCIAL_TEMPLATES");
     }
 
     /**
-     * Returns the social posts from the SOCIAL_POSTS table.
+     * Returns the social templates from the SOCIAL_TEMPLATES table.
      */
-    public List<SocialPost> list() throws SQLException
+    public List<SocialTemplate> list() throws SQLException
     {
-        List<SocialPost> ret = null;
+        List<SocialTemplate> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -241,19 +240,19 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
         {
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
-            ret = new ArrayList<SocialPost>();
+            ret = new ArrayList<SocialTemplate>();
             while(rs.next())
             {
-                SocialPost post = new SocialPost();
-                post.setId(rs.getString(1));
-                post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                post.setOrganisation(rs.getString(4));
-                post.setMessage(rs.getString(5));
-                post.setChannel(SocialChannels.get(rs.getString(6)));
-                post.setStatus(rs.getString(7));
-                post.setCreatedBy(rs.getString(8));
-                ret.add(post);
+                SocialTemplate template = new SocialTemplate();
+                template.setId(rs.getString(1));
+                template.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                template.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                template.setName(rs.getString(4));
+                template.setMessage(rs.getString(5));
+                template.setContentType(rs.getString(6));
+                template.setDefault(rs.getBoolean(7));
+                template.setCreatedBy(rs.getString(8));
+                ret.add(template);
             }
         }
         finally
@@ -274,7 +273,7 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
     }
 
     /**
-     * Returns the count of social posts from the table.
+     * Returns the count of social templates from the table.
      */
     public int count() throws SQLException
     {
@@ -292,21 +291,21 @@ public class SocialPostDAO extends SocialDAO<SocialPost>
     }
 
     /**
-     * Removes the given social post from the SOCIAL_POSTS table.
+     * Removes the given social template from the SOCIAL_TEMPLATES table.
      */
-    public void delete(SocialPost post) throws SQLException
+    public void delete(SocialTemplate template) throws SQLException
     {
-        if(!hasConnection() || post == null)
+        if(!hasConnection() || template == null)
             return;
 
         if(deleteStmt == null)
             deleteStmt = prepareStatement(getConnection(), DELETE_SQL);
         clearParameters(deleteStmt);
 
-        deleteStmt.setString(1, post.getId());
+        deleteStmt.setString(1, template.getId());
         deleteStmt.executeUpdate();
 
-        logger.info("Deleted social post '"+post.getId()+"' in SOCIAL_POSTS");
+        logger.info("Deleted social template '"+template.getId()+"' in SOCIAL_TEMPLATES");
     }
 
     /**
