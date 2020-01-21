@@ -39,7 +39,8 @@ public class SocialUpdate extends SocialItem
     {
         PENDING,
         PROCESSED,
-        SKIPPED;
+        SKIPPED,
+        ALL;
     };
 
     /**
@@ -102,6 +103,14 @@ public class SocialUpdate extends SocialItem
     public void setOrganisation(String organisation)
     {
         this.organisation = organisation;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the update organisation has been set.
+     */
+    public boolean hasOrganisation()
+    {
+        return organisation != null && organisation.length() > 0;
     }
 
     /**

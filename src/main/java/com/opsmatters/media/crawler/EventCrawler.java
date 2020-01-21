@@ -144,7 +144,7 @@ public class EventCrawler extends ContentCrawler<EventSummary>
             hasTime = TimeUtils.hasTime(content.getStartDateMillis());
 
         // Default the start date to today if not found
-        if(!fields.hasStartDate() && content.getStartDate() == null)
+        if(content.getStartDate() == null)
         {
             content.setStartDate(TimeUtils.truncateTimeUTC());
             if(debug())
@@ -273,7 +273,7 @@ public class EventCrawler extends ContentCrawler<EventSummary>
             else //if(field.getSource().isMetatag()) // Date metatag not found
             {
                 // Default date to today if not found
-                logger.warning("Published date not found, defaulting to today");
+                logger.warning("Start date not found, defaulting to today");
                 content.setStartDate(TimeUtils.truncateTimeUTC());
             }
         }
