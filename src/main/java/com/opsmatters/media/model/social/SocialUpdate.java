@@ -28,7 +28,10 @@ import com.opsmatters.media.model.content.ContentItem;
  */
 public class SocialUpdate extends SocialItem
 {
+    public static final String HANDLE = "social.handle";
     public static final String HASHTAGS = "social.hashtags";
+    public static final String TITLE1 = "content.title1";
+    public static final String TITLE2 = "content.title2";
 
     private String organisation = "";
     private String templateId = "";
