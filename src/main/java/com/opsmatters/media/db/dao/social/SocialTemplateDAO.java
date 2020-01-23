@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.social.SocialTemplate;
+import com.opsmatters.media.model.content.ContentType;
 
 /**
  * DAO that provides operations on the SOCIAL_TEMPLATES table in the database.
@@ -63,6 +64,13 @@ public class SocialTemplateDAO extends SocialDAO<SocialTemplate>
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, CONTENT_TYPE, IS_DEFAULT, CREATED_BY "
       + "FROM SOCIAL_TEMPLATES";
+
+    /**
+     * The query to use to select the social templates from the SOCIAL_TEMPLATES table.
+     */
+    private static final String LIST_BY_CONTENT_TYPE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, CONTENT_TYPE, IS_DEFAULT, CREATED_BY "
+      + "FROM SOCIAL_TEMPLATES WHERE CONTENT_TYPE=?";
 
     /**
      * The query to use to get the count of social templates from the SOCIAL_TEMPLATES table.
@@ -273,6 +281,60 @@ public class SocialTemplateDAO extends SocialDAO<SocialTemplate>
     }
 
     /**
+     * Returns the social templates from the SOCIAL_TEMPLATES table.
+     */
+    public List<SocialTemplate> list(ContentType type) throws SQLException
+    {
+        List<SocialTemplate> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByContentTypeStmt == null)
+            listByContentTypeStmt = prepareStatement(getConnection(), LIST_BY_CONTENT_TYPE_SQL);
+        clearParameters(listByContentTypeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByContentTypeStmt.setString(1, type != null ? type.name() : "");
+            listByContentTypeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByContentTypeStmt.executeQuery();
+            ret = new ArrayList<SocialTemplate>();
+            while(rs.next())
+            {
+                SocialTemplate template = new SocialTemplate();
+                template.setId(rs.getString(1));
+                template.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                template.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                template.setName(rs.getString(4));
+                template.setMessage(rs.getString(5));
+                template.setContentType(rs.getString(6));
+                template.setDefault(rs.getBoolean(7));
+                template.setCreatedBy(rs.getString(8));
+                ret.add(template);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the count of social templates from the table.
      */
     public int count() throws SQLException
@@ -322,6 +384,8 @@ public class SocialTemplateDAO extends SocialDAO<SocialTemplate>
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
+        closeStatement(listByContentTypeStmt);
+        listByContentTypeStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -332,6 +396,7 @@ public class SocialTemplateDAO extends SocialDAO<SocialTemplate>
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
+    private PreparedStatement listByContentTypeStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }

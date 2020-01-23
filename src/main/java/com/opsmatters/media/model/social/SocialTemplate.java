@@ -76,6 +76,14 @@ public class SocialTemplate extends SocialItem
     /**
      * Returns the template name.
      */
+    public String toString()
+    {
+        return getName();
+    }
+
+    /**
+     * Returns the template name.
+     */
     public String getName()
     {
         return name;

@@ -30,15 +30,7 @@ public class SocialPost extends SocialItem
     private String organisation = "";
     private String message = "";
     private SocialChannel channel;
-    private PostStatus status;
-
-    static public enum PostStatus
-    {
-        NEW,
-        PENDING,
-        SENT,
-        EXTERNAL;
-    };
+    private SocialPostStatus status;
 
     /**
      * Default constructor.
@@ -57,7 +49,7 @@ public class SocialPost extends SocialItem
         setUpdatedDate(Instant.now());
         setMessage(status.getText());
         setChannel(channel);
-        setStatus(PostStatus.EXTERNAL);
+        setStatus(SocialPostStatus.EXTERNAL);
     }
 
     /**
@@ -70,7 +62,7 @@ public class SocialPost extends SocialItem
         setUpdatedDate(Instant.now());
         setMessage(post.getMessage());
         setChannel(channel);
-        setStatus(PostStatus.EXTERNAL);
+        setStatus(SocialPostStatus.EXTERNAL);
     }
 
     /**
@@ -83,7 +75,7 @@ public class SocialPost extends SocialItem
         setUpdatedDate(Instant.now());
         setMessage(share.getText().getText());
         setChannel(channel);
-        setStatus(PostStatus.EXTERNAL);
+        setStatus(SocialPostStatus.EXTERNAL);
     }
 
     /**
@@ -160,7 +152,7 @@ public class SocialPost extends SocialItem
     /**
      * Returns the post status.
      */
-    public PostStatus getStatus()
+    public SocialPostStatus getStatus()
     {
         return status;
     }
@@ -170,13 +162,13 @@ public class SocialPost extends SocialItem
      */
     public void setStatus(String status)
     {
-        setStatus(PostStatus.valueOf(status));
+        setStatus(SocialPostStatus.valueOf(status));
     }
 
     /**
      * Sets the post status.
      */
-    public void setStatus(PostStatus status)
+    public void setStatus(SocialPostStatus status)
     {
         this.status = status;
     }

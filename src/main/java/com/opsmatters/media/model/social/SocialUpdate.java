@@ -28,20 +28,15 @@ import com.opsmatters.media.model.content.ContentItem;
  */
 public class SocialUpdate extends SocialItem
 {
+    public static final String HASHTAGS = "social.hashtags";
+
     private String organisation = "";
+    private String templateId = "";
     private String url = "";
     private ContentType contentType;
     private int contentId = -1;
     private String message = "";
-    private UpdateStatus status;
-
-    static public enum UpdateStatus
-    {
-        PENDING,
-        PROCESSED,
-        SKIPPED,
-        ALL;
-    };
+    private SocialUpdateStatus status;
 
     /**
      * Default constructor.
@@ -61,7 +56,7 @@ public class SocialUpdate extends SocialItem
         setContentId(content.getId());
         setUrl(organisation.getUrl(System.getProperty("om-config.site.prod")));
         setContentType(content.getType());
-        setStatus(UpdateStatus.PENDING);
+        setStatus(SocialUpdateStatus.PENDING);
     }
 
     /**
@@ -81,6 +76,7 @@ public class SocialUpdate extends SocialItem
         {
             super.copyAttributes(obj);
             setOrganisation(obj.getOrganisation());
+            setTemplateId(obj.getTemplateId());
             setContentId(obj.getContentId());
             setUrl(obj.getUrl());
             setContentType(obj.getContentType());
@@ -111,6 +107,22 @@ public class SocialUpdate extends SocialItem
     public boolean hasOrganisation()
     {
         return organisation != null && organisation.length() > 0;
+    }
+
+    /**
+     * Returns the update template id.
+     */
+    public String getTemplateId()
+    {
+        return templateId;
+    }
+
+    /**
+     * Sets the update template id.
+     */
+    public void setTemplateId(String templateId)
+    {
+        this.templateId = templateId;
     }
 
     /**
@@ -196,7 +208,7 @@ public class SocialUpdate extends SocialItem
     /**
      * Returns the update status.
      */
-    public UpdateStatus getStatus()
+    public SocialUpdateStatus getStatus()
     {
         return status;
     }
@@ -206,13 +218,13 @@ public class SocialUpdate extends SocialItem
      */
     public void setStatus(String status)
     {
-        setStatus(UpdateStatus.valueOf(status));
+        setStatus(SocialUpdateStatus.valueOf(status));
     }
 
     /**
      * Sets the update status.
      */
-    public void setStatus(UpdateStatus status)
+    public void setStatus(SocialUpdateStatus status)
     {
         this.status = status;
     }
@@ -222,7 +234,7 @@ public class SocialUpdate extends SocialItem
      */
     public boolean isPending()
     {
-        return status == UpdateStatus.PENDING;
+        return status == SocialUpdateStatus.PENDING;
     }
 
     /**
@@ -230,7 +242,7 @@ public class SocialUpdate extends SocialItem
      */
     public boolean isProcessed()
     {
-        return status == UpdateStatus.PROCESSED;
+        return status == SocialUpdateStatus.PROCESSED;
     }
 
     /**
@@ -238,6 +250,6 @@ public class SocialUpdate extends SocialItem
      */
     public boolean isSkipped()
     {
-        return status == UpdateStatus.SKIPPED;
+        return status == SocialUpdateStatus.SKIPPED;
     }
 }
