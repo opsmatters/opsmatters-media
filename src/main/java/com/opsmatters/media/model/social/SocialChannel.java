@@ -26,10 +26,14 @@ public class SocialChannel implements java.io.Serializable
 {
     public static final String PROVIDER = "provider";
     public static final String HANDLE = "handle";
+    public static final String SCREEN_NAME = "screen-name";
+    public static final String ENABLED = "enabled";
 
     private String name = "";
     private String handle = "";
+    private String screenName = "";
     private SocialProvider provider;
+    private boolean enabled = false;
 
     /**
      * Default constructor.
@@ -48,7 +52,9 @@ public class SocialChannel implements java.io.Serializable
         {
             setName(obj.getName());
             setHandle(obj.getHandle());
+            setScreenName(obj.getScreenName());
             setProvider(obj.getProvider());
+            setEnabled(obj.isEnabled());
         }
     }
 
@@ -61,7 +67,7 @@ public class SocialChannel implements java.io.Serializable
     }
 
     /**
-     * Returns the post name.
+     * Returns the channel name.
      */
     public String getName()
     {
@@ -69,7 +75,7 @@ public class SocialChannel implements java.io.Serializable
     }
 
     /**
-     * Sets the post name.
+     * Sets the channel name.
      */
     public void setName(String name)
     {
@@ -77,7 +83,7 @@ public class SocialChannel implements java.io.Serializable
     }
 
     /**
-     * Returns the post handle.
+     * Returns the channel handle.
      */
     public String getHandle()
     {
@@ -85,11 +91,27 @@ public class SocialChannel implements java.io.Serializable
     }
 
     /**
-     * Sets the post handle.
+     * Sets the channel handle.
      */
     public void setHandle(String handle)
     {
         this.handle = handle;
+    }
+
+    /**
+     * Returns the channel screen name.
+     */
+    public String getScreenName()
+    {
+        return screenName;
+    }
+
+    /**
+     * Sets the channel screen name.
+     */
+    public void setScreenName(String screenName)
+    {
+        this.screenName = screenName;
     }
 
     /**
@@ -117,13 +139,33 @@ public class SocialChannel implements java.io.Serializable
     }
 
     /**
+     * Returns <CODE>true</CODE> if this channel is enabled to send messages.
+     */
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this channel is enabled to send messages.
+     */
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     public void parse(Map<String, Object> map)
     {
         if(map.containsKey(HANDLE))
             setHandle((String)map.get(HANDLE));
+        if(map.containsKey(SCREEN_NAME))
+            setScreenName((String)map.get(SCREEN_NAME));
         if(map.containsKey(PROVIDER))
             setProvider((String)map.get(PROVIDER));
+        if(map.containsKey(ENABLED))
+            setEnabled((Boolean)map.get(ENABLED));
     }
 }

@@ -16,7 +16,8 @@
 package com.opsmatters.media.model.social;
 
 import java.util.Map;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Collection;
 
 /**
  * Class representing the list of social media channels.
@@ -25,7 +26,7 @@ import java.util.HashMap;
  */
 public class SocialChannels implements java.io.Serializable
 {
-    static private Map<String,SocialChannel> map = new HashMap<String,SocialChannel>();
+    static private Map<String,SocialChannel> map = new LinkedHashMap<String,SocialChannel>();
 
     /**
      * Private constructor.
@@ -64,5 +65,13 @@ public class SocialChannels implements java.io.Serializable
     public static int size()
     {
         return map.size();
+    }
+
+    /**
+     * Returns the count of social channels.
+     */
+    public static Collection<SocialChannel> values()
+    {
+        return map.values();
     }
 }

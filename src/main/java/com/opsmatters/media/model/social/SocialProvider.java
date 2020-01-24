@@ -23,12 +23,14 @@ package com.opsmatters.media.model.social;
  */
 public enum SocialProvider
 {
-    TWITTER("twitter", "Twitter", "images/twitter-thumb.png", 280),
-    FACEBOOK("facebook", "Facebook", "images/facebook-thumb.png", 2000),
-    LINKEDIN("linkedin", "LinkedIn", "images/linkedin-thumb.png", 1300);
+    TWITTER("twitter", "Twitter", "https://twitter.com", "/hashtag/%s", "images/twitter-thumb.png", 280),
+    FACEBOOK("facebook", "Facebook", "https://www.facebook.com", "/hashtag/%s", "images/facebook-thumb.png", 2000),
+    LINKEDIN("linkedin", "LinkedIn", "https://www.linkedin.com", "/feed/hashtag/?keywords=%%23%s", "images/linkedin-thumb.png", 1300);
 
     private String code;
     private String displayName;
+    private String url;
+    private String hashtagUrl;
     private String thumbnail;
     private int maxLength;
 
@@ -36,13 +38,17 @@ public enum SocialProvider
      * Constructor that takes the channel information.
      * @param code The code for the provider
      * @param displayName The display name for the provider
+     * @param url The url for the provider
+     * @param hashtagUrl The hashtag url for the provider
      * @param thumbnail The thumbnail image for the provider
      * @param maxLength The maximum message length for the provider
      */
-    SocialProvider(String code, String displayName, String thumbnail, int maxLength)
+    SocialProvider(String code, String displayName, String url, String hashtagUrl, String thumbnail, int maxLength)
     {
         this.code = code;
         this.displayName = displayName;
+        this.url = url;
+        this.hashtagUrl = url+hashtagUrl;
         this.thumbnail = thumbnail;
         this.maxLength = maxLength;
     }
@@ -63,6 +69,24 @@ public enum SocialProvider
     public String displayName()
     {
         return displayName;
+    }
+
+    /**
+     * Returns the provider URL.
+     * @return The provider URL.
+     */
+    public String url()
+    {
+        return url;
+    }
+
+    /**
+     * Returns the provider hashtag URL.
+     * @return The provider hashtag URL.
+     */
+    public String hashtagUrl()
+    {
+        return hashtagUrl;
     }
 
     /**
