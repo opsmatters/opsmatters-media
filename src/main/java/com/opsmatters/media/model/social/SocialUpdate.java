@@ -161,6 +161,14 @@ public class SocialUpdate extends SocialItem
     }
 
     /**
+     * Returns <CODE>true</CODE> if the update URL has been set.
+     */
+    public boolean hasUrl()
+    {
+        return url != null && url.length() > 0;
+    }
+
+    /**
      * Returns the update content type.
      */
     public ContentType getContentType()

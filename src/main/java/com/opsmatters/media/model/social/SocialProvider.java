@@ -23,9 +23,9 @@ package com.opsmatters.media.model.social;
  */
 public enum SocialProvider
 {
-    TWITTER("twitter", "Twitter", "twitter-thumb.png", 280),
-    FACEBOOK("facebook", "Facebook", "facebook-thumb.png", 2000),
-    LINKEDIN("linkedin", "LinkedIn", "linkedin-thumb.png", 1300);
+    TWITTER("twitter", "Twitter", "images/twitter-thumb.png", 280),
+    FACEBOOK("facebook", "Facebook", "images/facebook-thumb.png", 2000),
+    LINKEDIN("linkedin", "LinkedIn", "images/linkedin-thumb.png", 1300);
 
     private String code;
     private String displayName;
