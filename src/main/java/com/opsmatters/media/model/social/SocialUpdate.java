@@ -29,6 +29,7 @@ import com.opsmatters.media.model.content.ContentItem;
 public class SocialUpdate extends SocialItem
 {
     public static final String HANDLE = "social.handle";
+    public static final String HASHTAG = "social.hashtag";
     public static final String HASHTAGS = "social.hashtags";
     public static final String TITLE1 = "content.title1";
     public static final String TITLE2 = "content.title2";
@@ -126,6 +127,14 @@ public class SocialUpdate extends SocialItem
     public void setTemplateId(String templateId)
     {
         this.templateId = templateId;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the update template id has been set.
+     */
+    public boolean hasTemplateId()
+    {
+        return templateId != null && templateId.length() > 0;
     }
 
     /**
