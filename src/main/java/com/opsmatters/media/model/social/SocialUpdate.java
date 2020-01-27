@@ -15,7 +15,12 @@
  */
 package com.opsmatters.media.model.social;
 
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.time.Instant;
+import org.json.JSONObject;
+import org.apache.commons.text.StringSubstitutor;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.model.content.ContentType;
@@ -28,15 +33,16 @@ import com.opsmatters.media.model.content.ContentItem;
  */
 public class SocialUpdate extends SocialItem
 {
-    public static final String HANDLE = "social.handle";
-    public static final String HASHTAG = "social.hashtag";
-    public static final String HASHTAGS = "social.hashtags";
-    public static final String TITLE1 = "content.title1";
-    public static final String TITLE2 = "content.title2";
+    public static final String HANDLE = "handle";
+    public static final String HASHTAG = "hashtag";
+    public static final String HASHTAGS = "hashtags";
+    public static final String TITLE1 = "title1";
+    public static final String TITLE2 = "title2";
+    public static final String URL = "url";
 
     private String organisation = "";
     private String templateId = "";
-    private String url = "";
+    private Map<String,String> properties = new HashMap<String,String>();
     private ContentType contentType;
     private int contentId = -1;
     private String message = "";
@@ -58,9 +64,13 @@ public class SocialUpdate extends SocialItem
         setCreatedDate(Instant.now());
         setOrganisation(organisation.getCode());
         setContentId(content.getId());
-        setUrl(organisation.getUrl(System.getProperty("om-config.site.prod")));
         setContentType(content.getType());
         setStatus(SocialUpdateStatus.PENDING);
+
+        properties.put(HANDLE, "@"+organisation.getTwitterUsername());
+        properties.put(HASHTAG, organisation.getSocialHashtag());
+        properties.put(HASHTAGS, organisation.getSocialHashtags());
+        properties.put(URL, organisation.getUrl(System.getProperty("om-config.site.prod")));
     }
 
     /**
@@ -82,7 +92,7 @@ public class SocialUpdate extends SocialItem
             setOrganisation(obj.getOrganisation());
             setTemplateId(obj.getTemplateId());
             setContentId(obj.getContentId());
-            setUrl(obj.getUrl());
+            setProperties(obj.getProperties());
             setContentType(obj.getContentType());
             setMessage(obj.getMessage());
             setStatus(obj.getStatus());
@@ -154,11 +164,130 @@ public class SocialUpdate extends SocialItem
     }
 
     /**
+     * Returns the update properties.
+     */
+    public Map<String,String> getProperties()
+    {
+        return properties;
+    }
+
+    /**
+     * Returns the update properties as a JSON object.
+     */
+    public JSONObject getPropertiesAsJson()
+    {
+        return new JSONObject(properties);
+    }
+
+    /**
+     * Sets the update properties.
+     */
+    public void setProperties(Map<String,String> properties)
+    {
+        this.properties.clear();
+        this.properties.putAll(properties);
+    }
+
+    /**
+     * Sets the update properties from a JSON object.
+     */
+    public void setProperties(JSONObject obj)
+    {
+        this.properties.clear();
+        Iterator<String> keys = obj.keys();
+        while(keys.hasNext())
+        {
+            String key = keys.next();
+            properties.put(key, obj.getString(key));
+        }
+    }
+
+    /**
+     * Sets the given update property.
+     */
+    public void setProperty(String key, String value)
+    {
+        this.properties.put(key, value);
+    }
+
+    /**
+     * Returns the update handle.
+     */
+    public String getHandle()
+    {
+        return properties.get(HANDLE);
+    }
+
+    /**
+     * Sets the update handle.
+     */
+    public void setHandle(String handle)
+    {
+        properties.put(HANDLE, handle);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the update handle has been set.
+     */
+    public boolean hasHandle()
+    {
+        return getHandle() != null && getHandle().length() > 0;
+    }
+
+    /**
+     * Returns the update hashtag.
+     */
+    public String getHashtag()
+    {
+        return properties.get(HASHTAG);
+    }
+
+    /**
+     * Sets the update hashtag.
+     */
+    public void setHashtag(String hashtag)
+    {
+        properties.put(HASHTAG, hashtag);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the update hashtag has been set.
+     */
+    public boolean hasHashtag()
+    {
+        return getHashtag() != null && getHashtag().length() > 0;
+    }
+
+    /**
+     * Returns the update hashtags.
+     */
+    public String getHashtags()
+    {
+        return properties.get(HASHTAGS);
+    }
+
+    /**
+     * Sets the update hashtags.
+     */
+    public void setHashtags(String hashtags)
+    {
+        properties.put(HASHTAGS, hashtags);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the update hashtags have been set.
+     */
+    public boolean hasHashtags()
+    {
+        return getHashtags() != null && getHashtags().length() > 0;
+    }
+
+    /**
      * Returns the update URL.
      */
     public String getUrl()
     {
-        return url;
+        return properties.get(URL);
     }
 
     /**
@@ -166,7 +295,7 @@ public class SocialUpdate extends SocialItem
      */
     public void setUrl(String url)
     {
-        this.url = url;
+        properties.put(URL, url);
     }
 
     /**
@@ -174,7 +303,55 @@ public class SocialUpdate extends SocialItem
      */
     public boolean hasUrl()
     {
-        return url != null && url.length() > 0;
+        return getUrl() != null && getUrl().length() > 0;
+    }
+
+    /**
+     * Returns the update title1.
+     */
+    public String getTitle1()
+    {
+        return properties.get(TITLE1);
+    }
+
+    /**
+     * Sets the update title1.
+     */
+    public void setTitle1(String title1)
+    {
+        properties.put(TITLE1, title1);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the update title1 has been set.
+     */
+    public boolean hasTitle1()
+    {
+        return getTitle1() != null && getTitle1().length() > 0;
+    }
+
+    /**
+     * Returns the update title2.
+     */
+    public String getTitle2()
+    {
+        return properties.get(TITLE2);
+    }
+
+    /**
+     * Sets the update title2.
+     */
+    public void setTitle2(String title2)
+    {
+        properties.put(TITLE2, title2);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the update title2 has been set.
+     */
+    public boolean hasTitle2()
+    {
+        return getTitle2() != null && getTitle2().length() > 0;
     }
 
     /**
@@ -223,6 +400,14 @@ public class SocialUpdate extends SocialItem
     public boolean hasMessage()
     {
         return message != null && message.length() > 0;
+    }
+
+    /**
+     * Generates a message from the update message and properties.
+     */
+    public String createMessage()
+    {
+        return new StringSubstitutor(properties).replace(message);
     }
 
     /**

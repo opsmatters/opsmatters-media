@@ -61,7 +61,7 @@ public class Organisation extends ContentItem implements FieldSource
     private String features = "";
     private String tags = "";
     private boolean social = false;
-    private String socialHandle = "";
+    private String socialHashtag = "";
     private String socialHashtags = "";
     private String image = "";
     private String imageText = "";
@@ -118,7 +118,7 @@ public class Organisation extends ContentItem implements FieldSource
         setFeatures(new String(obj.getFeatures() != null ? obj.getFeatures() : ""));
         setTags(new String(obj.getTags() != null ? obj.getTags() : ""));
         setSocial(obj.hasSocial());
-        setSocialHandle(new String(obj.getSocialHandle() != null ? obj.getSocialHandle() : ""));
+        setSocialHashtag(new String(obj.getSocialHashtag() != null ? obj.getSocialHashtag() : ""));
         setSocialHashtags(new String(obj.getSocialHashtags() != null ? obj.getSocialHashtags() : ""));
         setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
         setImageText(new String(obj.getImageText() != null ? obj.getImageText() : ""));
@@ -164,7 +164,7 @@ public class Organisation extends ContentItem implements FieldSource
         String features = values[28];
         String tags = values[29];
         String social = values[30];
-        String socialHandle = values[31];
+        String socialHashtag = values[31];
         String socialHashtags = values[32];
         String image = values[33];
         String imageText = values[34];
@@ -211,7 +211,7 @@ public class Organisation extends ContentItem implements FieldSource
         setFeatures(features);
         setTags(tags);
         setSocial(social != null && social.equals("1"));
-        setSocialHandle(socialHandle);
+        setSocialHashtag(socialHashtag);
         setSocialHashtags(socialHashtags);
         setImage(image);
         setImageText(imageText);
@@ -261,7 +261,7 @@ public class Organisation extends ContentItem implements FieldSource
         setFeatures(obj.optString(Fields.FEATURES));
         setTags(obj.optString(Fields.TAGS));
         setSocial(obj.optBoolean(Fields.SOCIAL, false));
-        setSocialHandle(obj.optString(Fields.SOCIAL_HANDLE));
+        setSocialHashtag(obj.optString(Fields.SOCIAL_HASHTAG));
         setSocialHashtags(obj.optString(Fields.SOCIAL_HASHTAGS));
         setImage(obj.optString(Fields.IMAGE));
         setImageText(obj.optString(Fields.IMAGE_TEXT));
@@ -302,7 +302,7 @@ public class Organisation extends ContentItem implements FieldSource
         ret.putOpt(Fields.FEATURES, getFeatures());
         ret.putOpt(Fields.TAGS, getTags());
         ret.put(Fields.SOCIAL, hasSocial());
-        ret.putOpt(Fields.SOCIAL_HANDLE, getSocialHandle());
+        ret.putOpt(Fields.SOCIAL_HASHTAG, getSocialHashtag());
         ret.putOpt(Fields.SOCIAL_HASHTAGS, getSocialHashtags());
         ret.putOpt(Fields.IMAGE, getImage());
         ret.putOpt(Fields.IMAGE_TEXT, getImageText());
@@ -347,7 +347,7 @@ public class Organisation extends ContentItem implements FieldSource
         ret.put(Fields.FEATURES, getFeatures());
         ret.put(Fields.TAGS, getTags());
         ret.put(Fields.SOCIAL, hasSocial() ? "1" : "0");
-        ret.put(Fields.SOCIAL_HANDLE, getSocialHandle());
+        ret.put(Fields.SOCIAL_HASHTAG, getSocialHashtag());
         ret.put(Fields.SOCIAL_HASHTAGS, getSocialHashtags());
         ret.put(Fields.IMAGE, getImage());
         ret.put(Fields.IMAGE_TEXT, getImageText());
@@ -1100,19 +1100,19 @@ public class Organisation extends ContentItem implements FieldSource
     }
 
     /**
-     * Returns the organisation's social handle.
+     * Returns the organisation's social hashtag.
      */
-    public String getSocialHandle()
+    public String getSocialHashtag()
     {
-        return socialHandle;
+        return socialHashtag;
     }
 
     /**
-     * Sets the organisation's social handle.
+     * Sets the organisation's social hashtag.
      */
-    public void setSocialHandle(String socialHandle)
+    public void setSocialHashtag(String socialHashtag)
     {
-        this.socialHandle = socialHandle;
+        this.socialHashtag = socialHashtag;
     }
 
     /**

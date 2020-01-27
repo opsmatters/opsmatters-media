@@ -15,6 +15,7 @@
  */
 package com.opsmatters.media.db.dao.social;
 
+import java.io.StringReader;
 import java.util.List;
 import java.util.ArrayList;
 import java.sql.Types;
@@ -23,6 +24,7 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
+import org.json.JSONObject;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.social.SocialUpdate;
@@ -40,14 +42,14 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
      * The query to use to select an item from the SOCIAL_UPDATES table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, TEMPLATE_ID, CONTENT_ID, URL, CONTENT_TYPE, MESSAGE, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, TEMPLATE_ID, CONTENT_ID, CONTENT_TYPE, PROPERTIES, MESSAGE, STATUS, CREATED_BY "
       + "FROM SOCIAL_UPDATES WHERE ID=?";
 
     /**
      * The query to use to select pending items from the SOCIAL_UPDATES table.
      */
     private static final String GET_PENDING_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, TEMPLATE_ID, CONTENT_ID, URL, CONTENT_TYPE, MESSAGE, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, TEMPLATE_ID, CONTENT_ID, CONTENT_TYPE, PROPERTIES, MESSAGE, STATUS, CREATED_BY "
       + "FROM SOCIAL_UPDATES WHERE ORGANISATION=? AND CONTENT_TYPE=? AND STATUS='PENDING'";
 
     /**
@@ -55,7 +57,7 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO SOCIAL_UPDATES"
-      + "( ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, TEMPLATE_ID, CONTENT_ID, URL, CONTENT_TYPE, MESSAGE, STATUS, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, TEMPLATE_ID, CONTENT_ID, CONTENT_TYPE, PROPERTIES, MESSAGE, STATUS, CREATED_BY )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
@@ -63,14 +65,14 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
      * The query to use to update a social update in the SOCIAL_UPDATES table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE SOCIAL_UPDATES SET UPDATED_DATE=?, ORGANISATION=?, TEMPLATE_ID=?, CONTENT_ID=?, URL=?, CONTENT_TYPE=?, MESSAGE=?, STATUS=? "
+      "UPDATE SOCIAL_UPDATES SET UPDATED_DATE=?, ORGANISATION=?, TEMPLATE_ID=?, CONTENT_ID=?, CONTENT_TYPE=?, PROPERTIES=?, MESSAGE=?, STATUS=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the social updates from the SOCIAL_UPDATES table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, TEMPLATE_ID, CONTENT_ID, URL, CONTENT_TYPE, MESSAGE, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORGANISATION, TEMPLATE_ID, CONTENT_ID, CONTENT_TYPE, PROPERTIES, MESSAGE, STATUS, CREATED_BY "
       + "FROM SOCIAL_UPDATES ORDER BY CREATED_DATE";
 
     /**
@@ -105,8 +107,8 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
         table.addColumn("ORGANISATION", Types.VARCHAR, 5, false);
         table.addColumn("TEMPLATE_ID", Types.VARCHAR, 36, false);
         table.addColumn("CONTENT_ID", Types.INTEGER, false);
-        table.addColumn("URL", Types.VARCHAR, 128, true);
         table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, true);
+        table.addColumn("PROPERTIES", Types.LONGVARCHAR, true);
         table.addColumn("MESSAGE", Types.VARCHAR, 512, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
@@ -146,8 +148,8 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
                 update.setOrganisation(rs.getString(4));
                 update.setTemplateId(rs.getString(5));
                 update.setContentId(rs.getInt(6));
-                update.setUrl(rs.getString(7));
-                update.setContentType(rs.getString(8));
+                update.setContentType(rs.getString(7));
+                update.setProperties(new JSONObject(getClob(rs, 8)));
                 update.setMessage(rs.getString(9));
                 update.setStatus(rs.getString(10));
                 update.setCreatedBy(rs.getString(11));
@@ -226,8 +228,8 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
                 update.setOrganisation(rs.getString(4));
                 update.setTemplateId(rs.getString(5));
                 update.setContentId(rs.getInt(6));
-                update.setUrl(rs.getString(7));
-                update.setContentType(rs.getString(8));
+                update.setContentType(rs.getString(7));
+                update.setProperties(new JSONObject(getClob(rs, 8)));
                 update.setMessage(rs.getString(9));
                 update.setStatus(rs.getString(10));
                 update.setCreatedBy(rs.getString(11));
@@ -263,6 +265,8 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
             insertStmt = prepareStatement(getConnection(), INSERT_SQL);
         clearParameters(insertStmt);
 
+        StringReader reader = null;
+
         try
         {
             insertStmt.setString(1, update.getId());
@@ -271,8 +275,10 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
             insertStmt.setString(4, update.getOrganisation());
             insertStmt.setString(5, update.getTemplateId());
             insertStmt.setInt(6, update.getContentId());
-            insertStmt.setString(7, update.getUrl());
-            insertStmt.setString(8, update.getContentType().name());
+            insertStmt.setString(7, update.getContentType().name());
+            String properties = update.getPropertiesAsJson().toString();
+            reader = new StringReader(properties);
+            insertStmt.setCharacterStream(8, reader, properties.length());
             insertStmt.setString(9, update.getMessage());
             insertStmt.setString(10, update.getStatus().name());
             insertStmt.setString(11, update.getCreatedBy());
@@ -293,6 +299,11 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
             if(!getDriver().isConstraintViolation(ex))
                 throw ex;
         }
+        finally
+        {
+            if(reader != null)
+                reader.close();
+        }
     }
 
     /**
@@ -307,18 +318,30 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
         clearParameters(updateStmt);
 
-        updateStmt.setTimestamp(1, new Timestamp(update.getUpdatedDateMillis()), UTC);
-        updateStmt.setString(2, update.getOrganisation());
-        updateStmt.setString(3, update.getTemplateId());
-        updateStmt.setInt(4, update.getContentId());
-        updateStmt.setString(5, update.getUrl());
-        updateStmt.setString(6, update.getContentType().name());
-        updateStmt.setString(7, update.getMessage());
-        updateStmt.setString(8, update.getStatus().name());
-        updateStmt.setString(9, update.getId());
-        updateStmt.executeUpdate();
+        StringReader reader = null;
 
-        logger.info("Updated social update '"+update.getId()+"' in SOCIAL_UPDATES");
+        try
+        {
+            updateStmt.setTimestamp(1, new Timestamp(update.getUpdatedDateMillis()), UTC);
+            updateStmt.setString(2, update.getOrganisation());
+            updateStmt.setString(3, update.getTemplateId());
+            updateStmt.setInt(4, update.getContentId());
+            updateStmt.setString(5, update.getContentType().name());
+            String properties = update.getPropertiesAsJson().toString();
+            reader = new StringReader(properties);
+            updateStmt.setCharacterStream(6, reader, properties.length());
+            updateStmt.setString(7, update.getMessage());
+            updateStmt.setString(8, update.getStatus().name());
+            updateStmt.setString(9, update.getId());
+            updateStmt.executeUpdate();
+
+            logger.info("Updated social update '"+update.getId()+"' in SOCIAL_UPDATES");
+        }
+        finally
+        {
+            if(reader != null)
+                reader.close();
+        }
     }
 
     /**
@@ -352,8 +375,8 @@ public class SocialUpdateDAO extends SocialDAO<SocialUpdate>
                 update.setOrganisation(rs.getString(4));
                 update.setTemplateId(rs.getString(5));
                 update.setContentId(rs.getInt(6));
-                update.setUrl(rs.getString(7));
-                update.setContentType(rs.getString(8));
+                update.setContentType(rs.getString(7));
+                update.setProperties(new JSONObject(getClob(rs, 8)));
                 update.setMessage(rs.getString(9));
                 update.setStatus(rs.getString(10));
                 update.setCreatedBy(rs.getString(11));
