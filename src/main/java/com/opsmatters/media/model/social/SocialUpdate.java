@@ -16,8 +16,9 @@
 package com.opsmatters.media.model.social;
 
 import java.util.Map;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Iterator;
+import java.util.Collection;
 import java.time.Instant;
 import org.json.JSONObject;
 import org.apache.commons.text.StringSubstitutor;
@@ -42,7 +43,7 @@ public class SocialUpdate extends SocialItem
 
     private String organisation = "";
     private String templateId = "";
-    private Map<String,String> properties = new HashMap<String,String>();
+    private Map<String,String> properties = new LinkedHashMap<String,String>();
     private ContentType contentType;
     private int contentId = -1;
     private String message = "";
@@ -456,5 +457,78 @@ public class SocialUpdate extends SocialItem
     public boolean isSkipped()
     {
         return status == SocialUpdateStatus.SKIPPED;
+    }
+
+    /**
+     * Creates a map of the given hashtags string.
+     */
+    private static Map<String,String> toHashtagMap(String str)
+    {
+        Map<String,String> ret = new LinkedHashMap<String,String>();
+        if(str != null && str.length() > 0)
+        {
+            String[] hashtags = str.split(" ");
+            for(String hashtag : hashtags)
+            {
+                if(hashtag.startsWith("#") && hashtag.length() > 2)
+                {
+                    hashtag = hashtag.substring(1);
+                    ret.put(hashtag.toLowerCase(), hashtag);
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Creates a hashtags string from the given map.
+     */
+    private static String fromHashtagMap(Map<String,String> map)
+    {
+        StringBuilder builder = new StringBuilder();
+        Collection<String> hashtags = map.values();
+        for(String hashtag : hashtags)
+        {
+            if(builder.length() > 0)
+                builder.append(" ");
+            builder.append("#"+hashtag);
+        }
+
+        return builder.toString();
+    }
+
+    /**
+     * Integrate the hashtags in the update properties with the message.
+     */
+    public static SocialUpdate processUpdate(SocialUpdate update)
+    {
+        // Get the processed message
+        Map<String,String> hashtagMap = toHashtagMap(update.getHashtags());
+        Map<String,String> properties = new LinkedHashMap<String,String>();
+        properties.put(TITLE1, update.getTitle1());
+        properties.put(TITLE2, update.getTitle1());
+        String message = new StringSubstitutor(properties).replace(update.getMessage());
+
+        // Locate any hashtags in the message, prefix with a "#" and remove from the hashtags list
+        String[] tokens = message.split(" ");
+        for(String token : tokens)
+        {
+            if(!token.startsWith("#") && !token.startsWith("@") && token.length() > 2)
+            {
+                if(hashtagMap.containsKey(token.toLowerCase()))
+                {
+                    message = message.replaceFirst(token, "#"+token);
+                    hashtagMap.remove(token.toLowerCase());
+                }
+            }
+        }
+
+        // Return the processed update with an amended message and hashtags list
+        SocialUpdate ret = new SocialUpdate(update);
+        ret.setMessage(message);
+        properties.put(HASHTAGS, fromHashtagMap(hashtagMap));
+        ret.getProperties().putAll(properties);
+        return ret;
     }
 }
