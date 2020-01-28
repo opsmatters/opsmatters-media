@@ -23,13 +23,32 @@ package com.opsmatters.media.model.social;
  */
 public enum SocialProvider
 {
-    TWITTER("twitter", "Twitter", "https://twitter.com", "/hashtag/%s", "images/twitter-thumb.png", 280),
-    FACEBOOK("facebook", "Facebook", "https://www.facebook.com", "/hashtag/%s", "images/facebook-thumb.png", 2000),
-    LINKEDIN("linkedin", "LinkedIn", "https://www.linkedin.com", "/feed/hashtag/?keywords=%%23%s", "images/linkedin-thumb.png", 1300);
+    TWITTER("twitter",
+        "Twitter",
+        "https://twitter.com",
+        "/%s",
+        "/hashtag/%s",
+        "images/twitter-thumb.png",
+        280),
+    FACEBOOK("facebook",
+        "Facebook",
+        "https://www.facebook.com",
+        "/%s",
+        "/hashtag/%s",
+        "images/facebook-thumb.png",
+        2000),
+    LINKEDIN("linkedin",
+        "LinkedIn",
+        "https://www.linkedin.com",
+        "/company/%s",
+        "/feed/hashtag/?keywords=%%23%s",
+        "images/linkedin-thumb.png",
+        1300);
 
     private String code;
     private String displayName;
     private String url;
+    private String handleUrl;
     private String hashtagUrl;
     private String thumbnail;
     private int maxLength;
@@ -39,15 +58,17 @@ public enum SocialProvider
      * @param code The code for the provider
      * @param displayName The display name for the provider
      * @param url The url for the provider
+     * @param handleUrl The handle url for the provider
      * @param hashtagUrl The hashtag url for the provider
      * @param thumbnail The thumbnail image for the provider
      * @param maxLength The maximum message length for the provider
      */
-    SocialProvider(String code, String displayName, String url, String hashtagUrl, String thumbnail, int maxLength)
+    SocialProvider(String code, String displayName, String url, String handleUrl, String hashtagUrl, String thumbnail, int maxLength)
     {
         this.code = code;
         this.displayName = displayName;
         this.url = url;
+        this.handleUrl = url+handleUrl;
         this.hashtagUrl = url+hashtagUrl;
         this.thumbnail = thumbnail;
         this.maxLength = maxLength;
@@ -78,6 +99,15 @@ public enum SocialProvider
     public String url()
     {
         return url;
+    }
+
+    /**
+     * Returns the provider handle URL.
+     * @return The provider handle URL.
+     */
+    public String handleUrl()
+    {
+        return handleUrl;
     }
 
     /**

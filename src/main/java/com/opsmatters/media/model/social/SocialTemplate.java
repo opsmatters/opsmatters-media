@@ -28,6 +28,13 @@ import com.opsmatters.media.model.content.ContentItem;
  */
 public class SocialTemplate extends SocialItem
 {
+    public static final String HANDLE = "handle";
+    public static final String HASHTAG = "hashtag";
+    public static final String HASHTAGS = "hashtags";
+    public static final String TITLE1 = "title1";
+    public static final String TITLE2 = "title2";
+    public static final String URL = "url";
+
     private String name = "";
     private String message = "";
     private ContentType contentType;

@@ -18,10 +18,8 @@ package com.opsmatters.media.model.social;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.Iterator;
-import java.util.Collection;
 import java.time.Instant;
 import org.json.JSONObject;
-import org.apache.commons.text.StringSubstitutor;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.model.content.ContentType;
@@ -34,13 +32,6 @@ import com.opsmatters.media.model.content.ContentItem;
  */
 public class SocialUpdate extends SocialItem
 {
-    public static final String HANDLE = "handle";
-    public static final String HASHTAG = "hashtag";
-    public static final String HASHTAGS = "hashtags";
-    public static final String TITLE1 = "title1";
-    public static final String TITLE2 = "title2";
-    public static final String URL = "url";
-
     private String organisation = "";
     private String templateId = "";
     private Map<String,String> properties = new LinkedHashMap<String,String>();
@@ -68,10 +59,10 @@ public class SocialUpdate extends SocialItem
         setContentType(content.getType());
         setStatus(SocialUpdateStatus.PENDING);
 
-        properties.put(HANDLE, "@"+organisation.getTwitterUsername());
-        properties.put(HASHTAG, organisation.getSocialHashtag());
-        properties.put(HASHTAGS, organisation.getSocialHashtags());
-        properties.put(URL, organisation.getUrl(System.getProperty("om-config.site.prod")));
+        properties.put(SocialTemplate.HANDLE, "@"+organisation.getTwitterUsername());
+        properties.put(SocialTemplate.HASHTAG, organisation.getSocialHashtag());
+        properties.put(SocialTemplate.HASHTAGS, organisation.getSocialHashtags());
+        properties.put(SocialTemplate.URL, organisation.getUrl(System.getProperty("om-config.site.prod")));
     }
 
     /**
@@ -216,7 +207,7 @@ public class SocialUpdate extends SocialItem
      */
     public String getHandle()
     {
-        return properties.get(HANDLE);
+        return properties.get(SocialTemplate.HANDLE);
     }
 
     /**
@@ -224,7 +215,7 @@ public class SocialUpdate extends SocialItem
      */
     public void setHandle(String handle)
     {
-        properties.put(HANDLE, handle);
+        properties.put(SocialTemplate.HANDLE, handle);
     }
 
     /**
@@ -240,7 +231,7 @@ public class SocialUpdate extends SocialItem
      */
     public String getHashtag()
     {
-        return properties.get(HASHTAG);
+        return properties.get(SocialTemplate.HASHTAG);
     }
 
     /**
@@ -248,7 +239,7 @@ public class SocialUpdate extends SocialItem
      */
     public void setHashtag(String hashtag)
     {
-        properties.put(HASHTAG, hashtag);
+        properties.put(SocialTemplate.HASHTAG, hashtag);
     }
 
     /**
@@ -264,7 +255,7 @@ public class SocialUpdate extends SocialItem
      */
     public String getHashtags()
     {
-        return properties.get(HASHTAGS);
+        return properties.get(SocialTemplate.HASHTAGS);
     }
 
     /**
@@ -272,7 +263,7 @@ public class SocialUpdate extends SocialItem
      */
     public void setHashtags(String hashtags)
     {
-        properties.put(HASHTAGS, hashtags);
+        properties.put(SocialTemplate.HASHTAGS, hashtags);
     }
 
     /**
@@ -288,7 +279,7 @@ public class SocialUpdate extends SocialItem
      */
     public String getUrl()
     {
-        return properties.get(URL);
+        return properties.get(SocialTemplate.URL);
     }
 
     /**
@@ -296,7 +287,7 @@ public class SocialUpdate extends SocialItem
      */
     public void setUrl(String url)
     {
-        properties.put(URL, url);
+        properties.put(SocialTemplate.URL, url);
     }
 
     /**
@@ -312,7 +303,7 @@ public class SocialUpdate extends SocialItem
      */
     public String getTitle1()
     {
-        return properties.get(TITLE1);
+        return properties.get(SocialTemplate.TITLE1);
     }
 
     /**
@@ -320,7 +311,7 @@ public class SocialUpdate extends SocialItem
      */
     public void setTitle1(String title1)
     {
-        properties.put(TITLE1, title1);
+        properties.put(SocialTemplate.TITLE1, title1);
     }
 
     /**
@@ -336,7 +327,7 @@ public class SocialUpdate extends SocialItem
      */
     public String getTitle2()
     {
-        return properties.get(TITLE2);
+        return properties.get(SocialTemplate.TITLE2);
     }
 
     /**
@@ -344,7 +335,7 @@ public class SocialUpdate extends SocialItem
      */
     public void setTitle2(String title2)
     {
-        properties.put(TITLE2, title2);
+        properties.put(SocialTemplate.TITLE2, title2);
     }
 
     /**
@@ -404,14 +395,6 @@ public class SocialUpdate extends SocialItem
     }
 
     /**
-     * Generates a message from the update message and properties.
-     */
-    public String createMessage()
-    {
-        return new StringSubstitutor(properties).replace(message);
-    }
-
-    /**
      * Returns the update status.
      */
     public SocialUpdateStatus getStatus()
@@ -457,78 +440,5 @@ public class SocialUpdate extends SocialItem
     public boolean isSkipped()
     {
         return status == SocialUpdateStatus.SKIPPED;
-    }
-
-    /**
-     * Creates a map of the given hashtags string.
-     */
-    private static Map<String,String> toHashtagMap(String str)
-    {
-        Map<String,String> ret = new LinkedHashMap<String,String>();
-        if(str != null && str.length() > 0)
-        {
-            String[] hashtags = str.split(" ");
-            for(String hashtag : hashtags)
-            {
-                if(hashtag.startsWith("#") && hashtag.length() > 2)
-                {
-                    hashtag = hashtag.substring(1);
-                    ret.put(hashtag.toLowerCase(), hashtag);
-                }
-            }
-        }
-
-        return ret;
-    }
-
-    /**
-     * Creates a hashtags string from the given map.
-     */
-    private static String fromHashtagMap(Map<String,String> map)
-    {
-        StringBuilder builder = new StringBuilder();
-        Collection<String> hashtags = map.values();
-        for(String hashtag : hashtags)
-        {
-            if(builder.length() > 0)
-                builder.append(" ");
-            builder.append("#"+hashtag);
-        }
-
-        return builder.toString();
-    }
-
-    /**
-     * Integrate the hashtags in the update properties with the message.
-     */
-    public static SocialUpdate processUpdate(SocialUpdate update)
-    {
-        // Get the processed message
-        Map<String,String> hashtagMap = toHashtagMap(update.getHashtags());
-        Map<String,String> properties = new LinkedHashMap<String,String>();
-        properties.put(TITLE1, update.getTitle1());
-        properties.put(TITLE2, update.getTitle1());
-        String message = new StringSubstitutor(properties).replace(update.getMessage());
-
-        // Locate any hashtags in the message, prefix with a "#" and remove from the hashtags list
-        String[] tokens = message.split(" ");
-        for(String token : tokens)
-        {
-            if(!token.startsWith("#") && !token.startsWith("@") && token.length() > 2)
-            {
-                if(hashtagMap.containsKey(token.toLowerCase()))
-                {
-                    message = message.replaceFirst(token, "#"+token);
-                    hashtagMap.remove(token.toLowerCase());
-                }
-            }
-        }
-
-        // Return the processed update with an amended message and hashtags list
-        SocialUpdate ret = new SocialUpdate(update);
-        ret.setMessage(message);
-        properties.put(HASHTAGS, fromHashtagMap(hashtagMap));
-        ret.getProperties().putAll(properties);
-        return ret;
     }
 }

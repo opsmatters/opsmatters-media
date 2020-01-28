@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.file;
+package com.opsmatters.media.handler;
 
 import java.io.File;
 import java.io.InputStream;
@@ -35,6 +35,9 @@ import com.opsmatters.media.model.content.Fields;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.client.S3Client;
 import com.opsmatters.media.client.SshClient;
+import com.opsmatters.media.file.InputFileReader;
+import com.opsmatters.media.file.OutputFileWriter;
+import com.opsmatters.media.file.FileFormat;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.FileUtils;
