@@ -299,6 +299,38 @@ public class SocialUpdate extends SocialItem
     }
 
     /**
+     * Returns <CODE>true</CODE> if the update URL has been set and it has been shortened.
+     */
+    public boolean hasShortenedUrl()
+    {
+        return hasUrl() && getUrl().indexOf("bit.ly") != -1;
+    }
+
+    /**
+     * Returns the update original URL.
+     */
+    public String getOriginalUrl()
+    {
+        return properties.get(SocialTemplate.ORIGINAL_URL);
+    }
+
+    /**
+     * Sets the update original URL.
+     */
+    public void setOriginalUrl(String url)
+    {
+        properties.put(SocialTemplate.ORIGINAL_URL, url);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the update original URL has been set.
+     */
+    public boolean hasOriginalUrl()
+    {
+        return getOriginalUrl() != null && getOriginalUrl().length() > 0;
+    }
+
+    /**
      * Returns the update title1.
      */
     public String getTitle1()

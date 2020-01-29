@@ -34,6 +34,7 @@ public class SocialTemplate extends SocialItem
     public static final String TITLE1 = "title1";
     public static final String TITLE2 = "title2";
     public static final String URL = "url";
+    public static final String ORIGINAL_URL = "original-url";
 
     private String name = "";
     private String message = "";
