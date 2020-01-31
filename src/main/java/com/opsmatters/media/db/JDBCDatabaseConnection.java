@@ -20,8 +20,7 @@ import java.net.UnknownHostException;
 import java.sql.*;
 import java.util.logging.Logger;
 import com.opsmatters.media.exception.MissingParameterException;
-import com.opsmatters.media.db.dao.content.ContentDAOFactory;
-import com.opsmatters.media.db.dao.social.SocialDAOFactory;
+import com.opsmatters.media.db.dao.DAOFactory;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -46,9 +45,8 @@ public class JDBCDatabaseConnection
     private int connectTimeout = 0;
     private Connection conn;
     private DatabaseMetaData data;
-    private JDBCDatabaseDriver driver;
-    private ContentDAOFactory contentDAOFactory;
-    private SocialDAOFactory socialDAOFactory;
+    protected JDBCDatabaseDriver driver;
+    private List<DAOFactory> factories = new ArrayList<DAOFactory>();
     private int lastConnectionStatus = NOT_CONNECTED;
     private Exception connectException;
     private boolean debug = false;
@@ -324,11 +322,22 @@ public class JDBCDatabaseConnection
     }
 
     /**
+     * Adds a DAO factory to the list for this connection.
+     */
+    public void addDAOFactory(DAOFactory factory)
+    {
+        factories.add(factory);
+    }
+
+    /**
      * Returns <CODE>true</CODE> if an application table is missing from the database.
      */
     protected boolean hasMissingTable() 
     {
-        return contentDAOFactory.hasMissingTable() || socialDAOFactory.hasMissingTable();
+        boolean ret = false;
+        for(DAOFactory factory : factories)
+            ret = ret || factory.hasMissingTable();
+        return ret;
     }
 
     /**
@@ -336,8 +345,8 @@ public class JDBCDatabaseConnection
      */
     protected void createTables() 
     {
-        contentDAOFactory.createTables();
-        socialDAOFactory.createTables();
+        for(DAOFactory factory : factories)
+            factory.createTables();
     }
 
     /**
@@ -345,27 +354,6 @@ public class JDBCDatabaseConnection
      */
     protected void createDAOFactories()
     {
-        if(driver != null)
-        {
-            contentDAOFactory = new ContentDAOFactory(driver, this);
-            socialDAOFactory = new SocialDAOFactory(driver, this);
-        }
-    }
-
-    /**
-     * Returns the content DAO factory.
-     */
-    public ContentDAOFactory getContentDAOFactory()
-    {
-        return contentDAOFactory;
-    }
-
-    /**
-     * Returns the social media DAO factory.
-     */
-    public SocialDAOFactory getSocialDAOFactory()
-    {
-        return socialDAOFactory;
     }
 
     /**
@@ -373,7 +361,7 @@ public class JDBCDatabaseConnection
      */
     protected boolean hasDAOFactories()
     {
-        return contentDAOFactory != null && socialDAOFactory != null;
+        return factories.size() > 0;
     }
 
     /**
@@ -381,10 +369,8 @@ public class JDBCDatabaseConnection
      */
     protected void closeDAOFactories()
     {
-        if(contentDAOFactory != null)
-            contentDAOFactory.close();
-        if(socialDAOFactory != null)
-            socialDAOFactory.close();
+        for(DAOFactory factory : factories)
+            factory.close();
     }
 
     /**
