@@ -18,7 +18,7 @@ package com.opsmatters.media.model.social;
 import java.time.Instant;
 import twitter4j.Status;
 import facebook4j.Post;
-import com.echobox.api.linkedin.types.Share;
+import com.echobox.api.linkedin.types.ugc.UGCShare;
 
 /**
  * Class representing a social media post.
@@ -68,12 +68,12 @@ public class SocialPost extends SocialItem
     /**
      * Constructor that takes a LinkedIn share.
      */
-    public SocialPost(Share share, SocialChannel channel)
+    public SocialPost(UGCShare share, SocialChannel channel)
     {
-        setId(Long.toString(share.getId()));
+        setId(share.getId().getId());
         setCreatedDateMillis(share.getCreated().getTime());
         setUpdatedDate(Instant.now());
-        setMessage(share.getText().getText());
+        setMessage(share.getSpecificContent().getShareContent().getShareCommentary().getText());
         setChannel(channel);
         setStatus(SocialPostStatus.EXTERNAL);
     }

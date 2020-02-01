@@ -22,22 +22,24 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.security.GeneralSecurityException;
 import org.apache.commons.io.FileUtils;
-import com.google.common.collect.Lists;
 import org.json.JSONObject;
 import com.echobox.api.linkedin.client.DefaultLinkedInClient;
 import com.echobox.api.linkedin.version.Version;
 import com.echobox.api.linkedin.types.urn.URN;
 import com.echobox.api.linkedin.types.urn.URNEntityType;
+import com.echobox.api.linkedin.types.ugc.UGCShare;
+import com.echobox.api.linkedin.types.ugc.ShareContent;
+import com.echobox.api.linkedin.types.ugc.ShareMedia;
+import com.echobox.api.linkedin.types.ugc.Commentary;
+import com.echobox.api.linkedin.types.ugc.ViewContext;
 import com.echobox.api.linkedin.types.organization.Organization;
-import com.echobox.api.linkedin.types.Share;
-import com.echobox.api.linkedin.types.ShareText;
-import com.echobox.api.linkedin.types.request.ShareRequestBody;
 import com.echobox.api.linkedin.connection.v2.OrganizationConnection;
-import com.echobox.api.linkedin.connection.v2.ShareConnection;
+import com.echobox.api.linkedin.connection.v2.UGCShareConnection;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.SocialPost;
+import com.opsmatters.media.util.StringUtils;
 
 /**
  * Class that represents a connection to LinkedIn for social media posts.
@@ -54,7 +56,7 @@ public class LinkedInClient extends Client implements SocialClient
     private OrganizationConnection organizationConnection;
     private String organizationId;
     private URN organizationURN;
-    private ShareConnection shareConnection;
+    private UGCShareConnection ugcConnection;
     private String appId = "";
     private String appSecret = "";
     private String redirectUri = "";
@@ -150,8 +152,8 @@ public class LinkedInClient extends Client implements SocialClient
 
         // Create the client
         DefaultLinkedInClient linkedin = new DefaultLinkedInClient(getAccessToken(), Version.DEFAULT_VERSION);
-        shareConnection = new ShareConnection(linkedin);
         organizationConnection = new OrganizationConnection(linkedin);
+        ugcConnection = new UGCShareConnection(linkedin);
 
         // Issue command to test connectivity
         organizationURN = new URN(URNEntityType.ORGANIZATION, organizationId);
@@ -290,12 +292,37 @@ public class LinkedInClient extends Client implements SocialClient
      */
     public SocialPost sendPost(String text) throws IOException
     {
-        ShareRequestBody shareRequestBody = new ShareRequestBody(organizationURN);
-        ShareText shareText = new ShareText();
-        shareText.setText(text);
-        shareRequestBody.setText(shareText);
-        Share share = shareConnection.postShare(shareRequestBody);
-        return share != null ? new SocialPost(share, channel) : null;
+        String url = StringUtils.extractUrl(text);
+
+        ShareContent.ShareContentBody body = new ShareContent.ShareContentBody();
+        Commentary commentary = new Commentary();
+        commentary.setText(text);
+        body.setShareCommentary(commentary);
+
+        if(url != null)
+        {
+            body.setShareMediaCategory("ARTICLE");
+            List<ShareMedia> mediaList = new ArrayList<ShareMedia>();
+            ShareMedia media = new ShareMedia();
+            media.setOriginalUrl(url);
+            media.setStatus("READY");
+            mediaList.add(media);
+            body.setMedia(mediaList);
+        }
+        else
+        {
+            body.setShareMediaCategory("NONE");
+        }
+
+        UGCShare share = new UGCShare(organizationURN);
+        ShareContent shareContent = new ShareContent();
+        shareContent.setShareContent(body);
+        share.setSpecificContent(shareContent);
+        share.setVisibility(new UGCShare.Visibility("PUBLIC"));
+        share.setLifecycleState("PUBLISHED");
+        UGCShare ugc = ugcConnection.createUGCPost(share);
+
+        return new SocialPost(ugc, channel);
     }
 
     /**
@@ -305,8 +332,9 @@ public class LinkedInClient extends Client implements SocialClient
      */
     public SocialPost deletePost(String id) throws IOException
     {
-        Share share = shareConnection.getShare(Long.parseLong(id));
-        shareConnection.deleteShare(share.getId());
+        URN urn = new URN(URNEntityType.UGCPOST, id);
+        UGCShare share = ugcConnection.retrieveUGCPost(urn, ViewContext.AUTHOR);
+        ugcConnection.deleteUGCPost(urn);
         return share != null ? new SocialPost(share, channel) : null;
     }
 
@@ -316,8 +344,8 @@ public class LinkedInClient extends Client implements SocialClient
     public List<SocialPost> getPosts() throws IOException
     {
         List<SocialPost> ret = new ArrayList<SocialPost>();
-        List<Share> shares = shareConnection.getShares(Lists.newArrayList(organizationURN), 30, null);
-        for(Share share : shares)
+        List<UGCShare> shares = ugcConnection.retrieveUGCPostsByAuthors(organizationURN, 30).getData();
+        for(UGCShare share : shares)
             ret.add(new SocialPost(share, channel));
         return ret;
     }
