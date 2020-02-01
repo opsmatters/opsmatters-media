@@ -216,6 +216,14 @@ public class SocialUpdate extends SocialItem
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given update property has been set.
+     */
+    public boolean hasProperty(String key)
+    {
+        return this.properties.containsKey(key);
+    }
+
+    /**
      * Returns the update handle.
      */
     public String getHandle()
