@@ -55,14 +55,16 @@ public class SocialUpdate extends SocialItem
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setOrganisation(organisation.getCode());
-        setContentId(content.getId());
+        if(content.getType() != ContentType.ROUNDUP)
+            setContentId(content.getId());
         setContentType(content.getType());
         setStatus(SocialUpdateStatus.PENDING);
 
         properties.put(SocialTemplate.HANDLE, "@"+organisation.getTwitterUsername());
         properties.put(SocialTemplate.HASHTAG, organisation.getSocialHashtag());
         properties.put(SocialTemplate.HASHTAGS, organisation.getSocialHashtags());
-        properties.put(SocialTemplate.URL, organisation.getUrl(System.getProperty("om-config.site.prod")));
+        if(content.getType() == ContentType.ROUNDUP)
+            properties.put(SocialTemplate.URL, organisation.getUrl(System.getProperty("om-config.site.prod")));
     }
 
     /**
@@ -153,6 +155,17 @@ public class SocialUpdate extends SocialItem
     public void setContentId(int contentId)
     {
         this.contentId = contentId;
+    }
+
+    /**
+     * Returns the content GUID.
+     */
+    public String getGuid()
+    {
+        String ret = null;
+        if(hasOrganisation() && contentId > 0 && contentType != null)
+            ret = String.format("%s-%s-%05d", contentType.code(), organisation, contentId);
+        return ret;
     }
 
     /**

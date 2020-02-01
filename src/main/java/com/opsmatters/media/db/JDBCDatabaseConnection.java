@@ -106,6 +106,14 @@ public class JDBCDatabaseConnection
     }
 
     /**
+     * Returns <CODE>true</CODE> if this connection is for the system database.
+     */
+    public boolean isInternal()
+    {
+        return true;
+    }
+
+    /**
      * Returns the underlying JDBC connection.
      */
     public Connection getConnection()

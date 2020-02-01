@@ -129,7 +129,7 @@ public class ImageUtils
     /**
      * Returns the size of the SVG image from the given file.
      */
-    static private Rectangle getSvgBounds(File file) throws IOException//, FileNotFoundException
+    static private Rectangle getSvgBounds(File file) throws IOException
     {
         Rectangle ret = null;
         FileInputStream stream = null;
@@ -144,8 +144,8 @@ public class ImageUtils
             {
                 if(root.hasAttribute("width") && root.hasAttribute("height"))
                 {
-                    ret = new Rectangle(Integer.parseInt(root.getAttribute("width")), 
-                        Integer.parseInt(root.getAttribute("height")));
+                    ret = new Rectangle(Integer.parseInt(getNumber(root.getAttribute("width"))), 
+                        Integer.parseInt(getNumber(root.getAttribute("height"))));
                 }
                 else // Otherwise use the viewbox
                 {
@@ -164,6 +164,17 @@ public class ImageUtils
                 stream.close();
         }
 
+        return ret;
+    }
+
+    /**
+     * Returns the pixels number from the given attribute value.
+     */
+    static private String getNumber(String str)
+    {
+        String ret = str;
+        if(str != null && str.endsWith("px"))
+            ret = str.substring(0, str.length()-2);
         return ret;
     }
 

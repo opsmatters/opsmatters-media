@@ -164,7 +164,7 @@ public class SocialMessageHandler
                     inWord = false;
                 }
             }
-            else if(Character.isLetterOrDigit(c)) // In a hashtag, handle or word
+            else if(Character.isLetterOrDigit(c) || c == '_') // In a hashtag, handle or word
             {
                 if(!inWord)
                 {

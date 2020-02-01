@@ -155,17 +155,22 @@ public abstract class BaseDAO
      */
     public void checkTable()
     {
-        if(!table.isInitialised())
-            defineTable();
+        if(getDatabaseConnection().isInternal())
+        {
+            if(!table.isInitialised())
+                defineTable();
 
-        if(getTableName() != null && !hasTable)
-            createTable();
+            if(getTableName() != null && !hasTable)
+                createTable();
+        }
     }
 
     /**
      * Defines the columns for the table.
      */
-    protected abstract void defineTable();
+    protected void defineTable()
+    {
+    }
 
     /**
      * Returns the table definition for this DAO.
