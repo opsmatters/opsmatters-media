@@ -24,7 +24,9 @@ package com.opsmatters.media.model.social;
 public enum SocialUpdateStatus
 {
     PENDING("Pending"),
+    PROCESSING("Processing"),
     PROCESSED("Processed"),
+    ERROR("Error"),
     SKIPPED("Skipped"),
     ALL("All");
 

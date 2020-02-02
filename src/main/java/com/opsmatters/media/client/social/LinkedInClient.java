@@ -50,7 +50,7 @@ public class LinkedInClient extends Client implements SocialClient
 {
     private static final Logger logger = Logger.getLogger(LinkedInClient.class.getName());
 
-    public static final String AUTH = ".linkedIn";
+    public static final String AUTH = ".linkedin";
 
     private Organization organization;
     private OrganizationConnection organizationConnection;

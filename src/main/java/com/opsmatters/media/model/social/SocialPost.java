@@ -40,7 +40,18 @@ public class SocialPost extends SocialItem
     }
 
     /**
-     * Constructor that takes a Twitter status.
+     * Constructor that takes a message and a channel.
+     */
+    public SocialPost(String message, SocialChannel channel)
+    {
+        setCreatedDate(Instant.now());
+        setMessage(message);
+        setChannel(channel);
+        setStatus(SocialPostStatus.NEW);
+    }
+
+    /**
+     * Constructor that takes a Twitter status and a channel.
      */
     public SocialPost(Status status, SocialChannel channel)
     {
@@ -53,7 +64,7 @@ public class SocialPost extends SocialItem
     }
 
     /**
-     * Constructor that takes a Facebook post.
+     * Constructor that takes a Facebook post and a channel.
      */
     public SocialPost(Post post, SocialChannel channel)
     {
@@ -66,14 +77,18 @@ public class SocialPost extends SocialItem
     }
 
     /**
-     * Constructor that takes a LinkedIn share.
+     * Constructor that takes a LinkedIn share and a channel.
      */
     public SocialPost(UGCShare share, SocialChannel channel)
     {
         setId(share.getId().getId());
-        setCreatedDateMillis(share.getCreated().getTime());
+        if(share.getCreated() != null)
+            setCreatedDateMillis(share.getCreated().getTime());
+        else
+            setCreatedDate(Instant.now());
         setUpdatedDate(Instant.now());
-        setMessage(share.getSpecificContent().getShareContent().getShareCommentary().getText());
+        if(share.getSpecificContent() != null)
+            setMessage(share.getSpecificContent().getShareContent().getShareCommentary().getText());
         setChannel(channel);
         setStatus(SocialPostStatus.EXTERNAL);
     }

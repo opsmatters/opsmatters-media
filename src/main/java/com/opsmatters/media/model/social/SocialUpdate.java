@@ -32,6 +32,8 @@ import com.opsmatters.media.model.content.ContentItem;
  */
 public class SocialUpdate extends SocialItem
 {
+    private static final String ENABLED = ".enabled";
+
     private String organisation = "";
     private String templateId = "";
     private Map<String,String> properties = new LinkedHashMap<String,String>();
@@ -208,7 +210,39 @@ public class SocialUpdate extends SocialItem
     }
 
     /**
-     * Sets the given update property.
+     * Returns <CODE>true</CODE> if the given update property has been set.
+     */
+    public boolean hasProperty(String key)
+    {
+        return this.properties.containsKey(key);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the enabled property for given channel has been set.
+     */
+    public boolean hasEnabled(SocialChannel channel)
+    {
+        return hasProperty(channel.getName()+ENABLED);
+    }
+
+    /**
+     * Returns the value of the given update property.
+     */
+    public String getProperty(String key)
+    {
+        return this.properties.get(key);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given channel is enabled.
+     */
+    public boolean isEnabled(SocialChannel channel)
+    {
+        return Boolean.parseBoolean(getProperty(channel.getName()+ENABLED));
+    }
+
+    /**
+     * Sets the value of the given update property.
      */
     public void setProperty(String key, String value)
     {
@@ -216,11 +250,11 @@ public class SocialUpdate extends SocialItem
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given update property has been set.
+     * Set to <CODE>true</CODE> if the given channel is enabled.
      */
-    public boolean hasProperty(String key)
+    public void setEnabled(SocialChannel channel, boolean enabled)
     {
-        return this.properties.containsKey(key);
+        setProperty(channel.getName()+ENABLED, Boolean.toString(enabled));
     }
 
     /**
@@ -480,11 +514,27 @@ public class SocialUpdate extends SocialItem
     }
 
     /**
+     * Returns <CODE>true</CODE> if the update status is PROCESSING.
+     */
+    public boolean isProcessing()
+    {
+        return status == SocialUpdateStatus.PROCESSING;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the update status is PROCESSED.
      */
     public boolean isProcessed()
     {
         return status == SocialUpdateStatus.PROCESSED;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the update status is ERROR.
+     */
+    public boolean isError()
+    {
+        return status == SocialUpdateStatus.ERROR;
     }
 
     /**
