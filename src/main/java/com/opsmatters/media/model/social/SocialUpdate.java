@@ -15,11 +15,7 @@
  */
 package com.opsmatters.media.model.social;
 
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.Iterator;
 import java.time.Instant;
-import org.json.JSONObject;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.model.content.ContentType;
@@ -30,17 +26,11 @@ import com.opsmatters.media.model.content.ContentItem;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialUpdate extends SocialItem
+public class SocialUpdate extends SocialMessage
 {
-    private static final String ENABLED = ".enabled";
-
     private String organisation = "";
-    private String templateId = "";
-    private Map<String,String> properties = new LinkedHashMap<String,String>();
     private ContentType contentType;
     private int contentId = -1;
-    private String message = "";
-    private SocialUpdateStatus status;
 
     /**
      * Default constructor.
@@ -60,13 +50,13 @@ public class SocialUpdate extends SocialItem
         if(content.getType() != ContentType.ROUNDUP)
             setContentId(content.getId());
         setContentType(content.getType());
-        setStatus(SocialUpdateStatus.PENDING);
+        setStatus(MessageStatus.PENDING);
 
-        properties.put(SocialTemplate.HANDLE, "@"+organisation.getTwitterUsername());
-        properties.put(SocialTemplate.HASHTAG, organisation.getSocialHashtag());
-        properties.put(SocialTemplate.HASHTAGS, organisation.getSocialHashtags());
+        getProperties().put(SocialTemplate.HANDLE, "@"+organisation.getTwitterUsername());
+        getProperties().put(SocialTemplate.HASHTAG, organisation.getSocialHashtag());
+        getProperties().put(SocialTemplate.HASHTAGS, organisation.getSocialHashtags());
         if(content.getType() == ContentType.ROUNDUP)
-            properties.put(SocialTemplate.URL, organisation.getUrl(System.getProperty("om-config.site.prod")));
+            getProperties().put(SocialTemplate.URL, organisation.getUrl(System.getProperty("om-config.site.prod")));
     }
 
     /**
@@ -86,12 +76,8 @@ public class SocialUpdate extends SocialItem
         {
             super.copyAttributes(obj);
             setOrganisation(obj.getOrganisation());
-            setTemplateId(obj.getTemplateId());
             setContentId(obj.getContentId());
-            setProperties(obj.getProperties());
             setContentType(obj.getContentType());
-            setMessage(obj.getMessage());
-            setStatus(obj.getStatus());
         }
     }
 
@@ -117,30 +103,6 @@ public class SocialUpdate extends SocialItem
     public boolean hasOrganisation()
     {
         return organisation != null && organisation.length() > 0;
-    }
-
-    /**
-     * Returns the update template id.
-     */
-    public String getTemplateId()
-    {
-        return templateId;
-    }
-
-    /**
-     * Sets the update template id.
-     */
-    public void setTemplateId(String templateId)
-    {
-        this.templateId = templateId;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the update template id has been set.
-     */
-    public boolean hasTemplateId()
-    {
-        return templateId != null && templateId.length() > 0;
     }
 
     /**
@@ -171,98 +133,11 @@ public class SocialUpdate extends SocialItem
     }
 
     /**
-     * Returns the update properties.
-     */
-    public Map<String,String> getProperties()
-    {
-        return properties;
-    }
-
-    /**
-     * Returns the update properties as a JSON object.
-     */
-    public JSONObject getPropertiesAsJson()
-    {
-        return new JSONObject(properties);
-    }
-
-    /**
-     * Sets the update properties.
-     */
-    public void setProperties(Map<String,String> properties)
-    {
-        this.properties.clear();
-        this.properties.putAll(properties);
-    }
-
-    /**
-     * Sets the update properties from a JSON object.
-     */
-    public void setProperties(JSONObject obj)
-    {
-        this.properties.clear();
-        Iterator<String> keys = obj.keys();
-        while(keys.hasNext())
-        {
-            String key = keys.next();
-            properties.put(key, obj.getString(key));
-        }
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the given update property has been set.
-     */
-    public boolean hasProperty(String key)
-    {
-        return this.properties.containsKey(key);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the enabled property for given channel has been set.
-     */
-    public boolean hasEnabled(SocialChannel channel)
-    {
-        return hasProperty(channel.getName()+ENABLED);
-    }
-
-    /**
-     * Returns the value of the given update property.
-     */
-    public String getProperty(String key)
-    {
-        return this.properties.get(key);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the given channel is enabled.
-     */
-    public boolean isEnabled(SocialChannel channel)
-    {
-        return Boolean.parseBoolean(getProperty(channel.getName()+ENABLED));
-    }
-
-    /**
-     * Sets the value of the given update property.
-     */
-    public void setProperty(String key, String value)
-    {
-        this.properties.put(key, value);
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the given channel is enabled.
-     */
-    public void setEnabled(SocialChannel channel, boolean enabled)
-    {
-        setProperty(channel.getName()+ENABLED, Boolean.toString(enabled));
-    }
-
-    /**
      * Returns the update handle.
      */
     public String getHandle()
     {
-        return properties.get(SocialTemplate.HANDLE);
+        return getProperties().get(SocialTemplate.HANDLE);
     }
 
     /**
@@ -270,7 +145,7 @@ public class SocialUpdate extends SocialItem
      */
     public void setHandle(String handle)
     {
-        properties.put(SocialTemplate.HANDLE, handle);
+        getProperties().put(SocialTemplate.HANDLE, handle);
     }
 
     /**
@@ -286,7 +161,7 @@ public class SocialUpdate extends SocialItem
      */
     public String getHashtag()
     {
-        return properties.get(SocialTemplate.HASHTAG);
+        return getProperties().get(SocialTemplate.HASHTAG);
     }
 
     /**
@@ -294,7 +169,7 @@ public class SocialUpdate extends SocialItem
      */
     public void setHashtag(String hashtag)
     {
-        properties.put(SocialTemplate.HASHTAG, hashtag);
+        getProperties().put(SocialTemplate.HASHTAG, hashtag);
     }
 
     /**
@@ -310,7 +185,7 @@ public class SocialUpdate extends SocialItem
      */
     public String getHashtags()
     {
-        return properties.get(SocialTemplate.HASHTAGS);
+        return getProperties().get(SocialTemplate.HASHTAGS);
     }
 
     /**
@@ -318,7 +193,7 @@ public class SocialUpdate extends SocialItem
      */
     public void setHashtags(String hashtags)
     {
-        properties.put(SocialTemplate.HASHTAGS, hashtags);
+        getProperties().put(SocialTemplate.HASHTAGS, hashtags);
     }
 
     /**
@@ -330,67 +205,11 @@ public class SocialUpdate extends SocialItem
     }
 
     /**
-     * Returns the update URL.
-     */
-    public String getUrl()
-    {
-        return properties.get(SocialTemplate.URL);
-    }
-
-    /**
-     * Sets the update URL.
-     */
-    public void setUrl(String url)
-    {
-        properties.put(SocialTemplate.URL, url);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the update URL has been set.
-     */
-    public boolean hasUrl()
-    {
-        return getUrl() != null && getUrl().length() > 0;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the update URL has been set and it has been shortened.
-     */
-    public boolean hasShortenedUrl()
-    {
-        return hasUrl() && getUrl().indexOf("bit.ly") != -1;
-    }
-
-    /**
-     * Returns the update original URL.
-     */
-    public String getOriginalUrl()
-    {
-        return properties.get(SocialTemplate.ORIGINAL_URL);
-    }
-
-    /**
-     * Sets the update original URL.
-     */
-    public void setOriginalUrl(String url)
-    {
-        properties.put(SocialTemplate.ORIGINAL_URL, url);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the update original URL has been set.
-     */
-    public boolean hasOriginalUrl()
-    {
-        return getOriginalUrl() != null && getOriginalUrl().length() > 0;
-    }
-
-    /**
      * Returns the update title1.
      */
     public String getTitle1()
     {
-        return properties.get(SocialTemplate.TITLE1);
+        return getProperties().get(SocialTemplate.TITLE1);
     }
 
     /**
@@ -398,7 +217,7 @@ public class SocialUpdate extends SocialItem
      */
     public void setTitle1(String title1)
     {
-        properties.put(SocialTemplate.TITLE1, title1);
+        getProperties().put(SocialTemplate.TITLE1, title1);
     }
 
     /**
@@ -414,7 +233,7 @@ public class SocialUpdate extends SocialItem
      */
     public String getTitle2()
     {
-        return properties.get(SocialTemplate.TITLE2);
+        return getProperties().get(SocialTemplate.TITLE2);
     }
 
     /**
@@ -422,7 +241,7 @@ public class SocialUpdate extends SocialItem
      */
     public void setTitle2(String title2)
     {
-        properties.put(SocialTemplate.TITLE2, title2);
+        getProperties().put(SocialTemplate.TITLE2, title2);
     }
 
     /**
@@ -455,93 +274,5 @@ public class SocialUpdate extends SocialItem
     public void setContentType(ContentType contentType)
     {
         this.contentType = contentType;
-    }
-
-    /**
-     * Returns the update message.
-     */
-    public String getMessage()
-    {
-        return message;
-    }
-
-    /**
-     * Sets the update message.
-     */
-    public void setMessage(String message)
-    {
-        this.message = message;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the update message has been set.
-     */
-    public boolean hasMessage()
-    {
-        return message != null && message.length() > 0;
-    }
-
-    /**
-     * Returns the update status.
-     */
-    public SocialUpdateStatus getStatus()
-    {
-        return status;
-    }
-
-    /**
-     * Sets the update status.
-     */
-    public void setStatus(String status)
-    {
-        setStatus(SocialUpdateStatus.valueOf(status));
-    }
-
-    /**
-     * Sets the update status.
-     */
-    public void setStatus(SocialUpdateStatus status)
-    {
-        this.status = status;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the update status is PENDING.
-     */
-    public boolean isPending()
-    {
-        return status == SocialUpdateStatus.PENDING;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the update status is PROCESSING.
-     */
-    public boolean isProcessing()
-    {
-        return status == SocialUpdateStatus.PROCESSING;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the update status is PROCESSED.
-     */
-    public boolean isProcessed()
-    {
-        return status == SocialUpdateStatus.PROCESSED;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the update status is ERROR.
-     */
-    public boolean isError()
-    {
-        return status == SocialUpdateStatus.ERROR;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the update status is SKIPPED.
-     */
-    public boolean isSkipped()
-    {
-        return status == SocialUpdateStatus.SKIPPED;
     }
 }

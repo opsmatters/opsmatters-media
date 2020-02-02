@@ -30,7 +30,7 @@ public class SocialPost extends SocialItem
     private String organisation = "";
     private String message = "";
     private SocialChannel channel;
-    private SocialPostStatus status;
+    private PostStatus status;
 
     /**
      * Default constructor.
@@ -47,7 +47,7 @@ public class SocialPost extends SocialItem
         setCreatedDate(Instant.now());
         setMessage(message);
         setChannel(channel);
-        setStatus(SocialPostStatus.NEW);
+        setStatus(PostStatus.NEW);
     }
 
     /**
@@ -60,7 +60,7 @@ public class SocialPost extends SocialItem
         setUpdatedDate(Instant.now());
         setMessage(status.getText());
         setChannel(channel);
-        setStatus(SocialPostStatus.EXTERNAL);
+        setStatus(PostStatus.EXTERNAL);
     }
 
     /**
@@ -73,7 +73,7 @@ public class SocialPost extends SocialItem
         setUpdatedDate(Instant.now());
         setMessage(post.getMessage());
         setChannel(channel);
-        setStatus(SocialPostStatus.EXTERNAL);
+        setStatus(PostStatus.EXTERNAL);
     }
 
     /**
@@ -90,7 +90,7 @@ public class SocialPost extends SocialItem
         if(share.getSpecificContent() != null)
             setMessage(share.getSpecificContent().getShareContent().getShareCommentary().getText());
         setChannel(channel);
-        setStatus(SocialPostStatus.EXTERNAL);
+        setStatus(PostStatus.EXTERNAL);
     }
 
     /**
@@ -167,7 +167,7 @@ public class SocialPost extends SocialItem
     /**
      * Returns the post status.
      */
-    public SocialPostStatus getStatus()
+    public PostStatus getStatus()
     {
         return status;
     }
@@ -177,13 +177,13 @@ public class SocialPost extends SocialItem
      */
     public void setStatus(String status)
     {
-        setStatus(SocialPostStatus.valueOf(status));
+        setStatus(PostStatus.valueOf(status));
     }
 
     /**
      * Sets the post status.
      */
-    public void setStatus(SocialPostStatus status)
+    public void setStatus(PostStatus status)
     {
         this.status = status;
     }

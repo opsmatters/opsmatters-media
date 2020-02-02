@@ -17,18 +17,16 @@
 package com.opsmatters.media.model.social;
 
 /**
- * Represents a social update status.
+ * Represents a social post status.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum SocialUpdateStatus
+public enum PostStatus
 {
+    NEW("New"),
     PENDING("Pending"),
-    PROCESSING("Processing"),
-    PROCESSED("Processed"),
-    ERROR("Error"),
-    SKIPPED("Skipped"),
-    ALL("All");
+    SENT("Sent"),
+    EXTERNAL("External");
 
     private String value;
 
@@ -36,7 +34,7 @@ public enum SocialUpdateStatus
      * Constructor that takes the status value.
      * @param value The value for the status
      */
-    SocialUpdateStatus(String value)
+    PostStatus(String value)
     {
         this.value = value;
     }
@@ -64,10 +62,10 @@ public enum SocialUpdateStatus
      * @param value The type value
      * @return The type for the given value
      */
-    public static SocialUpdateStatus fromValue(String value)
+    public static PostStatus fromValue(String value)
     {
-        SocialUpdateStatus[] types = values();
-        for(SocialUpdateStatus type : types)
+        PostStatus[] types = values();
+        for(PostStatus type : types)
         {
             if(type.value().equals(value))
                 return type;
