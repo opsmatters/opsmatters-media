@@ -41,6 +41,17 @@ public class AdhocPost extends DraftPost
     }
 
     /**
+     * Constructor that takes a title.
+     */
+    public AdhocPost(String title)
+    {
+        setId(StringUtils.getUUID(null));
+        setTitle(title);
+        setCreatedDate(Instant.now());
+        setStatus(DraftStatus.NEW);
+    }
+
+    /**
      * Copy constructor.
      */
     public AdhocPost(AdhocPost obj)

@@ -23,7 +23,7 @@ package com.opsmatters.media.model.social;
  */
 public enum PostType
 {
-    CONTENT("CONTENT"),
+    CONTENT("Content"),
     ADHOC("Ad-hoc"),
     EXTERNAL("External");
 

@@ -15,6 +15,7 @@
  */
 package com.opsmatters.media.db.dao.social;
 
+import java.io.StringReader;
 import java.util.List;
 import java.util.ArrayList;
 import java.sql.Types;
@@ -23,7 +24,9 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
+import org.json.JSONObject;
 import com.opsmatters.media.model.social.PostTemplate;
+import com.opsmatters.media.model.social.PostType;
 import com.opsmatters.media.model.content.ContentType;
 
 /**
@@ -36,10 +39,10 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
     private static final Logger logger = Logger.getLogger(PostTemplateDAO.class.getName());
 
     /**
-     * The query to use to select an item from the POST_TEMPLATES table by id.
+     * The query to use to select a post template from the POST_TEMPLATES table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, CONTENT_TYPE, IS_DEFAULT, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CONTENT_TYPE, IS_DEFAULT, PROPERTIES, CREATED_BY "
       + "FROM POST_TEMPLATES WHERE ID=?";
 
     /**
@@ -47,30 +50,30 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO POST_TEMPLATES"
-      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, CONTENT_TYPE, IS_DEFAULT, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CONTENT_TYPE, IS_DEFAULT, PROPERTIES, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a post template in the POST_TEMPLATES table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE POST_TEMPLATES SET UPDATED_DATE=?, NAME=?, MESSAGE=?, CONTENT_TYPE=?, IS_DEFAULT=? "
+      "UPDATE POST_TEMPLATES SET UPDATED_DATE=?, NAME=?, MESSAGE=?, TYPE=?, CONTENT_TYPE=?, IS_DEFAULT=?, PROPERTIES=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the post templates from the POST_TEMPLATES table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, CONTENT_TYPE, IS_DEFAULT, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CONTENT_TYPE, IS_DEFAULT, PROPERTIES, CREATED_BY "
       + "FROM POST_TEMPLATES";
 
     /**
      * The query to use to select the post templates from the POST_TEMPLATES table.
      */
-    private static final String LIST_BY_CONTENT_TYPE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, CONTENT_TYPE, IS_DEFAULT, CREATED_BY "
-      + "FROM POST_TEMPLATES WHERE CONTENT_TYPE=?";
+    private static final String LIST_BY_TYPE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CONTENT_TYPE, IS_DEFAULT, PROPERTIES, CREATED_BY "
+      + "FROM POST_TEMPLATES WHERE TYPE=? AND CONTENT_TYPE=?";
 
     /**
      * The query to use to get the count of post templates from the POST_TEMPLATES table.
@@ -101,10 +104,12 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
-        table.addColumn("NAME", Types.VARCHAR, 30, true);
+        table.addColumn("NAME", Types.VARCHAR, 50, true);
         table.addColumn("MESSAGE", Types.VARCHAR, 512, true);
+        table.addColumn("TYPE", Types.VARCHAR, 15, true);
         table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, false);
         table.addColumn("IS_DEFAULT", Types.BOOLEAN, true);
+        table.addColumn("PROPERTIES", Types.LONGVARCHAR, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("POST_TEMPLATES_PK", new String[] {"ID"});
         table.setInitialised(true);
@@ -140,9 +145,11 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
                 template.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 template.setName(rs.getString(4));
                 template.setMessage(rs.getString(5));
-                template.setContentType(rs.getString(6));
-                template.setDefault(rs.getBoolean(7));
-                template.setCreatedBy(rs.getString(8));
+                template.setType(rs.getString(6));
+                template.setContentType(rs.getString(7));
+                template.setDefault(rs.getBoolean(8));
+                template.setProperties(new JSONObject(getClob(rs, 9)));
+                template.setCreatedBy(rs.getString(10));
                 ret = template;
             }
         }
@@ -175,6 +182,8 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
             insertStmt = prepareStatement(getConnection(), INSERT_SQL);
         clearParameters(insertStmt);
 
+        StringReader reader = null;
+
         try
         {
             insertStmt.setString(1, template.getId());
@@ -182,9 +191,14 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
             insertStmt.setTimestamp(3, new Timestamp(template.getUpdatedDateMillis()), UTC);
             insertStmt.setString(4, template.getName());
             insertStmt.setString(5, template.getMessage());
-            insertStmt.setString(6, template.getContentType() != null ? template.getContentType().name(): "");
-            insertStmt.setBoolean(7, template.isDefault());
-            insertStmt.setString(8, template.getCreatedBy());
+            insertStmt.setString(6, template.getType() != null ? template.getType().name(): "");
+            insertStmt.setString(7, template.getContentType() != null ? template.getContentType().name(): "");
+            insertStmt.setBoolean(8, template.isDefault());
+            String properties = template.getPropertiesAsJson().toString();
+            reader = new StringReader(properties);
+            insertStmt.setCharacterStream(9, reader, properties.length());
+
+            insertStmt.setString(10, template.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created post template '"+template.getId()+"' in POST_TEMPLATES");
@@ -216,12 +230,18 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
         clearParameters(updateStmt);
 
+        StringReader reader = null;
+
         updateStmt.setTimestamp(1, new Timestamp(template.getUpdatedDateMillis()), UTC);
         updateStmt.setString(2, template.getName());
         updateStmt.setString(3, template.getMessage());
-        updateStmt.setString(4, template.getContentType() != null ? template.getContentType().name(): "");
-        updateStmt.setBoolean(5, template.isDefault());
-        updateStmt.setString(6, template.getId());
+        updateStmt.setString(4, template.getType() != null ? template.getType().name(): "");
+        updateStmt.setString(5, template.getContentType() != null ? template.getContentType().name(): "");
+        updateStmt.setBoolean(6, template.isDefault());
+        String properties = template.getPropertiesAsJson().toString();
+        reader = new StringReader(properties);
+        updateStmt.setCharacterStream(7, reader, properties.length());
+        updateStmt.setString(8, template.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated post template '"+template.getId()+"' in POST_TEMPLATES");
@@ -257,9 +277,11 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
                 template.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 template.setName(rs.getString(4));
                 template.setMessage(rs.getString(5));
-                template.setContentType(rs.getString(6));
-                template.setDefault(rs.getBoolean(7));
-                template.setCreatedBy(rs.getString(8));
+                template.setType(rs.getString(6));
+                template.setContentType(rs.getString(7));
+                template.setDefault(rs.getBoolean(8));
+                template.setProperties(new JSONObject(getClob(rs, 9)));
+                template.setCreatedBy(rs.getString(10));
                 ret.add(template);
             }
         }
@@ -281,9 +303,9 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
     }
 
     /**
-     * Returns the post templates from the POST_TEMPLATES table.
+     * Returns the post templates from the POST_TEMPLATES table by post type and content type.
      */
-    public List<PostTemplate> list(ContentType type) throws SQLException
+    public List<PostTemplate> list(PostType type, ContentType contentType) throws SQLException
     {
         List<PostTemplate> ret = null;
 
@@ -291,17 +313,18 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
             return ret;
 
         preQuery();
-        if(listByContentTypeStmt == null)
-            listByContentTypeStmt = prepareStatement(getConnection(), LIST_BY_CONTENT_TYPE_SQL);
-        clearParameters(listByContentTypeStmt);
+        if(listByTypeStmt == null)
+            listByTypeStmt = prepareStatement(getConnection(), LIST_BY_TYPE_SQL);
+        clearParameters(listByTypeStmt);
 
         ResultSet rs = null;
 
         try
         {
-            listByContentTypeStmt.setString(1, type != null ? type.name() : "");
-            listByContentTypeStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = listByContentTypeStmt.executeQuery();
+            listByTypeStmt.setString(1, type != null ? type.name() : "");
+            listByTypeStmt.setString(2, contentType != null ? contentType.name() : "");
+            listByTypeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByTypeStmt.executeQuery();
             ret = new ArrayList<PostTemplate>();
             while(rs.next())
             {
@@ -311,9 +334,11 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
                 template.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 template.setName(rs.getString(4));
                 template.setMessage(rs.getString(5));
-                template.setContentType(rs.getString(6));
-                template.setDefault(rs.getBoolean(7));
-                template.setCreatedBy(rs.getString(8));
+                template.setType(rs.getString(6));
+                template.setContentType(rs.getString(7));
+                template.setDefault(rs.getBoolean(8));
+                template.setProperties(new JSONObject(getClob(rs, 9)));
+                template.setCreatedBy(rs.getString(10));
                 ret.add(template);
             }
         }
@@ -384,8 +409,8 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
-        closeStatement(listByContentTypeStmt);
-        listByContentTypeStmt = null;
+        closeStatement(listByTypeStmt);
+        listByTypeStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -396,7 +421,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
-    private PreparedStatement listByContentTypeStmt;
+    private PreparedStatement listByTypeStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }

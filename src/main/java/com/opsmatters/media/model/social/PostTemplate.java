@@ -15,7 +15,11 @@
  */
 package com.opsmatters.media.model.social;
 
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.Iterator;
 import java.time.Instant;
+import org.json.JSONObject;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.model.content.ContentType;
@@ -26,7 +30,7 @@ import com.opsmatters.media.model.content.ContentItem;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PostTemplate extends SocialItem
+public class PostTemplate extends SocialPost
 {
     public static final String HANDLE = "handle";
     public static final String HASHTAG = "hashtag";
@@ -37,9 +41,10 @@ public class PostTemplate extends SocialItem
     public static final String ORIGINAL_URL = "original-url";
 
     private String name = "";
-    private String message = "";
+    private PostType type;
     private ContentType contentType;
     private boolean isDefault = false;
+    private Map<String,String> properties = new LinkedHashMap<String,String>();
 
     /**
      * Default constructor.
@@ -75,9 +80,10 @@ public class PostTemplate extends SocialItem
         {
             super.copyAttributes(obj);
             setName(obj.getName());
-            setMessage(obj.getMessage());
+            setType(obj.getType());
             setContentType(obj.getContentType());
             setDefault(obj.isDefault());
+            setProperties(obj.getProperties());
         }
     }
 
@@ -106,19 +112,51 @@ public class PostTemplate extends SocialItem
     }
 
     /**
-     * Returns the template message.
+     * Returns the template post type.
      */
-    public String getMessage()
+    @Override
+    public PostType getType()
     {
-        return message;
+        return type;
     }
 
     /**
-     * Sets the template message.
+     * Returns the template post type value.
      */
-    public void setMessage(String message)
+    public String getTypeValue()
     {
-        this.message = message;
+        return type != null ? type.value() : "";
+    }
+
+    /**
+     * Sets the template post type.
+     */
+    public void setType(String type)
+    {
+        try
+        {
+            setType(PostType.valueOf(type));
+        }
+        catch(IllegalArgumentException e)
+        {
+            setType((PostType)null);
+        }
+    }
+
+    /**
+     * Sets the template post type.
+     */
+    public void setType(PostType type)
+    {
+        this.type = type;
+    }
+
+    /**
+     * Sets the template post type from a value.
+     */
+    public void setTypeValue(String type)
+    {
+        setType(PostType.fromValue(type));
     }
 
     /**
@@ -198,5 +236,100 @@ public class PostTemplate extends SocialItem
     public void setDefaultObject(Boolean isDefault)
     {
         setDefault(isDefault != null && isDefault.booleanValue());
+    }
+
+    /**
+     * Returns the template properties.
+     */
+    public Map<String,String> getProperties()
+    {
+        return properties;
+    }
+
+    /**
+     * Returns the template properties as a JSON object.
+     */
+    public JSONObject getPropertiesAsJson()
+    {
+        return new JSONObject(getProperties());
+    }
+
+    /**
+     * Sets the template properties.
+     */
+    public void setProperties(Map<String,String> properties)
+    {
+        this.properties.clear();
+        this.properties.putAll(properties);
+    }
+
+    /**
+     * Sets the template properties from a JSON object.
+     */
+    public void setProperties(JSONObject obj)
+    {
+        getProperties().clear();
+        Iterator<String> keys = obj.keys();
+        while(keys.hasNext())
+        {
+            String key = keys.next();
+            getProperties().put(key, obj.getString(key));
+        }
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given template property has been set.
+     */
+    public boolean hasProperty(String key)
+    {
+        return getProperties().containsKey(key);
+    }
+
+    /**
+     * Returns the post hashtags.
+     */
+    public String getHashtags()
+    {
+        return getProperties().get(HASHTAGS);
+    }
+
+    /**
+     * Sets the post hashtags.
+     */
+    public void setHashtags(String hashtags)
+    {
+        getProperties().put(HASHTAGS, hashtags);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the post hashtags have been set.
+     */
+    public boolean hasHashtags()
+    {
+        return getHashtags() != null && getHashtags().length() > 0;
+    }
+
+    /**
+     * Returns the post URL.
+     */
+    public String getUrl()
+    {
+        return getProperties().get(URL);
+    }
+
+    /**
+     * Sets the post URL.
+     */
+    public void setUrl(String url)
+    {
+        getProperties().put(URL, url);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the post URL has been set.
+     */
+    public boolean hasUrl()
+    {
+        return getUrl() != null && getUrl().length() > 0;
     }
 }
