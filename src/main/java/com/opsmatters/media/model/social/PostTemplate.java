@@ -22,11 +22,11 @@ import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
 
 /**
- * Class representing a social media template.
+ * Class representing a social media post template.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialTemplate extends SocialItem
+public class PostTemplate extends SocialItem
 {
     public static final String HANDLE = "handle";
     public static final String HASHTAG = "hashtag";
@@ -44,14 +44,14 @@ public class SocialTemplate extends SocialItem
     /**
      * Default constructor.
      */
-    public SocialTemplate()
+    public PostTemplate()
     {
     }
 
     /**
      * Constructor that takes a name.
      */
-    public SocialTemplate(String name)
+    public PostTemplate(String name)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
@@ -61,7 +61,7 @@ public class SocialTemplate extends SocialItem
     /**
      * Copy constructor.
      */
-    public SocialTemplate(SocialTemplate obj)
+    public PostTemplate(PostTemplate obj)
     {
         copyAttributes(obj);
     }
@@ -69,7 +69,7 @@ public class SocialTemplate extends SocialItem
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(SocialTemplate obj)
+    public void copyAttributes(PostTemplate obj)
     {
         if(obj != null)
         {

@@ -38,7 +38,7 @@ import com.echobox.api.linkedin.connection.v2.UGCShareConnection;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.model.social.SocialChannel;
-import com.opsmatters.media.model.social.SocialPost;
+import com.opsmatters.media.model.social.PreparedPost;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -290,7 +290,7 @@ public class LinkedInClient extends Client implements SocialClient
      *
      * @param text The text of the post to be sent.
      */
-    public SocialPost sendPost(String text) throws IOException
+    public PreparedPost sendPost(String text) throws IOException
     {
         String url = StringUtils.extractUrl(text);
 
@@ -322,7 +322,7 @@ public class LinkedInClient extends Client implements SocialClient
         share.setLifecycleState("PUBLISHED");
         UGCShare ugc = ugcConnection.createUGCPost(share);
 
-        return new SocialPost(ugc, channel);
+        return new PreparedPost(ugc, channel);
     }
 
     /**
@@ -330,23 +330,23 @@ public class LinkedInClient extends Client implements SocialClient
      *
      * @param id The id of the post to be deleted.
      */
-    public SocialPost deletePost(String id) throws IOException
+    public PreparedPost deletePost(String id) throws IOException
     {
         URN urn = new URN(URNEntityType.UGCPOST, id);
         UGCShare share = ugcConnection.retrieveUGCPost(urn, ViewContext.AUTHOR);
         ugcConnection.deleteUGCPost(urn);
-        return share != null ? new SocialPost(share, channel) : null;
+        return share != null ? new PreparedPost(share, channel) : null;
     }
 
     /**
      * Returns the posts for the current user.
      */
-    public List<SocialPost> getPosts() throws IOException
+    public List<PreparedPost> getPosts() throws IOException
     {
-        List<SocialPost> ret = new ArrayList<SocialPost>();
+        List<PreparedPost> ret = new ArrayList<PreparedPost>();
         List<UGCShare> shares = ugcConnection.retrieveUGCPostsByAuthors(organizationURN, 30).getData();
         for(UGCShare share : shares)
-            ret.add(new SocialPost(share, channel));
+            ret.add(new PreparedPost(share, channel));
         return ret;
     }
 }

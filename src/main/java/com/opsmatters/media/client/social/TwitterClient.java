@@ -30,7 +30,7 @@ import twitter4j.auth.AccessToken;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.model.social.SocialChannel;
-import com.opsmatters.media.model.social.SocialPost;
+import com.opsmatters.media.model.social.PreparedPost;
 
 /**
  * Class that represents a connection to Twitter for social media posts.
@@ -235,10 +235,10 @@ public class TwitterClient extends Client implements SocialClient
      *
      * @param text The text of the post to be sent.
      */
-    public SocialPost sendPost(String text) throws IOException, TwitterException
+    public PreparedPost sendPost(String text) throws IOException, TwitterException
     {
         Status status = client.updateStatus(text);
-        return status != null ? new SocialPost(status, channel) : null;
+        return status != null ? new PreparedPost(status, channel) : null;
     }
 
     /**
@@ -246,21 +246,21 @@ public class TwitterClient extends Client implements SocialClient
      *
      * @param id The id of the post to be deleted.
      */
-    public SocialPost deletePost(String id) throws IOException, TwitterException
+    public PreparedPost deletePost(String id) throws IOException, TwitterException
     {
         Status status = client.destroyStatus(Long.parseLong(id));
-        return status != null ? new SocialPost(status, channel) : null;
+        return status != null ? new PreparedPost(status, channel) : null;
     }
 
     /**
      * Returns the posts for the current user.
      */
-    public List<SocialPost> getPosts() throws IOException, TwitterException
+    public List<PreparedPost> getPosts() throws IOException, TwitterException
     {
-        List<SocialPost> ret = new ArrayList<SocialPost>();
+        List<PreparedPost> ret = new ArrayList<PreparedPost>();
         List<Status> statuses = client.getUserTimeline();
         for(Status status : statuses)
-            ret.add(new SocialPost(status, channel));
+            ret.add(new PreparedPost(status, channel));
         return ret;
     }
 }

@@ -21,51 +21,44 @@ import java.util.Iterator;
 import org.json.JSONObject;
 
 /**
- * Class representing a social media message.
+ * Class representing a social media post draft.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialMessage extends SocialItem
+public abstract class DraftPost extends SocialPost
 {
     private static final String ENABLED = ".enabled";
 
     private String templateId = "";
     private Map<String,String> properties = new LinkedHashMap<String,String>();
-    private String message = "";
-    private MessageStatus status;
-
-    /**
-     * Default constructor.
-     */
-    public SocialMessage()
-    {
-    }
-
-    /**
-     * Copy constructor.
-     */
-    public SocialMessage(SocialMessage obj)
-    {
-        copyAttributes(obj);
-    }
+    private DraftStatus status;
 
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(SocialMessage obj)
+    public void copyAttributes(DraftPost obj)
     {
         if(obj != null)
         {
             super.copyAttributes(obj);
             setTemplateId(obj.getTemplateId());
             setProperties(obj.getProperties());
-            setMessage(obj.getMessage());
             setStatus(obj.getStatus());
         }
     }
 
     /**
-     * Returns the message template id.
+     * Returns the attributes as a JSON object.
+     */
+    public abstract JSONObject getAttributesAsJson();
+
+    /**
+     * Initialise the attributes using a JSON object.
+     */
+    public abstract void setAttributes(JSONObject obj);
+
+    /**
+     * Returns the post template id.
      */
     public String getTemplateId()
     {
@@ -73,7 +66,7 @@ public class SocialMessage extends SocialItem
     }
 
     /**
-     * Sets the message template id.
+     * Sets the post template id.
      */
     public void setTemplateId(String templateId)
     {
@@ -81,7 +74,7 @@ public class SocialMessage extends SocialItem
     }
 
     /**
-     * Returns <CODE>true</CODE> if the message template id has been set.
+     * Returns <CODE>true</CODE> if the post template id has been set.
      */
     public boolean hasTemplateId()
     {
@@ -89,7 +82,7 @@ public class SocialMessage extends SocialItem
     }
 
     /**
-     * Returns the message properties.
+     * Returns the post properties.
      */
     public Map<String,String> getProperties()
     {
@@ -97,7 +90,7 @@ public class SocialMessage extends SocialItem
     }
 
     /**
-     * Returns the message properties as a JSON object.
+     * Returns the post properties as a JSON object.
      */
     public JSONObject getPropertiesAsJson()
     {
@@ -105,7 +98,7 @@ public class SocialMessage extends SocialItem
     }
 
     /**
-     * Sets the message properties.
+     * Sets the post properties.
      */
     public void setProperties(Map<String,String> properties)
     {
@@ -114,7 +107,7 @@ public class SocialMessage extends SocialItem
     }
 
     /**
-     * Sets the message properties from a JSON object.
+     * Sets the post properties from a JSON object.
      */
     public void setProperties(JSONObject obj)
     {
@@ -128,7 +121,7 @@ public class SocialMessage extends SocialItem
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given message property has been set.
+     * Returns <CODE>true</CODE> if the given post property has been set.
      */
     public boolean hasProperty(String key)
     {
@@ -144,7 +137,7 @@ public class SocialMessage extends SocialItem
     }
 
     /**
-     * Returns the value of the given message property.
+     * Returns the value of the given post property.
      */
     public String getProperty(String key)
     {
@@ -160,7 +153,7 @@ public class SocialMessage extends SocialItem
     }
 
     /**
-     * Sets the value of the given message property.
+     * Sets the value of the given post property.
      */
     public void setProperty(String key, String value)
     {
@@ -176,23 +169,47 @@ public class SocialMessage extends SocialItem
     }
 
     /**
-     * Returns the message URL.
+     * Returns the post hashtags.
+     */
+    public String getHashtags()
+    {
+        return getProperties().get(PostTemplate.HASHTAGS);
+    }
+
+    /**
+     * Sets the post hashtags.
+     */
+    public void setHashtags(String hashtags)
+    {
+        getProperties().put(PostTemplate.HASHTAGS, hashtags);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the post hashtags have been set.
+     */
+    public boolean hasHashtags()
+    {
+        return getHashtags() != null && getHashtags().length() > 0;
+    }
+
+    /**
+     * Returns the post URL.
      */
     public String getUrl()
     {
-        return getProperties().get(SocialTemplate.URL);
+        return getProperties().get(PostTemplate.URL);
     }
 
     /**
-     * Sets the message URL.
+     * Sets the post URL.
      */
     public void setUrl(String url)
     {
-        getProperties().put(SocialTemplate.URL, url);
+        getProperties().put(PostTemplate.URL, url);
     }
 
     /**
-     * Returns <CODE>true</CODE> if the message URL has been set.
+     * Returns <CODE>true</CODE> if the post URL has been set.
      */
     public boolean hasUrl()
     {
@@ -200,7 +217,7 @@ public class SocialMessage extends SocialItem
     }
 
     /**
-     * Returns <CODE>true</CODE> if the message URL has been set and it has been shortened.
+     * Returns <CODE>true</CODE> if the post URL has been set and it has been shortened.
      */
     public boolean hasShortenedUrl()
     {
@@ -208,23 +225,23 @@ public class SocialMessage extends SocialItem
     }
 
     /**
-     * Returns the message original URL.
+     * Returns the post original URL.
      */
     public String getOriginalUrl()
     {
-        return getProperties().get(SocialTemplate.ORIGINAL_URL);
+        return getProperties().get(PostTemplate.ORIGINAL_URL);
     }
 
     /**
-     * Sets the message original URL.
+     * Sets the post original URL.
      */
     public void setOriginalUrl(String url)
     {
-        getProperties().put(SocialTemplate.ORIGINAL_URL, url);
+        getProperties().put(PostTemplate.ORIGINAL_URL, url);
     }
 
     /**
-     * Returns <CODE>true</CODE> if the message original URL has been set.
+     * Returns <CODE>true</CODE> if the post original URL has been set.
      */
     public boolean hasOriginalUrl()
     {
@@ -232,90 +249,66 @@ public class SocialMessage extends SocialItem
     }
 
     /**
-     * Returns the message.
+     * Returns the draft status.
      */
-    public String getMessage()
-    {
-        return message;
-    }
-
-    /**
-     * Sets the message.
-     */
-    public void setMessage(String message)
-    {
-        this.message = message;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the message has been set.
-     */
-    public boolean hasMessage()
-    {
-        return message != null && message.length() > 0;
-    }
-
-    /**
-     * Returns the message status.
-     */
-    public MessageStatus getStatus()
+    public DraftStatus getStatus()
     {
         return status;
     }
 
     /**
-     * Sets the message status.
+     * Sets the draft status.
      */
     public void setStatus(String status)
     {
-        setStatus(MessageStatus.valueOf(status));
+        setStatus(DraftStatus.valueOf(status));
     }
 
     /**
-     * Sets the message status.
+     * Sets the draft status.
      */
-    public void setStatus(MessageStatus status)
+    public void setStatus(DraftStatus status)
     {
         this.status = status;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the message status is PENDING.
+     * Returns <CODE>true</CODE> if the draft status is PENDING.
      */
     public boolean isPending()
     {
-        return status == MessageStatus.PENDING;
+        return status == DraftStatus.PENDING;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the message status is PROCESSING.
+     * Returns <CODE>true</CODE> if the draft status is PROCESSING.
      */
     public boolean isProcessing()
     {
-        return status == MessageStatus.PROCESSING;
+        return status == DraftStatus.PROCESSING;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the message status is PROCESSED.
+     * Returns <CODE>true</CODE> if the draft status is PROCESSED.
      */
     public boolean isProcessed()
     {
-        return status == MessageStatus.PROCESSED;
+        return status == DraftStatus.PROCESSED;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the message status is ERROR.
+     * Returns <CODE>true</CODE> if the draft status is ERROR.
      */
     public boolean isError()
     {
-        return status == MessageStatus.ERROR;
+        return status == DraftStatus.ERROR;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the message status is SKIPPED.
+     * Returns <CODE>true</CODE> if the draft status is SKIPPED.
      */
     public boolean isSkipped()
     {
-        return status == MessageStatus.SKIPPED;
+        return status == DraftStatus.SKIPPED;
     }
 }

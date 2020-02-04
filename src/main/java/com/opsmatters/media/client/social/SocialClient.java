@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.model.social.SocialChannel;
-import com.opsmatters.media.model.social.SocialPost;
+import com.opsmatters.media.model.social.PreparedPost;
 
 /**
  * Methods to interact with a user's social media channel.
@@ -59,17 +59,17 @@ public interface SocialClient
      *
      * @param text The text of the post to be sent.
      */
-    public SocialPost sendPost(String text) throws Exception;
+    public PreparedPost sendPost(String text) throws Exception;
 
     /**
      * Deletes the given post.
      *
      * @param id The id of the post to be deleted.
      */
-    public SocialPost deletePost(String id) throws Exception;
+    public PreparedPost deletePost(String id) throws Exception;
 
     /**
      * Returns the posts for the current user.
      */
-    public List<SocialPost> getPosts() throws Exception;
+    public List<PreparedPost> getPosts() throws Exception;
 }

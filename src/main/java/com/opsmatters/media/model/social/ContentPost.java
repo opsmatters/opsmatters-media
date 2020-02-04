@@ -16,18 +16,23 @@
 package com.opsmatters.media.model.social;
 
 import java.time.Instant;
+import org.json.JSONObject;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
 
 /**
- * Class representing a social media update.
+ * Class representing a draft social media post for a content item.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialUpdate extends SocialMessage
+public class ContentPost extends DraftPost
 {
+    public static final String ORGANISATION = "organisation";
+    public static final String CONTENT_TYPE = "content-type";
+    public static final String CONTENT_ID = "content-id";
+
     private String organisation = "";
     private ContentType contentType;
     private int contentId = -1;
@@ -35,14 +40,14 @@ public class SocialUpdate extends SocialMessage
     /**
      * Default constructor.
      */
-    public SocialUpdate()
+    public ContentPost()
     {
     }
 
     /**
      * Constructor that takes an organisation and a content item.
      */
-    public SocialUpdate(Organisation organisation, ContentItem content)
+    public ContentPost(Organisation organisation, ContentItem content)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
@@ -50,19 +55,19 @@ public class SocialUpdate extends SocialMessage
         if(content.getType() != ContentType.ROUNDUP)
             setContentId(content.getId());
         setContentType(content.getType());
-        setStatus(MessageStatus.PENDING);
+        setStatus(DraftStatus.NEW);
 
-        getProperties().put(SocialTemplate.HANDLE, "@"+organisation.getTwitterUsername());
-        getProperties().put(SocialTemplate.HASHTAG, organisation.getSocialHashtag());
-        getProperties().put(SocialTemplate.HASHTAGS, organisation.getSocialHashtags());
+        getProperties().put(PostTemplate.HANDLE, "@"+organisation.getTwitterUsername());
+        getProperties().put(PostTemplate.HASHTAG, organisation.getSocialHashtag());
+        getProperties().put(PostTemplate.HASHTAGS, organisation.getSocialHashtags());
         if(content.getType() == ContentType.ROUNDUP)
-            getProperties().put(SocialTemplate.URL, organisation.getUrl(System.getProperty("om-config.site.prod")));
+            getProperties().put(PostTemplate.URL, organisation.getUrl(System.getProperty("om-config.site.prod")));
     }
 
     /**
      * Copy constructor.
      */
-    public SocialUpdate(SocialUpdate obj)
+    public ContentPost(ContentPost obj)
     {
         copyAttributes(obj);
     }
@@ -70,7 +75,7 @@ public class SocialUpdate extends SocialMessage
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(SocialUpdate obj)
+    public void copyAttributes(ContentPost obj)
     {
         if(obj != null)
         {
@@ -82,7 +87,42 @@ public class SocialUpdate extends SocialMessage
     }
 
     /**
-     * Returns the update organisation.
+     * Returns the post type.
+     */
+    @Override
+    public PostType getType()
+    {
+        return PostType.CONTENT;
+    }
+
+    /**
+     * Returns the attributes as a JSON object.
+     */
+    @Override
+    public JSONObject getAttributesAsJson()
+    {
+        JSONObject ret = new JSONObject();
+
+        ret.putOpt(ORGANISATION, getOrganisation());
+        ret.putOpt(CONTENT_TYPE, getContentType().name());
+        ret.putOpt(CONTENT_ID, getContentId());
+
+        return ret;
+    }
+
+    /**
+     * Initialise the attributes using a JSON object.
+     */
+    @Override
+    public void setAttributes(JSONObject obj)
+    {
+        setOrganisation(obj.optString(ORGANISATION));
+        setContentType(obj.optString(CONTENT_TYPE));
+        setContentId(obj.optInt(CONTENT_ID));
+    }
+
+    /**
+     * Returns the post organisation.
      */
     public String getOrganisation()
     {
@@ -90,7 +130,7 @@ public class SocialUpdate extends SocialMessage
     }
 
     /**
-     * Sets the update organisation.
+     * Sets the post organisation.
      */
     public void setOrganisation(String organisation)
     {
@@ -98,7 +138,7 @@ public class SocialUpdate extends SocialMessage
     }
 
     /**
-     * Returns <CODE>true</CODE> if the update organisation has been set.
+     * Returns <CODE>true</CODE> if the post organisation has been set.
      */
     public boolean hasOrganisation()
     {
@@ -106,7 +146,31 @@ public class SocialUpdate extends SocialMessage
     }
 
     /**
-     * Returns the update content id.
+     * Returns the post content type.
+     */
+    public ContentType getContentType()
+    {
+        return contentType;
+    }
+
+    /**
+     * Sets the post content type.
+     */
+    public void setContentType(String contentType)
+    {
+        setContentType(ContentType.valueOf(contentType));
+    }
+
+    /**
+     * Sets the post content type.
+     */
+    public void setContentType(ContentType contentType)
+    {
+        this.contentType = contentType;
+    }
+
+    /**
+     * Returns the post content id.
      */
     public int getContentId()
     {
@@ -114,7 +178,7 @@ public class SocialUpdate extends SocialMessage
     }
 
     /**
-     * Sets the update content id.
+     * Sets the post content id.
      */
     public void setContentId(int contentId)
     {
@@ -133,23 +197,23 @@ public class SocialUpdate extends SocialMessage
     }
 
     /**
-     * Returns the update handle.
+     * Returns the post handle.
      */
     public String getHandle()
     {
-        return getProperties().get(SocialTemplate.HANDLE);
+        return getProperties().get(PostTemplate.HANDLE);
     }
 
     /**
-     * Sets the update handle.
+     * Sets the post handle.
      */
     public void setHandle(String handle)
     {
-        getProperties().put(SocialTemplate.HANDLE, handle);
+        getProperties().put(PostTemplate.HANDLE, handle);
     }
 
     /**
-     * Returns <CODE>true</CODE> if the update handle has been set.
+     * Returns <CODE>true</CODE> if the post handle has been set.
      */
     public boolean hasHandle()
     {
@@ -157,23 +221,23 @@ public class SocialUpdate extends SocialMessage
     }
 
     /**
-     * Returns the update hashtag.
+     * Returns the post hashtag.
      */
     public String getHashtag()
     {
-        return getProperties().get(SocialTemplate.HASHTAG);
+        return getProperties().get(PostTemplate.HASHTAG);
     }
 
     /**
-     * Sets the update hashtag.
+     * Sets the post hashtag.
      */
     public void setHashtag(String hashtag)
     {
-        getProperties().put(SocialTemplate.HASHTAG, hashtag);
+        getProperties().put(PostTemplate.HASHTAG, hashtag);
     }
 
     /**
-     * Returns <CODE>true</CODE> if the update hashtag has been set.
+     * Returns <CODE>true</CODE> if the post hashtag has been set.
      */
     public boolean hasHashtag()
     {
@@ -181,47 +245,23 @@ public class SocialUpdate extends SocialMessage
     }
 
     /**
-     * Returns the update hashtags.
-     */
-    public String getHashtags()
-    {
-        return getProperties().get(SocialTemplate.HASHTAGS);
-    }
-
-    /**
-     * Sets the update hashtags.
-     */
-    public void setHashtags(String hashtags)
-    {
-        getProperties().put(SocialTemplate.HASHTAGS, hashtags);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the update hashtags have been set.
-     */
-    public boolean hasHashtags()
-    {
-        return getHashtags() != null && getHashtags().length() > 0;
-    }
-
-    /**
-     * Returns the update title1.
+     * Returns the post title1.
      */
     public String getTitle1()
     {
-        return getProperties().get(SocialTemplate.TITLE1);
+        return getProperties().get(PostTemplate.TITLE1);
     }
 
     /**
-     * Sets the update title1.
+     * Sets the post title1.
      */
     public void setTitle1(String title1)
     {
-        getProperties().put(SocialTemplate.TITLE1, title1);
+        getProperties().put(PostTemplate.TITLE1, title1);
     }
 
     /**
-     * Returns <CODE>true</CODE> if the update title1 has been set.
+     * Returns <CODE>true</CODE> if the post title1 has been set.
      */
     public boolean hasTitle1()
     {
@@ -229,50 +269,26 @@ public class SocialUpdate extends SocialMessage
     }
 
     /**
-     * Returns the update title2.
+     * Returns the post title2.
      */
     public String getTitle2()
     {
-        return getProperties().get(SocialTemplate.TITLE2);
+        return getProperties().get(PostTemplate.TITLE2);
     }
 
     /**
-     * Sets the update title2.
+     * Sets the post title2.
      */
     public void setTitle2(String title2)
     {
-        getProperties().put(SocialTemplate.TITLE2, title2);
+        getProperties().put(PostTemplate.TITLE2, title2);
     }
 
     /**
-     * Returns <CODE>true</CODE> if the update title2 has been set.
+     * Returns <CODE>true</CODE> if the post title2 has been set.
      */
     public boolean hasTitle2()
     {
         return getTitle2() != null && getTitle2().length() > 0;
-    }
-
-    /**
-     * Returns the update content type.
-     */
-    public ContentType getContentType()
-    {
-        return contentType;
-    }
-
-    /**
-     * Sets the update content type.
-     */
-    public void setContentType(String contentType)
-    {
-        setContentType(ContentType.valueOf(contentType));
-    }
-
-    /**
-     * Sets the update content type.
-     */
-    public void setContentType(ContentType contentType)
-    {
-        this.contentType = contentType;
     }
 }

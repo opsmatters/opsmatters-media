@@ -33,39 +33,39 @@ public class SocialDAOFactory extends DAOFactory
     {
         super(driver, conn);
 
-        getSocialTemplateDAO();
-        getSocialUpdateDAO();
-        getSocialPostDAO();
+        getPostTemplateDAO();
+        getDraftPostDAO();
+        getPreparedPostDAO();
     }
 
     /**
-     * Returns the social template DAO.
+     * Returns the post template DAO.
      */
-    public SocialTemplateDAO getSocialTemplateDAO()
+    public PostTemplateDAO getPostTemplateDAO()
     {
-        if(socialTemplateDAO == null)
-            socialTemplateDAO = new SocialTemplateDAO(this);
-        return socialTemplateDAO;
+        if(postTemplateDAO == null)
+            postTemplateDAO = new PostTemplateDAO(this);
+        return postTemplateDAO;
     }
 
     /**
-     * Returns the social update DAO.
+     * Returns the draft post DAO.
      */
-    public SocialUpdateDAO getSocialUpdateDAO()
+    public DraftPostDAO getDraftPostDAO()
     {
-        if(socialUpdateDAO == null)
-            socialUpdateDAO = new SocialUpdateDAO(this);
-        return socialUpdateDAO;
+        if(draftPostDAO == null)
+            draftPostDAO = new DraftPostDAO(this);
+        return draftPostDAO;
     }
 
     /**
-     * Returns the social post DAO.
+     * Returns the prepared post DAO.
      */
-    public SocialPostDAO getSocialPostDAO()
+    public PreparedPostDAO getPreparedPostDAO()
     {
-        if(socialPostDAO == null)
-            socialPostDAO = new SocialPostDAO(this);
-        return socialPostDAO;
+        if(preparedPostDAO == null)
+            preparedPostDAO = new PreparedPostDAO(this);
+        return preparedPostDAO;
     }
 
     /**
@@ -75,12 +75,12 @@ public class SocialDAOFactory extends DAOFactory
     public void close()
     {
         super.close();
-        socialTemplateDAO = null;
-        socialUpdateDAO = null;
-        socialPostDAO = null;
+        postTemplateDAO = null;
+        draftPostDAO = null;
+        preparedPostDAO = null;
     }
 
-    private SocialTemplateDAO socialTemplateDAO;
-    private SocialUpdateDAO socialUpdateDAO;
-    private SocialPostDAO socialPostDAO;
+    private PostTemplateDAO postTemplateDAO;
+    private DraftPostDAO draftPostDAO;
+    private PreparedPostDAO preparedPostDAO;
 }

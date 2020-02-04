@@ -23,14 +23,14 @@ import java.util.Collection;
 import org.apache.commons.text.StringSubstitutor;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.model.social.SocialChannel;
-import com.opsmatters.media.model.social.SocialTemplate;
+import com.opsmatters.media.model.social.PostTemplate;
 
 /**
- * Class representing a social media message handler.
+ * Class representing a handler used to prepare social media posts.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialMessageHandler
+public class DraftPostHandler
 {
     private List<Token> tokens = new ArrayList<Token>();
     private Map<String,String> hashtagMap = new LinkedHashMap<String,String>();
@@ -40,7 +40,7 @@ public class SocialMessageHandler
     /**
      * Private constructor.
      */
-    private SocialMessageHandler()
+    private DraftPostHandler()
     {
     }
 
@@ -122,12 +122,12 @@ public class SocialMessageHandler
         {
             // Process the message to find any hashtags in the message
             //   that can be removed from the hashtag list
-            properties.remove(SocialTemplate.HASHTAGS);
+            properties.remove(PostTemplate.HASHTAGS);
             parseTokens(new StringSubstitutor(properties).replace(message));
 
             // Put back the amended hashtag list and process the message again
             //   to resolve the HASHTAGS property with the new value
-            properties.put(SocialTemplate.HASHTAGS, getHashtags());
+            properties.put(PostTemplate.HASHTAGS, getHashtags());
             parseTokens(new StringSubstitutor(properties).replace(createMessage(false)));
         }
     }
@@ -459,7 +459,7 @@ public class SocialMessageHandler
      */
     public static class Builder
     {
-        private SocialMessageHandler handler = new SocialMessageHandler();
+        private DraftPostHandler handler = new DraftPostHandler();
 
         /**
          * Sets the hashtag list for the handler.
@@ -498,7 +498,7 @@ public class SocialMessageHandler
          * Returns the configured handler instance
          * @return The handler instance
          */
-        public SocialMessageHandler build()
+        public DraftPostHandler build()
         {
             return handler;
         }

@@ -17,33 +17,30 @@
 package com.opsmatters.media.model.social;
 
 /**
- * Represents a social message status.
+ * Represents a social post type.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum MessageStatus
+public enum PostType
 {
-    PENDING("Pending"),
-    PROCESSING("Processing"),
-    PROCESSED("Processed"),
-    ERROR("Error"),
-    SKIPPED("Skipped"),
-    ALL("All");
+    CONTENT("CONTENT"),
+    ADHOC("Ad-hoc"),
+    EXTERNAL("External");
 
     private String value;
 
     /**
-     * Constructor that takes the status value.
-     * @param value The value for the status
+     * Constructor that takes the type value.
+     * @param value The value for the type
      */
-    MessageStatus(String value)
+    PostType(String value)
     {
         this.value = value;
     }
 
     /**
-     * Returns the value of the status.
-     * @return The value of the status.
+     * Returns the value of the type.
+     * @return The value of the type.
      */
     public String toString()
     {
@@ -51,8 +48,8 @@ public enum MessageStatus
     }
 
     /**
-     * Returns the value of the status.
-     * @return The value of the status.
+     * Returns the value of the type.
+     * @return The value of the type.
      */
     public String value()
     {
@@ -64,10 +61,10 @@ public enum MessageStatus
      * @param value The type value
      * @return The type for the given value
      */
-    public static MessageStatus fromValue(String value)
+    public static PostType fromValue(String value)
     {
-        MessageStatus[] types = values();
-        for(MessageStatus type : types)
+        PostType[] types = values();
+        for(PostType type : types)
         {
             if(type.value().equals(value))
                 return type;

@@ -33,7 +33,7 @@ import facebook4j.auth.AccessToken;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.model.social.SocialChannel;
-import com.opsmatters.media.model.social.SocialPost;
+import com.opsmatters.media.model.social.PreparedPost;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -240,7 +240,7 @@ public class FacebookClient extends Client implements SocialClient
      *
      * @param text The text of the post to be sent.
      */
-    public SocialPost sendPost(String text) throws IOException, FacebookException
+    public PreparedPost sendPost(String text) throws IOException, FacebookException
     {
         String id = null;
         String url = StringUtils.extractUrl(text);
@@ -249,7 +249,7 @@ public class FacebookClient extends Client implements SocialClient
         else
             id = client.postStatusMessage(text);
         Post post = client.getPost(id);
-        return post != null ? new SocialPost(post, channel) : null;
+        return post != null ? new PreparedPost(post, channel) : null;
     }
 
     /**
@@ -257,21 +257,21 @@ public class FacebookClient extends Client implements SocialClient
      *
      * @param id The id of the post to be deleted.
      */
-    public SocialPost deletePost(String id) throws IOException, FacebookException
+    public PreparedPost deletePost(String id) throws IOException, FacebookException
     {
         Post post = client.getPost(id);
-        return post != null && client.deletePost(post.getId()) ? new SocialPost(post, channel) : null;
+        return post != null && client.deletePost(post.getId()) ? new PreparedPost(post, channel) : null;
     }
 
     /**
      * Returns the posts for the current user.
      */
-    public List<SocialPost> getPosts() throws IOException, FacebookException
+    public List<PreparedPost> getPosts() throws IOException, FacebookException
     {
-        List<SocialPost> ret = new ArrayList<SocialPost>();
+        List<PreparedPost> ret = new ArrayList<PreparedPost>();
         ResponseList<Post> posts = client.getPosts();
         for(Post post : posts)
-            ret.add(new SocialPost(post, channel));
+            ret.add(new PreparedPost(post, channel));
         return ret;
     }
 }
