@@ -46,7 +46,7 @@ public enum SocialProvider
         1300);
 
     private String code;
-    private String displayName;
+    private String value;
     private String url;
     private String handleUrl;
     private String hashtagUrl;
@@ -56,17 +56,17 @@ public enum SocialProvider
     /**
      * Constructor that takes the channel information.
      * @param code The code for the provider
-     * @param displayName The display name for the provider
+     * @param value The display name for the provider
      * @param url The url for the provider
      * @param handleUrl The handle url for the provider
      * @param hashtagUrl The hashtag url for the provider
      * @param thumbnail The thumbnail image for the provider
      * @param maxLength The maximum message length for the provider
      */
-    SocialProvider(String code, String displayName, String url, String handleUrl, String hashtagUrl, String thumbnail, int maxLength)
+    SocialProvider(String code, String value, String url, String handleUrl, String hashtagUrl, String thumbnail, int maxLength)
     {
         this.code = code;
-        this.displayName = displayName;
+        this.value = value;
         this.url = url;
         this.handleUrl = url+handleUrl;
         this.hashtagUrl = url+hashtagUrl;
@@ -87,9 +87,9 @@ public enum SocialProvider
      * Returns the provider display name.
      * @return The provider display name.
      */
-    public String displayName()
+    public String value()
     {
-        return displayName;
+        return value;
     }
 
     /**

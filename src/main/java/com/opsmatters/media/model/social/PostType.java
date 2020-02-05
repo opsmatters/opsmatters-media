@@ -25,7 +25,8 @@ public enum PostType
 {
     CONTENT("Content"),
     ADHOC("Ad-hoc"),
-    EXTERNAL("External");
+    EXTERNAL("External"),
+    ALL("All");
 
     private String value;
 
