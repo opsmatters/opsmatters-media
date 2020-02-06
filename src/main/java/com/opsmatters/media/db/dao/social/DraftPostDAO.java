@@ -53,7 +53,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
      */
     private static final String GET_PENDING_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, TEMPLATE_ID, PROPERTIES, ATTRIBUTES, MESSAGE, STATUS, CREATED_BY "
-      + "FROM DRAFT_POSTS WHERE TYPE=? AND STATUS='PENDING'";
+      + "FROM DRAFT_POSTS WHERE TYPE=? AND STATUS='NEW'";
 
     /**
      * The query to use to insert a post into the DRAFT_POSTS table.

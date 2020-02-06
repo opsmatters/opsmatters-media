@@ -35,6 +35,7 @@ public class PostTemplate extends SocialPost
     public static final String HANDLE = "handle";
     public static final String HASHTAG = "hashtag";
     public static final String HASHTAGS = "hashtags";
+    public static final String TITLE = "title";
     public static final String TITLE1 = "title1";
     public static final String TITLE2 = "title2";
     public static final String URL = "url";
@@ -57,11 +58,12 @@ public class PostTemplate extends SocialPost
     /**
      * Constructor that takes a name.
      */
-    public PostTemplate(String name)
+    public PostTemplate(String name, PostType type)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setName(name);
+        setType(type);
     }
 
     /**

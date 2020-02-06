@@ -245,6 +245,30 @@ public class ContentPost extends DraftPost
     }
 
     /**
+     * Returns the post title.
+     */
+    public String getTitle()
+    {
+        return getProperties().get(PostTemplate.TITLE);
+    }
+
+    /**
+     * Sets the post title.
+     */
+    public void setTitle(String title)
+    {
+        getProperties().put(PostTemplate.TITLE, title);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the post title has been set.
+     */
+    public boolean hasTitle()
+    {
+        return getTitle() != null && getTitle().length() > 0;
+    }
+
+    /**
      * Returns the post title1.
      */
     public String getTitle1()
