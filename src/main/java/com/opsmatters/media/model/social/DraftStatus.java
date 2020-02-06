@@ -24,8 +24,7 @@ package com.opsmatters.media.model.social;
 public enum DraftStatus
 {
     NEW("New"),
-    PENDING("Pending"),
-    PROCESSING("Processing"),
+    SUBMITTED("Submitted"),
     PROCESSED("Processed"),
     ERROR("Error"),
     SKIPPED("Skipped"),

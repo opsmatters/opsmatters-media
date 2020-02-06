@@ -215,6 +215,7 @@ public abstract class Resource extends ContentItem
     /**
      * Returns <CODE>true</CODE> if this content should be promoted.
      */
+    @Override
     public boolean isPromoted()
     {
         return promote;

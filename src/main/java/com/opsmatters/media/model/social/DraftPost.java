@@ -273,19 +273,11 @@ public abstract class DraftPost extends SocialPost
     }
 
     /**
-     * Returns <CODE>true</CODE> if the draft status is PENDING.
+     * Returns <CODE>true</CODE> if the draft status is SUBMITTED.
      */
-    public boolean isPending()
+    public boolean isSubmitted()
     {
-        return status == DraftStatus.PENDING;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the draft status is PROCESSING.
-     */
-    public boolean isProcessing()
-    {
-        return status == DraftStatus.PROCESSING;
+        return status == DraftStatus.SUBMITTED;
     }
 
     /**

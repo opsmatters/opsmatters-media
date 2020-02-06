@@ -450,6 +450,14 @@ public abstract class ContentItem implements java.io.Serializable
     }
 
     /**
+     * Returns <CODE>true</CODE> if this content should be promoted.
+     */
+    public boolean isPromoted()
+    {
+        return true;
+    }
+
+    /**
      * Returns the user that created the content.
      */
     public String getCreatedBy()

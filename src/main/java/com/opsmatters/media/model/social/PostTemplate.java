@@ -44,6 +44,7 @@ public class PostTemplate extends SocialPost
     private PostType type;
     private ContentType contentType;
     private boolean isDefault = false;
+    private boolean shortenUrl = false;
     private Map<String,String> properties = new LinkedHashMap<String,String>();
 
     /**
@@ -83,6 +84,7 @@ public class PostTemplate extends SocialPost
             setType(obj.getType());
             setContentType(obj.getContentType());
             setDefault(obj.isDefault());
+            setShortenUrl(obj.isShortenUrl());
             setProperties(obj.getProperties());
         }
     }
@@ -236,6 +238,38 @@ public class PostTemplate extends SocialPost
     public void setDefaultObject(Boolean isDefault)
     {
         setDefault(isDefault != null && isDefault.booleanValue());
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the template URL should be automatically shortened.
+     */
+    public boolean isShortenUrl()
+    {
+        return shortenUrl;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the template URL should be automatically shortened.
+     */
+    public Boolean getShortenUrlObject()
+    {
+        return new Boolean(isShortenUrl());
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the template URL should be automatically shortened.
+     */
+    public void setShortenUrl(boolean shortenUrl)
+    {
+        this.shortenUrl = shortenUrl;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the template URL should be automatically shortened.
+     */
+    public void setShortenUrlObject(Boolean shortenUrl)
+    {
+        setShortenUrl(shortenUrl != null && shortenUrl.booleanValue());
     }
 
     /**
