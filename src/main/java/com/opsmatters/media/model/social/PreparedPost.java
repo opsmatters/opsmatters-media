@@ -143,6 +143,14 @@ public class PreparedPost extends SocialPost
     }
 
     /**
+     * Returns <CODE>true</CODE> if the post organisation has been set.
+     */
+    public boolean hasOrganisation()
+    {
+        return organisation != null && organisation.length() > 0;
+    }
+
+    /**
      * Returns the post title.
      */
     public String getTitle()

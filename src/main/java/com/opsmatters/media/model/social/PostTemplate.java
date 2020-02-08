@@ -43,6 +43,7 @@ public class PostTemplate extends SocialPost
 
     private String name = "";
     private PostType type;
+    private String organisation = "";
     private ContentType contentType;
     private boolean isDefault = false;
     private boolean shortenUrl = false;
@@ -67,6 +68,26 @@ public class PostTemplate extends SocialPost
     }
 
     /**
+     * Constructor that takes a content post.
+     */
+    public PostTemplate(ContentPost post, String message)
+    {
+        setId(StringUtils.getUUID(null));
+        setCreatedDate(Instant.now());
+        setName(post.getTitle());
+        setType(PostType.LIBRARY);
+        setOrganisation(post.getOrganisation());
+        setContentType(post.getContentType());
+        setMessage(message);
+        setHashtags(post.getHashtags());
+        if(post.hasOriginalUrl())
+            setUrl(post.getOriginalUrl());
+        else
+            setUrl(post.getUrl());
+        setShortenUrl(post.hasShortenedUrl());
+    }
+
+    /**
      * Copy constructor.
      */
     public PostTemplate(PostTemplate obj)
@@ -84,6 +105,7 @@ public class PostTemplate extends SocialPost
             super.copyAttributes(obj);
             setName(obj.getName());
             setType(obj.getType());
+            setOrganisation(obj.getOrganisation());
             setContentType(obj.getContentType());
             setDefault(obj.isDefault());
             setShortenUrl(obj.isShortenUrl());
@@ -161,6 +183,30 @@ public class PostTemplate extends SocialPost
     public void setTypeValue(String type)
     {
         setType(PostType.fromValue(type));
+    }
+
+    /**
+     * Returns the template organisation.
+     */
+    public String getOrganisation()
+    {
+        return organisation;
+    }
+
+    /**
+     * Sets the template organisation.
+     */
+    public void setOrganisation(String organisation)
+    {
+        this.organisation = organisation;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the template organisation has been set.
+     */
+    public boolean hasOrganisation()
+    {
+        return organisation != null && organisation.length() > 0;
     }
 
     /**

@@ -65,6 +65,25 @@ public class ContentPost extends DraftPost
     }
 
     /**
+     * Constructor that takes a library post template.
+     */
+    public ContentPost(Organisation organisation, PostTemplate template)
+    {
+        setId(StringUtils.getUUID(null));
+        setCreatedDate(Instant.now());
+        setTemplateId(template.getId());
+        setOrganisation(organisation.getCode());
+        setContentType(template.getContentType());
+        setStatus(DraftStatus.NEW);
+
+        getProperties().put(PostTemplate.HANDLE, "@"+organisation.getTwitterUsername());
+        getProperties().put(PostTemplate.HASHTAG, organisation.getSocialHashtag());
+        setTitle(template.getName());
+        setHashtags(template.getHashtags());
+        setUrl(template.getUrl());
+    }
+
+    /**
      * Copy constructor.
      */
     public ContentPost(ContentPost obj)

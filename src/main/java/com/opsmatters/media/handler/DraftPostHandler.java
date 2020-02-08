@@ -33,6 +33,7 @@ import com.opsmatters.media.model.social.PostTemplate;
 public class DraftPostHandler
 {
     private List<Token> tokens = new ArrayList<Token>();
+    private String hashtags = null;
     private Map<String,String> hashtagMap = new LinkedHashMap<String,String>();
     private Map<String,String> properties = new LinkedHashMap<String,String>();
     private SocialChannel channel;
@@ -85,6 +86,7 @@ public class DraftPostHandler
         hashtagMap.clear();
         if(hashtags != null && hashtags.length() > 0)
         {
+            this.hashtags = hashtags;
             for(String hashtag : hashtags.split(" "))
             {
                 if(hashtag.startsWith("#") && hashtag.length() > 2)
@@ -127,7 +129,8 @@ public class DraftPostHandler
 
             // Put back the amended hashtag list and process the message again
             //   to resolve the HASHTAGS property with the new value
-            properties.put(PostTemplate.HASHTAGS, getHashtags());
+            if(hashtags != null)
+                properties.put(PostTemplate.HASHTAGS, getHashtags());
             parseTokens(new StringSubstitutor(properties).replace(createMessage(false)));
         }
     }

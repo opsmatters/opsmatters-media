@@ -18,9 +18,6 @@ package com.opsmatters.media.model.social;
 import java.time.Instant;
 import org.json.JSONObject;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.model.content.Organisation;
-import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.ContentItem;
 
 /**
  * Class representing a draft social media post with a message and a link.
@@ -49,6 +46,20 @@ public class AdhocPost extends DraftPost
         setTitle(title);
         setCreatedDate(Instant.now());
         setStatus(DraftStatus.NEW);
+    }
+
+    /**
+     * Constructor that takes a library post template.
+     */
+    public AdhocPost(PostTemplate template)
+    {
+        setId(StringUtils.getUUID(null));
+        setCreatedDate(Instant.now());
+        setTemplateId(template.getId());
+        setStatus(DraftStatus.NEW);
+        setTitle(template.getName());
+        setHashtags(template.getHashtags());
+        setUrl(template.getUrl());
     }
 
     /**

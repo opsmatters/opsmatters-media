@@ -42,7 +42,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
      * The query to use to select a post template from the POST_TEMPLATES table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, ORGANISATION, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY "
       + "FROM POST_TEMPLATES WHERE ID=?";
 
     /**
@@ -50,29 +50,29 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO POST_TEMPLATES"
-      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, ORGANISATION, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a post template in the POST_TEMPLATES table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE POST_TEMPLATES SET UPDATED_DATE=?, NAME=?, MESSAGE=?, TYPE=?, CONTENT_TYPE=?, IS_DEFAULT=?, SHORTEN_URL=?, PROPERTIES=? "
+      "UPDATE POST_TEMPLATES SET UPDATED_DATE=?, NAME=?, MESSAGE=?, TYPE=?, ORGANISATION=?, CONTENT_TYPE=?, IS_DEFAULT=?, SHORTEN_URL=?, PROPERTIES=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the post templates from the POST_TEMPLATES table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, ORGANISATION, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY "
       + "FROM POST_TEMPLATES";
 
     /**
      * The query to use to select the post templates from the POST_TEMPLATES table.
      */
     private static final String LIST_BY_TYPE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, ORGANISATION, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY "
       + "FROM POST_TEMPLATES WHERE TYPE=? AND CONTENT_TYPE=?";
 
     /**
@@ -104,9 +104,10 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
-        table.addColumn("NAME", Types.VARCHAR, 50, true);
+        table.addColumn("NAME", Types.VARCHAR, 128, true);
         table.addColumn("MESSAGE", Types.VARCHAR, 512, true);
         table.addColumn("TYPE", Types.VARCHAR, 15, true);
+        table.addColumn("ORGANISATION", Types.VARCHAR, 5, false);
         table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, false);
         table.addColumn("IS_DEFAULT", Types.BOOLEAN, true);
         table.addColumn("SHORTEN_URL", Types.BOOLEAN, true);
@@ -147,11 +148,12 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
                 template.setName(rs.getString(4));
                 template.setMessage(rs.getString(5));
                 template.setType(rs.getString(6));
-                template.setContentType(rs.getString(7));
-                template.setDefault(rs.getBoolean(8));
-                template.setShortenUrl(rs.getBoolean(9));
-                template.setProperties(new JSONObject(getClob(rs, 10)));
-                template.setCreatedBy(rs.getString(11));
+                template.setOrganisation(rs.getString(7));
+                template.setContentType(rs.getString(8));
+                template.setDefault(rs.getBoolean(9));
+                template.setShortenUrl(rs.getBoolean(10));
+                template.setProperties(new JSONObject(getClob(rs, 11)));
+                template.setCreatedBy(rs.getString(12));
                 ret = template;
             }
         }
@@ -194,13 +196,14 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
             insertStmt.setString(4, template.getName());
             insertStmt.setString(5, template.getMessage());
             insertStmt.setString(6, template.getType() != null ? template.getType().name(): "");
-            insertStmt.setString(7, template.getContentType() != null ? template.getContentType().name(): "");
-            insertStmt.setBoolean(8, template.isDefault());
-            insertStmt.setBoolean(9, template.isShortenUrl());
+            insertStmt.setString(7, template.getOrganisation());
+            insertStmt.setString(8, template.getContentType() != null ? template.getContentType().name(): "");
+            insertStmt.setBoolean(9, template.isDefault());
+            insertStmt.setBoolean(10, template.isShortenUrl());
             String properties = template.getPropertiesAsJson().toString();
             reader = new StringReader(properties);
-            insertStmt.setCharacterStream(10, reader, properties.length());
-            insertStmt.setString(11, template.getCreatedBy());
+            insertStmt.setCharacterStream(11, reader, properties.length());
+            insertStmt.setString(12, template.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created post template '"+template.getId()+"' in POST_TEMPLATES");
@@ -238,13 +241,14 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
         updateStmt.setString(2, template.getName());
         updateStmt.setString(3, template.getMessage());
         updateStmt.setString(4, template.getType() != null ? template.getType().name(): "");
-        updateStmt.setString(5, template.getContentType() != null ? template.getContentType().name(): "");
-        updateStmt.setBoolean(6, template.isDefault());
-        updateStmt.setBoolean(7, template.isShortenUrl());
+        updateStmt.setString(5, template.getOrganisation());
+        updateStmt.setString(6, template.getContentType() != null ? template.getContentType().name(): "");
+        updateStmt.setBoolean(7, template.isDefault());
+        updateStmt.setBoolean(8, template.isShortenUrl());
         String properties = template.getPropertiesAsJson().toString();
         reader = new StringReader(properties);
-        updateStmt.setCharacterStream(8, reader, properties.length());
-        updateStmt.setString(9, template.getId());
+        updateStmt.setCharacterStream(9, reader, properties.length());
+        updateStmt.setString(10, template.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated post template '"+template.getId()+"' in POST_TEMPLATES");
@@ -281,11 +285,12 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
                 template.setName(rs.getString(4));
                 template.setMessage(rs.getString(5));
                 template.setType(rs.getString(6));
-                template.setContentType(rs.getString(7));
-                template.setDefault(rs.getBoolean(8));
-                template.setShortenUrl(rs.getBoolean(9));
-                template.setProperties(new JSONObject(getClob(rs, 10)));
-                template.setCreatedBy(rs.getString(11));
+                template.setOrganisation(rs.getString(7));
+                template.setContentType(rs.getString(8));
+                template.setDefault(rs.getBoolean(9));
+                template.setShortenUrl(rs.getBoolean(10));
+                template.setProperties(new JSONObject(getClob(rs, 11)));
+                template.setCreatedBy(rs.getString(12));
                 ret.add(template);
             }
         }
@@ -339,11 +344,12 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
                 template.setName(rs.getString(4));
                 template.setMessage(rs.getString(5));
                 template.setType(rs.getString(6));
-                template.setContentType(rs.getString(7));
-                template.setDefault(rs.getBoolean(8));
-                template.setShortenUrl(rs.getBoolean(9));
-                template.setProperties(new JSONObject(getClob(rs, 10)));
-                template.setCreatedBy(rs.getString(11));
+                template.setOrganisation(rs.getString(7));
+                template.setContentType(rs.getString(8));
+                template.setDefault(rs.getBoolean(9));
+                template.setShortenUrl(rs.getBoolean(10));
+                template.setProperties(new JSONObject(getClob(rs, 11)));
+                template.setCreatedBy(rs.getString(12));
                 ret.add(template);
             }
         }
