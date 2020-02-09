@@ -24,9 +24,13 @@ package com.opsmatters.media.model.social;
 public enum DeliveryStatus
 {
     NEW("New"),
-    PENDING("Pending"),
-    PUBLISHED("Published"),
-    ERROR("Error");
+    WAITING("Waiting"),
+    SENDING("Sending"),
+    SENT("Sent"),
+    RECEIVED("Received"),
+    ERROR("Error"),
+    DELETED("Deleted"),
+    ALL("All");
 
     private String value;
 

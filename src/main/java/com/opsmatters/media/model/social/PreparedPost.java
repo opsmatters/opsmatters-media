@@ -19,6 +19,7 @@ import java.time.Instant;
 import twitter4j.Status;
 import facebook4j.Post;
 import com.echobox.api.linkedin.types.ugc.UGCShare;
+import com.opsmatters.media.util.StringUtils;
 
 /**
  * Class representing a social media post that has been prepared and assigned to a channel.
@@ -48,9 +49,11 @@ public class PreparedPost extends SocialPost
      */
     public PreparedPost(DraftPost post, String message, SocialChannel channel)
     {
+        setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         if(post.getType() == PostType.CONTENT)
             setOrganisation(((ContentPost)post).getOrganisation());
+        setTitle(post.getTitle());
         setMessage(message);
         setChannel(channel);
         setType(post.getType());
@@ -68,7 +71,7 @@ public class PreparedPost extends SocialPost
         setMessage(status.getText());
         setChannel(channel);
         setType(PostType.EXTERNAL);
-        setStatus(DeliveryStatus.PUBLISHED);
+        setStatus(DeliveryStatus.RECEIVED);
     }
 
     /**
@@ -82,7 +85,7 @@ public class PreparedPost extends SocialPost
         setMessage(post.getMessage());
         setChannel(channel);
         setType(PostType.EXTERNAL);
-        setStatus(DeliveryStatus.PUBLISHED);
+        setStatus(DeliveryStatus.RECEIVED);
     }
 
     /**
@@ -100,7 +103,7 @@ public class PreparedPost extends SocialPost
             setMessage(share.getSpecificContent().getShareContent().getShareCommentary().getText());
         setChannel(channel);
         setType(PostType.EXTERNAL);
-        setStatus(DeliveryStatus.PUBLISHED);
+        setStatus(DeliveryStatus.RECEIVED);
     }
 
     /**
@@ -164,6 +167,14 @@ public class PreparedPost extends SocialPost
     public void setTitle(String title)
     {
         this.title = title;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the post title has been set.
+     */
+    public boolean hasTitle()
+    {
+        return title != null && title.length() > 0;
     }
 
     /**

@@ -266,6 +266,7 @@ public class ContentPost extends DraftPost
     /**
      * Returns the post title.
      */
+    @Override
     public String getTitle()
     {
         return getProperties().get(PostTemplate.TITLE);

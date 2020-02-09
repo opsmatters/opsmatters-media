@@ -75,6 +75,15 @@ public enum SocialProvider
     }
 
     /**
+     * Returns the value of the provider.
+     * @return The value of the provider.
+     */
+    public String toString()
+    {
+        return value();
+    }
+
+    /**
      * Returns the code of the provider.
      * @return The code of the provider.
      */

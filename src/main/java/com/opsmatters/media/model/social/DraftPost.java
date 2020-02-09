@@ -48,6 +48,11 @@ public abstract class DraftPost extends SocialPost
     }
 
     /**
+     * Returns the post title.
+     */
+    public abstract String getTitle();
+
+    /**
      * Returns the attributes as a JSON object.
      */
     public abstract JSONObject getAttributesAsJson();

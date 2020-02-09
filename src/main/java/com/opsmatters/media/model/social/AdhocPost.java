@@ -116,6 +116,7 @@ public class AdhocPost extends DraftPost
     /**
      * Returns the post title.
      */
+    @Override
     public String getTitle()
     {
         return title;
