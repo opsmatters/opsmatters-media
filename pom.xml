@@ -536,13 +536,13 @@ built.on=${TODAY}
 <dependency>
   <groupId>com.echobox</groupId>
   <artifactId>ebx-linkedin-sdk</artifactId>
-  <version>1.0.2</version>
-      <exclusions>
-        <exclusion>
-          <groupId>ch.qos.logback.contrib</groupId>
-          <artifactId>logback-json-classic</artifactId>
-        </exclusion>
-      </exclusions>
+  <version>1.0.3-SNAPSHOT</version>
+    <exclusions>
+      <exclusion>
+        <groupId>ch.qos.logback.contrib</groupId>
+        <artifactId>logback-json-classic</artifactId>
+      </exclusion>
+    </exclusions>
 </dependency>
 
 <dependency>

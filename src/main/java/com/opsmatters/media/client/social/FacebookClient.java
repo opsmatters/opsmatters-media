@@ -259,8 +259,23 @@ public class FacebookClient extends Client implements SocialClient
      */
     public PreparedPost deletePost(String id) throws IOException, FacebookException
     {
-        Post post = client.getPost(id);
-        return post != null && client.deletePost(post.getId()) ? new PreparedPost(post, channel) : null;
+        PreparedPost ret = null;
+
+        try
+        {
+            Post post = client.getPost(id);
+            ret = new PreparedPost(post, channel);
+        }
+        catch(FacebookException e)
+        {
+            // Post already deleted
+            if(e.getStatusCode() == 400)
+                ret = new PreparedPost(id, channel);
+            else
+                throw e;
+        }
+
+        return ret;
     }
 
     /**

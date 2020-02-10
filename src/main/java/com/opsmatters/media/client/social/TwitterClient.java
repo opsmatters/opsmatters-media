@@ -248,8 +248,23 @@ public class TwitterClient extends Client implements SocialClient
      */
     public PreparedPost deletePost(String id) throws IOException, TwitterException
     {
-        Status status = client.destroyStatus(Long.parseLong(id));
-        return status != null ? new PreparedPost(status, channel) : null;
+        PreparedPost ret = null;
+
+        try
+        {
+            Status status = client.destroyStatus(Long.parseLong(id));
+            ret = new PreparedPost(status, channel);
+        }
+        catch(TwitterException e)
+        {
+            // Post already deleted
+            if(e.getStatusCode() == 404)
+                ret = new PreparedPost(id, channel);
+            else
+                throw e;
+        }
+
+        return ret;
     }
 
     /**

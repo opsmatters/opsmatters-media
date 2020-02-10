@@ -35,6 +35,7 @@ import com.echobox.api.linkedin.types.ugc.ViewContext;
 import com.echobox.api.linkedin.types.organization.Organization;
 import com.echobox.api.linkedin.connection.v2.OrganizationConnection;
 import com.echobox.api.linkedin.connection.v2.UGCShareConnection;
+import com.echobox.api.linkedin.exception.LinkedInResourceNotFoundException;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.model.social.SocialChannel;
@@ -332,10 +333,22 @@ public class LinkedInClient extends Client implements SocialClient
      */
     public PreparedPost deletePost(String id) throws IOException
     {
-        URN urn = new URN(URNEntityType.UGCPOST, id);
-        UGCShare share = ugcConnection.retrieveUGCPost(urn, ViewContext.AUTHOR);
-        ugcConnection.deleteUGCPost(urn);
-        return share != null ? new PreparedPost(share, channel) : null;
+        PreparedPost ret = null;
+        URN urn = new URN(URNEntityType.SHARE, id);
+
+        try
+        {
+            UGCShare share = ugcConnection.retrieveUGCPost(urn, ViewContext.AUTHOR);
+            ugcConnection.deleteUGCPost(urn);
+            ret = new PreparedPost(share, channel);
+        }
+        catch(LinkedInResourceNotFoundException e)
+        {
+            // Post already deleted
+            ret = new PreparedPost(id, channel);
+        }
+
+        return ret;
     }
 
     /**

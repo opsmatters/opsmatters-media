@@ -33,6 +33,7 @@ public class PreparedPost extends SocialPost
     private SocialChannel channel;
     private PostType type;
     private DeliveryStatus status;
+    private String externalId = "";
 
     /**
      * Default constructor.
@@ -107,6 +108,18 @@ public class PreparedPost extends SocialPost
     }
 
     /**
+     * Constructor that takes an external id and a channel.
+     */
+    public PreparedPost(String externalId, SocialChannel channel)
+    {
+        setId(externalId);
+        setCreatedDate(Instant.now());
+        setChannel(channel);
+        setType(PostType.EXTERNAL);
+        setStatus(DeliveryStatus.RECEIVED);
+    }
+
+    /**
      * Copy constructor.
      */
     public PreparedPost(PreparedPost obj)
@@ -126,6 +139,7 @@ public class PreparedPost extends SocialPost
             setTitle(obj.getTitle());
             setChannel(obj.getChannel());
             setStatus(obj.getStatus());
+            setExternalId(obj.getExternalId());
         }
     }
 
@@ -240,5 +254,29 @@ public class PreparedPost extends SocialPost
     public void setStatus(DeliveryStatus status)
     {
         this.status = status;
+    }
+
+    /**
+     * Returns the post external id.
+     */
+    public String getExternalId()
+    {
+        return externalId;
+    }
+
+    /**
+     * Sets the post external id.
+     */
+    public void setExternalId(String externalId)
+    {
+        this.externalId = externalId;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the post external id has been set.
+     */
+    public boolean hasExternalId()
+    {
+        return externalId != null && externalId.length() > 0;
     }
 }
