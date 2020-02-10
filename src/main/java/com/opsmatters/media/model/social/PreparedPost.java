@@ -16,9 +16,13 @@
 package com.opsmatters.media.model.social;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import twitter4j.Status;
 import facebook4j.Post;
 import com.echobox.api.linkedin.types.ugc.UGCShare;
+import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -34,6 +38,7 @@ public class PreparedPost extends SocialPost
     private PostType type;
     private DeliveryStatus status;
     private String externalId = "";
+    private Instant scheduledDate;
 
     /**
      * Default constructor.
@@ -52,6 +57,7 @@ public class PreparedPost extends SocialPost
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
+        setScheduledDate(post.getScheduledDate());
         if(post.getType() == PostType.CONTENT)
             setOrganisation(((ContentPost)post).getOrganisation());
         setTitle(post.getTitle());
@@ -140,6 +146,7 @@ public class PreparedPost extends SocialPost
             setChannel(obj.getChannel());
             setStatus(obj.getStatus());
             setExternalId(obj.getExternalId());
+            setScheduledDate(obj.getScheduledDate());
         }
     }
 
@@ -278,5 +285,87 @@ public class PreparedPost extends SocialPost
     public boolean hasExternalId()
     {
         return externalId != null && externalId.length() > 0;
+    }
+
+    /**
+     * Returns the date the item was scheduled.
+     */
+    public Instant getScheduledDate()
+    {
+        return scheduledDate;
+    }
+
+    /**
+     * Returns the date the item was scheduled.
+     */
+    public long getScheduledDateMillis()
+    {
+        return getScheduledDate() != null ? getScheduledDate().toEpochMilli() : 0L;
+    }
+
+    /**
+     * Returns the date the item was scheduled.
+     */
+    public LocalDateTime getScheduledDateUTC()
+    {
+        return TimeUtils.toDateTimeUTC(getScheduledDate());
+    }
+
+    /**
+     * Returns the date the item was scheduled.
+     */
+    public String getScheduledDateAsString(String pattern)
+    {
+        return TimeUtils.toStringUTC(scheduledDate, pattern);
+    }
+
+    /**
+     * Returns the date the item was scheduled.
+     */
+    public String getScheduledDateAsString()
+    {
+        return getScheduledDateAsString(Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Sets the date the item was scheduled.
+     */
+    public void setScheduledDate(Instant scheduledDate)
+    {
+        this.scheduledDate = scheduledDate;
+    }
+
+    /**
+     * Sets the date the item was scheduled.
+     */
+    public void setScheduledDateMillis(long millis)
+    {
+        if(millis > 0L)
+            this.scheduledDate = Instant.ofEpochMilli(millis);
+    }
+
+    /**
+     * Sets the date the item was scheduled.
+     */
+    public void setScheduledDateAsString(String str, String pattern) throws DateTimeParseException
+    {
+        setScheduledDate(TimeUtils.toInstantUTC(str, pattern));
+    }
+
+    /**
+     * Sets the date the item was scheduled.
+     */
+    public void setScheduledDateAsString(String str) throws DateTimeParseException
+    {
+        setScheduledDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Sets the date the item was scheduled.
+     */
+    public void setScheduledDateUTC(LocalDateTime scheduledDate)
+    {
+        if(scheduledDate != null)
+            setScheduledDate(TimeUtils.toInstantUTC(scheduledDate));
     }
 }

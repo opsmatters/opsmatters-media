@@ -251,6 +251,46 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
+     * Returns the date the item status was created or last updated.
+     */
+    public Instant getDate()
+    {
+        return updatedDate != null ? updatedDate : createdDate;
+    }
+
+    /**
+     * Returns the date the item was created or last updated.
+     */
+    public long getDateMillis()
+    {
+        return getDate() != null ? getDate().toEpochMilli() : 0L;
+    }
+
+    /**
+     * Returns the date the item was created or last updated.
+     */
+    public LocalDateTime getDateUTC()
+    {
+        return TimeUtils.toDateTimeUTC(getDate());
+    }
+
+    /**
+     * Returns the date the item was created or last updated.
+     */
+    public String getDateAsString(String pattern)
+    {
+        return TimeUtils.toStringUTC(getDate(), pattern);
+    }
+
+    /**
+     * Returns the date the item was created or last updated.
+     */
+    public String getDateAsString()
+    {
+        return getDateAsString(Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
      * Returns the item creator.
      */
     public String getCreatedBy()
