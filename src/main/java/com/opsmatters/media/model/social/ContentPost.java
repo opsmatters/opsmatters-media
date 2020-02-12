@@ -45,6 +45,25 @@ public class ContentPost extends DraftPost
     }
 
     /**
+     * Constructor that takes an organisation.
+     */
+    public ContentPost(Organisation organisation)
+    {
+        setId(StringUtils.getUUID(null));
+        setCreatedDate(Instant.now());
+        setOrganisation(organisation.getCode());
+        setTitle(organisation.getTitle());
+        setContentId(organisation.getId());
+        setContentType(ContentType.ORGANISATION);
+        setStatus(DraftStatus.NEW);
+
+        getProperties().put(PostTemplate.HANDLE, "@"+organisation.getTwitterUsername());
+        getProperties().put(PostTemplate.HASHTAG, organisation.getSocialHashtag());
+        getProperties().put(PostTemplate.HASHTAGS, organisation.getSocialHashtags());
+        getProperties().put(PostTemplate.URL, organisation.getUrl(System.getProperty("om-config.site.prod")));
+    }
+
+    /**
      * Constructor that takes an organisation and a content item.
      */
     public ContentPost(Organisation organisation, ContentItem content)

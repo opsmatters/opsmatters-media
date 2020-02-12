@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
+import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.model.social.DraftPost;
 import com.opsmatters.media.model.social.DraftPostFactory;
 import com.opsmatters.media.model.social.PostType;
@@ -196,6 +197,28 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
                     ret = true;
                     break;
                 }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given organisation has a pending post in the DRAFT_POSTS table.
+     */
+    public boolean hasPending(Organisation organisation) throws SQLException
+    {
+        boolean ret = false;
+
+        List<DraftPost> posts = getPendingPosts(PostType.CONTENT);
+        for(DraftPost draft : posts)
+        {
+            ContentPost post = (ContentPost)draft;
+            if(post.getOrganisation().equals(organisation.getCode())
+                && post.getContentType() == ContentType.ORGANISATION)
+            {
+                ret = true;
+                break;
             }
         }
 
