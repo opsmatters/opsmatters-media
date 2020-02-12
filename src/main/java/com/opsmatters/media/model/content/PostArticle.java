@@ -30,7 +30,6 @@ public class PostArticle extends Article
     private PostDetails details = new PostDetails();
     private String link = "";
     private String linkText = "";
-    private String urlAlias = "";
     private String canonicalUrl = "";
 
     /**
@@ -82,7 +81,6 @@ public class PostArticle extends Article
         setPostDetails(obj.getPostDetails());
         setLink(new String(obj.getLink() != null ? obj.getLink() : ""));
         setLinkText(new String(obj.getLinkText() != null ? obj.getLinkText() : ""));
-        setUrlAlias(new String(obj.getUrlAlias() != null ? obj.getUrlAlias() : ""));
         setCanonicalUrl(new String(obj.getCanonicalUrl() != null ? obj.getCanonicalUrl() : ""));
     }
 
@@ -166,7 +164,6 @@ public class PostArticle extends Article
         setDescription(obj.optString(Fields.DESCRIPTION));
         setLink(obj.optString(Fields.LINK));
         setLinkText(obj.optString(Fields.LINK_TEXT));
-        setUrlAlias(obj.optString(Fields.URL));
         setCanonicalUrl(obj.optString(Fields.CANONICAL_URL));
         setImage(obj.optString(Fields.IMAGE));
         setAuthor(obj.optString(Fields.AUTHOR));
@@ -183,7 +180,6 @@ public class PostArticle extends Article
         ret.putOpt(Fields.DESCRIPTION, getDescription());
         ret.putOpt(Fields.LINK, getLink());
         ret.putOpt(Fields.LINK_TEXT, getLinkText());
-        ret.putOpt(Fields.URL, getUrlAlias());
         ret.putOpt(Fields.CANONICAL_URL, getCanonicalUrl());
         ret.putOpt(Fields.IMAGE, getImage());
         ret.putOpt(Fields.AUTHOR, getAuthor());
@@ -205,26 +201,11 @@ public class PostArticle extends Article
         ret.put(Fields.AUTHOR_LINK, getAuthorLink());
         ret.put(Fields.LINK, getLink());
         ret.put(Fields.LINK_TEXT, getLinkText());
-        ret.put(Fields.URL, getUrlAlias());
         ret.put(Fields.CANONICAL_URL, getCanonicalUrl());
         ret.put(Fields.IMAGE, getImage());
         ret.put(Fields.METATAGS, getMetatags());
 
         return ret;
-    }
-
-    /**
-     * Copies any external attributes of the given object.
-     */
-    @Override
-    public void copyExternalAttributes(ContentItem obj)
-    {
-        if(obj instanceof PostArticle)
-        {
-            PostArticle article = (PostArticle)obj;
-            if(article.hasUrlAlias())
-                setUrlAlias(article.getUrlAlias());
-        }
     }
 
     /**
@@ -409,30 +390,6 @@ public class PostArticle extends Article
     public void setLinkText(String linkText)
     {
         this.linkText = linkText;
-    }
-
-    /**
-     * Returns the URL alias for the post.
-     */
-    public String getUrlAlias()
-    {
-        return urlAlias;
-    }
-
-    /**
-     * Sets the URL alias for the post.
-     */
-    public void setUrlAlias(String urlAlias)
-    {
-        this.urlAlias = urlAlias;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the URL alias for the post has been set.
-     */
-    public boolean hasUrlAlias()
-    {
-        return urlAlias != null && urlAlias.length() > 0;
     }
 
     /**
