@@ -468,6 +468,28 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     }
 
     /**
+     * Removes the post for the given content from the DRAFT_POSTS table.
+     */
+    public void delete(ContentItem content) throws SQLException
+    {
+        if(!hasConnection() || content == null)
+            return;
+
+        List<DraftPost> posts = getPendingPosts(PostType.CONTENT);
+        for(DraftPost draft : posts)
+        {
+            ContentPost post = (ContentPost)draft;
+            if(post.getContentType() == content.getType()
+                && post.getOrganisation().equals(content.getCode())
+                && post.getContentId() == content.getId())
+            {
+                logger.info("Found post for content '"+post.getId()+"' in DRAFT_POSTS");
+                delete(post);
+            }
+        }
+    }
+
+    /**
      * Close any resources associated with this DAO.
      */
     @Override
