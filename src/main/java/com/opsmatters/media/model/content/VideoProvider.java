@@ -30,7 +30,7 @@ public enum VideoProvider
     VIMEO("vimeo", 
         "https://vimeo.com/%s",
         "https://vimeo.com/%s",
-        "<iframe src=\"https://player.vimeo.com/video/%s?title=0&byline=0&portrait=0\" width=\"%d&autoplay=%s\" height=\"%d\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe>"),
+        "<iframe src=\"https://player.vimeo.com/video/%s?title=0&byline=0&portrait=0&autoplay=%s\" width=\"%d\" height=\"%d\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe>"),
     WISTIA("wistia", 
         "https://fast.wistia.com/projects/%s",
         "https://fast.wistia.com/medias/%s",

@@ -124,7 +124,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns a post from the DRAFT_POSTS table by id.
      */
-    public DraftPost getById(int id) throws SQLException
+    public DraftPost getById(String id) throws SQLException
     {
         DraftPost ret = null;
 
@@ -140,7 +140,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
 
         try
         {
-            getByIdStmt.setInt(1, id);
+            getByIdStmt.setString(1, id);
             getByIdStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByIdStmt.executeQuery();
             while(rs.next())

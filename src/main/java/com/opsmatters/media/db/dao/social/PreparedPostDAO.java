@@ -119,7 +119,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     /**
      * Returns a post from the PREPARED_POSTS table by id.
      */
-    public PreparedPost getById(int id) throws SQLException
+    public PreparedPost getById(String id) throws SQLException
     {
         PreparedPost ret = null;
 
@@ -135,7 +135,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
 
         try
         {
-            getByIdStmt.setInt(1, id);
+            getByIdStmt.setString(1, id);
             getByIdStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByIdStmt.executeQuery();
             while(rs.next())

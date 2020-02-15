@@ -120,7 +120,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
     /**
      * Returns a post template from the POST_TEMPLATES table by id.
      */
-    public PostTemplate getById(int id) throws SQLException
+    public PostTemplate getById(String id) throws SQLException
     {
         PostTemplate ret = null;
 
@@ -136,7 +136,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
 
         try
         {
-            getByIdStmt.setInt(1, id);
+            getByIdStmt.setString(1, id);
             getByIdStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByIdStmt.executeQuery();
             while(rs.next())

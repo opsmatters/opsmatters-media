@@ -156,8 +156,6 @@ public abstract class ContentItem implements java.io.Serializable
 
         String published = config.getField(Fields.PUBLISHED);
         setPublished(published == null || published.equals("0") ? false : true);
-
-        setCreatedBy(System.getProperty("om-config.ui.username", "anonymous"));
     }
 
     /**

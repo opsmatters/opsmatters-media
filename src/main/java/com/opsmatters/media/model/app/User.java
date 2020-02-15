@@ -13,57 +13,82 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.social;
+package com.opsmatters.media.model.app;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
+import com.opsmatters.media.util.StringUtils;
 
 /**
- * Class representing a social media item.
+ * Class representing a user.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialItem implements java.io.Serializable
+public class User implements java.io.Serializable
 {
     private String id = "";
     private Instant createdDate;
     private Instant updatedDate;
-    private String createdBy = "";
+    private String name = "";
+    private String username = "";
+    private String email = "";
+    private String role = "";
+    private boolean administrator = false;
+    private boolean enabled = false;
 
     /**
      * Default constructor.
      */
-    public SocialItem()
+    public User()
     {
+    }
+
+    /**
+     * Constructor that takes a username.
+     */
+    public User(String username)
+    {
+        setId(StringUtils.getUUID(null));
+        if(StringUtils.isValidEmailAddress(username, false))
+            setEmail(username);
+        else
+            setUsername(username);
+        setCreatedDate(Instant.now());
+        setEnabled(true);
     }
 
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(SocialItem obj)
+    public void copyAttributes(User obj)
     {
         if(obj != null)
         {
             setId(obj.getId());
+            setName(obj.getName());
+            setUsername(obj.getUsername());
+            setEmail(obj.getEmail());
+            setRole(obj.getRole());
             setCreatedDate(obj.getCreatedDate());
             setUpdatedDate(obj.getUpdatedDate());
-            setCreatedBy(obj.getCreatedBy());
+            setAdministrator(obj.isAdministrator());
+            setEnabled(obj.isEnabled());
         }
     }
 
     /**
-     * Returns the id.
+     * Returns the username.
      */
     public String toString()
     {
-        return getId();
+        return getUsername();
     }
 
     /**
-     * Returns the item id.
+     * Returns the user id.
      */
     public String getId()
     {
@@ -71,7 +96,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Sets the item id.
+     * Sets the user id.
      */
     public void setId(String id)
     {
@@ -79,7 +104,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if the item id has been set.
+     * Returns <CODE>true</CODE> if the user id has been set.
      */
     public boolean hasId()
     {
@@ -87,7 +112,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was created.
+     * Returns the date the user was created.
      */
     public Instant getCreatedDate()
     {
@@ -95,7 +120,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was created.
+     * Returns the date the user was created.
      */
     public long getCreatedDateMillis()
     {
@@ -103,7 +128,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was created.
+     * Returns the date the user was created.
      */
     public LocalDateTime getCreatedDateUTC()
     {
@@ -111,7 +136,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was created.
+     * Returns the date the user was created.
      */
     public String getCreatedDateAsString(String pattern)
     {
@@ -119,7 +144,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was created.
+     * Returns the date the user was created.
      */
     public String getCreatedDateAsString()
     {
@@ -127,7 +152,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was created.
+     * Sets the date the user was created.
      */
     public void setCreatedDate(Instant createdDate)
     {
@@ -135,7 +160,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was created.
+     * Sets the date the user was created.
      */
     public void setCreatedDateMillis(long millis)
     {
@@ -144,7 +169,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was created.
+     * Sets the date the user was created.
      */
     public void setCreatedDateAsString(String str, String pattern) throws DateTimeParseException
     {
@@ -152,7 +177,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was created.
+     * Sets the date the user was created.
      */
     public void setCreatedDateAsString(String str) throws DateTimeParseException
     {
@@ -160,7 +185,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was created.
+     * Sets the date the user was created.
      */
     public void setCreatedDateUTC(LocalDateTime createdDate)
     {
@@ -169,7 +194,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was last updated.
+     * Returns the date the user was last updated.
      */
     public Instant getUpdatedDate()
     {
@@ -177,7 +202,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was last updated.
+     * Returns the date the user was last updated.
      */
     public long getUpdatedDateMillis()
     {
@@ -185,7 +210,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was last updated.
+     * Returns the date the user was last updated.
      */
     public LocalDateTime getUpdatedDateUTC()
     {
@@ -193,7 +218,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was last updated.
+     * Returns the date the user was last updated.
      */
     public String getUpdatedDateAsString(String pattern)
     {
@@ -201,7 +226,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was last updated.
+     * Returns the date the user was last updated.
      */
     public String getUpdatedDateAsString()
     {
@@ -209,7 +234,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was last updated.
+     * Sets the date the user was last updated.
      */
     public void setUpdatedDate(Instant updatedDate)
     {
@@ -217,7 +242,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was last updated.
+     * Sets the date the user was last updated.
      */
     public void setUpdatedDateMillis(long millis)
     {
@@ -226,7 +251,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was last updated.
+     * Sets the date the user was last updated.
      */
     public void setUpdatedDateAsString(String str, String pattern) throws DateTimeParseException
     {
@@ -234,7 +259,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was last updated.
+     * Sets the date the user was last updated.
      */
     public void setUpdatedDateAsString(String str) throws DateTimeParseException
     {
@@ -242,7 +267,7 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was last updated.
+     * Sets the date the user was last updated.
      */
     public void setUpdatedDateUTC(LocalDateTime updatedDate)
     {
@@ -251,58 +276,130 @@ public class SocialItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was created or last updated.
+     * Returns the user's name.
      */
-    public Instant getDate()
+    public String getName()
     {
-        return updatedDate != null ? updatedDate : createdDate;
+        return name;
     }
 
     /**
-     * Returns the date the item was created or last updated.
+     * Sets the user's name.
      */
-    public long getDateMillis()
+    public void setName(String name)
     {
-        return getDate() != null ? getDate().toEpochMilli() : 0L;
+        this.name = name;
     }
 
     /**
-     * Returns the date the item was created or last updated.
+     * Returns <CODE>true</CODE> if the user's name has been set.
      */
-    public LocalDateTime getDateUTC()
+    public boolean hasName()
     {
-        return TimeUtils.toDateTimeUTC(getDate());
+        return name != null && name.length() > 0;
     }
 
     /**
-     * Returns the date the item was created or last updated.
+     * Returns the username.
      */
-    public String getDateAsString(String pattern)
+    public String getUsername()
     {
-        return TimeUtils.toStringUTC(getDate(), pattern);
+        return username;
     }
 
     /**
-     * Returns the date the item was created or last updated.
+     * Sets the username.
      */
-    public String getDateAsString()
+    public void setUsername(String username)
     {
-        return getDateAsString(Formats.CONTENT_DATE_FORMAT);
+        this.username = username;
     }
 
     /**
-     * Returns the item creator.
+     * Returns <CODE>true</CODE> if the username has been set.
      */
-    public String getCreatedBy()
+    public boolean hasUsername()
     {
-        return createdBy;
+        return username != null && username.length() > 0;
     }
 
     /**
-     * Sets the item creator.
+     * Returns the email.
      */
-    public void setCreatedBy(String createdBy)
+    public String getEmail()
     {
-        this.createdBy = createdBy;
+        return email;
+    }
+
+    /**
+     * Sets the email.
+     */
+    public void setEmail(String email)
+    {
+        this.email = email;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the email has been set.
+     */
+    public boolean hasEmail()
+    {
+        return email != null && email.length() > 0;
+    }
+
+    /**
+     * Returns the role.
+     */
+    public String getRole()
+    {
+        return role;
+    }
+
+    /**
+     * Sets the role.
+     */
+    public void setRole(String role)
+    {
+        this.role = role;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the role has been set.
+     */
+    public boolean hasRole()
+    {
+        return role != null && role.length() > 0;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the user is an administrator.
+     */
+    public boolean isAdministrator()
+    {
+        return administrator;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the user is an administrator.
+     */
+    public void setAdministrator(boolean administrator)
+    {
+        this.administrator = administrator;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the user is enabled.
+     */
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the user is enabled.
+     */
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
     }
 }
