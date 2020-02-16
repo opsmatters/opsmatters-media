@@ -32,12 +32,15 @@ public class User implements java.io.Serializable
     private String id = "";
     private Instant createdDate;
     private Instant updatedDate;
-    private String name = "";
     private String username = "";
     private String email = "";
+    private String firstName = "";
+    private String lastName = "";
     private String role = "";
     private boolean administrator = false;
     private boolean enabled = false;
+    private TraceObject traceObject = TraceObject.NONE;
+    private boolean debug = false;
 
     /**
      * Default constructor.
@@ -68,9 +71,10 @@ public class User implements java.io.Serializable
         if(obj != null)
         {
             setId(obj.getId());
-            setName(obj.getName());
             setUsername(obj.getUsername());
             setEmail(obj.getEmail());
+            setFirstName(obj.getFirstName());
+            setLastName(obj.getLastName());
             setRole(obj.getRole());
             setCreatedDate(obj.getCreatedDate());
             setUpdatedDate(obj.getUpdatedDate());
@@ -276,30 +280,6 @@ public class User implements java.io.Serializable
     }
 
     /**
-     * Returns the user's name.
-     */
-    public String getName()
-    {
-        return name;
-    }
-
-    /**
-     * Sets the user's name.
-     */
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the user's name has been set.
-     */
-    public boolean hasName()
-    {
-        return name != null && name.length() > 0;
-    }
-
-    /**
      * Returns the username.
      */
     public String getUsername()
@@ -345,6 +325,54 @@ public class User implements java.io.Serializable
     public boolean hasEmail()
     {
         return email != null && email.length() > 0;
+    }
+
+    /**
+     * Returns the user's first name.
+     */
+    public String getFirstName()
+    {
+        return firstName;
+    }
+
+    /**
+     * Sets the user's first name.
+     */
+    public void setFirstName(String firstName)
+    {
+        this.firstName = firstName;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the user's first name has been set.
+     */
+    public boolean hasFirstName()
+    {
+        return firstName != null && firstName.length() > 0;
+    }
+
+    /**
+     * Returns the user's last name.
+     */
+    public String getLastName()
+    {
+        return lastName;
+    }
+
+    /**
+     * Sets the user's last name.
+     */
+    public void setLastName(String lastName)
+    {
+        this.lastName = lastName;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the user's last name has been set.
+     */
+    public boolean hasLastName()
+    {
+        return lastName != null && lastName.length() > 0;
     }
 
     /**
@@ -401,5 +429,53 @@ public class User implements java.io.Serializable
     public void setEnabled(boolean enabled)
     {
         this.enabled = enabled;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if debug is enabled.
+     */
+    public boolean debug()
+    {
+        return debug;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if debug is enabled.
+     */
+    public Boolean getDebugObject()
+    {
+        return new Boolean(debug);
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if debug is enabled.
+     */
+    public void setDebug(boolean debug)
+    {
+        this.debug = debug;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if debug is enabled.
+     */
+    public void setDebugObject(Boolean debug)
+    {
+        this.debug = debug != null && debug.booleanValue();
+    }
+
+    /**
+     * Returns the object type to be traced.
+     */
+    public TraceObject getTraceObject()
+    {
+        return traceObject;
+    }
+
+    /**
+     * Set the object type to be traced.
+     */
+    public void setTraceObject(TraceObject traceObject)
+    {
+        this.traceObject = traceObject;
     }
 }

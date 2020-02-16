@@ -38,21 +38,21 @@ public class UserDAO extends AppDAO<User>
      * The query to use to select a user from the USER table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, USERNAME, EMAIL, ROLE, ADMINISTRATOR, ENABLED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, USERNAME, EMAIL, FIRSTNAME, LASTNAME, ROLE, ADMINISTRATOR, ENABLED "
       + "FROM USERS WHERE ID=?";
 
     /**
      * The query to use to select a user from the USER table by username.
      */
     private static final String GET_BY_USERNAME_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, USERNAME, EMAIL, ROLE, ADMINISTRATOR, ENABLED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, USERNAME, EMAIL, FIRSTNAME, LASTNAME, ROLE, ADMINISTRATOR, ENABLED "
       + "FROM USERS WHERE USERNAME=?";
 
     /**
      * The query to use to select a user from the USER table by email.
      */
     private static final String GET_BY_EMAIL_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, USERNAME, EMAIL, ROLE, ADMINISTRATOR, ENABLED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, USERNAME, EMAIL, FIRSTNAME, LASTNAME, ROLE, ADMINISTRATOR, ENABLED "
       + "FROM USERS WHERE EMAIL=?";
 
     /**
@@ -60,22 +60,22 @@ public class UserDAO extends AppDAO<User>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO USERS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, USERNAME, EMAIL, ROLE, ADMINISTRATOR, ENABLED )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, USERNAME, EMAIL, FIRSTNAME, LASTNAME, ROLE, ADMINISTRATOR, ENABLED )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a user in the USERS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE USERS SET UPDATED_DATE=?, NAME=?, USERNAME=?, EMAIL=?, ROLE=?, ADMINISTRATOR=?, ENABLED=? "
+      "UPDATE USERS SET UPDATED_DATE=?, USERNAME=?, EMAIL=?, FIRSTNAME=?, LASTNAME=?, ROLE=?, ADMINISTRATOR=?, ENABLED=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the users from the USERS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, USERNAME, EMAIL, ROLE, ADMINISTRATOR, ENABLED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, USERNAME, EMAIL, FIRSTNAME, LASTNAME, ROLE, ADMINISTRATOR, ENABLED "
       + "FROM USERS ORDER BY CREATED_DATE";
 
     /**
@@ -107,9 +107,10 @@ public class UserDAO extends AppDAO<User>
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
-        table.addColumn("NAME", Types.VARCHAR, 30, false);
         table.addColumn("USERNAME", Types.VARCHAR, 20, true);
         table.addColumn("EMAIL", Types.VARCHAR, 30, true);
+        table.addColumn("FIRSTNAME", Types.VARCHAR, 20, false);
+        table.addColumn("LASTNAME", Types.VARCHAR, 20, false);
         table.addColumn("ROLE", Types.VARCHAR, 50, false);
         table.addColumn("ADMINISTRATOR", Types.BOOLEAN, true);
         table.addColumn("ENABLED", Types.BOOLEAN, true);
@@ -146,12 +147,13 @@ public class UserDAO extends AppDAO<User>
                 user.setId(rs.getString(1));
                 user.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 user.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                user.setName(rs.getString(4));
-                user.setUsername(rs.getString(5));
-                user.setEmail(rs.getString(6));
-                user.setRole(rs.getString(7));
-                user.setAdministrator(rs.getBoolean(8));
-                user.setEnabled(rs.getBoolean(9));
+                user.setUsername(rs.getString(4));
+                user.setEmail(rs.getString(5));
+                user.setFirstName(rs.getString(6));
+                user.setLastName(rs.getString(7));
+                user.setRole(rs.getString(8));
+                user.setAdministrator(rs.getBoolean(9));
+                user.setEnabled(rs.getBoolean(10));
                 ret = user;
             }
         }
@@ -200,12 +202,13 @@ public class UserDAO extends AppDAO<User>
                 user.setId(rs.getString(1));
                 user.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 user.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                user.setName(rs.getString(4));
-                user.setUsername(rs.getString(5));
-                user.setEmail(rs.getString(6));
-                user.setRole(rs.getString(7));
-                user.setAdministrator(rs.getBoolean(8));
-                user.setEnabled(rs.getBoolean(9));
+                user.setUsername(rs.getString(4));
+                user.setEmail(rs.getString(5));
+                user.setFirstName(rs.getString(6));
+                user.setLastName(rs.getString(7));
+                user.setRole(rs.getString(8));
+                user.setAdministrator(rs.getBoolean(9));
+                user.setEnabled(rs.getBoolean(10));
                 ret = user;
             }
         }
@@ -254,12 +257,13 @@ public class UserDAO extends AppDAO<User>
                 user.setId(rs.getString(1));
                 user.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 user.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                user.setName(rs.getString(4));
-                user.setUsername(rs.getString(5));
-                user.setEmail(rs.getString(6));
-                user.setRole(rs.getString(7));
-                user.setAdministrator(rs.getBoolean(8));
-                user.setEnabled(rs.getBoolean(9));
+                user.setUsername(rs.getString(4));
+                user.setEmail(rs.getString(5));
+                user.setFirstName(rs.getString(6));
+                user.setLastName(rs.getString(7));
+                user.setRole(rs.getString(8));
+                user.setAdministrator(rs.getBoolean(9));
+                user.setEnabled(rs.getBoolean(10));
                 ret = user;
             }
         }
@@ -297,12 +301,13 @@ public class UserDAO extends AppDAO<User>
             insertStmt.setString(1, user.getId());
             insertStmt.setTimestamp(2, new Timestamp(user.getCreatedDateMillis()), UTC);
             insertStmt.setTimestamp(3, new Timestamp(user.getUpdatedDateMillis()), UTC);
-            insertStmt.setString(4, user.getName());
-            insertStmt.setString(5, user.getUsername());
-            insertStmt.setString(6, user.getEmail());
-            insertStmt.setString(7, user.getRole());
-            insertStmt.setBoolean(8, user.isAdministrator());
-            insertStmt.setBoolean(9, user.isEnabled());
+            insertStmt.setString(4, user.getUsername());
+            insertStmt.setString(5, user.getEmail());
+            insertStmt.setString(6, user.getFirstName());
+            insertStmt.setString(7, user.getLastName());
+            insertStmt.setString(8, user.getRole());
+            insertStmt.setBoolean(9, user.isAdministrator());
+            insertStmt.setBoolean(10, user.isEnabled());
             insertStmt.executeUpdate();
 
             logger.info("Created user '"+user.getId()+"' in USERS");
@@ -335,13 +340,14 @@ public class UserDAO extends AppDAO<User>
         clearParameters(updateStmt);
 
         updateStmt.setTimestamp(1, new Timestamp(user.getUpdatedDateMillis()), UTC);
-        updateStmt.setString(2, user.getName());
-        updateStmt.setString(3, user.getUsername());
-        updateStmt.setString(4, user.getEmail());
-        updateStmt.setString(5, user.getRole());
-        updateStmt.setBoolean(6, user.isAdministrator());
-        updateStmt.setBoolean(7, user.isEnabled());
-        updateStmt.setString(8, user.getId());
+        updateStmt.setString(2, user.getUsername());
+        updateStmt.setString(3, user.getEmail());
+        updateStmt.setString(4, user.getFirstName());
+        updateStmt.setString(5, user.getLastName());
+        updateStmt.setString(6, user.getRole());
+        updateStmt.setBoolean(7, user.isAdministrator());
+        updateStmt.setBoolean(8, user.isEnabled());
+        updateStmt.setString(9, user.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated user '"+user.getId()+"' in USERS");
@@ -375,12 +381,13 @@ public class UserDAO extends AppDAO<User>
                 user.setId(rs.getString(1));
                 user.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 user.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                user.setName(rs.getString(4));
-                user.setUsername(rs.getString(5));
-                user.setEmail(rs.getString(6));
-                user.setRole(rs.getString(7));
-                user.setAdministrator(rs.getBoolean(8));
-                user.setEnabled(rs.getBoolean(9));
+                user.setUsername(rs.getString(4));
+                user.setEmail(rs.getString(5));
+                user.setFirstName(rs.getString(6));
+                user.setLastName(rs.getString(7));
+                user.setRole(rs.getString(8));
+                user.setAdministrator(rs.getBoolean(9));
+                user.setEnabled(rs.getBoolean(10));
                 ret.add(user);
             }
         }
