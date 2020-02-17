@@ -16,10 +16,6 @@
 package com.opsmatters.media.model.app;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
-import com.opsmatters.media.util.Formats;
-import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -27,11 +23,8 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class User implements java.io.Serializable
+public class User extends AppItem
 {
-    private String id = "";
-    private Instant createdDate;
-    private Instant updatedDate;
     private String username = "";
     private String email = "";
     private String firstName = "";
@@ -70,14 +63,12 @@ public class User implements java.io.Serializable
     {
         if(obj != null)
         {
-            setId(obj.getId());
+            super.copyAttributes(obj);
             setUsername(obj.getUsername());
             setEmail(obj.getEmail());
             setFirstName(obj.getFirstName());
             setLastName(obj.getLastName());
             setRole(obj.getRole());
-            setCreatedDate(obj.getCreatedDate());
-            setUpdatedDate(obj.getUpdatedDate());
             setAdmin(obj.isAdmin());
             setStatus(obj.getStatus());
         }
@@ -89,194 +80,6 @@ public class User implements java.io.Serializable
     public String toString()
     {
         return getUsername();
-    }
-
-    /**
-     * Returns the user id.
-     */
-    public String getId()
-    {
-        return id;
-    }
-
-    /**
-     * Sets the user id.
-     */
-    public void setId(String id)
-    {
-        this.id = id;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the user id has been set.
-     */
-    public boolean hasId()
-    {
-        return id != null && id.length() > 0;
-    }
-
-    /**
-     * Returns the date the user was created.
-     */
-    public Instant getCreatedDate()
-    {
-        return createdDate;
-    }
-
-    /**
-     * Returns the date the user was created.
-     */
-    public long getCreatedDateMillis()
-    {
-        return getCreatedDate() != null ? getCreatedDate().toEpochMilli() : 0L;
-    }
-
-    /**
-     * Returns the date the user was created.
-     */
-    public LocalDateTime getCreatedDateUTC()
-    {
-        return TimeUtils.toDateTimeUTC(getCreatedDate());
-    }
-
-    /**
-     * Returns the date the user was created.
-     */
-    public String getCreatedDateAsString(String pattern)
-    {
-        return TimeUtils.toStringUTC(createdDate, pattern);
-    }
-
-    /**
-     * Returns the date the user was created.
-     */
-    public String getCreatedDateAsString()
-    {
-        return getCreatedDateAsString(Formats.CONTENT_DATE_FORMAT);
-    }
-
-    /**
-     * Sets the date the user was created.
-     */
-    public void setCreatedDate(Instant createdDate)
-    {
-        this.createdDate = createdDate;
-    }
-
-    /**
-     * Sets the date the user was created.
-     */
-    public void setCreatedDateMillis(long millis)
-    {
-        if(millis > 0L)
-            this.createdDate = Instant.ofEpochMilli(millis);
-    }
-
-    /**
-     * Sets the date the user was created.
-     */
-    public void setCreatedDateAsString(String str, String pattern) throws DateTimeParseException
-    {
-        setCreatedDate(TimeUtils.toInstantUTC(str, pattern));
-    }
-
-    /**
-     * Sets the date the user was created.
-     */
-    public void setCreatedDateAsString(String str) throws DateTimeParseException
-    {
-        setCreatedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
-    }
-
-    /**
-     * Sets the date the user was created.
-     */
-    public void setCreatedDateUTC(LocalDateTime createdDate)
-    {
-        if(createdDate != null)
-            setCreatedDate(TimeUtils.toInstantUTC(createdDate));
-    }
-
-    /**
-     * Returns the date the user was last updated.
-     */
-    public Instant getUpdatedDate()
-    {
-        return updatedDate;
-    }
-
-    /**
-     * Returns the date the user was last updated.
-     */
-    public long getUpdatedDateMillis()
-    {
-        return getUpdatedDate() != null ? getUpdatedDate().toEpochMilli() : 0L;
-    }
-
-    /**
-     * Returns the date the user was last updated.
-     */
-    public LocalDateTime getUpdatedDateUTC()
-    {
-        return TimeUtils.toDateTimeUTC(getUpdatedDate());
-    }
-
-    /**
-     * Returns the date the user was last updated.
-     */
-    public String getUpdatedDateAsString(String pattern)
-    {
-        return TimeUtils.toStringUTC(updatedDate, pattern);
-    }
-
-    /**
-     * Returns the date the user was last updated.
-     */
-    public String getUpdatedDateAsString()
-    {
-        return getUpdatedDateAsString(Formats.CONTENT_DATE_FORMAT);
-    }
-
-    /**
-     * Sets the date the user was last updated.
-     */
-    public void setUpdatedDate(Instant updatedDate)
-    {
-        this.updatedDate = updatedDate;
-    }
-
-    /**
-     * Sets the date the user was last updated.
-     */
-    public void setUpdatedDateMillis(long millis)
-    {
-        if(millis > 0L)
-            this.updatedDate = Instant.ofEpochMilli(millis);
-    }
-
-    /**
-     * Sets the date the user was last updated.
-     */
-    public void setUpdatedDateAsString(String str, String pattern) throws DateTimeParseException
-    {
-        setUpdatedDate(TimeUtils.toInstantUTC(str, pattern));
-    }
-
-    /**
-     * Sets the date the user was last updated.
-     */
-    public void setUpdatedDateAsString(String str) throws DateTimeParseException
-    {
-        setUpdatedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
-    }
-
-    /**
-     * Sets the date the user was last updated.
-     */
-    public void setUpdatedDateUTC(LocalDateTime updatedDate)
-    {
-        if(updatedDate != null)
-            setUpdatedDate(TimeUtils.toInstantUTC(updatedDate));
     }
 
     /**
@@ -376,6 +179,14 @@ public class User implements java.io.Serializable
     }
 
     /**
+     * Returns the user's first and last name.
+     */
+    public String getName()
+    {
+        return String.format("%s %s", getFirstName(), getLastName());
+    }
+
+    /**
      * Returns the role.
      */
     public String getRole()
@@ -408,11 +219,27 @@ public class User implements java.io.Serializable
     }
 
     /**
+     * Returns <CODE>true</CODE> if the user is an administrator.
+     */
+    public Boolean getAdminObject()
+    {
+        return new Boolean(admin);
+    }
+
+    /**
      * Set to <CODE>true</CODE> if the user is an administrator.
      */
     public void setAdmin(boolean admin)
     {
         this.admin = admin;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the user is an administrator.
+     */
+    public void setAdminObject(Boolean admin)
+    {
+        this.admin = admin != null && admin.booleanValue();
     }
 
     /**

@@ -16,6 +16,9 @@
 
 package com.opsmatters.media.model.app;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * Represents the status of a user.
  * 
@@ -23,8 +26,9 @@ package com.opsmatters.media.model.app;
  */
 public enum UserStatus
 {
+    ACTIVE("Active"),
     DISABLED("Disabled"),
-    ACTIVE("Active");
+    ALL("All");
 
     private String value;
 
@@ -79,5 +83,18 @@ public enum UserStatus
     public static boolean contains(String value)
     {
         return valueOf(value) != null;
+    }
+
+    /**
+     * Returns a list of the user statuses.
+     */
+    public static List<UserStatus> toList()
+    {
+        List<UserStatus> ret = new ArrayList<UserStatus>();
+
+        ret.add(ACTIVE);
+        ret.add(DISABLED);
+
+        return ret;
     }
 }
