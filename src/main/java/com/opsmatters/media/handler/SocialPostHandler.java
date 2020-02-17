@@ -34,7 +34,7 @@ public class SocialPostHandler
 {
     private List<Token> tokens = new ArrayList<Token>();
     private String hashtags = null;
-    private Map<String,String> hashtagMap = new LinkedHashMap<String,String>();
+    private Map<String,Hashtag> hashtagMap = new LinkedHashMap<String,Hashtag>();
     private Map<String,String> properties = new LinkedHashMap<String,String>();
     private SocialChannel channel;
 
@@ -79,6 +79,63 @@ public class SocialPostHandler
     }
 
     /**
+     * Represents a hashtag in the hashtag list.
+     */
+    class Hashtag
+    {
+        String key;
+        String value;
+        boolean optional = false;
+
+        /**
+         * Constructor that takes a hashtag with format: #value[?]
+         */
+        Hashtag(String str)
+        {
+            if(str.endsWith("?"))
+            {
+                optional = true;
+                str = str.substring(0, str.length()-1); // Remove trailing "?"
+            }
+
+            value = str.substring(1); // remove leading "#"
+            key = value.toLowerCase();
+        }
+
+        /**
+         * Returns the value of the hashtag prefixed by "#".
+         */
+        public String toString()
+        {
+            return "#"+value;
+        }
+
+        /**
+         * Returns the key for the hashtag in the map.
+         */
+        String getKey()
+        {
+            return key;
+        }
+
+        /**
+         * Returns the value of the hashtag.
+         */
+        String getValue()
+        {
+            return value;
+        }
+
+        /**
+         * Returns <CODE>true</CODE> if the hashtag is optional.
+         */
+        boolean isOptional()
+        {
+            return optional;
+        }
+    }
+
+    /**
      * Populates the hashtag map from the given hashtag list.
      */
     private void setHashtags(String hashtags)
@@ -87,12 +144,12 @@ public class SocialPostHandler
         if(hashtags != null && hashtags.length() > 0)
         {
             this.hashtags = hashtags;
-            for(String hashtag : hashtags.split(" "))
+            for(String str : hashtags.split(" "))
             {
-                if(hashtag.startsWith("#") && hashtag.length() > 2)
+                if(str.startsWith("#") && str.length() > 2)
                 {
-                    hashtag = hashtag.substring(1);
-                    hashtagMap.put(hashtag.toLowerCase(), hashtag);
+                    Hashtag hashtag = new Hashtag(str);
+                    hashtagMap.put(hashtag.getKey(), hashtag);
                 }
             }
         }
@@ -104,12 +161,15 @@ public class SocialPostHandler
     private String getHashtags()
     {
         StringBuilder builder = new StringBuilder();
-        Collection<String> hashtags = hashtagMap.values();
-        for(String hashtag : hashtags)
+        Collection<Hashtag> hashtags = hashtagMap.values();
+        for(Hashtag hashtag : hashtags)
         {
-            if(builder.length() > 0)
-                builder.append(" ");
-            builder.append("#"+hashtag);
+            if(!hashtag.isOptional())
+            {
+                if(builder.length() > 0)
+                    builder.append(" ");
+                builder.append(hashtag);
+            }
         }
 
         return builder.toString();

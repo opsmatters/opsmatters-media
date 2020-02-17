@@ -37,8 +37,8 @@ public class User implements java.io.Serializable
     private String firstName = "";
     private String lastName = "";
     private String role = "";
-    private boolean administrator = false;
-    private boolean enabled = false;
+    private boolean admin = false;
+    private UserStatus status = UserStatus.DISABLED;
     private TraceObject traceObject = TraceObject.NONE;
     private boolean debug = false;
 
@@ -60,7 +60,7 @@ public class User implements java.io.Serializable
         else
             setUsername(username);
         setCreatedDate(Instant.now());
-        setEnabled(true);
+        setStatus(UserStatus.ACTIVE);
     }
 
     /**
@@ -78,8 +78,8 @@ public class User implements java.io.Serializable
             setRole(obj.getRole());
             setCreatedDate(obj.getCreatedDate());
             setUpdatedDate(obj.getUpdatedDate());
-            setAdministrator(obj.isAdministrator());
-            setEnabled(obj.isEnabled());
+            setAdmin(obj.isAdmin());
+            setStatus(obj.getStatus());
         }
     }
 
@@ -402,33 +402,49 @@ public class User implements java.io.Serializable
     /**
      * Returns <CODE>true</CODE> if the user is an administrator.
      */
-    public boolean isAdministrator()
+    public boolean isAdmin()
     {
-        return administrator;
+        return admin;
     }
 
     /**
      * Set to <CODE>true</CODE> if the user is an administrator.
      */
-    public void setAdministrator(boolean administrator)
+    public void setAdmin(boolean admin)
     {
-        this.administrator = administrator;
+        this.admin = admin;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the user is enabled.
+     * Returns the user's status.
      */
-    public boolean isEnabled()
+    public UserStatus getStatus()
     {
-        return enabled;
+        return status;
     }
 
     /**
-     * Set to <CODE>true</CODE> if the user is enabled.
+     * Returns <CODE>true</CODE> if the user is active.
      */
-    public void setEnabled(boolean enabled)
+    public boolean isActive()
     {
-        this.enabled = enabled;
+        return status == UserStatus.ACTIVE;
+    }
+
+    /**
+     * Sets the user's status.
+     */
+    public void setStatus(UserStatus status)
+    {
+        this.status = status;
+    }
+
+    /**
+     * Sets the user's status.
+     */
+    public void setStatus(String status)
+    {
+        setStatus(UserStatus.valueOf(status));
     }
 
     /**

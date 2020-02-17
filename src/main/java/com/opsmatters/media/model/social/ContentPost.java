@@ -78,7 +78,6 @@ public class ContentPost extends DraftPost
 
         getProperties().put(PostTemplate.HANDLE, "@"+organisation.getTwitterUsername());
         getProperties().put(PostTemplate.HASHTAG, organisation.getSocialHashtag());
-        getProperties().put(PostTemplate.HASHTAGS, organisation.getSocialHashtags());
         if(content.getType() == ContentType.ROUNDUP)
             getProperties().put(PostTemplate.URL, organisation.getUrl(System.getProperty("om-config.site.prod")));
     }
