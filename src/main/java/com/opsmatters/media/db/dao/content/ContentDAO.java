@@ -17,7 +17,9 @@ package com.opsmatters.media.db.dao.content;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.time.Instant;
 import java.sql.PreparedStatement;
+import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.lang.reflect.ParameterizedType;
@@ -51,10 +53,16 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
       "SELECT ATTRIBUTES FROM %s WHERE CODE=? AND ID=?";
 
     /**
-     * The query to use to select the content from the table.
+     * The query to use to select the content from the table by organisation code.
      */
-    private static final String LIST_SQL =  
+    private static final String LIST_BY_CODE_SQL =  
       "SELECT ATTRIBUTES FROM %s WHERE CODE=? ORDER BY ID";
+
+    /**
+     * The query to use to select the content from the table by published date.
+     */
+    private static final String LIST_BY_DATE_SQL =  
+      "SELECT ATTRIBUTES FROM %s WHERE PUBLISHED_DATE>? ORDER BY ID";
 
     /**
      * The query to use to get the count of content items from the table.
@@ -193,7 +201,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
     }
 
     /**
-     * Returns the content items from the table.
+     * Returns the content items from the table by organisation code.
      */
     public List<T> list(String code) throws SQLException
     {
@@ -203,17 +211,71 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
             return ret;
 
         preQuery();
-        if(listStmt == null)
-            listStmt = prepareStatement(getConnection(), String.format(LIST_SQL, getTableName()));
-        clearParameters(listStmt);
+        if(listByCodeStmt == null)
+            listByCodeStmt = prepareStatement(getConnection(), String.format(LIST_BY_CODE_SQL, getTableName()));
+        clearParameters(listByCodeStmt);
 
         ResultSet rs = null;
 
         try
         {
-            listStmt.setString(1, code);
-            listStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = listStmt.executeQuery();
+            listByCodeStmt.setString(1, code);
+            listByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByCodeStmt.executeQuery();
+            ret = new ArrayList<T>();
+            while(rs.next())
+            {
+                JSONObject attributes = new JSONObject(getClob(rs, 1));
+                ret.add(newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes }));
+            }
+        }
+        catch(IllegalAccessException e)
+        {
+            logger.severe(StringUtils.serialize(e));
+        }
+        catch(NoSuchMethodException e)
+        {
+            logger.severe(StringUtils.serialize(e));
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the content items from the table by published date.
+     */
+    public List<T> list(Instant date) throws SQLException
+    {
+        List<T> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByDateStmt == null)
+            listByDateStmt = prepareStatement(getConnection(), String.format(LIST_BY_DATE_SQL, getTableName()));
+        clearParameters(listByDateStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByDateStmt.setTimestamp(1, new Timestamp(date.toEpochMilli()), UTC);
+            listByDateStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByDateStmt.executeQuery();
             ret = new ArrayList<T>();
             while(rs.next())
             {
@@ -400,8 +462,10 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
         getByUuidStmt = null;
         closeStatement(getByIdStmt);
         getByIdStmt = null;
-        closeStatement(listStmt);
-        listStmt = null;
+        closeStatement(listByCodeStmt);
+        listByCodeStmt = null;
+        closeStatement(listByDateStmt);
+        listByDateStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(maxIdStmt);
@@ -412,7 +476,8 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
 
     private PreparedStatement getByUuidStmt;
     private PreparedStatement getByIdStmt;
-    private PreparedStatement listStmt;
+    private PreparedStatement listByCodeStmt;
+    private PreparedStatement listByDateStmt;
     private PreparedStatement countStmt;
     private PreparedStatement maxIdStmt;
     private PreparedStatement deleteStmt;

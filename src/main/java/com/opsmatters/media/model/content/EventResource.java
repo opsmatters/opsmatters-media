@@ -299,6 +299,15 @@ public class EventResource extends Resource
     }
 
     /**
+     * Returns <CODE>true</CODE> if this content should be promoted.
+     */
+    @Override
+    public boolean isPromoted()
+    {
+        return true;
+    }
+
+    /**
      * Returns the activity type.
      */
     public String getActivityType()

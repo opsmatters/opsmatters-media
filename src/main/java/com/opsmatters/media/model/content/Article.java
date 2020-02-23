@@ -222,6 +222,14 @@ public abstract class Article extends ContentItem
     }
 
     /**
+     * Returns the newsletter status of the article.
+     */
+    public NewsletterStatus getNewsletterStatus()
+    {
+        return newsletter ? NewsletterStatus.INCLUDED : NewsletterStatus.NOT_INCLUDED;
+    }
+
+    /**
      * Set to <CODE>true</CODE> if this content should appear in the newsletter.
      */
     public void setNewsletter(boolean newsletter)
