@@ -138,10 +138,23 @@ public class ArticleWrapper extends Article
     public String getUrl()
     {
         String ret = null;
+
         if(article instanceof RoundupArticle)
-            ret = ((RoundupArticle)article).getUrl();
+        {
+            RoundupArticle roundup = (RoundupArticle)article;
+            ret = roundup.getUrl();
+        }
         else if(article instanceof VideoArticle)
-            ret = ((VideoArticle)article).getVideoUrl();
+        {
+            VideoArticle video = (VideoArticle)article;
+            ret = video.getVideoUrl();
+        }
+        else if(article instanceof PostArticle)
+        {
+            PostArticle post = (PostArticle)article;
+            ret = post.getUrl();
+        }
+
         return ret;
     }
 
@@ -151,9 +164,20 @@ public class ArticleWrapper extends Article
     public void setUrl(String url)
     {
         if(article instanceof RoundupArticle)
-            ((RoundupArticle)article).setUrl(url);
+        {
+            RoundupArticle roundup = (RoundupArticle)article;
+            roundup.setUrl(url);
+        }
         else if(article instanceof VideoArticle)
-            ((VideoArticle)article).getProvider().getVideoId(url);
+        {
+            VideoArticle video = (VideoArticle)article;
+            video.setVideoId(video.getProvider().getVideoId(url));
+        }
+        else if(article instanceof PostArticle)
+        {
+            PostArticle post = (PostArticle)article;
+            post.setUrl(url);
+        }
     }
 
     /**
