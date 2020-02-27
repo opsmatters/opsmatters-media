@@ -21,13 +21,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.RoundupArticle;
 
 /**
  * Class that represents the configuration for roundup content items.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupConfiguration extends ContentConfiguration
+public class RoundupConfiguration extends ContentConfiguration<RoundupArticle>
 {
     private static final Logger logger = Logger.getLogger(RoundupConfiguration.class.getName());
 

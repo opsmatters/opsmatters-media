@@ -21,13 +21,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.ToolResource;
 
 /**
  * Class that represents the configuration for tool content items.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ToolConfiguration extends ContentConfiguration
+public class ToolConfiguration extends ContentConfiguration<ToolResource>
 {
     private static final Logger logger = Logger.getLogger(ToolConfiguration.class.getName());
 

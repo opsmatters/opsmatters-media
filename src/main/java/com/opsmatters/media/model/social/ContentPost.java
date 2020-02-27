@@ -207,6 +207,14 @@ public class ContentPost extends DraftPost
     }
 
     /**
+     * Returns <CODE>true</CODE> if the post can be added to the library.
+     */
+    public boolean isLibraryType()
+    {
+        return getContentType() == ContentType.POST || getContentType() == ContentType.EVENT;
+    }
+
+    /**
      * Returns the post content id.
      */
     public int getContentId()

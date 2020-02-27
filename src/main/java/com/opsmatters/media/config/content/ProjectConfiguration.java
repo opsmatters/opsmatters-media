@@ -21,13 +21,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.ProjectResource;
 
 /**
  * Class that represents the configuration for project content items.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ProjectConfiguration extends ContentConfiguration
+public class ProjectConfiguration extends ContentConfiguration<ProjectResource>
 {
     private static final Logger logger = Logger.getLogger(ProjectConfiguration.class.getName());
 

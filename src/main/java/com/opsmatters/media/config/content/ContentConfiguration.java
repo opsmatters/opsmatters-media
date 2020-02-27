@@ -16,13 +16,20 @@
 
 package com.opsmatters.media.config.content;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
+import java.sql.SQLException;
 import com.opsmatters.media.config.YamlConfiguration;
+import com.opsmatters.media.model.content.Organisation;
+import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.content.Fields;
 import com.opsmatters.media.model.content.FieldSource;
-import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.handler.ContentHandler;
+import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.util.FileUtils;
 
 /**
@@ -30,7 +37,7 @@ import com.opsmatters.media.util.FileUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ContentConfiguration extends YamlConfiguration implements FieldSource
+public abstract class ContentConfiguration<C extends ContentItem> extends YamlConfiguration implements FieldSource
 {
     private static final Logger logger = Logger.getLogger(ContentConfiguration.class.getName());
 
@@ -242,6 +249,14 @@ public abstract class ContentConfiguration extends YamlConfiguration implements 
     }
 
     /**
+     * Returns the list of HTML fields that need to be escaped.
+     */
+    public String[] getHtmlFields()
+    {
+        return new String[] {"body"};
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     @Override
@@ -264,5 +279,38 @@ public abstract class ContentConfiguration extends YamlConfiguration implements 
             if(map.containsKey(OUTPUT))
                 addOutput((Map<String,String>)map.get(OUTPUT));
         }
+    }
+
+    /**
+     * Extract the list of content items from the database and deploy using the given handler.
+     */
+    public List<C> deployContent(ContentDAO contentDAO, ContentHandler handler)
+        throws IOException, SQLException
+    {
+        List<C> items = contentDAO.list(getCode());
+        for(C content : items)
+        {
+            boolean deployed = content.isDeployed();
+            handler.append(handler.getValues(content.toFields().add(this, handler)));
+            content.setDeployed(true);
+            if(content.isDeployed() != deployed)
+                contentDAO.update(content);
+        }
+
+        // Process the import file
+        handler.writeFile();
+        handler.copyFileToBucket(System.getProperty("om-config.s3.content"));
+        handler.deleteFile();
+
+        // Process the CSV file
+        String type = getType().tag();
+        handler.setFilename(handler.getCsvFilename());
+        handler.convertLinesToAscii(getHtmlFields());
+        handler.writeFile();
+        handler.copyFileToHost(System.getProperty("om-config.files.stage.feeds."+type), "stage");
+        handler.copyFileToHost(System.getProperty("om-config.files.prod.feeds."+type), "prod");
+        handler.deleteFile();
+
+        return items;
     }
 }

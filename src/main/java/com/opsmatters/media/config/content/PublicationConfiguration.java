@@ -20,13 +20,14 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import com.opsmatters.media.model.content.ContentItem;
 
 /**
  * Class that represents the configuration for publication content items.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class PublicationConfiguration extends ContentConfiguration
+public abstract class PublicationConfiguration<C extends ContentItem> extends ContentConfiguration<C>
 {
     private static final Logger logger = Logger.getLogger(PublicationConfiguration.class.getName());
 
@@ -40,19 +41,6 @@ public abstract class PublicationConfiguration extends ContentConfiguration
     public PublicationConfiguration(String name)
     {
         super(name);
-    }
-
-    /**
-     * Copies the attributes of the given object.
-     */
-    public void copyAttributes(PublicationConfiguration obj)
-    {
-        if(obj != null)
-        {
-            super.copyAttributes(obj);
-            for(WebPageConfiguration page : obj.getPages())
-                addPage(new WebPageConfiguration(page));
-        }
     }
 
     /**

@@ -21,13 +21,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.PostArticle;
 
 /**
  * Class that represents the configuration for post content items.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PostConfiguration extends ContentConfiguration
+public class PostConfiguration extends ContentConfiguration<PostArticle>
 {
     private static final Logger logger = Logger.getLogger(PostConfiguration.class.getName());
 

@@ -17,13 +17,14 @@
 package com.opsmatters.media.config.content;
 
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.WhitePaperResource;
 
 /**
  * Class that represents a YAML configuration for white papers.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class WhitePaperConfiguration extends PublicationConfiguration
+public class WhitePaperConfiguration extends PublicationConfiguration<WhitePaperResource>
 {
     /**
      * Default constructor.
@@ -39,7 +40,13 @@ public class WhitePaperConfiguration extends PublicationConfiguration
     public WhitePaperConfiguration(WhitePaperConfiguration obj)
     {
         super(obj != null ? obj.getName() : null);
-        copyAttributes(obj);
+
+        if(obj != null)
+        {
+            copyAttributes(obj);
+            for(WebPageConfiguration page : obj.getPages())
+                addPage(new WebPageConfiguration(page));
+        }
     }
 
     /**

@@ -22,13 +22,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.Organisation;
 
 /**
  * Class that represents the configuration for organisation content items.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrganisationConfiguration extends ContentConfiguration
+public class OrganisationConfiguration extends ContentConfiguration<Organisation>
 {
     private static final Logger logger = Logger.getLogger(OrganisationConfiguration.class.getName());
 

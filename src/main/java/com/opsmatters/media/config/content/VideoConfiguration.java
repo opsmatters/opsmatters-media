@@ -22,13 +22,14 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.VideoProvider;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.VideoArticle;
 
 /**
  * Class that represents the configuration for video content items.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class VideoConfiguration extends ContentConfiguration
+public class VideoConfiguration extends ContentConfiguration<VideoArticle>
 {
     private static final Logger logger = Logger.getLogger(VideoConfiguration.class.getName());
 
@@ -73,6 +74,15 @@ public class VideoConfiguration extends ContentConfiguration
     public ContentType getType()
     {
         return ContentType.VIDEO;
+    }
+
+    /**
+     * Returns the list of HTML fields that need to be escaped.
+     */
+    @Override
+    public String[] getHtmlFields()
+    {
+        return new String[] {"summary", "body"};
     }
 
     /**

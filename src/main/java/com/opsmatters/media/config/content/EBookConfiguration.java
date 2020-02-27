@@ -17,13 +17,14 @@
 package com.opsmatters.media.config.content;
 
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.EBookResource;
 
 /**
  * Class that represents a YAML configuration for e-books.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EBookConfiguration extends PublicationConfiguration
+public class EBookConfiguration extends PublicationConfiguration<EBookResource>
 {
     /**
      * Default constructor.
@@ -39,7 +40,13 @@ public class EBookConfiguration extends PublicationConfiguration
     public EBookConfiguration(EBookConfiguration obj)
     {
         super(obj != null ? obj.getName() : null);
-        copyAttributes(obj);
+
+        if(obj != null)
+        {
+            copyAttributes(obj);
+            for(WebPageConfiguration page : obj.getPages())
+                addPage(new WebPageConfiguration(page));
+        }
     }
 
     /**

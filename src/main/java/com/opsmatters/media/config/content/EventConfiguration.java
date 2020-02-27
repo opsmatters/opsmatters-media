@@ -21,13 +21,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.EventResource;
 
 /**
  * Class that represents the configuration for event content items.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EventConfiguration extends ContentConfiguration
+public class EventConfiguration extends ContentConfiguration<EventResource>
 {
     private static final Logger logger = Logger.getLogger(EventConfiguration.class.getName());
 

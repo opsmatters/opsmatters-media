@@ -32,6 +32,8 @@ import com.google.common.io.Files;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.opsmatters.media.model.content.Fields;
+import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.FieldSource;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.client.S3Client;
 import com.opsmatters.media.client.SshClient;
@@ -47,7 +49,7 @@ import com.opsmatters.media.util.FileUtils;
  *
  * @author Gerald Curley (opsmatters)
  */
-public class ContentHandler
+public class ContentHandler implements FieldSource
 {
     private static final Logger logger = Logger.getLogger(ContentHandler.class.getName());
 
@@ -61,6 +63,7 @@ public class ContentHandler
     private String workingDir = "";
     private String dateFormat = Formats.CONTENT_DATE_FORMAT;
     private File file;
+    private Fields fields;
 
     /**
      * Default constructor.
@@ -131,6 +134,33 @@ public class ContentHandler
     public void setFilename(String filename)
     {
         this.filename = filename;
+    }
+
+    /**
+     * Returns the fields for this handler.
+     */
+    @Override
+    public Fields getFields()
+    {
+        return fields;
+    }
+
+    /**
+     * Sets the fields for this handler.
+     */
+    public void setFields(Fields fields)
+    {
+        this.fields = fields;
+    }
+
+    /**
+     * Adds the fields for this handler.
+     */
+    public void addFields(Map<String,String> fields)
+    {
+        if(this.fields == null)
+            this.fields = new Fields();
+        this.fields.putAll(fields);
     }
 
     /**
@@ -782,6 +812,18 @@ public class ContentHandler
         public Builder withWorkingDirectory(String workingDir)
         {
             handler.setWorkingDirectory(workingDir);
+            return this;
+        }
+
+        /**
+         * Adds a field source to the handler.
+         * @param source The field source to add to the handler
+         * @return This object
+         */
+        public Builder withFieldSource(FieldSource source)
+        {
+            if(source != null)
+                handler.addFields(source.getFields());
             return this;
         }
 
