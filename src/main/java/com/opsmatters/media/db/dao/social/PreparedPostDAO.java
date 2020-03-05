@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.social.PreparedPost;
+import com.opsmatters.media.model.social.DraftPost;
 import com.opsmatters.media.model.social.SocialChannels;
 import com.opsmatters.media.model.social.DeliveryStatus;
 
@@ -40,7 +41,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
      * The query to use to select a post from the PREPARED_POSTS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, ORGANISATION, TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, DRAFT_ID, ORGANISATION, TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, CREATED_BY "
       + "FROM PREPARED_POSTS WHERE ID=?";
 
     /**
@@ -48,9 +49,9 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO PREPARED_POSTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, ORGANISATION, TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, DRAFT_ID, ORGANISATION, TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a post in the PREPARED_POSTS table.
@@ -63,15 +64,22 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
      * The query to use to select the posts from the PREPARED_POSTS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, ORGANISATION, TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, DRAFT_ID, ORGANISATION, TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, CREATED_BY "
       + "FROM PREPARED_POSTS ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the PREPARED_POSTS table.
      */
     private static final String LIST_BY_STATUS_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, ORGANISATION, TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, DRAFT_ID, ORGANISATION, TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, CREATED_BY "
       + "FROM PREPARED_POSTS WHERE STATUS=? ORDER BY CREATED_DATE";
+
+    /**
+     * The query to use to select the posts from the PREPARED_POSTS table.
+     */
+    private static final String LIST_BY_DRAFT_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, DRAFT_ID, ORGANISATION, TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, CREATED_BY "
+      + "FROM PREPARED_POSTS WHERE DRAFT_ID=?";
 
     /**
      * The query to use to get the count of posts from the PREPARED_POSTS table.
@@ -104,6 +112,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("SCHEDULED_DATE", Types.TIMESTAMP, false);
         table.addColumn("TYPE", Types.VARCHAR, 15, true);
+        table.addColumn("DRAFT_ID", Types.VARCHAR, 36, true);
         table.addColumn("ORGANISATION", Types.VARCHAR, 5, false);
         table.addColumn("TITLE", Types.VARCHAR, 128, false);
         table.addColumn("MESSAGE", Types.VARCHAR, 512, true);
@@ -113,6 +122,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("PREPARED_POSTS_PK", new String[] {"ID"});
         table.addIndex("PREPARED_POSTS_STATUS_IDX", new String[] {"STATUS"});
+        table.addIndex("PREPARED_POSTS_DRAFT_IDX", new String[] {"DRAFT_ID"});
         table.setInitialised(true);
     }
 
@@ -146,13 +156,14 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setScheduledDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 post.setType(rs.getString(5));
-                post.setOrganisation(rs.getString(6));
-                post.setTitle(rs.getString(7));
-                post.setMessage(rs.getString(8));
-                post.setChannel(SocialChannels.get(rs.getString(9)));
-                post.setStatus(rs.getString(10));
-                post.setExternalId(rs.getString(11));
-                post.setCreatedBy(rs.getString(12));
+                post.setDraftId(rs.getString(6));
+                post.setOrganisation(rs.getString(7));
+                post.setTitle(rs.getString(8));
+                post.setMessage(rs.getString(9));
+                post.setChannel(SocialChannels.get(rs.getString(10)));
+                post.setStatus(rs.getString(11));
+                post.setExternalId(rs.getString(12));
+                post.setCreatedBy(rs.getString(13));
                 ret = post;
             }
         }
@@ -192,13 +203,14 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
             insertStmt.setTimestamp(3, new Timestamp(post.getUpdatedDateMillis()), UTC);
             insertStmt.setTimestamp(4, new Timestamp(post.getScheduledDateMillis()), UTC);
             insertStmt.setString(5, post.getType().name());
-            insertStmt.setString(6, post.getOrganisation());
-            insertStmt.setString(7, post.getTitle());
-            insertStmt.setString(8, post.getMessage());
-            insertStmt.setString(9, post.getChannel().getName());
-            insertStmt.setString(10, post.getStatus().name());
-            insertStmt.setString(11, post.getExternalId());
-            insertStmt.setString(12, post.getCreatedBy());
+            insertStmt.setString(6, post.getDraftId());
+            insertStmt.setString(7, post.getOrganisation());
+            insertStmt.setString(8, post.getTitle());
+            insertStmt.setString(9, post.getMessage());
+            insertStmt.setString(10, post.getChannel().getName());
+            insertStmt.setString(11, post.getStatus().name());
+            insertStmt.setString(12, post.getExternalId());
+            insertStmt.setString(13, post.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created post '"+post.getId()+"' in PREPARED_POSTS");
@@ -273,13 +285,14 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setScheduledDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 post.setType(rs.getString(5));
-                post.setOrganisation(rs.getString(6));
-                post.setTitle(rs.getString(7));
-                post.setMessage(rs.getString(8));
-                post.setChannel(SocialChannels.get(rs.getString(9)));
-                post.setStatus(rs.getString(10));
-                post.setExternalId(rs.getString(11));
-                post.setCreatedBy(rs.getString(12));
+                post.setDraftId(rs.getString(6));
+                post.setOrganisation(rs.getString(7));
+                post.setTitle(rs.getString(8));
+                post.setMessage(rs.getString(9));
+                post.setChannel(SocialChannels.get(rs.getString(10)));
+                post.setStatus(rs.getString(11));
+                post.setExternalId(rs.getString(12));
+                post.setCreatedBy(rs.getString(13));
                 ret.add(post);
             }
         }
@@ -331,13 +344,73 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setScheduledDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 post.setType(rs.getString(5));
-                post.setOrganisation(rs.getString(6));
-                post.setTitle(rs.getString(7));
-                post.setMessage(rs.getString(8));
-                post.setChannel(SocialChannels.get(rs.getString(9)));
-                post.setStatus(rs.getString(10));
-                post.setExternalId(rs.getString(11));
-                post.setCreatedBy(rs.getString(12));
+                post.setDraftId(rs.getString(6));
+                post.setOrganisation(rs.getString(7));
+                post.setTitle(rs.getString(8));
+                post.setMessage(rs.getString(9));
+                post.setChannel(SocialChannels.get(rs.getString(10)));
+                post.setStatus(rs.getString(11));
+                post.setExternalId(rs.getString(12));
+                post.setCreatedBy(rs.getString(13));
+                ret.add(post);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the posts from the PREPARED_POSTS table by draft post id.
+     */
+    public List<PreparedPost> list(DraftPost draft) throws SQLException
+    {
+        List<PreparedPost> ret = null;
+
+        if(!hasConnection() || draft == null || !draft.hasId())
+            return ret;
+
+        preQuery();
+        if(listByDraftStmt == null)
+            listByDraftStmt = prepareStatement(getConnection(), LIST_BY_DRAFT_SQL);
+        clearParameters(listByDraftStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByDraftStmt.setString(1, draft.getId());
+            listByDraftStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByDraftStmt.executeQuery();
+            ret = new ArrayList<PreparedPost>();
+            while(rs.next())
+            {
+                PreparedPost post = new PreparedPost();
+                post.setId(rs.getString(1));
+                post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                post.setScheduledDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                post.setType(rs.getString(5));
+                post.setDraftId(rs.getString(6));
+                post.setOrganisation(rs.getString(7));
+                post.setTitle(rs.getString(8));
+                post.setMessage(rs.getString(9));
+                post.setChannel(SocialChannels.get(rs.getString(10)));
+                post.setStatus(rs.getString(11));
+                post.setExternalId(rs.getString(12));
+                post.setCreatedBy(rs.getString(13));
                 ret.add(post);
             }
         }
@@ -410,6 +483,8 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
         listStmt = null;
         closeStatement(listByStatusStmt);
         listByStatusStmt = null;
+        closeStatement(listByDraftStmt);
+        listByDraftStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -421,6 +496,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
     private PreparedStatement listByStatusStmt;
+    private PreparedStatement listByDraftStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }

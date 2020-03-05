@@ -32,6 +32,7 @@ import com.opsmatters.media.util.StringUtils;
  */
 public class PreparedPost extends SocialPost
 {
+    private String draftId = "";
     private String organisation = "";
     private String title = "";
     private SocialChannel channel;
@@ -58,6 +59,7 @@ public class PreparedPost extends SocialPost
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setScheduledDate(post.getScheduledDate());
+        setDraftId(post.getId());
         if(post.getType() == PostType.CONTENT)
             setOrganisation(((ContentPost)post).getOrganisation());
         setTitle(post.getTitle());
@@ -141,6 +143,7 @@ public class PreparedPost extends SocialPost
         if(obj != null)
         {
             super.copyAttributes(obj);
+            setDraftId(obj.getDraftId());
             setOrganisation(obj.getOrganisation());
             setTitle(obj.getTitle());
             setChannel(obj.getChannel());
@@ -148,6 +151,30 @@ public class PreparedPost extends SocialPost
             setExternalId(obj.getExternalId());
             setScheduledDate(obj.getScheduledDate());
         }
+    }
+
+    /**
+     * Returns the draft post id.
+     */
+    public String getDraftId()
+    {
+        return draftId;
+    }
+
+    /**
+     * Sets the draft post id.
+     */
+    public void setDraftId(String draftId)
+    {
+        this.draftId = draftId;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the draft post id has been set.
+     */
+    public boolean hasDraftId()
+    {
+        return draftId != null && draftId.length() > 0;
     }
 
     /**
