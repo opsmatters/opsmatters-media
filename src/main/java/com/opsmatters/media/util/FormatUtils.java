@@ -261,6 +261,9 @@ public class FormatUtils
             // Replace escaped spaces with dashes
             ret = ret.replaceAll("%20", "-");
 
+            // Replace escaped plus with plus
+            ret = ret.replaceAll("%2B", "+");
+
             // Replace escaped brackets with brackets
             ret = ret.replaceAll("%28", "(");
             ret = ret.replaceAll("%29", ")");
@@ -308,6 +311,20 @@ public class FormatUtils
     {
         StringBuilder ret = new StringBuilder();
 
+        if(url != null)
+        {
+            // Replace any special characters in the URL
+            url = url.replaceAll(" ", "%20");
+
+            // Remove any leading "../" from the URL
+            if(url.startsWith("../"))
+                url = url.substring(2);
+
+            // Remove query parameters
+            if(removeParameters)
+                url = url.replaceAll("(.*)[\\?#](.*)", "$1");
+        }
+
         if(basePath != null && basePath.length() > 0 && FileUtils.isRelativePath(url))
         {
             if(basePath.endsWith("/"))
@@ -319,16 +336,8 @@ public class FormatUtils
 
         if(url != null)
         {
-            // Replace any special characters in the URL
-            url = url.replaceAll(" ", "%20");
-
             if(ret.length() == 0 && url.startsWith("//"))
                 ret.append("https:");
-
-            // Remove query parameters
-            if(removeParameters)
-                url = url.replaceAll("(.*)[\\?#](.*)", "$1");
-
             ret = ret.append(url);
         }
 
