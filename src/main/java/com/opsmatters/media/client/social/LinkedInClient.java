@@ -36,6 +36,7 @@ import com.echobox.api.linkedin.types.organization.Organization;
 import com.echobox.api.linkedin.connection.v2.OrganizationConnection;
 import com.echobox.api.linkedin.connection.v2.UGCShareConnection;
 import com.echobox.api.linkedin.exception.LinkedInResourceNotFoundException;
+import com.echobox.api.linkedin.exception.LinkedInAPIException;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.model.social.SocialChannel;
@@ -360,6 +361,47 @@ public class LinkedInClient extends Client implements SocialClient
         List<UGCShare> shares = ugcConnection.retrieveUGCPostsByAuthors(organizationURN, 30).getData();
         for(UGCShare share : shares)
             ret.add(new PreparedPost(share, channel));
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given error is recoverable.
+     */
+    public boolean isRecoverable(Exception e)
+    {
+        int errorCode = getErrorCode(e);
+        return errorCode != 409; // Content is a duplicate
+    }
+
+    /**
+     * Returns the error code from the given exception.
+     */
+    public int getErrorCode(Exception e)
+    {
+        int ret = -1;
+
+        if(e instanceof LinkedInAPIException)
+        {
+            LinkedInAPIException ex = (LinkedInAPIException)e;
+            ret = ex.getErrorCode();
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the error message from the given exception.
+     */
+    public String getErrorMessage(Exception e)
+    {
+        String ret = "";
+
+        if(e instanceof LinkedInAPIException)
+        {
+            LinkedInAPIException ex = (LinkedInAPIException)e;
+            ret = ex.getErrorMessage();
+        }
+
         return ret;
     }
 }

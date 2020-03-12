@@ -72,4 +72,19 @@ public interface SocialClient
      * Returns the posts for the current user.
      */
     public List<PreparedPost> getPosts() throws Exception;
+
+    /**
+     * Returns <CODE>true</CODE> if the given error is recoverable.
+     */
+    public boolean isRecoverable(Exception e);
+
+    /**
+     * Returns the error code from the given exception.
+     */
+    public int getErrorCode(Exception e);
+
+    /**
+     * Returns the error message from the given exception.
+     */
+    public String getErrorMessage(Exception e);
 }

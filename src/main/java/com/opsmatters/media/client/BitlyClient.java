@@ -19,8 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
-import net.swisstech.bitly.model.Response;
-import net.swisstech.bitly.model.v3.ShortenResponse;
+import com.opsmatters.bitly.Bitly;
 
 /**
  * Class that represents a connection to bit.ly for shortening URLs.
@@ -33,7 +32,7 @@ public class BitlyClient extends Client
 
     public static final String AUTH = ".bitly";
 
-    private static net.swisstech.bitly.BitlyClient client;
+    private static Bitly client;
     private String accessToken = "";
 
     /**
@@ -88,7 +87,7 @@ public class BitlyClient extends Client
 
         // Authenticate using access token
         if(accessToken != null && accessToken.length() > 0)
-            client = new net.swisstech.bitly.BitlyClient(accessToken);
+            client = new Bitly(accessToken);
 
         if(debug())
             logger.info("Created bitly client successfully");
@@ -99,24 +98,8 @@ public class BitlyClient extends Client
     /**
      * Shortens the given URL.
      */
-    public String shortenUrl(String logUrl) throws IOException
+    public String shortenUrl(String longUrl) throws IOException
     {
-        String ret = null;
-
-        Response<ShortenResponse> response = client.shorten()
-            .setLongUrl(logUrl)
-            .call();
-
-        if(response.status_code == 200)
-        {
-            ret = response.data.url;
-            logger.info("Shortened URL: " + response.data.url);
-        }
-        else
-        {
-            throw new IOException("Bitly Error "+response.status_code+": "+response.status_txt);
-        }
-
-        return ret;
+        return client.bitlinks().shorten(longUrl).get().getLink();
     }
 }

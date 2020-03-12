@@ -278,4 +278,45 @@ public class TwitterClient extends Client implements SocialClient
             ret.add(new PreparedPost(status, channel));
         return ret;
     }
+
+    /**
+     * Returns <CODE>true</CODE> if the given error is recoverable.
+     */
+    public boolean isRecoverable(Exception e)
+    {
+        int errorCode = getErrorCode(e);
+        return errorCode != 187; // Status is a duplicate
+    }
+
+    /**
+     * Returns the error code from the given exception.
+     */
+    public int getErrorCode(Exception e)
+    {
+        int ret = -1;
+
+        if(e instanceof TwitterException)
+        {
+            TwitterException ex = (TwitterException)e;
+            ret = ex.getErrorCode();
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the error message from the given exception.
+     */
+    public String getErrorMessage(Exception e)
+    {
+        String ret = "";
+
+        if(e instanceof TwitterException)
+        {
+            TwitterException ex = (TwitterException)e;
+            ret = ex.getErrorMessage();
+        }
+
+        return ret;
+    }
 }

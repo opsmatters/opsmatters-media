@@ -289,4 +289,45 @@ public class FacebookClient extends Client implements SocialClient
             ret.add(new PreparedPost(post, channel));
         return ret;
     }
+
+    /**
+     * Returns <CODE>true</CODE> if the given error is recoverable.
+     */
+    public boolean isRecoverable(Exception e)
+    {
+        int errorCode = getErrorCode(e);
+        return errorCode != 506; // Duplicate Post
+    }
+
+    /**
+     * Returns the error code from the given exception.
+     */
+    public int getErrorCode(Exception e)
+    {
+        int ret = -1;
+
+        if(e instanceof FacebookException)
+        {
+            FacebookException ex = (FacebookException)e;
+            ret = ex.getErrorCode();
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the error message from the given exception.
+     */
+    public String getErrorMessage(Exception e)
+    {
+        String ret = "";
+
+        if(e instanceof FacebookException)
+        {
+            FacebookException ex = (FacebookException)e;
+            ret = ex.getErrorMessage();
+        }
+
+        return ret;
+    }
 }

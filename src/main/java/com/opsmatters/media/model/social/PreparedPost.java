@@ -40,6 +40,8 @@ public class PreparedPost extends SocialPost
     private DeliveryStatus status;
     private String externalId = "";
     private Instant scheduledDate;
+    private int errorCode;
+    private String errorMessage = "";
 
     /**
      * Default constructor.
@@ -150,6 +152,8 @@ public class PreparedPost extends SocialPost
             setStatus(obj.getStatus());
             setExternalId(obj.getExternalId());
             setScheduledDate(obj.getScheduledDate());
+            setErrorCode(obj.getErrorCode());
+            setErrorMessage(obj.getErrorMessage());
         }
     }
 
@@ -394,5 +398,37 @@ public class PreparedPost extends SocialPost
     {
         if(scheduledDate != null)
             setScheduledDate(TimeUtils.toInstantUTC(scheduledDate));
+    }
+
+    /**
+     * Returns the post error code.
+     */
+    public int getErrorCode()
+    {
+        return errorCode;
+    }
+
+    /**
+     * Sets the post error code.
+     */
+    public void setErrorCode(int errorCode)
+    {
+        this.errorCode = errorCode;
+    }
+
+    /**
+     * Returns the post error message.
+     */
+    public String getErrorMessage()
+    {
+        return errorMessage;
+    }
+
+    /**
+     * Sets the post error message.
+     */
+    public void setErrorMessage(String errorMessage)
+    {
+        this.errorMessage = errorMessage;
     }
 }

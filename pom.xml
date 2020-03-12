@@ -546,9 +546,9 @@ built.on=${TODAY}
 </dependency>
 
 <dependency>
-  <groupId>net.swisstech</groupId>
-  <artifactId>bitly-api-client</artifactId>
-  <version>0.8.0</version>
+  <groupId>com.opsmatters</groupId>
+  <artifactId>bitly-java-api</artifactId>
+  <version>1.0.2-SNAPSHOT</version>
 </dependency>
 
 </dependencies>
@@ -569,13 +569,13 @@ built.on=${TODAY}
     </snapshots>
   </repository>
 -->
-
+<!--
   <repository>
     <id>central</id>
     <name>bintray</name>
     <url>http://jcenter.bintray.com</url>
   </repository>
-
+-->
 </repositories>
 
 </project>
