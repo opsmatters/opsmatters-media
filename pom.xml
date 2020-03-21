@@ -548,7 +548,25 @@ built.on=${TODAY}
 <dependency>
   <groupId>com.opsmatters</groupId>
   <artifactId>bitly-java-api</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.0.2</version>
+</dependency>
+
+<dependency>
+  <groupId>org.kohsuke</groupId>
+  <artifactId>github-api</artifactId>
+  <version>1.108</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
+        </exclusion>
+      </exclusions>
+</dependency>
+
+<dependency>
+    <groupId>com.atlassian.commonmark</groupId>
+    <artifactId>commonmark</artifactId>
+    <version>0.14.0</version>
 </dependency>
 
 </dependencies>

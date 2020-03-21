@@ -31,26 +31,26 @@ public enum TraceObject
     PAGES("pages", "Pages"); 
 
     private String code;
-    private String displayName;
+    private String value;
 
     /**
      * Constructor that takes the code and name.
      * @param code The code for the trace
-     * @param displayName The display name of the trace
+     * @param value The value of the trace
      */
-    TraceObject(String code, String displayName)
+    TraceObject(String code, String value)
     {
         this.code = code;
-        this.displayName = displayName;
+        this.value = value;
     }
 
     /**
-     * Returns the display name of the trace.
-     * @return The display name of the trace.
+     * Returns the value of the trace.
+     * @return The value of the trace.
      */
     public String toString()
     {
-        return displayName();
+        return value();
     }
 
     /**
@@ -63,12 +63,12 @@ public enum TraceObject
     }
 
     /**
-     * Returns the display name of the trace.
-     * @return The display name of the trace.
+     * Returns the value of the trace.
+     * @return The value of the trace.
      */
-    public String displayName()
+    public String value()
     {
-        return displayName;
+        return value;
     }
 
     /**

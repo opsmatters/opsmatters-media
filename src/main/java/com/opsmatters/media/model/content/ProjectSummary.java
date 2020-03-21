@@ -24,8 +24,6 @@ import com.opsmatters.media.util.FormatUtils;
  */
 public class ProjectSummary extends ResourceSummary
 {
-    private String repoId = "";
-    private RepoProvider provider;
     private String founded = "";
     private String license = "";
 
@@ -45,56 +43,9 @@ public class ProjectSummary extends ResourceSummary
 
         if(obj != null)
         {
-            setRepoId(obj.getRepoId());
+            setFounded(obj.getFounded());
+            setLicense(obj.getLicense());
         }
-    }
-
-    /**
-     * Returns the repository ID.
-     */
-    public String getRepoId()
-    {
-        return repoId;
-    }
-
-    /**
-     * Sets the repository ID.
-     */
-    public void setRepoId(String repoId)
-    {
-        this.repoId = repoId;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the repository ID has been set.
-     */
-    public boolean hasRepoId()
-    {
-        return repoId != null && repoId.length() > 0;
-    }
-
-    /**
-     * Returns the repository provider.
-     */
-    public RepoProvider getProvider()
-    {
-        return provider;
-    }
-
-    /**
-     * Sets the repository provider.
-     */
-    public void setProvider(RepoProvider provider)
-    {
-        this.provider = provider;
-    }
-
-    /**
-     * Returns the url of the repository.
-     */
-    public String getRepoUrl()
-    {
-        return provider != null ? String.format(provider.repoUrl(), repoId) : null;
     }
 
     /**

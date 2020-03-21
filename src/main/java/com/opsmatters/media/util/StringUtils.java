@@ -21,10 +21,13 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.logging.Logger;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import org.apache.commons.codec.binary.Base64;
-import java.util.logging.Logger;
+import org.commonmark.node.*;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 
 /**
  * A set of utility methods to perform miscellaneous tasks related to strings.
@@ -859,5 +862,16 @@ public class StringUtils
     {
         Matcher m = urlPattern.matcher(text);
         return m.find() ? m.group() : null;
+    }
+
+    /**
+     * Converts the given markdown to HTML.
+     */
+    public static String markdownToHtml(String text)
+    {
+        Parser parser = Parser.builder().build();
+        Node document = parser.parse(text);
+        HtmlRenderer renderer = HtmlRenderer.builder().build();
+        return renderer.render(document);
     }
 }

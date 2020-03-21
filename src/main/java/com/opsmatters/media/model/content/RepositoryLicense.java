@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Gerald Curley
+ * Copyright 2020 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,36 +14,48 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.config.content;
+package com.opsmatters.media.model.content;
 
 /**
- * Represents a content source.
+ * Represents a repository open source license.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ContentSource
+public enum RepositoryLicense
 {
-    CHANNEL("channel", "Channel"),
-    PAGE("page", "Page"),
-    STORE("store", "Store"); 
+    AGPL_3_0("agpl-3.0", "AGPL 3.0"),
+    APACHE_2_0("apache-2.0", "Apache 2.0"),
+    BSD_2_CLAUSE("bsd-2-clause", "BSD 2 Clause"),
+    BSD_3_CLAUSE("bsd-3-clause", "BSD 3 Clause"),
+    CC_BY_SA_3_0("cc-by-sa-3.0", "CC-BY-SA 3.0"),
+    CC_BY_NC_SA_4_0("cc-by-nc-sa-4.0", "CC-BY-NC-SA 4.0"),
+    GPL_2_0("gpl-2.0", "GPL 2.0"),
+    GPL_3_0("gpl-3.0", "GPL 3.0"),
+    GPL_3_0_PLUS("gpl-3.0-or-later", "GPL v3+"),
+    ISC("isc", "ISC"),
+    LGPL_2_1("lgpl-2.1", "LGPL 2.1"),
+    LGPL_3_0("lgpl-3.0", "LGPL 3.0"),
+    MIT("mit", "MIT"),
+    MPL_2_0("mpl-2.0", "MPL 2.0"),
+    PHP("php", "PHP");
 
     private String code;
     private String value;
 
     /**
      * Constructor that takes the code and name.
-     * @param code The code for the source
-     * @param value The name of the source
+     * @param code The code for the license
+     * @param value The value of the license
      */
-    ContentSource(String code, String value)
+    RepositoryLicense(String code, String value)
     {
         this.code = code;
         this.value = value;
     }
 
     /**
-     * Returns the value of the source.
-     * @return The value of the source.
+     * Returns the value of the license.
+     * @return The value of the license.
      */
     public String toString()
     {
@@ -51,8 +63,8 @@ public enum ContentSource
     }
 
     /**
-     * Returns the code of the source.
-     * @return The code of the source.
+     * Returns the code of the license.
+     * @return The code of the license.
      */
     public String code()
     {
@@ -60,8 +72,8 @@ public enum ContentSource
     }
 
     /**
-     * Returns the value of the source.
-     * @return The value of the source.
+     * Returns the value of the license.
+     * @return The value of the license.
      */
     public String value()
     {
@@ -69,41 +81,14 @@ public enum ContentSource
     }
 
     /**
-     * Returns <CODE>true</code> if this is the STORE source.
-     * @return <CODE>true</code> if this is the STORE source.
-     */
-    public boolean isStore()
-    {
-        return this == STORE;
-    }
-
-    /**
-     * Returns <CODE>true</code> if this is the CHANNEL source.
-     * @return <CODE>true</code> if this is the CHANNEL source.
-     */
-    public boolean isChannel()
-    {
-        return this == CHANNEL;
-    }
-
-    /**
-     * Returns <CODE>true</code> if this is the PAGE source.
-     * @return <CODE>true</code> if this is the PAGE source.
-     */
-    public boolean isPage()
-    {
-        return this == PAGE;
-    }
-
-    /**
      * Returns the type for the given code.
      * @param code The type code
      * @return The type for the given code
      */
-    public static ContentSource fromCode(String code)
+    public static RepositoryLicense fromCode(String code)
     {
-        ContentSource[] types = values();
-        for(ContentSource type : types)
+        RepositoryLicense[] types = values();
+        for(RepositoryLicense type : types)
         {
             if(type.code().equals(code))
                 return type;
@@ -118,6 +103,6 @@ public enum ContentSource
      */
     public static boolean contains(String code)
     {
-        return valueOf(code) != null;
+        return fromCode(code) != null;
     }
 }

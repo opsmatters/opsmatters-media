@@ -100,15 +100,13 @@ public class ProjectResource extends Resource
         String founded = values[8];
         String license = values[9];
         String website = values[10];
-        String repoUrl = values[11];
+        String url = values[11];
         String features = values[12];
         String thumbnail = values[13];
         String thumbnailText = values[14];
         String thumbnailTitle = values[15];
         String createdBy = values[16];
         String published = values[17];
-
-        RepoProvider provider = RepoProvider.fromRepoUrl(repoUrl);
 
         setCode(code);
         setId(Integer.parseInt(id.substring(id.lastIndexOf("-")+1)));
@@ -121,9 +119,7 @@ public class ProjectResource extends Resource
         setFounded(founded);
         setLicense(license);
         setWebsite(website);
-        if(provider != null)
-            setRepoId(provider.getRepoId(repoUrl));
-        setProvider(provider);
+        setUrl(url);
         setFeatures(features);
         setCreatedBy(createdBy);
         setPublished(published != null && published.equals("1"));
@@ -145,8 +141,7 @@ public class ProjectResource extends Resource
     {
         super.fromJson(obj);
 
-        setRepoId(obj.optString(Fields.REPO_ID));
-        setProvider(RepoProvider.fromCode(obj.optString(Fields.PROVIDER)));
+        setUrl(obj.optString(Fields.URL));
         setBadges(obj.optString(Fields.BADGES));
         setLinks(obj.optString(Fields.LINKS));
         setFounded(obj.optString(Fields.FOUNDED));
@@ -161,8 +156,7 @@ public class ProjectResource extends Resource
     {
         JSONObject ret = super.toJson();
 
-        ret.putOpt(Fields.REPO_ID, getRepoId());
-        ret.putOpt(Fields.PROVIDER, getProvider().code());
+        ret.putOpt(Fields.URL, getUrl());
         ret.putOpt(Fields.BADGES, getBadges());
         ret.putOpt(Fields.LINKS, getLinks());
         ret.putOpt(Fields.FOUNDED, getFounded());
@@ -180,8 +174,7 @@ public class ProjectResource extends Resource
     {
         Fields ret = super.toFields();
 
-        ret.put(Fields.REPO_ID, getRepoId());
-        ret.put(Fields.REPO_URL, getRepoUrl());
+        ret.put(Fields.URL, getUrl());
         ret.put(Fields.BADGES, getBadges());
         ret.put(Fields.LINKS, getLinks());
         ret.put(Fields.FOUNDED, getFounded());
@@ -203,7 +196,6 @@ public class ProjectResource extends Resource
         resource.setDescription(StringUtils.EMPTY);
         resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
         resource.setFounded(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
-        resource.setProvider(RepoProvider.GITHUB);
 
         return resource;
     }
@@ -213,7 +205,8 @@ public class ProjectResource extends Resource
      */
     public void init(Organisation organisation)
     {
-        setWebsite(organisation.getWebsite());
+        if(getWebsite().length() == 0)
+            setWebsite(organisation.getWebsite());
     }
 
     /**
@@ -224,7 +217,8 @@ public class ProjectResource extends Resource
         super.init(config);
 
         setFeatures(config.getField(Fields.FEATURES, ""));
-        setLicense(config.getField(Fields.LICENSE, ""));
+        if(getLicense().length() == 0)
+            setLicense(config.getField(Fields.LICENSE, ""));
     }
 
     /**
@@ -234,7 +228,8 @@ public class ProjectResource extends Resource
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
         setDescription(FormatUtils.getFormattedDescription(getDescription()));
-        setSummary(FormatUtils.getFormattedSummary(getDescription()));
+        if(getSummary().length() == 0)
+            setSummary(FormatUtils.getFormattedSummary(getDescription()));
     }
 
     /**
@@ -272,58 +267,17 @@ public class ProjectResource extends Resource
     public void setContentSummary(ProjectSummary obj)
     {
         super.setContentSummary(obj);
-        setRepoId(new String(obj.getRepoId() != null ? obj.getRepoId() : ""));
-        setProvider(obj.getProvider());
+        setUrl(new String(obj.getUrl()), false);
         setFounded(new String(obj.getFounded() != null ? obj.getFounded() : ""));
         setLicense(new String(obj.getLicense() != null ? obj.getLicense() : ""));
     }
 
     /**
-     * Returns the repository ID.
-     */
-    public String getRepoId()
-    {
-        return details.getRepoId();
-    }
-
-    /**
-     * Sets the repository ID.
-     */
-    public void setRepoId(String repoId)
-    {
-        details.setRepoId(repoId);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the repository ID has been set.
-     */
-    public boolean hasRepoId()
-    {
-        return details.hasRepoId();
-    }
-
-    /**
      * Returns the provider of the project.
      */
-    public RepoProvider getProvider()
+    public RepositoryProvider getProvider()
     {
-        return details.getProvider();
-    }
-
-    /**
-     * Sets the provider of the project.
-     */
-    public void setProvider(RepoProvider provider)
-    {
-        details.setProvider(provider);
-    }
-
-    /**
-     * Returns the URL of the repository.
-     */
-    public String getRepoUrl()
-    {
-        return details.getRepoUrl();
+        return RepositoryProvider.fromUrl(getUrl());
     }
 
     /**

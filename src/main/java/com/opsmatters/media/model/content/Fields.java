@@ -95,8 +95,6 @@ public class Fields extends LinkedHashMap<String,String>
     public static final String SOCIAL_HASHTAGS = "social-hashtags";
     public static final String DOWNLOAD = "download";
     public static final String DOWNLOAD_TEXT = "download-text";
-    public static final String REPO_ID = "repo-id";
-    public static final String REPO_URL = "repo-url";
     public static final String PRICING = "pricing";
     public static final String BADGES = "badges";
     public static final String LINKS = "links";

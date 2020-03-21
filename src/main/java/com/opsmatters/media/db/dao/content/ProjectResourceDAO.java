@@ -35,19 +35,25 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
     private static final Logger logger = Logger.getLogger(ProjectResourceDAO.class.getName());
 
     /**
+     * The query to use to select a project from the PROJECTS table by URL.
+     */
+    private static final String GET_BY_URL_SQL =  
+      "SELECT ATTRIBUTES FROM PROJECTS WHERE CODE=? AND URL=?";
+
+    /**
      * The query to use to insert a project into the PROJECTS table.
      */
     private static final String INSERT_SQL =  
       "INSERT INTO PROJECTS"
-      + "( CODE, ID, PUBLISHED_DATE, UUID, TITLE, PROVIDER, PUBLISHED, CREATED_BY, ATTRIBUTES )"
+      + "( CODE, ID, PUBLISHED_DATE, UUID, URL, PUBLISHED, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a project in the PROJECTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE PROJECTS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, PROVIDER=?, PUBLISHED=?, ATTRIBUTES=? "
+      "UPDATE PROJECTS SET PUBLISHED_DATE=?, UUID=?, URL=?, PUBLISHED=?, ATTRIBUTES=? "
       + "WHERE CODE=? AND ID=?";
 
     /**
@@ -68,14 +74,60 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UUID", Types.VARCHAR, 36, true);
-        table.addColumn("TITLE", Types.VARCHAR, 128, true);
-        table.addColumn("PROVIDER", Types.VARCHAR, 15, true);
+        table.addColumn("URL", Types.VARCHAR, 256, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.setPrimaryKey("PROJECTS_PK", new String[] {"CODE","ID"});
         table.addIndex("PROJECTS_UUID_IDX", new String[] {"CODE","UUID"});
+        table.addIndex("PROJECTS_URL_IDX", new String[] {"CODE","URL"});
         table.setInitialised(true);
+    }
+
+    /**
+     * Returns a project from the PROJECTS table by URL.
+     */
+    public ProjectResource getByUrl(String code, String url) throws SQLException
+    {
+        ProjectResource ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(getByUrlStmt == null)
+            getByUrlStmt = prepareStatement(getConnection(), GET_BY_URL_SQL);
+        clearParameters(getByUrlStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            getByUrlStmt.setString(1, code);
+            getByUrlStmt.setString(2, url);
+            getByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = getByUrlStmt.executeQuery();
+            while(rs.next())
+            {
+                JSONObject attributes = new JSONObject(getClob(rs, 1));
+                ret = new ProjectResource(attributes);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
     }
 
     /**
@@ -101,13 +153,12 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
             insertStmt.setInt(2, content.getId());
             insertStmt.setTimestamp(3, new Timestamp(content.getPublishedDateMillis()), UTC);
             insertStmt.setString(4, content.getUuid());
-            insertStmt.setString(5, content.getTitle());
-            insertStmt.setString(6, content.getProvider().code());
-            insertStmt.setBoolean(7, content.isPublished());
-            insertStmt.setString(8, content.getCreatedBy());
+            insertStmt.setString(5, content.getUrl());
+            insertStmt.setBoolean(6, content.isPublished());
+            insertStmt.setString(7, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(9, reader, attributes.length());
+            insertStmt.setCharacterStream(8, reader, attributes.length());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -154,14 +205,13 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
         {
             updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
             updateStmt.setString(2, content.getUuid());
-            updateStmt.setString(3, content.getTitle());
-            updateStmt.setString(4, content.getProvider().code());
-            updateStmt.setBoolean(5, content.isPublished());
+            updateStmt.setString(3, content.getUrl());
+            updateStmt.setBoolean(4, content.isPublished());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(6, reader, attributes.length());
-            updateStmt.setString(7, content.getCode());
-            updateStmt.setInt(8, content.getId());
+            updateStmt.setCharacterStream(5, reader, attributes.length());
+            updateStmt.setString(6, content.getCode());
+            updateStmt.setInt(7, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 
@@ -180,12 +230,15 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
     @Override
     protected void close()
     {
+        closeStatement(getByUrlStmt);
+        getByUrlStmt = null;
         closeStatement(insertStmt);
         insertStmt = null;
         closeStatement(updateStmt);
         updateStmt = null;
     }
 
+    private PreparedStatement getByUrlStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
 }
