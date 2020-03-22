@@ -601,7 +601,7 @@ public class TimeUtils
     public static long toMillisTime(String str, String pattern) throws DateTimeParseException
     {
         DateTimeFormatter formatter = getFormatter(pattern);
-        TemporalAccessor dt = formatter.parse(str, new ParsePosition(0));
+        TemporalAccessor dt = formatter.parse(preprocessTimeString(str), new ParsePosition(0));
         return LocalTime.from(dt).toSecondOfDay()*1000L;
     }
 
@@ -650,6 +650,26 @@ public class TimeUtils
 
             // Replace "Sept" as it doesnt parse
             ret = ret.replaceAll("Sept( |\\.)", "Sep$1");
+        }
+
+        return ret;
+    }
+
+    /**
+     * Preprocess time strings that won't parse.
+     * @param s The time to be parsed
+     * @return The given time string prepared for parsing
+     */
+    static private String preprocessTimeString(String s)
+    {
+        String ret = s;
+
+        if(ret != null)
+        {
+            ret = ret.trim();
+
+            // Replace "a.m" as it doesnt parse
+            ret = ret.replaceAll("([AaPp])\\.([Mm])\\.?", "$1$2");
         }
 
         return ret;

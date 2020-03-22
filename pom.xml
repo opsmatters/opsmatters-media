@@ -432,7 +432,7 @@ built.on=${TODAY}
 <dependency>
   <groupId>net.sourceforge.htmlunit</groupId>
   <artifactId>htmlunit</artifactId>
-  <version>2.36.0</version>
+  <version>2.38.0</version>
 </dependency>
 
 <dependency>
