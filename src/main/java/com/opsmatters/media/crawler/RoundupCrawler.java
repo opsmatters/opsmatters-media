@@ -124,14 +124,9 @@ public class RoundupCrawler extends ContentCrawler<RoundupSummary>
         loadPage(content.getUrl());
         configureExplicitWait(getContentLoading());
 
-        // Wait for the javascript to load for the content
-//GERALD: fix later
-//        loadPage(page, getContentLoading());
-
         // Trace to see the roundup page
-//GERALD: fix later
-//        if(trace(page))
-//            logger.info("roundup-page="+page.asXml());
+        if(trace(getDriver()))
+            logger.info("roundup-page="+getDriver().getPageSource());
 
         if(!fields.hasRoot())
             throw new IllegalArgumentException("Root empty for roundup content");
@@ -149,9 +144,8 @@ public class RoundupCrawler extends ContentCrawler<RoundupSummary>
         }
 
         // Trace to see the content root node
-//GERALD: fix later
-//        if(trace(root))
-//            logger.info("roundup-node="+root.asXml());
+        if(trace(root))
+            logger.info("roundup-node="+root.getAttribute("innerHTML"));
 
         // Default the published date to today if not found
         if(!fields.hasPublishedDate() && content.getPublishedDate() == null)

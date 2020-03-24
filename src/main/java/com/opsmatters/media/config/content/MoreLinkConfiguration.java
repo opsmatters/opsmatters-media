@@ -26,12 +26,14 @@ import com.opsmatters.media.config.YamlConfiguration;
 public class MoreLinkConfiguration extends YamlConfiguration
 {
     public static final String SELECTOR = "selector";
+    public static final String INTERVAL = "interval";
+    public static final String MAX_WAIT = "max-wait";
     public static final String COUNT = "count";
-    public static final String WAIT = "wait";
 
     private String selector = "";
+    private long interval = 0L;
+    private long maxWait = 0L;
     private int count = 1;
-    private long wait = 0L;
 
     /**
      * Constructor that takes a selector.
@@ -69,8 +71,9 @@ public class MoreLinkConfiguration extends YamlConfiguration
         {
             super.copyAttributes(obj);
             setSelector(obj.getSelector());
+            setInterval(obj.getInterval());
+            setMaxWait(obj.getMaxWait());
             setCount(obj.getCount());
-            setWait(obj.getWait());
         }
     }
 
@@ -107,19 +110,35 @@ public class MoreLinkConfiguration extends YamlConfiguration
     }
 
     /**
-     * Returns the wait time after each click (in milliseconds).
+     * Returns the interval between selector queries.
      */
-    public long getWait()
+    public long getInterval()
     {
-        return wait;
+        return interval;
     }
 
     /**
-     * Sets the wait time after each click (in milliseconds).
+     * Sets the interval between selector queries.
      */
-    public void setWait(long wait)
+    public void setInterval(long interval)
     {
-        this.wait = wait;
+        this.interval = interval;
+    }
+
+    /**
+     * Returns the maximum wait time before each click (in milliseconds).
+     */
+    public long getMaxWait()
+    {
+        return maxWait;
+    }
+
+    /**
+     * Sets the maximum wait time before each click (in milliseconds).
+     */
+    public void setMaxWait(long maxWait)
+    {
+        this.maxWait = maxWait;
     }
 
     /**
@@ -134,10 +153,12 @@ public class MoreLinkConfiguration extends YamlConfiguration
 
             if(map.containsKey(SELECTOR))
                 setSelector((String)map.get(SELECTOR));
+            if(map.containsKey(INTERVAL))
+                setInterval((Integer)map.get(INTERVAL));
+            if(map.containsKey(MAX_WAIT))
+                setMaxWait((Integer)map.get(MAX_WAIT));
             if(map.containsKey(COUNT))
                 setCount((Integer)map.get(COUNT));
-            if(map.containsKey(WAIT))
-                setWait((Integer)map.get(WAIT));
         }
     }
 }

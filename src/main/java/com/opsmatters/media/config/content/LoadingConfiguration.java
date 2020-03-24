@@ -29,14 +29,12 @@ public class LoadingConfiguration extends YamlConfiguration
     public static final String SELECTOR = "selector";
     public static final String INTERVAL = "interval";
     public static final String MAX_WAIT = "max-wait";
-    public static final String JAVASCRIPT = "javascript";
     public static final String REMOVE_PARAMETERS = "remove-parameters";
 
     private long wait = 0L;
     private String selector = "";
     private long interval = 0L;
     private long maxWait = 0L;
-    private boolean javascript = false;
     private boolean removeParameters = true;
 
     /**
@@ -68,7 +66,6 @@ public class LoadingConfiguration extends YamlConfiguration
             setInterval(obj.getInterval());
             setWait(obj.getWait());
             setMaxWait(obj.getMaxWait());
-            setJavaScriptEnabled(obj.isJavaScriptEnabled());
             setRemoveParameters(obj.removeParameters());
         }
     }
@@ -138,22 +135,6 @@ public class LoadingConfiguration extends YamlConfiguration
     }
 
     /**
-     * Returns <CODE>true</CODE> if javascript is enabled for the page loading.
-     */
-    public boolean isJavaScriptEnabled()
-    {
-        return javascript;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if javascript is enabled for the page loading.
-     */
-    public void setJavaScriptEnabled(boolean javascript)
-    {
-        this.javascript = javascript;
-    }
-
-    /**
      * Returns <CODE>true</CODE> if query parameters should be removed from the URL.
      */
     public boolean removeParameters()
@@ -187,8 +168,6 @@ public class LoadingConfiguration extends YamlConfiguration
                 setInterval((Integer)map.get(INTERVAL));
             if(map.containsKey(MAX_WAIT))
                 setMaxWait((Integer)map.get(MAX_WAIT));
-            if(map.containsKey(JAVASCRIPT))
-                setJavaScriptEnabled((Boolean)map.get(JAVASCRIPT));
             if(map.containsKey(REMOVE_PARAMETERS))
                 setRemoveParameters((Boolean)map.get(REMOVE_PARAMETERS));
         }

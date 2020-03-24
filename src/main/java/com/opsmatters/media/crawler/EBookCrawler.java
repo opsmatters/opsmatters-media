@@ -112,14 +112,9 @@ public class EBookCrawler extends ContentCrawler<PublicationSummary>
         if(!fields.hasRoot())
             throw new IllegalArgumentException("Root empty for ebook content");
 
-        // Wait for the javascript to load for the content
-//GERALD: fix later
-//        loadPage(page, getContentLoading());
-
         // Trace to see the ebook page
-//GERALD: fix later
-//        if(trace(page))
-//            logger.info("ebook-page="+page.asXml());
+        if(trace(getDriver()))
+            logger.info("ebook-page="+getDriver().getPageSource());
 
         WebElement root = getDriver().findElement(By.cssSelector(fields.getRoot()));
         if(root != null)
@@ -135,9 +130,8 @@ public class EBookCrawler extends ContentCrawler<PublicationSummary>
         }
 
         // Trace to see the ebook root node
-//GERALD: fix later
-//        if(trace(root))
-//            logger.info("ebook-node="+root.asXml());
+        if(trace(root))
+            logger.info("ebook-node="+root.getAttribute("innerHTML"));
 
         // Default the published date to today if not found
         if(!fields.hasPublishedDate() && content.getPublishedDate() == null)

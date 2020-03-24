@@ -111,14 +111,9 @@ public class EventCrawler extends ContentCrawler<EventSummary>
         if(!fields.hasRoot())
             throw new IllegalArgumentException("Root empty for event content");
 
-        // Wait for the javascript to load for the content
-//GERALD: fix later
-//        loadPage(page, getContentLoading());
-
         // Trace to see the event page
-//GERALD: fix later
-//        if(trace(page))
-//            logger.info("event-page="+page.asXml());
+        if(trace(getDriver()))
+            logger.info("event-page="+getDriver().getPageSource());
 
         WebElement root = getDriver().findElement(By.cssSelector(fields.getRoot()));
         if(root != null)
@@ -134,9 +129,8 @@ public class EventCrawler extends ContentCrawler<EventSummary>
         }
 
         // Trace to see the event root node
-//GERALD: fix later
-//        if(trace(root))
-//            logger.info("event-node="+root.asXml());
+        if(trace(root))
+            logger.info("event-node="+root.getAttribute("innerHTML"));
 
         // Default the published date to today if not found
         if(!fields.hasPublishedDate() && content.getPublishedDate() == null)

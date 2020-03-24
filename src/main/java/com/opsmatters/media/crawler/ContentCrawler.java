@@ -223,22 +223,20 @@ public abstract class ContentCrawler<T extends ContentSummary>
 
         if(!traceObject.isNone())
         {
-/* GERALD: fix later
             if(debug())
                 logger.info("Trace enabled: traceObject="+traceObject+" obj="+obj.getClass().getName());
-            if(obj instanceof HtmlPage)
+            if(obj instanceof WebDriver)
             {
                 ret = traceObject.isPages();
                 if(debug())
                     logger.info("Trace pages: obj="+obj.getClass().getName()+" ret="+ret);
             }
-            else if(obj instanceof DomNode)
+            else if(obj instanceof WebElement)
             {
                 ret = traceObject.isNodes();
                 if(debug())
                     logger.info("Trace nodes: obj="+obj.getClass().getName()+" ret="+ret);
             }
-*/
         }
         else
         {
@@ -295,22 +293,6 @@ public abstract class ContentCrawler<T extends ContentSummary>
     public LoadingConfiguration getTeaserLoading()
     {
         return config.getTeaserLoading();
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if javascript is enabled for the teasers.
-     */
-    public boolean isTeaserJavaScriptEnabled()
-    {
-        return config.getTeaserLoading() != null ? config.getTeaserLoading().isJavaScriptEnabled() : false;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if javascript is enabled for the content items.
-     */
-    public boolean isContentJavaScriptEnabled()
-    {
-        return config.getContentLoading() != null ? config.getContentLoading().isJavaScriptEnabled() : false;
     }
 
     /**
@@ -417,7 +399,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
     }
 
     /**
-     * Returns the given page with javascript enabled/disabled.
+     * Loads the given page.
      */
     protected void loadPage(String url) throws IOException
     {
@@ -438,7 +420,6 @@ public abstract class ContentCrawler<T extends ContentSummary>
         loadPage(getUrl());
         configureExplicitWait(getTeaserLoading());
 
-/* GERALD: fix later
         // Click a "Load More" button if configured
         if(getMoreLink() != null)
         {
@@ -447,15 +428,13 @@ public abstract class ContentCrawler<T extends ContentSummary>
             {
                 if(debug())
                     logger.info("More link click "+(i+1)+" of "+count);
-                clickMoreLink(page, getMoreLink());
+                clickMoreLink(getMoreLink());
             }
         }
-*/
 
         // Trace to see the teaser page
-//GERALD: fix later
-//        if(trace(page))
-//            logger.info("teaser-page="+page.asXml());
+        if(trace(getDriver()))
+            logger.info("teaser-page="+getDriver().getPageSource());
 
         if(debug())
             logger.info("Loaded page in: "+(System.currentTimeMillis()-now)+"ms");
@@ -465,29 +444,33 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Click a Load More button after the initial page load.
      */
-    protected void clickMoreLink(WebElement page, MoreLinkConfiguration moreLink) throws IOException
+    protected void clickMoreLink(MoreLinkConfiguration moreLink) throws IOException
     {
         String selector = moreLink.getSelector();
-/* GERALD: fix later
         if(selector.length() > 0)
         {
             if(debug())
                 logger.info("Looking for More link: "+selector);
-            DomElement link = page.querySelector(selector);
-            if(link != null)
+            List<WebElement> links = driver.findElements(By.cssSelector(selector));
+            if(links.size() > 0)
             {
                 if(debug())
                     logger.info("Found More link: "+selector);
-                page = link.click();
 
-                long wait = moreLink.getWait();
-                if(wait > 0L)
+                long max = moreLink.getMaxWait();
+                long interval = moreLink.getInterval();
+                if(max > 0L)
                 {
                     if(debug())
-                        logger.info("Waiting after More link click: "+wait);
-                    getClient(true).waitForBackgroundJavaScript(wait);
-                    if(debug())
-                        logger.info("Finished waiting after More link click");
+                        logger.info("Set explicit wait before More link click: "+max);
+                    WebDriverWait waiter = new WebDriverWait(driver, max, interval); 
+                    WebElement element = waiter.until(ExpectedConditions.elementToBeClickable(By.cssSelector(selector)));
+                    if(element != null)
+                        element.click();
+                }
+                else
+                {
+                    links.get(0).click();
                 }
             }
             else
@@ -495,7 +478,6 @@ public abstract class ContentCrawler<T extends ContentSummary>
                 logger.warning("More link not found: "+selector);
             }
         }
-*/
     }
 
     protected void configureImplicitWait(LoadingConfiguration loading)
@@ -557,9 +539,8 @@ public abstract class ContentCrawler<T extends ContentSummary>
             for(WebElement result : results)
             {
                 // Trace to see the teaser root node
-//GERALD: fix later
-//                if(trace(result))
-//                    logger.info("teaser-node="+result.asXml());
+                if(trace(result))
+                    logger.info("teaser-node="+result.getAttribute("innerHTML"));
 
                 T content = getContentSummary(result, fields);
                 if(content.isValid() && !map.containsKey(content.getUniqueId()))
