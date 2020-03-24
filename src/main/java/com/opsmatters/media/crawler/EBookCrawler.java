@@ -18,8 +18,8 @@ package com.opsmatters.media.crawler;
 import java.io.IOException;
 import java.util.logging.Logger;
 import java.time.format.DateTimeParseException;
-import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.By;
 import com.opsmatters.media.model.content.ContentField;
 import com.opsmatters.media.model.content.ContentFields;
 import com.opsmatters.media.model.content.PublicationSummary;
@@ -63,7 +63,7 @@ public class EBookCrawler extends ContentCrawler<PublicationSummary>
      * Create the ebook summary from a selected node.
      */
     @Override
-    public PublicationSummary getContentSummary(DomNode root, ContentFields fields)
+    public PublicationSummary getContentSummary(WebElement root, ContentFields fields)
         throws DateTimeParseException
     {
         PublicationSummary content = new PublicationSummary();
@@ -73,11 +73,12 @@ public class EBookCrawler extends ContentCrawler<PublicationSummary>
         {
             if(debug() && fields.hasValidator())
                 logger.info("Validated ebook content: "+fields.getValidator());
-            populateSummaryFields(this.page, root, fields, content, "teaser");
+            populateSummaryFields(root, fields, content, "teaser");
             if(fields.hasUrl())
             {
                 ContentField field = fields.getUrl();
-                String url = getAnchor(field, root, page, "teaser", field.removeParameters());
+//                String url = getAnchor(field, root, page, "teaser", field.removeParameters());
+                String url = getAnchor(field, root, "teaser", field.removeParameters());
                 if(url != null)
                     content.setUrl(url, field.removeParameters());
             }
@@ -103,23 +104,29 @@ public class EBookCrawler extends ContentCrawler<PublicationSummary>
     {
         ContentFields fields = getContentFields();
         PublicationDetails content = new PublicationDetails(summary);
-        HtmlPage page = getPage(content.getUrl(), isContentJavaScriptEnabled());
+
+        configureImplicitWait(getContentLoading());
+        loadPage(content.getUrl());
+        configureExplicitWait(getContentLoading());
+
         if(!fields.hasRoot())
             throw new IllegalArgumentException("Root empty for ebook content");
 
         // Wait for the javascript to load for the content
-        loadPage(page, getContentLoading());
+//GERALD: fix later
+//        loadPage(page, getContentLoading());
 
         // Trace to see the ebook page
-        if(trace(page))
-            logger.info("ebook-page="+page.asXml());
+//GERALD: fix later
+//        if(trace(page))
+//            logger.info("ebook-page="+page.asXml());
 
-        DomNode root = page.querySelector(fields.getRoot());
+        WebElement root = getDriver().findElement(By.cssSelector(fields.getRoot()));
         if(root != null)
         {
             if(debug())
                 logger.info("Root found for ebook content: "+fields.getRoot());
-            populateSummaryFields(page, root, fields, content, "content");
+            populateSummaryFields(root, fields, content, "content");
         }
         else
         {
@@ -128,8 +135,9 @@ public class EBookCrawler extends ContentCrawler<PublicationSummary>
         }
 
         // Trace to see the ebook root node
-        if(trace(root))
-            logger.info("ebook-node="+root.asXml());
+//GERALD: fix later
+//        if(trace(root))
+//            logger.info("ebook-node="+root.asXml());
 
         // Default the published date to today if not found
         if(!fields.hasPublishedDate() && content.getPublishedDate() == null)
@@ -141,7 +149,7 @@ public class EBookCrawler extends ContentCrawler<PublicationSummary>
 
         if(root != null && fields.hasBody())
         {
-            String body = getBody(fields.getBody(), root, page, "content");
+            String body = getBody(fields.getBody(), root, "content");
             if(body != null)
                 content.setDescription(body);
         }
@@ -152,14 +160,14 @@ public class EBookCrawler extends ContentCrawler<PublicationSummary>
     /**
      * Populate the content fields from the given node.
      */
-    private void populateSummaryFields(HtmlPage page, DomNode root, 
+    private void populateSummaryFields(WebElement root, 
         ContentFields fields, PublicationSummary content, String type)
         throws DateTimeParseException
     {
         if(fields.hasTitle())
         {
             ContentField field = fields.getTitle();
-            String title = getElements(field, root, page, type, field.isMultiple(), field.getSeparator());
+            String title = getElements(field, root, type, field.isMultiple(), field.getSeparator());
             if(title != null)
                 content.setTitle(title);
         }
@@ -167,7 +175,7 @@ public class EBookCrawler extends ContentCrawler<PublicationSummary>
         if(fields.hasPublishedDate())
         {
             ContentField field = fields.getPublishedDate();
-            String publishedDate = getElement(field, root, page, type);
+            String publishedDate = getElement(field, root, type);
             if(publishedDate != null)
             {
                 try

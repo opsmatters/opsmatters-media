@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.ArrayList;
 import com.opsmatters.media.config.YamlConfiguration;
 import com.opsmatters.media.model.content.ContentFields;
+import com.opsmatters.media.crawler.CrawlerBrowser;
 
 /**
  * Class that represents a YAML configuration for a web page.
@@ -29,6 +30,7 @@ import com.opsmatters.media.model.content.ContentFields;
 public class WebPageConfiguration extends YamlConfiguration
 {
     public static final String URL = "url";
+    public static final String BROWSER = "browser";
     public static final String BASE_PATH = "base-path";
     public static final String MORE_LINK = "more-link";
     public static final String TEASER_LOADING = "teaser-loading";
@@ -37,6 +39,7 @@ public class WebPageConfiguration extends YamlConfiguration
     public static final String CONTENT_FIELDS = "content-fields";
 
     private String url = "";
+    private CrawlerBrowser browser;
     private String basePath = "";
     private MoreLinkConfiguration moreLink;
     private LoadingConfiguration teaserLoading; 
@@ -70,6 +73,7 @@ public class WebPageConfiguration extends YamlConfiguration
         {
             super.copyAttributes(obj);
             setUrl(obj.getUrl());
+            setBrowser(obj.getBrowser());
             setBasePath(obj.getBasePath());
             if(obj.getMoreLink() != null)
                 setMoreLink(new MoreLinkConfiguration(obj.getMoreLink()));
@@ -105,6 +109,30 @@ public class WebPageConfiguration extends YamlConfiguration
     public void setUrl(String url)
     {
         this.url = url;
+    }
+
+    /**
+     * Returns the browser for this configuration.
+     */
+    public CrawlerBrowser getBrowser()
+    {
+        return browser;
+    }
+
+    /**
+     * Sets the browser for this configuration.
+     */
+    public void setBrowser(String browser)
+    {
+        setBrowser(CrawlerBrowser.fromValue(browser));
+    }
+
+    /**
+     * Sets the browser for this configuration.
+     */
+    public void setBrowser(CrawlerBrowser browser)
+    {
+        this.browser = browser;
     }
 
     /**
@@ -223,6 +251,8 @@ public class WebPageConfiguration extends YamlConfiguration
 
             if(map.containsKey(URL))
                 setUrl((String)map.get(URL));
+            if(map.containsKey(BROWSER))
+                setBrowser((String)map.get(BROWSER));
             if(map.containsKey(BASE_PATH))
                 setBasePath((String)map.get(BASE_PATH));
             if(map.containsKey(MORE_LINK))

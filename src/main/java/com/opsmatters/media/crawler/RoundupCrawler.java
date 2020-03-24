@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.util.logging.Logger;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
-import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.By;
 import com.opsmatters.media.model.content.ContentField;
 import com.opsmatters.media.model.content.ContentFields;
 import com.opsmatters.media.model.content.RoundupSummary;
@@ -79,7 +79,7 @@ public class RoundupCrawler extends ContentCrawler<RoundupSummary>
      * Create an roundup summary from a selected node.
      */
     @Override
-    public RoundupSummary getContentSummary(DomNode root, ContentFields fields)
+    public RoundupSummary getContentSummary(WebElement root, ContentFields fields)
         throws DateTimeParseException
     {
         RoundupSummary content = new RoundupSummary();
@@ -89,11 +89,11 @@ public class RoundupCrawler extends ContentCrawler<RoundupSummary>
         {
             if(debug() && fields.hasValidator())
                 logger.info("Validated roundup content: "+fields.getValidator());
-            populateSummaryFields(this.page, root, fields, content, "teaser");
+            populateSummaryFields(root, fields, content, "teaser");
             if(fields.hasUrl())
             {
                 ContentField field = fields.getUrl();
-                String url = getAnchor(field, root, page, "teaser", field.removeParameters());
+                String url = getAnchor(field, root, "teaser", field.removeParameters());
                 if(url != null)
                     content.setUrl(url);
             }
@@ -119,23 +119,28 @@ public class RoundupCrawler extends ContentCrawler<RoundupSummary>
     {
         ContentFields fields = getContentFields();
         RoundupDetails content = new RoundupDetails(summary);
-        HtmlPage page = getPage(content.getUrl(), isContentJavaScriptEnabled());
+
+        configureImplicitWait(getContentLoading());
+        loadPage(content.getUrl());
+        configureExplicitWait(getContentLoading());
 
         // Wait for the javascript to load for the content
-        loadPage(page, getContentLoading());
+//GERALD: fix later
+//        loadPage(page, getContentLoading());
 
         // Trace to see the roundup page
-        if(trace(page))
-            logger.info("roundup-page="+page.asXml());
+//GERALD: fix later
+//        if(trace(page))
+//            logger.info("roundup-page="+page.asXml());
 
         if(!fields.hasRoot())
             throw new IllegalArgumentException("Root empty for roundup content");
-        DomNode root = page.querySelector(fields.getRoot());
+        WebElement root = getDriver().findElement(By.cssSelector(fields.getRoot()));
         if(root != null)
         {
             if(debug())
                 logger.info("Root found for roundup content: "+fields.getRoot());
-            populateSummaryFields(page, root, fields, content, "content");
+            populateSummaryFields(root, fields, content, "content");
         }
         else
         {
@@ -144,8 +149,9 @@ public class RoundupCrawler extends ContentCrawler<RoundupSummary>
         }
 
         // Trace to see the content root node
-        if(trace(root))
-            logger.info("roundup-node="+root.asXml());
+//GERALD: fix later
+//        if(trace(root))
+//            logger.info("roundup-node="+root.asXml());
 
         // Default the published date to today if not found
         if(!fields.hasPublishedDate() && content.getPublishedDate() == null)
@@ -157,7 +163,7 @@ public class RoundupCrawler extends ContentCrawler<RoundupSummary>
 
         if(root != null && fields.hasBody())
         {
-            String body = getBodySummary(fields.getBody(), root, page, "content", getMaxLength());
+            String body = getBodySummary(fields.getBody(), root, "content", getMaxLength());
             if(body != null)
                 content.setSummary(body);
         }
@@ -190,7 +196,7 @@ public class RoundupCrawler extends ContentCrawler<RoundupSummary>
     /**
      * Populate the content fields from the given node.
      */
-    private void populateSummaryFields(HtmlPage page, DomNode root, 
+    private void populateSummaryFields(WebElement root, 
         ContentFields fields, RoundupSummary content, String type)
         throws DateTimeParseException
     {
@@ -200,7 +206,7 @@ public class RoundupCrawler extends ContentCrawler<RoundupSummary>
         if(fields.hasTitle())
         {
             ContentField field = fields.getTitle();
-            String title = getElements(field, root, page, type, field.isMultiple(), field.getSeparator());
+            String title = getElements(field, root, type, field.isMultiple(), field.getSeparator());
             if(title != null)
                 content.setTitle(title);
         }
@@ -208,7 +214,7 @@ public class RoundupCrawler extends ContentCrawler<RoundupSummary>
         if(fields.hasPublishedDate())
         {
             ContentField field = fields.getPublishedDate();
-            String publishedDate = getElement(field, root, page, type);
+            String publishedDate = getElement(field, root, type);
             if(publishedDate != null)
             {
                 try
@@ -245,7 +251,7 @@ public class RoundupCrawler extends ContentCrawler<RoundupSummary>
         if(fields.hasAuthor())
         {
             ContentField field = fields.getAuthor();
-            String author = getElements(field, root, page, type, field.isMultiple(), field.getSeparator());
+            String author = getElements(field, root, type, field.isMultiple(), field.getSeparator());
             if(author != null)
                 content.setAuthor(author);
         }
@@ -253,7 +259,7 @@ public class RoundupCrawler extends ContentCrawler<RoundupSummary>
         if(fields.hasAuthorLink())
         {
             ContentField field = fields.getAuthorLink();
-            String authorLink = getAnchor(field, root, page, type, field.removeParameters());
+            String authorLink = getAnchor(field, root, type, field.removeParameters());
             if(authorLink != null)
                 content.setAuthorLink(authorLink);
         }
@@ -261,7 +267,7 @@ public class RoundupCrawler extends ContentCrawler<RoundupSummary>
         if(fields.hasImage())
         {
             ContentField field = fields.getImage();
-            String src = getImageSrc(field, root, page, type);
+            String src = getImageSrc(field, root, type);
             if(src != null)
             {
                 content.setImageFromPath(src);

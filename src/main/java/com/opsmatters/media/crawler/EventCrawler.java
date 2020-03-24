@@ -18,8 +18,8 @@ package com.opsmatters.media.crawler;
 import java.io.IOException;
 import java.util.logging.Logger;
 import java.time.format.DateTimeParseException;
-import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.By;
 import com.opsmatters.media.model.content.ContentField;
 import com.opsmatters.media.model.content.ContentFields;
 import com.opsmatters.media.model.content.EventSummary;
@@ -63,7 +63,7 @@ public class EventCrawler extends ContentCrawler<EventSummary>
      * Create an event summary from a selected node.
      */
     @Override
-    public EventSummary getContentSummary(DomNode root, ContentFields fields)
+    public EventSummary getContentSummary(WebElement root, ContentFields fields)
         throws DateTimeParseException
     {
         EventSummary content = new EventSummary();
@@ -73,11 +73,11 @@ public class EventCrawler extends ContentCrawler<EventSummary>
         {
             if(debug() && fields.hasValidator())
                 logger.info("Validated event content: "+fields.getValidator());
-            populateSummaryFields(this.page, root, fields, content, "teaser");
+            populateSummaryFields(root, fields, content, "teaser");
             if(fields.hasUrl())
             {
                 ContentField field = fields.getUrl();
-                String url = getAnchor(field, root, page, "teaser", field.removeParameters());
+                String url = getAnchor(field, root, "teaser", field.removeParameters());
                 if(url != null)
                     content.setUrl(url, field.removeParameters());
             }
@@ -103,23 +103,29 @@ public class EventCrawler extends ContentCrawler<EventSummary>
     {
         ContentFields fields = getContentFields();
         EventDetails content = new EventDetails(summary);
-        HtmlPage page = getPage(content.getUrl(), isContentJavaScriptEnabled());
+
+        configureImplicitWait(getContentLoading());
+        loadPage(content.getUrl());
+        configureExplicitWait(getContentLoading());
+
         if(!fields.hasRoot())
             throw new IllegalArgumentException("Root empty for event content");
 
         // Wait for the javascript to load for the content
-        loadPage(page, getContentLoading());
+//GERALD: fix later
+//        loadPage(page, getContentLoading());
 
         // Trace to see the event page
-        if(trace(page))
-            logger.info("event-page="+page.asXml());
+//GERALD: fix later
+//        if(trace(page))
+//            logger.info("event-page="+page.asXml());
 
-        DomNode root = page.querySelector(fields.getRoot());
+        WebElement root = getDriver().findElement(By.cssSelector(fields.getRoot()));
         if(root != null)
         {
             if(debug())
                 logger.info("Root found for event content: "+fields.getRoot());
-            populateSummaryFields(page, root, fields, content, "content");
+            populateSummaryFields(root, fields, content, "content");
         }
         else
         {
@@ -128,8 +134,9 @@ public class EventCrawler extends ContentCrawler<EventSummary>
         }
 
         // Trace to see the event root node
-        if(trace(root))
-            logger.info("event-node="+root.asXml());
+//GERALD: fix later
+//        if(trace(root))
+//            logger.info("event-node="+root.asXml());
 
         // Default the published date to today if not found
         if(!fields.hasPublishedDate() && content.getPublishedDate() == null)
@@ -156,7 +163,7 @@ public class EventCrawler extends ContentCrawler<EventSummary>
         if(fields.hasStartTime())
         {
             ContentField field = fields.getStartTime();
-            String start = getElement(field, root, page, "content");
+            String start = getElement(field, root, "content");
             if(start != null)
             {
                 try
@@ -189,14 +196,14 @@ public class EventCrawler extends ContentCrawler<EventSummary>
 
         if(fields.hasTimeZone())
         {
-            String timezone = getElement(fields.getTimeZone(), root, page, "content");
+            String timezone = getElement(fields.getTimeZone(), root, "content");
             if(timezone != null)
                 content.setTimeZone(timezone);
         }
 
         if(root != null && fields.hasBody())
         {
-            String body = getBody(fields.getBody(), root, page, "content");
+            String body = getBody(fields.getBody(), root, "content");
             if(body != null)
                 content.setDescription(body);
         }
@@ -215,14 +222,14 @@ public class EventCrawler extends ContentCrawler<EventSummary>
     /**
      * Populate the content fields from the given node.
      */
-    private void populateSummaryFields(HtmlPage page, DomNode root, 
+    private void populateSummaryFields(WebElement root, 
         ContentFields fields, EventSummary content, String type)
         throws DateTimeParseException
     {
         if(fields.hasTitle())
         {
             ContentField field = fields.getTitle();
-            String title = getElements(field, root, page, type, field.isMultiple(), field.getSeparator());
+            String title = getElements(field, root, type, field.isMultiple(), field.getSeparator());
             if(title != null)
             {
                 // Event title should always start with the organisation name
@@ -244,7 +251,7 @@ public class EventCrawler extends ContentCrawler<EventSummary>
         if(fields.hasStartDate())
         {
             ContentField field = fields.getStartDate();
-            String startDate = getElement(field, root, page, type);
+            String startDate = getElement(field, root, type);
             if(startDate != null)
             {
                 try

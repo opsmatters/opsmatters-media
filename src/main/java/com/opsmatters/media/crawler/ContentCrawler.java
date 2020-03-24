@@ -25,26 +25,26 @@ import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.concurrent.TimeUnit;
 import java.time.format.DateTimeParseException;
 import java.time.Month;
 import java.time.format.TextStyle;
 import org.apache.commons.logging.LogFactory;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlMeta;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
-import com.gargoylesoftware.htmlunit.html.HtmlDivision;
-import com.gargoylesoftware.htmlunit.html.HtmlImage;
-import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.DomNodeList;
-import com.gargoylesoftware.htmlunit.html.DomElement;
-import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
-import com.gargoylesoftware.htmlunit.WebRequest;
-import com.gargoylesoftware.htmlunit.ScriptException;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.WordUtils;
 import com.google.common.net.UrlEscapers;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.By;
+import org.openqa.selenium.PageLoadStrategy;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import com.gargoylesoftware.htmlunit.WebClient;
 import com.opsmatters.media.config.content.WebPageConfiguration;
 import com.opsmatters.media.config.content.LoadingConfiguration;
 import com.opsmatters.media.config.content.MoreLinkConfiguration;
@@ -66,6 +66,9 @@ public abstract class ContentCrawler<T extends ContentSummary>
 {
     private static final Logger logger = Logger.getLogger(ContentCrawler.class.getName());
 
+    public static final String ANCHOR = "a";
+    public static final String DIV = "div";
+
     public static final String ROOT = "<root>";
     public static final String CURRENT_DAY = "current-day";
     public static final String CURRENT_MONTH = "current-month";
@@ -75,7 +78,8 @@ public abstract class ContentCrawler<T extends ContentSummary>
     public static final String IMAGE_NAME = "image-name";
     public static final String IMAGE_EXT = "image-ext";
 
-    private WebClient client;
+    private CrawlerBrowser browser;
+    private WebDriver driver;
     private String name = "";
     private boolean initialised = false;
     private boolean debug = false;
@@ -83,7 +87,6 @@ public abstract class ContentCrawler<T extends ContentSummary>
     private int maxResults = 0;
     private WebPageConfiguration config;
     private List<T> content = new ArrayList<T>();
-    protected HtmlPage page;
 
     protected Map<String, Object> properties = new HashMap<String, Object>();
 
@@ -101,41 +104,57 @@ public abstract class ContentCrawler<T extends ContentSummary>
         setName(config.getName());
         this.config = config;
 
-    }
-
-    /**
-     * Returns the htmlunit client with javascript enabled or disabled.
-     */
-    private WebClient getClient(boolean javascript)
-    {
-        if(client == null)
-        {
-            client = new WebClient();
-            client.setJavaScriptTimeout(30000);
-            client.getOptions().setTimeout(60000);
-            client.getOptions().setRedirectEnabled(true);
-            client.getOptions().setThrowExceptionOnFailingStatusCode(false);
-            client.getOptions().setThrowExceptionOnScriptError(false);
-            client.getOptions().setCssEnabled(false);
-            client.getOptions().setPrintContentOnFailingStatusCode(false);
-            client.getCookieManager().setCookiesEnabled(false);
-            client.getOptions().setUseInsecureSSL(true);
-
-            // Change the window size for pages that execute javascript when the user scrolls down
-            client.getCurrentWindow().setInnerHeight(60000);
-
-            // Process all javascript requests synchonously
-            client.setAjaxController(new NicelyResynchronizingAjaxController());
-        }
-
-        // Enable/disable javascript to improve page loading performance
-        if(client.getOptions().isJavaScriptEnabled() != javascript)
-            client.getOptions().setJavaScriptEnabled(javascript);
+        // Create the web driver
+        createDriver(config.getBrowser());
 
         // Initialise the format properties
         initFormatProperties();
+    }
 
-        return client;
+
+    protected void createDriver(CrawlerBrowser browser)
+    {
+        if(driver == null)
+        {
+            if(browser == CrawlerBrowser.CHROME)
+            {
+                ChromeOptions options = new ChromeOptions();
+                options.addArguments("--no-sandbox");
+                options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"}); 
+                options.addArguments("--disable-extensions");
+                options.setPageLoadStrategy(PageLoadStrategy.EAGER);
+                options.addArguments("--window-size=1920,1080");
+                options.setHeadless(true);
+
+                driver = new ChromeDriver(options);
+                this.browser = browser;
+            }
+            else // Defaults to HtmlUnit
+            {
+                driver = new HtmlUnitDriver()
+                {
+                    @Override
+                    protected WebClient modifyWebClient(WebClient webClient)
+                    {
+                        final WebClient client = super.modifyWebClient(webClient);
+
+                        client.setJavaScriptTimeout(30000);
+                        client.getOptions().setTimeout(60000);
+                        client.getOptions().setRedirectEnabled(true);
+                        client.getOptions().setThrowExceptionOnFailingStatusCode(false);
+                        client.getOptions().setThrowExceptionOnScriptError(false);
+                        client.getOptions().setCssEnabled(false);
+                        client.getOptions().setPrintContentOnFailingStatusCode(false);
+                        client.getCookieManager().setCookiesEnabled(false);
+                        client.getOptions().setUseInsecureSSL(true);
+
+                        return client;
+                    }
+                };
+
+                this.browser = CrawlerBrowser.HTMLUNIT;
+            }
+        }
     }
 
     /**
@@ -143,23 +162,16 @@ public abstract class ContentCrawler<T extends ContentSummary>
      */
     public void close()
     {
-        try
-        {
-            if(client != null)
-                client.close();
-        }
-        catch(ScriptException e)
-        {
-            logger.warning(StringUtils.serialize(e));
-        }
+        if(driver != null)
+            driver.quit();
     }
 
     /**
-     * Returns the htmlunit client with javascript disabled.
+     * Returns the selenium web driver.
      */
-    private WebClient getClient()
+    protected WebDriver getDriver()
     {
-        return getClient(false);
+        return driver;
     }
 
     /**
@@ -211,6 +223,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
 
         if(!traceObject.isNone())
         {
+/* GERALD: fix later
             if(debug())
                 logger.info("Trace enabled: traceObject="+traceObject+" obj="+obj.getClass().getName());
             if(obj instanceof HtmlPage)
@@ -225,6 +238,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
                 if(debug())
                     logger.info("Trace nodes: obj="+obj.getClass().getName()+" ret="+ret);
             }
+*/
         }
         else
         {
@@ -352,8 +366,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
      */
     public void addContent(T content)
     {
-        if(maxResults == 0 || this.content.size() < maxResults)
-            this.content.add(content);
+        this.content.add(content);
     }
 
     /**
@@ -406,20 +419,11 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Returns the given page with javascript enabled/disabled.
      */
-    protected HtmlPage getPage(String url, boolean javascript) throws IOException
+    protected void loadPage(String url) throws IOException
     {
-        HtmlPage page = getClient(javascript).getPage(url);
+        driver.get(url);
         if(debug())
-            logger.info("Loading page: "+page.getTitleText());
-        return page;
-    }
-
-    /**
-     * Returns the given page with javascript disabled.
-     */
-    protected HtmlPage getPage(String url) throws IOException
-    {
-        return getPage(url, false);
+            logger.info("Loading page: "+driver.getTitle());
     }
 
     /**
@@ -430,8 +434,11 @@ public abstract class ContentCrawler<T extends ContentSummary>
     protected void connect() throws IOException
     {
         long now = System.currentTimeMillis();
-        page = getPage(getUrl(), isTeaserJavaScriptEnabled());
+        configureImplicitWait(getTeaserLoading());
+        loadPage(getUrl());
+        configureExplicitWait(getTeaserLoading());
 
+/* GERALD: fix later
         // Click a "Load More" button if configured
         if(getMoreLink() != null)
         {
@@ -443,13 +450,12 @@ public abstract class ContentCrawler<T extends ContentSummary>
                 clickMoreLink(page, getMoreLink());
             }
         }
-
-        // Wait for the javascript to load for the teasers
-        loadPage(page, getTeaserLoading());
+*/
 
         // Trace to see the teaser page
-        if(trace(page))
-            logger.info("teaser-page="+page.asXml());
+//GERALD: fix later
+//        if(trace(page))
+//            logger.info("teaser-page="+page.asXml());
 
         if(debug())
             logger.info("Loaded page in: "+(System.currentTimeMillis()-now)+"ms");
@@ -459,9 +465,10 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Click a Load More button after the initial page load.
      */
-    protected void clickMoreLink(HtmlPage page, MoreLinkConfiguration moreLink) throws IOException
+    protected void clickMoreLink(WebElement page, MoreLinkConfiguration moreLink) throws IOException
     {
         String selector = moreLink.getSelector();
+/* GERALD: fix later
         if(selector.length() > 0)
         {
             if(debug())
@@ -488,57 +495,46 @@ public abstract class ContentCrawler<T extends ContentSummary>
                 logger.warning("More link not found: "+selector);
             }
         }
+*/
     }
 
-    protected void loadPage(HtmlPage page, LoadingConfiguration loading)
+    protected void configureImplicitWait(LoadingConfiguration loading)
     {
-        if(page == null || loading == null)
+        if(loading == null)
             return;
 
-        // Wait for the configured interval before parsing the page
-        boolean javascript = loading.isJavaScriptEnabled();
-        String selector = loading.getSelector();
-        long interval = loading.getInterval();
-        long max = loading.getMaxWait();
-        if(selector.length() > 0 && interval > 0L)
-        {
-            long tm = 0L;
-            while(tm <= max)
-            {
-                DomElement element = page.querySelector(selector);
-                if(element != null)
-                {
-                    if(debug())
-                        logger.info("Found selector: "+selector);
-                    break;
-                }
-                else
-                {
-                    if(debug())
-                        logger.info("Selector not found, waiting for background javascript: "+interval);
-                    getClient(javascript).waitForBackgroundJavaScript(interval);
-                    if(debug())
-                        logger.info("Finished waiting for background javascript");
-                    tm += interval;
-                }
-            }
-        }
-
         long wait = loading.getWait();
+
         if(wait > 0L)
         {
             if(debug())
-                logger.info("Waiting for background javascript: "+wait);
-            getClient(javascript).waitForBackgroundJavaScript(wait);
+                logger.info("Set implicit wait: "+wait);
+            driver.manage().timeouts().implicitlyWait(wait, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    protected void configureExplicitWait(LoadingConfiguration loading)
+    {
+        if(loading == null || browser == CrawlerBrowser.HTMLUNIT) // Don't use JS with HtmlUnit
+            return;
+
+        String selector = loading.getSelector();
+        long interval = loading.getInterval();
+        long max = loading.getMaxWait();
+
+        if(selector.length() > 0 && interval > 0L)
+        {
             if(debug())
-                logger.info("Finished waiting for background javascript");
+                logger.info(String.format("Set explicit wait: max-wait=%d interval=%d selector=%s", max, interval, selector));
+            WebDriverWait waiter = new WebDriverWait(driver, max, interval); 
+            waiter.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector)));
         }
     }
 
     /**
      * Create a content summary from a selected node.
      */
-    public abstract T getContentSummary(DomNode result, ContentFields fields) throws DateTimeParseException;
+    public abstract T getContentSummary(WebElement result, ContentFields fields) throws DateTimeParseException;
 
     /**
      * Process all the configured teaser fields.
@@ -555,14 +551,15 @@ public abstract class ContentCrawler<T extends ContentSummary>
         Map<String,String> map = new HashMap<String,String>();
         for(ContentFields fields : getTeaserFields())
         {
-            DomNodeList<DomNode> results = page.querySelectorAll(fields.getRoot());
+            List<WebElement> results = driver.findElements(By.cssSelector(fields.getRoot()));
             if(debug())
                 logger.info("Found "+results.size()+" teasers for teasers: "+fields.getRoot());
-            for(DomNode result : results)
+            for(WebElement result : results)
             {
                 // Trace to see the teaser root node
-                if(trace(result))
-                    logger.info("teaser-node="+result.asXml());
+//GERALD: fix later
+//                if(trace(result))
+//                    logger.info("teaser-node="+result.asXml());
 
                 T content = getContentSummary(result, fields);
                 if(content.isValid() && !map.containsKey(content.getUniqueId()))
@@ -570,6 +567,9 @@ public abstract class ContentCrawler<T extends ContentSummary>
                     addContent(content);
                     map.put(content.getUniqueId(), content.getUniqueId());
                 }
+
+                if(this.content.size() >= maxResults)
+                    break;
             }
         }
 
@@ -643,17 +643,17 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Returns a list of the metatags for the given attribute name and value.
      */
-    protected List<HtmlMeta> getMetatags(HtmlPage page, String name, String value)
+    protected List<WebElement> getMetatags(String name, String value)
     {
-        List<HtmlMeta> ret = new ArrayList<HtmlMeta>();
-        List<DomElement> tags = getChildElementsRecursive(page.getDocumentElement(), HtmlMeta.class);
+        List<WebElement> ret = new ArrayList<WebElement>();
+        List<WebElement> tags = driver.findElements(By.tagName("meta"));
 
-        for(DomElement tag : tags)
+        for(WebElement tag : tags)
         {
             String attr = tag.getAttribute(name);
             if(attr != null && attr.equals(value))
             {
-                ret.add((HtmlMeta)tag);
+                ret.add(tag);
                 if(debug())
                     logger.info("Found metatag "+name+" "+value+": "+tag.getAttribute("content"));
             }
@@ -662,70 +662,24 @@ public abstract class ContentCrawler<T extends ContentSummary>
         return ret;
     }
 
-    /**
-     * Traverse the children of startElement and its children looking for instances of the given class.
-     * @param startElement the parent element
-     * @param clazz the class to search for
-     * @return {@code null} if no child found
-     */
-    private List<DomElement> getChildElementsRecursive(DomElement startElement, Class<?> clazz)
+    protected String getPropertyMetatag(String value)
     {
-        if(startElement == null)
-            return null;
-
-        List<DomElement> ret = new ArrayList<DomElement>();
-        for(DomElement element : startElement.getChildElements())
-        {
-            if(clazz.isInstance(element))
-                ret.add(element);
-
-            traverseChildElementsRecursive(element, clazz, ret);
-        }
-
-        return ret;
-    }
-
-    /**
-     * Traverse the children of startElement and its children looking for instances of the given class.
-     * @param startElement the parent element
-     * @param clazz the class to search for
-     * @param list the list of elements matching the given class
-     */
-    private void traverseChildElementsRecursive(DomElement startElement, Class<?> clazz, List<DomElement> list)
-    {
-        if(startElement == null)
-            return;
-
-        for(DomElement element : startElement.getChildElements())
-        {
-            if(clazz.isInstance(element))
-                list.add(element);
-
-            traverseChildElementsRecursive(element, clazz, list);
-        }
-    }
-
-    /**
-     * Returns the content of the first "property" metatag for the given attribute value.
-     */
-    protected String getPropertyMetatag(HtmlPage page, String value)
-    {
-        List<HtmlMeta> tags = getMetatags(page, "property", value);
+        List<WebElement> tags = getMetatags("property", value);
         if(tags.size() == 0)
-            tags = getMetatags(page, "name", value); // Sometimes og tags called "name" instead of "property"
+            tags = getMetatags("name", value); // Sometimes og tags called "name" instead of "property"
         if(tags.size() > 0)
-            return tags.get(0).getContentAttribute();
+            return tags.get(0).getAttribute("content");
         return null;
     }
 
     /**
      * Returns <CODE>true</CODE> if the content validator is found.
      */
-    protected void validateContent(T content, String validator, DomNode root, String type)
+    protected void validateContent(T content, String validator, WebElement root, String type)
     {
-        DomElement element = root.querySelector(validator);
-        content.setValid(element != null);
-        if(element != null)
+        List<WebElement> elements = root.findElements(By.cssSelector(validator));
+        content.setValid(elements.size() > 0);
+        if(elements.size() > 0)
         {
             if(debug())
                 logger.info("Validation successful for "+type+": "+validator);
@@ -739,7 +693,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Process an element field returning multiple results.
      */
-    protected String getElements(ContentField field, DomNode root, HtmlPage page, String type,
+    protected String getElements(ContentField field, WebElement root, String type,
         boolean multiple, String separator)
     {
         String ret = null;
@@ -749,19 +703,44 @@ public abstract class ContentCrawler<T extends ContentSummary>
             if(debug())
                 logger.info("Looking for elements for "+type+" field: "+field.getName());
 
-            DomNodeList<DomNode> nodes = root.querySelectorAll(field.getSelector());
-            if(nodes.size() > 0)
+            List<WebElement> nodes = null;
+            try
+            {
+                nodes = root.findElements(By.cssSelector(field.getSelector()));
+            }
+            catch(StaleElementReferenceException e)
+            {
+            }
+
+            if(nodes != null && nodes.size() > 0)
             {
                 int i = 0; 
                 StringBuilder str = new StringBuilder();
-                for(DomNode node : nodes)
+                for(WebElement node : nodes)
                 {
                     String value = null;
-                    DomElement element = (DomElement)node;
                     if(field.getAttribute() != null && field.getAttribute().length() > 0)
-                        value = element.getAttribute(field.getAttribute());
+                    {
+                        value = node.getAttribute(field.getAttribute());
+                    }
                     else
-                        value = element.asText();
+                    {
+                        try
+                        {
+                            value = node.getText();
+                        }
+                        catch(StaleElementReferenceException e)
+                        {
+                        }
+
+                        if(value == null || value.length() == 0)
+                        {
+                            value = node.getAttribute("innerHTML");
+                            if(value.indexOf("<") != -1) // Remove any markup
+                                value = value.replaceAll("<.+?>","").trim();
+                        }
+                    }
+
                     if(value.length() > 0)
                     {
                         if(i > 0 && separator != null && separator.length() > 0)
@@ -789,7 +768,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
             if(debug())
                 logger.info("Looking for element metatag for "+type+" field: "+field.getName());
 
-            String tag = getPropertyMetatag(page, field.getSelector());
+            String tag = getPropertyMetatag(field.getSelector());
             if(tag != null)
             {
                 ret = getValue(field, tag);
@@ -809,15 +788,15 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Process an element field returning a single result.
      */
-    protected String getElement(ContentField field, DomNode root, HtmlPage page, String type)
+    protected String getElement(ContentField field, WebElement root, String type)
     {
-        return getElements(field, root, page, type, false, null);
+        return getElements(field, root, type, false, null);
     }
 
     /**
      * Process an anchor field.
      */
-    protected String getAnchor(ContentField field, DomNode root, HtmlPage page, String type, boolean removeParameters)
+    protected String getAnchor(ContentField field, WebElement root, String type, boolean removeParameters)
     {
         String ret = null;
 
@@ -826,27 +805,34 @@ public abstract class ContentCrawler<T extends ContentSummary>
             if(debug())
                 logger.info("Looking for anchor for "+type+" field: "+field.getName());
 
-            HtmlAnchor anchor = null;
-            HtmlDivision div = null;
+            WebElement anchor = null;
+            WebElement div = null;
             if(field.getSelector().equals(ROOT)) // The anchor is the root node itself
             {
-                if(root instanceof HtmlAnchor)
-                    anchor = (HtmlAnchor)root;
-                else if(root instanceof HtmlDivision)
-                    div = (HtmlDivision)root;
+                if(root.getTagName().equals(ANCHOR))
+                    anchor = root;
+                else if(root.getTagName().equals(DIV))
+                    div = root;
             }
             else
             {
-                HtmlElement element = (HtmlElement)root.querySelector(field.getSelector());
-                if(element instanceof HtmlAnchor)
-                    anchor = (HtmlAnchor)element;
-                else if(element instanceof HtmlDivision)
-                    div = (HtmlDivision)element;
+                WebElement element = null;
+                try
+                {
+                    element = root.findElement(By.cssSelector(field.getSelector()));
+                    if(element.getTagName().equals(ANCHOR))
+                        anchor = element;
+                    else if(element.getTagName().equals(DIV))
+                        div = element;
+                }
+                catch(NoSuchElementException e)
+                {
+                }
             }
 
             if(anchor != null)
             {
-                ret = FormatUtils.getFormattedUrl(getBasePath(), anchor.getHrefAttribute(), removeParameters);
+                ret = FormatUtils.getFormattedUrl(getBasePath(), anchor.getAttribute("href"), removeParameters);
 
                 if(debug())
                     logger.info("Found anchor for "+type+" field "+field.getName()+": "+ret);
@@ -868,7 +854,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
             if(debug())
                 logger.info("Looking for anchor metatag for "+type+" field: "+field.getName());
 
-            String tag = getPropertyMetatag(page, field.getSelector());
+            String tag = getPropertyMetatag(field.getSelector());
             if(tag != null)
             {
                 ret = FormatUtils.getFormattedUrl(getBasePath(), tag, removeParameters);
@@ -888,13 +874,13 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Coalesces the given paragraphs into a single string up to the maximum length.
      */
-    protected String getFormattedSummary(DomNodeList<DomNode> paragraphs, int maxLength)
+    protected String getFormattedSummary(List<WebElement> paragraphs, int maxLength)
     {
         StringBuilder ret = new StringBuilder();
 
-        for(DomNode paragraph : paragraphs)
+        for(WebElement paragraph : paragraphs)
         {
-            String text = paragraph.asText().trim();
+            String text = paragraph.getText().trim();
             if(text.length() > 0)
                 text = String.format("<p>%s</p>", text);
             if(ret.length() > 0 && (ret.length()+text.length()) > maxLength)
@@ -911,7 +897,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Process the body field to produce a summary.
      */
-    protected String getBodySummary(ContentField field, DomNode root, HtmlPage page, String type, int maxLength)
+    protected String getBodySummary(ContentField field, WebElement root, String type, int maxLength)
     {
         String ret = null;
 
@@ -920,7 +906,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
             if(debug())
                 logger.info("Looking for body summary for "+type+" field: "+field.getName());
 
-            String body = getFormattedSummary(root.querySelectorAll(field.getSelector()), maxLength);
+            String body = getFormattedSummary(root.findElements(By.cssSelector(field.getSelector())), maxLength);
             if(body.length() > 0)
             {
                 ret = String.format("<p>%s</p>", body);
@@ -938,7 +924,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
             if(debug())
                 logger.info("Looking for body summary metatag for "+type+" field: "+field.getName());
 
-            String tag = getPropertyMetatag(page, field.getSelector());
+            String tag = getPropertyMetatag(field.getSelector());
             if(tag != null)
             {
                 ret = String.format("<p>%s</p>", getValue(field, tag));
@@ -958,14 +944,14 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Coalesces the given paragraphs into a single string, keeping any markup.
      */
-    protected String getFormattedParagraphs(DomNodeList<DomNode> paragraphs, Pattern stopExprPattern)
+    protected String getFormattedParagraphs(List<WebElement> paragraphs, Pattern stopExprPattern)
     {
         StringBuilder ret = new StringBuilder();
 
-        for(DomNode paragraph : paragraphs)
+        for(WebElement paragraph : paragraphs)
         {
-            String text = paragraph.asText().trim();
-            String tag = paragraph.getNodeName();
+            String text = paragraph.getText().trim();
+            String tag = paragraph.getTagName();
 
             if(text.length() == 0)
                 continue;
@@ -1006,7 +992,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Process the body field.
      */
-    protected String getBody(ContentField field, DomNode root, HtmlPage page, String type)
+    protected String getBody(ContentField field, WebElement root, String type)
     {
         String ret = null;
 
@@ -1015,7 +1001,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
             if(debug())
                 logger.info("Looking for body for "+type+" field: "+field.getName());
 
-            String body = getFormattedParagraphs(root.querySelectorAll(field.getSelector()),
+            String body = getFormattedParagraphs(root.findElements(By.cssSelector(field.getSelector())),
                 field.getStopExprPattern());
             if(body.length() > 0)
             {
@@ -1034,7 +1020,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
             if(debug())
                 logger.info("Looking for body metatag for "+type+" field: "+field.getName());
 
-            String tag = getPropertyMetatag(page, field.getSelector());
+            String tag = getPropertyMetatag(field.getSelector());
             if(tag != null)
             {
                 ret = getValue(field, tag);
@@ -1054,7 +1040,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Process an image field.
      */
-    protected String getImageSrc(ContentField field, DomNode root, HtmlPage page, String type)
+    protected String getImageSrc(ContentField field, WebElement root, String type)
     {
         String ret = null;
 
@@ -1063,7 +1049,15 @@ public abstract class ContentCrawler<T extends ContentSummary>
             if(debug())
                 logger.info("Looking for image for "+type+" field: "+field.getName());
 
-            HtmlImage image = root.querySelector(field.getSelector());
+            WebElement image = null;
+            try
+            {
+                image = root.findElement(By.cssSelector(field.getSelector()));
+            }
+            catch(NoSuchElementException e)
+            {
+            }
+
             if(image != null)
             {
                 if(field.getAttribute() != null && field.getAttribute().length() > 0)
@@ -1075,7 +1069,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
                 }
                 else
                 {
-                    ret = getValue(field, image.getSrcAttribute());
+                    ret = getValue(field, image.getAttribute("src"));
 
                     if(debug())
                         logger.info("Found image src for "+type+" field "+field.getName()+": "+ret);
@@ -1091,7 +1085,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
             if(debug())
                 logger.info("Looking for image metatag for "+type+" field: "+field.getName());
 
-            String tag = getPropertyMetatag(page, field.getSelector());
+            String tag = getPropertyMetatag(field.getSelector());
             if(tag != null)
             {
                 ret = getValue(field, tag);
@@ -1111,7 +1105,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Returns the style attribute of an element.
      */
-    protected String getStyle(ContentField field, DomNode root, String type)
+    protected String getStyle(ContentField field, WebElement root, String type)
     {
         String ret = null;
 
@@ -1120,7 +1114,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
             if(debug())
                 logger.info("Looking for style for "+type+" field: "+field.getName());
 
-            DomElement element = root.querySelector(field.getSelector());
+            WebElement element = root.findElement(By.cssSelector(field.getSelector()));
             if(element != null)
             {
                 ret = getValue(field, element.getAttribute("style"));
