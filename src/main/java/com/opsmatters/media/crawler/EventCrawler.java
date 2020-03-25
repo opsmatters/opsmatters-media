@@ -16,6 +16,7 @@
 package com.opsmatters.media.crawler;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 import java.time.format.DateTimeParseException;
 import org.openqa.selenium.WebElement;
@@ -115,9 +116,11 @@ public class EventCrawler extends ContentCrawler<EventSummary>
         if(trace(getDriver()))
             logger.info("event-page="+getDriver().getPageSource());
 
-        WebElement root = getDriver().findElement(By.cssSelector(fields.getRoot()));
-        if(root != null)
+        WebElement root = null;
+        List<WebElement> elements = getDriver().findElements(By.cssSelector(fields.getRoot()));
+        if(elements.size() > 0)
         {
+            root = elements.get(0);
             if(debug())
                 logger.info("Root found for event content: "+fields.getRoot());
             populateSummaryFields(root, fields, content, "content");

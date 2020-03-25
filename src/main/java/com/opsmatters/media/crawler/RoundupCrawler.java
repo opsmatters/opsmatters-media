@@ -16,6 +16,7 @@
 package com.opsmatters.media.crawler;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
@@ -130,9 +131,11 @@ public class RoundupCrawler extends ContentCrawler<RoundupSummary>
 
         if(!fields.hasRoot())
             throw new IllegalArgumentException("Root empty for roundup content");
-        WebElement root = getDriver().findElement(By.cssSelector(fields.getRoot()));
-        if(root != null)
+        WebElement root = null;
+        List<WebElement> elements = getDriver().findElements(By.cssSelector(fields.getRoot()));
+        if(elements.size() > 0)
         {
+            root = elements.get(0);
             if(debug())
                 logger.info("Root found for roundup content: "+fields.getRoot());
             populateSummaryFields(root, fields, content, "content");

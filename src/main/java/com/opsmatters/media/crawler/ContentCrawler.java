@@ -706,6 +706,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
                     }
                     else
                     {
+/* GERALD
                         try
                         {
                             value = node.getText();
@@ -719,6 +720,18 @@ public abstract class ContentCrawler<T extends ContentSummary>
                             value = node.getAttribute("innerHTML");
                             if(value.indexOf("<") != -1) // Remove any markup
                                 value = value.replaceAll("<.+?>","").trim();
+                        }
+*/
+//GERALD: test
+                        if(browser == CrawlerBrowser.CHROME)
+                        {
+                            value = node.getAttribute("innerHTML");
+                            if(value.indexOf("<") != -1) // Remove any markup
+                                value = value.replaceAll("<.+?>","").trim();
+                        }
+                        else // HtmlUnit
+                        {
+                            value = node.getText();
                         }
                     }
 
