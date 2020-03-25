@@ -264,6 +264,9 @@ public class FormatUtils
             // Replace escaped plus with plus
             ret = ret.replaceAll("%2B", "+");
 
+            // Replace escaped ampersand with ampersand
+            ret = ret.replaceAll("%26", "+");
+
             // Replace escaped brackets with brackets
             ret = ret.replaceAll("%28", "(");
             ret = ret.replaceAll("%29", ")");
