@@ -35,11 +35,15 @@ public class RoundupConfiguration extends ContentConfiguration<RoundupArticle>
     public static final String IMAGE_PREFIX = "image-prefix";
     public static final String IMAGE_FORMAT = "image-format";
     public static final String MAX_LENGTH = "max-length";
+    public static final String MIN_LENGTH = "min-length";
+    public static final String MIN_PARAGRAPH = "min-paragraph";
     public static final String PAGES = "pages";
 
     private String imagePrefix = "";
     private String imageFormat = "";
     private int maxLength = 0;
+    private int minLength = 0;
+    private int minParagraph = 0;
     private List<WebPageConfiguration> pages = new ArrayList<WebPageConfiguration>();
 
     /**
@@ -70,6 +74,8 @@ public class RoundupConfiguration extends ContentConfiguration<RoundupArticle>
             setImagePrefix(obj.getImagePrefix());
             setImageFormat(obj.getImageFormat());
             setMaxLength(obj.getMaxLength());
+            setMinLength(obj.getMinLength());
+            setMinParagraph(obj.getMinParagraph());
             for(WebPageConfiguration page : obj.getPages())
                 addPage(new WebPageConfiguration(page));
         }
@@ -133,6 +139,38 @@ public class RoundupConfiguration extends ContentConfiguration<RoundupArticle>
     }
 
     /**
+     * Returns the min length for this configuration.
+     */
+    public int getMinLength()
+    {
+        return minLength;
+    }
+
+    /**
+     * Sets the min length for this configuration.
+     */
+    public void setMinLength(int minLength)
+    {
+        this.minLength = minLength;
+    }
+
+    /**
+     * Returns the min paragraph length for this configuration.
+     */
+    public int getMinParagraph()
+    {
+        return minParagraph;
+    }
+
+    /**
+     * Sets the min paragraph length for this configuration.
+     */
+    public void setMinParagraph(int minParagraph)
+    {
+        this.minParagraph = minParagraph;
+    }
+
+    /**
      * Returns the pages for this configuration.
      */
     public List<WebPageConfiguration> getPages()
@@ -189,6 +227,10 @@ public class RoundupConfiguration extends ContentConfiguration<RoundupArticle>
                 setImageFormat((String)map.get(IMAGE_FORMAT));
             if(map.containsKey(MAX_LENGTH))
                 setMaxLength((Integer)map.get(MAX_LENGTH));
+            if(map.containsKey(MIN_LENGTH))
+                setMinLength((Integer)map.get(MIN_LENGTH));
+            if(map.containsKey(MIN_PARAGRAPH))
+                setMinParagraph((Integer)map.get(MIN_PARAGRAPH));
             if(map.containsKey(PAGES))
             {
                 List<Map<String,Object>> pages = (List<Map<String,Object>>)map.get(PAGES);

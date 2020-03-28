@@ -706,23 +706,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
                     }
                     else
                     {
-/* GERALD
-                        try
-                        {
-                            value = node.getText();
-                        }
-                        catch(StaleElementReferenceException e)
-                        {
-                        }
-
-                        if(value == null || value.length() == 0)
-                        {
-                            value = node.getAttribute("innerHTML");
-                            if(value.indexOf("<") != -1) // Remove any markup
-                                value = value.replaceAll("<.+?>","").trim();
-                        }
-*/
-//GERALD: test
+                        // Get the node text
                         if(browser == CrawlerBrowser.CHROME)
                         {
                             value = node.getAttribute("innerHTML");
@@ -866,24 +850,131 @@ public abstract class ContentCrawler<T extends ContentSummary>
     }
 
     /**
-     * Coalesces the given paragraphs into a single string up to the maximum length.
+     * Coalesces the given paragraphs into a single string by accumulating paragraphs up to a heading or maximum length.
      */
-    protected String getFormattedSummary(List<WebElement> paragraphs, int maxLength)
+    protected String getFormattedSummary(ContentField field, WebElement root, 
+        int minLength, int maxLength, int minParagraph, boolean debug)
     {
         StringBuilder ret = new StringBuilder();
+        String carryover = null;
 
-        for(WebElement paragraph : paragraphs)
+        String tag = null;
+        List<WebElement> elements = root.findElements(By.cssSelector(field.getSelector()));
+
+        if(debug)
+            logger.info(String.format("1: getFormattedSummary: elements=%d minParagraph=%d minLength=%d maxLength=%d",
+                elements.size(), minParagraph, minLength, maxLength));
+
+        for(WebElement element : elements)
         {
-            String text = paragraph.getText().trim();
-            if(text.length() > 0)
-                text = String.format("<p>%s</p>", text);
-            if(ret.length() > 0 && (ret.length()+text.length()) > maxLength)
+            if(ret.length() == 0 && element.getTagName().startsWith("h")) // Exclude headings
+            {
+                if(debug)
+                    logger.info(String.format("1a: getFormattedSummary: heading: tag=%s element.tag=%s ret.length=%d",
+                        tag, element.getTagName(), ret.length()));
+                continue;
+            }
+            else if(tag == null)
+            {
+                tag = element.getTagName();
+                if(debug)
+                    logger.info(String.format("1b: getFormattedSummary: set: tag=%s element.tag=%s ret.length=%d",
+                        tag, element.getTagName(), ret.length()));
+            }
+            else if(!element.getTagName().equals(tag)) // Tag has changed
+            {
+                if(debug)
+                    logger.info(String.format("1c: getFormattedSummary: set: tag=%s element.tag=%s ret.length=%d",
+                        tag, element.getTagName(), ret.length()));
                 break;
+            }
 
+            String text = element.getText().trim();
+
+            // Remove linefeeds
+            text = text.replaceAll("[ \t]*(\r\n|\n)+[ \t]*", " ");
+
+            if(debug)
+                logger.info(String.format("2: getFormattedSummary: tag=%s text=%s length=%d ret.length=%d",
+                    element.getTagName(), text, text.length(), ret.length()));
+
+            // Carry over very short paragraphs and add to the next
+            if(carryover != null)
+            {
+                StringBuilder str = new StringBuilder(carryover);
+                if(str.length() > 1) // Allow for stylised first character
+                    str.append(" ");
+                str.append(text);     
+                text = str.toString();
+
+                if(debug)
+                    logger.info(String.format("3: getFormattedSummary: carryover=%s text=%s length=%d",
+                        carryover, text, text.length()));
+                carryover = null;
+            }
+
+            if(text.length() < minParagraph) // Too short so just carry it forward
+            {
+                carryover = text;
+
+                if(debug)
+                    logger.info(String.format("4: getFormattedSummary: carryover=%s text=%s length=%d",
+                        carryover, text, text.length()));
+            }
+            else
+            {
+                if(ret.length() > 0 && (ret.length()+text.length()) > maxLength)
+                {
+                    if(debug)
+                        logger.info(String.format("5: getFormattedSummary: break1: ret=%s text.length=%d ret.length=%d",
+                            ret, text.length(), ret.length()));
+                    break;
+                }
+
+                if(debug)
+                    logger.info(String.format("6: getFormattedSummary: ret=%s text.length=%d ret.length=%d",
+                        ret, text.length(), ret.length()));
+
+                if(ret.length() > 0)
+                    ret.append(" ");
+                ret.append(text);
+
+                if(debug)
+                    logger.info(String.format("7: getFormattedSummary: ret=%s text.length=%d ret.length=%d",
+                        ret, text.length(), ret.length()));
+
+                if(ret.length() > minLength)
+                {
+                    if(debug)
+                        logger.info(String.format("8: getFormattedSummary: break2: ret=%s text.length=%d ret.length=%d",
+                            ret, text.length(), ret.length()));
+                    break;
+                }
+            }
+        }
+
+        // Handle descriptions less than the min paragraph length
+        if(carryover != null
+            && (ret.length() == 0 || (ret.length()+carryover.length()) <= maxLength))
+        {
             if(ret.length() > 0)
                 ret.append(" ");
-            ret.append(FormatUtils.getFormattedSummary(text));
+            ret.append(carryover);
         }
+
+        // Summary should end with full stop if it ends with a semi-colon
+        if(ret.length() > 0 && ret.charAt(ret.length()-1) == ':')
+        {
+            ret.setCharAt(ret.length()-1, '.');
+
+            if(debug)
+                logger.info(String.format("9: getFormattedSummary: fixed ':': ret=%s ret.length=%d",
+                    ret, ret.length()));
+        }
+
+        if(debug)
+            logger.info(String.format("10: getFormattedSummary: ret=%s ret.length=%d",
+                ret, ret.length()));
 
         return ret.toString();
     }
@@ -891,7 +982,8 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Process the body field to produce a summary.
      */
-    protected String getBodySummary(ContentField field, WebElement root, String type, int maxLength)
+    protected String getBodySummary(ContentField field, WebElement root, String type,
+        int minLength, int maxLength, int minParagraph, boolean debug)
     {
         String ret = null;
 
@@ -900,7 +992,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
             if(debug())
                 logger.info("Looking for body summary for "+type+" field: "+field.getName());
 
-            String body = getFormattedSummary(root.findElements(By.cssSelector(field.getSelector())), maxLength);
+            String body = getFormattedSummary(field, root, minLength, maxLength, minParagraph, debug);
             if(body.length() > 0)
             {
                 ret = String.format("<p>%s</p>", body);
@@ -1108,7 +1200,15 @@ public abstract class ContentCrawler<T extends ContentSummary>
             if(debug())
                 logger.info("Looking for style for "+type+" field: "+field.getName());
 
-            WebElement element = root.findElement(By.cssSelector(field.getSelector()));
+            WebElement element = null;
+            try
+            {
+                element = root.findElement(By.cssSelector(field.getSelector()));
+            }
+            catch(NoSuchElementException e)
+            {
+            }
+
             if(element != null)
             {
                 ret = getValue(field, element.getAttribute("style"));

@@ -270,6 +270,8 @@ public class VideoArticle extends Article
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
         setDescription(FormatUtils.getFormattedDescription(getDescription()));
         setSummary(FormatUtils.getFormattedSummary(getDescription()));
+        String text = String.format("%s %s", getTitle(), getDescription());
+        setVideoType(VideoType.fromText(text, VideoType.fromValue(getVideoType())));
     }
 
     /**
@@ -318,6 +320,14 @@ public class VideoArticle extends Article
     public String getVideoType()
     {
         return videoType;
+    }
+
+    /**
+     * Sets the video type.
+     */
+    public void setVideoType(VideoType videoType)
+    {
+        setVideoType(videoType != null ? videoType.value() : "");
     }
 
     /**

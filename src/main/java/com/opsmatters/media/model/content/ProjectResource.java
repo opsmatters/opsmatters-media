@@ -371,6 +371,14 @@ public class ProjectResource extends Resource
     /**
      * Sets the project license.
      */
+    public void setLicense(RepositoryLicense license)
+    {
+        setLicense(license != null ? license.value() : "");
+    }
+
+    /**
+     * Sets the project license.
+     */
     public void setLicense(String license)
     {
         details.setLicense(license);
