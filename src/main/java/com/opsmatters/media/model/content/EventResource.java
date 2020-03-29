@@ -248,7 +248,7 @@ public class EventResource extends Resource
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
         setDescription(FormatUtils.getFormattedDescription(getDescription()));
-        setSummary(FormatUtils.getFormattedSummary(getDescription()));
+        setSummary(FormatUtils.getFormattedSummary(getDescription(), config.getSummary()));
 
         // Use the default timezone if an resource timezone wasn't found
         if(config.hasField(Fields.TIMEZONE) && getTimeZone().length() == 0)

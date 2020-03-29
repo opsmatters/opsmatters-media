@@ -45,6 +45,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
     public static final String SHEET = "sheet";
     public static final String SOURCE = "source";
     public static final String DEFAULT_DATE_PATTERN = "default-date-pattern";
+    public static final String SUMMARY = "summary";
     public static final String FIELDS = "fields";
     public static final String OUTPUT = "output";
 
@@ -52,6 +53,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
     private String sheet = "";
     private ContentSource source = ContentSource.STORE;
     private String defaultDatePattern = "";
+    private SummaryConfiguration summary; 
     private Fields fields;
     private Map<String,String> output;
 
@@ -75,6 +77,8 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
             setSheet(obj.getSheet());
             setSource(obj.getSource());
             setDefaultDatePattern(obj.getDefaultDatePattern());
+            if(obj.getSummary() != null)
+                setSummary(new SummaryConfiguration(obj.getSummary()));
             setFields(new Fields(obj.getFields()));
             setOutput(new LinkedHashMap<String,String>(obj.getOutput()));
         }
@@ -167,6 +171,22 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
     public void setSource(ContentSource source)
     {
         this.source = source;
+    }
+
+    /**
+     * Returns the summary configuration.
+     */
+    public SummaryConfiguration getSummary()
+    {
+        return summary;
+    }
+
+    /**
+     * Sets the summary configuration.
+     */
+    public void setSummary(SummaryConfiguration summary)
+    {
+        this.summary = summary;
     }
 
     /**
@@ -278,6 +298,12 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 addFields((Map<String,String>)map.get(FIELDS));
             if(map.containsKey(OUTPUT))
                 addOutput((Map<String,String>)map.get(OUTPUT));
+
+            if(map.containsKey(SUMMARY))
+            {
+                summary = new SummaryConfiguration(getName());
+                summary.parseDocument((Map<String,Object>)map.get(SUMMARY));
+            }
         }
     }
 

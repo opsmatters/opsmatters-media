@@ -229,7 +229,7 @@ public class ProjectResource extends Resource
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
         setDescription(FormatUtils.getFormattedDescription(getDescription()));
         if(getSummary().length() == 0)
-            setSummary(FormatUtils.getFormattedSummary(getDescription()));
+            setSummary(FormatUtils.getFormattedSummary(getDescription(), config.getSummary()));
     }
 
     /**

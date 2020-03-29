@@ -269,7 +269,7 @@ public class VideoArticle extends Article
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
         setDescription(FormatUtils.getFormattedDescription(getDescription()));
-        setSummary(FormatUtils.getFormattedSummary(getDescription()));
+        setSummary(FormatUtils.getFormattedSummary(getDescription(), config.getSummary()));
         String text = String.format("%s %s", getTitle(), getDescription());
         setVideoType(VideoType.fromText(text, VideoType.fromValue(getVideoType())));
     }

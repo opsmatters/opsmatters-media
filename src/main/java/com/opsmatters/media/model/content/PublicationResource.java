@@ -161,7 +161,7 @@ public abstract class PublicationResource extends Resource
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
         setDescription(FormatUtils.getFormattedDescription(getDescription()));
-        setSummary(FormatUtils.getFormattedSummary(getDescription()));
+        setSummary(FormatUtils.getFormattedSummary(getDescription(), config.getSummary()));
     }
 
     /**

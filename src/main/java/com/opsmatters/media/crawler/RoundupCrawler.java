@@ -69,30 +69,6 @@ public class RoundupCrawler extends ContentCrawler<RoundupSummary>
     }
 
     /**
-     * Returns the max summary length for this configuration.
-     */
-    public int getMaxLength()
-    {
-        return config.getMaxLength();
-    }
-
-    /**
-     * Returns the min length for this configuration.
-     */
-    public int getMinLength()
-    {
-        return config.getMinLength();
-    }
-
-    /**
-     * Returns the min paragraph length for this configuration.
-     */
-    public int getMinParagraph()
-    {
-        return config.getMinParagraph();
-    }
-
-    /**
      * Create an roundup summary from a selected node.
      */
     @Override
@@ -176,8 +152,7 @@ public class RoundupCrawler extends ContentCrawler<RoundupSummary>
 
         if(root != null && fields.hasBody())
         {
-            String body = getBodySummary(fields.getBody(), root, "content",
-                getMinLength(), getMaxLength(), getMinParagraph(), debug());
+            String body = getBodySummary(fields.getBody(), root, "content", config.getSummary(), debug());
             if(body != null)
                 content.setSummary(body);
         }

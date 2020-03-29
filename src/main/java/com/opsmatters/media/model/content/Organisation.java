@@ -412,8 +412,6 @@ public class Organisation extends ContentItem implements FieldSource
     public void prepare(OrganisationConfiguration config) throws DateTimeParseException
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
-        setDescription(FormatUtils.getFormattedDescription(getDescription()));
-        setSummary(FormatUtils.getFormattedSummary(getDescription()));
     }
 
     /**

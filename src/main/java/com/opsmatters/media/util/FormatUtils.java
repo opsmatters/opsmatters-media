@@ -19,6 +19,7 @@ package com.opsmatters.media.util;
 import java.text.DecimalFormat;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import com.opsmatters.media.config.content.SummaryConfiguration;
 
 /**
  * A set of utility methods to perform miscellaneous tasks related to formatting.
@@ -94,42 +95,104 @@ public class FormatUtils
      * @param description The description to be formatted
      * @return The formatted summary
      */
-    static public String getFormattedSummary(String description)
+    static public String getFormattedSummary(String description, SummaryConfiguration config)
     {
-        String ret = description;
+        if(config != null)
+            return getFormattedSummary(description, config.getMinLength(), config.getMaxLength(), config.getMinParagraph());
+        return null;
+    }
 
-        if(ret != null)
+    /**
+     * Returns the given HTML content description formatted as a plain text summary.
+     * @param description The description to be formatted
+     * @return The formatted summary
+     */
+    static public String getFormattedSummary(String description, int minLength, int maxLength, int minParagraph)
+    {
+        StringBuilder ret = new StringBuilder();
+        String carryover = null;
+
+        if(description != null)
         {
             // Extract the contents of the 1st paragraph
-            Matcher m = Pattern.compile("<p>(.*?)</p>", Pattern.DOTALL).matcher(ret);
-            if(m.find())
-            {
-                ret = m.group(1);
-            }
+            Matcher m = Pattern.compile("<p>(.*?)<\\/p>", Pattern.DOTALL).matcher(description);
 
-            // If the summary contains a break
-            int pos = ret.indexOf("<br>");
-            if(pos != -1)
+            while(m.find())
             {
-                String str = ret.substring(0, pos).trim();
-                String rest = ret.substring(pos+("<br>".length()));
-                if(rest.indexOf("http") != -1) // Throw away the rest if it contains a link
-                    ret = str;
+                String text = m.group(1);
+
+                // If the summary contains a break
+                int pos = text.indexOf("<br>");
+                if(pos != -1)
+                {
+                    String str = text.substring(0, pos).trim();
+                    String rest = text.substring(pos+("<br>".length()));
+                    if(rest.indexOf("http") != -1) // Throw away the rest if it contains a link
+                        text = str;
+                    else
+                        text = text.replaceAll("<br>", ""); // Otherwise just remove breaks
+                }
+
+                // Remove linefeeds
+                text = text.replaceAll("[ \t]*(\r\n|\n)+[ \t]*", " ");
+                text = text.trim();
+
+                // Carry over very short paragraphs and add to the next
+                if(carryover != null)
+                {
+                    StringBuilder str = new StringBuilder(carryover);
+                    str.append(" ");
+                    str.append(text);
+                    text = str.toString();
+                    carryover = null;
+                }
+
+                if(text.indexOf("<ul>") != -1 || text.indexOf("<ol>") != -1 || text.indexOf("http") != -1)
+                {
+                    // Skip paragraph if it contains a list or link
+                    continue;
+                }
+                else if(text.length() < minParagraph) // Too short so just carry it forward
+                {
+                    carryover = text;
+                }
                 else
-                    ret = ret.replaceAll("<br>", ""); // Otherwise just remove breaks
+                {
+                    // Exit if the addition would take us over the maximum
+                    if(ret.length() > 0 && (ret.length()+text.length()) > maxLength)
+                    {
+                        break;
+                    }
+
+                    if(ret.length() > 0)
+                        ret.append(" ");
+                    ret.append(text);
+
+                    // Exit if the addition has taken us over the minimum
+                    if(ret.length() > minLength)
+                    {
+                        break;
+                    }
+                }
             }
-
-            // Remove linefeeds
-            ret = ret.replaceAll("[ \t]*(\r\n|\n)+[ \t]*", " ");
-
-            // Remove <ul>/<ol> tags and first <li>
-            ret = ret.replaceAll("<(u|o)l><li>|</(u|o)l>", "");
-
-            // Turn subsequent <li> tags into comma to "flatten" the list items
-            ret = ret.replaceAll("<li>", ",");
         }
 
-        return ret;
+        // Handle descriptions less than the min paragraph length
+        if(carryover != null
+            && (ret.length() == 0 || (ret.length()+carryover.length()) <= maxLength))
+        {
+            if(ret.length() > 0)
+                ret.append(" ");
+            ret.append(carryover);
+        }
+
+        // Summary should end with full stop if it ends with a semi-colon
+        if(ret.length() > 0 && ret.charAt(ret.length()-1) == ':')
+        {
+            ret.setCharAt(ret.length()-1, '.');
+        }
+
+        return ret.toString();
     }
 
     /**

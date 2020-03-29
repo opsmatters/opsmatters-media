@@ -48,6 +48,7 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.opsmatters.media.config.content.WebPageConfiguration;
 import com.opsmatters.media.config.content.LoadingConfiguration;
 import com.opsmatters.media.config.content.MoreLinkConfiguration;
+import com.opsmatters.media.config.content.SummaryConfiguration;
 import com.opsmatters.media.model.app.TraceObject;
 import com.opsmatters.media.model.content.ContentSummary;
 import com.opsmatters.media.model.content.ContentField;
@@ -852,14 +853,14 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Coalesces the given paragraphs into a single string by accumulating paragraphs up to a heading or maximum length.
      */
-    protected String getFormattedSummary(ContentField field, WebElement root, 
+    protected String getFormattedSummary(String selector, WebElement root, 
         int minLength, int maxLength, int minParagraph, boolean debug)
     {
         StringBuilder ret = new StringBuilder();
         String carryover = null;
 
         String tag = null;
-        List<WebElement> elements = root.findElements(By.cssSelector(field.getSelector()));
+        List<WebElement> elements = root.findElements(By.cssSelector(selector));
 
         if(debug)
             logger.info(String.format("1: getFormattedSummary: elements=%d minParagraph=%d minLength=%d maxLength=%d",
@@ -923,6 +924,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
             }
             else
             {
+                // Exit if the addition would take us over the maximum
                 if(ret.length() > 0 && (ret.length()+text.length()) > maxLength)
                 {
                     if(debug)
@@ -943,6 +945,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
                     logger.info(String.format("7: getFormattedSummary: ret=%s text.length=%d ret.length=%d",
                         ret, text.length(), ret.length()));
 
+                // Exit if the addition has taken us over the minimum
                 if(ret.length() > minLength)
                 {
                     if(debug)
@@ -983,7 +986,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
      * Process the body field to produce a summary.
      */
     protected String getBodySummary(ContentField field, WebElement root, String type,
-        int minLength, int maxLength, int minParagraph, boolean debug)
+        SummaryConfiguration summary, boolean debug)
     {
         String ret = null;
 
@@ -992,7 +995,8 @@ public abstract class ContentCrawler<T extends ContentSummary>
             if(debug())
                 logger.info("Looking for body summary for "+type+" field: "+field.getName());
 
-            String body = getFormattedSummary(field, root, minLength, maxLength, minParagraph, debug);
+            String body = getFormattedSummary(field.getSelector(), root, 
+                summary.getMinLength(), summary.getMaxLength(), summary.getMinParagraph(), debug);
             if(body.length() > 0)
             {
                 ret = String.format("<p>%s</p>", body);
