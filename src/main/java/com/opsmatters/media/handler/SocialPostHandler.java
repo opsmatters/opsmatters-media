@@ -136,14 +136,21 @@ public class SocialPostHandler
     }
 
     /**
-     * Populates the hashtag map from the given hashtag list.
+     * Sets the hashtag list.
      */
     private void setHashtags(String hashtags)
+    {
+        this.hashtags = hashtags;
+    }
+
+    /**
+     * Populates the hashtag map from the hashtag list.
+     */
+    private void parseHashtags()
     {
         hashtagMap.clear();
         if(hashtags != null && hashtags.length() > 0)
         {
-            this.hashtags = hashtags;
             for(String str : hashtags.split(" "))
             {
                 if(str.startsWith("#") && str.length() > 2)
@@ -182,6 +189,9 @@ public class SocialPostHandler
     {
         if(message != null && message.length() > 0)
         {
+            // Parse the hashtags into a map
+            parseHashtags();
+
             // Process the message to find any hashtags in the message
             //   that can be removed from the hashtag list
             properties.remove(PostTemplate.HASHTAGS);
