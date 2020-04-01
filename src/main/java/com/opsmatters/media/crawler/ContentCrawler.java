@@ -853,6 +853,14 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Coalesces the given paragraphs into a single string by accumulating paragraphs up to a heading or maximum length.
      */
+    protected String getFormattedSummary(String selector, WebElement root, SummaryConfiguration config, boolean debug)
+    {
+        return getFormattedSummary(selector, root, config.getMinLength(), config.getMaxLength(), config.getMinParagraph(), debug);
+    }
+
+    /**
+     * Coalesces the given paragraphs into a single string by accumulating paragraphs up to a heading or maximum length.
+     */
     protected String getFormattedSummary(String selector, WebElement root, 
         int minLength, int maxLength, int minParagraph, boolean debug)
     {
@@ -911,7 +919,6 @@ public abstract class ContentCrawler<T extends ContentSummary>
                 if(debug)
                     logger.info(String.format("3: getFormattedSummary: carryover=%s text=%s length=%d",
                         carryover, text, text.length()));
-                carryover = null;
             }
 
             if(text.length() < minParagraph) // Too short so just carry it forward
@@ -940,6 +947,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
                 if(ret.length() > 0)
                     ret.append(" ");
                 ret.append(text);
+                carryover = null;
 
                 if(debug)
                     logger.info(String.format("7: getFormattedSummary: ret=%s text.length=%d ret.length=%d",
@@ -995,8 +1003,10 @@ public abstract class ContentCrawler<T extends ContentSummary>
             if(debug())
                 logger.info("Looking for body summary for "+type+" field: "+field.getName());
 
-            String body = getFormattedSummary(field.getSelector(), root, 
-                summary.getMinLength(), summary.getMaxLength(), summary.getMinParagraph(), debug);
+            String body = getFormattedSummary(field.getSelector(), root, summary, debug);
+            if(body.length() == 0 && field.hasSelector2())
+                body = getFormattedSummary(field.getSelector2(), root, summary, debug);
+
             if(body.length() > 0)
             {
                 ret = String.format("<p>%s</p>", body);
@@ -1034,14 +1044,16 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Coalesces the given paragraphs into a single string, keeping any markup.
      */
-    protected String getFormattedParagraphs(List<WebElement> paragraphs, Pattern stopExprPattern)
+    protected String getFormattedParagraphs(String selector, WebElement root, Pattern stopExprPattern)
     {
         StringBuilder ret = new StringBuilder();
 
-        for(WebElement paragraph : paragraphs)
+        List<WebElement> elements = root.findElements(By.cssSelector(selector));
+
+        for(WebElement element : elements)
         {
-            String text = paragraph.getText().trim();
-            String tag = paragraph.getTagName();
+            String text = element.getText().trim();
+            String tag = element.getTagName();
 
             if(text.length() == 0)
                 continue;
@@ -1091,8 +1103,10 @@ public abstract class ContentCrawler<T extends ContentSummary>
             if(debug())
                 logger.info("Looking for body for "+type+" field: "+field.getName());
 
-            String body = getFormattedParagraphs(root.findElements(By.cssSelector(field.getSelector())),
-                field.getStopExprPattern());
+            String body = getFormattedParagraphs(field.getSelector(), root, field.getStopExprPattern());
+            if(body.length() == 0 && field.hasSelector2())
+                body = getFormattedParagraphs(field.getSelector2(), root, field.getStopExprPattern());
+
             if(body.length() > 0)
             {
                 ret = body;

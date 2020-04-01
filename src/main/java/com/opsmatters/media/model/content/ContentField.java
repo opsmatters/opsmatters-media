@@ -30,6 +30,7 @@ public class ContentField implements java.io.Serializable
 
     public static final String SOURCE = "source";
     public static final String SELECTOR = "selector";
+    public static final String SELECTOR2 = "selector2";
     public static final String ATTRIBUTE = "attribute";
     public static final String TEXT_CASE = "text-case";
     public static final String MULTIPLE = "multiple";
@@ -45,6 +46,7 @@ public class ContentField implements java.io.Serializable
     private String name = "";
     private ContentFieldSource source = ContentFieldSource.PAGE;
     private String selector = "";
+    private String selector2 = "";
     private String attribute = "";
     private ContentFieldCase textCase = ContentFieldCase.NONE;
     private boolean multiple = false;
@@ -154,6 +156,30 @@ public class ContentField implements java.io.Serializable
     public boolean hasSelector()
     {
         return selector != null && selector.length() > 0;
+    }
+
+    /**
+     * Returns the 2nd selector for this configuration.
+     */
+    public String getSelector2()
+    {
+        return selector2;
+    }
+
+    /**
+     * Sets the 2nd selector for this configuration.
+     */
+    public void setSelector2(String selector2)
+    {
+        this.selector2 = selector2;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the 2nd selector has been set.
+     */
+    public boolean hasSelector2()
+    {
+        return selector2 != null && selector2.length() > 0;
     }
 
     /**
@@ -447,6 +473,8 @@ public class ContentField implements java.io.Serializable
             setSource((String)map.get(SOURCE));
         if(map.containsKey(SELECTOR))
             setSelector((String)map.get(SELECTOR));
+        if(map.containsKey(SELECTOR2))
+            setSelector2((String)map.get(SELECTOR2));
         if(map.containsKey(ATTRIBUTE))
             setAttribute((String)map.get(ATTRIBUTE));
         if(map.containsKey(TEXT_CASE))

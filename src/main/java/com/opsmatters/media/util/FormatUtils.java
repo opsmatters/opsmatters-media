@@ -17,6 +17,7 @@
 package com.opsmatters.media.util;
 
 import java.text.DecimalFormat;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import com.opsmatters.media.config.content.SummaryConfiguration;
@@ -28,6 +29,8 @@ import com.opsmatters.media.config.content.SummaryConfiguration;
  */
 public class FormatUtils
 {
+    private static final Logger logger = Logger.getLogger(FormatUtils.class.getName());
+
     /**
      * Private constructor as this class shouldn't be instantiated.
      */
@@ -98,7 +101,8 @@ public class FormatUtils
     static public String getFormattedSummary(String description, SummaryConfiguration config)
     {
         if(config != null)
-            return getFormattedSummary(description, config.getMinLength(), config.getMaxLength(), config.getMinParagraph());
+            return getFormattedSummary(description, config.getMinLength(), config.getMaxLength(),
+                config.getMinParagraph(), true);
         return null;
     }
 
@@ -107,7 +111,8 @@ public class FormatUtils
      * @param description The description to be formatted
      * @return The formatted summary
      */
-    static public String getFormattedSummary(String description, int minLength, int maxLength, int minParagraph)
+    static public String getFormattedSummary(String description, int minLength, int maxLength,
+        int minParagraph, boolean debug)
     {
         StringBuilder ret = new StringBuilder();
         String carryover = null;
@@ -117,9 +122,16 @@ public class FormatUtils
             // Extract the contents of the 1st paragraph
             Matcher m = Pattern.compile("<p>(.*?)<\\/p>", Pattern.DOTALL).matcher(description);
 
+            if(debug)
+                logger.info(String.format("1: getFormattedSummary: description=%s minLength=%d maxLength=%d minParagraph=%d",
+                    description, minLength, maxLength, minParagraph));
+
             while(m.find())
             {
                 String text = m.group(1);
+
+                if(debug)
+                    logger.info(String.format("2: getFormattedSummary: text=%s carryover=%s", text, carryover));
 
                 // If the summary contains a break
                 int pos = text.indexOf("<br>");
@@ -137,6 +149,19 @@ public class FormatUtils
                 text = text.replaceAll("[ \t]*(\r\n|\n)+[ \t]*", " ");
                 text = text.trim();
 
+                if(debug)
+                    logger.info(String.format("3: getFormattedSummary: text=%s", text));
+
+                if(text.indexOf("<ul>") != -1 || text.indexOf("<ol>") != -1
+                    || text.indexOf("http") != -1 || text.indexOf("www.") != -1)
+                {
+                    // Skip paragraph if it contains a list or link
+                    continue;
+                }
+
+                if(debug)
+                    logger.info(String.format("4: getFormattedSummary: text=%s", text));
+
                 // Carry over very short paragraphs and add to the next
                 if(carryover != null)
                 {
@@ -144,33 +169,42 @@ public class FormatUtils
                     str.append(" ");
                     str.append(text);
                     text = str.toString();
-                    carryover = null;
                 }
 
-                if(text.indexOf("<ul>") != -1 || text.indexOf("<ol>") != -1 || text.indexOf("http") != -1)
-                {
-                    // Skip paragraph if it contains a list or link
-                    continue;
-                }
-                else if(text.length() < minParagraph) // Too short so just carry it forward
+                if(debug)
+                    logger.info(String.format("5: getFormattedSummary: text=%s text.length=%d carryover=%s",
+                        text, text.length(), carryover));
+
+                if(text.length() < minParagraph) // Too short so just carry it forward
                 {
                     carryover = text;
+
+                    if(debug)
+                        logger.info(String.format("6: getFormattedSummary: text=%s text.length=%d carryover=%s",
+                            text, text.length(), carryover));
                 }
                 else
                 {
                     // Exit if the addition would take us over the maximum
                     if(ret.length() > 0 && (ret.length()+text.length()) > maxLength)
                     {
+                        if(debug)
+                            logger.info(String.format("7: getFormattedSummary: break1: text=%s text.length=%d ret=%s ret.length=%d",
+                                text, text.length(), ret, ret.length()));
                         break;
                     }
 
                     if(ret.length() > 0)
                         ret.append(" ");
                     ret.append(text);
+                    carryover = null;
 
                     // Exit if the addition has taken us over the minimum
                     if(ret.length() > minLength)
                     {
+                        if(debug)
+                            logger.info(String.format("8: getFormattedSummary: break2: ret=%s ret.length=%d",
+                                ret, ret.length()));
                         break;
                     }
                 }
@@ -184,6 +218,10 @@ public class FormatUtils
             if(ret.length() > 0)
                 ret.append(" ");
             ret.append(carryover);
+
+            if(debug)
+                logger.info(String.format("9: getFormattedSummary: ret=%s ret.length=%d carryover=%s carryover.length=%d",
+                    ret, ret.length(), carryover, carryover.length()));
         }
 
         // Summary should end with full stop if it ends with a semi-colon
@@ -191,6 +229,9 @@ public class FormatUtils
         {
             ret.setCharAt(ret.length()-1, '.');
         }
+
+        if(debug)
+            logger.info(String.format("10: getFormattedSummary: ret=%s ret.length=%d", ret, ret.length()));
 
         return ret.toString();
     }
