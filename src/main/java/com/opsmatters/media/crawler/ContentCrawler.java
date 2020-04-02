@@ -902,9 +902,10 @@ public abstract class ContentCrawler<T extends ContentSummary>
 
             // Remove linefeeds
             text = text.replaceAll("[ \t]*(\r\n|\n)+[ \t]*", " ");
+            text = text.trim();
 
             if(debug)
-                logger.info(String.format("2: getFormattedSummary: tag=%s text=%s length=%d ret.length=%d",
+                logger.info(String.format("2: getFormattedSummary: tag=%s text=%s text.length=%d ret.length=%d",
                     element.getTagName(), text, text.length(), ret.length()));
 
             // Carry over very short paragraphs and add to the next
@@ -921,7 +922,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
                         carryover, text, text.length()));
             }
 
-            if(text.length() < minParagraph) // Too short so just carry it forward
+            if(text.length() > 0 && text.length() < minParagraph) // Too short so just carry it forward
             {
                 carryover = text;
 
@@ -944,7 +945,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
                     logger.info(String.format("6: getFormattedSummary: ret=%s text.length=%d ret.length=%d",
                         ret, text.length(), ret.length()));
 
-                if(ret.length() > 0)
+                if(ret.length() > 0 && text.length() > 0)
                     ret.append(" ");
                 ret.append(text);
                 carryover = null;
@@ -968,7 +969,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
         if(carryover != null
             && (ret.length() == 0 || (ret.length()+carryover.length()) <= maxLength))
         {
-            if(ret.length() > 0)
+            if(ret.length() > 0 && carryover.length() > 0)
                 ret.append(" ");
             ret.append(carryover);
         }

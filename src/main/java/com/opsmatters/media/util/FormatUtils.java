@@ -134,15 +134,29 @@ public class FormatUtils
                     logger.info(String.format("2: getFormattedSummary: text=%s carryover=%s", text, carryover));
 
                 // If the summary contains a break
-                int pos = text.indexOf("<br>");
+                int pos = text.lastIndexOf("<br>");
                 if(pos != -1)
                 {
                     String str = text.substring(0, pos).trim();
                     String rest = text.substring(pos+("<br>".length()));
-                    if(rest.indexOf("http") != -1) // Throw away the rest if it contains a link
+
+                    // Throw away the rest if it contains a link
+                    if(rest.indexOf("http") != -1 || rest.indexOf("www.") != -1)
                         text = str;
                     else
                         text = text.replaceAll("<br>", ""); // Otherwise just remove breaks
+                }
+
+                // If the summary contains a full stop
+                pos = text.lastIndexOf(". ");
+                if(pos != -1)
+                {
+                    String str = text.substring(0, pos+1).trim();
+                    String rest = text.substring(pos+2);
+
+                    // Throw away the rest if it contains a link
+                    if(rest.indexOf("http") != -1 || rest.indexOf("www.") != -1)
+                        text = str;
                 }
 
                 // Remove linefeeds
@@ -175,7 +189,7 @@ public class FormatUtils
                     logger.info(String.format("5: getFormattedSummary: text=%s text.length=%d carryover=%s",
                         text, text.length(), carryover));
 
-                if(text.length() < minParagraph) // Too short so just carry it forward
+                if(text.length() > 0 && text.length() < minParagraph) // Too short so just carry it forward
                 {
                     carryover = text;
 
@@ -194,7 +208,7 @@ public class FormatUtils
                         break;
                     }
 
-                    if(ret.length() > 0)
+                    if(ret.length() > 0 && text.length() > 0)
                         ret.append(" ");
                     ret.append(text);
                     carryover = null;
@@ -215,7 +229,7 @@ public class FormatUtils
         if(carryover != null
             && (ret.length() == 0 || (ret.length()+carryover.length()) <= maxLength))
         {
-            if(ret.length() > 0)
+            if(ret.length() > 0 && carryover.length() > 0)
                 ret.append(" ");
             ret.append(carryover);
 
