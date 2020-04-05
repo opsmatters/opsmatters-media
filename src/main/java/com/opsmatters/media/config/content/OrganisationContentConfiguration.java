@@ -435,6 +435,7 @@ public class OrganisationContentConfiguration extends ContentConfiguration
                 // Read the config file
                 File config = new File(directory, filename);
                 ret.read(config.getAbsolutePath());
+                ret.setFilename(filename);
             }
 
             return ret;
