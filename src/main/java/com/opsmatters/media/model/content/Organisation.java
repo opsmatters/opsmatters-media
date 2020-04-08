@@ -44,7 +44,6 @@ public class Organisation extends ContentItem implements FieldSource
     private String location = "";
     private String stockSymbol = "";
     private String website = "";
-    private String websiteParams = "";
     private String email = "";
     private String facebook = "";
     private String facebookUsername = "";
@@ -101,7 +100,6 @@ public class Organisation extends ContentItem implements FieldSource
         setLocation(new String(obj.getLocation() != null ? obj.getLocation() : ""));
         setStockSymbol(new String(obj.getStockSymbol() != null ? obj.getStockSymbol() : ""));
         setWebsite(new String(obj.getWebsite() != null ? obj.getWebsite() : ""));
-        setWebsiteParams(new String(obj.getWebsiteParams() != null ? obj.getWebsiteParams() : ""));
         setEmail(new String(obj.getEmail() != null ? obj.getEmail() : ""));
         setFacebook(new String(obj.getFacebook() != null ? obj.getFacebook() : ""));
         setFacebookUsername(new String(obj.getFacebookUsername() != null ? obj.getFacebookUsername() : ""));
@@ -147,7 +145,6 @@ public class Organisation extends ContentItem implements FieldSource
         String location = values[11];
         String stockSymbol = values[12];
         String website = values[13];
-        String websiteParams = values[14];
         String email = values[15];
         String facebook = values[16];
         String facebookUsername = values[17];
@@ -194,7 +191,6 @@ public class Organisation extends ContentItem implements FieldSource
         setLocation(location);
         setStockSymbol(stockSymbol);
         setWebsite(website);
-        setWebsiteParams(websiteParams);
         setEmail(email);
         setFacebook(facebook);
         setFacebookUsername(facebookUsername);
@@ -244,7 +240,6 @@ public class Organisation extends ContentItem implements FieldSource
         setLocation(obj.optString(Fields.LOCATION));
         setStockSymbol(obj.optString(Fields.STOCK_SYMBOL));
         setWebsite(obj.optString(Fields.WEBSITE));
-        setWebsiteParams(obj.optString(Fields.WEBSITE_PARAMS));
         setEmail(obj.optString(Fields.EMAIL));
         setFacebook(obj.optString(Fields.FACEBOOK));
         setFacebookUsername(obj.optString(Fields.FACEBOOK_USERNAME));
@@ -285,7 +280,6 @@ public class Organisation extends ContentItem implements FieldSource
         ret.putOpt(Fields.LOCATION, getLocation());
         ret.putOpt(Fields.STOCK_SYMBOL, getStockSymbol());
         ret.putOpt(Fields.WEBSITE, getWebsite());
-        ret.putOpt(Fields.WEBSITE_PARAMS, getWebsiteParams());
         ret.putOpt(Fields.EMAIL, getEmail());
         ret.putOpt(Fields.FACEBOOK, getFacebook());
         ret.putOpt(Fields.FACEBOOK_USERNAME, getFacebookUsername());
@@ -330,7 +324,6 @@ public class Organisation extends ContentItem implements FieldSource
         ret.put(Fields.LOCATION, getLocation());
         ret.put(Fields.STOCK_SYMBOL, getStockSymbol());
         ret.put(Fields.WEBSITE, getWebsite());
-        ret.put(Fields.WEBSITE_PARAMS, getWebsiteParams());
         ret.put(Fields.EMAIL, getEmail());
         ret.put(Fields.FACEBOOK, getFacebook());
         ret.put(Fields.FACEBOOK_USERNAME, getFacebookUsername());
@@ -679,22 +672,6 @@ public class Organisation extends ContentItem implements FieldSource
     public boolean hasWebsite()
     {
         return website != null && website.length() > 0;
-    }
-
-    /**
-     * Returns the organisation's website parameters.
-     */
-    public String getWebsiteParams()
-    {
-        return websiteParams;
-    }
-
-    /**
-     * Sets the organisation's website parameters.
-     */
-    public void setWebsiteParams(String websiteParams)
-    {
-        this.websiteParams = websiteParams;
     }
 
     /**

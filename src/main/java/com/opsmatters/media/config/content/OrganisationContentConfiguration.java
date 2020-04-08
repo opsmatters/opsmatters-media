@@ -281,6 +281,9 @@ public class OrganisationContentConfiguration extends ContentConfiguration
             if(map.containsKey(Fields.ORGANISATION))
                 setOrganisation((String)map.get(Fields.ORGANISATION));
 
+            if(map.containsKey(FIELDS))
+                addFields((Map<String,String>)map.get(FIELDS));
+
             if(map.containsKey(ContentType.VIDEO.tag()))
             {
                 VideoConfiguration config = new VideoConfiguration(defaults.getVideos());

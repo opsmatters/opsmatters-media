@@ -76,7 +76,6 @@ public class Fields extends LinkedHashMap<String,String>
     public static final String ADVERT = "advert";
     public static final String FOUNDED = "founded";
     public static final String STOCK_SYMBOL = "stock-symbol";
-    public static final String WEBSITE_PARAMS = "website-params";
     public static final String FACEBOOK = "facebook";
     public static final String FACEBOOK_USERNAME = "facebook-username";
     public static final String TWITTER = "twitter";
@@ -131,11 +130,14 @@ public class Fields extends LinkedHashMap<String,String>
                 if(source != null)
                 {
                     Fields fields = source.getFields();
-                    for(String key : fields.keySet())
+                    if(fields != null)
                     {
-                        String value = get(key);
-                        if(value == null || value.length() == 0)
-                            put(key, fields.get(key));
+                        for(String key : fields.keySet())
+                        {
+                            String value = get(key);
+                            if(value == null || value.length() == 0)
+                                put(key, fields.get(key));
+                        }
                     }
                 }
             }
