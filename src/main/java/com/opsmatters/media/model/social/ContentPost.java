@@ -58,8 +58,7 @@ public class ContentPost extends DraftPost
         setStatus(DraftStatus.NEW);
 
         getProperties().put(PostTemplate.HANDLE, "@"+organisation.getTwitterUsername());
-        getProperties().put(PostTemplate.HASHTAG, organisation.getSocialHashtag());
-        getProperties().put(PostTemplate.HASHTAGS, organisation.getSocialHashtags());
+        getProperties().put(PostTemplate.HASHTAG, organisation.getHashtag());
         getProperties().put(PostTemplate.URL, organisation.getUrl(System.getProperty("om-config.site.prod")));
     }
 
@@ -77,7 +76,7 @@ public class ContentPost extends DraftPost
         setStatus(DraftStatus.NEW);
 
         getProperties().put(PostTemplate.HANDLE, "@"+organisation.getTwitterUsername());
-        getProperties().put(PostTemplate.HASHTAG, organisation.getSocialHashtag());
+        getProperties().put(PostTemplate.HASHTAG, organisation.getHashtag());
         if(content.getType() == ContentType.ROUNDUP)
             getProperties().put(PostTemplate.URL, organisation.getUrl(System.getProperty("om-config.site.prod")));
     }
@@ -95,7 +94,7 @@ public class ContentPost extends DraftPost
         setStatus(DraftStatus.NEW);
 
         getProperties().put(PostTemplate.HANDLE, "@"+organisation.getTwitterUsername());
-        getProperties().put(PostTemplate.HASHTAG, organisation.getSocialHashtag());
+        getProperties().put(PostTemplate.HASHTAG, organisation.getHashtag());
         setTitle(template.getName());
         setHashtags(template.getHashtags());
         setUrl(template.getUrl());

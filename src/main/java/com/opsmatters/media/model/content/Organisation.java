@@ -60,8 +60,7 @@ public class Organisation extends ContentItem implements FieldSource
     private String features = "";
     private String tags = "";
     private boolean social = false;
-    private String socialHashtag = "";
-    private String socialHashtags = "";
+    private String hashtag = "";
     private String image = "";
     private String imageText = "";
     private String thumbnail = "";
@@ -116,8 +115,7 @@ public class Organisation extends ContentItem implements FieldSource
         setFeatures(new String(obj.getFeatures() != null ? obj.getFeatures() : ""));
         setTags(new String(obj.getTags() != null ? obj.getTags() : ""));
         setSocial(obj.hasSocial());
-        setSocialHashtag(new String(obj.getSocialHashtag() != null ? obj.getSocialHashtag() : ""));
-        setSocialHashtags(new String(obj.getSocialHashtags() != null ? obj.getSocialHashtags() : ""));
+        setHashtag(new String(obj.getHashtag() != null ? obj.getHashtag() : ""));
         setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
         setImageText(new String(obj.getImageText() != null ? obj.getImageText() : ""));
         setThumbnail(new String(obj.getThumbnail() != null ? obj.getThumbnail() : ""));
@@ -161,16 +159,15 @@ public class Organisation extends ContentItem implements FieldSource
         String features = values[28];
         String tags = values[29];
         String social = values[30];
-        String socialHashtag = values[31];
-        String socialHashtags = values[32];
-        String image = values[33];
-        String imageText = values[34];
-        String imageTitle = values[35]; // not used
-        String thumbnail = values[36];
-        String thumbnailText = values[37];
-        String thumbnailTitle = values[38]; // not used
-        String createdBy = values[39];
-        String published = values[40];
+        String hashtag = values[31];
+        String image = values[32];
+        String imageText = values[33];
+        String imageTitle = values[34]; // not used
+        String thumbnail = values[35];
+        String thumbnailText = values[36];
+        String thumbnailTitle = values[37]; // not used
+        String createdBy = values[38];
+        String published = values[39];
 
         // Remove feeds path from images
         if(image.indexOf("/") != -1)
@@ -207,8 +204,7 @@ public class Organisation extends ContentItem implements FieldSource
         setFeatures(features);
         setTags(tags);
         setSocial(social != null && social.equals("1"));
-        setSocialHashtag(socialHashtag);
-        setSocialHashtags(socialHashtags);
+        setHashtag(hashtag);
         setImage(image);
         setImageText(imageText);
         setThumbnail(thumbnail);
@@ -256,8 +252,7 @@ public class Organisation extends ContentItem implements FieldSource
         setFeatures(obj.optString(Fields.FEATURES));
         setTags(obj.optString(Fields.TAGS));
         setSocial(obj.optBoolean(Fields.SOCIAL, false));
-        setSocialHashtag(obj.optString(Fields.SOCIAL_HASHTAG));
-        setSocialHashtags(obj.optString(Fields.SOCIAL_HASHTAGS));
+        setHashtag(obj.optString(Fields.HASHTAG));
         setImage(obj.optString(Fields.IMAGE));
         setImageText(obj.optString(Fields.IMAGE_TEXT));
         setThumbnail(obj.optString(Fields.THUMBNAIL));
@@ -296,8 +291,7 @@ public class Organisation extends ContentItem implements FieldSource
         ret.putOpt(Fields.FEATURES, getFeatures());
         ret.putOpt(Fields.TAGS, getTags());
         ret.put(Fields.SOCIAL, hasSocial());
-        ret.putOpt(Fields.SOCIAL_HASHTAG, getSocialHashtag());
-        ret.putOpt(Fields.SOCIAL_HASHTAGS, getSocialHashtags());
+        ret.putOpt(Fields.HASHTAG, getHashtag());
         ret.putOpt(Fields.IMAGE, getImage());
         ret.putOpt(Fields.IMAGE_TEXT, getImageText());
         ret.putOpt(Fields.THUMBNAIL, getThumbnail());
@@ -340,8 +334,7 @@ public class Organisation extends ContentItem implements FieldSource
         ret.put(Fields.FEATURES, getFeatures());
         ret.put(Fields.TAGS, getTags());
         ret.put(Fields.SOCIAL, hasSocial() ? "1" : "0");
-        ret.put(Fields.SOCIAL_HASHTAG, getSocialHashtag());
-        ret.put(Fields.SOCIAL_HASHTAGS, getSocialHashtags());
+        ret.put(Fields.HASHTAG, getHashtag());
         ret.put(Fields.IMAGE, getImage());
         ret.put(Fields.IMAGE_TEXT, getImageText());
         ret.put(Fields.THUMBNAIL, getThumbnail());
@@ -379,6 +372,7 @@ public class Organisation extends ContentItem implements FieldSource
         organisation.setImageText("tbd logo");
         organisation.setThumbnail("tbd-thumb.png");
         organisation.setThumbnailText("tbd logo");
+        organisation.setSocial(true);
 
         return organisation;
     }
@@ -1077,33 +1071,17 @@ public class Organisation extends ContentItem implements FieldSource
     /**
      * Returns the organisation's social hashtag.
      */
-    public String getSocialHashtag()
+    public String getHashtag()
     {
-        return socialHashtag;
+        return hashtag;
     }
 
     /**
      * Sets the organisation's social hashtag.
      */
-    public void setSocialHashtag(String socialHashtag)
+    public void setHashtag(String hashtag)
     {
-        this.socialHashtag = socialHashtag;
-    }
-
-    /**
-     * Returns the organisation's social hashtags.
-     */
-    public String getSocialHashtags()
-    {
-        return socialHashtags;
-    }
-
-    /**
-     * Sets the organisation's social hashtags.
-     */
-    public void setSocialHashtags(String socialHashtags)
-    {
-        this.socialHashtags = socialHashtags;
+        this.hashtag = hashtag;
     }
 
     /**
