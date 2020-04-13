@@ -116,6 +116,14 @@ public class VideoSummary extends ArticleSummary
     }
 
     /**
+     * Sets the video provider.
+     */
+    public void setProvider(String provider)
+    {
+        setProvider(VideoProvider.fromCode(provider));
+    }
+
+    /**
      * Returns the url of the video.
      */
     public String getVideoUrl()

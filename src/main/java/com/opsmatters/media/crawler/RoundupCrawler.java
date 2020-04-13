@@ -37,7 +37,7 @@ import com.opsmatters.media.util.TimeUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupCrawler extends ContentCrawler<RoundupSummary>
+public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
 {
     private static final Logger logger = Logger.getLogger(RoundupCrawler.class.getName());
 

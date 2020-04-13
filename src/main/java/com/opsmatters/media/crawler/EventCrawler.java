@@ -37,7 +37,7 @@ import com.opsmatters.media.util.TimeUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EventCrawler extends ContentCrawler<EventSummary>
+public class EventCrawler extends WebPageCrawler<EventSummary>
 {
     private static final Logger logger = Logger.getLogger(EventCrawler.class.getName());
 

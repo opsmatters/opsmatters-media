@@ -37,7 +37,7 @@ import com.opsmatters.media.util.TimeUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EBookCrawler extends ContentCrawler<PublicationSummary>
+public class EBookCrawler extends WebPageCrawler<PublicationSummary>
 {
     private static final Logger logger = Logger.getLogger(EBookCrawler.class.getName());
 

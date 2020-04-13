@@ -37,7 +37,7 @@ import com.opsmatters.media.util.TimeUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class WhitePaperCrawler extends ContentCrawler<PublicationSummary>
+public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
 {
     private static final Logger logger = Logger.getLogger(WhitePaperCrawler.class.getName());
 

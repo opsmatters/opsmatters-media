@@ -28,9 +28,8 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.model.content.VideoSummary;
-import com.opsmatters.media.model.content.VideoDetails;
 import com.opsmatters.media.model.content.VideoProvider;
+import com.opsmatters.media.model.content.Fields;
 import com.opsmatters.media.util.FormatUtils;
 
 /**
@@ -122,9 +121,9 @@ public class VimeoClient extends Client implements VideoClient
      *
      * @param videoId The ID of the video to be retrieved
      */
-    public VideoDetails getVideo(String videoId) throws IOException
+    public JSONObject getVideo(String videoId) throws IOException
     {
-        VideoDetails ret = null;
+        JSONObject ret = null;
 
         try
         {
@@ -144,14 +143,15 @@ public class VimeoClient extends Client implements VideoClient
                 JSONObject user = item.getJSONObject("user");
                 String link = user.optString("link");
 
-                ret = new VideoDetails(videoId);
-                ret.setTitle(item.optString("name"));
-                ret.setPublishedDateAsString(item.optString("created_time"), "yyyy-MM-dd'T'HH:mm:ssX");
-                ret.setDescription(item.optString("description"));
-                ret.setDuration(item.optLong("duration"));
-                ret.setChannelId(link.substring(link.lastIndexOf("/")+1));
-                ret.setChannelTitle(user.optString("name"));
-                ret.setProvider(VideoProvider.VIMEO);
+                ret = new JSONObject();
+                ret.put(Fields.VIDEO_ID, videoId);
+                ret.put(Fields.TITLE, item.optString("name"));
+                ret.put(Fields.PUBLISHED_DATE, item.optString("created_time"));
+                ret.putOpt(Fields.DESCRIPTION, item.optString("description"));
+                ret.put(Fields.DURATION, item.optLong("duration"));
+                ret.put(Fields.CHANNEL_ID, link.substring(link.lastIndexOf("/")+1));
+                ret.put(Fields.CHANNEL_TITLE, user.optString("name"));
+                ret.put(Fields.PROVIDER, VideoProvider.VIMEO.code());
             }
             else
             {
@@ -179,9 +179,9 @@ public class VimeoClient extends Client implements VideoClient
      * @param maxResults The maximum number of results to retrieve
      * @return The list of summary videos retrieved
      */
-    public List<VideoSummary> listVideos(String channelId, String userId, int maxResults) throws IOException
+    public List<JSONObject> listVideos(String channelId, String userId, int maxResults) throws IOException
     {
-        List<VideoSummary> list = new ArrayList<VideoSummary>();
+        List<JSONObject> list = new ArrayList<JSONObject>();
 
         try
         {
@@ -202,10 +202,11 @@ public class VimeoClient extends Client implements VideoClient
                     JSONObject item = data.getJSONObject(i);
                     String uri = item.optString("uri");
 
-                    VideoSummary video = new VideoSummary(uri.substring(uri.lastIndexOf("/")+1));
-                    video.setTitle(item.optString("name"));
-                    video.setPublishedDateAsString(item.optString("created_time"), "yyyy-MM-dd'T'HH:mm:ssX");
-                    video.setProvider(VideoProvider.VIMEO);
+                    JSONObject video = new JSONObject();
+                    video.put(Fields.VIDEO_ID, uri.substring(uri.lastIndexOf("/")+1));
+                    video.put(Fields.TITLE, item.optString("name"));
+                    video.put(Fields.PUBLISHED_DATE, item.optString("created_time"));
+                    video.put(Fields.PROVIDER, VideoProvider.VIMEO.code());
 
                     list.add(video);
                 }

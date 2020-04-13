@@ -24,7 +24,8 @@ package com.opsmatters.media.model.content;
 public enum ContentFieldSource
 {
     PAGE("page"),
-    METATAG("metatag"); 
+    METATAG("metatag"),
+    API("api"); 
 
     private String value;
 
@@ -62,6 +63,15 @@ public enum ContentFieldSource
     public boolean isMetatag()
     {
         return this == METATAG;
+    }
+
+    /**
+     * Returns <CODE>true</code> if this is the API source.
+     * @return <CODE>true</code> if this is the API source.
+     */
+    public boolean isApi()
+    {
+        return this == API;
     }
 
     /**

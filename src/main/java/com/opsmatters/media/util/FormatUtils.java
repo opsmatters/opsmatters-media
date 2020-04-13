@@ -102,7 +102,7 @@ public class FormatUtils
     {
         if(config != null)
             return getFormattedSummary(description, config.getMinLength(), config.getMaxLength(),
-                config.getMinParagraph(), true);
+                config.getMinParagraph(), false);
         return null;
     }
 

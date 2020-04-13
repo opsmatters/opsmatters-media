@@ -28,9 +28,8 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.model.content.VideoSummary;
-import com.opsmatters.media.model.content.VideoDetails;
 import com.opsmatters.media.model.content.VideoProvider;
+import com.opsmatters.media.model.content.Fields;
 import com.opsmatters.media.util.FormatUtils;
 
 /**
@@ -120,9 +119,9 @@ public class WistiaClient extends Client implements VideoClient
      *
      * @param videoId The ID of the video to be retrieved
      */
-    public VideoDetails getVideo(String videoId) throws IOException
+    public JSONObject getVideo(String videoId) throws IOException
     {
-        VideoDetails ret = null;
+        JSONObject ret = null;
 
         try
         {
@@ -140,14 +139,15 @@ public class WistiaClient extends Client implements VideoClient
 
                 JSONObject project = item.getJSONObject("project");
 
-                ret = new VideoDetails(videoId);
-                ret.setTitle(item.optString("name"));
-                ret.setPublishedDateAsString(item.optString("created"), "yyyy-MM-dd'T'HH:mm:ssX");
-                ret.setDescription(item.optString("description"));
-                ret.setDuration(item.optLong("duration"));
-                ret.setChannelId(project.optString("hashed_id"));
-                ret.setChannelTitle(project.optString("name"));
-                ret.setProvider(VideoProvider.WISTIA);
+                ret = new JSONObject();
+                ret.put(Fields.VIDEO_ID, videoId);
+                ret.put(Fields.TITLE, item.optString("name"));
+                ret.put(Fields.PUBLISHED_DATE, item.optString("created"));
+                ret.putOpt(Fields.DESCRIPTION, item.optString("description"));
+                ret.put(Fields.DURATION, item.optLong("duration"));
+                ret.put(Fields.CHANNEL_ID, project.optString("hashed_id"));
+                ret.put(Fields.CHANNEL_TITLE, project.optString("name"));
+                ret.put(Fields.PROVIDER, VideoProvider.WISTIA.code());
             }
             else
             {
@@ -175,9 +175,9 @@ public class WistiaClient extends Client implements VideoClient
      * @param maxResults The maximum number of results to retrieve
      * @return The list of summary videos retrieved
      */
-    public List<VideoSummary> listVideos(String channelId, String userId, int maxResults) throws IOException
+    public List<JSONObject> listVideos(String channelId, String userId, int maxResults) throws IOException
     {
-        List<VideoSummary> list = new ArrayList<VideoSummary>();
+        List<JSONObject> list = new ArrayList<JSONObject>();
 
         try
         {
@@ -197,10 +197,11 @@ public class WistiaClient extends Client implements VideoClient
                 {
                     JSONObject item = data.getJSONObject(i);
 
-                    VideoSummary video = new VideoSummary(item.optString("hashed_id"));
-                    video.setTitle(item.optString("name"));
-                    video.setPublishedDateAsString(item.optString("created"), "yyyy-MM-dd'T'HH:mm:ssX");
-                    video.setProvider(VideoProvider.WISTIA);
+                    JSONObject video = new JSONObject();
+                    video.put(Fields.VIDEO_ID, item.optString("hashed_id"));
+                    video.put(Fields.TITLE, item.optString("name"));
+                    video.put(Fields.PUBLISHED_DATE, item.optString("created"));
+                    video.put(Fields.PROVIDER, VideoProvider.WISTIA.code());
 
                     list.add(video);
                 }

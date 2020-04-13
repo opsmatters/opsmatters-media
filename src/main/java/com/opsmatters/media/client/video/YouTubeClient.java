@@ -55,10 +55,10 @@ import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import com.google.common.collect.Lists;
+import org.json.JSONObject;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.model.content.VideoSummary;
-import com.opsmatters.media.model.content.VideoDetails;
 import com.opsmatters.media.model.content.VideoProvider;
+import com.opsmatters.media.model.content.Fields;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -165,9 +165,9 @@ public class YouTubeClient extends Client implements VideoClient
      *
      * @param videoId The ID of the video to be retrieved
      */
-    public VideoDetails getVideo(String videoId) throws IOException
+    public JSONObject getVideo(String videoId) throws IOException
     {
-        VideoDetails ret = null;
+        JSONObject ret = null;
 
         try
         {
@@ -193,14 +193,15 @@ public class YouTubeClient extends Client implements VideoClient
                     if(debug())
                         logger.info("Found youtube video: "+snippet.getTitle());
 
-                    ret = new VideoDetails(videoId);
-                    ret.setTitle(snippet.getTitle());
-                    ret.setPublishedDateMillis(snippet.getPublishedAt().getValue());
-                    ret.setDescription(snippet.getDescription());
-                    ret.setDuration(Duration.parse(details.getDuration()).getSeconds());
-                    ret.setChannelId(snippet.getChannelId());
-                    ret.setChannelTitle(snippet.getChannelTitle());
-                    ret.setProvider(VideoProvider.YOUTUBE);
+                    ret = new JSONObject();
+                    ret.put(Fields.VIDEO_ID, videoId);
+                    ret.put(Fields.TITLE, snippet.getTitle());
+                    ret.put(Fields.PUBLISHED_DATE, snippet.getPublishedAt().toString());
+                    ret.putOpt(Fields.DESCRIPTION, snippet.getDescription());
+                    ret.put(Fields.DURATION, Duration.parse(details.getDuration()).getSeconds());
+                    ret.put(Fields.CHANNEL_ID, snippet.getChannelId());
+                    ret.put(Fields.CHANNEL_TITLE, snippet.getChannelTitle());
+                    ret.put(Fields.PROVIDER, VideoProvider.YOUTUBE.code());
                 }
             }
         }
@@ -225,9 +226,9 @@ public class YouTubeClient extends Client implements VideoClient
      * @param maxResults The maximum number of results to retrieve
      * @return The list of summary videos retrieved
      */
-    public List<VideoSummary> listVideosOld(String channelId, String userId, int maxResults) throws IOException
+    public List<JSONObject> listVideosOld(String channelId, String userId, int maxResults) throws IOException
     {
-        List<VideoSummary> list = new ArrayList<VideoSummary>();
+        List<JSONObject> list = new ArrayList<JSONObject>();
 
         try
         {
@@ -252,10 +253,11 @@ public class YouTubeClient extends Client implements VideoClient
                     ResourceId resource = result.getId();
                     SearchResultSnippet snippet = result.getSnippet();
 
-                    VideoSummary video = new VideoSummary(resource.getVideoId());
-                    video.setTitle(snippet.getTitle());
-                    video.setPublishedDateMillis(snippet.getPublishedAt().getValue());
-                    video.setProvider(VideoProvider.YOUTUBE);
+                    JSONObject video = new JSONObject();
+                    video.put(Fields.VIDEO_ID, resource.getVideoId());
+                    video.put(Fields.TITLE, snippet.getTitle());
+                    video.put(Fields.PUBLISHED_DATE, snippet.getPublishedAt().toString());
+                    video.put(Fields.PROVIDER, VideoProvider.YOUTUBE.code());
 
                     list.add(video);
                 }
@@ -287,9 +289,9 @@ public class YouTubeClient extends Client implements VideoClient
      * @param maxResults The maximum number of results to retrieve
      * @return The list of summary videos retrieved
      */
-    public List<VideoSummary> listVideos(String channelId, String userId, int maxResults) throws IOException
+    public List<JSONObject> listVideos(String channelId, String userId, int maxResults) throws IOException
     {
-        List<VideoSummary> list = new ArrayList<VideoSummary>();
+        List<JSONObject> list = new ArrayList<JSONObject>();
 
         try
         {
@@ -342,10 +344,11 @@ public class YouTubeClient extends Client implements VideoClient
                     PlaylistItemSnippet snippet = item.getSnippet();
                     ResourceId resource = snippet.getResourceId();
 
-                    VideoSummary video = new VideoSummary(resource.getVideoId());
-                    video.setTitle(snippet.getTitle());
-                    video.setPublishedDateMillis(snippet.getPublishedAt().getValue());
-                    video.setProvider(VideoProvider.YOUTUBE);
+                    JSONObject video = new JSONObject();
+                    video.put(Fields.VIDEO_ID, resource.getVideoId());
+                    video.put(Fields.TITLE, snippet.getTitle());
+                    video.put(Fields.PUBLISHED_DATE, snippet.getPublishedAt().toString());
+                    video.put(Fields.PROVIDER, VideoProvider.YOUTUBE.code());
 
                     list.add(video);
                 }

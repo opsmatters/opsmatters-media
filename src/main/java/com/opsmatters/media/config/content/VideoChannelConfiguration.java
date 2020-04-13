@@ -16,7 +16,6 @@
 package com.opsmatters.media.config.content;
 
 import java.util.Map;
-import com.opsmatters.media.config.YamlConfiguration;
 import com.opsmatters.media.model.content.VideoProvider;
 
 /**
@@ -24,7 +23,7 @@ import com.opsmatters.media.model.content.VideoProvider;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class VideoChannelConfiguration extends YamlConfiguration
+public class VideoChannelConfiguration extends FieldsConfiguration
 {
     public static final String CHANNEL_ID = "channelId";
     public static final String USER_ID = "userId";
@@ -63,14 +62,6 @@ public class VideoChannelConfiguration extends YamlConfiguration
             setUserId(obj.getUserId());
             setProvider(obj.getProvider());
         }
-    }
-
-    /**
-     * Returns the name of this configuration.
-     */
-    public String toString()
-    {
-        return getName();
     }
 
     /**
@@ -131,6 +122,7 @@ public class VideoChannelConfiguration extends YamlConfiguration
         {
             Map map = (Map)doc;
 
+            super.parseDocument(doc);
             if(map.containsKey(CHANNEL_ID))
                 setChannelId((String)map.get(CHANNEL_ID));
             if(map.containsKey(USER_ID))

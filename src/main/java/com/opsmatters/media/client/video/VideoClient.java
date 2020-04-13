@@ -18,8 +18,7 @@ package com.opsmatters.media.client.video;
 
 import java.io.IOException;
 import java.util.List;
-import com.opsmatters.media.model.content.VideoSummary;
-import com.opsmatters.media.model.content.VideoDetails;
+import org.json.JSONObject;
 import com.opsmatters.media.model.content.VideoProvider;
 
 /**
@@ -49,7 +48,7 @@ public interface VideoClient
      *
      * @param videoId The ID of the video to be retrieved
      */
-    public VideoDetails getVideo(String videoId) throws IOException;
+    public JSONObject getVideo(String videoId) throws IOException;
 
     /**
      * Returns the list of most recent videos for the given channel ID.
@@ -59,5 +58,5 @@ public interface VideoClient
      * @param maxResults The maximum number of results to retrieve
      * @return The list of summary videos retrieved
      */
-    public List<VideoSummary> listVideos(String channelId, String userId, int maxResults) throws IOException;
+    public List<JSONObject> listVideos(String channelId, String userId, int maxResults) throws IOException;
 }
