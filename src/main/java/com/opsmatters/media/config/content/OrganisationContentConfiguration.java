@@ -22,7 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.content.Fields;
 import com.opsmatters.media.model.content.ContentType;
 
 /**

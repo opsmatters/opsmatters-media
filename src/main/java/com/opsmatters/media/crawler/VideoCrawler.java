@@ -22,13 +22,13 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.json.JSONObject;
-import com.opsmatters.media.model.content.ContentField;
-import com.opsmatters.media.model.content.ContentFields;
 import com.opsmatters.media.model.content.VideoSummary;
 import com.opsmatters.media.model.content.VideoDetails;
-import com.opsmatters.media.model.content.Fields;
 import com.opsmatters.media.config.content.VideoConfiguration;
 import com.opsmatters.media.config.content.VideoChannelConfiguration;
+import com.opsmatters.media.config.content.ContentField;
+import com.opsmatters.media.config.content.ContentFields;
+import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.client.video.VideoClient;
 import com.opsmatters.media.client.video.VideoClientFactory;
 

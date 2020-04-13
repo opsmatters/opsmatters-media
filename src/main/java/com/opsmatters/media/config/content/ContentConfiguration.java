@@ -26,8 +26,6 @@ import com.opsmatters.media.config.YamlConfiguration;
 import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
-import com.opsmatters.media.model.content.Fields;
-import com.opsmatters.media.model.content.FieldSource;
 import com.opsmatters.media.handler.ContentHandler;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.util.FileUtils;

@@ -58,7 +58,7 @@ import com.google.common.collect.Lists;
 import org.json.JSONObject;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.content.VideoProvider;
-import com.opsmatters.media.model.content.Fields;
+import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.util.StringUtils;
 
 /**

@@ -18,6 +18,7 @@ package com.opsmatters.media.model.content;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.PostConfiguration;
+import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
@@ -123,7 +124,8 @@ public class PostArticle extends Article
             image = image.substring(image.lastIndexOf("/")+1);
 
         // Remove strange carriage return sequences from excel
-        description = description.replaceAll("_x000D_", "");
+//GERALD: needed?
+//        description = description.replaceAll("_x000D_", "");
 
         setCode(code);
         setId(Integer.parseInt(id.substring(id.lastIndexOf("-")+1)));

@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.EventConfiguration;
+import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;

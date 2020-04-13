@@ -31,10 +31,10 @@ import org.apache.commons.text.StringSubstitutor;
 import com.google.common.io.Files;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
-import com.opsmatters.media.model.content.Fields;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.FieldSource;
 import com.opsmatters.media.config.content.ContentConfiguration;
+import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.config.content.FieldSource;
 import com.opsmatters.media.client.S3Client;
 import com.opsmatters.media.client.SshClient;
 import com.opsmatters.media.file.InputFileReader;
@@ -606,7 +606,8 @@ public class ContentHandler implements FieldSource
                 for(int i = 0; i < line.length; i++)
                 {
                     boolean isHtml = htmlMap.containsKey(headerAt(i));
-                    line[i] = StringUtils.convertToAscii(line[i], isHtml).replaceAll("_x000D_", "");
+//GERALD: needed?
+//                    line[i] = StringUtils.convertToAscii(line[i], isHtml).replaceAll("_x000D_", "");
                 }
             }
         }

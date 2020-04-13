@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import com.opsmatters.media.config.YamlConfiguration;
-import com.opsmatters.media.model.content.ContentFields;
 
 /**
  * Class that represents a YAML configuration for a page with fields.

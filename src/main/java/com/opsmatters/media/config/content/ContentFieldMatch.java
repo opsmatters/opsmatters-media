@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.content;
+package com.opsmatters.media.config.content;
 
 /**
  * Represents a content field match.

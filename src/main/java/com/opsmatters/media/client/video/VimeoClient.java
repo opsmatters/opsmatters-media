@@ -29,7 +29,7 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.content.VideoProvider;
-import com.opsmatters.media.model.content.Fields;
+import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.util.FormatUtils;
 
 /**

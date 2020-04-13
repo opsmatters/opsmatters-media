@@ -19,6 +19,7 @@ import java.util.List;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.PublicationConfiguration;
+import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.StringUtils;
 

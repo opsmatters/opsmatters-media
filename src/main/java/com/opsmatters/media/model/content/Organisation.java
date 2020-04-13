@@ -21,6 +21,8 @@ import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.OrganisationConfiguration;
+import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.config.content.FieldSource;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;

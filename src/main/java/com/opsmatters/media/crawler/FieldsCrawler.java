@@ -30,11 +30,11 @@ import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.WordUtils;
 import com.opsmatters.media.config.content.FieldsConfiguration;
 import com.opsmatters.media.config.content.LoadingConfiguration;
+import com.opsmatters.media.config.content.ContentField;
+import com.opsmatters.media.config.content.ContentFields;
+import com.opsmatters.media.config.content.ContentFieldMatch;
+import com.opsmatters.media.config.content.ContentFieldCase;
 import com.opsmatters.media.model.content.ContentSummary;
-import com.opsmatters.media.model.content.ContentField;
-import com.opsmatters.media.model.content.ContentFields;
-import com.opsmatters.media.model.content.ContentFieldMatch;
-import com.opsmatters.media.model.content.ContentFieldCase;
 
 /**
  * Class representing a crawler for content items with fields.

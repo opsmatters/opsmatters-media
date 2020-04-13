@@ -194,6 +194,8 @@ public class XlsxWorksheet extends Worksheet
                 {
                     if(ret[j] == null)
                         ret[j] = "";
+//GERALD: test
+ret[j] = ret[j].replaceAll("_x000D_", "");
                 }
             }
         }

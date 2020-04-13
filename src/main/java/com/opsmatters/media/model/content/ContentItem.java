@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.ContentConfiguration;
+import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;

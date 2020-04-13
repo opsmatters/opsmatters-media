@@ -14,34 +14,33 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.content;
+package com.opsmatters.media.config.content;
 
 /**
- * Represents the case of a content field.
+ * Represents a content field source.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ContentFieldCase
+public enum ContentFieldSource
 {
-    NONE("none"),
-    LOWER("lower"),
-    UPPER("upper"),
-    CAPITALIZE("capitalize"); 
+    PAGE("page"),
+    METATAG("metatag"),
+    API("api"); 
 
     private String value;
 
     /**
-     * Constructor that takes the case value.
-     * @param value The value for the case
+     * Constructor that takes the source value.
+     * @param value The value for the source
      */
-    ContentFieldCase(String value)
+    ContentFieldSource(String value)
     {
         this.value = value;
     }
 
     /**
-     * Returns the value of the case.
-     * @return The value of the case.
+     * Returns the value of the source.
+     * @return The value of the source.
      */
     public String value()
     {
@@ -49,14 +48,41 @@ public enum ContentFieldCase
     }
 
     /**
+     * Returns <CODE>true</code> if this is the PAGE source.
+     * @return <CODE>true</code> if this is the PAGE source.
+     */
+    public boolean isPage()
+    {
+        return this == PAGE;
+    }
+
+    /**
+     * Returns <CODE>true</code> if this is the METATAG source.
+     * @return <CODE>true</code> if this is the METATAG source.
+     */
+    public boolean isMetatag()
+    {
+        return this == METATAG;
+    }
+
+    /**
+     * Returns <CODE>true</code> if this is the API source.
+     * @return <CODE>true</code> if this is the API source.
+     */
+    public boolean isApi()
+    {
+        return this == API;
+    }
+
+    /**
      * Returns the type for the given value.
      * @param value The type value
      * @return The type for the given value
      */
-    public static ContentFieldCase fromValue(String value)
+    public static ContentFieldSource fromValue(String value)
     {
-        ContentFieldCase[] types = values();
-        for(ContentFieldCase type : types)
+        ContentFieldSource[] types = values();
+        for(ContentFieldSource type : types)
         {
             if(type.value().equals(value))
                 return type;
