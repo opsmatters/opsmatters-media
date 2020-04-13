@@ -157,28 +157,23 @@ public class RoundupConfiguration extends ContentConfiguration<RoundupArticle>
      * Reads the configuration from the given YAML Document.
      */
     @Override
-    protected void parseDocument(Object doc)
+    protected void parseDocument(Map<String,Object> map)
     {
-        if(doc instanceof Map)
+        super.parseDocument(map);
+        if(map.containsKey(IMAGE_PREFIX))
+            setImagePrefix((String)map.get(IMAGE_PREFIX));
+        if(map.containsKey(IMAGE_FORMAT))
+            setImageFormat((String)map.get(IMAGE_FORMAT));
+        if(map.containsKey(PAGES))
         {
-            Map map = (Map)doc;
-
-            super.parseDocument(map);
-            if(map.containsKey(IMAGE_PREFIX))
-                setImagePrefix((String)map.get(IMAGE_PREFIX));
-            if(map.containsKey(IMAGE_FORMAT))
-                setImageFormat((String)map.get(IMAGE_FORMAT));
-            if(map.containsKey(PAGES))
+            List<Map<String,Object>> pages = (List<Map<String,Object>>)map.get(PAGES);
+            for(Map<String,Object> page : pages)
             {
-                List<Map<String,Object>> pages = (List<Map<String,Object>>)map.get(PAGES);
-                for(Map<String,Object> page : pages)
+                for(Map.Entry<String,Object> entry : page.entrySet())
                 {
-                    for(Map.Entry<String,Object> entry : page.entrySet())
-                    {
-                        WebPageConfiguration config = new WebPageConfiguration(entry.getKey());
-                        config.parseDocument(entry.getValue());
-                        addPage(config);
-                    }
+                    WebPageConfiguration config = new WebPageConfiguration(entry.getKey());
+                    config.parseDocument((Map<String,Object>)entry.getValue());
+                    addPage(config);
                 }
             }
         }

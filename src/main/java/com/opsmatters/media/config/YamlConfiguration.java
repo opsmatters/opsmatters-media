@@ -21,6 +21,7 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
 import java.util.logging.Logger;
 import org.yaml.snakeyaml.Yaml;
 import com.opsmatters.media.util.StringUtils;
@@ -120,7 +121,7 @@ public abstract class YamlConfiguration implements java.io.Serializable
             {
                 // Create the parser
                 reader = new FileReader(file);
-                Object data = new Yaml().load(getContents(reader, "\n"));
+                Map<String,Object> data = new Yaml().load(getContents(reader, "\n"));
                 if(data != null)
                 {
                     parseDocument(data);
@@ -159,7 +160,7 @@ public abstract class YamlConfiguration implements java.io.Serializable
     /**
      * Reads the configuration from the given YAML Document.
      */
-    protected abstract void parseDocument(Object doc);
+    protected abstract void parseDocument(Map<String,Object> map);
 
     /**
      * Read the contents of the configuration file.

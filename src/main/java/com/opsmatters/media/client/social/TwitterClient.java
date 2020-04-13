@@ -285,7 +285,8 @@ public class TwitterClient extends Client implements SocialClient
     public boolean isRecoverable(Exception e)
     {
         int errorCode = getErrorCode(e);
-        return errorCode != 187; // Status is a duplicate
+        return errorCode != 186  // Message too long
+            && errorCode != 187; // Status is a duplicate
     }
 
     /**

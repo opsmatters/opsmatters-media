@@ -116,19 +116,14 @@ public class VideoChannelConfiguration extends FieldsConfiguration
      * Reads the configuration from the given YAML Document.
      */
     @Override
-    protected void parseDocument(Object doc)
+    protected void parseDocument(Map<String,Object> map)
     {
-        if(doc instanceof Map)
-        {
-            Map map = (Map)doc;
-
-            super.parseDocument(doc);
-            if(map.containsKey(CHANNEL_ID))
-                setChannelId((String)map.get(CHANNEL_ID));
-            if(map.containsKey(USER_ID))
-                setUserId((String)map.get(USER_ID));
-            if(map.containsKey(PROVIDER))
-                setProvider(VideoProvider.fromCode((String)map.get(PROVIDER)));
-        }
+        super.parseDocument(map);
+        if(map.containsKey(CHANNEL_ID))
+            setChannelId((String)map.get(CHANNEL_ID));
+        if(map.containsKey(USER_ID))
+            setUserId((String)map.get(USER_ID));
+        if(map.containsKey(PROVIDER))
+            setProvider(VideoProvider.fromCode((String)map.get(PROVIDER)));
     }
 }

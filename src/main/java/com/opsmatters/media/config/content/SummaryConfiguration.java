@@ -116,18 +116,13 @@ public class SummaryConfiguration extends YamlConfiguration
      * Reads the configuration from the given YAML Document.
      */
     @Override
-    protected void parseDocument(Object doc)
+    protected void parseDocument(Map<String,Object> map)
     {
-        if(doc instanceof Map)
-        {
-            Map map = (Map)doc;
-
-            if(map.containsKey(MAX_LENGTH))
-                setMaxLength((Integer)map.get(MAX_LENGTH));
-            if(map.containsKey(MIN_LENGTH))
-                setMinLength((Integer)map.get(MIN_LENGTH));
-            if(map.containsKey(MIN_PARAGRAPH))
-                setMinParagraph((Integer)map.get(MIN_PARAGRAPH));
-        }
+        if(map.containsKey(MAX_LENGTH))
+            setMaxLength((Integer)map.get(MAX_LENGTH));
+        if(map.containsKey(MIN_LENGTH))
+            setMinLength((Integer)map.get(MIN_LENGTH));
+        if(map.containsKey(MIN_PARAGRAPH))
+            setMinParagraph((Integer)map.get(MIN_PARAGRAPH));
     }
 }

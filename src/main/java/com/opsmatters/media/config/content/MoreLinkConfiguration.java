@@ -145,20 +145,15 @@ public class MoreLinkConfiguration extends YamlConfiguration
      * Reads the configuration from the given YAML Document.
      */
     @Override
-    protected void parseDocument(Object doc)
+    protected void parseDocument(Map<String,Object> map)
     {
-        if(doc instanceof Map)
-        {
-            Map map = (Map)doc;
-
-            if(map.containsKey(SELECTOR))
-                setSelector((String)map.get(SELECTOR));
-            if(map.containsKey(INTERVAL))
-                setInterval((Integer)map.get(INTERVAL));
-            if(map.containsKey(MAX_WAIT))
-                setMaxWait((Integer)map.get(MAX_WAIT));
-            if(map.containsKey(COUNT))
-                setCount((Integer)map.get(COUNT));
-        }
+        if(map.containsKey(SELECTOR))
+            setSelector((String)map.get(SELECTOR));
+        if(map.containsKey(INTERVAL))
+            setInterval((Integer)map.get(INTERVAL));
+        if(map.containsKey(MAX_WAIT))
+            setMaxWait((Integer)map.get(MAX_WAIT));
+        if(map.containsKey(COUNT))
+            setCount((Integer)map.get(COUNT));
     }
 }

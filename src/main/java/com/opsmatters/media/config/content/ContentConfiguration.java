@@ -278,30 +278,25 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
      * Reads the configuration from the given YAML Document.
      */
     @Override
-    protected void parseDocument(Object doc)
+    protected void parseDocument(Map<String,Object> map)
     {
-        if(doc instanceof Map)
+        if(map.containsKey(FILENAME))
+            setFilename((String)map.get(FILENAME));
+        if(map.containsKey(SHEET))
+            setSheet((String)map.get(SHEET));
+        if(map.containsKey(DEFAULT_DATE_PATTERN))
+            setDefaultDatePattern((String)map.get(DEFAULT_DATE_PATTERN));
+        if(map.containsKey(SOURCE))
+            setSource(ContentSource.fromCode((String)map.get(SOURCE)));
+        if(map.containsKey(FIELDS))
+            addFields((Map<String,String>)map.get(FIELDS));
+        if(map.containsKey(OUTPUT))
+            addOutput((Map<String,String>)map.get(OUTPUT));
+
+        if(map.containsKey(SUMMARY))
         {
-            Map map = (Map)doc;
-
-            if(map.containsKey(FILENAME))
-                setFilename((String)map.get(FILENAME));
-            if(map.containsKey(SHEET))
-                setSheet((String)map.get(SHEET));
-            if(map.containsKey(DEFAULT_DATE_PATTERN))
-                setDefaultDatePattern((String)map.get(DEFAULT_DATE_PATTERN));
-            if(map.containsKey(SOURCE))
-                setSource(ContentSource.fromCode((String)map.get(SOURCE)));
-            if(map.containsKey(FIELDS))
-                addFields((Map<String,String>)map.get(FIELDS));
-            if(map.containsKey(OUTPUT))
-                addOutput((Map<String,String>)map.get(OUTPUT));
-
-            if(map.containsKey(SUMMARY))
-            {
-                summary = new SummaryConfiguration(getName());
-                summary.parseDocument((Map<String,Object>)map.get(SUMMARY));
-            }
+            summary = new SummaryConfiguration(getName());
+            summary.parseDocument((Map<String,Object>)map.get(SUMMARY));
         }
     }
 

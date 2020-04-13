@@ -587,37 +587,6 @@ public class StringUtils
     }
 
     /**
-     * Remove any extraneous control characters from text fields.
-     * @param s The string to have control characters removed
-     * @param removeCR <CODE>true</CODE> if carriage returns should be removed
-     * @return The given string with all control characters removed
-     */
-/* GERALD
-    public static String removeControlCharacters(String s, boolean removeCR)
-    {
-        String ret = s;
-        if(ret != null)
-        {
-//GERALD: needed?
-            ret = ret.replaceAll("_x000D_","");
-            if(removeCR)
-                ret = ret.replaceAll("\r","");
-        }
-        return ret;
-    }
-*/
-    /**
-     * Remove any extraneous control characters from text fields.
-     * @param s The string to have control characters removed
-     * @return The given string with all control characters removed
-     */
-/* GERALD
-    public static String removeControlCharacters(String s)
-    {
-        return removeControlCharacters(s, false);
-    }
-*/
-    /**
      * Prints the character codes for the given string.
      * @param s The string to be printed
      */

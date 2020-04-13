@@ -130,24 +130,19 @@ public class VideoConfiguration extends ContentConfiguration<VideoArticle>
      * Reads the configuration from the given YAML Document.
      */
     @Override
-    protected void parseDocument(Object doc)
+    protected void parseDocument(Map<String,Object> map)
     {
-        if(doc instanceof Map)
+        super.parseDocument(map);
+        if(map.containsKey(CHANNELS))
         {
-            Map map = (Map)doc;
-
-            super.parseDocument(map);
-            if(map.containsKey(CHANNELS))
+            List<Map<String,Object>> channels = (List<Map<String,Object>>)map.get(CHANNELS);
+            for(Map<String,Object> channel : channels)
             {
-                List<Map<String,Object>> channels = (List<Map<String,Object>>)map.get(CHANNELS);
-                for(Map<String,Object> channel : channels)
+                for(Map.Entry<String,Object> entry : channel.entrySet())
                 {
-                    for(Map.Entry<String,Object> entry : channel.entrySet())
-                    {
-                        VideoChannelConfiguration config = new VideoChannelConfiguration(entry.getKey());
-                        config.parseDocument(entry.getValue());
-                        addChannel(config);
-                    }
+                    VideoChannelConfiguration config = new VideoChannelConfiguration(entry.getKey());
+                    config.parseDocument((Map<String,Object>)entry.getValue());
+                    addChannel(config);
                 }
             }
         }

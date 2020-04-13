@@ -73,13 +73,8 @@ public class ProjectConfiguration extends ContentConfiguration<ProjectResource>
      * Reads the configuration from the given YAML Document.
      */
     @Override
-    protected void parseDocument(Object doc)
+    protected void parseDocument(Map<String,Object> map)
     {
-        if(doc instanceof Map)
-        {
-            Map map = (Map)doc;
-
-            super.parseDocument(map);
-        }
+        super.parseDocument(map);
     }
 }

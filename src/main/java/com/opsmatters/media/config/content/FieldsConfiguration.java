@@ -156,35 +156,30 @@ public abstract class FieldsConfiguration extends YamlConfiguration
      * Reads the configuration from the given YAML Document.
      */
     @Override
-    protected void parseDocument(Object doc)
+    protected void parseDocument(Map<String,Object> map)
     {
-        if(doc instanceof Map)
+        if(map.containsKey(TEASER_LOADING))
         {
-            Map map = (Map)doc;
+            teaserLoading = new LoadingConfiguration(getName());
+            teaserLoading.parseDocument((Map<String,Object>)map.get(TEASER_LOADING));
+        }
 
-            if(map.containsKey(TEASER_LOADING))
-            {
-                teaserLoading = new LoadingConfiguration(getName());
-                teaserLoading.parseDocument((Map<String,Object>)map.get(TEASER_LOADING));
-            }
+        if(map.containsKey(TEASER_FIELDS))
+        {
+            List<Map<String,Object>> teasers = (List<Map<String,Object>>)map.get(TEASER_FIELDS);
+            for(Map<String,Object> teaser : teasers)
+                addTeaserFields(new ContentFields(teaser));
+        }
 
-            if(map.containsKey(TEASER_FIELDS))
-            {
-                List<Map<String,Object>> teasers = (List<Map<String,Object>>)map.get(TEASER_FIELDS);
-                for(Map<String,Object> teaser : teasers)
-                    addTeaserFields(new ContentFields(teaser));
-            }
+        if(map.containsKey(CONTENT_LOADING))
+        {
+            contentLoading = new LoadingConfiguration(getName());
+            contentLoading.parseDocument((Map<String,Object>)map.get(CONTENT_LOADING));
+        }
 
-            if(map.containsKey(CONTENT_LOADING))
-            {
-                contentLoading = new LoadingConfiguration(getName());
-                contentLoading.parseDocument((Map<String,Object>)map.get(CONTENT_LOADING));
-            }
-
-            if(map.containsKey(CONTENT_FIELDS))
-            {
-                setContentFields(new ContentFields((Map<String,Object>)map.get(CONTENT_FIELDS)));
-            }
+        if(map.containsKey(CONTENT_FIELDS))
+        {
+            setContentFields(new ContentFields((Map<String,Object>)map.get(CONTENT_FIELDS)));
         }
     }
 }

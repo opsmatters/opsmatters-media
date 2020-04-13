@@ -144,22 +144,17 @@ public class WebPageConfiguration extends FieldsConfiguration
      * Reads the configuration from the given YAML Document.
      */
     @Override
-    protected void parseDocument(Object doc)
+    protected void parseDocument(Map<String,Object> map)
     {
-        if(doc instanceof Map)
-        {
-            Map map = (Map)doc;
-
-            super.parseDocument(doc);
-            if(map.containsKey(URL))
-                setUrl((String)map.get(URL));
-            if(map.containsKey(BROWSER))
-                setBrowser((String)map.get(BROWSER));
-            if(map.containsKey(BASE_PATH))
-                setBasePath((String)map.get(BASE_PATH));
-            if(map.containsKey(MORE_LINK))
-                setMoreLink(createMoreLink(MORE_LINK, map.get(MORE_LINK)));
-        }
+        super.parseDocument(map);
+        if(map.containsKey(URL))
+            setUrl((String)map.get(URL));
+        if(map.containsKey(BROWSER))
+            setBrowser((String)map.get(BROWSER));
+        if(map.containsKey(BASE_PATH))
+            setBasePath((String)map.get(BASE_PATH));
+        if(map.containsKey(MORE_LINK))
+            setMoreLink(createMoreLink(MORE_LINK, map.get(MORE_LINK)));
     }
 
     /**
