@@ -123,10 +123,6 @@ public class PostArticle extends Article
         if(image.indexOf("/") != -1)
             image = image.substring(image.lastIndexOf("/")+1);
 
-        // Remove strange carriage return sequences from excel
-//GERALD: needed?
-//        description = description.replaceAll("_x000D_", "");
-
         setCode(code);
         setId(Integer.parseInt(id.substring(id.lastIndexOf("-")+1)));
         setPublishedDateAsString(pubdate);
