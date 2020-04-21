@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Gerald Curley
+ * Copyright 2020 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.app;
-
-import java.util.List;
-import java.util.ArrayList;
+package com.opsmatters.media.model.monitor;
 
 /**
- * Represents the status of a user.
+ * Represents the status of a content monitor change.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum UserStatus
+public enum ChangeStatus
 {
-    ACTIVE("Active"),
-    DISABLED("Disabled"),
+    NEW("New"),
+    PENDING("Pending"),
+    CHANGED("Changed"),
+    SKIPPED("Skipped"),
     ALL("All");
 
     private String value;
@@ -36,7 +35,7 @@ public enum UserStatus
      * Constructor that takes the status value.
      * @param value The value for the status
      */
-    UserStatus(String value)
+    ChangeStatus(String value)
     {
         this.value = value;
     }
@@ -64,10 +63,10 @@ public enum UserStatus
      * @param value The type value
      * @return The type for the given value
      */
-    public static UserStatus fromValue(String value)
+    public static ChangeStatus fromValue(String value)
     {
-        UserStatus[] types = values();
-        for(UserStatus type : types)
+        ChangeStatus[] types = values();
+        for(ChangeStatus type : types)
         {
             if(type.value().equals(value))
                 return type;
@@ -83,18 +82,5 @@ public enum UserStatus
     public static boolean contains(String value)
     {
         return valueOf(value) != null;
-    }
-
-    /**
-     * Returns a list of the user statuses.
-     */
-    public static List<UserStatus> toList()
-    {
-        List<UserStatus> ret = new ArrayList<UserStatus>();
-
-        ret.add(ACTIVE);
-        ret.add(DISABLED);
-
-        return ret;
     }
 }

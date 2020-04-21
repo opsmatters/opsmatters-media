@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.db.dao.app;
+package com.opsmatters.media.db.dao.admin;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -23,14 +23,14 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.app.User;
+import com.opsmatters.media.model.admin.User;
 
 /**
  * DAO that provides operations on the USERS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class UserDAO extends AppDAO<User>
+public class UserDAO extends AdminDAO<User>
 {
     private static final Logger logger = Logger.getLogger(UserDAO.class.getName());
 
@@ -93,7 +93,7 @@ public class UserDAO extends AppDAO<User>
     /**
      * Constructor that takes a DAO factory.
      */
-    public UserDAO(AppDAOFactory factory)
+    public UserDAO(AdminDAOFactory factory)
     {
         super(factory, "USERS");
     }

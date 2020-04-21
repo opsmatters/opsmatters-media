@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.app;
+package com.opsmatters.media.model.admin;
 
 import java.time.Instant;
 import com.opsmatters.media.util.StringUtils;
@@ -23,7 +23,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class User extends AppItem
+public class User extends AdminItem
 {
     private String username = "";
     private String email = "";

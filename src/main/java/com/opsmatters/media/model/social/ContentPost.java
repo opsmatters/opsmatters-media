@@ -135,7 +135,7 @@ public class ContentPost extends DraftPost
      * Returns the attributes as a JSON object.
      */
     @Override
-    public JSONObject getAttributesAsJson()
+    public JSONObject getAttributes()
     {
         JSONObject ret = new JSONObject();
 

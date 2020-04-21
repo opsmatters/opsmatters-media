@@ -13,37 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.db.dao.app;
+package com.opsmatters.media.db.dao.monitor;
 
 import com.opsmatters.media.db.JDBCDatabaseDriver;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.db.dao.DAOFactory;
 
 /**
- * The class for all app data access object factories.
+ * The class for all monitor data access object factories.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class AppDAOFactory extends DAOFactory
+public class MonitorDAOFactory extends DAOFactory
 {
     /**
      * Constructor that takes a database driver and connection.
      */
-    public AppDAOFactory(JDBCDatabaseDriver driver, JDBCDatabaseConnection conn)
+    public MonitorDAOFactory(JDBCDatabaseDriver driver, JDBCDatabaseConnection conn)
     {
         super(driver, conn);
 
-        getUserDAO();
+        getContentMonitorDAO();
+        getContentChangeDAO();
     }
 
     /**
-     * Returns the user DAO.
+     * Returns the content monitor DAO.
      */
-    public UserDAO getUserDAO()
+    public ContentMonitorDAO getContentMonitorDAO()
     {
-        if(userDAO == null)
-            userDAO = new UserDAO(this);
-        return userDAO;
+        if(contentMonitorDAO == null)
+            contentMonitorDAO = new ContentMonitorDAO(this);
+        return contentMonitorDAO;
+    }
+
+    /**
+     * Returns the content change DAO.
+     */
+    public ContentChangeDAO getContentChangeDAO()
+    {
+        if(contentChangeDAO == null)
+            contentChangeDAO = new ContentChangeDAO(this);
+        return contentChangeDAO;
     }
 
     /**
@@ -53,8 +64,10 @@ public class AppDAOFactory extends DAOFactory
     public void close()
     {
         super.close();
-        userDAO = null;
+        contentMonitorDAO = null;
+        contentChangeDAO = null;
     }
 
-    private UserDAO userDAO;
+    private ContentMonitorDAO contentMonitorDAO;
+    private ContentChangeDAO contentChangeDAO;
 }

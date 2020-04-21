@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import com.opsmatters.media.config.YamlConfiguration;
+import com.opsmatters.media.config.monitor.MonitorConfiguration;
 
 /**
  * Class that represents a YAML configuration for a page with fields.
@@ -28,11 +29,13 @@ import com.opsmatters.media.config.YamlConfiguration;
 public abstract class FieldsConfiguration extends YamlConfiguration
 {
     public static final String TEASER_LOADING = "teaser-loading";
+    public static final String TEASER_MONITOR = "teaser-monitor";
     public static final String TEASER_FIELDS = "teaser-fields";
     public static final String CONTENT_LOADING = "content-loading";
     public static final String CONTENT_FIELDS = "content-fields";
 
-    private LoadingConfiguration teaserLoading; 
+    private LoadingConfiguration teaserLoading;
+    private MonitorConfiguration teaserMonitor; 
     private List<ContentFields> teaserFields = new ArrayList<ContentFields>();
     private LoadingConfiguration contentLoading; 
     private ContentFields contentFields;
@@ -64,6 +67,8 @@ public abstract class FieldsConfiguration extends YamlConfiguration
             super.copyAttributes(obj);
             if(obj.getTeaserLoading() != null)
                 setTeaserLoading(new LoadingConfiguration(obj.getTeaserLoading()));
+            if(obj.getTeaserMonitor() != null)
+                setTeaserMonitor(new MonitorConfiguration(obj.getTeaserMonitor()));
             if(obj.getContentLoading() != null)
                 setContentLoading(new LoadingConfiguration(obj.getContentLoading()));
             for(ContentFields teaserFields : obj.getTeaserFields())
@@ -94,6 +99,22 @@ public abstract class FieldsConfiguration extends YamlConfiguration
     public void setTeaserLoading(LoadingConfiguration teaserLoading)
     {
         this.teaserLoading = teaserLoading;
+    }
+
+    /**
+     * Returns the teaser page monitor configuration.
+     */
+    public MonitorConfiguration getTeaserMonitor()
+    {
+        return teaserMonitor;
+    }
+
+    /**
+     * Sets the teaser page monitor configuration.
+     */
+    public void setTeaserMonitor(MonitorConfiguration teaserMonitor)
+    {
+        this.teaserMonitor = teaserMonitor;
     }
 
     /**
@@ -162,6 +183,12 @@ public abstract class FieldsConfiguration extends YamlConfiguration
         {
             teaserLoading = new LoadingConfiguration(getName());
             teaserLoading.parseDocument((Map<String,Object>)map.get(TEASER_LOADING));
+        }
+
+        if(map.containsKey(TEASER_MONITOR))
+        {
+            teaserMonitor = new MonitorConfiguration(getName());
+            teaserMonitor.parseDocument((Map<String,Object>)map.get(TEASER_MONITOR));
         }
 
         if(map.containsKey(TEASER_FIELDS))

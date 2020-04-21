@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Gerald Curley
+ * Copyright 2020 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.app;
+package com.opsmatters.media.model.monitor;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -22,33 +22,35 @@ import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
- * Class representing an app item.
+ * Class representing a monitor item.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class AppItem implements java.io.Serializable
+public class MonitorItem implements java.io.Serializable
 {
     private String id = "";
     private Instant createdDate;
     private Instant updatedDate;
+    private String createdBy = "";
 
     /**
      * Default constructor.
      */
-    public AppItem()
+    public MonitorItem()
     {
     }
 
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(AppItem obj)
+    public void copyAttributes(MonitorItem obj)
     {
         if(obj != null)
         {
             setId(obj.getId());
             setCreatedDate(obj.getCreatedDate());
             setUpdatedDate(obj.getUpdatedDate());
+            setCreatedBy(obj.getCreatedBy());
         }
     }
 
@@ -286,5 +288,21 @@ public class AppItem implements java.io.Serializable
     public String getDateAsString()
     {
         return getDateAsString(Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Returns the item creator.
+     */
+    public String getCreatedBy()
+    {
+        return createdBy;
+    }
+
+    /**
+     * Sets the item creator.
+     */
+    public void setCreatedBy(String createdBy)
+    {
+        this.createdBy = createdBy;
     }
 }

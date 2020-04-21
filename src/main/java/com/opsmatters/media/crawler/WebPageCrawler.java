@@ -45,7 +45,7 @@ import com.opsmatters.media.config.content.MoreLinkConfiguration;
 import com.opsmatters.media.config.content.SummaryConfiguration;
 import com.opsmatters.media.config.content.ContentField;
 import com.opsmatters.media.config.content.ContentFields;
-import com.opsmatters.media.model.app.TraceObject;
+import com.opsmatters.media.model.admin.TraceObject;
 import com.opsmatters.media.model.content.ContentSummary;
 import com.opsmatters.media.util.FormatUtils;
 

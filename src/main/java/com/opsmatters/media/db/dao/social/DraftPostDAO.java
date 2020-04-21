@@ -306,7 +306,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
             String properties = post.getPropertiesAsJson().toString();
             reader = new StringReader(properties);
             insertStmt.setCharacterStream(7, reader, properties.length());
-            String attributes = post.getAttributesAsJson().toString();
+            String attributes = post.getAttributes().toString();
             reader2 = new StringReader(attributes);
             insertStmt.setCharacterStream(8, reader2, attributes.length());
             insertStmt.setString(9, post.getMessage());
@@ -333,6 +333,8 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
         {
             if(reader != null)
                 reader.close();
+            if(reader2 != null)
+                reader2.close();
         }
     }
 
@@ -358,7 +360,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
             String properties = post.getPropertiesAsJson().toString();
             reader = new StringReader(properties);
             updateStmt.setCharacterStream(4, reader, properties.length());
-            String attributes = post.getAttributesAsJson().toString();
+            String attributes = post.getAttributes().toString();
             reader2 = new StringReader(attributes);
             updateStmt.setCharacterStream(5, reader2, attributes.length());
             updateStmt.setString(6, post.getMessage());
@@ -372,6 +374,8 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
         {
             if(reader != null)
                 reader.close();
+            if(reader2 != null)
+                reader2.close();
         }
     }
 

@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.db.dao.app;
+package com.opsmatters.media.db.dao.admin;
 
 import java.util.logging.Logger;
 import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.db.dao.DAOFactory;
 
 /**
- * DAO that provides operations on an app table in the database.
+ * DAO that provides operations on an admin table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class AppDAO<T> extends BaseDAO
+public abstract class AdminDAO<T> extends BaseDAO
 {
-    private static final Logger logger = Logger.getLogger(AppDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(AdminDAO.class.getName());
 
     /**
      * Constructor that takes a DAO factory and a table name.
      */
-    public AppDAO(DAOFactory factory, String tableName)
+    public AdminDAO(DAOFactory factory, String tableName)
     {
         super(factory, tableName);
     }

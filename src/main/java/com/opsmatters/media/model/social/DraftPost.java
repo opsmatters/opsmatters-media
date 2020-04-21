@@ -62,7 +62,7 @@ public abstract class DraftPost extends SocialPost
     /**
      * Returns the attributes as a JSON object.
      */
-    public abstract JSONObject getAttributesAsJson();
+    public abstract JSONObject getAttributes();
 
     /**
      * Initialise the attributes using a JSON object.
