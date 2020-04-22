@@ -319,7 +319,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
 
         // Process the import file
         handler.writeFile();
-        handler.copyFileToBucket(System.getProperty("om-config.s3.content"));
+        handler.copyFileToBucket(System.getProperty("opsmatters.s3.content"));
         handler.deleteFile();
 
         // Process the CSV file
@@ -327,8 +327,8 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
         handler.setFilename(handler.getCsvFilename());
         handler.convertLinesToAscii(getHtmlFields());
         handler.writeFile();
-        handler.copyFileToHost(System.getProperty("om-config.files.stage.feeds."+type), "stage");
-        handler.copyFileToHost(System.getProperty("om-config.files.prod.feeds."+type), "prod");
+        handler.copyFileToHost(System.getProperty("opsmatters.files.stage.feeds."+type), "stage");
+        handler.copyFileToHost(System.getProperty("opsmatters.files.prod.feeds."+type), "prod");
         handler.deleteFile();
 
         return items;

@@ -59,7 +59,7 @@ public class ContentPost extends DraftPost
 
         getProperties().put(PostTemplate.HANDLE, "@"+organisation.getTwitterUsername());
         getProperties().put(PostTemplate.HASHTAG, organisation.getHashtag());
-        getProperties().put(PostTemplate.URL, organisation.getUrl(System.getProperty("om-config.site.prod")));
+        getProperties().put(PostTemplate.URL, organisation.getUrl(System.getProperty("opsmatters.site.prod")));
     }
 
     /**
@@ -78,7 +78,7 @@ public class ContentPost extends DraftPost
         getProperties().put(PostTemplate.HANDLE, "@"+organisation.getTwitterUsername());
         getProperties().put(PostTemplate.HASHTAG, organisation.getHashtag());
         if(content.getType() == ContentType.ROUNDUP)
-            getProperties().put(PostTemplate.URL, organisation.getUrl(System.getProperty("om-config.site.prod")));
+            getProperties().put(PostTemplate.URL, organisation.getUrl(System.getProperty("opsmatters.site.prod")));
     }
 
     /**

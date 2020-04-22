@@ -40,7 +40,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
      * The query to use to select a monitor from the CONTENT_MONITORS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, SNAPSHOT, ATTRIBUTES, STATUS "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, SNAPSHOT, ATTRIBUTES, STATUS, CHANGE_ID "
       + "FROM CONTENT_MONITORS WHERE ID=?";
 
     /**
@@ -48,9 +48,9 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTENT_MONITORS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, SNAPSHOT, ATTRIBUTES, STATUS )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, SNAPSHOT, ATTRIBUTES, STATUS< CHANGE_ID )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a monitor in the CONTENT_MONITORS table.
@@ -63,7 +63,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
      * The query to use to select the monitors from the CONTENT_MONITORS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, SNAPSHOT, ATTRIBUTES, STATUS "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, SNAPSHOT, ATTRIBUTES, STATUS, CHANGE_ID "
       + "FROM CONTENT_MONITORS ORDER BY CREATED_DATE";
 
     /**
@@ -101,6 +101,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
         table.addColumn("SNAPSHOT", Types.LONGVARCHAR, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
+        table.addColumn("CHANGE_ID", Types.VARCHAR, 36, true);
         table.setPrimaryKey("CONTENT_MONITORS_PK", new String[] {"ID"});
         table.addIndex("CONTENT_MONITORS_CODE_IDX", new String[] {"CODE"});
         table.addIndex("CONTENT_MONITORS_STATUS_IDX", new String[] {"STATUS"});
@@ -141,6 +142,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
                 monitor.setSnapshot(new JSONObject(getClob(rs, 7)));
                 monitor.setAttributes(new JSONObject(getClob(rs, 8)));
                 monitor.setStatus(rs.getString(9));
+                monitor.setChangeId(rs.getString(10));
                 ret = monitor;
             }
         }
@@ -190,6 +192,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
             reader2 = new StringReader(attributes);
             insertStmt.setCharacterStream(8, reader2, attributes.length());
             insertStmt.setString(9, monitor.getStatus().name());
+            insertStmt.setString(10, monitor.getChangeId());
             insertStmt.executeUpdate();
 
             logger.info("Created monitor '"+monitor.getId()+"' in CONTENT_MONITORS");
@@ -290,6 +293,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
                 monitor.setSnapshot(new JSONObject(getClob(rs, 7)));
                 monitor.setAttributes(new JSONObject(getClob(rs, 8)));
                 monitor.setStatus(rs.getString(9));
+                monitor.setChangeId(rs.getString(10));
                 ret.add(monitor);
             }
         }

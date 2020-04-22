@@ -91,7 +91,7 @@ public class TwitterClient extends Client implements SocialClient
         if(debug())
             logger.info("Configuring twitter client: "+channel.getName());
 
-        String directory = System.getProperty("om-config.auth", ".");
+        String directory = System.getProperty("opsmatters.auth", ".");
 
         File auth = new File(directory, channel.getName()+AUTH);
         try

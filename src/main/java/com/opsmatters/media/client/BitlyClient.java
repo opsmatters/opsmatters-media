@@ -59,7 +59,7 @@ public class BitlyClient extends Client
         if(debug())
             logger.info("Configuring bitly client");
 
-        String directory = System.getProperty("om-config.auth", ".");
+        String directory = System.getProperty("opsmatters.auth", ".");
 
         File auth = new File(directory, AUTH);
         try

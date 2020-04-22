@@ -140,7 +140,7 @@ public class ContentChange extends MonitorItem
     }
 
     /**
-     * Returns <CODE>true</CODE> if the monitorId id has been set.
+     * Returns <CODE>true</CODE> if the monitor id id has been set.
      */
     public boolean hasMonitorId()
     {

@@ -63,10 +63,10 @@ public class S3Client extends Client
     static public S3Client newClient() throws IOException
     {
         S3Client ret = S3Client.builder()
-            .endpoint(System.getProperty("om-config.s3.endpoint"))
-            .secure(Boolean.parseBoolean(System.getProperty("om-config.s3.secure", "false")))
-            .accessKeyId(System.getProperty("om-config.s3.accessKeyId"))
-            .secretAccessKey(System.getProperty("om-config.s3.secretAccessKey"))
+            .endpoint(System.getProperty("opsmatters.s3.endpoint"))
+            .secure(Boolean.parseBoolean(System.getProperty("opsmatters.s3.secure", "false")))
+            .accessKeyId(System.getProperty("opsmatters.s3.accessKeyId"))
+            .secretAccessKey(System.getProperty("opsmatters.s3.secretAccessKey"))
             .build();
 
         // Configure and create the S3 client
@@ -86,7 +86,7 @@ public class S3Client extends Client
         if(debug())
             logger.info("Configuring S3 client: "+getEndpoint());
 
-        String directory = System.getProperty("om-config.auth", ".");
+        String directory = System.getProperty("opsmatters.auth", ".");
 
         File auth = new File(directory, AUTH);
         try

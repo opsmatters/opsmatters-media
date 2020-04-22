@@ -106,7 +106,7 @@ public class LinkedInClient extends Client implements SocialClient
         if(debug())
             logger.info("Configuring linkedin client: "+channel.getName());
 
-        String directory = System.getProperty("om-config.auth", ".");
+        String directory = System.getProperty("opsmatters.auth", ".");
 
         File auth = new File(directory, channel.getName()+AUTH);
         JSONObject obj = null;

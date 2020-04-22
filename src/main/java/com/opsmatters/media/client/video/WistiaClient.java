@@ -78,7 +78,7 @@ public class WistiaClient extends Client implements VideoClient
         if(debug())
             logger.info("Configuring wistia client");
 
-        String directory = System.getProperty("om-config.auth", ".");
+        String directory = System.getProperty("opsmatters.auth", ".");
 
         File auth = new File(directory, AUTH);
         try

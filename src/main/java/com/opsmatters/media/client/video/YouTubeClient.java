@@ -115,7 +115,7 @@ public class YouTubeClient extends Client implements VideoClient
         if(debug())
             logger.info("Configuring youtube client");
 
-        String directory = System.getProperty("om-config.auth", ".");
+        String directory = System.getProperty("opsmatters.auth", ".");
 
         // Load client secrets
         File secrets = new File(directory, AUTH);

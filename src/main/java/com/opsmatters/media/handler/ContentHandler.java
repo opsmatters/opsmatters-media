@@ -722,7 +722,7 @@ public class ContentHandler implements FieldSource
         {
             // Connect to the remote server using S3
             client = S3Client.newClient();
-            client.changeBucket(System.getProperty("om-config.s3.content")); 
+            client.changeBucket(System.getProperty("opsmatters.s3.content")); 
         }
         catch(IOException e)
         {

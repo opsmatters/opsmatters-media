@@ -38,6 +38,7 @@ public class ContentMonitor extends MonitorItem
     private Instant executedDate;
     private MonitorStatus status;
     private JSONObject snapshot;
+    private String changeId = "";
 
     /**
      * Default constructor.
@@ -68,6 +69,7 @@ public class ContentMonitor extends MonitorItem
             setStatus(obj.getStatus());
             setExecutedDate(obj.getExecutedDate());
             setSnapshot(obj.getSnapshot());
+            setChangeId(obj.getChangeId());
         }
     }
 
@@ -105,6 +107,14 @@ public class ContentMonitor extends MonitorItem
     public void setCode(String code)
     {
         this.code = code;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the monitor organisation has been set.
+     */
+    public boolean hasCode()
+    {
+        return code != null && code.length() > 0;
     }
 
     /**
@@ -275,5 +285,29 @@ public class ContentMonitor extends MonitorItem
     public void setSnapshot(JSONObject snapshot)
     {
         this.snapshot = snapshot;
+    }
+
+    /**
+     * Returns the change id.
+     */
+    public String getChangeId()
+    {
+        return changeId;
+    }
+
+    /**
+     * Sets the change id.
+     */
+    public void setChangeId(String changeId)
+    {
+        this.changeId = changeId;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the change id id has been set.
+     */
+    public boolean hasChangeId()
+    {
+        return changeId != null && changeId.length() > 0;
     }
 }
