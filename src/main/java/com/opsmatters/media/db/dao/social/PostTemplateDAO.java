@@ -148,7 +148,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
                 template.setName(rs.getString(4));
                 template.setMessage(rs.getString(5));
                 template.setType(rs.getString(6));
-                template.setOrganisation(rs.getString(7));
+                template.setCode(rs.getString(7));
                 template.setContentType(rs.getString(8));
                 template.setDefault(rs.getBoolean(9));
                 template.setShortenUrl(rs.getBoolean(10));
@@ -196,7 +196,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
             insertStmt.setString(4, template.getName());
             insertStmt.setString(5, template.getMessage());
             insertStmt.setString(6, template.getType() != null ? template.getType().name(): "");
-            insertStmt.setString(7, template.getOrganisation());
+            insertStmt.setString(7, template.getCode());
             insertStmt.setString(8, template.getContentType() != null ? template.getContentType().name(): "");
             insertStmt.setBoolean(9, template.isDefault());
             insertStmt.setBoolean(10, template.isShortenUrl());
@@ -241,7 +241,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
         updateStmt.setString(2, template.getName());
         updateStmt.setString(3, template.getMessage());
         updateStmt.setString(4, template.getType() != null ? template.getType().name(): "");
-        updateStmt.setString(5, template.getOrganisation());
+        updateStmt.setString(5, template.getCode());
         updateStmt.setString(6, template.getContentType() != null ? template.getContentType().name(): "");
         updateStmt.setBoolean(7, template.isDefault());
         updateStmt.setBoolean(8, template.isShortenUrl());
@@ -285,7 +285,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
                 template.setName(rs.getString(4));
                 template.setMessage(rs.getString(5));
                 template.setType(rs.getString(6));
-                template.setOrganisation(rs.getString(7));
+                template.setCode(rs.getString(7));
                 template.setContentType(rs.getString(8));
                 template.setDefault(rs.getBoolean(9));
                 template.setShortenUrl(rs.getBoolean(10));
@@ -344,7 +344,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
                 template.setName(rs.getString(4));
                 template.setMessage(rs.getString(5));
                 template.setType(rs.getString(6));
-                template.setOrganisation(rs.getString(7));
+                template.setCode(rs.getString(7));
                 template.setContentType(rs.getString(8));
                 template.setDefault(rs.getBoolean(9));
                 template.setShortenUrl(rs.getBoolean(10));

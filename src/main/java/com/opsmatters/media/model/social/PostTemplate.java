@@ -43,7 +43,7 @@ public class PostTemplate extends SocialPost
 
     private String name = "";
     private PostType type;
-    private String organisation = "";
+    private String code = "";
     private ContentType contentType;
     private boolean isDefault = false;
     private boolean shortenUrl = false;
@@ -76,7 +76,7 @@ public class PostTemplate extends SocialPost
         setCreatedDate(Instant.now());
         setName(post.getTitle());
         setType(PostType.LIBRARY);
-        setOrganisation(post.getOrganisation());
+        setCode(post.getCode());
         setContentType(post.getContentType());
         setMessage(message);
         setHashtags(post.getHashtags());
@@ -105,7 +105,7 @@ public class PostTemplate extends SocialPost
             super.copyAttributes(obj);
             setName(obj.getName());
             setType(obj.getType());
-            setOrganisation(obj.getOrganisation());
+            setCode(obj.getCode());
             setContentType(obj.getContentType());
             setDefault(obj.isDefault());
             setShortenUrl(obj.isShortenUrl());
@@ -188,25 +188,25 @@ public class PostTemplate extends SocialPost
     /**
      * Returns the template organisation.
      */
-    public String getOrganisation()
+    public String getCode()
     {
-        return organisation;
+        return code;
     }
 
     /**
      * Sets the template organisation.
      */
-    public void setOrganisation(String organisation)
+    public void setCode(String code)
     {
-        this.organisation = organisation;
+        this.code = code;
     }
 
     /**
      * Returns <CODE>true</CODE> if the template organisation has been set.
      */
-    public boolean hasOrganisation()
+    public boolean hasCode()
     {
-        return organisation != null && organisation.length() > 0;
+        return code != null && code.length() > 0;
     }
 
     /**

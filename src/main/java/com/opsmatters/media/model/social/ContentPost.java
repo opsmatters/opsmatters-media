@@ -33,7 +33,7 @@ public class ContentPost extends DraftPost
     public static final String CONTENT_TYPE = "content-type";
     public static final String CONTENT_ID = "content-id";
 
-    private String organisation = "";
+    private String code = "";
     private ContentType contentType;
     private int contentId = -1;
 
@@ -51,7 +51,7 @@ public class ContentPost extends DraftPost
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
-        setOrganisation(organisation.getCode());
+        setCode(organisation.getCode());
         setTitle(organisation.getTitle());
         setContentId(organisation.getId());
         setContentType(ContentType.ORGANISATION);
@@ -69,7 +69,7 @@ public class ContentPost extends DraftPost
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
-        setOrganisation(organisation.getCode());
+        setCode(organisation.getCode());
         if(content.getType() != ContentType.ROUNDUP)
             setContentId(content.getId());
         setContentType(content.getType());
@@ -89,7 +89,7 @@ public class ContentPost extends DraftPost
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setTemplateId(template.getId());
-        setOrganisation(organisation.getCode());
+        setCode(organisation.getCode());
         setContentType(template.getContentType());
         setStatus(DraftStatus.NEW);
 
@@ -116,7 +116,7 @@ public class ContentPost extends DraftPost
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setOrganisation(obj.getOrganisation());
+            setCode(obj.getCode());
             setContentId(obj.getContentId());
             setContentType(obj.getContentType());
         }
@@ -139,7 +139,7 @@ public class ContentPost extends DraftPost
     {
         JSONObject ret = new JSONObject();
 
-        ret.putOpt(ORGANISATION, getOrganisation());
+        ret.putOpt(ORGANISATION, getCode());
         ret.putOpt(CONTENT_TYPE, getContentType().name());
         ret.putOpt(CONTENT_ID, getContentId());
 
@@ -152,7 +152,7 @@ public class ContentPost extends DraftPost
     @Override
     public void setAttributes(JSONObject obj)
     {
-        setOrganisation(obj.optString(ORGANISATION));
+        setCode(obj.optString(ORGANISATION));
         setContentType(obj.optString(CONTENT_TYPE));
         setContentId(obj.optInt(CONTENT_ID));
     }
@@ -160,25 +160,25 @@ public class ContentPost extends DraftPost
     /**
      * Returns the post organisation.
      */
-    public String getOrganisation()
+    public String getCode()
     {
-        return organisation;
+        return code;
     }
 
     /**
      * Sets the post organisation.
      */
-    public void setOrganisation(String organisation)
+    public void setCode(String code)
     {
-        this.organisation = organisation;
+        this.code = code;
     }
 
     /**
      * Returns <CODE>true</CODE> if the post organisation has been set.
      */
-    public boolean hasOrganisation()
+    public boolean hasCode()
     {
-        return organisation != null && organisation.length() > 0;
+        return code != null && code.length() > 0;
     }
 
     /**
@@ -235,8 +235,8 @@ public class ContentPost extends DraftPost
     public String getGuid()
     {
         String ret = null;
-        if(hasOrganisation() && contentId > 0 && contentType != null)
-            ret = String.format("%s-%s-%05d", contentType.code(), organisation, contentId);
+        if(hasCode() && contentId > 0 && contentType != null)
+            ret = String.format("%s-%s-%05d", contentType.code(), code, contentId);
         return ret;
     }
 

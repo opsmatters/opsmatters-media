@@ -33,7 +33,7 @@ import com.opsmatters.media.util.StringUtils;
 public class PreparedPost extends SocialPost
 {
     private String draftId = "";
-    private String organisation = "";
+    private String code = "";
     private String title = "";
     private SocialChannel channel;
     private PostType type;
@@ -63,7 +63,7 @@ public class PreparedPost extends SocialPost
         setScheduledDate(post.getScheduledDate());
         setDraftId(post.getId());
         if(post.getType() == PostType.CONTENT)
-            setOrganisation(((ContentPost)post).getOrganisation());
+            setCode(((ContentPost)post).getCode());
         setTitle(post.getTitle());
         setMessage(message);
         setChannel(channel);
@@ -146,7 +146,7 @@ public class PreparedPost extends SocialPost
         {
             super.copyAttributes(obj);
             setDraftId(obj.getDraftId());
-            setOrganisation(obj.getOrganisation());
+            setCode(obj.getCode());
             setTitle(obj.getTitle());
             setChannel(obj.getChannel());
             setStatus(obj.getStatus());
@@ -184,25 +184,25 @@ public class PreparedPost extends SocialPost
     /**
      * Returns the post organisation.
      */
-    public String getOrganisation()
+    public String getCode()
     {
-        return organisation;
+        return code;
     }
 
     /**
      * Sets the post organisation.
      */
-    public void setOrganisation(String organisation)
+    public void setCode(String code)
     {
-        this.organisation = organisation;
+        this.code = code;
     }
 
     /**
      * Returns <CODE>true</CODE> if the post organisation has been set.
      */
-    public boolean hasOrganisation()
+    public boolean hasCode()
     {
-        return organisation != null && organisation.length() > 0;
+        return code != null && code.length() > 0;
     }
 
     /**

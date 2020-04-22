@@ -165,7 +165,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
                 post.setScheduledDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 post.setType(rs.getString(5));
                 post.setDraftId(rs.getString(6));
-                post.setOrganisation(rs.getString(7));
+                post.setCode(rs.getString(7));
                 post.setTitle(rs.getString(8));
                 post.setMessage(rs.getString(9));
                 post.setChannel(SocialChannels.get(rs.getString(10)));
@@ -214,7 +214,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
             insertStmt.setTimestamp(4, new Timestamp(post.getScheduledDateMillis()), UTC);
             insertStmt.setString(5, post.getType().name());
             insertStmt.setString(6, post.getDraftId());
-            insertStmt.setString(7, post.getOrganisation());
+            insertStmt.setString(7, post.getCode());
             insertStmt.setString(8, post.getTitle());
             insertStmt.setString(9, post.getMessage());
             insertStmt.setString(10, post.getChannel().getName());
@@ -254,7 +254,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
 
         updateStmt.setTimestamp(1, new Timestamp(post.getUpdatedDateMillis()), UTC);
         updateStmt.setTimestamp(2, new Timestamp(post.getScheduledDateMillis()), UTC);
-        updateStmt.setString(3, post.getOrganisation());
+        updateStmt.setString(3, post.getCode());
         updateStmt.setString(4, post.getTitle());
         updateStmt.setString(5, post.getMessage());
         updateStmt.setString(6, post.getStatus().name());
@@ -298,7 +298,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
                 post.setScheduledDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 post.setType(rs.getString(5));
                 post.setDraftId(rs.getString(6));
-                post.setOrganisation(rs.getString(7));
+                post.setCode(rs.getString(7));
                 post.setTitle(rs.getString(8));
                 post.setMessage(rs.getString(9));
                 post.setChannel(SocialChannels.get(rs.getString(10)));
@@ -359,7 +359,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
                 post.setScheduledDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 post.setType(rs.getString(5));
                 post.setDraftId(rs.getString(6));
-                post.setOrganisation(rs.getString(7));
+                post.setCode(rs.getString(7));
                 post.setTitle(rs.getString(8));
                 post.setMessage(rs.getString(9));
                 post.setChannel(SocialChannels.get(rs.getString(10)));
@@ -420,7 +420,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
                 post.setScheduledDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 post.setType(rs.getString(5));
                 post.setDraftId(rs.getString(6));
-                post.setOrganisation(rs.getString(7));
+                post.setCode(rs.getString(7));
                 post.setTitle(rs.getString(8));
                 post.setMessage(rs.getString(9));
                 post.setChannel(SocialChannels.get(rs.getString(10)));
