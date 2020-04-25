@@ -24,8 +24,11 @@ package com.opsmatters.media.model.monitor;
 public enum MonitorStatus
 {
     NEW("New"),
-    ACTIVE("Active"),
-    INACTIVE("Inactive"),
+    WAITING("Waiting"),
+    EXECUTING("Executing"),
+    PENDING("Pending"),
+    ERROR("Error"),
+    DISABLED("Disabled"),
     ALL("All");
 
     private String value;

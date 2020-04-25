@@ -78,7 +78,7 @@ public class MonitorConfiguration extends YamlConfiguration
     }
 
     /**
-     * Returns the interval between monitor checks.
+     * Returns the interval between monitor checks (in minutes).
      */
     public int getInterval()
     {
@@ -86,7 +86,7 @@ public class MonitorConfiguration extends YamlConfiguration
     }
 
     /**
-     * Sets the interval between monitor checks.
+     * Sets the interval between monitor checks (in minutes).
      */
     public void setInterval(int interval)
     {

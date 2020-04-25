@@ -23,9 +23,8 @@ package com.opsmatters.media.model.monitor;
  */
 public enum ChangeStatus
 {
-    NEW("New"),
     PENDING("Pending"),
-    CHANGED("Changed"),
+    RESOLVED("Resolved"),
     SKIPPED("Skipped"),
     ALL("All");
 

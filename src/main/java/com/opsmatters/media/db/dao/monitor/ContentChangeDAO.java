@@ -134,7 +134,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
                 change.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 change.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 change.setCode(rs.getString(4));
-                change.setSnapshot(new JSONObject(getClob(rs, 5)));
+                change.setSnapshot(getClob(rs, 5));
                 change.setStatus(rs.getString(6));
                 change.setMonitorId(rs.getString(7));
                 change.setCreatedBy(rs.getString(8));
@@ -178,7 +178,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
             insertStmt.setTimestamp(2, new Timestamp(change.getCreatedDateMillis()), UTC);
             insertStmt.setTimestamp(3, new Timestamp(change.getUpdatedDateMillis()), UTC);
             insertStmt.setString(4, change.getCode());
-            String snapshot = change.getSnapshot().toString();
+            String snapshot = change.getSnapshot();
             reader = new StringReader(snapshot);
             insertStmt.setCharacterStream(5, reader, snapshot.length());
             insertStmt.setString(6, change.getStatus().name());
@@ -225,7 +225,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
         try
         {
             updateStmt.setTimestamp(1, new Timestamp(change.getUpdatedDateMillis()), UTC);
-            String snapshot = change.getSnapshot().toString();
+            String snapshot = change.getSnapshot();
             reader = new StringReader(snapshot);
             updateStmt.setCharacterStream(2, reader, snapshot.length());
             updateStmt.setString(3, change.getStatus().name());
@@ -271,7 +271,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
                 change.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 change.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 change.setCode(rs.getString(4));
-                change.setSnapshot(new JSONObject(getClob(rs, 5)));
+                change.setSnapshot(getClob(rs, 5));
                 change.setStatus(rs.getString(6));
                 change.setMonitorId(rs.getString(7));
                 change.setCreatedBy(rs.getString(8));

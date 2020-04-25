@@ -84,6 +84,23 @@ public abstract class PublicationConfiguration<C extends ContentItem> extends Co
     }
 
     /**
+     * Returns the page with the given name.
+     */
+    public WebPageConfiguration getPage(String name)
+    {
+        WebPageConfiguration ret = null;
+        for(WebPageConfiguration page : getPages())
+        {
+            if(page.getName().equals(name))
+            {
+                ret = page;
+                break;
+            }
+        }
+        return ret;
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     @Override

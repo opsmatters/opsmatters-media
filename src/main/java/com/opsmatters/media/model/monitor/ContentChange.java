@@ -15,7 +15,9 @@
  */
 package com.opsmatters.media.model.monitor;
 
+import java.time.Instant;
 import org.json.JSONObject;
+import com.opsmatters.media.util.StringUtils;
 
 /**
  * Class representing a content monitor change.
@@ -26,7 +28,7 @@ public class ContentChange extends MonitorItem
 {
     private String code = "";
     private ChangeStatus status;
-    private JSONObject snapshot;
+    private String snapshot = "";
     private String monitorId = "";
 
     /**
@@ -34,6 +36,19 @@ public class ContentChange extends MonitorItem
      */
     public ContentChange()
     {
+    }
+
+    /**
+     * Constructor that takes a monitor.
+     */
+    public ContentChange(ContentMonitor monitor, JSONObject snapshot)
+    {
+        setId(StringUtils.getUUID(null));
+        setCreatedDate(Instant.now());
+        setCode(monitor.getCode());
+        setStatus(ChangeStatus.PENDING);
+        setSnapshot(snapshot);
+        setMonitorId(monitor.getId());
     }
 
     /**
@@ -100,6 +115,16 @@ public class ContentChange extends MonitorItem
     }
 
     /**
+     * Sets the change status by the given user.
+     */
+    public void setStatus(ChangeStatus status, String username)
+    {
+        setStatus(status);
+        setUpdatedDate(Instant.now());
+        setCreatedBy(username);
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the change status is PENDING.
      */
     public boolean isPending()
@@ -108,19 +133,35 @@ public class ContentChange extends MonitorItem
     }
 
     /**
-     * Returns the last monitor snapshot.
+     * Returns the monitor snapshot with the change.
      */
-    public JSONObject getSnapshot()
+    public String getSnapshot()
     {
         return snapshot;
     }
 
     /**
-     * Sets the last monitor snapshot.
+     * Returns the monitor snapshot with the change.
+     */
+    public JSONObject getSnapshotAsJson()
+    {
+        return new JSONObject(snapshot);
+    }
+
+    /**
+     * Sets the monitor snapshot with the change.
+     */
+    public void setSnapshot(String snapshot)
+    {
+        this.snapshot = snapshot;
+    }
+
+    /**
+     * Sets the monitor snapshot with the change.
      */
     public void setSnapshot(JSONObject snapshot)
     {
-        this.snapshot = snapshot;
+        setSnapshot(snapshot.toString());
     }
 
     /**

@@ -19,9 +19,12 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
+import com.opsmatters.media.config.content.ContentConfiguration;
+import com.opsmatters.media.config.monitor.MonitorConfiguration;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
+import com.opsmatters.media.util.StringUtils;
 
 /**
  * Class representing a content monitor.
@@ -31,20 +34,43 @@ import com.opsmatters.media.util.TimeUtils;
 public class ContentMonitor extends MonitorItem
 {
     public static final String CONTENT_TYPE = "content-type";
+    public static final String URL = "url";
+    public static final String INTERVAL = "interval";
+    public static final String EXECUTION_TIME = "execution-time";
 
     private String code = "";
     private String name = "";
     private ContentType contentType;
     private Instant executedDate;
+    private long executionTime = -1L;
     private MonitorStatus status;
-    private JSONObject snapshot;
+    private String url = "";
+    private String snapshot = "";
     private String changeId = "";
+    private int interval = -1;
+    private boolean active = false;
 
     /**
      * Default constructor.
      */
     public ContentMonitor()
     {
+    }
+
+    /**
+     * Constructor that takes a content configuration and a monitor configuration.
+     */
+    public ContentMonitor(ContentConfiguration content, MonitorConfiguration config)
+    {
+        setId(StringUtils.getUUID(null));
+        setCreatedDate(Instant.now());
+        setCode(content.getCode());
+        setContentType(content.getType());
+        setName(config.getName());
+        setStatus(MonitorStatus.NEW);
+        setSnapshot(new JSONObject());
+        setInterval(config.getInterval());
+        setActive(config.isActive());
     }
 
     /**
@@ -68,8 +94,12 @@ public class ContentMonitor extends MonitorItem
             setContentType(obj.getContentType());
             setStatus(obj.getStatus());
             setExecutedDate(obj.getExecutedDate());
+            setExecutionTime(obj.getExecutionTime());
+            setUrl(obj.getUrl());
             setSnapshot(obj.getSnapshot());
             setChangeId(obj.getChangeId());
+            setInterval(obj.getInterval());
+            setActive(obj.isActive());
         }
     }
 
@@ -81,6 +111,9 @@ public class ContentMonitor extends MonitorItem
         JSONObject ret = new JSONObject();
 
         ret.putOpt(CONTENT_TYPE, getContentType().name());
+        ret.putOpt(URL, getUrl());
+        ret.putOpt(INTERVAL, getInterval());
+        ret.putOpt(EXECUTION_TIME, getExecutionTime());
 
         return ret;
     }
@@ -91,6 +124,25 @@ public class ContentMonitor extends MonitorItem
     public void setAttributes(JSONObject obj)
     {
         setContentType(obj.optString(CONTENT_TYPE));
+        setUrl(obj.optString(URL));
+        setInterval(obj.optInt(INTERVAL));
+        setExecutionTime(obj.optLong(EXECUTION_TIME));
+    }
+
+    /**
+     * Returns the monitor GUID.
+     */
+    public String getGuid()
+    {
+        return getGuid(getContentType(), code, name);
+    }
+
+    /**
+     * Returns the monitor GUID.
+     */
+    public static String getGuid(ContentType type, String code, String name)
+    {
+        return String.format("%s-%s-%s", type.code(), code, name);
     }
 
     /**
@@ -182,11 +234,24 @@ public class ContentMonitor extends MonitorItem
     }
 
     /**
-     * Returns <CODE>true</CODE> if the monitor status is ACTIVE.
+     * Resolved the monitor status from PENDING.
      */
-    public boolean isActive()
+    public void clearPending()
     {
-        return status == MonitorStatus.ACTIVE;
+        if(getStatus() == MonitorStatus.PENDING)
+        {
+            setChangeId("");
+            setStatus(MonitorStatus.WAITING);
+            setUpdatedDate(Instant.now());
+        }
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the monitor status is RUNNING.
+     */
+    public boolean isExecuting()
+    {
+        return status == MonitorStatus.EXECUTING;
     }
 
     /**
@@ -272,11 +337,75 @@ public class ContentMonitor extends MonitorItem
     }
 
     /**
+     * Returns the time taken for the last monitor execution.
+     */
+    public long getExecutionTime()
+    {
+        return executionTime;
+    }
+
+    /**
+     * Sets the time taken for the last monitor execution.
+     */
+    public void setExecutionTime(long executionTime)
+    {
+        this.executionTime = executionTime;
+    }
+
+    /**
+     * Returns the monitor url.
+     */
+    public String getUrl()
+    {
+        return url;
+    }
+
+    /**
+     * Sets the monitor url.
+     */
+    public void setUrl(String url)
+    {
+        this.url = url;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the monitor url has been set.
+     */
+    public boolean hasUrl()
+    {
+        return url != null && url.length() > 0;
+    }
+
+    /**
      * Returns the last monitor snapshot.
      */
-    public JSONObject getSnapshot()
+    public String getSnapshot()
     {
         return snapshot;
+    }
+
+    /**
+     * Returns the last monitor snapshot.
+     */
+    public JSONObject getSnapshotAsJson()
+    {
+        return new JSONObject(snapshot);
+    }
+
+    /**
+     * Returns the last monitor snapshot with pretty print.
+     */
+    public String getPrettySnapshot()
+    {
+        return getSnapshotAsJson().toString(2);
+    }
+
+    /**
+     * Sets the last monitor snapshot.
+     */
+    public void setSnapshot(String snapshot)
+    {
+        this.snapshot = snapshot;
     }
 
     /**
@@ -284,7 +413,15 @@ public class ContentMonitor extends MonitorItem
      */
     public void setSnapshot(JSONObject snapshot)
     {
-        this.snapshot = snapshot;
+        setSnapshot(snapshot.toString());
+    }
+
+    /**
+     * Sets the last monitor snapshot.
+     */
+    public void setPrettySnapshot(String snapshot)
+    {
+        setSnapshot(new JSONObject(snapshot));
     }
 
     /**
@@ -309,5 +446,37 @@ public class ContentMonitor extends MonitorItem
     public boolean hasChangeId()
     {
         return changeId != null && changeId.length() > 0;
+    }
+
+    /**
+     * Returns the interval between monitor checks (in minutes).
+     */
+    public int getInterval()
+    {
+        return interval;
+    }
+
+    /**
+     * Sets the interval between monitor checks (in minutes).
+     */
+    public void setInterval(int interval)
+    {
+        this.interval = interval;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the monitor is enabled.
+     */
+    public boolean isActive()
+    {
+        return active;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the monitor is enabled.
+     */
+    public void setActive(boolean active)
+    {
+        this.active = active;
     }
 }
