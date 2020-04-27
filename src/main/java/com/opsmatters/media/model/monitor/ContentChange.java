@@ -28,8 +28,10 @@ public class ContentChange extends MonitorItem
 {
     private String code = "";
     private ChangeStatus status;
-    private String snapshot = "";
+    private String snapshotBefore = "";
+    private String snapshotAfter = "";
     private String monitorId = "";
+    private long executionTime = -1L;
 
     /**
      * Default constructor.
@@ -46,9 +48,11 @@ public class ContentChange extends MonitorItem
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setCode(monitor.getCode());
-        setStatus(ChangeStatus.PENDING);
-        setSnapshot(snapshot);
+        setStatus(ChangeStatus.NEW);
+        setSnapshotBefore(monitor.getSnapshot());
+        setSnapshotAfter(snapshot);
         setMonitorId(monitor.getId());
+        setExecutionTime(monitor.getExecutionTime());
     }
 
     /**
@@ -69,8 +73,10 @@ public class ContentChange extends MonitorItem
             super.copyAttributes(obj);
             setCode(obj.getCode());
             setStatus(obj.getStatus());
-            setSnapshot(obj.getSnapshot());
+            setSnapshotBefore(obj.getSnapshotBefore());
+            setSnapshotAfter(obj.getSnapshotAfter());
             setMonitorId(obj.getMonitorId());
+            setExecutionTime(obj.getExecutionTime());
         }
     }
 
@@ -88,6 +94,14 @@ public class ContentChange extends MonitorItem
     public void setCode(String code)
     {
         this.code = code;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the monitor organisation has been set.
+     */
+    public boolean hasCode()
+    {
+        return code != null && code.length() > 0;
     }
 
     /**
@@ -125,43 +139,99 @@ public class ContentChange extends MonitorItem
     }
 
     /**
-     * Returns <CODE>true</CODE> if the change status is PENDING.
+     * Returns the monitor snapshot before the change.
      */
-    public boolean isPending()
+    public String getSnapshotBefore()
     {
-        return status == ChangeStatus.PENDING;
+        return snapshotBefore;
     }
 
     /**
-     * Returns the monitor snapshot with the change.
+     * Returns the monitor snapshot before the change.
      */
-    public String getSnapshot()
+    public JSONObject getSnapshotBeforeAsJson()
     {
-        return snapshot;
+        return new JSONObject(snapshotBefore);
     }
 
     /**
-     * Returns the monitor snapshot with the change.
+     * Returns the monitor snapshot before the change with pretty print.
      */
-    public JSONObject getSnapshotAsJson()
+    public String getPrettySnapshotBefore()
     {
-        return new JSONObject(snapshot);
+        return getSnapshotBeforeAsJson().toString(2);
     }
 
     /**
-     * Sets the monitor snapshot with the change.
+     * Sets the monitor snapshot before the change.
      */
-    public void setSnapshot(String snapshot)
+    public void setSnapshotBefore(String snapshotBefore)
     {
-        this.snapshot = snapshot;
+        this.snapshotBefore = snapshotBefore;
     }
 
     /**
-     * Sets the monitor snapshot with the change.
+     * Sets the monitor snapshot before the change.
      */
-    public void setSnapshot(JSONObject snapshot)
+    public void setSnapshotBefore(JSONObject snapshotBefore)
     {
-        setSnapshot(snapshot.toString());
+        setSnapshotBefore(snapshotBefore.toString());
+    }
+
+    /**
+     * Sets the monitor snapshot before the change with pretty print.
+     */
+    public void setPrettySnapshotBefore(String snapshotBefore)
+    {
+        setSnapshotBefore(new JSONObject(snapshotBefore));
+    }
+
+    /**
+     * Returns the monitor snapshot after the change.
+     */
+    public String getSnapshotAfter()
+    {
+        return snapshotAfter;
+    }
+
+    /**
+     * Returns the monitor snapshot after the change.
+     */
+    public JSONObject getSnapshotAfterAsJson()
+    {
+        return new JSONObject(snapshotAfter);
+    }
+
+    /**
+     * Returns the monitor snapshot after the change with pretty print.
+     */
+    public String getPrettySnapshotAfter()
+    {
+        return getSnapshotAfterAsJson().toString(2);
+    }
+
+    /**
+     * Sets the monitor snapshot after the change.
+     */
+    public void setSnapshotAfter(String snapshotAfter)
+    {
+        this.snapshotAfter = snapshotAfter;
+    }
+
+    /**
+     * Sets the monitor snapshot after the change.
+     */
+    public void setSnapshotAfter(JSONObject snapshotAfter)
+    {
+        setSnapshotAfter(snapshotAfter.toString());
+    }
+
+    /**
+     * Sets the monitor snapshot after the change with pretty print.
+     */
+    public void setPrettySnapshotAfter(String snapshotAfter)
+    {
+        setSnapshotAfter(new JSONObject(snapshotAfter));
     }
 
     /**
@@ -186,5 +256,21 @@ public class ContentChange extends MonitorItem
     public boolean hasMonitorId()
     {
         return monitorId != null && monitorId.length() > 0;
+    }
+
+    /**
+     * Returns the time taken for the monitor execution.
+     */
+    public long getExecutionTime()
+    {
+        return executionTime;
+    }
+
+    /**
+     * Sets the time taken for the monitor execution.
+     */
+    public void setExecutionTime(long executionTime)
+    {
+        this.executionTime = executionTime;
     }
 }

@@ -606,8 +606,6 @@ public class ContentHandler implements FieldSource
                 for(int i = 0; i < line.length; i++)
                 {
                     boolean isHtml = htmlMap.containsKey(headerAt(i));
-//GERALD: needed?
-//                    line[i] = StringUtils.convertToAscii(line[i], isHtml).replaceAll("_x000D_", "");
                     line[i] = StringUtils.convertToAscii(line[i], isHtml);
                 }
             }
