@@ -37,6 +37,7 @@ public class ContentMonitor extends MonitorItem
     public static final String URL = "url";
     public static final String INTERVAL = "interval";
     public static final String EXECUTION_TIME = "execution-time";
+    public static final String ERROR_MESSAGE = "error-message";
 
     private String code = "";
     private String name = "";
@@ -49,6 +50,7 @@ public class ContentMonitor extends MonitorItem
     private String changeId = "";
     private int interval = -1;
     private boolean active = false;
+    private String errorMessage = "";
 
     /**
      * Default constructor.
@@ -100,6 +102,7 @@ public class ContentMonitor extends MonitorItem
             setChangeId(obj.getChangeId());
             setInterval(obj.getInterval());
             setActive(obj.isActive());
+            setErrorMessage(obj.getErrorMessage());
         }
     }
 
@@ -114,6 +117,7 @@ public class ContentMonitor extends MonitorItem
         ret.putOpt(URL, getUrl());
         ret.putOpt(INTERVAL, getInterval());
         ret.putOpt(EXECUTION_TIME, getExecutionTime());
+        ret.putOpt(ERROR_MESSAGE, getErrorMessage());
 
         return ret;
     }
@@ -127,6 +131,7 @@ public class ContentMonitor extends MonitorItem
         setUrl(obj.optString(URL));
         setInterval(obj.optInt(INTERVAL));
         setExecutionTime(obj.optLong(EXECUTION_TIME));
+        setErrorMessage(obj.optString(ERROR_MESSAGE));
     }
 
     /**
@@ -234,20 +239,45 @@ public class ContentMonitor extends MonitorItem
     }
 
     /**
-     * Resolved the monitor status from PENDING.
+     * Set the monitor status to PENDING.
+     */
+    public void setPending(ContentChange change)
+    {
+        if(getStatus() != MonitorStatus.PENDING)
+        {
+            setStatus(MonitorStatus.PENDING);
+            setUpdatedDate(Instant.now());
+            setChangeId(change.getId());
+        }
+    }
+
+    /**
+     * Clear the monitor status after PENDING.
      */
     public void clearPending()
     {
         if(getStatus() == MonitorStatus.PENDING)
         {
-            setChangeId("");
-            setStatus(MonitorStatus.WAITING);
+            setStatus(MonitorStatus.RESUMING);
             setUpdatedDate(Instant.now());
+            setChangeId("");
         }
     }
 
     /**
-     * Returns <CODE>true</CODE> if the monitor status is RUNNING.
+     * Resets the monitor.
+     */
+    public void clear()
+    {
+        setStatus(MonitorStatus.RESUMING);
+        setUpdatedDate(Instant.now());
+        setExecutedDate(null);
+        setChangeId("");
+        setErrorMessage("");
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the monitor status is EXECUTING.
      */
     public boolean isExecuting()
     {
@@ -478,5 +508,29 @@ public class ContentMonitor extends MonitorItem
     public void setActive(boolean active)
     {
         this.active = active;
+    }
+
+    /**
+     * Returns the monitor error message.
+     */
+    public String getErrorMessage()
+    {
+        return errorMessage;
+    }
+
+    /**
+     * Sets the monitor error message.
+     */
+    public void setErrorMessage(String errorMessage)
+    {
+        this.errorMessage = errorMessage;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the monitor error message has been set.
+     */
+    public boolean hasErrorMessage()
+    {
+        return errorMessage != null && errorMessage.length() > 0;
     }
 }

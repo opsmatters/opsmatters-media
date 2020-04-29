@@ -559,9 +559,9 @@ public class StringUtils
                         buff.append("'");
                     else if(c >= 8220 && c <= 8222) // Replace forward/backward double quote
                         buff.append("\"");
-                    else if(c >= 8230)         // Replace ellipsis
+                    else if(c == 8230)         // Replace ellipsis
                         buff.append("...");
-                    else if(c >= 8364)         // Replace Euro
+                    else if(c == 8364)         // Replace Euro
                         buff.append("Euro");
                 }
             }

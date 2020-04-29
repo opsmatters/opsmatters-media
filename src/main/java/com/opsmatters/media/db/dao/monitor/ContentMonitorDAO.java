@@ -67,6 +67,13 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
       + "FROM CONTENT_MONITORS ORDER BY CREATED_DATE";
 
     /**
+     * The query to use to select the monitors from the CONTENT_MONITORS table by organisation code.
+     */
+    private static final String LIST_BY_CODE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, SNAPSHOT, ATTRIBUTES, STATUS, CHANGE_ID, ACTIVE "
+      + "FROM CONTENT_MONITORS WHERE CODE=? ORDER BY CREATED_DATE";
+
+    /**
      * The query to use to get the count of monitors from the CONTENT_MONITORS table.
      */
     private static final String COUNT_SQL =  
@@ -342,6 +349,63 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     }
 
     /**
+     * Returns the monitors from the CONTENT_MONITORS table by organisation code.
+     */
+    public List<ContentMonitor> list(String code) throws SQLException
+    {
+        List<ContentMonitor> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByCodeStmt == null)
+            listByCodeStmt = prepareStatement(getConnection(), LIST_BY_CODE_SQL);
+        clearParameters(listByCodeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByCodeStmt.setString(1, code);
+            listByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByCodeStmt.executeQuery();
+            ret = new ArrayList<ContentMonitor>();
+            while(rs.next())
+            {
+                ContentMonitor monitor = new ContentMonitor();
+                monitor.setId(rs.getString(1));
+                monitor.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                monitor.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                monitor.setExecutedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                monitor.setCode(rs.getString(5));
+                monitor.setName(rs.getString(6));
+                monitor.setSnapshot(getClob(rs, 7));
+                monitor.setAttributes(new JSONObject(getClob(rs, 8)));
+                monitor.setStatus(rs.getString(9));
+                monitor.setChangeId(rs.getString(10));
+                monitor.setActive(rs.getBoolean(11));
+                ret.add(monitor);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the count of monitors from the table.
      */
     public int count() throws SQLException
@@ -391,6 +455,8 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
+        closeStatement(listByCodeStmt);
+        listByCodeStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -401,6 +467,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
+    private PreparedStatement listByCodeStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }
