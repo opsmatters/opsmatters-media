@@ -28,7 +28,9 @@ public enum MonitorStatus
     EXECUTING("Executing"),
     PENDING("Pending"),
     RESUMING("Resuming"),
+    RETRYING("Retrying"),
     ERROR("Error"),
+    SUSPENDED("Suspended"),
     DISABLED("Disabled"),
     ALL("All");
 

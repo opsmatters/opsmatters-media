@@ -38,21 +38,21 @@ public class UserDAO extends AdminDAO<User>
      * The query to use to select a user from the USER table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, USERNAME, EMAIL, FIRSTNAME, LASTNAME, ROLE, ADMIN, STATUS "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, USERNAME, EMAIL, FIRSTNAME, LASTNAME, ROLE, TIMEZONE, ADMIN, STATUS "
       + "FROM USERS WHERE ID=?";
 
     /**
      * The query to use to select a user from the USER table by username.
      */
     private static final String GET_BY_USERNAME_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, USERNAME, EMAIL, FIRSTNAME, LASTNAME, ROLE, ADMIN, STATUS "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, USERNAME, EMAIL, FIRSTNAME, LASTNAME, ROLE, TIMEZONE, ADMIN, STATUS "
       + "FROM USERS WHERE USERNAME=?";
 
     /**
      * The query to use to select a user from the USER table by email.
      */
     private static final String GET_BY_EMAIL_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, USERNAME, EMAIL, FIRSTNAME, LASTNAME, ROLE, ADMIN, STATUS "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, USERNAME, EMAIL, FIRSTNAME, LASTNAME, ROLE, TIMEZONE, ADMIN, STATUS "
       + "FROM USERS WHERE EMAIL=?";
 
     /**
@@ -60,22 +60,22 @@ public class UserDAO extends AdminDAO<User>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO USERS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, USERNAME, EMAIL, FIRSTNAME, LASTNAME, ROLE, ADMIN, STATUS )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, USERNAME, EMAIL, FIRSTNAME, LASTNAME, ROLE, TIMEZONE, ADMIN, STATUS )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a user in the USERS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE USERS SET UPDATED_DATE=?, USERNAME=?, EMAIL=?, FIRSTNAME=?, LASTNAME=?, ROLE=?, ADMIN=?, STATUS=? "
+      "UPDATE USERS SET UPDATED_DATE=?, USERNAME=?, EMAIL=?, FIRSTNAME=?, LASTNAME=?, ROLE=?, TIMEZONE=?, ADMIN=?, STATUS=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the users from the USERS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, USERNAME, EMAIL, FIRSTNAME, LASTNAME, ROLE, ADMIN, STATUS "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, USERNAME, EMAIL, FIRSTNAME, LASTNAME, ROLE, TIMEZONE, ADMIN, STATUS "
       + "FROM USERS ORDER BY CREATED_DATE";
 
     /**
@@ -112,6 +112,7 @@ public class UserDAO extends AdminDAO<User>
         table.addColumn("FIRSTNAME", Types.VARCHAR, 20, false);
         table.addColumn("LASTNAME", Types.VARCHAR, 20, false);
         table.addColumn("ROLE", Types.VARCHAR, 50, false);
+        table.addColumn("TIMEZONE", Types.VARCHAR, 30, true);
         table.addColumn("ADMIN", Types.BOOLEAN, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.setPrimaryKey("USERS_PK", new String[] {"ID"});
@@ -152,8 +153,9 @@ public class UserDAO extends AdminDAO<User>
                 user.setFirstName(rs.getString(6));
                 user.setLastName(rs.getString(7));
                 user.setRole(rs.getString(8));
-                user.setAdmin(rs.getBoolean(9));
-                user.setStatus(rs.getString(10));
+                user.setTimezone(rs.getString(9));
+                user.setAdmin(rs.getBoolean(10));
+                user.setStatus(rs.getString(11));
                 ret = user;
             }
         }
@@ -207,8 +209,9 @@ public class UserDAO extends AdminDAO<User>
                 user.setFirstName(rs.getString(6));
                 user.setLastName(rs.getString(7));
                 user.setRole(rs.getString(8));
-                user.setAdmin(rs.getBoolean(9));
-                user.setStatus(rs.getString(10));
+                user.setTimezone(rs.getString(9));
+                user.setAdmin(rs.getBoolean(10));
+                user.setStatus(rs.getString(11));
                 ret = user;
             }
         }
@@ -262,8 +265,9 @@ public class UserDAO extends AdminDAO<User>
                 user.setFirstName(rs.getString(6));
                 user.setLastName(rs.getString(7));
                 user.setRole(rs.getString(8));
-                user.setAdmin(rs.getBoolean(9));
-                user.setStatus(rs.getString(10));
+                user.setTimezone(rs.getString(9));
+                user.setAdmin(rs.getBoolean(10));
+                user.setStatus(rs.getString(11));
                 ret = user;
             }
         }
@@ -306,8 +310,9 @@ public class UserDAO extends AdminDAO<User>
             insertStmt.setString(6, user.getFirstName());
             insertStmt.setString(7, user.getLastName());
             insertStmt.setString(8, user.getRole());
-            insertStmt.setBoolean(9, user.isAdmin());
-            insertStmt.setString(10, user.getStatus().name());
+            insertStmt.setString(9, user.getTimezone());
+            insertStmt.setBoolean(10, user.isAdmin());
+            insertStmt.setString(11, user.getStatus().name());
             insertStmt.executeUpdate();
 
             logger.info("Created user '"+user.getId()+"' in USERS");
@@ -345,9 +350,10 @@ public class UserDAO extends AdminDAO<User>
         updateStmt.setString(4, user.getFirstName());
         updateStmt.setString(5, user.getLastName());
         updateStmt.setString(6, user.getRole());
-        updateStmt.setBoolean(7, user.isAdmin());
-        updateStmt.setString(8, user.getStatus().name());
-        updateStmt.setString(9, user.getId());
+        updateStmt.setString(7, user.getTimezone());
+        updateStmt.setBoolean(8, user.isAdmin());
+        updateStmt.setString(9, user.getStatus().name());
+        updateStmt.setString(10, user.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated user '"+user.getId()+"' in USERS");
@@ -386,8 +392,9 @@ public class UserDAO extends AdminDAO<User>
                 user.setFirstName(rs.getString(6));
                 user.setLastName(rs.getString(7));
                 user.setRole(rs.getString(8));
-                user.setAdmin(rs.getBoolean(9));
-                user.setStatus(rs.getString(10));
+                user.setTimezone(rs.getString(9));
+                user.setAdmin(rs.getBoolean(10));
+                user.setStatus(rs.getString(11));
                 ret.add(user);
             }
         }

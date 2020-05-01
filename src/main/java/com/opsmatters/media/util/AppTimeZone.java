@@ -29,6 +29,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class AppTimeZone
 {
+    public static final String DEFAULT = "Universal";
+
     private TimeZone tz;
     private String name = "";
 

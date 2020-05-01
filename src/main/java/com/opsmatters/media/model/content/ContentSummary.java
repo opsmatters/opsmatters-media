@@ -129,6 +129,14 @@ public abstract class ContentSummary implements java.io.Serializable
     /**
      * Returns the date the content was published.
      */
+    public long getPublishedDateMillis()
+    {
+        return getPublishedDate() != null ? getPublishedDate().toEpochMilli() : 0L;
+    }
+
+    /**
+     * Returns the date the content was published.
+     */
     public String getPublishedDateAsString(String pattern)
     {
         return TimeUtils.toStringUTC(publishedDate, pattern);

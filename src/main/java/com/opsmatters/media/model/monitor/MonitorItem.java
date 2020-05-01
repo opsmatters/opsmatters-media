@@ -121,6 +121,14 @@ public class MonitorItem implements java.io.Serializable
     /**
      * Returns the date the item was created.
      */
+    public String getCreatedDateAsString(String pattern, String timezone)
+    {
+        return TimeUtils.toString(createdDate, pattern, timezone);
+    }
+
+    /**
+     * Returns the date the item was created.
+     */
     public String getCreatedDateAsString()
     {
         return getCreatedDateAsString(Formats.CONTENT_DATE_FORMAT);
@@ -203,6 +211,14 @@ public class MonitorItem implements java.io.Serializable
     /**
      * Returns the date the item was last updated.
      */
+    public String getUpdatedDateAsString(String pattern, String timezone)
+    {
+        return TimeUtils.toString(updatedDate, pattern, timezone);
+    }
+
+    /**
+     * Returns the date the item was last updated.
+     */
     public String getUpdatedDateAsString()
     {
         return getUpdatedDateAsString(Formats.CONTENT_DATE_FORMAT);
@@ -280,6 +296,14 @@ public class MonitorItem implements java.io.Serializable
     public String getDateAsString(String pattern)
     {
         return TimeUtils.toStringUTC(getDate(), pattern);
+    }
+
+    /**
+     * Returns the date the item was created or last updated.
+     */
+    public String getDateAsString(String pattern, String timezone)
+    {
+        return TimeUtils.toString(getDate(), pattern, timezone);
     }
 
     /**

@@ -38,6 +38,7 @@ public class ContentMonitor extends MonitorItem
     public static final String INTERVAL = "interval";
     public static final String EXECUTION_TIME = "execution-time";
     public static final String ERROR_MESSAGE = "error-message";
+    public static final String RETRY = "retry";
 
     private String code = "";
     private String name = "";
@@ -51,6 +52,7 @@ public class ContentMonitor extends MonitorItem
     private int interval = -1;
     private boolean active = false;
     private String errorMessage = "";
+    private int retry = 0;
 
     /**
      * Default constructor.
@@ -103,6 +105,7 @@ public class ContentMonitor extends MonitorItem
             setInterval(obj.getInterval());
             setActive(obj.isActive());
             setErrorMessage(obj.getErrorMessage());
+            setRetry(obj.getRetry());
         }
     }
 
@@ -118,6 +121,7 @@ public class ContentMonitor extends MonitorItem
         ret.putOpt(INTERVAL, getInterval());
         ret.putOpt(EXECUTION_TIME, getExecutionTime());
         ret.putOpt(ERROR_MESSAGE, getErrorMessage());
+        ret.putOpt(RETRY, getRetry());
 
         return ret;
     }
@@ -132,6 +136,7 @@ public class ContentMonitor extends MonitorItem
         setInterval(obj.optInt(INTERVAL));
         setExecutionTime(obj.optLong(EXECUTION_TIME));
         setErrorMessage(obj.optString(ERROR_MESSAGE));
+        setRetry(obj.optInt(RETRY));
     }
 
     /**
@@ -314,6 +319,14 @@ public class ContentMonitor extends MonitorItem
     public String getExecutedDateAsString(String pattern)
     {
         return TimeUtils.toStringUTC(executedDate, pattern);
+    }
+
+    /**
+     * Returns the date the monitor was last executed.
+     */
+    public String getExecutedDateAsString(String pattern, String timezone)
+    {
+        return TimeUtils.toString(executedDate, pattern, timezone);
     }
 
     /**
@@ -532,5 +545,21 @@ public class ContentMonitor extends MonitorItem
     public boolean hasErrorMessage()
     {
         return errorMessage != null && errorMessage.length() > 0;
+    }
+
+    /**
+     * Returns the number of retries since the last error.
+     */
+    public int getRetry()
+    {
+        return retry;
+    }
+
+    /**
+     * Sets the number of retries since the last error.
+     */
+    public void setRetry(int retry)
+    {
+        this.retry = retry;
     }
 }

@@ -28,6 +28,7 @@ import java.text.DecimalFormat;
 import java.text.ParsePosition;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.LocalDateTime;
@@ -527,6 +528,22 @@ public class TimeUtils
         {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
             ret = LocalDateTime.ofInstant(dt, ZoneOffset.UTC).format(formatter);
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the given instant as a string in the given timezone.
+     */
+    public static String toString(Instant dt, String pattern, String timezone)
+    {
+        String ret = "";
+
+        if(dt != null && dt.toEpochMilli() > 0L)
+        {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+            ret = dt.atZone(ZoneId.of(timezone)).format(formatter);
         }
 
         return ret;

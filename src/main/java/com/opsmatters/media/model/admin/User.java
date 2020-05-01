@@ -17,6 +17,7 @@ package com.opsmatters.media.model.admin;
 
 import java.time.Instant;
 import com.opsmatters.media.util.StringUtils;
+import com.opsmatters.media.util.AppTimeZone;
 
 /**
  * Class representing a user.
@@ -30,6 +31,7 @@ public class User extends AdminItem
     private String firstName = "";
     private String lastName = "";
     private String role = "";
+    private String timezone = AppTimeZone.DEFAULT; // UTC
     private boolean admin = false;
     private UserStatus status = UserStatus.DISABLED;
     private TraceObject traceObject = TraceObject.NONE;
@@ -69,6 +71,7 @@ public class User extends AdminItem
             setFirstName(obj.getFirstName());
             setLastName(obj.getLastName());
             setRole(obj.getRole());
+            setTimezone(obj.getTimezone());
             setAdmin(obj.isAdmin());
             setStatus(obj.getStatus());
         }
@@ -208,6 +211,30 @@ public class User extends AdminItem
     public boolean hasRole()
     {
         return role != null && role.length() > 0;
+    }
+
+    /**
+     * Returns the timezone.
+     */
+    public String getTimezone()
+    {
+        return timezone;
+    }
+
+    /**
+     * Sets the timezone.
+     */
+    public void setTimezone(String timezone)
+    {
+        this.timezone = timezone;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the timezone has been set.
+     */
+    public boolean hasTimezone()
+    {
+        return timezone != null && timezone.length() > 0;
     }
 
     /**
