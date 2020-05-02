@@ -255,6 +255,9 @@ public class PostArticle extends Article
     {
         super.init(config);
 
+        if(config.hasField(Fields.LINK))
+            setLink(config.getField(Fields.LINK));
+
         setTags(config.getField(Fields.TAGS, ""));
         setLinkText(config.getField(Fields.LINK_TEXT, ""));
 
@@ -289,6 +292,10 @@ public class PostArticle extends Article
         // Use the default image if a content image wasn't found
         if(config.hasField(Fields.IMAGE) && getImage().length() == 0)
             setImage(config.getField(Fields.IMAGE));
+
+        // Clear the link if it has been set to "-"
+        if(getLink().equals(EMPTY))
+            setLink("");
     }
 
     /**

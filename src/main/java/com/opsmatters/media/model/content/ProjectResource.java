@@ -231,6 +231,10 @@ public class ProjectResource extends Resource
         setDescription(FormatUtils.getFormattedDescription(getDescription()));
         if(getSummary().length() == 0)
             setSummary(FormatUtils.getFormattedSummary(getDescription(), config.getSummary()));
+
+        // Clear the license if it has been set to "-"
+        if(getLicense().equals(EMPTY))
+            setLicense("");
     }
 
     /**

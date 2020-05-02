@@ -34,6 +34,8 @@ import com.opsmatters.media.util.TimeUtils;
  */
 public abstract class ContentItem implements java.io.Serializable
 {
+    public static final String EMPTY = "-";
+
     private ContentSummary details;
     private boolean detailsSet = false;
 
