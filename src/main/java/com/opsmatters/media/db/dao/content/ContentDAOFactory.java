@@ -42,6 +42,8 @@ public class ContentDAOFactory extends DAOFactory
         getEBookResourceDAO();
         getToolResourceDAO();
         getProjectResourceDAO();
+        getOrganisationSummaryDAO();
+        getContentTypeSummaryDAO();
     }
 
     /**
@@ -135,6 +137,26 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
+     * Returns the OrganisationSummary DAO.
+     */
+    public OrganisationSummaryDAO getOrganisationSummaryDAO()
+    {
+        if(organisationSummaryDAO == null)
+            organisationSummaryDAO = new OrganisationSummaryDAO(this);
+        return organisationSummaryDAO;
+    }
+
+    /**
+     * Returns the ContentTypeSummary DAO.
+     */
+    public ContentTypeSummaryDAO getContentTypeSummaryDAO()
+    {
+        if(contentTypeSummaryDAO == null)
+            contentTypeSummaryDAO = new ContentTypeSummaryDAO(this);
+        return contentTypeSummaryDAO;
+    }
+
+    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
@@ -150,6 +172,8 @@ public class ContentDAOFactory extends DAOFactory
         ebookResourceDAO = null;
         toolResourceDAO = null;
         projectResourceDAO = null;
+        organisationSummaryDAO = null;
+        contentTypeSummaryDAO = null;
     }
 
     private OrganisationDAO organisationDAO;
@@ -161,4 +185,6 @@ public class ContentDAOFactory extends DAOFactory
     private EBookResourceDAO ebookResourceDAO;
     private ToolResourceDAO toolResourceDAO;
     private ProjectResourceDAO projectResourceDAO;
+    private OrganisationSummaryDAO organisationSummaryDAO;
+    private ContentTypeSummaryDAO contentTypeSummaryDAO;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Gerald Curley
+ * Copyright 2020 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,57 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.social;
-
-import com.opsmatters.media.model.OwnedItem;
+package com.opsmatters.media.model;
 
 /**
- * Class representing a social media post.
+ * Class representing an item with an owner.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class SocialPost extends OwnedItem
+public abstract class OwnedItem extends BaseItem
 {
-    private String message = "";
+    private String createdBy = "";
 
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(SocialPost obj)
+    public void copyAttributes(OwnedItem obj)
     {
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setMessage(obj.getMessage());
+            setCreatedBy(obj.getCreatedBy());
         }
     }
 
     /**
-     * Returns the post type.
+     * Returns the user that changed the item.
      */
-    public abstract PostType getType();
-
-    /**
-     * Returns the post message.
-     */
-    public String getMessage()
+    public String getCreatedBy()
     {
-        return message;
+        return createdBy;
     }
 
     /**
-     * Sets the post message.
+     * Sets the user that changed the item.
      */
-    public void setMessage(String message)
+    public void setCreatedBy(String createdBy)
     {
-        this.message = message;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the post message has been set.
-     */
-    public boolean hasMessage()
-    {
-        return message != null && message.length() > 0;
+        this.createdBy = createdBy;
     }
 }

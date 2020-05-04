@@ -21,6 +21,7 @@ import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.monitor.MonitorConfiguration;
+import com.opsmatters.media.model.BaseItem;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
@@ -31,7 +32,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentMonitor extends MonitorItem
+public class ContentMonitor extends BaseItem
 {
     public static final String CONTENT_TYPE = "content-type";
     public static final String URL = "url";

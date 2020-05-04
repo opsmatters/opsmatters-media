@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Gerald Curley
+ * Copyright 2020 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.social;
+package com.opsmatters.media.model;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -22,40 +22,31 @@ import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
- * Class representing a social media item.
+ * Class representing a created item.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialItem implements java.io.Serializable
+public abstract class BaseItem implements java.io.Serializable
 {
     private String id = "";
     private Instant createdDate;
     private Instant updatedDate;
-    private String createdBy = "";
-
-    /**
-     * Default constructor.
-     */
-    public SocialItem()
-    {
-    }
 
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(SocialItem obj)
+    public void copyAttributes(BaseItem obj)
     {
         if(obj != null)
         {
             setId(obj.getId());
             setCreatedDate(obj.getCreatedDate());
             setUpdatedDate(obj.getUpdatedDate());
-            setCreatedBy(obj.getCreatedBy());
         }
     }
 
     /**
-     * Returns the id.
+     * Returns the item id.
      */
     public String toString()
     {
@@ -312,21 +303,5 @@ public class SocialItem implements java.io.Serializable
     public String getDateAsString()
     {
         return getDateAsString(Formats.CONTENT_DATE_FORMAT);
-    }
-
-    /**
-     * Returns the item creator.
-     */
-    public String getCreatedBy()
-    {
-        return createdBy;
-    }
-
-    /**
-     * Sets the item creator.
-     */
-    public void setCreatedBy(String createdBy)
-    {
-        this.createdBy = createdBy;
     }
 }

@@ -17,6 +17,7 @@ package com.opsmatters.media.model.monitor;
 
 import java.time.Instant;
 import org.json.JSONObject;
+import com.opsmatters.media.model.OwnedItem;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -24,7 +25,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentChange extends MonitorItem
+public class ContentChange extends OwnedItem
 {
     private String code = "";
     private ChangeStatus status;
