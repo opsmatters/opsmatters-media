@@ -64,7 +64,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
      */
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, STATUS, MONITOR_ID, EXECUTION_TIME, CREATED_BY "
-      + "FROM CONTENT_CHANGES ORDER BY CREATED_DATE";
+      + "FROM CONTENT_CHANGES WHERE CREATED_DATE >= (NOW() + INTERVAL -7 DAY) ORDER BY CREATED_DATE";
 
     /**
      * The query to use to get the count of changes from the CONTENT_CHANGES table.

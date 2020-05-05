@@ -18,6 +18,7 @@ package com.opsmatters.media.config.content;
 
 import java.util.Map;
 import java.util.LinkedHashMap;
+import com.opsmatters.media.model.content.ContentItem;
 
 /**
  * Contains a list of fields for output.
@@ -136,7 +137,12 @@ public class Fields extends LinkedHashMap<String,String>
                         {
                             String value = get(key);
                             if(value == null || value.length() == 0)
-                                put(key, fields.get(key));
+                            {
+                                // Ignore fields that have been marked as empty
+                                String fieldValue = fields.get(key);
+                                if(fieldValue != null && !fieldValue.equals(ContentItem.EMPTY))
+                                    put(key, fieldValue);
+                            }
                         }
                     }
                 }

@@ -21,6 +21,8 @@ import java.time.format.DateTimeParseException;
 import twitter4j.Status;
 import facebook4j.Post;
 import com.echobox.api.linkedin.types.ugc.UGCShare;
+import com.opsmatters.media.client.social.SocialClient;
+import com.opsmatters.media.client.social.SocialClientFactory;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
@@ -430,5 +432,39 @@ public class PreparedPost extends SocialPost
     public void setErrorMessage(String errorMessage)
     {
         this.errorMessage = errorMessage;
+    }
+
+    /**
+     * Send the post using a client.
+     */
+    public void send() throws Exception
+    {
+        SocialClient client = SocialClientFactory.newClient(getChannel());
+        if(client == null)
+            throw new IllegalArgumentException("unknown channel provider: "+getChannel());
+
+        try
+        {
+            setStatus(DeliveryStatus.SENDING);
+            PreparedPost sent = client.sendPost(getMessage());
+            if(sent != null)
+            {
+                setExternalId(sent.getId());
+                setStatus(DeliveryStatus.SENT);
+            }
+        }
+        catch(Exception e)
+        {
+            if(client.isRecoverable(e))
+            {
+                throw e;
+            }
+            else
+            {
+                setStatus(DeliveryStatus.ERROR);
+                setErrorCode(client.getErrorCode(e));
+                setErrorMessage(client.getErrorMessage(e));
+            }
+        }
     }
 }
