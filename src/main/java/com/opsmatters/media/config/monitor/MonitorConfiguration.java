@@ -27,9 +27,13 @@ public class MonitorConfiguration extends YamlConfiguration
 {
     public static final String ACTIVE = "active";
     public static final String INTERVAL = "interval";
+    public static final String DIFFERENCE = "difference";
+    public static final String SORT = "sort";
 
     private boolean active = false;
     private int interval = 0;
+    private int difference = 0;
+    private String sort = "";
 
     /**
      * Default constructor.
@@ -58,6 +62,8 @@ public class MonitorConfiguration extends YamlConfiguration
             super.copyAttributes(obj);
             setActive(obj.isActive());
             setInterval(obj.getInterval());
+            setMinDifference(obj.getMinDifference());
+            setSort(obj.getSort());
         }
     }
 
@@ -94,6 +100,38 @@ public class MonitorConfiguration extends YamlConfiguration
     }
 
     /**
+     * Returns the minimum % difference between monitor checks.
+     */
+    public int getMinDifference()
+    {
+        return difference;
+    }
+
+    /**
+     * Sets the minimum % difference between monitor checks.
+     */
+    public void setMinDifference(int difference)
+    {
+        this.difference = difference;
+    }
+
+    /**
+     * Returns the monitor content sort.
+     */
+    public String getSort()
+    {
+        return sort;
+    }
+
+    /**
+     * Sets the monitor content sort.
+     */
+    public void setSort(String sort)
+    {
+        this.sort = sort;
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     @Override
@@ -103,5 +141,9 @@ public class MonitorConfiguration extends YamlConfiguration
             setActive((Boolean)map.get(ACTIVE));
         if(map.containsKey(INTERVAL))
             setInterval((Integer)map.get(INTERVAL));
+        if(map.containsKey(DIFFERENCE))
+            setMinDifference((Integer)map.get(DIFFERENCE));
+        if(map.containsKey(SORT))
+            setSort((String)map.get(SORT));
     }
 }

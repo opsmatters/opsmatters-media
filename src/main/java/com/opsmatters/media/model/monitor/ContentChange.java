@@ -33,6 +33,7 @@ public class ContentChange extends OwnedItem
     private String snapshotAfter = "";
     private String monitorId = "";
     private long executionTime = -1L;
+    private int difference = 0;
 
     /**
      * Default constructor.
@@ -54,6 +55,7 @@ public class ContentChange extends OwnedItem
         setSnapshotAfter(snapshot);
         setMonitorId(monitor.getId());
         setExecutionTime(monitor.getExecutionTime());
+        setDifference(StringUtils.getDifference(getSnapshotBefore(), getSnapshotAfter()));
     }
 
     /**
@@ -78,6 +80,7 @@ public class ContentChange extends OwnedItem
             setSnapshotAfter(obj.getSnapshotAfter());
             setMonitorId(obj.getMonitorId());
             setExecutionTime(obj.getExecutionTime());
+            setDifference(obj.getDifference());
         }
     }
 
@@ -273,5 +276,21 @@ public class ContentChange extends OwnedItem
     public void setExecutionTime(long executionTime)
     {
         this.executionTime = executionTime;
+    }
+
+    /**
+     * Returns the % difference between the snapshots.
+     */
+    public int getDifference()
+    {
+        return difference;
+    }
+
+    /**
+     * Sets the % difference between the snapshots.
+     */
+    public void setDifference(int difference)
+    {
+        this.difference = difference;
     }
 }

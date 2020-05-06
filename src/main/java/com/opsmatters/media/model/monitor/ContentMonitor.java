@@ -37,6 +37,8 @@ public class ContentMonitor extends BaseItem
     public static final String CONTENT_TYPE = "content-type";
     public static final String URL = "url";
     public static final String INTERVAL = "interval";
+    public static final String DIFFERENCE = "difference";
+    public static final String SORT = "sort";
     public static final String EXECUTION_TIME = "execution-time";
     public static final String ERROR_MESSAGE = "error-message";
     public static final String RETRY = "retry";
@@ -51,6 +53,8 @@ public class ContentMonitor extends BaseItem
     private String snapshot = "";
     private String changeId = "";
     private int interval = -1;
+    private int difference = 0;
+    private ContentSort sort;
     private boolean active = false;
     private String errorMessage = "";
     private int retry = 0;
@@ -75,6 +79,8 @@ public class ContentMonitor extends BaseItem
         setStatus(MonitorStatus.NEW);
         setSnapshot(new JSONObject());
         setInterval(config.getInterval());
+        setMinDifference(config.getMinDifference());
+        setSort(config.getSort());
         setActive(config.isActive());
     }
 
@@ -104,6 +110,8 @@ public class ContentMonitor extends BaseItem
             setSnapshot(obj.getSnapshot());
             setChangeId(obj.getChangeId());
             setInterval(obj.getInterval());
+            setMinDifference(obj.getMinDifference());
+            setSort(obj.getSort());
             setActive(obj.isActive());
             setErrorMessage(obj.getErrorMessage());
             setRetry(obj.getRetry());
@@ -120,6 +128,8 @@ public class ContentMonitor extends BaseItem
         ret.putOpt(CONTENT_TYPE, getContentType().name());
         ret.putOpt(URL, getUrl());
         ret.putOpt(INTERVAL, getInterval());
+        ret.putOpt(DIFFERENCE, getMinDifference());
+        ret.putOpt(SORT, getSort().name());
         ret.putOpt(EXECUTION_TIME, getExecutionTime());
         ret.putOpt(ERROR_MESSAGE, getErrorMessage());
         ret.putOpt(RETRY, getRetry());
@@ -135,6 +145,8 @@ public class ContentMonitor extends BaseItem
         setContentType(obj.optString(CONTENT_TYPE));
         setUrl(obj.optString(URL));
         setInterval(obj.optInt(INTERVAL));
+        setMinDifference(obj.optInt(DIFFERENCE));
+        setSort(obj.optString(SORT));
         setExecutionTime(obj.optLong(EXECUTION_TIME));
         setErrorMessage(obj.optString(ERROR_MESSAGE));
         setRetry(obj.optInt(RETRY));
@@ -506,6 +518,46 @@ public class ContentMonitor extends BaseItem
     public void setInterval(int interval)
     {
         this.interval = interval;
+    }
+
+    /**
+     * Returns the minimum % difference between monitor checks.
+     */
+    public int getMinDifference()
+    {
+        return difference;
+    }
+
+    /**
+     * Sets the minimum % difference between monitor checks.
+     */
+    public void setMinDifference(int difference)
+    {
+        this.difference = difference;
+    }
+
+    /**
+     * Returns the monitor content sort.
+     */
+    public ContentSort getSort()
+    {
+        return sort;
+    }
+
+    /**
+     * Sets the monitor content sort.
+     */
+    public void setSort(String sort)
+    {
+        setSort(sort != null && sort.length() > 0 ? ContentSort.valueOf(sort) : ContentSort.NONE);
+    }
+
+    /**
+     * Sets the monitor content sort.
+     */
+    public void setSort(ContentSort sort)
+    {
+        this.sort = sort;
     }
 
     /**
