@@ -41,7 +41,7 @@ public class ContentTypeSummaryDAO extends BaseDAO
      * The query to use to select a summary from the CONTENT_TYPE_SUMMARY table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, ITEM_COUNT, DEPLOYED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, TEMPLATE_ID, ITEM_COUNT, DEPLOYED "
       + "FROM CONTENT_TYPE_SUMMARY WHERE ID=?";
 
     /**
@@ -49,29 +49,29 @@ public class ContentTypeSummaryDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTENT_TYPE_SUMMARY"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, ITEM_COUNT, DEPLOYED )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, TEMPLATE_ID, ITEM_COUNT, DEPLOYED )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a summary in the CONTENT_TYPE_SUMMARY table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTENT_TYPE_SUMMARY SET UPDATED_DATE=?, ITEM_COUNT=?, DEPLOYED=? "
+      "UPDATE CONTENT_TYPE_SUMMARY SET UPDATED_DATE=?, TEMPLATE_ID=?, ITEM_COUNT=?, DEPLOYED=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the summaries from the CONTENT_TYPE_SUMMARY table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, ITEM_COUNT, DEPLOYED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, TEMPLATE_ID, ITEM_COUNT, DEPLOYED "
       + "FROM CONTENT_TYPE_SUMMARY ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the summaries from the CONTENT_TYPE_SUMMARY table by organisation code.
      */
     private static final String LIST_BY_CODE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, ITEM_COUNT, DEPLOYED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, TEMPLATE_ID, ITEM_COUNT, DEPLOYED "
       + "FROM CONTENT_TYPE_SUMMARY WHERE CODE=? ORDER BY CREATED_DATE";
 
     /**
@@ -105,6 +105,7 @@ public class ContentTypeSummaryDAO extends BaseDAO
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, false);
+        table.addColumn("TEMPLATE_ID", Types.VARCHAR, 36, false);
         table.addColumn("ITEM_COUNT", Types.INTEGER, true);
         table.addColumn("DEPLOYED", Types.BOOLEAN, true);
         table.setPrimaryKey("CONTENT_TYPE_SUMMARY_PK", new String[] {"ID"});
@@ -142,8 +143,9 @@ public class ContentTypeSummaryDAO extends BaseDAO
                 summary.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 summary.setCode(rs.getString(4));
                 summary.setType(rs.getString(5));
-                summary.setItemCount(rs.getInt(6));
-                summary.setDeployed(rs.getBoolean(7));
+                summary.setTemplateId(rs.getString(6));
+                summary.setItemCount(rs.getInt(7));
+                summary.setDeployed(rs.getBoolean(8));
                 ret = summary;
             }
         }
@@ -183,8 +185,9 @@ public class ContentTypeSummaryDAO extends BaseDAO
             insertStmt.setTimestamp(3, new Timestamp(summary.getUpdatedDateMillis()), UTC);
             insertStmt.setString(4, summary.getCode());
             insertStmt.setString(5, summary.getType().name());
-            insertStmt.setLong(6, summary.getItemCount());
-            insertStmt.setBoolean(7, summary.isDeployed());
+            insertStmt.setString(6, summary.getTemplateId());
+            insertStmt.setLong(7, summary.getItemCount());
+            insertStmt.setBoolean(8, summary.isDeployed());
             insertStmt.executeUpdate();
 
             logger.info("Created summary '"+summary.getId()+"' in CONTENT_TYPE_SUMMARY");
@@ -221,9 +224,10 @@ public class ContentTypeSummaryDAO extends BaseDAO
         try
         {
             updateStmt.setTimestamp(1, new Timestamp(summary.getUpdatedDateMillis()), UTC);
-            updateStmt.setLong(2, summary.getItemCount());
-            updateStmt.setBoolean(3, summary.isDeployed());
-            updateStmt.setString(4, summary.getId());
+            updateStmt.setString(2, summary.getTemplateId());
+            updateStmt.setLong(3, summary.getItemCount());
+            updateStmt.setBoolean(4, summary.isDeployed());
+            updateStmt.setString(5, summary.getId());
             updateStmt.executeUpdate();
 
             logger.info("Updated summary '"+summary.getId()+"' in CONTENT_TYPE_SUMMARY");
@@ -265,8 +269,9 @@ public class ContentTypeSummaryDAO extends BaseDAO
                 summary.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 summary.setCode(rs.getString(4));
                 summary.setType(rs.getString(5));
-                summary.setItemCount(rs.getInt(6));
-                summary.setDeployed(rs.getBoolean(7));
+                summary.setTemplateId(rs.getString(6));
+                summary.setItemCount(rs.getInt(7));
+                summary.setDeployed(rs.getBoolean(8));
                 ret.add(summary);
             }
         }
@@ -318,8 +323,9 @@ public class ContentTypeSummaryDAO extends BaseDAO
                 summary.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 summary.setCode(rs.getString(4));
                 summary.setType(rs.getString(5));
-                summary.setItemCount(rs.getInt(6));
-                summary.setDeployed(rs.getBoolean(7));
+                summary.setTemplateId(rs.getString(6));
+                summary.setItemCount(rs.getInt(7));
+                summary.setDeployed(rs.getBoolean(8));
                 ret.add(summary);
             }
         }

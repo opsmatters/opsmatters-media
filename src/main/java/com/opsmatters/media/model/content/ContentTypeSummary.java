@@ -29,6 +29,7 @@ public class ContentTypeSummary extends BaseItem
 {
     private String code = "";
     private ContentType type;
+    private String templateId = "";
     private int count = -1;
     private boolean deployed = false;
 
@@ -88,6 +89,7 @@ public class ContentTypeSummary extends BaseItem
             super.copyAttributes(obj);
             setCode(obj.getCode());
             setType(obj.getType());
+            setTemplateId(obj.getTemplateId());
             setItemCount(obj.getItemCount());
             setDeployed(obj.isDeployed());
         }
@@ -139,6 +141,30 @@ public class ContentTypeSummary extends BaseItem
     public void setType(ContentType type)
     {
         this.type = type;
+    }
+
+    /**
+     * Returns the social post template id.
+     */
+    public String getTemplateId()
+    {
+        return templateId;
+    }
+
+    /**
+     * Sets the social post template id.
+     */
+    public void setTemplateId(String templateId)
+    {
+        this.templateId = templateId;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the social post template id has been set.
+     */
+    public boolean hasTemplateId()
+    {
+        return templateId != null && templateId.length() > 0;
     }
 
     /**
