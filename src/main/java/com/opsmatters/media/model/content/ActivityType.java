@@ -28,6 +28,7 @@ public enum ActivityType
     MEETUP("Meetup"),
     PRESENTATION("Presentation"),
     SPECIAL_EVENT("Special Event"),
+    WEBCAST("Webcast"),
     WEBINAR("Webinar"),
     WORKSHOP("Workshop");
 

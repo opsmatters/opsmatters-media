@@ -71,4 +71,15 @@ public class TextDiff
 
         return textVisitor.getText();
     }
+
+    /**
+     * Returns the % difference between the given strings.
+     */
+    public static int getDifferencePercent(String before, String after)
+    {
+        StringsComparator comparator = new StringsComparator(before, after);
+        int len = Integer.max(before.length(), after.length());
+        int lcs = comparator.getScript().getLCSLength();
+        return (int)((1-(lcs/(float)len))*100);
+    }
 }

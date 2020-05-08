@@ -258,11 +258,28 @@ public class ContentHandler implements FieldSource
     }
 
     /**
-     * Returns a list of output lines.
+     * Returns the list of output lines.
      */
     public List<String[]> getLines()
     {
         return lines;
+    }
+
+    /**
+     * Returns the number of output lines.
+     */
+    public int getLineCount()
+    {
+        return lines != null ? lines.size() : -1;
+    }
+
+    /**
+     * Trims the output lines to the given size by removing the first lines.
+     */
+    public void trimFirstLines(int maxLines)
+    {
+        if(getLineCount() > maxLines+1)
+            lines.subList(1, getLineCount()-maxLines).clear();
     }
 
     /**
@@ -493,7 +510,7 @@ public class ContentHandler implements FieldSource
     /**
      * Append the given line to the existing lines.
      */
-    public void append(List<String> line)
+    public void appendLine(List<String> line)
     {
         lines.add(line.toArray(new String[0]));
     }

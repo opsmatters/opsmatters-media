@@ -304,14 +304,14 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
      * Extract the list of content items from the database and deploy using the given handler.
      */
     public List<C> deployContent(ContentDAO contentDAO, ContentHandler handler, 
-        Map<String,OrganisationContentConfiguration> configurationMap)
+        Map<String,OrganisationContentConfiguration> configurationMap, int maxItems)
         throws IOException, SQLException
     {
         List<C> items = contentDAO.list(getCode());
         for(C content : items)
         {
             boolean deployed = content.isDeployed();
-            handler.append(handler.getValues(content.toFields().add(this, configurationMap.get(content.getTitle()), handler)));
+            handler.appendLine(handler.getValues(content.toFields().add(this, configurationMap.get(content.getTitle()), handler)));
             content.setDeployed(true);
             if(content.isDeployed() != deployed)
                 contentDAO.update(content);
@@ -325,6 +325,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
         // Process the CSV file
         String type = getType().tag();
         handler.setFilename(handler.getCsvFilename());
+        handler.trimFirstLines(maxItems);
         handler.convertLinesToAscii(getHtmlFields());
         handler.writeFile();
         handler.copyFileToHost(System.getProperty("opsmatters.files.stage.feeds."+type), "stage");
