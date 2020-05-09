@@ -35,21 +35,21 @@ public class UserDAO extends AdminDAO<User>
     private static final Logger logger = Logger.getLogger(UserDAO.class.getName());
 
     /**
-     * The query to use to select a user from the USER table by id.
+     * The query to use to select a user from the USERS table by id.
      */
     private static final String GET_BY_ID_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, USERNAME, EMAIL, FIRSTNAME, LASTNAME, ROLE, TIMEZONE, ADMIN, STATUS "
       + "FROM USERS WHERE ID=?";
 
     /**
-     * The query to use to select a user from the USER table by username.
+     * The query to use to select a user from the USERS table by username.
      */
     private static final String GET_BY_USERNAME_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, USERNAME, EMAIL, FIRSTNAME, LASTNAME, ROLE, TIMEZONE, ADMIN, STATUS "
       + "FROM USERS WHERE USERNAME=?";
 
     /**
-     * The query to use to select a user from the USER table by email.
+     * The query to use to select a user from the USERS table by email.
      */
     private static final String GET_BY_EMAIL_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, USERNAME, EMAIL, FIRSTNAME, LASTNAME, ROLE, TIMEZONE, ADMIN, STATUS "

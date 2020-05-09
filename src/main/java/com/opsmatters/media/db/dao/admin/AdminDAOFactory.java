@@ -34,6 +34,7 @@ public class AdminDAOFactory extends DAOFactory
         super(driver, conn);
 
         getUserDAO();
+        getEmailDAO();
     }
 
     /**
@@ -47,6 +48,16 @@ public class AdminDAOFactory extends DAOFactory
     }
 
     /**
+     * Returns the email DAO.
+     */
+    public EmailDAO getEmailDAO()
+    {
+        if(emailDAO == null)
+            emailDAO = new EmailDAO(this);
+        return emailDAO;
+    }
+
+    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
@@ -54,7 +65,9 @@ public class AdminDAOFactory extends DAOFactory
     {
         super.close();
         userDAO = null;
+        emailDAO = null;
     }
 
     private UserDAO userDAO;
+    private EmailDAO emailDAO;
 }

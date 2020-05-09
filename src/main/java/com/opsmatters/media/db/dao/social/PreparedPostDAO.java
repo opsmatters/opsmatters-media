@@ -23,10 +23,10 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
+import com.opsmatters.media.model.DeliveryStatus;
 import com.opsmatters.media.model.social.PreparedPost;
 import com.opsmatters.media.model.social.DraftPost;
 import com.opsmatters.media.model.social.SocialChannels;
-import com.opsmatters.media.model.social.DeliveryStatus;
 
 /**
  * DAO that provides operations on the PREPARED_POSTS table in the database.

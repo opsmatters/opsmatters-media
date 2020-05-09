@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Gerald Curley
+ * Copyright 2020 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.social;
+package com.opsmatters.media.model;
 
 /**
- * Represents the delivery status of a prepared social post.
+ * Represents the delivery status of a message.
  * 
  * @author Gerald Curley (opsmatters)
  */
