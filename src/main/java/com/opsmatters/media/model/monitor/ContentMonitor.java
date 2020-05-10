@@ -23,6 +23,7 @@ import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.monitor.MonitorConfiguration;
 import com.opsmatters.media.model.BaseItem;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
@@ -614,5 +615,17 @@ public class ContentMonitor extends BaseItem
     public void setRetry(int retry)
     {
         this.retry = retry;
+    }
+
+    /**
+     * Returns the email for a monitor status change.
+     */
+    public Email getStatusEmail()
+    {
+        String subject = String.format("Monitor %s: %s",
+            getStatus().name(), getGuid());
+        String body = String.format("The monitor %s was %s at %s.",
+            getGuid(), getStatus().name(), getUpdatedDateAsString(Formats.CONTENT_DATE_FORMAT));
+        return new Email(subject, body);
     }
 }

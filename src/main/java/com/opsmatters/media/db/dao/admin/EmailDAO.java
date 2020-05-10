@@ -103,7 +103,7 @@ public class EmailDAO extends AdminDAO<Email>
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
-        table.addColumn("SUBJECT", Types.VARCHAR, 30, true);
+        table.addColumn("SUBJECT", Types.VARCHAR, 128, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("PROVIDER", Types.VARCHAR, 15, false);
         table.addColumn("MESSAGE_ID", Types.VARCHAR, 60, false);

@@ -55,13 +55,14 @@ public class Email extends BaseItem
     }
 
     /**
-     * Constructor that takes a list of recipients.
+     * Constructor that takes a subject and message body.
      */
-    public Email(String from)
+    public Email(String subject, String body)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
-        setFrom(from);
+        setSubject(subject);
+        setBody(body);
         setStatus(DeliveryStatus.NEW);
     }
 
