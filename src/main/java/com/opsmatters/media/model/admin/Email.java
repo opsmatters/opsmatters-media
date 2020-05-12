@@ -46,6 +46,9 @@ public class Email extends BaseItem
     private DeliveryStatus status;
     private String messageId = "";
     private String errorMessage = "";
+//GERALD
+    private EmailFormat format = EmailFormat.TEXT;
+    private EmailType type = EmailType.NONE;
 
     /**
      * Default constructor.
@@ -82,6 +85,9 @@ public class Email extends BaseItem
             setStatus(obj.getStatus());
             setMessageId(obj.getMessageId());
             setErrorMessage(obj.getErrorMessage());
+//GERALD
+            setFormat(obj.getFormat());
+            setType(obj.getType());
         }
     }
 
@@ -280,6 +286,56 @@ public class Email extends BaseItem
     public void setStatus(String status)
     {
         setStatus(DeliveryStatus.valueOf(status));
+    }
+
+//GERALD
+    /**
+     * Returns the email's type.
+     */
+    public EmailType getType()
+    {
+        return type;
+    }
+
+    /**
+     * Sets the email's type.
+     */
+    public void setType(EmailType type)
+    {
+        this.type = type;
+    }
+
+    /**
+     * Sets the email's type.
+     */
+    public void setType(String type)
+    {
+        setType(EmailType.valueOf(type));
+    }
+
+//GERALD
+    /**
+     * Returns the email's format.
+     */
+    public EmailFormat getFormat()
+    {
+        return format;
+    }
+
+    /**
+     * Sets the email's format.
+     */
+    public void setFormat(EmailFormat format)
+    {
+        this.format = format;
+    }
+
+    /**
+     * Sets the email's format.
+     */
+    public void setFormat(String format)
+    {
+        setFormat(EmailFormat.valueOf(format));
     }
 
     /**

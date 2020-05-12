@@ -113,6 +113,14 @@ public class VideoChannelConfiguration extends FieldsConfiguration
     }
 
     /**
+     * Returns the channel url for this configuration.
+     */
+    public String getChannelUrl()
+    {
+        return provider != null ? String.format(provider.channelUrl(), channelId) : null;
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     @Override

@@ -37,6 +37,7 @@ public class ContentMonitor extends BaseItem
 {
     public static final String CONTENT_TYPE = "content-type";
     public static final String URL = "url";
+    public static final String CHANNEL_ID = "channel-id";
     public static final String INTERVAL = "interval";
     public static final String DIFFERENCE = "difference";
     public static final String SORT = "sort";
@@ -51,6 +52,7 @@ public class ContentMonitor extends BaseItem
     private long executionTime = -1L;
     private MonitorStatus status;
     private String url = "";
+    private String channelId = "";
     private String snapshot = "";
     private String changeId = "";
     private int interval = -1;
@@ -108,6 +110,7 @@ public class ContentMonitor extends BaseItem
             setExecutedDate(obj.getExecutedDate());
             setExecutionTime(obj.getExecutionTime());
             setUrl(obj.getUrl());
+            setChannelId(obj.getChannelId());
             setSnapshot(obj.getSnapshot());
             setChangeId(obj.getChangeId());
             setInterval(obj.getInterval());
@@ -128,6 +131,7 @@ public class ContentMonitor extends BaseItem
 
         ret.putOpt(CONTENT_TYPE, getContentType().name());
         ret.putOpt(URL, getUrl());
+        ret.putOpt(CHANNEL_ID, getChannelId());
         ret.putOpt(INTERVAL, getInterval());
         ret.putOpt(DIFFERENCE, getMinDifference());
         ret.putOpt(SORT, getSort().name());
@@ -144,6 +148,7 @@ public class ContentMonitor extends BaseItem
     public void setAttributes(JSONObject obj)
     {
         setContentType(obj.optString(CONTENT_TYPE));
+        setChannelId(obj.optString(CHANNEL_ID));
         setUrl(obj.optString(URL));
         setInterval(obj.optInt(INTERVAL));
         setMinDifference(obj.optInt(DIFFERENCE));
@@ -431,6 +436,30 @@ public class ContentMonitor extends BaseItem
     public boolean hasUrl()
     {
         return url != null && url.length() > 0;
+    }
+
+    /**
+     * Returns the monitor channel id.
+     */
+    public String getChannelId()
+    {
+        return channelId;
+    }
+
+    /**
+     * Sets the monitor channel id.
+     */
+    public void setChannelId(String channelId)
+    {
+        this.channelId = channelId;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the monitor channel id has been set.
+     */
+    public boolean hasChannelId()
+    {
+        return channelId != null && channelId.length() > 0;
     }
 
     /**

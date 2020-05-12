@@ -131,8 +131,8 @@ public class YouTubeClient extends Client implements VideoClient
             HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, scopes).setCredentialDataStore(datastore)
             .build();
 
-        // Build the local server and bind it to port 8081
-        LocalServerReceiver localReceiver = new LocalServerReceiver.Builder().setPort(8081).build();
+        // Build the local server and bind it to port 8099
+        LocalServerReceiver localReceiver = new LocalServerReceiver.Builder().setPort(8099).build();
 
         credential = new AuthorizationCodeInstalledApp(flow, localReceiver).authorize("user");
 

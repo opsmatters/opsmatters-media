@@ -127,6 +127,23 @@ public class VideoConfiguration extends ContentConfiguration<VideoArticle>
     }
 
     /**
+     * Returns the channel with the given name.
+     */
+    public VideoChannelConfiguration getChannel(String name)
+    {
+        VideoChannelConfiguration ret = null;
+        for(VideoChannelConfiguration channel : getChannels())
+        {
+            if(channel.getName().equals(name))
+            {
+                ret = channel;
+                break;
+            }
+        }
+        return ret;
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     @Override
