@@ -24,6 +24,7 @@ import com.opsmatters.media.config.monitor.MonitorConfiguration;
 import com.opsmatters.media.model.BaseItem;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.admin.Email;
+import com.opsmatters.media.model.admin.EmailBody;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
@@ -653,8 +654,14 @@ public class ContentMonitor extends BaseItem
     {
         String subject = String.format("Monitor %s: %s",
             getStatus().name(), getGuid());
-        String body = String.format("The monitor %s was %s at %s.",
-            getGuid(), getStatus().name(), getUpdatedDateAsString(Formats.CONTENT_DATE_FORMAT));
+        EmailBody body = new EmailBody()
+            .addParagraph("The status of the following monitor has changed:")
+            .addTable(new String[][]
+            {
+                {"ID", getGuid()},
+                {"Status", getStatus().name()},
+                {"Date", getUpdatedDateAsString(Formats.CONTENT_DATE_FORMAT)},
+            });
         return new Email(subject, body);
     }
 }

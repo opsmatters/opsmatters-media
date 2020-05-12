@@ -33,6 +33,7 @@ import com.amazonaws.services.simpleemail.model.Body;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.admin.EmailProvider;
 import com.opsmatters.media.model.admin.Email;
+import com.opsmatters.media.model.admin.EmailFormat;
 
 /**
  * Class that represents a connection to SES for emails.
@@ -180,12 +181,18 @@ public class SesClient extends Client implements EmailClient
     public String sendEmail(Email email) throws IOException
     {
         String ret = null;
+
+        // Set the email body using the correct format
+        Body body = new Body();
+        Content content = new Content().withCharset("UTF-8").withData(email.getBody());
+        body = email.getFormat() == EmailFormat.HTML ? body.withHtml(content) : body.withText(content);
+
         SendEmailRequest request = new SendEmailRequest()
           .withSource(email.getFrom())
           .withDestination(new Destination().withToAddresses(email.getRecipients()))
           .withMessage(new Message()
               .withSubject(new Content().withCharset("UTF-8").withData(email.getSubject()))
-              .withBody(new Body().withText(new Content().withCharset("UTF-8").withData(email.getBody()))));
+              .withBody(body));
         return client.sendEmail(request).getMessageId();
     }
 

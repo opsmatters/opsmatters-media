@@ -108,7 +108,6 @@ public class EmailDAO extends AdminDAO<Email>
         table.addColumn("PROVIDER", Types.VARCHAR, 15, false);
         table.addColumn("MESSAGE_ID", Types.VARCHAR, 60, false);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
-//GERALD
         table.addColumn("TYPE", Types.VARCHAR, 5, true);
         table.addColumn("FORMAT", Types.VARCHAR, 5, true);
         table.setPrimaryKey("EMAILS_PK", new String[] {"ID"});
@@ -149,7 +148,6 @@ public class EmailDAO extends AdminDAO<Email>
                 email.setProvider(rs.getString(6));
                 email.setMessageId(rs.getString(7));
                 email.setStatus(rs.getString(8));
-//GERALD
                 email.setType(rs.getString(9));
                 email.setFormat(rs.getString(10));
                 ret = email;
@@ -196,7 +194,6 @@ public class EmailDAO extends AdminDAO<Email>
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(5, reader, attributes.length());
             insertStmt.setString(6, email.getStatus().name());
-//GERALD
             insertStmt.setString(7, email.getType().name());
             insertStmt.setString(8, email.getFormat().name());
             insertStmt.executeUpdate();
@@ -292,7 +289,6 @@ public class EmailDAO extends AdminDAO<Email>
                 email.setProvider(rs.getString(6));
                 email.setMessageId(rs.getString(7));
                 email.setStatus(rs.getString(8));
-//GERALD
                 email.setType(rs.getString(9));
                 email.setFormat(rs.getString(10));
                 ret.add(email);
@@ -349,7 +345,6 @@ public class EmailDAO extends AdminDAO<Email>
                 email.setProvider(rs.getString(6));
                 email.setMessageId(rs.getString(7));
                 email.setStatus(rs.getString(8));
-//GERALD
                 email.setType(rs.getString(9));
                 email.setFormat(rs.getString(10));
                 ret.add(email);

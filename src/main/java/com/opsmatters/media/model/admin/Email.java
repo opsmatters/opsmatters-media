@@ -46,7 +46,6 @@ public class Email extends BaseItem
     private DeliveryStatus status;
     private String messageId = "";
     private String errorMessage = "";
-//GERALD
     private EmailFormat format = EmailFormat.TEXT;
     private EmailType type = EmailType.NONE;
 
@@ -70,6 +69,15 @@ public class Email extends BaseItem
     }
 
     /**
+     * Constructor that takes a subject and message body.
+     */
+    public Email(String subject, EmailBody body)
+    {
+        this(subject, body.getText());
+        setFormat(EmailFormat.HTML);
+    }
+
+    /**
      * Copies the attributes of the given object.
      */
     public void copyAttributes(Email obj)
@@ -85,7 +93,6 @@ public class Email extends BaseItem
             setStatus(obj.getStatus());
             setMessageId(obj.getMessageId());
             setErrorMessage(obj.getErrorMessage());
-//GERALD
             setFormat(obj.getFormat());
             setType(obj.getType());
         }
@@ -288,7 +295,6 @@ public class Email extends BaseItem
         setStatus(DeliveryStatus.valueOf(status));
     }
 
-//GERALD
     /**
      * Returns the email's type.
      */
@@ -313,7 +319,6 @@ public class Email extends BaseItem
         setType(EmailType.valueOf(type));
     }
 
-//GERALD
     /**
      * Returns the email's format.
      */
