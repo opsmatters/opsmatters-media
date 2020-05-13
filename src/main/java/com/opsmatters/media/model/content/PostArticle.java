@@ -235,6 +235,7 @@ public class PostArticle extends Article
         article.init();
         article.setTitle("New Post");
         article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        article.setSocial(true);
 
         return article;
     }
@@ -272,6 +273,8 @@ public class PostArticle extends Article
 
         String sponsored = config.getField(Fields.SPONSORED);
         setSponsored(sponsored == null || sponsored.equals("0") ? false : true);
+
+        setSocial(true);
     }
 
     /**

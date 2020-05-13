@@ -45,6 +45,7 @@ public abstract class ContentItem implements java.io.Serializable
     private boolean published = false;
     private String createdBy = "";
     private boolean deployed = false;
+    private boolean social = false;
 
     /**
      * Default constructor.
@@ -83,6 +84,7 @@ public abstract class ContentItem implements java.io.Serializable
         setPublished(obj.isPublished());
         setCreatedBy(new String(obj.getCreatedBy() != null ? obj.getCreatedBy() : ""));
         setDeployed(obj.isDeployed());
+        setSocial(obj.hasSocial());
     }
 
     /**
@@ -99,6 +101,7 @@ public abstract class ContentItem implements java.io.Serializable
         setPublished(obj.optBoolean(Fields.PUBLISHED, false));
         setCreatedBy(obj.optString(Fields.CREATED_BY));
         setDeployed(obj.optBoolean(Fields.DEPLOYED));
+        setSocial(obj.optBoolean(Fields.SOCIAL, false));
     }
 
     /**
@@ -118,6 +121,7 @@ public abstract class ContentItem implements java.io.Serializable
         ret.put(Fields.PUBLISHED, isPublished());
         ret.put(Fields.CREATED_BY, getCreatedBy());
         ret.put(Fields.DEPLOYED, isDeployed());
+        ret.put(Fields.SOCIAL, hasSocial());
 
         return ret;
     }
@@ -520,5 +524,37 @@ public abstract class ContentItem implements java.io.Serializable
         }
 
         return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this content has social media.
+     */
+    public boolean hasSocial()
+    {
+        return social;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this content has social media.
+     */
+    public Boolean getSocialObject()
+    {
+        return new Boolean(hasSocial());
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this content has social media.
+     */
+    public void setSocial(boolean social)
+    {
+        this.social = social;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this content has social media.
+     */
+    public void setSocialObject(Boolean social)
+    {
+        setSocial(social != null && social.booleanValue());
     }
 }

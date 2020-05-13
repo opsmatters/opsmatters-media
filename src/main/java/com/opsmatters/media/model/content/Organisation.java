@@ -61,7 +61,6 @@ public class Organisation extends ContentItem implements FieldSource
     private String alternatives = "";
     private String features = "";
     private String tags = "";
-    private boolean social = false;
     private String hashtag = "";
     private String image = "";
     private String imageText = "";
@@ -116,7 +115,6 @@ public class Organisation extends ContentItem implements FieldSource
         setAlternatives(new String(obj.getAlternatives() != null ? obj.getAlternatives() : ""));
         setFeatures(new String(obj.getFeatures() != null ? obj.getFeatures() : ""));
         setTags(new String(obj.getTags() != null ? obj.getTags() : ""));
-        setSocial(obj.hasSocial());
         setHashtag(new String(obj.getHashtag() != null ? obj.getHashtag() : ""));
         setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
         setImageText(new String(obj.getImageText() != null ? obj.getImageText() : ""));
@@ -253,7 +251,6 @@ public class Organisation extends ContentItem implements FieldSource
         setAlternatives(obj.optString(Fields.ALTERNATIVES));
         setFeatures(obj.optString(Fields.FEATURES));
         setTags(obj.optString(Fields.TAGS));
-        setSocial(obj.optBoolean(Fields.SOCIAL, false));
         setHashtag(obj.optString(Fields.HASHTAG));
         setImage(obj.optString(Fields.IMAGE));
         setImageText(obj.optString(Fields.IMAGE_TEXT));
@@ -292,7 +289,6 @@ public class Organisation extends ContentItem implements FieldSource
         ret.putOpt(Fields.ALTERNATIVES, getAlternatives());
         ret.putOpt(Fields.FEATURES, getFeatures());
         ret.putOpt(Fields.TAGS, getTags());
-        ret.put(Fields.SOCIAL, hasSocial());
         ret.putOpt(Fields.HASHTAG, getHashtag());
         ret.putOpt(Fields.IMAGE, getImage());
         ret.putOpt(Fields.IMAGE_TEXT, getImageText());
@@ -1036,38 +1032,6 @@ public class Organisation extends ContentItem implements FieldSource
     public void setTagsList(List<String> tags)
     {
         setTags(StringUtils.fromList(tags));
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if this organisation has social media.
-     */
-    public boolean hasSocial()
-    {
-        return social;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if this organisation has social media.
-     */
-    public Boolean getSocialObject()
-    {
-        return new Boolean(hasSocial());
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if this organisation has social media.
-     */
-    public void setSocial(boolean social)
-    {
-        this.social = social;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if this organisation has social media.
-     */
-    public void setSocialObject(Boolean social)
-    {
-        setSocial(social != null && social.booleanValue());
     }
 
     /**

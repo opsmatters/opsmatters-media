@@ -15,6 +15,8 @@
  */
 package com.opsmatters.media.model.monitor;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -23,6 +25,7 @@ import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.monitor.MonitorConfiguration;
 import com.opsmatters.media.model.BaseItem;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.ContentSummary;
 import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailBody;
 import com.opsmatters.media.util.Formats;
@@ -64,6 +67,8 @@ public class ContentMonitor extends BaseItem
     private String errorMessage = "";
     private int retry = 0;
     private Instant subscribedDate;
+
+    private List<ContentSummary> subscribed = new ArrayList<ContentSummary>();
 
     /**
      * Default constructor.
@@ -726,6 +731,30 @@ public class ContentMonitor extends BaseItem
     }
 
     /**
+     * Adds a subscribed content item to the monitor.
+     */
+    public void addSubscribedContent(ContentSummary content)
+    {
+        subscribed.add(content);
+    }
+
+    /**
+     * Returns the subscribed content items for the monitor.
+     */
+    public List<ContentSummary> getSubscribedContent()
+    {
+        return subscribed;
+    }
+
+    /**
+     * Clears the subscribed content items for the monitor.
+     */
+    public void clearSubscribedContent()
+    {
+        subscribed.clear();
+    }
+
+    /**
      * Returns the email for a monitor status change.
      */
     public Email getStatusEmail()
@@ -738,7 +767,7 @@ public class ContentMonitor extends BaseItem
             {
                 {"ID", getGuid()},
                 {"Status", getStatus().name()},
-                {"Date", getUpdatedDateAsString(Formats.CONTENT_DATE_FORMAT)},
+                {"Updated", getUpdatedDateAsString(Formats.CONTENT_DATE_FORMAT)},
             });
         return new Email(subject, body);
     }

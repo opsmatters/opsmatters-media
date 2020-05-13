@@ -16,6 +16,7 @@
 package com.opsmatters.media.model.content;
 
 import java.util.logging.Logger;
+import com.opsmatters.media.model.feed.video.YouTubeEntry;
 
 /**
  * Class representing a video summary.
@@ -56,6 +57,20 @@ public class VideoSummary extends ArticleSummary
             setVideoId(obj.getVideoId());
             setProvider(obj.getProvider());
         }
+    }
+
+    /**
+     * Constructor that takes a youtube feed entry.
+     */
+    public VideoSummary(YouTubeEntry entry)
+    {
+        setVideoId(entry.getVideoId());
+        setProvider(VideoProvider.YOUTUBE);
+        setTitle(entry.getTitle());
+        if(entry.getUpdatedDate() != null)
+            setPublishedDate(entry.getUpdatedDate());
+        else
+            setPublishedDate(entry.getPublishedDate());
     }
 
     /**

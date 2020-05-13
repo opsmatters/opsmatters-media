@@ -199,6 +199,7 @@ public class RoundupArticle extends Article
         article.setSummary(StringUtils.EMPTY);
         article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
         article.setImagePrefix(config.getImagePrefix());
+        article.setSocial(true);
 
         return article;
     }
@@ -231,6 +232,8 @@ public class RoundupArticle extends Article
 
         String sponsored = config.getField(Fields.SPONSORED);
         setSponsored(sponsored == null || sponsored.equals("0") ? false : true);
+
+        setSocial(true);
     }
 
     /**

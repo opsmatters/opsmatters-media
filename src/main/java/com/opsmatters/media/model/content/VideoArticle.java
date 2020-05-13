@@ -233,6 +233,7 @@ public class VideoArticle extends Article
         article.init();
         article.setTitle("New Video");
         article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        article.setSocial(true);
 
         return article;
     }
@@ -261,6 +262,8 @@ public class VideoArticle extends Article
 
         String newsletter = config.getField(Fields.NEWSLETTER);
         setNewsletter(newsletter == null || newsletter.equals("0") ? false : true);
+
+        setSocial(true);
     }
 
     /**
