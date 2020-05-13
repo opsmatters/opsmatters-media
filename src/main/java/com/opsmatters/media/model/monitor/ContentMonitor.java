@@ -45,6 +45,7 @@ public class ContentMonitor extends BaseItem
     public static final String EXECUTION_TIME = "execution-time";
     public static final String ERROR_MESSAGE = "error-message";
     public static final String RETRY = "retry";
+    public static final String SUBSCRIBED_DATE = "subscribed-date";
 
     private String code = "";
     private String name = "";
@@ -62,6 +63,7 @@ public class ContentMonitor extends BaseItem
     private boolean active = false;
     private String errorMessage = "";
     private int retry = 0;
+    private Instant subscribedDate;
 
     /**
      * Default constructor.
@@ -120,6 +122,7 @@ public class ContentMonitor extends BaseItem
             setActive(obj.isActive());
             setErrorMessage(obj.getErrorMessage());
             setRetry(obj.getRetry());
+            setSubscribedDate(obj.getSubscribedDate());
         }
     }
 
@@ -139,6 +142,7 @@ public class ContentMonitor extends BaseItem
         ret.putOpt(EXECUTION_TIME, getExecutionTime());
         ret.putOpt(ERROR_MESSAGE, getErrorMessage());
         ret.putOpt(RETRY, getRetry());
+        ret.putOpt(SUBSCRIBED_DATE, getSubscribedDateMillis());
 
         return ret;
     }
@@ -157,6 +161,7 @@ public class ContentMonitor extends BaseItem
         setExecutionTime(obj.optLong(EXECUTION_TIME));
         setErrorMessage(obj.optString(ERROR_MESSAGE));
         setRetry(obj.optInt(RETRY));
+        setSubscribedDateMillis(obj.optLong(SUBSCRIBED_DATE));
     }
 
     /**
@@ -292,7 +297,7 @@ public class ContentMonitor extends BaseItem
     /**
      * Resets the monitor.
      */
-    public void clear()
+    public void reset()
     {
         setStatus(MonitorStatus.RESUMING);
         setUpdatedDate(Instant.now());
@@ -645,6 +650,79 @@ public class ContentMonitor extends BaseItem
     public void setRetry(int retry)
     {
         this.retry = retry;
+    }
+
+    /**
+     * Returns the date the monitor was last subscribed.
+     */
+    public Instant getSubscribedDate()
+    {
+        return subscribedDate;
+    }
+
+    /**
+     * Returns the date the monitor was last subscribed.
+     */
+    public long getSubscribedDateMillis()
+    {
+        return getSubscribedDate() != null ? getSubscribedDate().toEpochMilli() : 0L;
+    }
+
+    /**
+     * Returns the date the monitor was last subscribed.
+     */
+    public String getSubscribedDateAsString(String pattern)
+    {
+        return TimeUtils.toStringUTC(subscribedDate, pattern);
+    }
+
+    /**
+     * Returns the date the monitor was last subscribed.
+     */
+    public String getSubscribedDateAsString(String pattern, String timezone)
+    {
+        return TimeUtils.toString(subscribedDate, pattern, timezone);
+    }
+
+    /**
+     * Returns the date the monitor was last subscribed.
+     */
+    public String getSubscribedDateAsString()
+    {
+        return getSubscribedDateAsString(Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Sets the date the monitor was last subscribed.
+     */
+    public void setSubscribedDate(Instant subscribedDate)
+    {
+        this.subscribedDate = subscribedDate;
+    }
+
+    /**
+     * Sets the date the monitor was last subscribed.
+     */
+    public void setSubscribedDateMillis(long millis)
+    {
+        if(millis > 0L)
+            this.subscribedDate = Instant.ofEpochMilli(millis);
+    }
+
+    /**
+     * Sets the date the monitor item was last subscribed.
+     */
+    public void setSubscribedDateAsString(String str, String pattern) throws DateTimeParseException
+    {
+        setSubscribedDate(TimeUtils.toInstantUTC(str, pattern));
+    }
+
+    /**
+     * Sets the date the monitor was last subscribed.
+     */
+    public void setSubscribedDateAsString(String str) throws DateTimeParseException
+    {
+        setSubscribedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
     }
 
     /**
