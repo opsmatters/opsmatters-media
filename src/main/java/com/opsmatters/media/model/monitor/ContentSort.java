@@ -25,6 +25,7 @@ public enum ContentSort
 {
     ASCENDING("Ascending"),
     DESCENDING("Descending"),
+    ALPHABETICAL("Alphabetical"),
     NONE("None");
 
     private String value;

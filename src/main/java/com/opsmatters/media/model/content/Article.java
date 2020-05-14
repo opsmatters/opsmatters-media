@@ -29,6 +29,7 @@ public abstract class Article extends ContentItem
 {
     private ArticleSummary details;
 
+    private String revisedTitle = "";
     private String tags = "";
     private String creatorEmail = "";
     private boolean promote = false;
@@ -50,6 +51,7 @@ public abstract class Article extends ContentItem
     {
         super.copyAttributes(obj);
 
+        setRevisedTitle(new String(obj.getRevisedTitle() != null ? obj.getRevisedTitle() : ""));
         setTags(new String(obj.getTags() != null ? obj.getTags() : ""));
         setCreatorEmail(new String(obj.getCreatorEmail() != null ? obj.getCreatorEmail() : ""));
         setPromoted(obj.isPromoted());
@@ -123,6 +125,30 @@ public abstract class Article extends ContentItem
     {
         super.setContentDetails(details);
         this.details = details;
+    }
+
+    /**
+     * Returns the content revised title.
+     */
+    public String getRevisedTitle()
+    {
+        return revisedTitle;
+    }
+
+    /**
+     * Sets the content revised title.
+     */
+    public void setRevisedTitle(String revisedTitle)
+    {
+        this.revisedTitle = revisedTitle;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the revised title has been set.
+     */
+    public boolean hasRevisedTitle()
+    {
+        return getRevisedTitle() != null && getRevisedTitle().length() > 0;
     }
 
     /**
