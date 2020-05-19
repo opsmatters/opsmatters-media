@@ -77,6 +77,15 @@ public class VideoConfiguration extends ContentConfiguration<VideoArticle>
     }
 
     /**
+     * Returns <CODE>true</CODE> if the deployed rows for this content type should be trimmed for performance.
+     */
+    @Override
+    public boolean trimDeployedContent()
+    {
+        return true;
+    }
+
+    /**
      * Returns the list of HTML fields that need to be escaped.
      */
     @Override

@@ -140,11 +140,25 @@ public class FormatUtils
                     String str = text.substring(0, pos).trim();
                     String rest = text.substring(pos+("<br>".length()));
 
-                    // Throw away the rest if it contains a link
-                    if(rest.indexOf("http") != -1 || rest.indexOf("www.") != -1)
+                    // Throw away the text if it contains a link
+                    if(str.indexOf("http") != -1 || str.indexOf("www.") != -1)
+                        text = rest;
+                    else if(rest.indexOf("http") != -1 || rest.indexOf("www.") != -1)
                         text = str;
                     else
                         text = text.replaceAll("<br>", ""); // Otherwise just remove breaks
+                }
+
+                // If the summary contains a list
+                pos = text.indexOf("<ul>");
+                if(pos == -1)
+                    pos = text.indexOf("<ol>");
+                if(pos != -1)
+                {
+                    text = text.substring(0, pos).trim();
+                    pos = text.lastIndexOf(". ");
+                    if(pos != -1)
+                        text = text.substring(0, pos+1).trim();
                 }
 
                 // If the summary contains a full stop
@@ -156,7 +170,9 @@ public class FormatUtils
 
                     // Throw away the rest if it contains a link
                     if(rest.indexOf("http") != -1 || rest.indexOf("www.") != -1)
+                    {
                         text = str;
+                    }
                 }
 
                 // Remove linefeeds
@@ -166,10 +182,9 @@ public class FormatUtils
                 if(debug)
                     logger.info(String.format("3: getFormattedSummary: text=%s", text));
 
-                if(text.indexOf("<ul>") != -1 || text.indexOf("<ol>") != -1
-                    || text.indexOf("http") != -1 || text.indexOf("www.") != -1)
+                if(text.indexOf("http") != -1 || text.indexOf("www.") != -1)
                 {
-                    // Skip paragraph if it contains a list or link
+                    // Skip paragraph if it contains a link
                     continue;
                 }
 
@@ -263,6 +278,9 @@ public class FormatUtils
         {
             // Wrap in a <p> tag
             ret = String.format("<p>%s</p>", ret);
+
+            // Replace special characters
+            ret = ret.replaceAll("→", "->");
 
             // Turn linefeeds into <br> tags
             ret = ret.replaceAll("\r\n?|\n", "<br>");
@@ -388,6 +406,8 @@ public class FormatUtils
             // Replace escaped brackets with brackets
             ret = ret.replaceAll("%28", "(");
             ret = ret.replaceAll("%29", ")");
+            ret = ret.replaceAll("%5B", "[");
+            ret = ret.replaceAll("%5D", "]");
 
             // Remove escaped hashes
             ret = ret.replaceAll("%23", "");

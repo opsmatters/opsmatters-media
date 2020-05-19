@@ -301,6 +301,14 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
     }
 
     /**
+     * Returns <CODE>true</CODE> if the deployed rows for this content type should be trimmed for performance.
+     */
+    public boolean trimDeployedContent()
+    {
+        return false;
+    }
+
+    /**
      * Extract the list of content items from the database and deploy using the given handler.
      */
     public List<C> deployContent(ContentDAO contentDAO, ContentHandler handler, 
@@ -325,7 +333,8 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
         // Process the CSV file
         String type = getType().tag();
         handler.setFilename(handler.getCsvFilename());
-        handler.trimFirstLines(maxItems);
+        if(maxItems > 0)
+            handler.trimFirstLines(maxItems);
         handler.convertLinesToAscii(getHtmlFields());
         handler.writeFile();
         handler.copyFileToHost(System.getProperty("opsmatters.files.stage.feeds."+type), "stage");

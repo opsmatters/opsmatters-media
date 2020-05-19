@@ -82,6 +82,15 @@ public class RoundupConfiguration extends ContentConfiguration<RoundupArticle>
     }
 
     /**
+     * Returns <CODE>true</CODE> if the deployed rows for this content type should be trimmed for performance.
+     */
+    @Override
+    public boolean trimDeployedContent()
+    {
+        return true;
+    }
+
+    /**
      * Returns the image prefix for this configuration.
      */
     public String getImagePrefix()

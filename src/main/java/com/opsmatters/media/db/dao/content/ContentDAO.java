@@ -68,6 +68,12 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
      * The query to use to get the count of content items from the table.
      */
     private static final String COUNT_SQL =  
+      "SELECT COUNT(*) FROM %s";
+
+    /**
+     * The query to use to get the count of content items from the table by organisation.
+     */
+    private static final String COUNT_BY_CODE_SQL =  
       "SELECT COUNT(*) FROM %s WHERE CODE=?";
 
     /**
@@ -311,7 +317,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
     /**
      * Returns the count of content items from the table.
      */
-    public int count(String code) throws SQLException
+    public int count() throws SQLException
     {
         if(!hasConnection())
             return -1;
@@ -320,9 +326,27 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
             countStmt = prepareStatement(getConnection(), String.format(COUNT_SQL, getTableName()));
         clearParameters(countStmt);
 
-        countStmt.setString(1, code);
         countStmt.setQueryTimeout(QUERY_TIMEOUT);
         ResultSet rs = countStmt.executeQuery();
+        rs.next();
+        return rs.getInt(1);
+    }
+
+    /**
+     * Returns the count of content items from the table by organisation.
+     */
+    public int count(String code) throws SQLException
+    {
+        if(!hasConnection())
+            return -1;
+
+        if(countByCodeStmt == null)
+            countByCodeStmt = prepareStatement(getConnection(), String.format(COUNT_BY_CODE_SQL, getTableName()));
+        clearParameters(countByCodeStmt);
+
+        countByCodeStmt.setString(1, code);
+        countByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
+        ResultSet rs = countByCodeStmt.executeQuery();
         rs.next();
         return rs.getInt(1);
     }
@@ -468,6 +492,8 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
         listByDateStmt = null;
         closeStatement(countStmt);
         countStmt = null;
+        closeStatement(countByCodeStmt);
+        countByCodeStmt = null;
         closeStatement(maxIdStmt);
         maxIdStmt = null;
         closeStatement(deleteStmt);
@@ -479,6 +505,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
     private PreparedStatement listByCodeStmt;
     private PreparedStatement listByDateStmt;
     private PreparedStatement countStmt;
+    private PreparedStatement countByCodeStmt;
     private PreparedStatement maxIdStmt;
     private PreparedStatement deleteStmt;
 }

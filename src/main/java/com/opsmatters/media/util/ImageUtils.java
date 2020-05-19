@@ -179,6 +179,16 @@ public class ImageUtils
     }
 
     /**
+     * Returns the image type for the given image, correcting for image type = 0.
+     * @param image The image bytes
+     * @throws IOException
+     */
+    private static int getImageType(BufferedImage image)
+    {
+        return image.getType() == 0 ? BufferedImage.TYPE_3BYTE_BGR : image.getType();
+    }
+
+    /**
      * Returns an image resized to a absolute width and height.
      * @param file The input image file
      * @param scaledWidth absolute width in pixels
@@ -194,7 +204,7 @@ public class ImageUtils
  
         // Create the output image
         BufferedImage outputImage = new BufferedImage(scaledWidth,
-            scaledHeight, inputImage.getType());
+            scaledHeight, getImageType(inputImage));
  
         // Scale the input image to the output image
         Graphics2D g2d = outputImage.createGraphics();
@@ -256,11 +266,17 @@ public class ImageUtils
     {
         // Remove the alpha channel when converting JPEGs otherwise
         //   this screws up the colours because JPEG doesn't have transparency
-        if(isJPEG(suffix))
+        if(isJPEG(suffix) && image != null && image.getColorModel().hasAlpha())
         {
             logger.info(String.format("Removing alpha from image of type %d: file=%s", 
                 image.getType(), file.getName()));
             image = removeImageAlpha(image);
+        }
+        else if(image.getType() == 0)
+        {
+            logger.info(String.format("Fixing image with zero type: file=%s", 
+                file.getName()));
+            image = fixImageType(image);
         }
 
         ImageIO.write(image, suffix, file);
@@ -271,7 +287,7 @@ public class ImageUtils
      * @param image The image bytes
      * @throws IOException
      */
-    public static BufferedImage removeImageAlpha(BufferedImage image)
+    private static BufferedImage removeImageAlpha(BufferedImage image)
     {
         BufferedImage ret = image;
         if(image != null && image.getColorModel().hasAlpha())
@@ -285,6 +301,23 @@ public class ImageUtils
             g2d.dispose();
 
             ret = convertedImage;
+        }
+
+        return ret;
+    }
+
+    /**
+     * Fix the given PNG image file with image type zero by setting the correct type.
+     * @param image The image bytes
+     * @throws IOException
+     */
+    private static BufferedImage fixImageType(BufferedImage image)
+    {
+        BufferedImage ret = image;
+        if(image != null)
+        {
+            ret = new BufferedImage(image.getWidth(),
+                image.getHeight(), getImageType(image));
         }
 
         return ret;

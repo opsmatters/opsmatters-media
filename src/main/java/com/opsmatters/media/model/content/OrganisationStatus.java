@@ -97,6 +97,7 @@ public enum OrganisationStatus
         ret.add(NEW);
         ret.add(ACTIVE);
         ret.add(DISABLED);
+        ret.add(DEFUNCT);
 
         return ret;
     }
