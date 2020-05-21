@@ -484,4 +484,17 @@ public class FormatUtils
 
         return ret.toString();
     }
+
+    /**
+     * Returns the given string formatted as a url using a base and relative path.
+     */
+    static public String generateUrl(String basePath, String str)
+    {
+        String url = str;
+        int pos = url.indexOf(":");
+        if(pos != -1)
+            url = url.substring(0, pos);
+        url = url.toLowerCase().replaceAll("[ ‘'’]", "-");
+        return getFormattedUrl(basePath, url, false);
+    }
 }

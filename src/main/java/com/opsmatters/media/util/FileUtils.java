@@ -61,7 +61,7 @@ public class FileUtils
     /**
      * The user agent to use with URLConnections to avoid 403 rejection errors
      */
-    private static final String USER_AGENT = "Mozilla/5.0";
+    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36";
 
     /**
      * The timeout for a HTTP connection
@@ -209,6 +209,7 @@ public class FileUtils
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestProperty("User-Agent", USER_AGENT);
                 conn.setConnectTimeout(CONNECT_TIMEOUT);
+                TrustAnyTrustManager.setTrustManager(conn);
 
                 int buffer = 4096;
                 BufferedInputStream bis = new BufferedInputStream(conn.getInputStream(), buffer);
@@ -540,6 +541,7 @@ public class FileUtils
                 httpConn.setRequestProperty("User-Agent", USER_AGENT);
                 httpConn.setRequestMethod("HEAD");
                 httpConn.setConnectTimeout(CONNECT_TIMEOUT);
+                TrustAnyTrustManager.setTrustManager(httpConn);
             }
 
             ret = conn.getContentLengthLong();

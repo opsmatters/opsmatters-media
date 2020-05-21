@@ -118,7 +118,7 @@ public class RoundupArticle extends Article
         setPublishedDateAsString(pubdate);
         setTitle(title);
         setSummary(summary);
-        setUrl(url);
+        setUrl(url, false);
         setTags(tags);
         setImage(image);
         setAuthor(author);
@@ -148,7 +148,7 @@ public class RoundupArticle extends Article
     {
         super.fromJson(obj);
 
-        setUrl(obj.optString(Fields.URL));
+        setUrl(obj.optString(Fields.URL), false);
         setImage(obj.optString(Fields.IMAGE));
         setImageSource(obj.optString(Fields.IMAGE_SOURCE));
         setAuthor(obj.optString(Fields.AUTHOR));
@@ -288,7 +288,7 @@ public class RoundupArticle extends Article
     public void setContentSummary(RoundupSummary obj)
     {
         super.setContentSummary(obj);
-        setUrl(new String(obj.getUrl()));
+        setUrl(new String(obj.getUrl()), false);
         setImageSource(new String(obj.getImageSource() != null ? obj.getImageSource() : ""));
         setImagePrefix(new String(obj.getImagePrefix() != null ? obj.getImagePrefix() : ""));
         setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
@@ -310,7 +310,15 @@ public class RoundupArticle extends Article
      */
     public void setUrl(String url)
     {
-        details.setUrl(url);
+        setUrl(url, false);
+    }
+
+    /**
+     * Sets the URL of the roundup.
+     */
+    public void setUrl(String url, boolean removeParameters)
+    {
+        details.setUrl(url, removeParameters);
     }
 
     /**

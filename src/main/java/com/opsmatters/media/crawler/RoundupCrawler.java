@@ -31,6 +31,7 @@ import com.opsmatters.media.config.content.ContentFields;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.FileUtils;
 import com.opsmatters.media.util.TimeUtils;
+import com.opsmatters.media.util.FormatUtils;
 
 /**
  * Class representing a crawler for roundup posts.
@@ -85,10 +86,14 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
             populateSummaryFields(root, fields, content, "teaser");
             if(fields.hasUrl())
             {
+                String url = null;
                 ContentField field = fields.getUrl();
-                String url = getAnchor(field, root, "teaser", field.removeParameters());
+                if(field.generate())
+                    url = FormatUtils.generateUrl(getBasePath(), getElement(field, root, "teaser"));
+                else
+                    url = getAnchor(field, root, "teaser", field.removeParameters());
                 if(url != null)
-                    content.setUrl(url);
+                    content.setUrl(url, field.removeParameters());
             }
         }
 
@@ -101,7 +106,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
     public RoundupDetails getRoundup(String url)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        return getRoundup(new RoundupSummary(url));
+        return getRoundup(new RoundupSummary(url, removeParameters()));
     }
 
     /**

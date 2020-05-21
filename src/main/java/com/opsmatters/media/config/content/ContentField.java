@@ -42,6 +42,7 @@ public class ContentField implements java.io.Serializable
     public static final String MATCH = "match";
     public static final String STOP_EXPR = "stop-expr";
     public static final String REMOVE_PARAMETERS = "remove-parameters";
+    public static final String GENERATE = "generate";
 
     private String name = "";
     private ContentFieldSource source = ContentFieldSource.PAGE;
@@ -59,6 +60,7 @@ public class ContentField implements java.io.Serializable
     private String stopExpr = "";
     private Pattern exprPattern, stopExprPattern;
     private boolean removeParameters = true;
+    private boolean generate = false;
 
     /**
      * Default constructor.
@@ -465,6 +467,22 @@ public class ContentField implements java.io.Serializable
     }
 
     /**
+     * Returns <CODE>true</CODE> if the field should be generated.
+     */
+    public boolean generate()
+    {
+        return generate;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the field should be generated.
+     */
+    public void setGenerate(boolean generate)
+    {
+        this.generate = generate;
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     public void parse(Map<String, Object> map)
@@ -497,5 +515,7 @@ public class ContentField implements java.io.Serializable
             setStopExpr((String)map.get(STOP_EXPR));
         if(map.containsKey(REMOVE_PARAMETERS))
             setRemoveParameters((Boolean)map.get(REMOVE_PARAMETERS));
+        if(map.containsKey(GENERATE))
+            setGenerate((Boolean)map.get(GENERATE));
     }
 }

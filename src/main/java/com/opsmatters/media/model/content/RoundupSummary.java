@@ -36,12 +36,9 @@ public class RoundupSummary extends ArticleSummary
     {
     }
 
-    /**
-     * Constructor that takes a url.
-     */
-    public RoundupSummary(String url)
+    public RoundupSummary(String url, boolean removeParameters)
     {
-        setUrl(url);
+        setUrl(url, removeParameters);
     }
 
     /**
@@ -53,7 +50,7 @@ public class RoundupSummary extends ArticleSummary
 
         if(obj != null)
         {
-            setUrl(obj.getUrl());
+            setUrl(obj.getUrl(), false);
             setImageSource(obj.getImageSource());
             setImagePrefix(obj.getImagePrefix());
         }
@@ -77,11 +74,11 @@ public class RoundupSummary extends ArticleSummary
     }
 
     /**
-     * Sets the roundup url.
+     * Sets the resource url.
      */
-    public void setUrl(String url)
+    public void setUrl(String url, boolean removeParameters)
     {
-        setUrl("", url, true);
+        setUrl("", url, removeParameters);
     }
 
     /**
