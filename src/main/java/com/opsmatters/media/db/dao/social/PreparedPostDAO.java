@@ -41,7 +41,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
      * The query to use to select a post from the PREPARED_POSTS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, DRAFT_ID, ORGANISATION, "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, DRAFT_ID, CODE, "
       + "TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, ERROR_CODE, ERROR_MESSAGE, CREATED_BY "
       + "FROM PREPARED_POSTS WHERE ID=?";
 
@@ -50,7 +50,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO PREPARED_POSTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, DRAFT_ID, ORGANISATION, "
+      + "( ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, DRAFT_ID, CODE, "
       + "TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, CREATED_BY )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
@@ -59,7 +59,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
      * The query to use to update a post in the PREPARED_POSTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE PREPARED_POSTS SET UPDATED_DATE=?, SCHEDULED_DATE=?, ORGANISATION=?, "
+      "UPDATE PREPARED_POSTS SET UPDATED_DATE=?, SCHEDULED_DATE=?, CODE=?, "
       + "TITLE=?, MESSAGE=?, STATUS=?, EXTERNAL_ID=?, ERROR_CODE=?, ERROR_MESSAGE=? "
       + "WHERE ID=?";
 
@@ -67,7 +67,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
      * The query to use to select the posts from the PREPARED_POSTS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, DRAFT_ID, ORGANISATION, "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, DRAFT_ID, CODE, "
       + "TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, ERROR_CODE, ERROR_MESSAGE, CREATED_BY "
       + "FROM PREPARED_POSTS WHERE CREATED_DATE >= (NOW() + INTERVAL -3 DAY) ORDER BY CREATED_DATE";
 
@@ -75,7 +75,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
      * The query to use to select the posts from the PREPARED_POSTS table.
      */
     private static final String LIST_BY_STATUS_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, DRAFT_ID, ORGANISATION, "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, DRAFT_ID, CODE, "
       + "TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, ERROR_CODE, ERROR_MESSAGE, CREATED_BY "
       + "FROM PREPARED_POSTS WHERE STATUS=? AND CREATED_DATE >= (NOW() + INTERVAL -3 DAY) ORDER BY CREATED_DATE";
 
@@ -83,7 +83,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
      * The query to use to select the posts from the PREPARED_POSTS table.
      */
     private static final String LIST_BY_DRAFT_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, DRAFT_ID, ORGANISATION, "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, DRAFT_ID, CODE, "
       + "TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, ERROR_CODE, ERROR_MESSAGE, CREATED_BY "
       + "FROM PREPARED_POSTS WHERE DRAFT_ID=?";
 
@@ -119,7 +119,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
         table.addColumn("SCHEDULED_DATE", Types.TIMESTAMP, false);
         table.addColumn("TYPE", Types.VARCHAR, 15, true);
         table.addColumn("DRAFT_ID", Types.VARCHAR, 36, true);
-        table.addColumn("ORGANISATION", Types.VARCHAR, 5, false);
+        table.addColumn("CODE", Types.VARCHAR, 5, false);
         table.addColumn("TITLE", Types.VARCHAR, 128, false);
         table.addColumn("MESSAGE", Types.VARCHAR, 512, true);
         table.addColumn("CHANNEL", Types.VARCHAR, 15, true);

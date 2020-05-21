@@ -21,9 +21,7 @@ import java.util.Iterator;
 import java.time.Instant;
 import org.json.JSONObject;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.ContentItem;
 
 /**
  * Class representing a social media post template.

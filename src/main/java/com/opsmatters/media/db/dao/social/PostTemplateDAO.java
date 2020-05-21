@@ -42,7 +42,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
      * The query to use to select a post template from the POST_TEMPLATES table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, ORGANISATION, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY "
       + "FROM POST_TEMPLATES WHERE ID=?";
 
     /**
@@ -50,7 +50,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO POST_TEMPLATES"
-      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, ORGANISATION, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
@@ -58,21 +58,21 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
      * The query to use to update a post template in the POST_TEMPLATES table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE POST_TEMPLATES SET UPDATED_DATE=?, NAME=?, MESSAGE=?, TYPE=?, ORGANISATION=?, CONTENT_TYPE=?, IS_DEFAULT=?, SHORTEN_URL=?, PROPERTIES=? "
+      "UPDATE POST_TEMPLATES SET UPDATED_DATE=?, NAME=?, MESSAGE=?, TYPE=?, CODE=?, CONTENT_TYPE=?, IS_DEFAULT=?, SHORTEN_URL=?, PROPERTIES=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the post templates from the POST_TEMPLATES table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, ORGANISATION, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY "
       + "FROM POST_TEMPLATES";
 
     /**
      * The query to use to select the post templates from the POST_TEMPLATES table.
      */
     private static final String LIST_BY_TYPE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, ORGANISATION, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY "
       + "FROM POST_TEMPLATES WHERE TYPE=? AND CONTENT_TYPE=?";
 
     /**
@@ -107,7 +107,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
         table.addColumn("NAME", Types.VARCHAR, 128, true);
         table.addColumn("MESSAGE", Types.VARCHAR, 512, true);
         table.addColumn("TYPE", Types.VARCHAR, 15, true);
-        table.addColumn("ORGANISATION", Types.VARCHAR, 5, false);
+        table.addColumn("CODE", Types.VARCHAR, 5, false);
         table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, false);
         table.addColumn("IS_DEFAULT", Types.BOOLEAN, true);
         table.addColumn("SHORTEN_URL", Types.BOOLEAN, true);
