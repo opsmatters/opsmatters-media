@@ -30,12 +30,14 @@ public class LoadingConfiguration extends YamlConfiguration
     public static final String INTERVAL = "interval";
     public static final String MAX_WAIT = "max-wait";
     public static final String REMOVE_PARAMETERS = "remove-parameters";
+    public static final String ANTI_CACHE = "anti-cache";
 
     private long wait = 0L;
     private String selector = "";
     private long interval = 0L;
     private long maxWait = 0L;
     private boolean removeParameters = true;
+    private boolean antiCache = false;
 
     /**
      * Default constructor.
@@ -67,6 +69,7 @@ public class LoadingConfiguration extends YamlConfiguration
             setWait(obj.getWait());
             setMaxWait(obj.getMaxWait());
             setRemoveParameters(obj.removeParameters());
+            setAntiCache(obj.isAntiCache());
         }
     }
 
@@ -151,6 +154,22 @@ public class LoadingConfiguration extends YamlConfiguration
     }
 
     /**
+     * Returns <CODE>true</CODE> if a timestamp parameter should be appended to the URL to prevent caching.
+     */
+    public boolean isAntiCache()
+    {
+        return antiCache;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if a timestamp parameter should be appended to the URL to prevent caching.
+     */
+    public void setAntiCache(boolean antiCache)
+    {
+        this.antiCache = antiCache;
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     @Override
@@ -166,5 +185,7 @@ public class LoadingConfiguration extends YamlConfiguration
             setMaxWait((Integer)map.get(MAX_WAIT));
         if(map.containsKey(REMOVE_PARAMETERS))
             setRemoveParameters((Boolean)map.get(REMOVE_PARAMETERS));
+        if(map.containsKey(ANTI_CACHE))
+            setAntiCache((Boolean)map.get(ANTI_CACHE));
     }
 }

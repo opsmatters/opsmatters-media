@@ -228,11 +228,15 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     /**
      * Loads the given page.
      */
-    protected void loadPage(String url) throws IOException
+    protected void loadPage(String url, LoadingConfiguration loading) throws IOException
     {
+        if(loading != null && loading.isAntiCache())
+            url = FormatUtils.addAntiCacheParameter(url);
+        if(debug())
+            logger.info("Loading page: "+url);
         driver.get(url);
         if(debug())
-            logger.info("Loading page: "+driver.getTitle());
+            logger.info("Loaded page: "+driver.getTitle());
     }
 
     /**
@@ -244,7 +248,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     {
         long now = System.currentTimeMillis();
         configureImplicitWait(getTeaserLoading());
-        loadPage(getUrl());
+        loadPage(getUrl(), getTeaserLoading());
         configureExplicitWait(getTeaserLoading());
 
         // Click a "Load More" button if configured

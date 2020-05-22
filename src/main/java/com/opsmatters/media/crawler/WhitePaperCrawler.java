@@ -105,7 +105,7 @@ public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
         PublicationDetails content = new PublicationDetails(summary);
 
         configureImplicitWait(getContentLoading());
-        loadPage(content.getUrl());
+        loadPage(content.getUrl(), getContentLoading());
         configureExplicitWait(getContentLoading());
 
         if(!fields.hasRoot())

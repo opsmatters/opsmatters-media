@@ -289,7 +289,7 @@ public class FormatUtils
             ret = ret.replaceAll("<br>(-|\\*)+<br>", "<br><br>");
 
             // Turn "<br>-", "<br>--", "<br>*", "<br>**", "<br>•" into <li> tags for <ul> list
-            ret = ret.replaceAll("(<br>)+( )*(-|\\*|\\u2022)+( )*", "<li> ");
+            ret = ret.replaceAll("(<br>)+( )*(-|\\*|\\u2022|\\u25cf)+( )*", "<li> ");
 
             // Add a linefeed to <li> tags to improve readability
             ret = ret.replaceAll("<li>", "\n<li>");
@@ -409,8 +409,9 @@ public class FormatUtils
             ret = ret.replaceAll("%5B", "[");
             ret = ret.replaceAll("%5D", "]");
 
-            // Remove escaped hashes
+            // Remove escaped hashes, pipe
             ret = ret.replaceAll("%23", "");
+            ret = ret.replaceAll("%7C", "");
 
             // Remove quotes etc
             ret = ret.replaceAll("'|‘|’|‚|‛|“|”|„|′|″", "");
@@ -496,5 +497,16 @@ public class FormatUtils
             url = url.substring(0, pos);
         url = url.toLowerCase().replaceAll("[ ‘'’]", "-");
         return getFormattedUrl(basePath, url, false);
+    }
+
+    /**
+     * Appends a timestamp parameter to the given URL to prevent caching.
+     */
+    static public String addAntiCacheParameter(String url)
+    {
+        return new StringBuilder(url)
+            .append(url.indexOf("?") == -1 ? "?" : "&")
+            .append("ts=").append(System.currentTimeMillis())
+            .toString();
     }
 }

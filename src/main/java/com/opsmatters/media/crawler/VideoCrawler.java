@@ -141,10 +141,13 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
      */
     public VideoDetails getVideo(String videoId) throws IOException
     {
+        JSONObject video = client.getVideo(videoId);
+
+        if(video == null)
+            return null;
+
         ContentFields fields = getContentFields();
         VideoDetails content = new VideoDetails(videoId);
-
-        JSONObject video = client.getVideo(videoId);
         populateSummaryFields(video, fields, content, "content");
 
         content.setDuration(video.getInt(Fields.DURATION));

@@ -106,7 +106,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
         EventDetails content = new EventDetails(summary);
 
         configureImplicitWait(getContentLoading());
-        loadPage(content.getUrl());
+        loadPage(content.getUrl(), getContentLoading());
         configureExplicitWait(getContentLoading());
 
         if(!fields.hasRoot())

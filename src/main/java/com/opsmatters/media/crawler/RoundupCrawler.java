@@ -119,7 +119,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
         RoundupDetails content = new RoundupDetails(summary);
 
         configureImplicitWait(getContentLoading());
-        loadPage(content.getUrl());
+        loadPage(content.getUrl(), getContentLoading());
         configureExplicitWait(getContentLoading());
 
         // Trace to see the roundup page
