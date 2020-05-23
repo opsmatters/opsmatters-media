@@ -423,6 +423,14 @@ public class VideoArticle extends Article
     }
 
     /**
+     * Returns <CODE>true</CODE> if the channel ID has been set.
+     */
+    public boolean hasChannelId()
+    {
+        return details.hasChannelId();
+    }
+
+    /**
      * Returns the title of the video channel.
      */
     public String getChannelTitle()
@@ -436,6 +444,14 @@ public class VideoArticle extends Article
     public void setChannelTitle(String channelTitle)
     {
         details.setChannelTitle(channelTitle);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the channel title has been set.
+     */
+    public boolean hasChannelTitle()
+    {
+        return details.hasChannelTitle();
     }
 
     /**
