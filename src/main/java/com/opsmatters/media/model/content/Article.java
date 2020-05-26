@@ -29,6 +29,7 @@ public abstract class Article extends ContentItem
 {
     private ArticleSummary details;
 
+    private String organisationTitle = "";
     private String revisedTitle = "";
     private String tags = "";
     private String creatorEmail = "";
@@ -51,6 +52,7 @@ public abstract class Article extends ContentItem
     {
         super.copyAttributes(obj);
 
+        setOrganisationTitle(new String(obj.getOrganisationTitle() != null ? obj.getOrganisationTitle() : ""));
         setRevisedTitle(new String(obj.getRevisedTitle() != null ? obj.getRevisedTitle() : ""));
         setTags(new String(obj.getTags() != null ? obj.getTags() : ""));
         setCreatorEmail(new String(obj.getCreatorEmail() != null ? obj.getCreatorEmail() : ""));
@@ -125,6 +127,30 @@ public abstract class Article extends ContentItem
     {
         super.setContentDetails(details);
         this.details = details;
+    }
+
+    /**
+     * Returns the organisation title.
+     */
+    public String getOrganisationTitle()
+    {
+        return organisationTitle;
+    }
+
+    /**
+     * Sets the organisation title.
+     */
+    public void setOrganisationTitle(String organisationTitle)
+    {
+        this.organisationTitle = organisationTitle;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the organisation title has been set.
+     */
+    public boolean hasOrganisationTitle()
+    {
+        return organisationTitle != null && organisationTitle.length() > 0;
     }
 
     /**

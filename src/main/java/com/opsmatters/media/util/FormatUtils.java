@@ -288,8 +288,8 @@ public class FormatUtils
             // Turn rows of dashes or stars into paragraphs
             ret = ret.replaceAll("<br>(-|\\*)+<br>", "<br><br>");
 
-            // Turn "<br>-", "<br>--", "<br>*", "<br>**", "<br>•" into <li> tags for <ul> list
-            ret = ret.replaceAll("(<br>)+( )*(-|\\*|\\u2022|\\u25cf)+( )*", "<li> ");
+            // Turn "<br>-", "<br>--", "<br>*", "<br>**", "<br>•, <br>▶" into <li> tags for <ul> list
+            ret = ret.replaceAll("(<br>)+( )*(-|\\*|\\u2022|\\u25cf|\\u25b6)+( )*", "<li> ");
 
             // Add a linefeed to <li> tags to improve readability
             ret = ret.replaceAll("<li>", "\n<li>");

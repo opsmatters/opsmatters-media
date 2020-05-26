@@ -51,6 +51,7 @@ public class ContentMonitor extends BaseItem
     public static final String SUBSCRIBED_DATE = "subscribed-date";
 
     private String code = "";
+    private String title = "";
     private String name = "";
     private ContentType contentType;
     private Instant executedDate;
@@ -112,6 +113,7 @@ public class ContentMonitor extends BaseItem
         {
             super.copyAttributes(obj);
             setCode(obj.getCode());
+            setTitle(obj.getTitle());
             setName(obj.getName());
             setContentType(obj.getContentType());
             setStatus(obj.getStatus());
@@ -207,6 +209,30 @@ public class ContentMonitor extends BaseItem
     public boolean hasCode()
     {
         return code != null && code.length() > 0;
+    }
+
+    /**
+     * Returns the monitor organisation title.
+     */
+    public String getTitle()
+    {
+        return title;
+    }
+
+    /**
+     * Sets the monitor organisation title.
+     */
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the monitor organisation title has been set.
+     */
+    public boolean hasTitle()
+    {
+        return title != null && title.length() > 0;
     }
 
     /**

@@ -29,6 +29,7 @@ import com.opsmatters.media.model.content.Organisation;
 public class OrganisationSummary extends OwnedItem
 {
     private String code = "";
+    private String title = "";
     private OrganisationStatus status = OrganisationStatus.NEW;
     private Map<ContentType, ContentTypeSummary> content = new HashMap<ContentType, ContentTypeSummary>();
 
@@ -60,6 +61,7 @@ public class OrganisationSummary extends OwnedItem
         {
             super.copyAttributes(obj);
             setCode(obj.getCode());
+            setTitle(obj.getTitle());
             setStatus(obj.getStatus());
         }
     }
@@ -86,6 +88,30 @@ public class OrganisationSummary extends OwnedItem
     public boolean hasCode()
     {
         return code != null && code.length() > 0;
+    }
+
+    /**
+     * Returns the organisation title.
+     */
+    public String getTitle()
+    {
+        return title;
+    }
+
+    /**
+     * Sets the organisation title.
+     */
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the organisation title has been set.
+     */
+    public boolean hasTitle()
+    {
+        return title != null && title.length() > 0;
     }
 
     /**
