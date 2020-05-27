@@ -210,7 +210,7 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
             if(stopExprPattern != null && stopExprPattern.matcher(text).matches())
                 break;
 
-            if(body.length() > 0)
+            if(body.length() > 0 && text.length() > 0)
                 body.append("\n");
             body.append(text);
         }

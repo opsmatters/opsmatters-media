@@ -830,7 +830,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             if(stopExprPattern != null && stopExprPattern.matcher(text).matches())
                 break;
 
-            if(ret.length() > 0)
+            if(ret.length() > 0 && text.length() > 0)
                 ret.append("\n\n");
 
             if(tag.equals("ul") || tag.equals("ol"))

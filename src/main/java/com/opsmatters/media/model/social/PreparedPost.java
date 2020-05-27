@@ -37,6 +37,7 @@ public class PreparedPost extends SocialPost
 {
     private String draftId = "";
     private String code = "";
+    private String organisationTitle = "";
     private String title = "";
     private SocialChannel channel;
     private PostType type;
@@ -150,6 +151,7 @@ public class PreparedPost extends SocialPost
             super.copyAttributes(obj);
             setDraftId(obj.getDraftId());
             setCode(obj.getCode());
+            setOrganisationTitle(obj.getOrganisationTitle() != null ? obj.getOrganisationTitle() : "");
             setTitle(obj.getTitle());
             setChannel(obj.getChannel());
             setStatus(obj.getStatus());
@@ -206,6 +208,30 @@ public class PreparedPost extends SocialPost
     public boolean hasCode()
     {
         return code != null && code.length() > 0;
+    }
+
+    /**
+     * Returns the organisation title.
+     */
+    public String getOrganisationTitle()
+    {
+        return organisationTitle;
+    }
+
+    /**
+     * Sets the organisation title.
+     */
+    public void setOrganisationTitle(String organisationTitle)
+    {
+        this.organisationTitle = organisationTitle;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the organisation title has been set.
+     */
+    public boolean hasOrganisationTitle()
+    {
+        return organisationTitle != null && organisationTitle.length() > 0;
     }
 
     /**

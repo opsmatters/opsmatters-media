@@ -44,6 +44,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<aws.sdk.version>1.11.778</aws.sdk.version>
+		<twelvemonkeys.imageio.version>3.5</twelvemonkeys.imageio.version>
   </properties>
 
   <distributionManagement>
@@ -518,7 +519,19 @@ built.on=${TODAY}
 <dependency>
   <groupId>com.twelvemonkeys.imageio</groupId>
   <artifactId>imageio-batik</artifactId> <!-- svg -->
-  <version>3.4.2</version>
+  <version>${twelvemonkeys.imageio.version}</version>
+</dependency>
+
+<dependency>
+  <groupId>com.twelvemonkeys.imageio</groupId>
+  <artifactId>imageio-jpeg</artifactId>
+  <version>${twelvemonkeys.imageio.version}</version>
+</dependency>
+
+<dependency>
+  <groupId>com.twelvemonkeys.servlet</groupId>
+  <artifactId>servlet</artifactId>
+  <version>${twelvemonkeys.imageio.version}</version>
 </dependency>
 
 <dependency>

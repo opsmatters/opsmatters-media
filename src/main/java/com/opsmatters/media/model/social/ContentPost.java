@@ -34,6 +34,7 @@ public class ContentPost extends DraftPost
     public static final String CONTENT_ID = "content-id";
 
     private String code = "";
+    private String organisationTitle = "";
     private ContentType contentType;
     private int contentId = -1;
 
@@ -117,6 +118,7 @@ public class ContentPost extends DraftPost
         {
             super.copyAttributes(obj);
             setCode(obj.getCode());
+            setOrganisationTitle(obj.getOrganisationTitle());
             setContentId(obj.getContentId());
             setContentType(obj.getContentType());
         }
@@ -179,6 +181,30 @@ public class ContentPost extends DraftPost
     public boolean hasCode()
     {
         return code != null && code.length() > 0;
+    }
+
+    /**
+     * Returns the organisation title.
+     */
+    public String getOrganisationTitle()
+    {
+        return organisationTitle;
+    }
+
+    /**
+     * Sets the organisation title.
+     */
+    public void setOrganisationTitle(String organisationTitle)
+    {
+        this.organisationTitle = organisationTitle;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the organisation title has been set.
+     */
+    public boolean hasOrganisationTitle()
+    {
+        return organisationTitle != null && organisationTitle.length() > 0;
     }
 
     /**

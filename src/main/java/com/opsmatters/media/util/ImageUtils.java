@@ -109,22 +109,35 @@ public class ImageUtils
         Iterator<ImageReader> readers = ImageIO.getImageReaders(stream);
         if(!readers.hasNext())
             throw new IllegalArgumentException("image reader null!");
-        ImageReader reader = readers.next();
 
-        try
+        // Try all the readers for the format
+        IOException exception = null;
+        while(readers.hasNext())
         {
-            reader.setInput(stream, true, true);
-            ImageReadParam param = reader.getDefaultReadParam();
-            if(reader.getFormatName().equals(CommonFiles.SVG_EXT))
-                param.setSourceRegion(getSvgBounds(file));
-            ret = reader.read(0, param);
-        }
-        finally
-        {
-            reader.dispose();
-            stream.close();
+            ImageReader reader = readers.next();
+            try
+            {
+                reader.setInput(stream, true, true);
+                ImageReadParam param = reader.getDefaultReadParam();
+                if(reader.getFormatName().equals(CommonFiles.SVG_EXT))
+                    param.setSourceRegion(getSvgBounds(file));
+                ret = reader.read(0, param);
+                exception = null;
+                break;
+            }
+            catch(IOException e)
+            {
+                exception = e;
+            }
+            finally
+            {
+                reader.dispose();
+            }
         }
 
+        stream.close();
+        if(exception != null)
+            throw exception;
         return ret;
     }
 
