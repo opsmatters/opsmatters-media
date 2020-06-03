@@ -792,6 +792,7 @@ public class ContentMonitor extends BaseItem
             .addTable(new String[][]
             {
                 {"ID", getGuid()},
+                {"Organisation", getOrganisationTitle()},
                 {"Status", getStatus().name()},
                 {"Updated", getUpdatedDateAsString(Formats.CONTENT_DATE_FORMAT)},
             });

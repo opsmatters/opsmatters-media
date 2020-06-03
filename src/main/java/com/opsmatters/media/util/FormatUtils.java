@@ -133,24 +133,56 @@ public class FormatUtils
                 if(debug)
                     logger.info(String.format("2: getFormattedSummary: text=%s carryover=%s", text, carryover));
 
-                // If the summary contains a break
-                int pos = text.lastIndexOf("<br>");
-                if(pos != -1)
+                // If the summary contains one or more breaks
+                StringBuilder buff = new StringBuilder();
+                String[] segments = text.split("<br>");
+                for(String segment : segments)
                 {
-                    String str = text.substring(0, pos).trim();
-                    String rest = text.substring(pos+("<br>".length()));
+                    segment = segment.trim();
 
-                    // Throw away the text if it contains a link
-                    if(str.indexOf("http") != -1 || str.indexOf("www.") != -1)
-                        text = rest;
-                    else if(rest.indexOf("http") != -1 || rest.indexOf("www.") != -1)
-                        text = str;
-                    else
-                        text = text.replaceAll("<br>", ""); // Otherwise just remove breaks
+                    // If the segment contains a link
+                    if(segment.indexOf("http") != -1 || segment.indexOf("www.") != -1)
+                    {
+                        // If the segment contains a full stop
+                        int pos = segment.lastIndexOf(". ");
+                        if(pos != -1)
+                        {
+                            String str = segment.substring(0, pos+1).trim();
+                            String rest = segment.substring(pos+2);
+
+                            if(buff.length() > 0 && buff.charAt(buff.length()-1) != ' ')
+                                buff.append(" ");
+
+                            // Throw away the text if it contains a link
+                            if(str.indexOf("http") != -1 || str.indexOf("www.") != -1)
+                                buff.append(rest);
+                            else if(rest.indexOf("http") != -1 || rest.indexOf("www.") != -1)
+                                buff.append(str);
+                        }
+                    }
+                    else if(segment.endsWith(":")) // Usually indicates a list follows
+                    {
+                        int pos = segment.lastIndexOf(". ");
+                        if(pos != -1)
+                        {
+                            segment = segment.substring(0, pos+1).trim();
+                            if(buff.length() > 0 && buff.charAt(buff.length()-1) != ' ')
+                                buff.append(" ");
+                            buff.append(segment);
+                        }
+                    }
+                    else if(!segment.startsWith("#")) // Ignore hashtags
+                    {
+                        if(buff.length() > 0 && buff.charAt(buff.length()-1) != ' ')
+                            buff.append(" ");
+                        buff.append(segment);
+                    }
                 }
 
+                text = buff.toString();
+
                 // If the summary contains a list
-                pos = text.indexOf("<ul>");
+                int pos = text.indexOf("<ul>");
                 if(pos == -1)
                     pos = text.indexOf("<ol>");
                 if(pos != -1)
@@ -159,20 +191,6 @@ public class FormatUtils
                     pos = text.lastIndexOf(". ");
                     if(pos != -1)
                         text = text.substring(0, pos+1).trim();
-                }
-
-                // If the summary contains a full stop
-                pos = text.lastIndexOf(". ");
-                if(pos != -1)
-                {
-                    String str = text.substring(0, pos+1).trim();
-                    String rest = text.substring(pos+2);
-
-                    // Throw away the rest if it contains a link
-                    if(rest.indexOf("http") != -1 || rest.indexOf("www.") != -1)
-                    {
-                        text = str;
-                    }
                 }
 
                 // Remove linefeeds
@@ -492,9 +510,19 @@ public class FormatUtils
     static public String generateUrl(String basePath, String str)
     {
         String url = str;
-        int pos = url.indexOf(":");
+
+        // Look for an illegal character to truncate on
+        int pos = -1;
+        for(int i = 0; i < url.length() && pos == -1; i++)
+        {
+            char c = url.charAt(i);
+            if(c == ':' || c == ',')
+                pos = i;
+        }
+
         if(pos != -1)
             url = url.substring(0, pos);
+
         url = url.toLowerCase().replaceAll("[ ‘'’]", "-");
         return getFormattedUrl(basePath, url, false);
     }

@@ -17,6 +17,7 @@ package com.opsmatters.media.model.content;
 
 import java.util.List;
 import org.json.JSONObject;
+import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.util.StringUtils;
 
@@ -59,7 +60,7 @@ public abstract class Resource extends ContentItem
     {
         super.fromJson(obj);
 
-        setDescription(obj.optString(Fields.DESCRIPTION));
+        setDescription(EmojiParser.parseToUnicode(obj.optString(Fields.DESCRIPTION)));
         setUrl(obj.optString(Fields.URL));
         setFeatures(obj.optString(Fields.FEATURES));
         setLinkText(obj.optString(Fields.LINK_TEXT));
@@ -73,7 +74,7 @@ public abstract class Resource extends ContentItem
     {
         JSONObject ret = super.toJson();
 
-        ret.putOpt(Fields.DESCRIPTION, getDescription());
+        ret.putOpt(Fields.DESCRIPTION, EmojiParser.parseToAliases(getDescription()));
         ret.putOpt(Fields.URL, getUrl());
         ret.putOpt(Fields.FEATURES, getFeatures());
         ret.putOpt(Fields.LINK_TEXT, getLinkText());
@@ -90,7 +91,7 @@ public abstract class Resource extends ContentItem
     {
         Fields ret = super.toFields();
 
-        ret.put(Fields.DESCRIPTION, getDescription());
+        ret.put(Fields.DESCRIPTION, EmojiParser.parseToHtmlDecimal(getDescription()));
         ret.put(Fields.URL, getUrl());
         ret.put(Fields.FEATURES, getFeatures());
         ret.put(Fields.LINK_TEXT, getLinkText());

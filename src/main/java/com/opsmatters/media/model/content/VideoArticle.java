@@ -17,6 +17,7 @@ package com.opsmatters.media.model.content;
 
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
+import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.config.content.VideoConfiguration;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.util.FormatUtils;
@@ -155,7 +156,7 @@ public class VideoArticle extends Article
     {
         super.fromJson(obj);
 
-        setDescription(obj.optString(Fields.DESCRIPTION));
+        setDescription(EmojiParser.parseToUnicode(obj.optString(Fields.DESCRIPTION)));
         setVideoId(obj.optString(Fields.VIDEO_ID));
         setVideoType(obj.optString(Fields.VIDEO_TYPE));
         setProvider(VideoProvider.fromCode(obj.optString(Fields.PROVIDER)));
@@ -174,7 +175,7 @@ public class VideoArticle extends Article
         JSONObject ret = super.toJson();
 
         if(getDescription() != null && getDescription().length() > 0)
-            ret.putOpt(Fields.DESCRIPTION, getDescription());
+            ret.putOpt(Fields.DESCRIPTION, EmojiParser.parseToAliases(getDescription()));
         ret.putOpt(Fields.VIDEO_ID, getVideoId());
         ret.putOpt(Fields.VIDEO_TYPE, getVideoType());
         ret.putOpt(Fields.PROVIDER, getProvider().code());
@@ -198,7 +199,7 @@ public class VideoArticle extends Article
 
         ret.put(Fields.VIDEO_ID, getVideoId());
         ret.put(Fields.VIDEO_URL, getVideoUrl());
-        ret.put(Fields.DESCRIPTION, getDescription());
+        ret.put(Fields.DESCRIPTION, EmojiParser.parseToHtmlDecimal(getDescription()));
         ret.put(Fields.CHANNEL_ID, getChannelId());
         ret.put(Fields.CHANNEL_URL, getChannelUrl());
         ret.put(Fields.CHANNEL_TITLE, getChannelTitle());

@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.By;
+import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.model.content.RoundupSummary;
 import com.opsmatters.media.model.content.RoundupDetails;
 import com.opsmatters.media.config.content.RoundupConfiguration;
@@ -202,7 +203,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
             ContentField field = fields.getTitle();
             String title = getElements(field, root, type, field.isMultiple(), field.getSeparator());
             if(title != null)
-                content.setTitle(title);
+                content.setTitle(EmojiParser.removeAllEmojis(title));
         }
 
         if(fields.hasPublishedDate())

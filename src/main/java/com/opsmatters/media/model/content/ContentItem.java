@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
+import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.util.Formats;
@@ -97,7 +98,7 @@ public abstract class ContentItem implements java.io.Serializable
         setUuid(obj.optString(Fields.UUID));
         setPublishedDateMillis(obj.optLong(Fields.PUBLISHED_DATE));
         setTitle(obj.optString(Fields.TITLE));
-        setSummary(obj.optString(Fields.SUMMARY));
+        setSummary(EmojiParser.parseToUnicode(obj.optString(Fields.SUMMARY)));
         setPublished(obj.optBoolean(Fields.PUBLISHED, false));
         setCreatedBy(obj.optString(Fields.CREATED_BY));
         setDeployed(obj.optBoolean(Fields.DEPLOYED));
@@ -117,7 +118,7 @@ public abstract class ContentItem implements java.io.Serializable
         ret.put(Fields.PUBLISHED_DATE, getPublishedDateMillis());
         ret.putOpt(Fields.TITLE, getTitle());
         if(getSummary() != null && getSummary().length() > 0)
-            ret.putOpt(Fields.SUMMARY, getSummary());
+            ret.putOpt(Fields.SUMMARY, EmojiParser.parseToAliases(getSummary()));
         ret.put(Fields.PUBLISHED, isPublished());
         ret.put(Fields.CREATED_BY, getCreatedBy());
         ret.put(Fields.DEPLOYED, isDeployed());
@@ -137,7 +138,7 @@ public abstract class ContentItem implements java.io.Serializable
         ret.put(Fields.UUID, getUuid());
         ret.put(Fields.PUBLISHED_DATE, getPublishedDateAsString());
         ret.put(Fields.TITLE, getTitle());
-        ret.put(Fields.SUMMARY, getSummary());
+        ret.put(Fields.SUMMARY, EmojiParser.parseToHtmlDecimal(getSummary()));
         ret.put(Fields.PUBLISHED, isPublished() ? "1" : "0");
         ret.put(Fields.CREATED_BY, getCreatedBy());
 

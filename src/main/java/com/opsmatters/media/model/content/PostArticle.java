@@ -17,6 +17,7 @@ package com.opsmatters.media.model.content;
 
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
+import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.config.content.PostConfiguration;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.util.TimeUtils;
@@ -161,7 +162,7 @@ public class PostArticle extends Article
     {
         super.fromJson(obj);
 
-        setDescription(obj.optString(Fields.DESCRIPTION));
+        setDescription(EmojiParser.parseToUnicode(obj.optString(Fields.DESCRIPTION)));
         setLink(obj.optString(Fields.LINK));
         setLinkText(obj.optString(Fields.LINK_TEXT));
         setUrlAlias(obj.optString(Fields.URL));
@@ -178,7 +179,7 @@ public class PostArticle extends Article
     {
         JSONObject ret = super.toJson();
 
-        ret.putOpt(Fields.DESCRIPTION, getDescription());
+        ret.putOpt(Fields.DESCRIPTION, EmojiParser.parseToAliases(getDescription()));
         ret.putOpt(Fields.LINK, getLink());
         ret.putOpt(Fields.LINK_TEXT, getLinkText());
         ret.putOpt(Fields.URL, getUrlAlias());
@@ -198,7 +199,7 @@ public class PostArticle extends Article
     {
         Fields ret = super.toFields();
 
-        ret.put(Fields.DESCRIPTION, getDescription());
+        ret.put(Fields.DESCRIPTION, EmojiParser.parseToHtmlDecimal(getDescription()));
         ret.put(Fields.AUTHOR, getAuthor());
         ret.put(Fields.AUTHOR_LINK, getAuthorLink());
         ret.put(Fields.LINK, getLink());
