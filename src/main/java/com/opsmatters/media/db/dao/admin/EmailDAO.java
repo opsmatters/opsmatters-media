@@ -108,7 +108,7 @@ public class EmailDAO extends AdminDAO<Email>
         table.addColumn("PROVIDER", Types.VARCHAR, 15, false);
         table.addColumn("MESSAGE_ID", Types.VARCHAR, 60, false);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
-        table.addColumn("TYPE", Types.VARCHAR, 5, true);
+        table.addColumn("TYPE", Types.VARCHAR, 10, true);
         table.addColumn("FORMAT", Types.VARCHAR, 5, true);
         table.setPrimaryKey("EMAILS_PK", new String[] {"ID"});
         table.addIndex("EMAILS_STATUS_IDX", new String[] {"STATUS"});

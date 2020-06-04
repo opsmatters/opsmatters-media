@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.apache.commons.text.StringSubstitutor;
+import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.PostTemplate;
@@ -284,7 +285,15 @@ public class SocialPostHandler
         StringBuilder builder = new StringBuilder();
         for(Token token : tokens)
             builder.append(markup ? token.getMarkup() : token.toString());
-        return new StringSubstitutor(properties).replace(builder.toString());
+
+        // Process any emojis in the message
+        String message = builder.toString();
+        if(markup)
+            message = EmojiParser.parseToHtmlDecimal(message);
+        else
+            message = EmojiParser.parseToUnicode(message);
+
+        return new StringSubstitutor(properties).replace(message);
     }
 
     /**
