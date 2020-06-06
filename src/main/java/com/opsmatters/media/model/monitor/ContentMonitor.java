@@ -326,9 +326,9 @@ public class ContentMonitor extends BaseItem
     }
 
     /**
-     * Resets the monitor.
+     * Restarts the monitor eg. after a suspension.
      */
-    public void reset()
+    public void restart()
     {
         setStatus(MonitorStatus.RESUMING);
         setUpdatedDate(Instant.now());
