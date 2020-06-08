@@ -165,20 +165,28 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
             {
                 try
                 {
-                    // Try the 1st date pattern
-                    starttm = TimeUtils.toMillisTime(start, field.getDatePattern());
+                    try
+                    {
+                        // Try the 1st date pattern
+                        starttm = TimeUtils.toMillisTime(start, field.getDatePattern());
+                    }
+                    catch(DateTimeParseException e)
+                    {
+                        // If the 1st date pattern fails, try the 2nd format
+                        if(field.hasDatePattern2())
+                            starttm = TimeUtils.toMillisTime(start, field.getDatePattern2());
+                        else
+                            throw e;
+                    }
+
+                    if(debug())
+                        logger.info("Found start time: "+starttm);
                 }
                 catch(DateTimeParseException e)
                 {
-                    // If the 1st date pattern fails, try the 2nd format
-                    if(field.hasDatePattern2())
-                        starttm = TimeUtils.toMillisTime(start, field.getDatePattern2());
-                    else
-                        throw e;
+                    logger.severe(StringUtils.serialize(e));
+                    logger.warning("Unparseable start time: "+start);
                 }
-
-                if(debug())
-                    logger.info("Found start time: "+starttm);
             }
         }
 

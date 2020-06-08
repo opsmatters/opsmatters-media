@@ -16,6 +16,8 @@
 package com.opsmatters.media.config.content;
 
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 import com.opsmatters.media.config.YamlConfiguration;
 
 /**
@@ -31,6 +33,7 @@ public class LoadingConfiguration extends YamlConfiguration
     public static final String MAX_WAIT = "max-wait";
     public static final String REMOVE_PARAMETERS = "remove-parameters";
     public static final String ANTI_CACHE = "anti-cache";
+    public static final String KEYWORDS = "keywords";
 
     private long wait = 0L;
     private String selector = "";
@@ -38,6 +41,8 @@ public class LoadingConfiguration extends YamlConfiguration
     private long maxWait = 0L;
     private boolean removeParameters = true;
     private boolean antiCache = false;
+    private String keywords = "";
+    private List<String> keywordList;
 
     /**
      * Default constructor.
@@ -70,6 +75,7 @@ public class LoadingConfiguration extends YamlConfiguration
             setMaxWait(obj.getMaxWait());
             setRemoveParameters(obj.removeParameters());
             setAntiCache(obj.isAntiCache());
+            setKeywords(obj.getKeywords());
         }
     }
 
@@ -170,6 +176,53 @@ public class LoadingConfiguration extends YamlConfiguration
     }
 
     /**
+     * Returns the keywords to filter on when page loading.
+     */
+    public String getKeywords()
+    {
+        return keywords;
+    }
+
+    /**
+     * Returns the list of keywords to filter on when page loading.
+     */
+    public List<String> getKeywordList()
+    {
+        return keywordList;
+    }
+
+    /**
+     * Sets the keywords to filter on when page loading.
+     */
+    public void setKeywords(String keywords)
+    {
+        this.keywords = keywords;
+
+        // Parse the keywords
+        if(hasKeywords())
+        {
+            if(keywordList == null)
+                keywordList = new ArrayList<String>();
+            keywordList.clear();
+            String[] array = keywords.split(",");
+            for(String keyword : array)
+            {
+                String str = keyword.toLowerCase().trim();
+                if(str.length() > 0)
+                    keywordList.add(str);
+            }
+        }
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if there are keywords to filter on when page loading.
+     */
+    public boolean hasKeywords()
+    {
+        return keywords != null && keywords.length() > 0;
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     @Override
@@ -187,5 +240,7 @@ public class LoadingConfiguration extends YamlConfiguration
             setRemoveParameters((Boolean)map.get(REMOVE_PARAMETERS));
         if(map.containsKey(ANTI_CACHE))
             setAntiCache((Boolean)map.get(ANTI_CACHE));
+        if(map.containsKey(KEYWORDS))
+            setKeywords((String)map.get(KEYWORDS));
     }
 }

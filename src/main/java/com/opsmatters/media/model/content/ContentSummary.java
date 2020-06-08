@@ -16,6 +16,7 @@
 package com.opsmatters.media.model.content;
 
 import java.time.Instant;
+import java.util.List;
 import java.time.format.DateTimeParseException;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
@@ -100,6 +101,25 @@ public abstract class ContentSummary implements java.io.Serializable
     public void setValid(boolean valid)
     {
         this.valid = valid;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content item matches the given keywords.
+     */
+    public boolean matches(List<String> keywords)
+    {
+        boolean ret = false;
+        String search = getTitle().toLowerCase();
+        for(String keyword : keywords)
+        {
+            if(search.indexOf(keyword) != -1)
+            {
+                ret = true;
+                break;
+            }
+        }
+
+        return ret;
     }
 
     /**

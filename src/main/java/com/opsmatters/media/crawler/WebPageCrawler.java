@@ -352,8 +352,9 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     /**
      * Process all the configured teaser fields.
      */
-    public void processTeaserFields() throws IOException, DateTimeParseException
+    public int processTeaserFields(LoadingConfiguration loading) throws IOException, DateTimeParseException
     {
+        int ret = -1;
         if(getUrl().length() == 0)
             throw new IllegalArgumentException("Root empty for teasers");
 
@@ -367,6 +368,8 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             List<WebElement> results = driver.findElements(By.cssSelector(fields.getRoot()));
             if(debug())
                 logger.info("Found "+results.size()+" teasers for teasers: "+fields.getRoot());
+            ret = results.size();
+
             for(WebElement result : results)
             {
                 // Trace to see the teaser root node
@@ -376,6 +379,14 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                 T content = getContentSummary(result, fields);
                 if(content.isValid() && !map.containsKey(content.getUniqueId()))
                 {
+                    // Check that the teaser matches the configured keywords
+                    if(loading != null && loading.hasKeywords() && !content.matches(loading.getKeywordList()))
+                    {
+                        logger.info(String.format("Skipping article as it does not match keywords: %s (%s)",
+                            content.getTitle(), loading.getKeywords()));
+                        continue;
+                    }
+
                     addContent(content);
                     map.put(content.getUniqueId(), content.getUniqueId());
                 }
@@ -387,6 +398,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
 
         if(debug())
             logger.info("Found "+numContentItems()+" items");
+        return ret;
     }
 
     /**

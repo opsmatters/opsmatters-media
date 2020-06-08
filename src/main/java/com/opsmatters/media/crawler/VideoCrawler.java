@@ -26,6 +26,7 @@ import com.opsmatters.media.model.content.VideoSummary;
 import com.opsmatters.media.model.content.VideoDetails;
 import com.opsmatters.media.config.content.VideoConfiguration;
 import com.opsmatters.media.config.content.VideoChannelConfiguration;
+import com.opsmatters.media.config.content.LoadingConfiguration;
 import com.opsmatters.media.config.content.ContentField;
 import com.opsmatters.media.config.content.ContentFields;
 import com.opsmatters.media.config.content.Fields;
@@ -106,8 +107,9 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
     /**
      * Process all the configured teaser fields.
      */
-    public void processTeaserFields() throws IOException
+    public int processTeaserFields(LoadingConfiguration loading) throws IOException
     {
+        int ret = -1;
         initialised = true;
 
         // Process selections
@@ -118,11 +120,20 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
                 channel.getUserId(), getMaxResults());
             if(debug())
                 logger.info("Found "+results.size()+" teasers for channel: "+channel.getChannelId());
+            ret = results.size();
             for(JSONObject result : results)
             {
                 VideoSummary content = getContentSummary(result, fields);
                 if(content.isValid() && !map.containsKey(content.getUniqueId()))
                 {
+                    // Check that the teaser matches the configured keywords
+                    if(loading != null && loading.hasKeywords() && !content.matches(loading.getKeywordList()))
+                    {
+                        logger.info(String.format("Skipping article as it does not match keywords: %s (%s)",
+                            content.getTitle(), loading.getKeywords()));
+                        continue;
+                    }
+
                     addContent(content);
                     map.put(content.getUniqueId(), content.getUniqueId());
                 }
@@ -134,6 +145,7 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
 
         if(debug())
             logger.info("Found "+numContentItems()+" items");
+        return ret;
     }
 
     /**
