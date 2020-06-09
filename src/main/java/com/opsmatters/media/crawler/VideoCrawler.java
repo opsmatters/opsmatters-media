@@ -109,7 +109,7 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
      */
     public int processTeaserFields(LoadingConfiguration loading) throws IOException
     {
-        int ret = -1;
+        int ret = 0;
         initialised = true;
 
         // Process selections
@@ -120,7 +120,7 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
                 channel.getUserId(), getMaxResults());
             if(debug())
                 logger.info("Found "+results.size()+" teasers for channel: "+channel.getChannelId());
-            ret = results.size();
+            ret += results.size();
             for(JSONObject result : results)
             {
                 VideoSummary content = getContentSummary(result, fields);

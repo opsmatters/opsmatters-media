@@ -354,7 +354,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
      */
     public int processTeaserFields(LoadingConfiguration loading) throws IOException, DateTimeParseException
     {
-        int ret = -1;
+        int ret = 0;
         if(getUrl().length() == 0)
             throw new IllegalArgumentException("Root empty for teasers");
 
@@ -368,7 +368,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             List<WebElement> results = driver.findElements(By.cssSelector(fields.getRoot()));
             if(debug())
                 logger.info("Found "+results.size()+" teasers for teasers: "+fields.getRoot());
-            ret = results.size();
+            ret += results.size();
 
             for(WebElement result : results)
             {
