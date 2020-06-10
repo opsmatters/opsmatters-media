@@ -18,7 +18,7 @@ package com.opsmatters.media.model.social;
 import java.time.Instant;
 import org.json.JSONObject;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.model.content.Organisation;
+import com.opsmatters.media.model.content.OrganisationListing;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
 
@@ -46,56 +46,56 @@ public class ContentPost extends DraftPost
     }
 
     /**
-     * Constructor that takes an organisation.
+     * Constructor that takes an organisation listing.
      */
-    public ContentPost(Organisation organisation)
+    public ContentPost(OrganisationListing listing)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
-        setCode(organisation.getCode());
-        setTitle(organisation.getTitle());
-        setContentId(organisation.getId());
+        setCode(listing.getCode());
+        setTitle(listing.getTitle());
+        setContentId(listing.getId());
         setContentType(ContentType.ORGANISATION);
         setStatus(DraftStatus.NEW);
 
-        getProperties().put(PostTemplate.HANDLE, "@"+organisation.getTwitterUsername());
-        getProperties().put(PostTemplate.HASHTAG, organisation.getHashtag());
-        getProperties().put(PostTemplate.URL, organisation.getUrl(System.getProperty("opsmatters.site.prod")));
+        getProperties().put(PostTemplate.HANDLE, "@"+listing.getTwitterUsername());
+        getProperties().put(PostTemplate.HASHTAG, listing.getHashtag());
+        getProperties().put(PostTemplate.URL, listing.getUrl(System.getProperty("opsmatters.site.prod")));
     }
 
     /**
-     * Constructor that takes an organisation and a content item.
+     * Constructor that takes an organisation listing and a content item.
      */
-    public ContentPost(Organisation organisation, ContentItem content)
+    public ContentPost(OrganisationListing listing, ContentItem content)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
-        setCode(organisation.getCode());
+        setCode(listing.getCode());
         if(content.getType() != ContentType.ROUNDUP)
             setContentId(content.getId());
         setContentType(content.getType());
         setStatus(DraftStatus.NEW);
 
-        getProperties().put(PostTemplate.HANDLE, "@"+organisation.getTwitterUsername());
-        getProperties().put(PostTemplate.HASHTAG, organisation.getHashtag());
+        getProperties().put(PostTemplate.HANDLE, "@"+listing.getTwitterUsername());
+        getProperties().put(PostTemplate.HASHTAG, listing.getHashtag());
         if(content.getType() == ContentType.ROUNDUP)
-            getProperties().put(PostTemplate.URL, organisation.getUrl(System.getProperty("opsmatters.site.prod")));
+            getProperties().put(PostTemplate.URL, listing.getUrl(System.getProperty("opsmatters.site.prod")));
     }
 
     /**
      * Constructor that takes a library post template.
      */
-    public ContentPost(Organisation organisation, PostTemplate template)
+    public ContentPost(OrganisationListing listing, PostTemplate template)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setTemplateId(template.getId());
-        setCode(organisation.getCode());
+        setCode(listing.getCode());
         setContentType(template.getContentType());
         setStatus(DraftStatus.NEW);
 
-        getProperties().put(PostTemplate.HANDLE, "@"+organisation.getTwitterUsername());
-        getProperties().put(PostTemplate.HASHTAG, organisation.getHashtag());
+        getProperties().put(PostTemplate.HANDLE, "@"+listing.getTwitterUsername());
+        getProperties().put(PostTemplate.HASHTAG, listing.getHashtag());
         setTitle(template.getName());
         setHashtags(template.getHashtags());
         setUrl(template.getUrl());

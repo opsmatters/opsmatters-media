@@ -23,7 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 import java.sql.SQLException;
 import com.opsmatters.media.config.YamlConfiguration;
-import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.handler.ContentHandler;

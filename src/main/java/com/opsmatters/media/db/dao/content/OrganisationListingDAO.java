@@ -25,62 +25,62 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
-import com.opsmatters.media.model.content.Organisation;
+import com.opsmatters.media.model.content.OrganisationListing;
 
 /**
- * DAO that provides operations on the ORGANISATIONS table in the database.
+ * DAO that provides operations on the ORGANISATION_LISTINGS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrganisationDAO extends ContentDAO<Organisation>
+public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
 {
-    private static final Logger logger = Logger.getLogger(OrganisationDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(OrganisationListingDAO.class.getName());
 
     /**
-     * The query to use to select an organisation from the ORGANISATIONS table by UUID.
+     * The query to use to select an organisation listing from the ORGANISATION_LISTINGS table by UUID.
      */
     private static final String GET_BY_UUID_SQL =  
-      "SELECT ATTRIBUTES FROM ORGANISATIONS WHERE UUID=?";
+      "SELECT ATTRIBUTES FROM ORGANISATION_LISTINGS WHERE UUID=?";
 
     /**
-     * The query to use to select an organisation from the table by id.
+     * The query to use to select an organisation listing from the table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ATTRIBUTES FROM ORGANISATIONS WHERE ID=?";
+      "SELECT ATTRIBUTES FROM ORGANISATION_LISTINGS WHERE ID=?";
 
     /**
-     * The query to use to select all the organisations from the table.
+     * The query to use to select all the organisation listings from the table.
      */
     private static final String LIST_SQL =  
-      "SELECT ATTRIBUTES FROM ORGANISATIONS ORDER BY ID";
+      "SELECT ATTRIBUTES FROM ORGANISATION_LISTINGS ORDER BY ID";
 
     /**
-     * The query to use to select the matching organisations from the table.
+     * The query to use to select the matching organisation listings from the table.
      */
     private static final String LIST_LIKE_SQL =  
-      "SELECT ATTRIBUTES FROM ORGANISATIONS WHERE TITLE LIKE ? ORDER BY ID";
+      "SELECT ATTRIBUTES FROM ORGANISATION_LISTINGS WHERE TITLE LIKE ? ORDER BY ID";
 
     /**
-     * The query to use to get the count of organisations from the table.
+     * The query to use to get the count of organisation listings from the table.
      */
     private static final String COUNT_SQL =  
-      "SELECT COUNT(*) FROM ORGANISATIONS";
+      "SELECT COUNT(*) FROM ORGANISATION_LISTINGS";
 
     /**
-     * The query to use to insert an organisation into the ORGANISATIONS table.
+     * The query to use to insert an organisation listing into the ORGANISATION_LISTINGS table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO ORGANISATIONS"
+      "INSERT INTO ORGANISATION_LISTINGS"
       + "( ID, PUBLISHED_DATE, UUID, CODE, TITLE, SPONSOR, TABS, "
       + "PUBLISHED, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update an organisation in the ORGANISATIONS table.
+     * The query to use to update an organisation listing in the ORGANISATION_LISTINGS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE ORGANISATIONS SET PUBLISHED_DATE=?, UUID=?, CODE=?, TITLE=?, SPONSOR=?, TABS=?, "
+      "UPDATE ORGANISATION_LISTINGS SET PUBLISHED_DATE=?, UUID=?, CODE=?, TITLE=?, SPONSOR=?, TABS=?, "
       + "PUBLISHED=?, ATTRIBUTES=? "
       + "WHERE ID=?";
 
@@ -88,24 +88,24 @@ public class OrganisationDAO extends ContentDAO<Organisation>
      * The query to use to get the last ID from the table.
      */
     private static final String GET_MAX_ID_SQL =  
-      "SELECT MAX(ID) FROM ORGANISATIONS";
+      "SELECT MAX(ID) FROM ORGANISATION_LISTINGS";
 
     /**
-     * The query to use to delete an organisation from the table.
+     * The query to use to delete an organisation listing from the table.
      */
     private static final String DELETE_SQL =  
-      "DELETE FROM ORGANISATIONS WHERE ID=?";
+      "DELETE FROM ORGANISATION_LISTINGS WHERE ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public OrganisationDAO(ContentDAOFactory factory)
+    public OrganisationListingDAO(ContentDAOFactory factory)
     {
-        super(factory, "ORGANISATIONS");
+        super(factory, "ORGANISATION_LISTINGS");
     }
 
     /**
-     * Defines the columns and indices for the ORGANISATIONS table.
+     * Defines the columns and indices for the ORGANISATION_LISTINGS table.
      */
     @Override
     protected void defineTable()
@@ -120,27 +120,27 @@ public class OrganisationDAO extends ContentDAO<Organisation>
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
-        table.setPrimaryKey("ORGANISATIONS_PK", new String[] {"ID"});
-        table.addIndex("ORGANISATIONS_UUID_IDX", new String[] {"UUID"});
-        table.addIndex("ORGANISATIONS_TITLE_IDX", new String[] {"TITLE"});
+        table.setPrimaryKey("ORGANISATION_LISTINGS_PK", new String[] {"ID"});
+        table.addIndex("ORGANISATION_LISTINGS_UUID_IDX", new String[] {"UUID"});
+        table.addIndex("ORGANISATION_LISTINGS_TITLE_IDX", new String[] {"TITLE"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns an organisation from the ORGANISATIONS table by UUID.
+     * Returns an organisation listing from the ORGANISATION_LISTINGS table by UUID.
      */
     @Override
-    public Organisation getByUuid(String code, String uuid) throws SQLException
+    public OrganisationListing getByUuid(String code, String uuid) throws SQLException
     {
         return getByUuid(uuid);
     }
 
     /**
-     * Returns an organisation from the ORGANISATIONS table by UUID.
+     * Returns an organisation listing from the ORGANISATION_LISTINGS table by UUID.
      */
-    public Organisation getByUuid(String uuid) throws SQLException
+    public OrganisationListing getByUuid(String uuid) throws SQLException
     {
-        Organisation ret = null;
+        OrganisationListing ret = null;
 
         if(!hasConnection())
             return ret;
@@ -160,7 +160,7 @@ public class OrganisationDAO extends ContentDAO<Organisation>
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = new Organisation(attributes);
+                ret = new OrganisationListing(attributes);
             }
         }
         finally
@@ -181,20 +181,20 @@ public class OrganisationDAO extends ContentDAO<Organisation>
     }
 
     /**
-     * Returns an organisation from the table by id.
+     * Returns an organisation listing from the table by id.
      */
     @Override
-    public Organisation getById(String code, int id) throws SQLException
+    public OrganisationListing getById(String code, int id) throws SQLException
     {
         return getById(id);
     }
 
     /**
-     * Returns an organisation from the table by id.
+     * Returns an organisation listing from the table by id.
      */
-    public Organisation getById(int id) throws SQLException
+    public OrganisationListing getById(int id) throws SQLException
     {
-        Organisation ret = null;
+        OrganisationListing ret = null;
 
         if(!hasConnection())
             return ret;
@@ -214,7 +214,7 @@ public class OrganisationDAO extends ContentDAO<Organisation>
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = new Organisation(attributes);
+                ret = new OrganisationListing(attributes);
             }
         }
         finally
@@ -235,20 +235,20 @@ public class OrganisationDAO extends ContentDAO<Organisation>
     }
 
     /**
-     * Returns the organisations from the table.
+     * Returns the organisation listings from the table.
      */
     @Override
-    public List<Organisation> list(String code) throws SQLException
+    public List<OrganisationListing> list(String code) throws SQLException
     {
         return list();
     }
 
     /**
-     * Returns the organisations from the table.
+     * Returns the organisation listings from the table.
      */
-    public List<Organisation> list() throws SQLException
+    public List<OrganisationListing> list() throws SQLException
     {
-        List<Organisation> ret = null;
+        List<OrganisationListing> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -264,11 +264,11 @@ public class OrganisationDAO extends ContentDAO<Organisation>
         {
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
-            ret = new ArrayList<Organisation>();
+            ret = new ArrayList<OrganisationListing>();
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret.add(new Organisation(attributes));
+                ret.add(new OrganisationListing(attributes));
             }
         }
         finally
@@ -289,11 +289,11 @@ public class OrganisationDAO extends ContentDAO<Organisation>
     }
 
     /**
-     * Returns the matching organisations from the table.
+     * Returns the matching organisation listings from the table.
      */
-    public List<Organisation> listByName(String name) throws SQLException
+    public List<OrganisationListing> listByName(String name) throws SQLException
     {
-        List<Organisation> ret = null;
+        List<OrganisationListing> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -312,11 +312,11 @@ public class OrganisationDAO extends ContentDAO<Organisation>
             listLikeStmt.setString(1, name+"%");
             listLikeStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listLikeStmt.executeQuery();
-            ret = new ArrayList<Organisation>();
+            ret = new ArrayList<OrganisationListing>();
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret.add(new Organisation(attributes));
+                ret.add(new OrganisationListing(attributes));
             }
         }
         finally
@@ -337,7 +337,7 @@ public class OrganisationDAO extends ContentDAO<Organisation>
     }
 
     /**
-     * Returns the count of organisations from the table.
+     * Returns the count of organisation listings from the table.
      */
     @Override
     public int count(String code) throws SQLException
@@ -346,7 +346,7 @@ public class OrganisationDAO extends ContentDAO<Organisation>
     }
 
     /**
-     * Returns the count of organisations from the table.
+     * Returns the count of  listings from the table.
      */
     public int count() throws SQLException
     {
@@ -364,15 +364,15 @@ public class OrganisationDAO extends ContentDAO<Organisation>
     }
 
     /**
-     * Stores the given organisation in the ORGANISATIONS table.
+     * Stores the given organisation listing in the ORGANISATION_LISTINGS table.
      */
     @Override
-    public void add(Organisation organisation) throws SQLException
+    public void add(OrganisationListing listing) throws SQLException
     {
-        if(!hasConnection() || organisation == null)
+        if(!hasConnection() || listing == null)
             return;
 
-        if(!organisation.hasUniqueId())
+        if(!listing.hasUniqueId())
             throw new IllegalArgumentException("organisation uuid null");
 
         if(insertStmt == null)
@@ -383,23 +383,23 @@ public class OrganisationDAO extends ContentDAO<Organisation>
 
         try
         {
-            insertStmt.setInt(1, organisation.getId());
-            insertStmt.setTimestamp(2, new Timestamp(organisation.getPublishedDateMillis()), UTC);
-            insertStmt.setString(3, organisation.getUuid());
-            insertStmt.setString(4, organisation.getCode());
-            insertStmt.setString(5, organisation.getTitle());
-            insertStmt.setBoolean(6, organisation.isSponsor());
-            insertStmt.setString(7, organisation.getTabs().name());
-            insertStmt.setBoolean(8, organisation.isPublished());
-            insertStmt.setString(9, organisation.getCreatedBy());
-            String attributes = organisation.toJson().toString();
+            insertStmt.setInt(1, listing.getId());
+            insertStmt.setTimestamp(2, new Timestamp(listing.getPublishedDateMillis()), UTC);
+            insertStmt.setString(3, listing.getUuid());
+            insertStmt.setString(4, listing.getCode());
+            insertStmt.setString(5, listing.getTitle());
+            insertStmt.setBoolean(6, listing.isSponsor());
+            insertStmt.setString(7, listing.getTabs().name());
+            insertStmt.setBoolean(8, listing.isPublished());
+            insertStmt.setString(9, listing.getCreatedBy());
+            String attributes = listing.toJson().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(10, reader, attributes.length());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s, code=%s)", 
-                organisation.getType().value(), organisation.getTitle(), getTableName(), 
-                organisation.getGuid(), organisation.getCode()));
+                listing.getType().value(), listing.getTitle(), getTableName(), 
+                listing.getGuid(), listing.getCode()));
         }
         catch(SQLException ex)
         {
@@ -422,15 +422,15 @@ public class OrganisationDAO extends ContentDAO<Organisation>
     }
 
     /**
-     * Updates the given organisation in the ORGANISATIONS table.
+     * Updates the given organisation listing in the ORGANISATION_LISTINGS table.
      */
     @Override
-    public void update(Organisation organisation) throws SQLException
+    public void update(OrganisationListing listing) throws SQLException
     {
-        if(!hasConnection() || organisation == null)
+        if(!hasConnection() || listing == null)
             return;
 
-        if(!organisation.hasUniqueId())
+        if(!listing.hasUniqueId())
             throw new IllegalArgumentException("organisation uuid null");
 
         if(updateStmt == null)
@@ -441,22 +441,22 @@ public class OrganisationDAO extends ContentDAO<Organisation>
 
         try
         {
-            updateStmt.setTimestamp(1, new Timestamp(organisation.getPublishedDateMillis()), UTC);
-            updateStmt.setString(2, organisation.getUuid());
-            updateStmt.setString(3, organisation.getCode());
-            updateStmt.setString(4, organisation.getTitle());
-            updateStmt.setBoolean(5, organisation.isSponsor());
-            updateStmt.setString(6, organisation.getTabs().name());
-            updateStmt.setBoolean(7, organisation.isPublished());
-            String attributes = organisation.toJson().toString();
+            updateStmt.setTimestamp(1, new Timestamp(listing.getPublishedDateMillis()), UTC);
+            updateStmt.setString(2, listing.getUuid());
+            updateStmt.setString(3, listing.getCode());
+            updateStmt.setString(4, listing.getTitle());
+            updateStmt.setBoolean(5, listing.isSponsor());
+            updateStmt.setString(6, listing.getTabs().name());
+            updateStmt.setBoolean(7, listing.isPublished());
+            String attributes = listing.toJson().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(8, reader, attributes.length());
-            updateStmt.setInt(9, organisation.getId());
+            updateStmt.setInt(9, listing.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s, code=%s)", 
-                organisation.getType().value(), organisation.getTitle(), getTableName(), 
-                organisation.getGuid(), organisation.getCode()));
+                listing.getType().value(), listing.getTitle(), getTableName(), 
+                listing.getGuid(), listing.getCode()));
         }
         finally
         {
@@ -466,24 +466,24 @@ public class OrganisationDAO extends ContentDAO<Organisation>
     }
 
     /**
-     * Removes the given organisation from the table.
+     * Removes the given organisation listing from the table.
      */
     @Override
-    public void delete(Organisation organisation) throws SQLException
+    public void delete(OrganisationListing listing) throws SQLException
     {
-        if(!hasConnection() || organisation == null)
+        if(!hasConnection() || listing == null)
             return;
 
         if(deleteStmt == null)
             deleteStmt = prepareStatement(getConnection(), DELETE_SQL);
         clearParameters(deleteStmt);
 
-        deleteStmt.setInt(1, organisation.getId());
+        deleteStmt.setInt(1, listing.getId());
         deleteStmt.executeUpdate();
 
         logger.info(String.format("Deleted %s '%s' in %s (GUID=%s, code=%s)", 
-            organisation.getType().value(), organisation.getTitle(), getTableName(), 
-            organisation.getGuid(), organisation.getCode()));
+            listing.getType().value(), listing.getTitle(), getTableName(), 
+            listing.getGuid(), listing.getCode()));
     }
 
     /**
@@ -514,36 +514,36 @@ public class OrganisationDAO extends ContentDAO<Organisation>
     }
 
     /**
-     * Adds or Updates the given organisation in the table.
+     * Adds or Updates the given organisation listing in the table.
      */
-    public boolean upsert(Organisation organisation) throws SQLException
+    public boolean upsert(OrganisationListing listing) throws SQLException
     {
-        return upsert(organisation, false);
+        return upsert(listing, false);
     }
 
     /**
-     * Adds or Updates the given organisation in the table.
+     * Adds or Updates the given organisation listing in the table.
      */
     @Override
-    public boolean upsert(Organisation organisation, boolean keepExternal) throws SQLException
+    public boolean upsert(OrganisationListing listing, boolean keepExternal) throws SQLException
     {
         boolean ret = false;
 
-        Organisation existing = getByUuid(organisation.getUuid());
+        OrganisationListing existing = getByUuid(listing.getUuid());
         if(existing != null)
         {
-            update(organisation);
+            update(listing);
         }
-        else if(organisation.getId() > 0) // Get by ID as the URL may have changed
+        else if(listing.getId() > 0) // Get by ID as the URL may have changed
         {
-            existing = getById(organisation.getId());
+            existing = getById(listing.getId());
             if(existing != null)
             {
-                update(organisation);
+                update(listing);
             }
             else
             {
-                add(organisation);
+                add(listing);
                 ret = true;
             }
         }
@@ -551,8 +551,8 @@ public class OrganisationDAO extends ContentDAO<Organisation>
         {
             synchronized(table)
             {
-                organisation.setId(getMaxId()+1);
-                add(organisation);
+                listing.setId(getMaxId()+1);
+                add(listing);
                 ret = true;
             }
         }
@@ -561,7 +561,7 @@ public class OrganisationDAO extends ContentDAO<Organisation>
     }
 
     /**
-     * Returns <CODE>true</CODE> if all the organisations have been deployed.
+     * Returns <CODE>true</CODE> if all the organisation listings have been deployed.
      */
     @Override
     public boolean isDeployed(String code) throws SQLException
@@ -570,18 +570,18 @@ public class OrganisationDAO extends ContentDAO<Organisation>
     }
 
     /**
-     * Returns <CODE>true</CODE> if all the organisations have been deployed.
+     * Returns <CODE>true</CODE> if all the organisation listings have been deployed.
      */
     public boolean isDeployed() throws SQLException
     {
         boolean ret = true;
 
-        List<Organisation> organisations = list();
-        if(organisations.size() > 0)
+        List<OrganisationListing> listings = list();
+        if(listings.size() > 0)
         {
-            for(Organisation organisation : organisations)
+            for(OrganisationListing listing : listings)
             {
-                if(!organisation.isDeployed())
+                if(!listing.isDeployed())
                 {
                     ret = false;
                     break;

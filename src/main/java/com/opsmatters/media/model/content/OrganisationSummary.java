@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.time.Instant;
 import com.opsmatters.media.model.OwnedItem;
-import com.opsmatters.media.model.content.Organisation;
+import com.opsmatters.media.model.content.OrganisationListing;
 
 /**
  * Class representing a the summary data for an organisation.
@@ -41,14 +41,14 @@ public class OrganisationSummary extends OwnedItem
     }
 
     /**
-     * Constructor that takes an organisation.
+     * Constructor that takes an organisation listing.
      */
-    public OrganisationSummary(Organisation organisation)
+    public OrganisationSummary(OrganisationListing listing)
     {
-        setId(organisation.getUniqueId());
-        setCreatedDate(organisation.getPublishedDate());
-        setCode(organisation.getCode());
-        if(organisation.isPublished())
+        setId(listing.getUniqueId());
+        setCreatedDate(listing.getPublishedDate());
+        setCode(listing.getCode());
+        if(listing.isPublished())
             setStatus(OrganisationStatus.ACTIVE);
     }
 
@@ -141,9 +141,9 @@ public class OrganisationSummary extends OwnedItem
     /**
      * Sets the organisation status by the given user.
      */
-    public void setStatus(Organisation organisation, String username)
+    public void setStatus(OrganisationListing listing, String username)
     {
-        if(organisation.isPublished())
+        if(listing.isPublished())
             setStatus(OrganisationStatus.ACTIVE);
         setUpdatedDate(Instant.now());
         setCreatedBy(username);

@@ -33,7 +33,7 @@ public class ContentDAOFactory extends DAOFactory
     {
         super(driver, conn);
 
-        getOrganisationDAO();
+        getOrganisationListingDAO();
         getVideoArticleDAO();
         getRoundupArticleDAO();
         getPostArticleDAO();
@@ -47,13 +47,13 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the Organisation DAO.
+     * Returns the OrganisationListing DAO.
      */
-    public OrganisationDAO getOrganisationDAO()
+    public OrganisationListingDAO getOrganisationListingDAO()
     {
-        if(organisationDAO == null)
-            organisationDAO = new OrganisationDAO(this);
-        return organisationDAO;
+        if(organisationListingDAO == null)
+            organisationListingDAO = new OrganisationListingDAO(this);
+        return organisationListingDAO;
     }
 
     /**
@@ -163,7 +163,7 @@ public class ContentDAOFactory extends DAOFactory
     public void close()
     {
         super.close();
-        organisationDAO = null;
+        organisationListingDAO = null;
         videoArticleDAO = null;
         roundupArticleDAO = null;
         postArticleDAO = null;
@@ -176,7 +176,7 @@ public class ContentDAOFactory extends DAOFactory
         contentTypeSummaryDAO = null;
     }
 
-    private OrganisationDAO organisationDAO;
+    private OrganisationListingDAO organisationListingDAO;
     private VideoArticleDAO videoArticleDAO;
     private RoundupArticleDAO roundupArticleDAO;
     private PostArticleDAO postArticleDAO;

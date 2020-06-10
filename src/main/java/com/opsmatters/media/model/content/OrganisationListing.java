@@ -28,11 +28,11 @@ import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
- * Class representing an organisation.
+ * Class representing an organisation's listing.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Organisation extends ContentItem implements FieldSource
+public class OrganisationListing extends ContentItem implements FieldSource
 {
     private Instant publishedDate;
     private String title = "";
@@ -70,14 +70,14 @@ public class Organisation extends ContentItem implements FieldSource
     /**
      * Default constructor.
      */
-    public Organisation()
+    public OrganisationListing()
     {
     }
 
     /**
-     * Constructor that takes an organisation.
+     * Constructor that takes an organisation listing.
      */
-    public Organisation(Organisation obj)
+    public OrganisationListing(OrganisationListing obj)
     {
         copyAttributes(obj);
     }
@@ -85,7 +85,7 @@ public class Organisation extends ContentItem implements FieldSource
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(Organisation obj)
+    public void copyAttributes(OrganisationListing obj)
     {
         super.copyAttributes(obj);
 
@@ -125,7 +125,7 @@ public class Organisation extends ContentItem implements FieldSource
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public Organisation(String[] values) throws DateTimeParseException
+    public OrganisationListing(String[] values) throws DateTimeParseException
     {
         init();
 
@@ -216,7 +216,7 @@ public class Organisation extends ContentItem implements FieldSource
     /**
      * Constructor that takes a JSON object.
      */
-    public Organisation(JSONObject obj)
+    public OrganisationListing(JSONObject obj)
     {
         fromJson(obj);
     }
@@ -299,7 +299,7 @@ public class Organisation extends ContentItem implements FieldSource
     }
 
     /**
-     * Returns the set of output fields from the organisation.
+     * Returns the set of output fields from the organisation listing.
      */
     @Override
     public Fields toFields()
@@ -355,28 +355,28 @@ public class Organisation extends ContentItem implements FieldSource
     }
 
     /**
-     * Returns a new organisation with defaults.
+     * Returns a new organisation listing with defaults.
      */
-    public static Organisation getDefault(OrganisationConfiguration config) throws DateTimeParseException
+    public static OrganisationListing getDefault(OrganisationConfiguration config) throws DateTimeParseException
     {
-        Organisation organisation = new Organisation();
+        OrganisationListing listing = new OrganisationListing();
 
-        organisation.init();
-        organisation.setCode("TBD");
-        organisation.setTitle("New Organisation");
-        organisation.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
-        organisation.setFounded(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
-        organisation.setImage("tbd-logo.png");
-        organisation.setImageText("tbd logo");
-        organisation.setThumbnail("tbd-thumb.png");
-        organisation.setThumbnailText("tbd logo");
-        organisation.setSocial(true);
+        listing.init();
+        listing.setCode("TBD");
+        listing.setTitle("New Organisation");
+        listing.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        listing.setFounded(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
+        listing.setImage("tbd-logo.png");
+        listing.setImageText("tbd logo");
+        listing.setThumbnail("tbd-thumb.png");
+        listing.setThumbnailText("tbd logo");
+        listing.setSocial(true);
 
-        return organisation;
+        return listing;
     }
 
     /**
-     * Use the given configuration to set defaults for the organisation.
+     * Use the given configuration to set defaults for the organisation listing.
      */
     public void init(OrganisationConfiguration config)
     {
@@ -392,7 +392,7 @@ public class Organisation extends ContentItem implements FieldSource
     }
 
     /**
-     * Prepare the fields in the organisation using the given configuration.
+     * Prepare the fields in the organisation listing using the given configuration.
      */
     public void prepare(OrganisationConfiguration config) throws DateTimeParseException
     {

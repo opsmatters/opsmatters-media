@@ -242,12 +242,12 @@ public class PostArticle extends Article
     }
 
     /**
-     * Use the given organisation to set defaults for the content.
+     * Use the given organisation listing to set defaults for the content.
      */
-    public void init(Organisation organisation)
+    public void init(OrganisationListing listing)
     {
-        setLink(organisation.getWebsite());
-        setCreatorEmail(organisation.getEmail());
+        setLink(listing.getWebsite());
+        setCreatorEmail(listing.getEmail());
     }
 
     /**
