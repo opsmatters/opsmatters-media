@@ -33,6 +33,8 @@ public class ContentDAOFactory extends DAOFactory
     {
         super(driver, conn);
 
+        getOrganisationDAO();
+        getContentTypeSummaryDAO();
         getOrganisationListingDAO();
         getVideoArticleDAO();
         getRoundupArticleDAO();
@@ -42,8 +44,26 @@ public class ContentDAOFactory extends DAOFactory
         getEBookResourceDAO();
         getToolResourceDAO();
         getProjectResourceDAO();
-        getOrganisationSummaryDAO();
-        getContentTypeSummaryDAO();
+    }
+
+    /**
+     * Returns the Organisation DAO.
+     */
+    public OrganisationDAO getOrganisationDAO()
+    {
+        if(organisationDAO == null)
+            organisationDAO = new OrganisationDAO(this);
+        return organisationDAO;
+    }
+
+    /**
+     * Returns the ContentTypeSummary DAO.
+     */
+    public ContentTypeSummaryDAO getContentTypeSummaryDAO()
+    {
+        if(contentTypeSummaryDAO == null)
+            contentTypeSummaryDAO = new ContentTypeSummaryDAO(this);
+        return contentTypeSummaryDAO;
     }
 
     /**
@@ -137,32 +157,14 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the OrganisationSummary DAO.
-     */
-    public OrganisationSummaryDAO getOrganisationSummaryDAO()
-    {
-        if(organisationSummaryDAO == null)
-            organisationSummaryDAO = new OrganisationSummaryDAO(this);
-        return organisationSummaryDAO;
-    }
-
-    /**
-     * Returns the ContentTypeSummary DAO.
-     */
-    public ContentTypeSummaryDAO getContentTypeSummaryDAO()
-    {
-        if(contentTypeSummaryDAO == null)
-            contentTypeSummaryDAO = new ContentTypeSummaryDAO(this);
-        return contentTypeSummaryDAO;
-    }
-
-    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
     public void close()
     {
         super.close();
+        organisationDAO = null;
+        contentTypeSummaryDAO = null;
         organisationListingDAO = null;
         videoArticleDAO = null;
         roundupArticleDAO = null;
@@ -172,10 +174,10 @@ public class ContentDAOFactory extends DAOFactory
         ebookResourceDAO = null;
         toolResourceDAO = null;
         projectResourceDAO = null;
-        organisationSummaryDAO = null;
-        contentTypeSummaryDAO = null;
     }
 
+    private OrganisationDAO organisationDAO;
+    private ContentTypeSummaryDAO contentTypeSummaryDAO;
     private OrganisationListingDAO organisationListingDAO;
     private VideoArticleDAO videoArticleDAO;
     private RoundupArticleDAO roundupArticleDAO;
@@ -185,6 +187,4 @@ public class ContentDAOFactory extends DAOFactory
     private EBookResourceDAO ebookResourceDAO;
     private ToolResourceDAO toolResourceDAO;
     private ProjectResourceDAO projectResourceDAO;
-    private OrganisationSummaryDAO organisationSummaryDAO;
-    private ContentTypeSummaryDAO contentTypeSummaryDAO;
 }

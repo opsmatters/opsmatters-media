@@ -26,69 +26,69 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.db.dao.BaseDAO;
-import com.opsmatters.media.model.content.OrganisationSummary;
+import com.opsmatters.media.model.content.Organisation;
 
 /**
- * DAO that provides operations on the ORGANISATION_SUMMARY table in the database.
+ * DAO that provides operations on the ORGANISATIONS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrganisationSummaryDAO extends BaseDAO
+public class OrganisationDAO extends BaseDAO
 {
-    private static final Logger logger = Logger.getLogger(OrganisationSummaryDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(OrganisationDAO.class.getName());
 
     /**
-     * The query to use to select a summary from the ORGANISATION_SUMMARY table by id.
+     * The query to use to select an organisation from the ORGANISATIONS table by id.
      */
     private static final String GET_BY_ID_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, STATUS, CREATED_BY "
-      + "FROM ORGANISATION_SUMMARY WHERE ID=?";
+      + "FROM ORGANISATIONS WHERE ID=?";
 
     /**
-     * The query to use to insert a summary into the ORGANISATION_SUMMARY table.
+     * The query to use to insert an organisation into the ORGANISATIONS table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO ORGANISATION_SUMMARY"
+      "INSERT INTO ORGANISATIONS"
       + "( ID, CREATED_DATE, UPDATED_DATE, CODE, STATUS, CREATED_BY )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update a summary in the ORGANISATION_SUMMARY table.
+     * The query to use to update an organisation in the ORGANISATIONS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE ORGANISATION_SUMMARY SET UPDATED_DATE=?, STATUS=? "
+      "UPDATE ORGANISATIONS SET UPDATED_DATE=?, STATUS=? "
       + "WHERE ID=?";
 
     /**
-     * The query to use to select the summaries from the ORGANISATION_SUMMARY table.
+     * The query to use to select the organisations from the ORGANISATIONS table.
      */
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, STATUS, CREATED_BY "
-      + "FROM ORGANISATION_SUMMARY ORDER BY CREATED_DATE";
+      + "FROM ORGANISATIONS ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to get the count of summaries from the ORGANISATION_SUMMARY table.
+     * The query to use to get the count of organisations from the ORGANISATIONS table.
      */
     private static final String COUNT_SQL =  
-      "SELECT COUNT(*) FROM ORGANISATION_SUMMARY";
+      "SELECT COUNT(*) FROM ORGANISATIONS";
 
     /**
-     * The query to use to delete a summary from the ORGANISATION_SUMMARY table.
+     * The query to use to delete an organisation from the ORGANISATIONS table.
      */
     private static final String DELETE_SQL =  
-      "DELETE FROM ORGANISATION_SUMMARY WHERE ID=?";
+      "DELETE FROM ORGANISATIONS WHERE ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public OrganisationSummaryDAO(ContentDAOFactory factory)
+    public OrganisationDAO(ContentDAOFactory factory)
     {
-        super(factory, "ORGANISATION_SUMMARY");
+        super(factory, "ORGANISATIONS");
     }
 
     /**
-     * Defines the columns and indices for the ORGANISATION_SUMMARY table.
+     * Defines the columns and indices for the ORGANISATIONS table.
      */
     @Override
     protected void defineTable()
@@ -99,17 +99,17 @@ public class OrganisationSummaryDAO extends BaseDAO
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
-        table.setPrimaryKey("ORGANISATION_SUMMARY_PK", new String[] {"ID"});
-        table.addIndex("ORGANISATION_SUMMARY_CODE", new String[] {"CODE"});
+        table.setPrimaryKey("ORGANISATIONS_PK", new String[] {"ID"});
+        table.addIndex("ORGANISATIONS_CODE", new String[] {"CODE"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns a summary from the ORGANISATION_SUMMARY table by id.
+     * Returns an organisation from the ORGANISATIONS table by id.
      */
-    public OrganisationSummary getById(String id) throws SQLException
+    public Organisation getById(String id) throws SQLException
     {
-        OrganisationSummary ret = null;
+        Organisation ret = null;
 
         if(!hasConnection())
             return ret;
@@ -128,14 +128,14 @@ public class OrganisationSummaryDAO extends BaseDAO
             rs = getByIdStmt.executeQuery();
             while(rs.next())
             {
-                OrganisationSummary summary = new OrganisationSummary();
-                summary.setId(rs.getString(1));
-                summary.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                summary.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                summary.setCode(rs.getString(4));
-                summary.setStatus(rs.getString(5));
-                summary.setCreatedBy(rs.getString(6));
-                ret = summary;
+                Organisation organisation = new Organisation();
+                organisation.setId(rs.getString(1));
+                organisation.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                organisation.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                organisation.setCode(rs.getString(4));
+                organisation.setStatus(rs.getString(5));
+                organisation.setCreatedBy(rs.getString(6));
+                ret = organisation;
             }
         }
         finally
@@ -156,11 +156,11 @@ public class OrganisationSummaryDAO extends BaseDAO
     }
 
     /**
-     * Stores the given summary in the ORGANISATION_SUMMARY table.
+     * Stores the given organisation in the ORGANISATIONS table.
      */
-    public void add(OrganisationSummary summary) throws SQLException
+    public void add(Organisation organisation) throws SQLException
     {
-        if(!hasConnection() || summary == null)
+        if(!hasConnection() || organisation == null)
             return;
 
         if(insertStmt == null)
@@ -169,15 +169,15 @@ public class OrganisationSummaryDAO extends BaseDAO
 
         try
         {
-            insertStmt.setString(1, summary.getId());
-            insertStmt.setTimestamp(2, new Timestamp(summary.getCreatedDateMillis()), UTC);
-            insertStmt.setTimestamp(3, new Timestamp(summary.getUpdatedDateMillis()), UTC);
-            insertStmt.setString(4, summary.getCode());
-            insertStmt.setString(5, summary.getStatus().name());
-            insertStmt.setString(6, summary.getCreatedBy());
+            insertStmt.setString(1, organisation.getId());
+            insertStmt.setTimestamp(2, new Timestamp(organisation.getCreatedDateMillis()), UTC);
+            insertStmt.setTimestamp(3, new Timestamp(organisation.getUpdatedDateMillis()), UTC);
+            insertStmt.setString(4, organisation.getCode());
+            insertStmt.setString(5, organisation.getStatus().name());
+            insertStmt.setString(6, organisation.getCreatedBy());
             insertStmt.executeUpdate();
 
-            logger.info("Created summary '"+summary.getId()+"' in ORGANISATION_SUMMARY");
+            logger.info("Created organisation '"+organisation.getId()+"' in ORGANISATIONS");
         }
         catch(SQLException ex)
         {
@@ -188,18 +188,18 @@ public class OrganisationSummaryDAO extends BaseDAO
                 insertStmt = null;
             }
 
-            // Unique constraint violated means that the summary already exists
+            // Unique constraint violated means that the organisation already exists
             if(!getDriver().isConstraintViolation(ex))
                 throw ex;
         }
     }
 
     /**
-     * Updates the given summary in the ORGANISATION_SUMMARY table.
+     * Updates the given organisation in the ORGANISATIONS table.
      */
-    public void update(OrganisationSummary summary) throws SQLException
+    public void update(Organisation organisation) throws SQLException
     {
-        if(!hasConnection() || summary == null)
+        if(!hasConnection() || organisation == null)
             return;
 
         if(updateStmt == null)
@@ -210,12 +210,12 @@ public class OrganisationSummaryDAO extends BaseDAO
 
         try
         {
-            updateStmt.setTimestamp(1, new Timestamp(summary.getUpdatedDateMillis()), UTC);
-            updateStmt.setString(2, summary.getStatus().name());
-            updateStmt.setString(3, summary.getId());
+            updateStmt.setTimestamp(1, new Timestamp(organisation.getUpdatedDateMillis()), UTC);
+            updateStmt.setString(2, organisation.getStatus().name());
+            updateStmt.setString(3, organisation.getId());
             updateStmt.executeUpdate();
 
-            logger.info("Updated summary '"+summary.getId()+"' in ORGANISATION_SUMMARY");
+            logger.info("Updated organisation '"+organisation.getId()+"' in ORGANISATIONS");
         }
         finally
         {
@@ -225,11 +225,11 @@ public class OrganisationSummaryDAO extends BaseDAO
     }
 
     /**
-     * Returns the summaries from the ORGANISATION_SUMMARY table.
+     * Returns the organisations from the ORGANISATIONS table.
      */
-    public List<OrganisationSummary> list() throws SQLException
+    public List<Organisation> list() throws SQLException
     {
-        List<OrganisationSummary> ret = null;
+        List<Organisation> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -245,17 +245,17 @@ public class OrganisationSummaryDAO extends BaseDAO
         {
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
-            ret = new ArrayList<OrganisationSummary>();
+            ret = new ArrayList<Organisation>();
             while(rs.next())
             {
-                OrganisationSummary summary = new OrganisationSummary();
-                summary.setId(rs.getString(1));
-                summary.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                summary.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                summary.setCode(rs.getString(4));
-                summary.setStatus(rs.getString(5));
-                summary.setCreatedBy(rs.getString(6));
-                ret.add(summary);
+                Organisation organisation = new Organisation();
+                organisation.setId(rs.getString(1));
+                organisation.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                organisation.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                organisation.setCode(rs.getString(4));
+                organisation.setStatus(rs.getString(5));
+                organisation.setCreatedBy(rs.getString(6));
+                ret.add(organisation);
             }
         }
         finally
@@ -276,7 +276,7 @@ public class OrganisationSummaryDAO extends BaseDAO
     }
 
     /**
-     * Returns the count of summaries from the table.
+     * Returns the count of organisations from the table.
      */
     public int count() throws SQLException
     {
@@ -294,21 +294,21 @@ public class OrganisationSummaryDAO extends BaseDAO
     }
 
     /**
-     * Removes the given summary from the ORGANISATION_SUMMARY table.
+     * Removes the given organisation from the ORGANISATIONS table.
      */
-    public void delete(OrganisationSummary summary) throws SQLException
+    public void delete(Organisation organisation) throws SQLException
     {
-        if(!hasConnection() || summary == null)
+        if(!hasConnection() || organisation == null)
             return;
 
         if(deleteStmt == null)
             deleteStmt = prepareStatement(getConnection(), DELETE_SQL);
         clearParameters(deleteStmt);
 
-        deleteStmt.setString(1, summary.getId());
+        deleteStmt.setString(1, organisation.getId());
         deleteStmt.executeUpdate();
 
-        logger.info("Deleted summary '"+summary.getId()+"' in ORGANISATION_SUMMARY");
+        logger.info("Deleted organisation '"+organisation.getId()+"' in ORGANISATIONS");
     }
 
     /**

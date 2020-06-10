@@ -22,11 +22,11 @@ import com.opsmatters.media.model.OwnedItem;
 import com.opsmatters.media.model.content.OrganisationListing;
 
 /**
- * Class representing a the summary data for an organisation.
+ * Class representing an organisation.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrganisationSummary extends OwnedItem
+public class Organisation extends OwnedItem
 {
     private String code = "";
     private String title = "";
@@ -36,14 +36,14 @@ public class OrganisationSummary extends OwnedItem
     /**
      * Default constructor.
      */
-    public OrganisationSummary()
+    public Organisation()
     {
     }
 
     /**
      * Constructor that takes an organisation listing.
      */
-    public OrganisationSummary(OrganisationListing listing)
+    public Organisation(OrganisationListing listing)
     {
         setId(listing.getUniqueId());
         setCreatedDate(listing.getPublishedDate());
@@ -55,7 +55,7 @@ public class OrganisationSummary extends OwnedItem
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(OrganisationSummary obj)
+    public void copyAttributes(Organisation obj)
     {
         if(obj != null)
         {

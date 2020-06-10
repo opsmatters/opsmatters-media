@@ -41,13 +41,13 @@ public class ContentTypeSummary extends BaseItem
     }
 
     /**
-     * Constructor that takes an organisation summary and content type.
+     * Constructor that takes an organisation and content type.
      */
-    public ContentTypeSummary(OrganisationSummary summary, List<? extends ContentItem> content)
+    public ContentTypeSummary(Organisation organisation, List<? extends ContentItem> content)
     {
         setId(StringUtils.getUUID(null));
-        setCreatedDate(summary.getCreatedDate());
-        setCode(summary.getCode());
+        setCreatedDate(organisation.getCreatedDate());
+        setCode(organisation.getCode());
 
         // Go through the items to populate the summary
         int count = 0;
