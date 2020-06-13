@@ -266,14 +266,18 @@ public class SocialPostHandler
 
         // If a string token matches a hashtag in the list,
         //    remove it from the list and replace the token with a hashtag token
+        Token lastToken = null;
         for(Token token : tokens)
         {
-            if(hashtagMap.containsKey(token.getKey()))
+            if((lastToken == null || !lastToken.getValue().endsWith(":")) // Check it's not an emoji alias
+                && hashtagMap.containsKey(token.getKey()))
             {
                 hashtagMap.remove(token.getKey());
                 if(token.getType() == TokenType.STRING)
                     tokens.set(tokens.indexOf(token), new HashtagToken(token.getValue()));
             }
+
+            lastToken = token;
         }
     }
 

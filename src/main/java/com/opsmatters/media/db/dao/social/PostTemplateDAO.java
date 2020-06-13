@@ -42,7 +42,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
      * The query to use to select a post template from the POST_TEMPLATES table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, POSTED_DATE, CREATED_BY "
       + "FROM POST_TEMPLATES WHERE ID=?";
 
     /**
@@ -58,21 +58,21 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
      * The query to use to update a post template in the POST_TEMPLATES table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE POST_TEMPLATES SET UPDATED_DATE=?, NAME=?, MESSAGE=?, TYPE=?, CODE=?, CONTENT_TYPE=?, IS_DEFAULT=?, SHORTEN_URL=?, PROPERTIES=? "
+      "UPDATE POST_TEMPLATES SET UPDATED_DATE=?, NAME=?, MESSAGE=?, TYPE=?, CODE=?, CONTENT_TYPE=?, IS_DEFAULT=?, SHORTEN_URL=?, PROPERTIES=?, POSTED_DATE=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the post templates from the POST_TEMPLATES table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, POSTED_DATE, CREATED_BY "
       + "FROM POST_TEMPLATES";
 
     /**
      * The query to use to select the post templates from the POST_TEMPLATES table.
      */
     private static final String LIST_BY_TYPE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, POSTED_DATE, CREATED_BY "
       + "FROM POST_TEMPLATES WHERE TYPE=? AND CONTENT_TYPE=?";
 
     /**
@@ -112,6 +112,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
         table.addColumn("IS_DEFAULT", Types.BOOLEAN, true);
         table.addColumn("SHORTEN_URL", Types.BOOLEAN, true);
         table.addColumn("PROPERTIES", Types.LONGVARCHAR, true);
+        table.addColumn("POSTED_DATE", Types.TIMESTAMP, false);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("POST_TEMPLATES_PK", new String[] {"ID"});
         table.setInitialised(true);
@@ -153,7 +154,8 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
                 template.setDefault(rs.getBoolean(9));
                 template.setShortenUrl(rs.getBoolean(10));
                 template.setProperties(new JSONObject(getClob(rs, 11)));
-                template.setCreatedBy(rs.getString(12));
+                template.setPostedDateMillis(rs.getTimestamp(12, UTC) != null ? rs.getTimestamp(12, UTC).getTime() : 0L);
+                template.setCreatedBy(rs.getString(13));
                 ret = template;
             }
         }
@@ -248,7 +250,8 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
         String properties = template.getPropertiesAsJson().toString();
         reader = new StringReader(properties);
         updateStmt.setCharacterStream(9, reader, properties.length());
-        updateStmt.setString(10, template.getId());
+        updateStmt.setTimestamp(10, new Timestamp(template.getPostedDateMillis()), UTC);
+        updateStmt.setString(11, template.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated post template '"+template.getId()+"' in POST_TEMPLATES");
@@ -290,7 +293,8 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
                 template.setDefault(rs.getBoolean(9));
                 template.setShortenUrl(rs.getBoolean(10));
                 template.setProperties(new JSONObject(getClob(rs, 11)));
-                template.setCreatedBy(rs.getString(12));
+                template.setPostedDateMillis(rs.getTimestamp(12, UTC) != null ? rs.getTimestamp(12, UTC).getTime() : 0L);
+                template.setCreatedBy(rs.getString(13));
                 ret.add(template);
             }
         }
@@ -349,7 +353,8 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
                 template.setDefault(rs.getBoolean(9));
                 template.setShortenUrl(rs.getBoolean(10));
                 template.setProperties(new JSONObject(getClob(rs, 11)));
-                template.setCreatedBy(rs.getString(12));
+                template.setPostedDateMillis(rs.getTimestamp(12, UTC) != null ? rs.getTimestamp(12, UTC).getTime() : 0L);
+                template.setCreatedBy(rs.getString(13));
                 ret.add(template);
             }
         }

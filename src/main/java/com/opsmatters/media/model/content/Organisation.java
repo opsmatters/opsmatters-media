@@ -18,8 +18,12 @@ package com.opsmatters.media.model.content;
 import java.util.Map;
 import java.util.HashMap;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import com.opsmatters.media.model.OwnedItem;
 import com.opsmatters.media.model.content.OrganisationListing;
+import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.util.TimeUtils;
 
 /**
  * Class representing an organisation.
@@ -32,6 +36,7 @@ public class Organisation extends OwnedItem
     private String title = "";
     private OrganisationStatus status = OrganisationStatus.NEW;
     private Map<ContentType, ContentTypeSummary> content = new HashMap<ContentType, ContentTypeSummary>();
+    private Instant reviewedDate;
 
     /**
      * Default constructor.
@@ -63,6 +68,7 @@ public class Organisation extends OwnedItem
             setCode(obj.getCode());
             setTitle(obj.getTitle());
             setStatus(obj.getStatus());
+            setReviewedDate(obj.getReviewedDate());
         }
     }
 
@@ -147,6 +153,96 @@ public class Organisation extends OwnedItem
             setStatus(OrganisationStatus.ACTIVE);
         setUpdatedDate(Instant.now());
         setCreatedBy(username);
+    }
+
+    /**
+     * Returns the date the item was last reviewed.
+     */
+    public Instant getReviewedDate()
+    {
+        return reviewedDate;
+    }
+
+    /**
+     * Returns the date the item was last reviewed.
+     */
+    public long getReviewedDateMillis()
+    {
+        return getReviewedDate() != null ? getReviewedDate().toEpochMilli() : 0L;
+    }
+
+    /**
+     * Returns the date the item was last reviewed.
+     */
+    public LocalDateTime getReviewedDateUTC()
+    {
+        return TimeUtils.toDateTimeUTC(getReviewedDate());
+    }
+
+    /**
+     * Returns the date the item was last reviewed.
+     */
+    public String getReviewedDateAsString(String pattern)
+    {
+        return TimeUtils.toStringUTC(reviewedDate, pattern);
+    }
+
+    /**
+     * Returns the date the item was last reviewed.
+     */
+    public String getReviewedDateAsString(String pattern, String timezone)
+    {
+        return TimeUtils.toString(reviewedDate, pattern, timezone);
+    }
+
+    /**
+     * Returns the date the item was last reviewed.
+     */
+    public String getReviewedDateAsString()
+    {
+        return getReviewedDateAsString(Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Sets the date the item was last reviewed.
+     */
+    public void setReviewedDate(Instant reviewedDate)
+    {
+        this.reviewedDate = reviewedDate;
+    }
+
+    /**
+     * Sets the date the item was last reviewed.
+     */
+    public void setReviewedDateMillis(long millis)
+    {
+        if(millis > 0L)
+            this.reviewedDate = Instant.ofEpochMilli(millis);
+    }
+
+    /**
+     * Sets the date the item was last reviewed.
+     */
+    public void setReviewedDateAsString(String str, String pattern) throws DateTimeParseException
+    {
+        setReviewedDate(TimeUtils.toInstantUTC(str, pattern));
+    }
+
+    /**
+     * Sets the date the item was last reviewed.
+     */
+    public void setReviewedDateAsString(String str) throws DateTimeParseException
+    {
+        setReviewedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Sets the date the item was last reviewed.
+     */
+    public void setReviewedDateUTC(LocalDateTime reviewedDate)
+    {
+        if(reviewedDate != null)
+            setReviewedDate(TimeUtils.toInstantUTC(reviewedDate));
     }
 
     /**

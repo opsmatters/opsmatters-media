@@ -591,6 +591,31 @@ public class TimeUtils
     }
 
     /**
+     * Returns the given LocalDateTime as an instant in the given timezone.
+     */
+    public static Instant toInstant(LocalDateTime dt, String timezone)
+    {
+        Instant ret = null;
+
+        if(dt != null)
+        {
+            Instant instant = dt.atZone(ZoneId.of(timezone)).toInstant();
+            if(instant.toEpochMilli() > 0L)
+                ret = instant;
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the given instant as a LocalDateTime in the given timezone.
+     */
+    public static LocalDateTime toDateTime(Instant dt, String timezone)
+    {
+        return dt != null ? LocalDateTime.ofInstant(dt, ZoneId.of(timezone)) : null;
+    }
+
+    /**
      * Returns the formatter for the given date pattern.
      */
     private static DateTimeFormatter getFormatter(String pattern)

@@ -19,6 +19,7 @@ import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.file.CommonFiles;
 import com.opsmatters.media.config.content.RoundupConfiguration;
+import com.opsmatters.media.config.content.WebPageConfiguration;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
@@ -215,11 +216,13 @@ public class RoundupArticle extends Article
     /**
      * Use the given configuration to set defaults for the content.
      */
-    public void init(RoundupConfiguration config)
+    public void init(RoundupConfiguration config, WebPageConfiguration page)
     {
         super.init(config);
 
         setTags(config.getField(Fields.TAGS, ""));
+        if(page.hasField(Fields.TAGS))
+            setTags(page.getField(Fields.TAGS, ""));
 
         String promote = config.getField(Fields.PROMOTE);
         setPromoted(promote == null || promote.equals("0") ? false : true);

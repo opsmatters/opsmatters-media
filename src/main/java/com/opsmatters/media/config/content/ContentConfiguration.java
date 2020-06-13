@@ -218,7 +218,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
      */
     public boolean hasField(String name)
     {
-        return fields.containsKey(name);
+        return fields != null ? fields.containsKey(name) : false;
     }
 
     /**
@@ -226,7 +226,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
      */
     public String getField(String name)
     {
-        return fields.get(name);
+        return fields != null ? fields.get(name) : null;
     }
 
     /**
@@ -236,7 +236,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
      */
     public String getField(String name, String fallback)
     {
-        return fields.get(name, fallback);
+        return fields != null ? fields.get(name, fallback) : null;
     }
 
     /**

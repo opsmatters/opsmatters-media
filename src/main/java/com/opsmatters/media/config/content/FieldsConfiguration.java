@@ -33,12 +33,14 @@ public abstract class FieldsConfiguration extends YamlConfiguration
     public static final String TEASER_FIELDS = "teaser-fields";
     public static final String CONTENT_LOADING = "content-loading";
     public static final String CONTENT_FIELDS = "content-fields";
+    public static final String FIELDS = "fields";
 
     private LoadingConfiguration teaserLoading;
     private MonitorConfiguration teaserMonitor; 
     private List<ContentFields> teaserFields = new ArrayList<ContentFields>();
     private LoadingConfiguration contentLoading; 
     private ContentFields contentFields;
+    private Fields fields;
 
     /**
      * Default constructor.
@@ -74,6 +76,7 @@ public abstract class FieldsConfiguration extends YamlConfiguration
             for(ContentFields teaserFields : obj.getTeaserFields())
                 addTeaserFields(teaserFields);
             setContentFields(obj.getContentFields());
+            setFields(new Fields(obj.getFields()));
         }
     }
 
@@ -174,6 +177,58 @@ public abstract class FieldsConfiguration extends YamlConfiguration
     }
 
     /**
+     * Returns the fields for this configuration.
+     */
+    public Fields getFields()
+    {
+        return fields;
+    }
+
+    /**
+     * Sets the fields for this configuration.
+     */
+    public void setFields(Fields fields)
+    {
+        this.fields = fields;
+    }
+
+    /**
+     * Adds the fields for this configuration.
+     */
+    public void addFields(Map<String,String> fields)
+    {
+        if(this.fields == null)
+            this.fields = new Fields();
+        this.fields.putAll(fields);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if given field has been set.
+     */
+    public boolean hasField(String name)
+    {
+        return fields != null ? fields.containsKey(name) : false;
+    }
+
+    /**
+     * Returns the value of the given field.
+     */
+    public String getField(String name)
+    {
+        return fields != null ? fields.get(name) : null;
+    }
+
+    /**
+     * Returns the value of the given field.
+     * <p>
+     * Returns the fallback if the field is not found.
+     */
+    public String getField(String name, String fallback)
+    {
+        return fields != null ? fields.get(name, fallback) : null;
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     @Override
@@ -207,6 +262,11 @@ public abstract class FieldsConfiguration extends YamlConfiguration
         if(map.containsKey(CONTENT_FIELDS))
         {
             setContentFields(new ContentFields((Map<String,Object>)map.get(CONTENT_FIELDS)));
+        }
+
+        if(map.containsKey(FIELDS))
+        {
+            addFields((Map<String,String>)map.get(FIELDS));
         }
     }
 }

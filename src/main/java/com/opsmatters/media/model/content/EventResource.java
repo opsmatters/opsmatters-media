@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.EventConfiguration;
+import com.opsmatters.media.config.content.WebPageConfiguration;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.FormatUtils;
@@ -234,7 +235,7 @@ public class EventResource extends Resource
     /**
      * Use the given configuration to set defaults for the resource.
      */
-    public void init(EventConfiguration config)
+    public void init(EventConfiguration config, WebPageConfiguration page)
     {
         super.init(config);
 
@@ -251,11 +252,11 @@ public class EventResource extends Resource
         setDescription(FormatUtils.getFormattedDescription(getDescription()));
         setSummary(FormatUtils.getFormattedSummary(getDescription(), config.getSummary()));
 
-        // Use the default timezone if an resource timezone wasn't found
+        // Use the default timezone if a resource timezone wasn't found
         if(config.hasField(Fields.TIMEZONE) && getTimeZone().length() == 0)
             setTimeZone(config.getField(Fields.TIMEZONE));
 
-        // Use the default location if an resource location wasn't found
+        // Use the default location if a resource location wasn't found
         if(config.hasField(Fields.LOCATION) && getLocation().length() == 0)
             setLocation(config.getField(Fields.LOCATION));
     }

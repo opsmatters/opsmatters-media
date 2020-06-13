@@ -19,6 +19,7 @@ import java.util.List;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.PublicationConfiguration;
+import com.opsmatters.media.config.content.WebPageConfiguration;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.StringUtils;
@@ -144,11 +145,14 @@ public abstract class PublicationResource extends Resource
     /**
      * Use the given configuration to set defaults for the resource.
      */
-    public void init(PublicationConfiguration config)
+    public void init(PublicationConfiguration config, WebPageConfiguration page)
     {
         super.init(config);
 
         setTags(config.getField(Fields.TAGS, ""));
+        if(page.hasField(Fields.TAGS))
+            setTags(page.getField(Fields.TAGS, ""));
+
         setLinkText(config.getField(Fields.LINK_TEXT, ""));
 
         String promote = config.getField(Fields.PROMOTE);

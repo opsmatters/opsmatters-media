@@ -367,7 +367,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
         {
             List<WebElement> results = driver.findElements(By.cssSelector(fields.getRoot()));
             if(debug())
-                logger.info("Found "+results.size()+" teasers for teasers: "+fields.getRoot());
+                logger.info("Found "+results.size()+" teasers for selector: "+fields.getRoot());
             ret += results.size();
 
             for(WebElement result : results)

@@ -19,9 +19,13 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.util.TimeUtils;
 
 /**
  * Class representing a social media post template.
@@ -46,6 +50,7 @@ public class PostTemplate extends SocialPost
     private boolean isDefault = false;
     private boolean shortenUrl = false;
     private Map<String,String> properties = new LinkedHashMap<String,String>();
+    private Instant postedDate;
 
     /**
      * Default constructor.
@@ -108,6 +113,7 @@ public class PostTemplate extends SocialPost
             setDefault(obj.isDefault());
             setShortenUrl(obj.isShortenUrl());
             setProperties(obj.getProperties());
+            setPostedDate(obj.getPostedDate());
         }
     }
 
@@ -411,5 +417,95 @@ public class PostTemplate extends SocialPost
     public boolean hasUrl()
     {
         return getUrl() != null && getUrl().length() > 0;
+    }
+
+    /**
+     * Returns the date a post was last created from the template.
+     */
+    public Instant getPostedDate()
+    {
+        return postedDate;
+    }
+
+    /**
+     * Returns the date a post was last created from the template.
+     */
+    public long getPostedDateMillis()
+    {
+        return getPostedDate() != null ? getPostedDate().toEpochMilli() : 0L;
+    }
+
+    /**
+     * Returns the date a post was last created from the template.
+     */
+    public LocalDateTime getPostedDateUTC()
+    {
+        return TimeUtils.toDateTimeUTC(getPostedDate());
+    }
+
+    /**
+     * Returns the date a post was last created from the template.
+     */
+    public String getPostedDateAsString(String pattern)
+    {
+        return TimeUtils.toStringUTC(postedDate, pattern);
+    }
+
+    /**
+     * Returns the date a post was last created from the template.
+     */
+    public String getPostedDateAsString(String pattern, String timezone)
+    {
+        return TimeUtils.toString(postedDate, pattern, timezone);
+    }
+
+    /**
+     * Returns the date a post was last created from the template.
+     */
+    public String getPostedDateAsString()
+    {
+        return getPostedDateAsString(Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Sets the date a post was last created from the template.
+     */
+    public void setPostedDate(Instant postedDate)
+    {
+        this.postedDate = postedDate;
+    }
+
+    /**
+     * Sets the date a post was last created from the template.
+     */
+    public void setPostedDateMillis(long millis)
+    {
+        if(millis > 0L)
+            this.postedDate = Instant.ofEpochMilli(millis);
+    }
+
+    /**
+     * Sets the date a post was last created from the template.
+     */
+    public void setPostedDateAsString(String str, String pattern) throws DateTimeParseException
+    {
+        setPostedDate(TimeUtils.toInstantUTC(str, pattern));
+    }
+
+    /**
+     * Sets the date a post was last created from the template.
+     */
+    public void setPostedDateAsString(String str) throws DateTimeParseException
+    {
+        setPostedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Sets the date a post was last created from the template.
+     */
+    public void setPostedDateUTC(LocalDateTime postedDate)
+    {
+        if(postedDate != null)
+            setPostedDate(TimeUtils.toInstantUTC(postedDate));
     }
 }

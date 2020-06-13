@@ -19,6 +19,7 @@ import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.config.content.VideoConfiguration;
+import com.opsmatters.media.config.content.VideoChannelConfiguration;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
@@ -250,12 +251,15 @@ public class VideoArticle extends Article
     /**
      * Use the given configuration to set defaults for the content.
      */
-    public void init(VideoConfiguration config)
+    public void init(VideoConfiguration config, VideoChannelConfiguration channel)
     {
         super.init(config);
 
-        setVideoType(config.getField(Fields.VIDEO_TYPE, ""));
         setTags(config.getField(Fields.TAGS, ""));
+        if(channel.hasField(Fields.TAGS))
+            setTags(channel.getField(Fields.TAGS, ""));
+
+        setVideoType(config.getField(Fields.VIDEO_TYPE, ""));
         setLinkText(config.getField(Fields.LINK_TEXT, ""));
 
         String promote = config.getField(Fields.PROMOTE);

@@ -41,7 +41,7 @@ public class OrganisationDAO extends BaseDAO
      * The query to use to select an organisation from the ORGANISATIONS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, STATUS, REVIEWED_DATE, CREATED_BY "
       + "FROM ORGANISATIONS WHERE ID=?";
 
     /**
@@ -49,22 +49,22 @@ public class OrganisationDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO ORGANISATIONS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, STATUS, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, STATUS, REVIEWED_DATE, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update an organisation in the ORGANISATIONS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE ORGANISATIONS SET UPDATED_DATE=?, STATUS=? "
+      "UPDATE ORGANISATIONS SET UPDATED_DATE=?, STATUS=?, REVIEWED_DATE=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the organisations from the ORGANISATIONS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, STATUS, REVIEWED_DATE, CREATED_BY "
       + "FROM ORGANISATIONS ORDER BY CREATED_DATE";
 
     /**
@@ -98,6 +98,7 @@ public class OrganisationDAO extends BaseDAO
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
+        table.addColumn("REVIEWED_DATE", Types.TIMESTAMP, false);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("ORGANISATIONS_PK", new String[] {"ID"});
         table.addIndex("ORGANISATIONS_CODE", new String[] {"CODE"});
@@ -134,7 +135,8 @@ public class OrganisationDAO extends BaseDAO
                 organisation.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 organisation.setCode(rs.getString(4));
                 organisation.setStatus(rs.getString(5));
-                organisation.setCreatedBy(rs.getString(6));
+                organisation.setReviewedDateMillis(rs.getTimestamp(6, UTC) != null ? rs.getTimestamp(6, UTC).getTime() : 0L);
+                organisation.setCreatedBy(rs.getString(7));
                 ret = organisation;
             }
         }
@@ -174,7 +176,8 @@ public class OrganisationDAO extends BaseDAO
             insertStmt.setTimestamp(3, new Timestamp(organisation.getUpdatedDateMillis()), UTC);
             insertStmt.setString(4, organisation.getCode());
             insertStmt.setString(5, organisation.getStatus().name());
-            insertStmt.setString(6, organisation.getCreatedBy());
+            insertStmt.setTimestamp(6, new Timestamp(organisation.getReviewedDateMillis()), UTC);
+            insertStmt.setString(7, organisation.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created organisation '"+organisation.getId()+"' in ORGANISATIONS");
@@ -212,7 +215,8 @@ public class OrganisationDAO extends BaseDAO
         {
             updateStmt.setTimestamp(1, new Timestamp(organisation.getUpdatedDateMillis()), UTC);
             updateStmt.setString(2, organisation.getStatus().name());
-            updateStmt.setString(3, organisation.getId());
+            updateStmt.setTimestamp(3, new Timestamp(organisation.getReviewedDateMillis()), UTC);
+            updateStmt.setString(4, organisation.getId());
             updateStmt.executeUpdate();
 
             logger.info("Updated organisation '"+organisation.getId()+"' in ORGANISATIONS");
@@ -254,7 +258,8 @@ public class OrganisationDAO extends BaseDAO
                 organisation.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 organisation.setCode(rs.getString(4));
                 organisation.setStatus(rs.getString(5));
-                organisation.setCreatedBy(rs.getString(6));
+                organisation.setReviewedDateMillis(rs.getTimestamp(6, UTC) != null ? rs.getTimestamp(6, UTC).getTime() : 0L);
+                organisation.setCreatedBy(rs.getString(7));
                 ret.add(organisation);
             }
         }
