@@ -31,6 +31,7 @@ public enum MonitorStatus
     RETRYING("Retrying"),
     ERROR("Error"),
     SUSPENDED("Suspended"),
+    DISABLED("Disabled"),
     ALL("All");
 
     private String value;

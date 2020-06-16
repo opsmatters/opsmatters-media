@@ -242,17 +242,28 @@ public class RoundupArticle extends Article
     /**
      * Prepare the fields in the content using the given configuration.
      */
-    public void prepare(RoundupConfiguration config) throws DateTimeParseException
+    public void prepare(RoundupConfiguration config, WebPageConfiguration page)
+        throws DateTimeParseException
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
 
         // Use the default author if a content author wasn't found
-        if(config.hasField(Fields.AUTHOR) && getAuthor().length() == 0)
-            setAuthor(config.getField(Fields.AUTHOR));
+        if(getAuthor().length() == 0)
+        {
+            if(page.hasField(Fields.AUTHOR))
+                setAuthor(page.getField(Fields.AUTHOR));
+            else if(config.hasField(Fields.AUTHOR))
+                setAuthor(config.getField(Fields.AUTHOR));
+        }
 
         // Use the default author link if a content author link wasn't found
-        if(config.hasField(Fields.AUTHOR_LINK) && getAuthorLink().length() == 0)
-            setAuthorLink(config.getField(Fields.AUTHOR_LINK));
+        if(getAuthorLink().length() == 0)
+        {
+            if(page.hasField(Fields.AUTHOR_LINK))
+                setAuthorLink(page.getField(Fields.AUTHOR_LINK));
+            else if(config.hasField(Fields.AUTHOR_LINK))
+                setAuthorLink(config.getField(Fields.AUTHOR_LINK));
+        }
 
         // Use the default image if a content image wasn't found
         if(config.hasField(Fields.IMAGE) && getImage().length() == 0)
