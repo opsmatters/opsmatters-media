@@ -60,6 +60,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
 
     public static final String ANCHOR = "a";
     public static final String DIV = "div";
+    public static final String SECTION = "section";
 
     public static final String ROOT = "<root>";
     public static final String URL_CONTEXT = "url-context";
@@ -565,6 +566,8 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
 
             WebElement anchor = null;
             WebElement div = null;
+            WebElement section = null;
+
             if(field.getSelector().equals(ROOT)) // The anchor is the root node itself
             {
                 if(root.getTagName().equals(ANCHOR))
@@ -582,25 +585,36 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                         anchor = element;
                     else if(element.getTagName().equals(DIV))
                         div = element;
+                    else if(element.getTagName().equals(SECTION))
+                        section = element;
                 }
                 catch(NoSuchElementException e)
                 {
                 }
             }
 
+            String attribute = field.hasAttribute() ? field.getAttribute() : "href";
+
             if(anchor != null)
             {
-                ret = FormatUtils.getFormattedUrl(getBasePath(), anchor.getAttribute("href"), removeParameters);
+                ret = FormatUtils.getFormattedUrl(getBasePath(), anchor.getAttribute(attribute), removeParameters);
 
                 if(debug())
                     logger.info("Found anchor for "+type+" field "+field.getName()+": "+ret);
             }
             else if(div != null) // Sometimes the link is a div with a href attribute
             {
-                ret = FormatUtils.getFormattedUrl(getBasePath(), div.getAttribute("href"), removeParameters);
+                ret = FormatUtils.getFormattedUrl(getBasePath(), div.getAttribute(attribute), removeParameters);
 
                 if(debug())
                     logger.info("Found anchor div for "+type+" field "+field.getName()+": "+ret);
+            }
+            else if(section != null) // Sometimes the link is a section with a custom attribute
+            {
+                ret = FormatUtils.getFormattedUrl(getBasePath(), section.getAttribute(attribute), removeParameters);
+
+                if(debug())
+                    logger.info("Found anchor section for "+type+" field "+field.getName()+": "+ret);
             }
             else
             {
