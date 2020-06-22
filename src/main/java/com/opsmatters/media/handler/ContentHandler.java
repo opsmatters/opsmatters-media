@@ -32,9 +32,11 @@ import com.google.common.io.Files;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.config.content.FieldSource;
+import com.opsmatters.media.config.content.OrganisationContentConfiguration;
 import com.opsmatters.media.client.S3Client;
 import com.opsmatters.media.client.SshClient;
 import com.opsmatters.media.file.InputFileReader;
@@ -64,6 +66,8 @@ public class ContentHandler implements FieldSource
     private String dateFormat = Formats.CONTENT_DATE_FORMAT;
     private File file;
     private Fields fields;
+    private Map<String,OrganisationContentConfiguration> configurationMap;
+    private Map<String,Organisation> organisationMap;
 
     /**
      * Default constructor.
@@ -161,6 +165,54 @@ public class ContentHandler implements FieldSource
         if(this.fields == null)
             this.fields = new Fields();
         this.fields.putAll(fields);
+    }
+
+    /**
+     * Returns the configuration map for the handler.
+     */
+    public Map<String,OrganisationContentConfiguration> getConfigurationMap()
+    {
+        return configurationMap;
+    }
+
+    /**
+     * Sets the configuration map for the handler.
+     */
+    public void setConfigurationMap(Map<String,OrganisationContentConfiguration> configurationMap)
+    {
+        this.configurationMap = configurationMap;
+    }
+
+    /**
+     * Returns the configuration for the given code.
+     */
+    public OrganisationContentConfiguration getConfiguration(String name)
+    {
+        return configurationMap.get(name);
+    }
+
+    /**
+     * Returns the organisation map for the handler.
+     */
+    public Map<String,Organisation> getOrganisationMap()
+    {
+        return organisationMap;
+    }
+
+    /**
+     * Sets the organisation map for the handler.
+     */
+    public void setOrganisationMap(Map<String,Organisation> organisationMap)
+    {
+        this.organisationMap = organisationMap;
+    }
+
+    /**
+     * Returns the organisation for the given code.
+     */
+    public Organisation getOrganisation(String code)
+    {
+        return organisationMap.get(code);
     }
 
     /**
@@ -841,6 +893,28 @@ public class ContentHandler implements FieldSource
         {
             if(source != null)
                 handler.addFields(source.getFields());
+            return this;
+        }
+
+        /**
+         * Adds a configuration map to the handler.
+         * @param configurationMap The configuration map to add to the handler
+         * @return This object
+         */
+        public Builder withConfigurations(Map<String,OrganisationContentConfiguration> configurationMap)
+        {
+            handler.setConfigurationMap(configurationMap);
+            return this;
+        }
+
+        /**
+         * Adds an organisation map to the handler.
+         * @param organisationMap The organisation map to add to the handler
+         * @return This object
+         */
+        public Builder withOrganisations(Map<String,Organisation> organisationMap)
+        {
+            handler.setOrganisationMap(organisationMap);
             return this;
         }
 

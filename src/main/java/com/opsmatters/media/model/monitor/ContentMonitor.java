@@ -51,7 +51,7 @@ public class ContentMonitor extends BaseItem
     public static final String SUBSCRIBED_DATE = "subscribed-date";
 
     private String code = "";
-    private String organisationTitle = "";
+    private String organisation = "";
     private String name = "";
     private ContentType contentType;
     private Instant executedDate;
@@ -113,7 +113,7 @@ public class ContentMonitor extends BaseItem
         {
             super.copyAttributes(obj);
             setCode(obj.getCode());
-            setOrganisationTitle(obj.getOrganisationTitle());
+            setOrganisation(obj.getOrganisation());
             setName(obj.getName());
             setContentType(obj.getContentType());
             setStatus(obj.getStatus());
@@ -212,27 +212,27 @@ public class ContentMonitor extends BaseItem
     }
 
     /**
-     * Returns the monitor organisation title.
+     * Returns the monitor organisation name.
      */
-    public String getOrganisationTitle()
+    public String getOrganisation()
     {
-        return organisationTitle;
+        return organisation;
     }
 
     /**
-     * Sets the monitor organisation title.
+     * Sets the monitor organisation name.
      */
-    public void setOrganisationTitle(String organisationTitle)
+    public void setOrganisation(String organisation)
     {
-        this.organisationTitle = organisationTitle;
+        this.organisation = organisation;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the monitor organisation title has been set.
+     * Returns <CODE>true</CODE> if the monitor organisation name has been set.
      */
-    public boolean hasOrganisationTitle()
+    public boolean hasOrganisation()
     {
-        return organisationTitle != null && organisationTitle.length() > 0;
+        return organisation != null && organisation.length() > 0;
     }
 
     /**
@@ -792,7 +792,7 @@ public class ContentMonitor extends BaseItem
             .addTable(new String[][]
             {
                 {"ID", getGuid()},
-                {"Organisation", getOrganisationTitle()},
+                {"Organisation", getOrganisation()},
                 {"Status", getStatus().name()},
                 {"Updated", getUpdatedDateAsString(Formats.CONTENT_DATE_FORMAT)},
             });

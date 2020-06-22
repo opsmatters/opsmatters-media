@@ -20,41 +20,41 @@ import java.util.HashMap;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import org.json.JSONObject;
+import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.config.content.FieldSource;
 import com.opsmatters.media.model.OwnedItem;
-import com.opsmatters.media.model.content.OrganisationListing;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
+import com.opsmatters.media.util.StringUtils;
 
 /**
  * Class representing an organisation.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Organisation extends OwnedItem
+public class Organisation extends OwnedItem implements FieldSource
 {
     private String code = "";
-    private String title = "";
+    private String name = "";
+    private String website = "";
+    private String email = "";
+    private String facebookUsername = "";
+    private String twitterUsername = "";
+    private String hashtag = "";
+    private boolean sponsor = false;
+    private String thumbnail = "";
+    private String thumbnailText = "";
     private OrganisationStatus status = OrganisationStatus.NEW;
     private Map<ContentType, ContentTypeSummary> content = new HashMap<ContentType, ContentTypeSummary>();
     private Instant reviewedDate;
+    private int listingId = -1;
 
     /**
      * Default constructor.
      */
     public Organisation()
     {
-    }
-
-    /**
-     * Constructor that takes an organisation listing.
-     */
-    public Organisation(OrganisationListing listing)
-    {
-        setId(listing.getUniqueId());
-        setCreatedDate(listing.getPublishedDate());
-        setCode(listing.getCode());
-        if(listing.isPublished())
-            setStatus(OrganisationStatus.ACTIVE);
     }
 
     /**
@@ -66,10 +66,90 @@ public class Organisation extends OwnedItem
         {
             super.copyAttributes(obj);
             setCode(obj.getCode());
-            setTitle(obj.getTitle());
+            setName(obj.getName());
+            setWebsite(new String(obj.getWebsite() != null ? obj.getWebsite() : ""));
+            setEmail(new String(obj.getEmail() != null ? obj.getEmail() : ""));
+            setFacebookUsername(new String(obj.getFacebookUsername() != null ? obj.getFacebookUsername() : ""));
+            setTwitterUsername(new String(obj.getTwitterUsername() != null ? obj.getTwitterUsername() : ""));
+            setHashtag(new String(obj.getHashtag() != null ? obj.getHashtag() : ""));
+            setSponsor(obj.isSponsor());
+            setThumbnail(new String(obj.getThumbnail() != null ? obj.getThumbnail() : ""));
+            setThumbnailText(new String(obj.getThumbnailText() != null ? obj.getThumbnailText() : ""));
             setStatus(obj.getStatus());
             setReviewedDate(obj.getReviewedDate());
+            setListingId(obj.getListingId());
         }
+    }
+
+    /**
+     * Returns the attributes as a JSON object.
+     */
+    public JSONObject getAttributes()
+    {
+        JSONObject ret = new JSONObject();
+
+        ret.put(Fields.SPONSOR, isSponsor());
+        ret.putOpt(Fields.WEBSITE, getWebsite());
+        ret.putOpt(Fields.EMAIL, getEmail());
+        ret.putOpt(Fields.HASHTAG, getHashtag());
+        ret.putOpt(Fields.TWITTER_USERNAME, getTwitterUsername());
+        ret.putOpt(Fields.FACEBOOK_USERNAME, getFacebookUsername());
+        ret.putOpt(Fields.THUMBNAIL, getThumbnail());
+        ret.putOpt(Fields.THUMBNAIL_TEXT, getThumbnailText());
+
+        return ret;
+    }
+
+    /**
+     * Initialise the attributes using a JSON object.
+     */
+    public void setAttributes(JSONObject obj)
+    {
+        setSponsor(obj.optBoolean(Fields.SPONSOR, false));
+        setWebsite(obj.optString(Fields.WEBSITE));
+        setEmail(obj.optString(Fields.EMAIL));
+        setHashtag(obj.optString(Fields.HASHTAG));
+        setTwitterUsername(obj.optString(Fields.TWITTER_USERNAME));
+        setFacebookUsername(obj.optString(Fields.FACEBOOK_USERNAME));
+        setThumbnail(obj.optString(Fields.THUMBNAIL));
+        setThumbnailText(obj.optString(Fields.THUMBNAIL_TEXT));
+    }
+
+    /**
+     * Returns the fields required by other objects.
+     */
+    public Fields getFields()
+    {
+        Fields ret = new Fields();
+
+        ret.put(Fields.SPONSOR, isSponsor() ? "1" : "0");
+        ret.put(Fields.WEBSITE, getWebsite());
+        ret.put(Fields.EMAIL, getEmail());
+        ret.put(Fields.FACEBOOK_USERNAME, getFacebookUsername());
+        ret.put(Fields.TWITTER_USERNAME, getTwitterUsername());
+        ret.put(Fields.HASHTAG, getHashtag());
+        ret.put(Fields.THUMBNAIL, getThumbnail());
+        ret.put(Fields.THUMBNAIL_TEXT, getThumbnailText());
+        ret.put(Fields.PUBLISHED, isActive() ? "1" : "0");
+
+        return ret;
+    }
+
+    /**
+     * Returns a new organisation with defaults.
+     */
+    public static Organisation getDefault()
+    {
+        Organisation organisation = new Organisation();
+
+        organisation.setId(StringUtils.getUUID(null));
+        organisation.setCode("TBD");
+        organisation.setName("New Organisation");
+        organisation.setCreatedDate(Instant.now());
+        organisation.setThumbnail("tbd-thumb.png");
+        organisation.setThumbnailText("tbd logo");
+
+        return organisation;
     }
 
     /**
@@ -97,27 +177,195 @@ public class Organisation extends OwnedItem
     }
 
     /**
-     * Returns the organisation title.
+     * Returns the organisation name.
      */
-    public String getTitle()
+    public String getName()
     {
-        return title;
+        return name;
     }
 
     /**
-     * Sets the organisation title.
+     * Sets the organisation name.
      */
-    public void setTitle(String title)
+    public void setName(String name)
     {
-        this.title = title;
+        this.name = name;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the organisation title has been set.
+     * Returns <CODE>true</CODE> if the organisation name has been set.
      */
-    public boolean hasTitle()
+    public boolean hasName()
     {
-        return title != null && title.length() > 0;
+        return name != null && name.length() > 0;
+    }
+
+    /**
+     * Returns the URL for the organisation.
+     */
+    public String getUrl(String basePath)
+    {
+        return String.format("%s/organisations/%s", basePath, StringUtils.getNormalisedName(getName()));
+    }
+
+    /**
+     * Returns the organisation's website.
+     */
+    public String getWebsite()
+    {
+        return website;
+    }
+
+    /**
+     * Sets the organisation's website.
+     */
+    public void setWebsite(String website)
+    {
+        this.website = website;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this organisation has a website address.
+     */
+    public boolean hasWebsite()
+    {
+        return website != null && website.length() > 0;
+    }
+
+    /**
+     * Returns the organisation's email.
+     */
+    public String getEmail()
+    {
+        return email;
+    }
+
+    /**
+     * Sets the organisation's email.
+     */
+    public void setEmail(String email)
+    {
+        this.email = email;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this organisation is a sponsor.
+     */
+    public boolean isSponsor()
+    {
+        return sponsor;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this organisation is a sponsor.
+     */
+    public Boolean getSponsorObject()
+    {
+        return new Boolean(isSponsor());
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this organisation is a sponsor.
+     */
+    public void setSponsor(boolean sponsor)
+    {
+        this.sponsor = sponsor;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this organisation is a sponsor.
+     */
+    public void setSponsorObject(Boolean sponsor)
+    {
+        setSponsor(sponsor != null && sponsor.booleanValue());
+    }
+
+    /**
+     * Returns the organisation's facebook username.
+     */
+    public String getFacebookUsername()
+    {
+        return facebookUsername;
+    }
+
+    /**
+     * Sets the organisation's facebook username.
+     */
+    public void setFacebookUsername(String facebookUsername)
+    {
+        this.facebookUsername = facebookUsername;
+    }
+
+    /**
+     * Returns the organisation's twitter username.
+     */
+    public String getTwitterUsername()
+    {
+        return twitterUsername;
+    }
+
+    /**
+     * Sets the organisation's twitter username.
+     */
+    public void setTwitterUsername(String twitterUsername)
+    {
+        this.twitterUsername = twitterUsername;
+    }
+
+    /**
+     * Returns the organisation's social hashtag.
+     */
+    public String getHashtag()
+    {
+        return hashtag;
+    }
+
+    /**
+     * Sets the organisation's social hashtag.
+     */
+    public void setHashtag(String hashtag)
+    {
+        this.hashtag = hashtag;
+    }
+
+    /**
+     * Returns the organisation's logo thumbnail.
+     */
+    public String getThumbnail()
+    {
+        return thumbnail;
+    }
+
+    /**
+     * Sets the organisation's logo thumbnail.
+     */
+    public void setThumbnail(String thumbnail)
+    {
+        this.thumbnail = thumbnail;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this organisation has a thumbnail image.
+     */
+    public boolean hasThumbnail()
+    {
+        return thumbnail != null && thumbnail.length() > 0;
+    }
+
+    /**
+     * Returns the organisation's logo thumbnail text.
+     */
+    public String getThumbnailText()
+    {
+        return thumbnailText;
+    }
+
+    /**
+     * Sets the organisation's logo thumbnail text.
+     */
+    public void setThumbnailText(String thumbnailText)
+    {
+        this.thumbnailText = thumbnailText;
     }
 
     /**
@@ -126,6 +374,14 @@ public class Organisation extends OwnedItem
     public OrganisationStatus getStatus()
     {
         return status;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the organisation is ACTIVE.
+     */
+    public boolean isActive()
+    {
+        return status == OrganisationStatus.ACTIVE;
     }
 
     /**
@@ -142,17 +398,6 @@ public class Organisation extends OwnedItem
     public void setStatus(OrganisationStatus status)
     {
         this.status = status;
-    }
-
-    /**
-     * Sets the organisation status by the given user.
-     */
-    public void setStatus(OrganisationListing listing, String username)
-    {
-        if(listing.isPublished())
-            setStatus(OrganisationStatus.ACTIVE);
-        setUpdatedDate(Instant.now());
-        setCreatedBy(username);
     }
 
     /**
@@ -246,11 +491,35 @@ public class Organisation extends OwnedItem
     }
 
     /**
+     * Returns the id of the organisation listing.
+     */
+    public int getListingId()
+    {
+        return listingId;
+    }
+
+    /**
+     * Sets the id of the organisation listing.
+     */
+    public void setListingId(int listingId)
+    {
+        this.listingId = listingId;
+    }
+
+    /**
      * Returns the content type summaries.
      */
     public Map<ContentType,ContentTypeSummary> getContent()
     {
         return content;
+    }
+
+    /**
+     * Returns <CODE>true</CODE>if the organisation has content type summaries.
+     */
+    public boolean hasContent()
+    {
+        return content != null && content.size() > 0;
     }
 
     /**

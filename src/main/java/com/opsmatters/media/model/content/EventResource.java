@@ -226,9 +226,9 @@ public class EventResource extends Resource
     }
 
     /**
-     * Use the given organisation listing to set defaults for the resource.
+     * Use the given organisation to set defaults for the resource.
      */
-    public void init(OrganisationListing listing)
+    public void init(Organisation organisation)
     {
     }
 

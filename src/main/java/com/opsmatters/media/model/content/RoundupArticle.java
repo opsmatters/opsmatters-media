@@ -206,11 +206,11 @@ public class RoundupArticle extends Article
     }
 
     /**
-     * Use the given organisation listing to set defaults for the content.
+     * Use the given organisation to set defaults for the content.
      */
-    public void init(OrganisationListing listing)
+    public void init(Organisation organisation)
     {
-        setCreatorEmail(listing.getEmail());
+        setCreatorEmail(organisation.getEmail());
     }
 
     /**

@@ -25,20 +25,20 @@ import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.OrganisationListing;
 
 /**
- * Class that represents the configuration for organisation content items.
+ * Class that represents the configuration for an organisation's listing.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrganisationConfiguration extends ContentConfiguration<OrganisationListing>
+public class OrganisationListingConfiguration extends ContentConfiguration<OrganisationListing>
 {
-    private static final Logger logger = Logger.getLogger(OrganisationConfiguration.class.getName());
+    private static final Logger logger = Logger.getLogger(OrganisationListingConfiguration.class.getName());
 
     public static final String FILENAME = "organisations.yml";
 
     /**
      * Default constructor.
      */
-    public OrganisationConfiguration(String name)
+    public OrganisationListingConfiguration(String name)
     {
         super(name);
     }
@@ -46,7 +46,7 @@ public class OrganisationConfiguration extends ContentConfiguration<Organisation
     /**
      * Copy constructor.
      */
-    public OrganisationConfiguration(OrganisationConfiguration obj)
+    public OrganisationListingConfiguration(OrganisationListingConfiguration obj)
     {
         super(obj != null ? obj.getName() : null);
         copyAttributes(obj);
@@ -55,7 +55,7 @@ public class OrganisationConfiguration extends ContentConfiguration<Organisation
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(OrganisationConfiguration obj)
+    public void copyAttributes(OrganisationListingConfiguration obj)
     {
         if(obj != null)
         {
@@ -144,9 +144,9 @@ public class OrganisationConfiguration extends ContentConfiguration<Organisation
          * Returns the configuration
          * @return The configuration
          */
-        public OrganisationConfiguration build(boolean read)
+        public OrganisationListingConfiguration build(boolean read)
         {
-            OrganisationConfiguration ret = new OrganisationConfiguration(name);
+            OrganisationListingConfiguration ret = new OrganisationListingConfiguration(name);
 
             if(read)
             {

@@ -29,7 +29,7 @@ import com.opsmatters.media.util.TextDiff;
 public class ContentChange extends OwnedItem
 {
     private String code = "";
-    private String organisationTitle = "";
+    private String organisation = "";
     private ChangeStatus status;
     private String snapshotBefore = "";
     private String snapshotAfter = "";
@@ -77,7 +77,7 @@ public class ContentChange extends OwnedItem
         {
             super.copyAttributes(obj);
             setCode(obj.getCode());
-            setOrganisationTitle(obj.getOrganisationTitle());
+            setOrganisation(obj.getOrganisation());
             setStatus(obj.getStatus());
             setSnapshotBefore(obj.getSnapshotBefore());
             setSnapshotAfter(obj.getSnapshotAfter());
@@ -112,27 +112,27 @@ public class ContentChange extends OwnedItem
     }
 
     /**
-     * Returns the monitor organisation title.
+     * Returns the monitor organisation name.
      */
-    public String getOrganisationTitle()
+    public String getOrganisation()
     {
-        return organisationTitle;
+        return organisation;
     }
 
     /**
-     * Sets the monitor organisation title.
+     * Sets the monitor organisation name.
      */
-    public void setOrganisationTitle(String organisationTitle)
+    public void setOrganisation(String organisation)
     {
-        this.organisationTitle = organisationTitle;
+        this.organisation = organisation;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the monitor organisation title has been set.
+     * Returns <CODE>true</CODE> if the monitor organisation name has been set.
      */
-    public boolean hasOrganisationTitle()
+    public boolean hasOrganisation()
     {
-        return organisationTitle != null && organisationTitle.length() > 0;
+        return organisation != null && organisation.length() > 0;
     }
 
     /**

@@ -20,10 +20,8 @@ import java.util.Calendar;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
-import com.opsmatters.media.config.content.OrganisationConfiguration;
+import com.opsmatters.media.config.content.OrganisationListingConfiguration;
 import com.opsmatters.media.config.content.Fields;
-import com.opsmatters.media.config.content.FieldSource;
-import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 
@@ -32,11 +30,10 @@ import com.opsmatters.media.util.TimeUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrganisationListing extends ContentItem implements FieldSource
+public class OrganisationListing extends ContentItem
 {
     private Instant publishedDate;
     private String title = "";
-    private boolean sponsor = false;
     private OrganisationTabs tabs = OrganisationTabs.ALL;
     private int content = 0;
     private String summary = "";
@@ -45,12 +42,8 @@ public class OrganisationListing extends ContentItem implements FieldSource
     private String founded = "";
     private String location = "";
     private String stockSymbol = "";
-    private String website = "";
-    private String email = "";
     private String facebook = "";
-    private String facebookUsername = "";
     private String twitter = "";
-    private String twitterUsername = "";
     private String linkedin = "";
     private String instagram = "";
     private String youtube = "";
@@ -61,11 +54,8 @@ public class OrganisationListing extends ContentItem implements FieldSource
     private String alternatives = "";
     private String features = "";
     private String tags = "";
-    private String hashtag = "";
     private String image = "";
     private String imageText = "";
-    private String thumbnail = "";
-    private String thumbnailText = "";
 
     /**
      * Default constructor.
@@ -91,7 +81,6 @@ public class OrganisationListing extends ContentItem implements FieldSource
 
         setPublishedDate(obj.getPublishedDate());
         setTitle(new String(obj.getTitle() != null ? obj.getTitle() : ""));
-        setSponsor(obj.isSponsor());
         setTabs(obj.getTabs());
         setSummary(new String(obj.getSummary() != null ? obj.getSummary() : ""));
         setDescription(new String(obj.getDescription() != null ? obj.getDescription() : ""));
@@ -99,12 +88,8 @@ public class OrganisationListing extends ContentItem implements FieldSource
         setFounded(new String(obj.getFounded() != null ? obj.getFounded() : ""));
         setLocation(new String(obj.getLocation() != null ? obj.getLocation() : ""));
         setStockSymbol(new String(obj.getStockSymbol() != null ? obj.getStockSymbol() : ""));
-        setWebsite(new String(obj.getWebsite() != null ? obj.getWebsite() : ""));
-        setEmail(new String(obj.getEmail() != null ? obj.getEmail() : ""));
         setFacebook(new String(obj.getFacebook() != null ? obj.getFacebook() : ""));
-        setFacebookUsername(new String(obj.getFacebookUsername() != null ? obj.getFacebookUsername() : ""));
         setTwitter(new String(obj.getTwitter() != null ? obj.getTwitter() : ""));
-        setTwitterUsername(new String(obj.getTwitterUsername() != null ? obj.getTwitterUsername() : ""));
         setLinkedIn(new String(obj.getLinkedIn() != null ? obj.getLinkedIn() : ""));
         setInstagram(new String(obj.getInstagram() != null ? obj.getInstagram() : ""));
         setYouTube(new String(obj.getYouTube() != null ? obj.getYouTube() : ""));
@@ -115,11 +100,8 @@ public class OrganisationListing extends ContentItem implements FieldSource
         setAlternatives(new String(obj.getAlternatives() != null ? obj.getAlternatives() : ""));
         setFeatures(new String(obj.getFeatures() != null ? obj.getFeatures() : ""));
         setTags(new String(obj.getTags() != null ? obj.getTags() : ""));
-        setHashtag(new String(obj.getHashtag() != null ? obj.getHashtag() : ""));
         setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
         setImageText(new String(obj.getImageText() != null ? obj.getImageText() : ""));
-        setThumbnail(new String(obj.getThumbnail() != null ? obj.getThumbnail() : ""));
-        setThumbnailText(new String(obj.getThumbnailText() != null ? obj.getThumbnailText() : ""));
     }
 
     /**
@@ -158,16 +140,15 @@ public class OrganisationListing extends ContentItem implements FieldSource
         String alternatives = values[27];
         String features = values[28];
         String tags = values[29];
-        String social = values[30];
-        String hashtag = values[31];
-        String image = values[32];
-        String imageText = values[33];
-        String imageTitle = values[34]; // not used
-        String thumbnail = values[35];
-        String thumbnailText = values[36];
-        String thumbnailTitle = values[37]; // not used
-        String createdBy = values[38];
-        String published = values[39];
+        String hashtag = values[30];
+        String image = values[31];
+        String imageText = values[32];
+        String imageTitle = values[33]; // not used
+        String thumbnail = values[34];
+        String thumbnailText = values[35];
+        String thumbnailTitle = values[36]; // not used
+        String createdBy = values[37];
+        String published = values[38];
 
         // Remove feeds path from images
         if(image.indexOf("/") != -1)
@@ -179,7 +160,7 @@ public class OrganisationListing extends ContentItem implements FieldSource
         setPublishedDateAsString(pubdate);
         setCode(code);
         setTitle(title);
-        setSponsor(sponsor != null && sponsor.equals("1"));
+        //setSponsor(sponsor != null && sponsor.equals("1"));
         setTabs(OrganisationTabs.valueOf(tabs));
         setSummary(summary);
         setDescription(description);
@@ -187,12 +168,12 @@ public class OrganisationListing extends ContentItem implements FieldSource
         setFounded(founded);
         setLocation(location);
         setStockSymbol(stockSymbol);
-        setWebsite(website);
-        setEmail(email);
+        //setWebsite(website);
+        //setEmail(email);
         setFacebook(facebook);
-        setFacebookUsername(facebookUsername);
+        //setFacebookUsername(facebookUsername);
         setTwitter(twitter);
-        setTwitterUsername(twitterUsername);
+        //setTwitterUsername(twitterUsername);
         setLinkedIn(linkedin);
         setInstagram(instagram);
         setYouTube(youtube);
@@ -203,14 +184,13 @@ public class OrganisationListing extends ContentItem implements FieldSource
         setAlternatives(alternatives);
         setFeatures(features);
         setTags(tags);
-        setSocial(social != null && social.equals("1"));
-        setHashtag(hashtag);
+        //setHashtag(hashtag);
         setImage(image);
         setImageText(imageText);
-        setThumbnail(thumbnail);
-        setThumbnailText(thumbnailText);
+        //setThumbnail(thumbnail);
+        //setThumbnailText(thumbnailText);
         setCreatedBy(createdBy);
-        setPublished(published != null && published.equals("1"));
+        //setPublished(published != null && published.equals("1"));
     }
 
     /**
@@ -228,19 +208,14 @@ public class OrganisationListing extends ContentItem implements FieldSource
     {
         super.fromJson(obj);
 
-        setSponsor(obj.optBoolean(Fields.SPONSOR, false));
         setTabs(OrganisationTabs.valueOf(obj.optString(Fields.TABS)));
         setDescription(obj.optString(Fields.DESCRIPTION));
         setAdvert(obj.optString(Fields.ADVERT));
         setFounded(obj.optString(Fields.FOUNDED));
         setLocation(obj.optString(Fields.LOCATION));
         setStockSymbol(obj.optString(Fields.STOCK_SYMBOL));
-        setWebsite(obj.optString(Fields.WEBSITE));
-        setEmail(obj.optString(Fields.EMAIL));
         setFacebook(obj.optString(Fields.FACEBOOK));
-        setFacebookUsername(obj.optString(Fields.FACEBOOK_USERNAME));
         setTwitter(obj.optString(Fields.TWITTER));
-        setTwitterUsername(obj.optString(Fields.TWITTER_USERNAME));
         setLinkedIn(obj.optString(Fields.LINKEDIN));
         setInstagram(obj.optString(Fields.INSTAGRAM));
         setYouTube(obj.optString(Fields.YOUTUBE));
@@ -251,11 +226,8 @@ public class OrganisationListing extends ContentItem implements FieldSource
         setAlternatives(obj.optString(Fields.ALTERNATIVES));
         setFeatures(obj.optString(Fields.FEATURES));
         setTags(obj.optString(Fields.TAGS));
-        setHashtag(obj.optString(Fields.HASHTAG));
         setImage(obj.optString(Fields.IMAGE));
         setImageText(obj.optString(Fields.IMAGE_TEXT));
-        setThumbnail(obj.optString(Fields.THUMBNAIL));
-        setThumbnailText(obj.optString(Fields.THUMBNAIL_TEXT));
     }
 
     /**
@@ -265,7 +237,6 @@ public class OrganisationListing extends ContentItem implements FieldSource
     {
         JSONObject ret = super.toJson();
 
-        ret.put(Fields.SPONSOR, isSponsor());
         ret.put(Fields.TABS, getTabs().name());
         ret.put(Fields.CONTENT, getContent());
         ret.putOpt(Fields.DESCRIPTION, getDescription());
@@ -273,12 +244,8 @@ public class OrganisationListing extends ContentItem implements FieldSource
         ret.putOpt(Fields.FOUNDED, getFounded());
         ret.putOpt(Fields.LOCATION, getLocation());
         ret.putOpt(Fields.STOCK_SYMBOL, getStockSymbol());
-        ret.putOpt(Fields.WEBSITE, getWebsite());
-        ret.putOpt(Fields.EMAIL, getEmail());
         ret.putOpt(Fields.FACEBOOK, getFacebook());
-        ret.putOpt(Fields.FACEBOOK_USERNAME, getFacebookUsername());
         ret.putOpt(Fields.TWITTER, getTwitter());
-        ret.putOpt(Fields.TWITTER_USERNAME, getTwitterUsername());
         ret.putOpt(Fields.LINKEDIN, getLinkedIn());
         ret.putOpt(Fields.INSTAGRAM, getInstagram());
         ret.putOpt(Fields.YOUTUBE, getYouTube());
@@ -289,11 +256,8 @@ public class OrganisationListing extends ContentItem implements FieldSource
         ret.putOpt(Fields.ALTERNATIVES, getAlternatives());
         ret.putOpt(Fields.FEATURES, getFeatures());
         ret.putOpt(Fields.TAGS, getTags());
-        ret.putOpt(Fields.HASHTAG, getHashtag());
         ret.putOpt(Fields.IMAGE, getImage());
         ret.putOpt(Fields.IMAGE_TEXT, getImageText());
-        ret.putOpt(Fields.THUMBNAIL, getThumbnail());
-        ret.putOpt(Fields.THUMBNAIL_TEXT, getThumbnailText());
 
         return ret;
     }
@@ -307,7 +271,6 @@ public class OrganisationListing extends ContentItem implements FieldSource
         Fields ret = super.toFields();
 
         ret.put(Fields.CODE, getCode());
-        ret.put(Fields.SPONSOR, isSponsor() ? "1" : "0");
         ret.put(Fields.TABS, getTabs().name());
         ret.put(Fields.CONTENT, Integer.toString(getTabs().value()));
         ret.put(Fields.DESCRIPTION, getDescription());
@@ -315,12 +278,8 @@ public class OrganisationListing extends ContentItem implements FieldSource
         ret.put(Fields.FOUNDED, getFounded());
         ret.put(Fields.LOCATION, getLocation());
         ret.put(Fields.STOCK_SYMBOL, getStockSymbol());
-        ret.put(Fields.WEBSITE, getWebsite());
-        ret.put(Fields.EMAIL, getEmail());
         ret.put(Fields.FACEBOOK, getFacebook());
-        ret.put(Fields.FACEBOOK_USERNAME, getFacebookUsername());
         ret.put(Fields.TWITTER, getTwitter());
-        ret.put(Fields.TWITTER_USERNAME, getTwitterUsername());
         ret.put(Fields.LINKEDIN, getLinkedIn());
         ret.put(Fields.INSTAGRAM, getInstagram());
         ret.put(Fields.YOUTUBE, getYouTube());
@@ -331,25 +290,8 @@ public class OrganisationListing extends ContentItem implements FieldSource
         ret.put(Fields.ALTERNATIVES, getAlternatives());
         ret.put(Fields.FEATURES, getFeatures());
         ret.put(Fields.TAGS, getTags());
-        ret.put(Fields.SOCIAL, hasSocial() ? "1" : "0");
-        ret.put(Fields.HASHTAG, getHashtag());
         ret.put(Fields.IMAGE, getImage());
         ret.put(Fields.IMAGE_TEXT, getImageText());
-        ret.put(Fields.THUMBNAIL, getThumbnail());
-        ret.put(Fields.THUMBNAIL_TEXT, getThumbnailText());
-
-        return ret;
-    }
-
-    /**
-     * Returns the fields required by other objects.
-     */
-    public Fields getFields()
-    {
-        Fields ret = new Fields();
-
-        ret.put(Fields.THUMBNAIL, getThumbnail());
-        ret.put(Fields.THUMBNAIL_TEXT, getThumbnailText());
 
         return ret;
     }
@@ -357,20 +299,18 @@ public class OrganisationListing extends ContentItem implements FieldSource
     /**
      * Returns a new organisation listing with defaults.
      */
-    public static OrganisationListing getDefault(OrganisationConfiguration config) throws DateTimeParseException
+    public static OrganisationListing getDefault(Organisation organisation, OrganisationListingConfiguration config)
+        throws DateTimeParseException
     {
         OrganisationListing listing = new OrganisationListing();
 
         listing.init();
-        listing.setCode("TBD");
-        listing.setTitle("New Organisation");
+        listing.setCode(organisation.getCode());
+        listing.setTitle(organisation.getName());
         listing.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
         listing.setFounded(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
-        listing.setImage("tbd-logo.png");
-        listing.setImageText("tbd logo");
-        listing.setThumbnail("tbd-thumb.png");
-        listing.setThumbnailText("tbd logo");
-        listing.setSocial(true);
+        listing.setImage(String.format("%s-thumb.png", listing.getTitle()));
+        listing.setImageText(String.format("%s logo", listing.getTitle().replaceAll("-", " ")));
 
         return listing;
     }
@@ -378,7 +318,7 @@ public class OrganisationListing extends ContentItem implements FieldSource
     /**
      * Use the given configuration to set defaults for the organisation listing.
      */
-    public void init(OrganisationConfiguration config)
+    public void init(OrganisationListingConfiguration config)
     {
         super.init(config);
 
@@ -394,7 +334,7 @@ public class OrganisationListing extends ContentItem implements FieldSource
     /**
      * Prepare the fields in the organisation listing using the given configuration.
      */
-    public void prepare(OrganisationConfiguration config) throws DateTimeParseException
+    public void prepare(OrganisationListingConfiguration config) throws DateTimeParseException
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
     }
@@ -415,14 +355,6 @@ public class OrganisationListing extends ContentItem implements FieldSource
     public String toString()
     {
         return getTitle();
-    }
-
-    /**
-     * Returns the URL for the organisation.
-     */
-    public String getUrl(String basePath)
-    {
-        return String.format("%s/organisations/%s", basePath, getNormalisedTitle());
     }
 
     /**
@@ -459,56 +391,6 @@ public class OrganisationListing extends ContentItem implements FieldSource
     public void setTitle(String title)
     {
         this.title = title;
-    }
-
-    /**
-     * Returns the organisation title normalized for a URL context.
-     */
-    public String getNormalisedTitle()
-    {
-        String ret = title;
-
-        if(ret != null)
-        {
-            ret = ret.toLowerCase()
-                .replaceAll(" ","-")
-                .replaceAll("\\.","-")
-                .replaceAll("&","");
-        }
-
-        return ret;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if this organisation is a sponsor.
-     */
-    public boolean isSponsor()
-    {
-        return sponsor;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if this organisation is a sponsor.
-     */
-    public Boolean getSponsorObject()
-    {
-        return new Boolean(isSponsor());
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if this organisation is a sponsor.
-     */
-    public void setSponsor(boolean sponsor)
-    {
-        this.sponsor = sponsor;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if this organisation is a sponsor.
-     */
-    public void setSponsorObject(Boolean sponsor)
-    {
-        setSponsor(sponsor != null && sponsor.booleanValue());
     }
 
     /**
@@ -643,46 +525,6 @@ public class OrganisationListing extends ContentItem implements FieldSource
     }
 
     /**
-     * Returns the organisation's website.
-     */
-    public String getWebsite()
-    {
-        return website;
-    }
-
-    /**
-     * Sets the organisation's website.
-     */
-    public void setWebsite(String website)
-    {
-        this.website = website;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if this organisation has a website address.
-     */
-    public boolean hasWebsite()
-    {
-        return website != null && website.length() > 0;
-    }
-
-    /**
-     * Returns the organisation's email.
-     */
-    public String getEmail()
-    {
-        return email;
-    }
-
-    /**
-     * Sets the organisation's email.
-     */
-    public void setEmail(String email)
-    {
-        this.email = email;
-    }
-
-    /**
      * Returns the organisation's facebook address.
      */
     public String getFacebook()
@@ -707,22 +549,6 @@ public class OrganisationListing extends ContentItem implements FieldSource
     }
 
     /**
-     * Returns the organisation's facebook username.
-     */
-    public String getFacebookUsername()
-    {
-        return facebookUsername;
-    }
-
-    /**
-     * Sets the organisation's facebook username.
-     */
-    public void setFacebookUsername(String facebookUsername)
-    {
-        this.facebookUsername = facebookUsername;
-    }
-
-    /**
      * Returns the organisation's twitter address.
      */
     public String getTwitter()
@@ -744,22 +570,6 @@ public class OrganisationListing extends ContentItem implements FieldSource
     public boolean hasTwitter()
     {
         return twitter != null && twitter.length() > 0;
-    }
-
-    /**
-     * Returns the organisation's twitter username.
-     */
-    public String getTwitterUsername()
-    {
-        return twitterUsername;
-    }
-
-    /**
-     * Sets the organisation's twitter username.
-     */
-    public void setTwitterUsername(String twitterUsername)
-    {
-        this.twitterUsername = twitterUsername;
     }
 
     /**
@@ -1035,22 +845,6 @@ public class OrganisationListing extends ContentItem implements FieldSource
     }
 
     /**
-     * Returns the organisation's social hashtag.
-     */
-    public String getHashtag()
-    {
-        return hashtag;
-    }
-
-    /**
-     * Sets the organisation's social hashtag.
-     */
-    public void setHashtag(String hashtag)
-    {
-        this.hashtag = hashtag;
-    }
-
-    /**
      * Returns the organisation's logo image.
      */
     public String getImage()
@@ -1088,45 +882,5 @@ public class OrganisationListing extends ContentItem implements FieldSource
     public void setImageText(String imageText)
     {
         this.imageText = imageText;
-    }
-
-    /**
-     * Returns the organisation's logo thumbnail.
-     */
-    public String getThumbnail()
-    {
-        return thumbnail;
-    }
-
-    /**
-     * Sets the organisation's logo thumbnail.
-     */
-    public void setThumbnail(String thumbnail)
-    {
-        this.thumbnail = thumbnail;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if this organisation has a thumbnail image.
-     */
-    public boolean hasThumbnail()
-    {
-        return thumbnail != null && thumbnail.length() > 0;
-    }
-
-    /**
-     * Returns the organisation's logo thumbnail text.
-     */
-    public String getThumbnailText()
-    {
-        return thumbnailText;
-    }
-
-    /**
-     * Sets the organisation's logo thumbnail text.
-     */
-    public void setThumbnailText(String thumbnailText)
-    {
-        this.thumbnailText = thumbnailText;
     }
 }

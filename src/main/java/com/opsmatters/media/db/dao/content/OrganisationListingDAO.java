@@ -71,17 +71,15 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO ORGANISATION_LISTINGS"
-      + "( ID, PUBLISHED_DATE, UUID, CODE, TITLE, SPONSOR, TABS, "
-      + "PUBLISHED, CREATED_BY, ATTRIBUTES )"
+      + "( ID, PUBLISHED_DATE, UUID, CODE, TITLE, ATTRIBUTES, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update an organisation listing in the ORGANISATION_LISTINGS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE ORGANISATION_LISTINGS SET PUBLISHED_DATE=?, UUID=?, CODE=?, TITLE=?, SPONSOR=?, TABS=?, "
-      + "PUBLISHED=?, ATTRIBUTES=? "
+      "UPDATE ORGANISATION_LISTINGS SET PUBLISHED_DATE=?, UUID=?, CODE=?, TITLE=?, ATTRIBUTES=? "
       + "WHERE ID=?";
 
     /**
@@ -115,9 +113,6 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
         table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("TITLE", Types.VARCHAR, 60, true);
-        table.addColumn("SPONSOR", Types.BOOLEAN, true);
-        table.addColumn("TABS", Types.VARCHAR, 10, true);
-        table.addColumn("PUBLISHED", Types.BOOLEAN, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.setPrimaryKey("ORGANISATION_LISTINGS_PK", new String[] {"ID"});
@@ -388,13 +383,10 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
             insertStmt.setString(3, listing.getUuid());
             insertStmt.setString(4, listing.getCode());
             insertStmt.setString(5, listing.getTitle());
-            insertStmt.setBoolean(6, listing.isSponsor());
-            insertStmt.setString(7, listing.getTabs().name());
-            insertStmt.setBoolean(8, listing.isPublished());
-            insertStmt.setString(9, listing.getCreatedBy());
             String attributes = listing.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(10, reader, attributes.length());
+            insertStmt.setCharacterStream(6, reader, attributes.length());
+            insertStmt.setString(7, listing.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s, code=%s)", 
@@ -445,13 +437,10 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
             updateStmt.setString(2, listing.getUuid());
             updateStmt.setString(3, listing.getCode());
             updateStmt.setString(4, listing.getTitle());
-            updateStmt.setBoolean(5, listing.isSponsor());
-            updateStmt.setString(6, listing.getTabs().name());
-            updateStmt.setBoolean(7, listing.isPublished());
             String attributes = listing.toJson().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(8, reader, attributes.length());
-            updateStmt.setInt(9, listing.getId());
+            updateStmt.setCharacterStream(5, reader, attributes.length());
+            updateStmt.setInt(6, listing.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s, code=%s)", 

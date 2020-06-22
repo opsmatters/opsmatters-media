@@ -20,20 +20,20 @@ import java.util.logging.Logger;
 import com.opsmatters.media.config.ConfigurationFile;
 
 /**
- * Class representing the organisations configuration file.
+ * Class representing the organisation's listing configuration file.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrganisationConfigurationFile extends ConfigurationFile
+public class OrganisationListingConfigurationFile extends ConfigurationFile
 {
-    private static final Logger logger = Logger.getLogger(OrganisationConfigurationFile.class.getName());
+    private static final Logger logger = Logger.getLogger(OrganisationListingConfigurationFile.class.getName());
 
-    private OrganisationConfiguration config;
+    private OrganisationListingConfiguration config;
 
     /**
      * Constructor that takes a filename.
      */
-    public OrganisationConfigurationFile(File file)
+    public OrganisationListingConfigurationFile(File file)
     {
         super(file);
     }
@@ -45,7 +45,7 @@ public class OrganisationConfigurationFile extends ConfigurationFile
     public void read()
     {
         // Get the organisations config from the config file
-        config = OrganisationConfiguration.builder()
+        config = OrganisationListingConfiguration.builder()
             .name(getType())
             .directory(getDirectory())
             .filename(getFilename())
@@ -73,7 +73,7 @@ public class OrganisationConfigurationFile extends ConfigurationFile
     /**
      * Returns the configuration.
      */
-    public OrganisationConfiguration getConfiguration()
+    public OrganisationListingConfiguration getConfiguration()
     {
         // Load the YAML file
         if(config == null)

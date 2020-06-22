@@ -243,9 +243,9 @@ public class VideoArticle extends Article
     /**
      * Use the given organisation to set defaults for the content.
      */
-    public void init(OrganisationListing listing)
+    public void init(Organisation organisation)
     {
-        setLink(listing.getWebsite());
+        setLink(organisation.getWebsite());
     }
 
     /**

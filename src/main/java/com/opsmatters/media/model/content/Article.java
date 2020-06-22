@@ -29,7 +29,7 @@ public abstract class Article extends ContentItem
 {
     private ArticleSummary details;
 
-    private String organisationTitle = "";
+    private String organisation = "";
     private String revisedTitle = "";
     private String tags = "";
     private String creatorEmail = "";
@@ -52,7 +52,7 @@ public abstract class Article extends ContentItem
     {
         super.copyAttributes(obj);
 
-        setOrganisationTitle(new String(obj.getOrganisationTitle() != null ? obj.getOrganisationTitle() : ""));
+        setOrganisation(new String(obj.getOrganisation() != null ? obj.getOrganisation() : ""));
         setRevisedTitle(new String(obj.getRevisedTitle() != null ? obj.getRevisedTitle() : ""));
         setTags(new String(obj.getTags() != null ? obj.getTags() : ""));
         setCreatorEmail(new String(obj.getCreatorEmail() != null ? obj.getCreatorEmail() : ""));
@@ -130,27 +130,27 @@ public abstract class Article extends ContentItem
     }
 
     /**
-     * Returns the organisation title.
+     * Returns the organisation name.
      */
-    public String getOrganisationTitle()
+    public String getOrganisation()
     {
-        return organisationTitle;
+        return organisation;
     }
 
     /**
-     * Sets the organisation title.
+     * Sets the organisation name.
      */
-    public void setOrganisationTitle(String organisationTitle)
+    public void setOrganisation(String organisation)
     {
-        this.organisationTitle = organisationTitle;
+        this.organisation = organisation;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the organisation title has been set.
+     * Returns <CODE>true</CODE> if the organisation name has been set.
      */
-    public boolean hasOrganisationTitle()
+    public boolean hasOrganisation()
     {
-        return organisationTitle != null && organisationTitle.length() > 0;
+        return organisation != null && organisation.length() > 0;
     }
 
     /**

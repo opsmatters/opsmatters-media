@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import com.opsmatters.media.config.YamlConfiguration;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
+import com.opsmatters.media.model.content.OrganisationListing;
 import com.opsmatters.media.handler.ContentHandler;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.util.FileUtils;
@@ -310,15 +311,22 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
     /**
      * Extract the list of content items from the database and deploy using the given handler.
      */
-    public List<C> deployContent(ContentDAO contentDAO, ContentHandler handler, 
-        Map<String,OrganisationContentConfiguration> configurationMap, int maxItems)
+    public List<C> deployContent(ContentDAO contentDAO, ContentHandler handler, int maxItems)
         throws IOException, SQLException
     {
         List<C> items = contentDAO.list(getCode());
         for(C content : items)
         {
             boolean deployed = content.isDeployed();
-            handler.appendLine(handler.getValues(content.toFields().add(this, configurationMap.get(content.getTitle()), handler)));
+            Fields fields = content.toFields().add(this);
+            if(content instanceof OrganisationListing) // Add the Organisation fields
+            {
+                fields.remove(Fields.PUBLISHED);
+                fields.add(handler.getOrganisation(content.getCode()),
+                    handler.getConfiguration(content.getTitle()));
+            }
+            fields.add(handler);
+            handler.appendLine(handler.getValues(fields));
             content.setDeployed(true);
             if(content.isDeployed() != deployed)
                 contentDAO.update(content);

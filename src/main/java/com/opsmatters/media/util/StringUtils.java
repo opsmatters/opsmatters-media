@@ -846,4 +846,22 @@ public class StringUtils
         HtmlRenderer renderer = HtmlRenderer.builder().build();
         return renderer.render(document);
     }
+
+    /**
+     * Returns the name normalized for a URL context.
+     */
+    public static String getNormalisedName(String name)
+    {
+        String ret = name;
+
+        if(ret != null)
+        {
+            ret = ret.toLowerCase()
+                .replaceAll(" ","-")
+                .replaceAll("\\.","-")
+                .replaceAll("&","");
+        }
+
+        return ret;
+    }
 }
