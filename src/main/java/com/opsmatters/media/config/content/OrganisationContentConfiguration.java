@@ -49,6 +49,7 @@ public class OrganisationContentConfiguration extends ContentConfiguration<Conte
     private EBookConfiguration ebooks;
     private ToolConfiguration tools;
     private ProjectConfiguration projects;
+    private JobConfiguration jobs;
 
     private Map<ContentType,ContentConfiguration> configurations = new LinkedHashMap<ContentType,ContentConfiguration>();
 
@@ -267,6 +268,23 @@ public class OrganisationContentConfiguration extends ContentConfiguration<Conte
     }
 
     /**
+     * Returns the job configuration.
+     */
+    public JobConfiguration getJobs()
+    {
+        return jobs;
+    }
+
+    /**
+     * Sets the job configuration.
+     */
+    public void setJobs(JobConfiguration jobs)
+    {
+        this.jobs = jobs;
+        configurations.put(jobs.getType(), jobs);
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     @Override
@@ -343,6 +361,14 @@ public class OrganisationContentConfiguration extends ContentConfiguration<Conte
             setContentDefaults(config, map);
             config.parseDocument((Map<String,Object>)map.get(ContentType.TOOL.tag()));
             setTools(config);
+        }
+
+        if(map.containsKey(ContentType.JOB.tag()))
+        {
+            JobConfiguration config = new JobConfiguration(defaults.getJobs());
+            setContentDefaults(config, map);
+            config.parseDocument((Map<String,Object>)map.get(ContentType.JOB.tag()));
+            setJobs(config);
         }
     }
 

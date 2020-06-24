@@ -51,6 +51,7 @@ public class OrganisationListing extends ContentItem
     private boolean projects = false;
     private String github = "";
     private boolean tools = false;
+    private boolean jobs = false;
     private String alternatives = "";
     private String features = "";
     private String tags = "";
@@ -97,6 +98,7 @@ public class OrganisationListing extends ContentItem
         setProjects(obj.hasProjects());
         setGitHub(new String(obj.getGitHub() != null ? obj.getGitHub() : ""));
         setTools(obj.hasTools());
+        setJobs(obj.hasJobs());
         setAlternatives(new String(obj.getAlternatives() != null ? obj.getAlternatives() : ""));
         setFeatures(new String(obj.getFeatures() != null ? obj.getFeatures() : ""));
         setTags(new String(obj.getTags() != null ? obj.getTags() : ""));
@@ -137,18 +139,19 @@ public class OrganisationListing extends ContentItem
         String projects = values[24];
         String github = values[25];
         String tools = values[26];
-        String alternatives = values[27];
-        String features = values[28];
-        String tags = values[29];
-        String hashtag = values[30];
-        String image = values[31];
-        String imageText = values[32];
-        String imageTitle = values[33]; // not used
-        String thumbnail = values[34];
-        String thumbnailText = values[35];
-        String thumbnailTitle = values[36]; // not used
-        String createdBy = values[37];
-        String published = values[38];
+        String jobs = values[27];
+        String alternatives = values[28];
+        String features = values[29];
+        String tags = values[30];
+        String hashtag = values[31];
+        String image = values[32];
+        String imageText = values[33];
+        String imageTitle = values[34]; // not used
+        String thumbnail = values[35];
+        String thumbnailText = values[36];
+        String thumbnailTitle = values[37]; // not used
+        String createdBy = values[38];
+        String published = values[39];
 
         // Remove feeds path from images
         if(image.indexOf("/") != -1)
@@ -181,6 +184,7 @@ public class OrganisationListing extends ContentItem
         setProjects(projects != null && projects.equals("1"));
         setGitHub(github);
         setTools(tools != null && tools.equals("1"));
+        setJobs(jobs != null && jobs.equals("1"));
         setAlternatives(alternatives);
         setFeatures(features);
         setTags(tags);
@@ -223,6 +227,7 @@ public class OrganisationListing extends ContentItem
         setProjects(obj.optBoolean(Fields.PROJECTS, false));
         setGitHub(obj.optString(Fields.GITHUB));
         setTools(obj.optBoolean(Fields.TOOLS, false));
+        setJobs(obj.optBoolean(Fields.JOBS, false));
         setAlternatives(obj.optString(Fields.ALTERNATIVES));
         setFeatures(obj.optString(Fields.FEATURES));
         setTags(obj.optString(Fields.TAGS));
@@ -253,6 +258,7 @@ public class OrganisationListing extends ContentItem
         ret.put(Fields.PROJECTS, hasProjects());
         ret.putOpt(Fields.GITHUB, getGitHub());
         ret.put(Fields.TOOLS, hasTools());
+        ret.put(Fields.JOBS, hasJobs());
         ret.putOpt(Fields.ALTERNATIVES, getAlternatives());
         ret.putOpt(Fields.FEATURES, getFeatures());
         ret.putOpt(Fields.TAGS, getTags());
@@ -287,6 +293,7 @@ public class OrganisationListing extends ContentItem
         ret.put(Fields.PROJECTS, hasProjects() ? "1" : "0");
         ret.put(Fields.GITHUB, getGitHub());
         ret.put(Fields.TOOLS, hasTools() ? "1" : "0");
+        ret.put(Fields.JOBS, hasJobs() ? "1" : "0");
         ret.put(Fields.ALTERNATIVES, getAlternatives());
         ret.put(Fields.FEATURES, getFeatures());
         ret.put(Fields.TAGS, getTags());
@@ -309,8 +316,9 @@ public class OrganisationListing extends ContentItem
         listing.setTitle(organisation.getName());
         listing.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
         listing.setFounded(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
-        listing.setImage(String.format("%s-thumb.png", listing.getTitle()));
-        listing.setImageText(String.format("%s logo", listing.getTitle().replaceAll("-", " ")));
+        String lower = listing.getTitle().toLowerCase();
+        listing.setImage(String.format("%s-logo.png", lower));
+        listing.setImageText(String.format("%s logo", lower.replaceAll("-", " ")));
 
         return listing;
     }
@@ -329,6 +337,9 @@ public class OrganisationListing extends ContentItem
 
         String tools = config.getField(Fields.TOOLS);
         setTools(tools == null || tools.equals("0") ? false : true);
+
+        String jobs = config.getField(Fields.JOBS);
+        setJobs(jobs == null || jobs.equals("0") ? false : true);
     }
 
     /**
@@ -754,6 +765,38 @@ public class OrganisationListing extends ContentItem
     public void setToolsObject(Boolean tools)
     {
         setTools(tools != null && tools.booleanValue());
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this organisation has jobs.
+     */
+    public boolean hasJobs()
+    {
+        return jobs;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this organisation has jobs.
+     */
+    public Boolean getJobsObject()
+    {
+        return new Boolean(hasJobs());
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this organisation has jobs.
+     */
+    public void setJobs(boolean jobs)
+    {
+        this.jobs = jobs;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this organisation has jobs.
+     */
+    public void setJobsObject(Boolean jobs)
+    {
+        setJobs(jobs != null && jobs.booleanValue());
     }
 
     /**

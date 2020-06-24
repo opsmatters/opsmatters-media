@@ -31,7 +31,8 @@ public enum ContentType
     WHITE_PAPER("WP", "White Paper", "white-papers"),
     EBOOK("EB", "EBook", "ebooks"),
     PROJECT("PR", "Project", "projects"),
-    TOOL("TL", "Tool", "tools");
+    TOOL("TL", "Tool", "tools"),
+    JOB("JB", "Job", "jobs");
 
     private String code;
     private String value;

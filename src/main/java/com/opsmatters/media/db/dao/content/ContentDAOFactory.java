@@ -44,6 +44,7 @@ public class ContentDAOFactory extends DAOFactory
         getEBookResourceDAO();
         getToolResourceDAO();
         getProjectResourceDAO();
+        getJobResourceDAO();
     }
 
     /**
@@ -157,6 +158,16 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
+     * Returns the JobResource DAO.
+     */
+    public JobResourceDAO getJobResourceDAO()
+    {
+        if(jobResourceDAO == null)
+            jobResourceDAO = new JobResourceDAO(this);
+        return jobResourceDAO;
+    }
+
+    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
@@ -174,6 +185,7 @@ public class ContentDAOFactory extends DAOFactory
         ebookResourceDAO = null;
         toolResourceDAO = null;
         projectResourceDAO = null;
+        jobResourceDAO = null;
     }
 
     private OrganisationDAO organisationDAO;
@@ -187,4 +199,5 @@ public class ContentDAOFactory extends DAOFactory
     private EBookResourceDAO ebookResourceDAO;
     private ToolResourceDAO toolResourceDAO;
     private ProjectResourceDAO projectResourceDAO;
+    private JobResourceDAO jobResourceDAO;
 }

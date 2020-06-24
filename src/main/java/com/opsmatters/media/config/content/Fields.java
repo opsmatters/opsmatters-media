@@ -99,6 +99,10 @@ public class Fields extends LinkedHashMap<String,String>
     public static final String BADGES = "badges";
     public static final String LINKS = "links";
     public static final String LICENSE = "license";
+    public static final String JOBS = "jobs";
+    public static final String PACKAGE = "package";
+    public static final String TECHNOLOGIES = "technologies";
+    public static final String CONTACT = "contact";
     public static final String CANONICAL_URL = "canonical-url";
     public static final String METATAGS = "metatags";
     public static final String IMAGES_PATH = "images-path";
