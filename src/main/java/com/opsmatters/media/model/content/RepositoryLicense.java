@@ -37,7 +37,8 @@ public enum RepositoryLicense
     LGPL_3_0("lgpl-3.0", "LGPL 3.0"),
     MIT("mit", "MIT"),
     MPL_2_0("mpl-2.0", "MPL 2.0"),
-    PHP("php", "PHP");
+    PHP("php", "PHP"),
+    SSPL("sspl", "SSPL");
 
     private String code;
     private String value;

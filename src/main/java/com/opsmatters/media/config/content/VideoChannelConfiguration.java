@@ -81,6 +81,14 @@ public class VideoChannelConfiguration extends FieldsConfiguration
     }
 
     /**
+     * Returns <CODE>true</CODE> if the channel id for this configuration has been set.
+     */
+    public boolean hasChannelId()
+    {
+        return channelId != null && channelId.length() > 0;
+    }
+
+    /**
      * Returns the user id for this configuration.
      */
     public String getUserId()
@@ -94,6 +102,14 @@ public class VideoChannelConfiguration extends FieldsConfiguration
     public void setUserId(String userId)
     {
         this.userId = userId;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the user id for this configuration has been set.
+     */
+    public boolean hasUserId()
+    {
+        return userId != null && userId.length() > 0;
     }
 
     /**
