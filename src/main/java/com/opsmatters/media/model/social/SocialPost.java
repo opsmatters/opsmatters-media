@@ -15,6 +15,7 @@
  */
 package com.opsmatters.media.model.social;
 
+import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.model.OwnedItem;
 
 /**
@@ -52,11 +53,27 @@ public abstract class SocialPost extends OwnedItem
     }
 
     /**
+     * Returns the post message, with encoded emojis if required.
+     */
+    public String getMessage(boolean encode)
+    {
+        return encode ? EmojiParser.parseToAliases(getMessage()) : getMessage();
+    }
+
+    /**
      * Sets the post message.
      */
     public void setMessage(String message)
     {
         this.message = message;
+    }
+
+    /**
+     * Sets the post message, with decoded emojis if required.
+     */
+    public void setMessage(String message, boolean decode)
+    {
+        setMessage(decode ? EmojiParser.parseToUnicode(message) : message);
     }
 
     /**

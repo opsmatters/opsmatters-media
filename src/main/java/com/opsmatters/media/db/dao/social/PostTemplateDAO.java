@@ -196,7 +196,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
             insertStmt.setTimestamp(2, new Timestamp(template.getCreatedDateMillis()), UTC);
             insertStmt.setTimestamp(3, new Timestamp(template.getUpdatedDateMillis()), UTC);
             insertStmt.setString(4, template.getName());
-            insertStmt.setString(5, template.getMessage());
+            insertStmt.setString(5, template.getMessage(true));
             insertStmt.setString(6, template.getType() != null ? template.getType().name(): "");
             insertStmt.setString(7, template.getCode());
             insertStmt.setString(8, template.getContentType() != null ? template.getContentType().name(): "");
@@ -241,7 +241,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
 
         updateStmt.setTimestamp(1, new Timestamp(template.getUpdatedDateMillis()), UTC);
         updateStmt.setString(2, template.getName());
-        updateStmt.setString(3, template.getMessage());
+        updateStmt.setString(3, template.getMessage(true));
         updateStmt.setString(4, template.getType() != null ? template.getType().name(): "");
         updateStmt.setString(5, template.getCode());
         updateStmt.setString(6, template.getContentType() != null ? template.getContentType().name(): "");

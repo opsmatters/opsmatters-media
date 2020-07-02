@@ -236,7 +236,9 @@ public class ContentPost extends DraftPost
      */
     public boolean isLibraryType()
     {
-        return getContentType() == ContentType.POST || getContentType() == ContentType.EVENT;
+        return getContentType() == ContentType.POST
+            || getContentType() == ContentType.EVENT
+            || getContentType() == ContentType.JOB;
     }
 
     /**

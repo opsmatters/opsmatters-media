@@ -167,7 +167,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
                 post.setDraftId(rs.getString(6));
                 post.setCode(rs.getString(7));
                 post.setTitle(rs.getString(8));
-                post.setMessage(rs.getString(9), true);
+                post.setMessage(rs.getString(9));
                 post.setChannel(SocialChannels.get(rs.getString(10)));
                 post.setStatus(rs.getString(11));
                 post.setExternalId(rs.getString(12));
@@ -300,7 +300,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
                 post.setDraftId(rs.getString(6));
                 post.setCode(rs.getString(7));
                 post.setTitle(rs.getString(8));
-                post.setMessage(rs.getString(9), true);
+                post.setMessage(rs.getString(9));
                 post.setChannel(SocialChannels.get(rs.getString(10)));
                 post.setStatus(rs.getString(11));
                 post.setExternalId(rs.getString(12));
@@ -361,7 +361,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
                 post.setDraftId(rs.getString(6));
                 post.setCode(rs.getString(7));
                 post.setTitle(rs.getString(8));
-                post.setMessage(rs.getString(9), true);
+                post.setMessage(rs.getString(9));
                 post.setChannel(SocialChannels.get(rs.getString(10)));
                 post.setStatus(rs.getString(11));
                 post.setExternalId(rs.getString(12));
@@ -422,7 +422,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
                 post.setDraftId(rs.getString(6));
                 post.setCode(rs.getString(7));
                 post.setTitle(rs.getString(8));
-                post.setMessage(rs.getString(9), true);
+                post.setMessage(rs.getString(9));
                 post.setChannel(SocialChannels.get(rs.getString(10)));
                 post.setStatus(rs.getString(11));
                 post.setExternalId(rs.getString(12));

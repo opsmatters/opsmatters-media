@@ -21,7 +21,6 @@ import java.time.format.DateTimeParseException;
 import twitter4j.Status;
 import facebook4j.Post;
 import com.echobox.api.linkedin.types.ugc.UGCShare;
-import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.client.social.SocialClient;
 import com.opsmatters.media.client.social.SocialClientFactory;
 import com.opsmatters.media.model.DeliveryStatus;
@@ -257,22 +256,6 @@ public class PreparedPost extends SocialPost
     public boolean hasTitle()
     {
         return title != null && title.length() > 0;
-    }
-
-    /**
-     * Returns the post message, with encoded emojis if required.
-     */
-    public String getMessage(boolean encode)
-    {
-        return encode ? EmojiParser.parseToAliases(getMessage()) : getMessage();
-    }
-
-    /**
-     * Sets the post message, with decoded emojis if required.
-     */
-    public void setMessage(String message, boolean decode)
-    {
-        setMessage(decode ? EmojiParser.parseToUnicode(message) : message);
     }
 
     /**

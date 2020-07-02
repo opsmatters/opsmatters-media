@@ -197,6 +197,7 @@ public class JobResource extends Resource
         resource.setTitle("New Job");
         resource.setDescription(StringUtils.EMPTY);
         resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        resource.setSocial(true);
 
         return resource;
     }
@@ -221,6 +222,8 @@ public class JobResource extends Resource
 
         String promote = config.getField(Fields.PROMOTE);
         setPromoted(promote == null || promote.equals("0") ? false : true);
+
+        setSocial(true);
     }
 
     /**

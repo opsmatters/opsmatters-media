@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.json.JSONObject;
+import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.model.content.VideoSummary;
 import com.opsmatters.media.model.content.VideoDetails;
 import com.opsmatters.media.config.content.VideoConfiguration;
@@ -191,7 +192,7 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
             ContentField field = fields.getTitle();
             String title = getValue(field, video.getString(field.getSelector()));
             if(title != null)
-                content.setTitle(title);
+                content.setTitle(EmojiParser.removeAllEmojis(title));
         }
 
         if(fields.hasPublishedDate())
