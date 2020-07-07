@@ -25,6 +25,8 @@ import java.time.Instant;
 public class ArticleWrapper extends Article
 {
     private Article article;
+    private String title = "";
+    private String summary = "";
 
     /**
      * Default constructor.
@@ -81,7 +83,7 @@ public class ArticleWrapper extends Article
     @Override
     public String getTitle()
     {
-        return article != null ? article.getTitle() : "";
+        return article != null ? article.getTitle() : title;
     }
 
     /**
@@ -92,6 +94,8 @@ public class ArticleWrapper extends Article
     {
         if(article != null)
             article.setTitle(title);
+        else if(title != null)
+            this.title = title;
     }
 
     /**
@@ -100,7 +104,7 @@ public class ArticleWrapper extends Article
     @Override
     public String getSummary()
     {
-        return article != null ? article.getSummary() : "";
+        return article != null ? article.getSummary() : summary;
     }
 
     /**
@@ -111,6 +115,8 @@ public class ArticleWrapper extends Article
     {
         if(article != null)
             article.setSummary(summary);
+        else if(summary != null)
+            this.summary = summary;
     }
 
     /**

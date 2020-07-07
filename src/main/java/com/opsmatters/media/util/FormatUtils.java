@@ -307,7 +307,7 @@ public class FormatUtils
             ret = ret.replaceAll("<br>(-|\\*)+<br>", "<br><br>");
 
             // Turn "<br>-", "<br>--", "<br>*", "<br>**", "<br>•, <br>▶" into <li> tags for <ul> list
-            ret = ret.replaceAll("(<br>)+( )*(-|\\*|\\u2022|\\u25cf|\\u25b6)+( )*", "<li> ");
+            ret = ret.replaceAll("(<br>)+( )*(-|\\*|\\u2022|\\u25cf|\\u25b6|\\u25aa\\ufe0f)+( )*", "<li> ");
 
             // Add a linefeed to <li> tags to improve readability
             ret = ret.replaceAll("<li>", "\n<li>");

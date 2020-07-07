@@ -27,6 +27,7 @@ import com.opsmatters.media.model.DeliveryStatus;
 import com.opsmatters.media.model.social.PreparedPost;
 import com.opsmatters.media.model.social.DraftPost;
 import com.opsmatters.media.model.social.SocialChannels;
+import com.opsmatters.media.model.social.MessageFormat;
 
 /**
  * DAO that provides operations on the PREPARED_POSTS table in the database.
@@ -216,7 +217,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
             insertStmt.setString(6, post.getDraftId());
             insertStmt.setString(7, post.getCode());
             insertStmt.setString(8, post.getTitle());
-            insertStmt.setString(9, post.getMessage(true));
+            insertStmt.setString(9, post.getMessage(MessageFormat.ENCODED));
             insertStmt.setString(10, post.getChannel().getName());
             insertStmt.setString(11, post.getStatus().name());
             insertStmt.setString(12, post.getExternalId());
@@ -256,7 +257,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
         updateStmt.setTimestamp(2, new Timestamp(post.getScheduledDateMillis()), UTC);
         updateStmt.setString(3, post.getCode());
         updateStmt.setString(4, post.getTitle());
-        updateStmt.setString(5, post.getMessage(true));
+        updateStmt.setString(5, post.getMessage(MessageFormat.ENCODED));
         updateStmt.setString(6, post.getStatus().name());
         updateStmt.setString(7, post.getExternalId());
         updateStmt.setInt(8, post.getErrorCode());

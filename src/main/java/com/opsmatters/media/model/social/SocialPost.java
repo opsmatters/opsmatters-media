@@ -55,9 +55,14 @@ public abstract class SocialPost extends OwnedItem
     /**
      * Returns the post message, with encoded emojis if required.
      */
-    public String getMessage(boolean encode)
+    public String getMessage(MessageFormat format)
     {
-        return encode ? EmojiParser.parseToAliases(getMessage()) : getMessage();
+        if(format == MessageFormat.ENCODED)
+            return EmojiParser.parseToAliases(getMessage());
+        else if(format == MessageFormat.DECODED)
+            return EmojiParser.parseToUnicode(getMessage());
+        else
+            return getMessage();
     }
 
     /**
@@ -66,14 +71,6 @@ public abstract class SocialPost extends OwnedItem
     public void setMessage(String message)
     {
         this.message = message;
-    }
-
-    /**
-     * Sets the post message, with decoded emojis if required.
-     */
-    public void setMessage(String message, boolean decode)
-    {
-        setMessage(decode ? EmojiParser.parseToUnicode(message) : message);
     }
 
     /**

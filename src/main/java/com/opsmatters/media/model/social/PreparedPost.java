@@ -24,6 +24,8 @@ import com.echobox.api.linkedin.types.ugc.UGCShare;
 import com.opsmatters.media.client.social.SocialClient;
 import com.opsmatters.media.client.social.SocialClientFactory;
 import com.opsmatters.media.model.DeliveryStatus;
+import com.opsmatters.media.model.admin.Email;
+import com.opsmatters.media.model.admin.EmailBody;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
@@ -473,7 +475,7 @@ public class PreparedPost extends SocialPost
         try
         {
             setStatus(DeliveryStatus.SENDING);
-            PreparedPost sent = client.sendPost(getMessage());
+            PreparedPost sent = client.sendPost(getMessage(MessageFormat.DECODED));
             if(sent != null)
             {
                 setExternalId(sent.getId());
@@ -493,5 +495,25 @@ public class PreparedPost extends SocialPost
                 setErrorMessage(client.getErrorMessage(e));
             }
         }
+    }
+
+    /**
+     * Returns the email for an errored post.
+     */
+    public Email getErrorEmail()
+    {
+        String subject = String.format("Post %s: %s",
+            getStatus().name(), getId());
+        EmailBody body = new EmailBody()
+            .addParagraph("The status of the following monitor has changed:")
+            .addTable(new String[][]
+            {
+                {"ID", getId()},
+                {"Organisation", getOrganisation()},
+                {"Title", getTitle()},
+                {"Status", getStatus().name()},
+                {"Updated", getUpdatedDateAsString(Formats.CONTENT_DATE_FORMAT)},
+            });
+        return new Email(subject, body);
     }
 }
