@@ -77,6 +77,7 @@ public class PostTemplate extends SocialPost
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
+        setPostedDate(post.getUpdatedDate());
         setName(post.getTitle());
         setType(PostType.LIBRARY);
         setCode(post.getCode());
