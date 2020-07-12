@@ -31,6 +31,7 @@ public class BitlyClient extends Client
     private static final Logger logger = Logger.getLogger(BitlyClient.class.getName());
 
     public static final String AUTH = ".bitly";
+    public static final String DEFAULT_DOMAIN = "bit.ly";
 
     private static Bitly client;
     private String accessToken = "";
@@ -96,10 +97,19 @@ public class BitlyClient extends Client
     }
 
     /**
-     * Shortens the given URL.
+     * Returns the configured custom domain.
+     */
+    public static String getDomain()
+    {
+        String custom = System.getProperty("opsmatters.site.prod.short-domain");
+        return custom != null ? custom : DEFAULT_DOMAIN;
+    }
+
+    /**
+     * Shortens the given URL using the given short domain name.
      */
     public String shortenUrl(String longUrl) throws IOException
     {
-        return client.bitlinks().shorten(longUrl).get().getLink();
+        return client.bitlinks().shorten(longUrl, getDomain()).get().getLink();
     }
 }

@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
+import com.opsmatters.media.client.BitlyClient;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
@@ -233,7 +234,7 @@ public abstract class DraftPost extends SocialPost
      */
     public boolean hasShortenedUrl()
     {
-        return hasUrl() && getUrl().indexOf("bit.ly") != -1;
+        return hasUrl() && getUrl().indexOf(BitlyClient.getDomain()) != -1;
     }
 
     /**

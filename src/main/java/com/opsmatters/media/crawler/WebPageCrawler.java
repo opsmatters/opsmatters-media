@@ -512,7 +512,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                     ++i;
                 }
 
-                ret = getValue(field, str.toString());
+                ret = getValue(field, str.toString().trim());
 
                 if(debug())
                     logger.info("Found elements for "+type+" field "+field.getName()+": "+ret);
