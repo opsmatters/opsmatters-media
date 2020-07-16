@@ -29,21 +29,24 @@ public enum SocialProvider
         "/%s",
         "/hashtag/%s",
         "images/twitter-thumb.png",
-        280),
+        280,
+        23),
     FACEBOOK("facebook",
         "Facebook",
         "https://www.facebook.com",
         "/%s",
         "/hashtag/%s",
         "images/facebook-thumb.png",
-        2000),
+        2000,
+        -1),
     LINKEDIN("linkedin",
         "LinkedIn",
         "https://www.linkedin.com",
         "/company/%s",
         "/feed/hashtag/?keywords=%%23%s",
         "images/linkedin-thumb.png",
-        1300);
+        1300,
+        -1);
 
     private String code;
     private String value;
@@ -52,6 +55,7 @@ public enum SocialProvider
     private String hashtagUrl;
     private String thumbnail;
     private int maxLength;
+    private int urlLength;
 
     /**
      * Constructor that takes the channel information.
@@ -62,8 +66,10 @@ public enum SocialProvider
      * @param hashtagUrl The hashtag url for the provider
      * @param thumbnail The thumbnail image for the provider
      * @param maxLength The maximum message length for the provider
+     * @param urlLength The length of a URL for the provider (-1 indicates the actual length should be used)
      */
-    SocialProvider(String code, String value, String url, String handleUrl, String hashtagUrl, String thumbnail, int maxLength)
+    SocialProvider(String code, String value, String url, String handleUrl, 
+        String hashtagUrl, String thumbnail, int maxLength, int urlLength)
     {
         this.code = code;
         this.value = value;
@@ -72,6 +78,7 @@ public enum SocialProvider
         this.hashtagUrl = url+hashtagUrl;
         this.thumbnail = thumbnail;
         this.maxLength = maxLength;
+        this.urlLength = urlLength;
     }
 
     /**
@@ -144,6 +151,15 @@ public enum SocialProvider
     public int maxLength()
     {
         return maxLength;
+    }
+
+    /**
+     * Returns the URL length (or -1).
+     * @return The URL length.
+     */
+    public int urlLength()
+    {
+        return urlLength;
     }
 
     /**

@@ -52,6 +52,14 @@ public class StringUtils
     private static final String URL_REGEX = "\\(?\\b(https?://|www[.])[-A-Za-z0-9+&amp;@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&amp;@#/%=~_()|]";
     private static final Pattern urlPattern = Pattern.compile(URL_REGEX);
 
+    // Pattern to detect properties in strings
+    private static final String PROPERTY_REGEX = "\\$\\{\\w+\\}";
+    private static final Pattern propertyPattern = Pattern.compile(PROPERTY_REGEX);
+
+    // Pattern to detect emojis in strings
+    private static final String EMOJI_REGEX = "\\:\\w+\\:";
+    private static final Pattern emojiPattern = Pattern.compile(EMOJI_REGEX);
+
     /**
      * The default depth for stack traces.
      */
@@ -833,6 +841,24 @@ public class StringUtils
     public static String extractUrl(String text)
     {
         Matcher m = urlPattern.matcher(text);
+        return m.find() ? m.group() : null;
+    }
+
+    /**
+     * Returns the first property extracted from the given text.
+     */
+    public static String extractProperty(String text)
+    {
+        Matcher m = propertyPattern.matcher(text);
+        return m.find() ? m.group() : null;
+    }
+
+    /**
+     * Returns the first emoji alias extracted from the given text.
+     */
+    public static String extractEmoji(String text)
+    {
+        Matcher m = emojiPattern.matcher(text);
         return m.find() ? m.group() : null;
     }
 

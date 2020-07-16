@@ -24,6 +24,7 @@ import org.apache.commons.text.StringSubstitutor;
 import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.model.social.SocialChannel;
+import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.model.social.PostTemplate;
 
 /**
@@ -38,6 +39,7 @@ public class SocialPostHandler
     private Map<String,Hashtag> hashtagMap = new LinkedHashMap<String,Hashtag>();
     private Map<String,String> properties = new LinkedHashMap<String,String>();
     private SocialChannel channel;
+    private int messageLength = -1;
 
     /**
      * Private constructor.
@@ -218,6 +220,7 @@ public class SocialPostHandler
         for(int i = 0; i < message.length(); i++)
         {
             char c = message.charAt(i);
+            String str = null;
 
             if(c == '#' || c == '@') // Start of a hashtag or handle
             {
@@ -225,9 +228,35 @@ public class SocialPostHandler
                 builder.setLength(0);
                 inWord = true;
             }
-            else if(message.substring(i).startsWith("http")) // Start of URL
+            else if((str = message.substring(i)).startsWith("${")) // Start of property
             {
-                String url = StringUtils.extractUrl(message.substring(i));
+                String property = StringUtils.extractProperty(str);
+                if(!inWord && property != null)
+                {
+                    addToken(builder.toString());
+                    addToken(property);
+                    i += property.length()-1;
+                    c = 0;
+                    builder.setLength(0);
+                    inWord = false;
+                }
+            }
+            else if(str.startsWith(":")) // Start of emoji
+            {
+                String emoji = StringUtils.extractEmoji(str);
+                if(!inWord && emoji != null)
+                {
+                    addToken(builder.toString());
+                    addToken(emoji);
+                    i += emoji.length()-1;
+                    c = 0;
+                    builder.setLength(0);
+                    inWord = false;
+                }
+            }
+            else if(str.startsWith("http")) // Start of URL
+            {
+                String url = StringUtils.extractUrl(str);
                 if(!inWord && url != null)
                 {
                     addToken(builder.toString());
@@ -269,12 +298,13 @@ public class SocialPostHandler
         Token lastToken = null;
         for(Token token : tokens)
         {
-            if((lastToken == null || !lastToken.getValue().endsWith(":")) // Check it's not an emoji alias
-                && hashtagMap.containsKey(token.getKey()))
+            if(hashtagMap.containsKey(token.getKey()))
             {
-                hashtagMap.remove(token.getKey());
                 if(token.getType() == TokenType.STRING)
+                {
+                    hashtagMap.remove(token.getKey());
                     tokens.set(tokens.indexOf(token), new HashtagToken(token.getValue()));
+                }
             }
 
             lastToken = token;
@@ -287,17 +317,59 @@ public class SocialPostHandler
     public String createMessage(boolean markup)
     {
         StringBuilder builder = new StringBuilder();
-        for(Token token : tokens)
-            builder.append(markup ? token.getMarkup() : token.toString());
+        if(markup) // Message with HTML markup
+        {
+            for(Token token : tokens)
+            {
+                if(token instanceof StringToken)
+                {
+                    builder.append(token.toString());
+                }
+                else if(token instanceof PropertyToken)
+                {
+                    builder.append(properties.getOrDefault(token.getValue(), token.toString()));
+                }
+                else if(token instanceof EmojiToken)
+                {
+                    builder.append(EmojiParser.parseToHtmlDecimal(token.toString()));
+                }
+                else // URLs, Hashtags, Handles, Emojis
+                {
+                    builder.append(token.getMarkup());
+                }
+            }
+        }
+        else // Message to be sent
+        {
+            int count = 0;
+            for(Token token : tokens)
+            {
+                if(token instanceof StringToken)
+                {
+                    builder.append(token.toString());
+                    count += token.length();
+                }
+                else if(token instanceof PropertyToken)
+                {
+                    String str = properties.getOrDefault(token.getValue(), token.toString());
+                    builder.append(str);
+                    count += str.length();
+                }
+                else if(token instanceof EmojiToken)
+                {
+                    builder.append(EmojiParser.parseToUnicode(token.toString()));
+                    count += token.length();
+                }
+                else // URLs, Hashtags, Handles
+                {
+                    builder.append(token.toString());
+                    count += token.length();
+                }
+            }
+            messageLength = count;
+        }
 
-        // Process any emojis in the message
-        String message = builder.toString();
-        if(markup)
-            message = EmojiParser.parseToHtmlDecimal(message);
-        else
-            message = EmojiParser.parseToUnicode(message);
-
-        return new StringSubstitutor(properties).replace(message);
+        return builder.toString();
     }
 
     /**
@@ -313,9 +385,21 @@ public class SocialPostHandler
                 tokens.add(new HandleToken(token.substring(1)));
             else if(token.startsWith("http") && token.length() > 7)
                 tokens.add(new UrlToken(token));
-            else
+            else if(token.startsWith("${") && token.endsWith("}") && token.length() > 4)
+                tokens.add(new PropertyToken(token.substring(2, token.length()-1)));
+            else if(token.startsWith(":") && token.endsWith(":") && token.length() > 3)
+                tokens.add(new EmojiToken(token.substring(1, token.length()-1)));
+            else if(!token.equals("\r")) // Throw away CRs
                 tokens.add(new StringToken(token));
         }
+    }
+
+    /**
+     * Returns the length of the message.
+     */
+    public int getMessageLength()
+    {
+        return messageLength;
     }
 
     /**
@@ -324,6 +408,8 @@ public class SocialPostHandler
     enum TokenType
     {
         STRING,
+        PROPERTY,
+        EMOJI,
         HASHTAG,
         HANDLE,
         URL
@@ -365,6 +451,14 @@ public class SocialPostHandler
         public String getValue()
         {
             return value;
+        }
+
+        /**
+         * Returns the length of the token value.
+         */
+        public int length()
+        {
+            return value.length();
         }
 
         /**
@@ -416,6 +510,88 @@ public class SocialPostHandler
     }
 
     /**
+     * Represents a token based on an emoji.
+     */
+    class EmojiToken extends Token
+    {
+        /**
+         * Constructor that takes a value.
+         */
+        EmojiToken(String value)
+        {
+            super(value);
+        }
+
+        /**
+         * Returns the type of the token.
+         */
+        @Override
+        public TokenType getType()
+        {
+            return TokenType.EMOJI;
+        }
+
+        /**
+         * Returns the length of the token value.
+         */
+        @Override
+        public int length()
+        {
+            return 2;
+        }
+
+        /**
+         * Returns the token value as an emoji.
+         */
+        @Override
+        public String toString()
+        {
+            return ":"+getValue()+":";
+        }
+    }
+
+    /**
+     * Represents a token based on a property.
+     */
+    class PropertyToken extends Token
+    {
+        /**
+         * Constructor that takes a value.
+         */
+        PropertyToken(String value)
+        {
+            super(value);
+        }
+
+        /**
+         * Returns the type of the token.
+         */
+        @Override
+        public TokenType getType()
+        {
+            return TokenType.PROPERTY;
+        }
+
+        /**
+         * Returns the length of the token value.
+         */
+        @Override
+        public int length()
+        {
+            return -1;
+        }
+
+        /**
+         * Returns the token value as an emoji.
+         */
+        @Override
+        public String toString()
+        {
+            return "${"+getValue()+"}";
+        }
+    }
+
+    /**
      * Represents a token based on a social hashtag.
      */
     class HashtagToken extends Token
@@ -435,6 +611,15 @@ public class SocialPostHandler
         public TokenType getType()
         {
             return TokenType.HASHTAG;
+        }
+
+        /**
+         * Returns the length of the token value.
+         */
+        @Override
+        public int length()
+        {
+            return value.length()+1;
         }
 
         /**
@@ -480,6 +665,15 @@ public class SocialPostHandler
         }
 
         /**
+         * Returns the length of the token value.
+         */
+        @Override
+        public int length()
+        {
+            return value.length()+1;
+        }
+
+        /**
          * Returns the token value as a handle.
          */
         @Override
@@ -519,6 +713,18 @@ public class SocialPostHandler
         public TokenType getType()
         {
             return TokenType.URL;
+        }
+
+        /**
+         * Returns the length of the token value.
+         */
+        @Override
+        public int length()
+        {
+            if(channel != null && channel.getProvider().urlLength() != -1)
+                return channel.getProvider().urlLength();
+            else
+                return super.length();
         }
 
         /**

@@ -186,7 +186,7 @@ public abstract class ContentItem implements java.io.Serializable
     {
         setPublishedDate(obj.getPublishedDate());
         setTitle(new String(obj.getTitle()));
-        setSummary(new String(obj.getSummary()));
+        setSummary(new String(obj.getSummary() != null ? obj.getSummary() : ""));
     }
 
     /**

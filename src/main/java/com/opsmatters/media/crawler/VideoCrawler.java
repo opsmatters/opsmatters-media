@@ -223,14 +223,14 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
             if(stopExprPattern != null && stopExprPattern.matcher(text).matches())
                 break;
 
-            if(body.length() > 0 && text.length() > 0)
+            if(body.length() > 0)
                 body.append("\n");
             body.append(text);
         }
 
         if(body.length() > 0)
         {
-            ret = body.toString();
+            ret = body.toString().trim();
 
             if(debug())
                 logger.info("Found body for "+type+" field "+field.getName()+": "+ret);

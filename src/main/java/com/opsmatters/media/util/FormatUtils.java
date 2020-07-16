@@ -122,6 +122,9 @@ public class FormatUtils
             // Extract the contents of the 1st paragraph
             Matcher m = Pattern.compile("<p>(.*?)<\\/p>", Pattern.DOTALL).matcher(description);
 
+            // Matches text starting with a number eg. "1." or "01:23"
+            Pattern p = Pattern.compile("\\d+[\\:\\.].+", Pattern.DOTALL);
+
             if(debug)
                 logger.info(String.format("1: getFormattedSummary: description=%s minLength=%d maxLength=%d minParagraph=%d",
                     description, minLength, maxLength, minParagraph));
@@ -132,6 +135,13 @@ public class FormatUtils
 
                 if(debug)
                     logger.info(String.format("2: getFormattedSummary: text=%s carryover=%s", text, carryover));
+
+                // Exclude text that starts with numbers
+                if(p.matcher(text).matches())
+                  continue;
+
+                if(debug)
+                    logger.info(String.format("2a: getFormattedSummary: text=%s carryover=%s", text, carryover));
 
                 // If the summary contains one or more breaks
                 StringBuilder buff = new StringBuilder();
@@ -203,6 +213,16 @@ public class FormatUtils
                 if(text.indexOf("http") != -1 || text.indexOf("www.") != -1)
                 {
                     // Skip paragraph if it contains a link
+                    continue;
+                }
+                else if(p.matcher(text).matches()) // Ignore text that starts with numbers
+                {
+                    // Skip paragraph if it starts with numbers
+                    continue;
+                }
+                else if(text.startsWith("#")) // Ignore Hashtags
+                {
+                    // Skip paragraph if it starts with hashtags
                     continue;
                 }
 
@@ -313,7 +333,7 @@ public class FormatUtils
             ret = ret.replaceAll("<li>", "\n<li>");
 
             // Turn "<br>1.", "<br>2.", "<br>3.", etc into <oli> tags to indicate an <ol> list
-            ret = ret.replaceAll("(<br>)+( )*(\\d)+(\\.)*( )*", "<oli> ");
+            ret = ret.replaceAll("(<br>)+[ ]*\\d+[\\. ]+", "<oli> ");
 
             // Add a linefeed to <oli> tags to improve readability
             ret = ret.replaceAll("<oli>", "\n<oli>");
