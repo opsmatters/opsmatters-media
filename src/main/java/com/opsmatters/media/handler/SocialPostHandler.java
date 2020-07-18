@@ -385,9 +385,9 @@ public class SocialPostHandler
                 tokens.add(new HandleToken(token.substring(1)));
             else if(token.startsWith("http") && token.length() > 7)
                 tokens.add(new UrlToken(token));
-            else if(token.startsWith("${") && token.endsWith("}") && token.length() > 4)
+            else if(token.startsWith("${") && token.endsWith("}") && token.length() > 3)
                 tokens.add(new PropertyToken(token.substring(2, token.length()-1)));
-            else if(token.startsWith(":") && token.endsWith(":") && token.length() > 3)
+            else if(token.startsWith(":") && token.endsWith(":") && token.length() > 2)
                 tokens.add(new EmojiToken(token.substring(1, token.length()-1)));
             else if(!token.equals("\r")) // Throw away CRs
                 tokens.add(new StringToken(token));

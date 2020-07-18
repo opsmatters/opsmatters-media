@@ -57,7 +57,7 @@ public class StringUtils
     private static final Pattern propertyPattern = Pattern.compile(PROPERTY_REGEX);
 
     // Pattern to detect emojis in strings
-    private static final String EMOJI_REGEX = "\\:\\w+\\:";
+    private static final String EMOJI_REGEX = "\\:[\\w\\+]+\\:";
     private static final Pattern emojiPattern = Pattern.compile(EMOJI_REGEX);
 
     /**
