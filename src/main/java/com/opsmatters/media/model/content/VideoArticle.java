@@ -281,6 +281,7 @@ public class VideoArticle extends Article
         setSummary(FormatUtils.getFormattedSummary(getDescription(), config.getSummary()));
         String text = String.format("%s %s", getTitle(), getDescription());
         setVideoType(VideoType.fromText(text, VideoType.fromValue(getVideoType())));
+        setSocial(hasDescription()); // Skip post if no description was provided
     }
 
     /**
@@ -385,6 +386,14 @@ public class VideoArticle extends Article
     public void setDescription(String description)
     {
         details.setDescription(description);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the video description has been set.
+     */
+    public boolean hasDescription()
+    {
+        return getDescription() != null && getDescription().length() > 0;
     }
 
     /**

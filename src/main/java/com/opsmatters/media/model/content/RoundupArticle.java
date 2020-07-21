@@ -17,7 +17,6 @@ package com.opsmatters.media.model.content;
 
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
-import com.opsmatters.media.file.CommonFiles;
 import com.opsmatters.media.config.content.RoundupConfiguration;
 import com.opsmatters.media.config.content.WebPageConfiguration;
 import com.opsmatters.media.config.content.Fields;
@@ -29,7 +28,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupArticle extends Article
+public class RoundupArticle extends ImageArticle
 {
     private RoundupDetails details = new RoundupDetails();
 
@@ -365,33 +364,6 @@ public class RoundupArticle extends Article
     public String getImage()
     {
         return details.getImage();
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the image name has a JPG extension.
-     */
-    public boolean isJpgImage()
-    {
-        String image = getImage() != null ? getImage().toLowerCase() : "";
-        return image.endsWith("."+CommonFiles.JPG_EXT) || image.endsWith("."+CommonFiles.JPEG_EXT);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the image name has a PNG extension.
-     */
-    public boolean isPngImage()
-    {
-        String image = getImage() != null ? getImage().toLowerCase() : "";
-        return image.endsWith("."+CommonFiles.PNG_EXT);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the image name has a GIF extension.
-     */
-    public boolean isGifImage()
-    {
-        String image = getImage() != null ? getImage().toLowerCase() : "";
-        return image.endsWith("."+CommonFiles.GIF_EXT);
     }
 
     /**

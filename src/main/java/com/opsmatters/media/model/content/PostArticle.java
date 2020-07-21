@@ -27,7 +27,7 @@ import com.opsmatters.media.util.TimeUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PostArticle extends Article
+public class PostArticle extends ImageArticle
 {
     private PostDetails details = new PostDetails();
     private String link = "";
@@ -378,6 +378,26 @@ public class PostArticle extends Article
     public boolean hasImage()
     {
         return details.hasImage();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the post image source has been set.
+     * <p>
+     * Always returns <CODE>false</CODE>.
+     */
+    public boolean hasImageSource()
+    {
+        return false;
+    }
+
+    /**
+     * Returns the post image source.
+     * <p>
+     * Always returns <CODE>null</CODE>.
+     */
+    public String getImageSource()
+    {
+        return null;
     }
 
     /**

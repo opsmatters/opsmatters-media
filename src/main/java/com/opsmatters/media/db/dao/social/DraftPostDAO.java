@@ -177,55 +177,6 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given content item has a pending post in the DRAFT_POSTS table.
-     */
-    public boolean hasPending(ContentItem content) throws SQLException
-    {
-        boolean ret = false;
-
-        List<DraftPost> posts = getPendingPosts(PostType.CONTENT);
-        for(DraftPost draft : posts)
-        {
-            ContentPost post = (ContentPost)draft;
-            if(post.getCode().equals(content.getCode())
-                && post.getContentType() == content.getType())
-            {
-                // Roundups don't have a content id
-                if(content.getType() == ContentType.ROUNDUP 
-                    || post.getContentId() == content.getId())
-                {
-                    ret = true;
-                    break;
-                }
-            }
-        }
-
-        return ret;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the given organisation has a pending post in the DRAFT_POSTS table.
-     */
-    public boolean hasPending(Organisation organisation) throws SQLException
-    {
-        boolean ret = false;
-
-        List<DraftPost> posts = getPendingPosts(PostType.CONTENT);
-        for(DraftPost draft : posts)
-        {
-            ContentPost post = (ContentPost)draft;
-            if(post.getCode().equals(organisation.getCode())
-                && post.getContentType() == ContentType.ORGANISATION)
-            {
-                ret = true;
-                break;
-            }
-        }
-
-        return ret;
-    }
-
-    /**
      * Returns the pending posts from the DRAFT_POSTS table for the given type.
      */
     public List<DraftPost> getPendingPosts(PostType type) throws SQLException
@@ -279,6 +230,69 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
         postQuery();
 
         return ret;
+    }
+
+    /**
+     * Returns the pending posts for the given content item in the DRAFT_POSTS table.
+     */
+    public List<DraftPost> getPending(ContentItem content) throws SQLException
+    {
+        List<DraftPost> ret = new ArrayList<DraftPost>();
+
+        List<DraftPost> posts = getPendingPosts(PostType.CONTENT);
+        for(DraftPost draft : posts)
+        {
+            ContentPost post = (ContentPost)draft;
+            if(post.getCode().equals(content.getCode())
+                && post.getContentType() == content.getType())
+            {
+                // Roundups don't have a content id
+                if(content.getType() == ContentType.ROUNDUP 
+                    || post.getContentId() == content.getId())
+                {
+                    ret.add(post);
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given content item has a pending post in the DRAFT_POSTS table.
+     */
+    public boolean hasPending(ContentItem content) throws SQLException
+    {
+        return getPending(content).size() > 0;
+    }
+
+    /**
+     * Returns the pending posts for the given organisation in the DRAFT_POSTS table.
+     */
+    public List<DraftPost> getPending(Organisation organisation) throws SQLException
+    {
+        List<DraftPost> ret = new ArrayList<DraftPost>();
+
+        List<DraftPost> posts = getPendingPosts(PostType.CONTENT);
+        for(DraftPost draft : posts)
+        {
+            ContentPost post = (ContentPost)draft;
+            if(post.getCode().equals(organisation.getCode())
+                && post.getContentType() == ContentType.ORGANISATION)
+            {
+                ret.add(post);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given organisation has a pending post in the DRAFT_POSTS table.
+     */
+    public boolean hasPending(Organisation organisation) throws SQLException
+    {
+        return getPending(organisation).size() > 0;
     }
 
     /**

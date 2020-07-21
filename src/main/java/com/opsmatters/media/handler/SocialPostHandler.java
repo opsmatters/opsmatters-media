@@ -300,11 +300,9 @@ public class SocialPostHandler
         {
             if(hashtagMap.containsKey(token.getKey()))
             {
+                hashtagMap.remove(token.getKey());
                 if(token.getType() == TokenType.STRING)
-                {
-                    hashtagMap.remove(token.getKey());
                     tokens.set(tokens.indexOf(token), new HashtagToken(token.getValue()));
-                }
             }
 
             lastToken = token;
