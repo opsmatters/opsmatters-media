@@ -253,6 +253,12 @@ public class SocialPostHandler
                     builder.setLength(0);
                     inWord = false;
                 }
+                else if(inWord) // End of hashtag, handle or word
+                {
+                    addToken(builder.toString());
+                    builder.setLength(0);
+                    inWord = false;
+                }
             }
             else if(str.startsWith("http")) // Start of URL
             {
@@ -325,7 +331,10 @@ public class SocialPostHandler
                 }
                 else if(token instanceof PropertyToken)
                 {
-                    builder.append(properties.getOrDefault(token.getValue(), token.toString()));
+                    String str = properties.getOrDefault(token.getValue(), token.toString());
+                    if(str == null)
+                        str = token.toString();
+                    builder.append(str);
                 }
                 else if(token instanceof EmojiToken)
                 {
@@ -350,6 +359,8 @@ public class SocialPostHandler
                 else if(token instanceof PropertyToken)
                 {
                     String str = properties.getOrDefault(token.getValue(), token.toString());
+                    if(str == null)
+                        str = token.toString();
                     builder.append(str);
                     count += str.length();
                 }

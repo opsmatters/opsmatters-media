@@ -447,13 +447,15 @@ public class FormatUtils
             ret = ret.replaceAll("%5B", "[");
             ret = ret.replaceAll("%5D", "]");
 
-            // Remove escaped hashes, pipe
-            ret = ret.replaceAll("%23", "");
-            ret = ret.replaceAll("%7C", "");
+            // Remove other special characters
+            ret = ret.replaceAll("%23", ""); // hash
+            ret = ret.replaceAll("%27", ""); // apostrophe
+            ret = ret.replaceAll("%2C", ""); // comma
+            ret = ret.replaceAll("%7C", ""); // pipe
 
             // Remove quotes etc
             ret = ret.replaceAll("'|‘|’|‚|‛|“|”|„|′|″", "");
-            ret = ret.replaceAll("–|—|―|‗|‾	", "-");
+            ret = ret.replaceAll("‐|‑|‒|–|—|―|‖|‗|‾	", "-");
             ret = ret.replaceAll("…", "-");
             ret = ret.replaceAll("-+", "-");
 
