@@ -38,7 +38,6 @@ public class ContentFields implements java.io.Serializable
     public static final String BODY = "body";
     public static final String IMAGE = "image";
     public static final String BACKGROUND_IMAGE = "background-image";
-    public static final String IMAGE_REFRESH = "image-refresh";
     public static final String URL = "url";
 
     private String root = "";
@@ -55,7 +54,6 @@ public class ContentFields implements java.io.Serializable
     private ContentField body;
     private ContentField image;
     private ContentField backgroundImage;
-    private boolean imageRefresh = false;
     private ContentField url;
 
     /**
@@ -119,22 +117,6 @@ public class ContentFields implements java.io.Serializable
     public boolean hasValidator()
     {
         return validator != null && validator.length() > 0;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the image needs to be refreshed after being rendered.
-     */
-    public boolean isImageRefresh()
-    {
-        return imageRefresh;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the image needs to be refreshed after being rendered.
-     */
-    public void setImageRefresh(boolean imageRefresh)
-    {
-        this.imageRefresh = imageRefresh;
     }
 
     /**
@@ -484,8 +466,6 @@ public class ContentFields implements java.io.Serializable
             setImage(createField(IMAGE, map.get(IMAGE)));
         if(map.containsKey(BACKGROUND_IMAGE))
             setBackgroundImage(createField(BACKGROUND_IMAGE, map.get(BACKGROUND_IMAGE)));
-        if(map.containsKey(IMAGE_REFRESH))
-            setImageRefresh((Boolean)map.get(IMAGE_REFRESH));
     }
 
     /**

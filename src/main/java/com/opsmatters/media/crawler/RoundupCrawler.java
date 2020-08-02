@@ -196,14 +196,16 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
         throws DateTimeParseException
     {
         content.setImagePrefix(getImagePrefix());
-        content.setImageRefresh(fields.isImageRefresh());
 
         if(fields.hasTitle())
         {
             ContentField field = fields.getTitle();
             String title = getElements(field, root, type, field.isMultiple(), field.getSeparator());
             if(title != null)
+            {
+                title = title.replaceAll("&amp;", "&"); // Remove &amp;
                 content.setTitle(EmojiParser.removeAllEmojis(title));
+            }
         }
 
         if(fields.hasPublishedDate())

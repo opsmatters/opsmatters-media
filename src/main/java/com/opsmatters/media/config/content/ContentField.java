@@ -36,6 +36,7 @@ public class ContentField implements java.io.Serializable
     public static final String MULTIPLE = "multiple";
     public static final String SEPARATOR = "separator";
     public static final String EXPR = "expr";
+    public static final String EXPR2 = "expr2";
     public static final String DATE_PATTERN = "date-pattern";
     public static final String DATE_PATTERN2 = "date-pattern2";
     public static final String FORMAT = "format";
@@ -53,12 +54,13 @@ public class ContentField implements java.io.Serializable
     private boolean multiple = false;
     private String separator = "";
     private String expr = "";
+    private String expr2 = "";
     private String datePattern = "";
     private String datePattern2 = "";
     private String format = "";
     private ContentFieldMatch match = ContentFieldMatch.FIRST;
     private String stopExpr = "";
-    private Pattern exprPattern, stopExprPattern;
+    private Pattern exprPattern, exprPattern2, stopExprPattern;
     private boolean removeParameters = true;
     private boolean generate = false;
 
@@ -314,6 +316,39 @@ public class ContentField implements java.io.Serializable
     }
 
     /**
+     * Returns the 2nd regular expression for this configuration.
+     */
+    public String getExpr2()
+    {
+        return expr2;
+    }
+
+    /**
+     * Returns the 2nd regular expression pattern for this configuration.
+     */
+    public Pattern getExprPattern2()
+    {
+        return exprPattern2;
+    }
+
+    /**
+     * Sets the 2nd regular expression for this configuration.
+     */
+    public void setExpr2(String expr2)
+    {
+        this.expr2 = expr2;
+        this.exprPattern2 = hasExpr2() ? Pattern.compile(expr2, Pattern.DOTALL) : null;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the 2nd regular expression has been set.
+     */
+    public boolean hasExpr2()
+    {
+        return expr2 != null && expr2.length() > 0;
+    }
+
+    /**
      * Returns the date pattern for this configuration.
      */
     public String getDatePattern()
@@ -503,6 +538,8 @@ public class ContentField implements java.io.Serializable
             setSeparator((String)map.get(SEPARATOR));
         if(map.containsKey(EXPR))
             setExpr((String)map.get(EXPR));
+        if(map.containsKey(EXPR2))
+            setExpr2((String)map.get(EXPR2));
         if(map.containsKey(DATE_PATTERN))
             setDatePattern((String)map.get(DATE_PATTERN));
         if(map.containsKey(DATE_PATTERN2))

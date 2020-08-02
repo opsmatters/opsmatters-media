@@ -468,12 +468,13 @@ public class PreparedPost extends SocialPost
      */
     public void send() throws Exception
     {
-        SocialClient client = SocialClientFactory.newClient(getChannel());
-        if(client == null)
-            throw new IllegalArgumentException("unknown channel provider: "+getChannel());
+        SocialClient client = null;
 
         try
         {
+            client = SocialClientFactory.newClient(getChannel());
+            if(client == null)
+                throw new IllegalArgumentException("unknown channel provider: "+getChannel());
             setStatus(DeliveryStatus.SENDING);
             PreparedPost sent = client.sendPost(getMessage(MessageFormat.DECODED));
             if(sent != null)
@@ -484,7 +485,13 @@ public class PreparedPost extends SocialPost
         }
         catch(Exception e)
         {
-            if(client.isRecoverable(e))
+            if(client == null)
+            {
+                // eg. OAuth token expired
+                setStatus(DeliveryStatus.ERROR);
+                setErrorMessage(e.getMessage());
+            }
+            else if(client.isRecoverable(e))
             {
                 throw e;
             }
@@ -513,6 +520,8 @@ public class PreparedPost extends SocialPost
                 {"Title", getTitle()},
                 {"Status", getStatus().name()},
                 {"Updated", getUpdatedDateAsString(Formats.CONTENT_DATE_FORMAT)},
+                {"Error Code", Integer.toString(getErrorCode())},
+                {"Error Message", getErrorMessage()},
             });
         return new Email(subject, body);
     }

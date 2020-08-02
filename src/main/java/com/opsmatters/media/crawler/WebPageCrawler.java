@@ -468,7 +468,18 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             List<WebElement> nodes = null;
             try
             {
+                // Try the first selector
                 nodes = root.findElements(By.cssSelector(field.getSelector()));
+            }
+            catch(StaleElementReferenceException e)
+            {
+            }
+
+            try
+            {
+                // Try the second selector
+                if(nodes.size() == 0 && field.hasSelector2())
+                    nodes = root.findElements(By.cssSelector(field.getSelector2()));
             }
             catch(StaleElementReferenceException e)
             {

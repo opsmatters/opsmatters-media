@@ -260,14 +260,33 @@ public abstract class FieldsCrawler<T extends ContentSummary>
                         field.getName(), ret, field.getTextCase()));
         }
 
-        Pattern pattern = field.getExprPattern();
+        String str = ret;
+
+        // Try the first expression
+        if(field.getExprPattern() != null)
+            ret = getValue(field, field.getExprPattern(), str);
+
+        // If that fails, try the second expression
+        if((ret == null || ret.length() == 0) && field.hasExpr2())
+            ret = getValue(field, field.getExprPattern2(), str);
+
+        return ret;
+    }
+
+    /**
+     * Returns the value for the given regular expression.
+     */
+    private String getValue(ContentField field, Pattern pattern, String value)
+    {
+        String ret = null;
+
         if(pattern != null)
         {
             if(debug())
                 logger.info(String.format("Evaluating field %s: pattern=[%s] value=[%s] match=[%s]", 
-                    field.getName(), pattern.pattern(), ret, field.getMatch()));
+                    field.getName(), pattern.pattern(), value, field.getMatch()));
 
-            Matcher m = pattern.matcher(ret);
+            Matcher m = pattern.matcher(value);
 
             if(m.find())
             {
@@ -291,7 +310,7 @@ public abstract class FieldsCrawler<T extends ContentSummary>
             else
             {
                 logger.warning(String.format("No match found for field %s: value=[%s]", 
-                    field.getName(), ret));
+                    field.getName(), value));
             }
         }
 
