@@ -77,7 +77,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
      */
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, TEMPLATE_ID, PROPERTIES, ATTRIBUTES, MESSAGE, STATUS, CREATED_BY "
-      + "FROM DRAFT_POSTS WHERE TYPE=? AND CREATED_DATE >= (NOW() + INTERVAL -10 DAY) ORDER BY CREATED_DATE";
+      + "FROM DRAFT_POSTS WHERE TYPE=? AND (CREATED_DATE >= (NOW() + INTERVAL -10 DAY) OR STATUS='NEW') ORDER BY CREATED_DATE";
 
     /**
      * The query to use to get the count of posts from the DRAFT_POSTS table.

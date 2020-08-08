@@ -571,6 +571,8 @@ public class StringUtils
                         buff.append("...");
                     else if(c == 8364)         // Replace Euro
                         buff.append("Euro");
+                    else if(c <= 383)  // ISO Latin 1 (128-255) and ISO Latin 1 Extended  Diacritics (256-383)
+                        buff.append((char)c);
                 }
             }
         }
