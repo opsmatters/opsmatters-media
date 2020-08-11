@@ -74,7 +74,6 @@ public class Fields extends LinkedHashMap<String,String>
     public static final String SPONSOR = "sponsor";
     public static final String TABS = "tabs";
     public static final String CONTENT = "content";
-    public static final String ADVERT = "advert";
     public static final String FOUNDED = "founded";
     public static final String STOCK_SYMBOL = "stock-symbol";
     public static final String FACEBOOK = "facebook";
