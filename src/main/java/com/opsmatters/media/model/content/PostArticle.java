@@ -33,7 +33,6 @@ public class PostArticle extends ImageArticle
     private String link = "";
     private String linkText = "";
     private String urlAlias = "";
-    private String canonicalUrl = "";
 
     /**
      * Default constructor.
@@ -85,7 +84,6 @@ public class PostArticle extends ImageArticle
         setLink(new String(obj.getLink() != null ? obj.getLink() : ""));
         setLinkText(new String(obj.getLinkText() != null ? obj.getLinkText() : ""));
         setUrlAlias(new String(obj.getUrlAlias() != null ? obj.getUrlAlias() : ""));
-        setCanonicalUrl(new String(obj.getCanonicalUrl() != null ? obj.getCanonicalUrl() : ""));
     }
 
     /**
@@ -481,30 +479,6 @@ public class PostArticle extends ImageArticle
         if(url.startsWith(path))
             url = url.substring(path.length());
         setUrlAlias(url);
-    }
-
-    /**
-     * Returns the canonical URL for the post.
-     */
-    public String getCanonicalUrl()
-    {
-        return canonicalUrl;
-    }
-
-    /**
-     * Sets the canonical URL for the post.
-     */
-    public void setCanonicalUrl(String canonicalUrl)
-    {
-        this.canonicalUrl = canonicalUrl;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the canonical URL for the post has been set.
-     */
-    public boolean hasCanonicalUrl()
-    {
-        return canonicalUrl != null && canonicalUrl.length() > 0;
     }
 
     /**

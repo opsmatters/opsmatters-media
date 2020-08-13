@@ -47,6 +47,7 @@ public abstract class ContentItem implements java.io.Serializable
     private String createdBy = "";
     private boolean deployed = false;
     private boolean social = false;
+    private String canonicalUrl = "";
 
     /**
      * Default constructor.
@@ -86,6 +87,7 @@ public abstract class ContentItem implements java.io.Serializable
         setCreatedBy(new String(obj.getCreatedBy() != null ? obj.getCreatedBy() : ""));
         setDeployed(obj.isDeployed());
         setSocial(obj.hasSocial());
+        setCanonicalUrl(new String(obj.getCanonicalUrl() != null ? obj.getCanonicalUrl() : ""));
     }
 
     /**
@@ -565,5 +567,29 @@ public abstract class ContentItem implements java.io.Serializable
     public void setSocialObject(Boolean social)
     {
         setSocial(social != null && social.booleanValue());
+    }
+
+    /**
+     * Returns the canonical URL for the post.
+     */
+    public String getCanonicalUrl()
+    {
+        return canonicalUrl;
+    }
+
+    /**
+     * Sets the canonical URL for the post.
+     */
+    public void setCanonicalUrl(String canonicalUrl)
+    {
+        this.canonicalUrl = canonicalUrl;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the canonical URL for the post has been set.
+     */
+    public boolean hasCanonicalUrl()
+    {
+        return canonicalUrl != null && canonicalUrl.length() > 0;
     }
 }

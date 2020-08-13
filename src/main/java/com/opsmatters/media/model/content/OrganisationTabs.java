@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Gerald Curley
+ * Copyright 2020 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,12 +27,12 @@ public enum OrganisationTabs
     ALL(0),
     N(1),
     V(2),
-    NVA(10),
-    NEA(20),
-    NPA(30),
-    NPVA(40),
-    NVEA(50),
-    NPEA(60);
+    NV(10),
+    NE(20),
+    NP(30),
+    NVP(40),
+    NVE(50),
+    NPE(60);
 
     private int value;
 

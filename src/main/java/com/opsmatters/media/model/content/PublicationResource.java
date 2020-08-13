@@ -80,6 +80,7 @@ public abstract class PublicationResource extends Resource
         String createdBy = values[14];
         String published = values[15];
         String promote = values[16];
+        String canonicalUrl = values.length > 17 ? values[17] : "";
 
         setCode(code);
         setId(Integer.parseInt(id.substring(id.lastIndexOf("-")+1)));
@@ -94,6 +95,7 @@ public abstract class PublicationResource extends Resource
         setCreatedBy(createdBy);
         setPublished(published != null && published.equals("1"));
         setPromoted(promote != null && promote.equals("1"));
+        setCanonicalUrl(canonicalUrl);
     }
 
     /**
@@ -105,6 +107,7 @@ public abstract class PublicationResource extends Resource
 
         setTags(obj.optString(Fields.TAGS));
         setCreatorEmail(obj.optString(Fields.EMAIL));
+        setCanonicalUrl(obj.optString(Fields.CANONICAL_URL));
     }
 
     /**
@@ -116,6 +119,7 @@ public abstract class PublicationResource extends Resource
 
         ret.putOpt(Fields.TAGS, getTags());
         ret.putOpt(Fields.EMAIL, getCreatorEmail());
+        ret.putOpt(Fields.CANONICAL_URL, getCanonicalUrl());
 
         return ret;
     }
@@ -130,6 +134,8 @@ public abstract class PublicationResource extends Resource
 
         ret.put(Fields.TAGS, getTags());
         ret.put(Fields.EMAIL, getCreatorEmail());
+        ret.put(Fields.CANONICAL_URL, getCanonicalUrl());
+        ret.put(Fields.METATAGS, getMetatags());
 
         return ret;
     }
@@ -241,5 +247,24 @@ public abstract class PublicationResource extends Resource
     public void setCreatorEmail(String creatorEmail)
     {
         this.creatorEmail = creatorEmail;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this content has metatags to set.
+     */
+    @Override
+    public boolean hasMetatags()
+    {
+        return hasCanonicalUrl();
+    }
+
+    /**
+     * Add the metatags for this content to the given JSON object.
+     */
+    @Override
+    protected void addMetatags(JSONObject obj)
+    {
+        if(hasCanonicalUrl())
+            obj.putOpt("canonical_url", getCanonicalUrl());
     }
 }
