@@ -505,6 +505,10 @@ public class FormatUtils
             // Remove query parameters
             if(removeParameters)
                 url = url.replaceAll("(.*)[\\?#](.*)", "$1");
+
+            // Remove trailing slash to normalise URLs
+            if(url.length() > 3 && url.endsWith("/"))
+                url = url.substring(0, url.length()-1);
         }
 
         if(basePath != null && basePath.length() > 0 && FileUtils.isRelativePath(url))
