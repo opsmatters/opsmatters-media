@@ -367,6 +367,9 @@ public class FormatUtils
 
             // Remove empty paragraphs
             ret = ret.replaceAll("\n<p>\\s*</p>", "");
+
+            // Replace URLs with hyperlinks
+            ret = StringUtils.replaceUrls(ret);
         }
 
         return ret;

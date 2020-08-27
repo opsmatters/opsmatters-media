@@ -23,26 +23,31 @@ package com.opsmatters.media.model.monitor;
  */
 public enum MonitorStatus
 {
-    NEW("New"),
-    WAITING("Waiting"),
-    EXECUTING("Executing"),
-    PENDING("Pending"),
-    RESUMING("Resuming"),
-    RETRYING("Retrying"),
-    ERROR("Error"),
-    SUSPENDED("Suspended"),
-    DISABLED("Disabled"),
-    ALL("All");
+    NEW("New", -1),
+    WAITING("Waiting", 1),
+    EXECUTING("Executing", 1),
+    PENDING("Pending", 0),
+    RESUMING("Resuming", 1),
+    RETRYING("Retrying", 1),
+    ERROR("Error", 1),
+    SUSPENDED("Suspended", -1),
+    DISABLED("Disabled", -1),
+    RUNNING("Running", 1),
+    STOPPED("Stopped", -1),
+    ALL("All", 0);
 
     private String value;
+    private int state;
 
     /**
      * Constructor that takes the status value.
      * @param value The value for the status
+     * @param state The state for the status
      */
-    MonitorStatus(String value)
+    MonitorStatus(String value, int state)
     {
         this.value = value;
+        this.state = state;
     }
 
     /**
@@ -61,6 +66,24 @@ public enum MonitorStatus
     public String value()
     {
         return value;
+    }
+
+    /**
+     * Returns <CODE>true<CODE> if the monitor state is RUNNING.
+     * @return The monitor state.
+     */
+    public boolean isRunning()
+    {
+        return state > 0;
+    }
+
+    /**
+     * Returns <CODE>true<CODE> if the monitor state is STOPPED.
+     * @return The monitor state.
+     */
+    public boolean isStopped()
+    {
+        return state < 0;
     }
 
     /**

@@ -18,6 +18,7 @@ package com.opsmatters.media.util;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -844,6 +845,44 @@ public class StringUtils
     {
         Matcher m = urlPattern.matcher(text);
         return m.find() ? m.group() : null;
+    }
+
+    static class Match
+    {
+        Match(int start, int end, String text)
+        {
+            this.start = start;
+            this.end = end;
+            this.text = text;
+        }
+
+        int start;
+        int end;
+        String text;
+    }
+
+    /**
+     * Replaces all URLs in the given text with hyperlinks.
+     */
+    public static String replaceUrls(String text)
+    {
+        // Get a list of the URL matches
+        List<Match> matches = new ArrayList<Match>();
+        Matcher m = urlPattern.matcher(text);
+        while(m.find())
+            matches.add(new Match(m.start(), m.end(), m.group()));
+
+        // Traverse in reverse order as we're changing the text
+        Collections.reverse(matches);
+
+        // Replace each URL match in the text with a hyperlink
+        for(Match match : matches)
+        {
+            String replacement = String.format("<a href=\"%1$s\" target=\"_blank\" rel=\"nofollow\">%1$s</a>", match.text);
+            text = new StringBuilder(text).replace(match.start, match.end, replacement).toString();
+        }
+
+        return text;
     }
 
     /**
