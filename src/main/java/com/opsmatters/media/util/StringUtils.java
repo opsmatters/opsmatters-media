@@ -878,7 +878,9 @@ public class StringUtils
         // Replace each URL match in the text with a hyperlink
         for(Match match : matches)
         {
-            String replacement = String.format("<a href=\"%1$s\" target=\"_blank\" rel=\"nofollow\">%1$s</a>", match.text);
+            int pos = match.text.indexOf("?");
+            String value = pos != -1 ? match.text.substring(0, pos) : match.text; // Remove query parameters
+            String replacement = String.format("<a href=\"%s\" target=\"_blank\" rel=\"nofollow\">%s</a>", match.text, value);
             text = new StringBuilder(text).replace(match.start, match.end, replacement).toString();
         }
 
