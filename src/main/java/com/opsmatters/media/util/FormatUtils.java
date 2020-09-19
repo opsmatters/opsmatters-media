@@ -452,8 +452,10 @@ public class FormatUtils
 
             // Remove other special characters
             ret = ret.replaceAll("%23", ""); // hash
+            ret = ret.replaceAll("%25", ""); // percent
             ret = ret.replaceAll("%27", ""); // apostrophe
             ret = ret.replaceAll("%2C", ""); // comma
+            ret = ret.replaceAll("%3F", ""); // question mark
             ret = ret.replaceAll("%7C", ""); // pipe
 
             // Remove quotes etc

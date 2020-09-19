@@ -542,9 +542,10 @@ public class StringUtils
      * Returns the given string with all non-ASCII characters replaced by their HTML escape sequences.
      * @param s The string to have all non-ASCII characters replaced
      * @param isHtml <CODE>true</CODE> if the string contains HTML markup
+     * @param diacritics <CODE>true</CODE> if Extended  Diacritics (256-383) should be included
      * @return The given string with all non-ASCII characters replaced
      */
-    public static String convertToAscii(String s, boolean isHtml)
+    public static String convertToAscii(String s, boolean isHtml, boolean diacritics)
     {
         StringBuffer buff = new StringBuffer();
         for(int i = 0; i < s.length(); i++)
@@ -572,13 +573,26 @@ public class StringUtils
                         buff.append("...");
                     else if(c == 8364)         // Replace Euro
                         buff.append("Euro");
-                    else if(c <= 383)  // ISO Latin 1 (128-255) and ISO Latin 1 Extended  Diacritics (256-383)
+                    else if(c <= 255)          // ISO Latin 1 (128-255)
                         buff.append((char)c);
+                    else if(c <= 383)          // ISO Latin 1 Extended  Diacritics (256-383)
+                        buff.append(!diacritics ? '?' : (char)c);
                 }
             }
         }
 
         return buff.toString();
+    }
+
+    /**
+     * Returns the given string with all non-ASCII characters replaced by their HTML escape sequences.
+     * @param s The string to have all non-ASCII characters replaced
+     * @param isHtml <CODE>true</CODE> if the string contains HTML markup
+     * @return The given string with all non-ASCII characters replaced
+     */
+    public static String convertToAscii(String s, boolean isHtml)
+    {
+        return convertToAscii(s, isHtml, true);
     }
 
     /**
