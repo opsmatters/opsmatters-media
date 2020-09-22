@@ -28,6 +28,7 @@ public class ContentField implements java.io.Serializable
 {
     private static final Logger logger = Logger.getLogger(ContentField.class.getName());
 
+//GERALD
     public static final String SOURCE = "source";
     public static final String SELECTOR = "selector";
     public static final String SELECTOR2 = "selector2";
@@ -35,16 +36,20 @@ public class ContentField implements java.io.Serializable
     public static final String TEXT_CASE = "text-case";
     public static final String MULTIPLE = "multiple";
     public static final String SEPARATOR = "separator";
-    public static final String EXPR = "expr";
-    public static final String EXPR2 = "expr2";
+//    public static final String EXPR = "expr";
+//    public static final String EXPR2 = "expr2";
     public static final String DATE_PATTERN = "date-pattern";
     public static final String DATE_PATTERN2 = "date-pattern2";
-    public static final String FORMAT = "format";
-    public static final String MATCH = "match";
+//    public static final String FORMAT = "format";
+//    public static final String MATCH = "match";
     public static final String STOP_EXPR = "stop-expr";
     public static final String REMOVE_PARAMETERS = "remove-parameters";
     public static final String GENERATE = "generate";
+//GERALD
+    public static final String EXTRACTOR = "extractor";
+    public static final String EXTRACTOR2 = "extractor2";
 
+//GERALD
     private String name = "";
     private ContentFieldSource source = ContentFieldSource.PAGE;
     private String selector = "";
@@ -53,16 +58,19 @@ public class ContentField implements java.io.Serializable
     private ContentFieldCase textCase = ContentFieldCase.NONE;
     private boolean multiple = false;
     private String separator = "";
-    private String expr = "";
-    private String expr2 = "";
+//    private String expr = "";
+//    private String expr2 = "";
     private String datePattern = "";
     private String datePattern2 = "";
-    private String format = "";
-    private ContentFieldMatch match = ContentFieldMatch.FIRST;
+//    private String format = "";
+//    private ContentFieldMatch match = ContentFieldMatch.FIRST;
     private String stopExpr = "";
-    private Pattern exprPattern, exprPattern2, stopExprPattern;
+    private Pattern stopExprPattern;
+//    private Pattern exprPattern, exprPattern2, stopExprPattern;
     private boolean removeParameters = true;
     private boolean generate = false;
+//GERALD
+    private ContentFieldExtractor extractor, extractor2;
 
     /**
      * Default constructor.
@@ -285,69 +293,77 @@ public class ContentField implements java.io.Serializable
     /**
      * Returns the regular expression for this configuration.
      */
+/* GERALD
     public String getExpr()
     {
         return expr;
     }
-
+*/
     /**
      * Returns the regular expression pattern for this configuration.
      */
+/* GERALD
     public Pattern getExprPattern()
     {
         return exprPattern;
     }
-
+*/
     /**
      * Sets the regular expression for this configuration.
      */
+/* GERALD
     public void setExpr(String expr)
     {
         this.expr = expr;
         this.exprPattern = hasExpr() ? Pattern.compile(expr, Pattern.DOTALL) : null;
     }
-
+*/
     /**
      * Returns <CODE>true</CODE> if the regular expression has been set.
      */
+/* GERALD
     public boolean hasExpr()
     {
         return expr != null && expr.length() > 0;
     }
-
+*/
     /**
      * Returns the 2nd regular expression for this configuration.
      */
+/* GERALD
     public String getExpr2()
     {
         return expr2;
     }
-
+*/
     /**
      * Returns the 2nd regular expression pattern for this configuration.
      */
+/* GERALD
     public Pattern getExprPattern2()
     {
         return exprPattern2;
     }
-
+*/
     /**
      * Sets the 2nd regular expression for this configuration.
      */
+/* GERALD
     public void setExpr2(String expr2)
     {
         this.expr2 = expr2;
         this.exprPattern2 = hasExpr2() ? Pattern.compile(expr2, Pattern.DOTALL) : null;
     }
-
+*/
     /**
      * Returns <CODE>true</CODE> if the 2nd regular expression has been set.
      */
+/* GERALD
     public boolean hasExpr2()
     {
         return expr2 != null && expr2.length() > 0;
     }
-
+*/
     /**
      * Returns the date pattern for this configuration.
      */
@@ -399,59 +415,66 @@ public class ContentField implements java.io.Serializable
     /**
      * Returns the format for this configuration.
      */
+/* GERALD
     public String getFormat()
     {
         return format;
     }
-
+*/
     /**
      * Sets the format for this configuration.
      */
+/* GERALD
     public void setFormat(String format)
     {
         this.format = format;
     }
-
+*/
     /**
      * Returns <CODE>true</CODE> if the format has been set.
      */
+/* GERALD
     public boolean hasFormat()
     {
         return format != null && format.length() > 0;
     }
-
+*/
     /**
      * Returns the match for this configuration (ALL/FIRST).
      */
+/* GERALD
     public ContentFieldMatch getMatch()
     {
         return match;
     }
-
+*/
     /**
      * Sets the match for this configuration (ALL/FIRST).
      */
+/* GERALD
     public void setMatch(ContentFieldMatch match)
     {
         this.match = match;
     }
-
+*/
     /**
      * Sets the match for this configuration (ALL/FIRST).
      */
+/* GERALD
     public void setMatch(String match)
     {
         setMatch(ContentFieldMatch.fromValue(match));
     }
-
+*/
     /**
      * Returns <CODE>true</CODE> if the match has been set.
      */
+/* GERALD
     public boolean hasMatch()
     {
         return match != null;
     }
-
+*/
     /**
      * Returns the stopping regular expression for this configuration.
      */
@@ -517,6 +540,24 @@ public class ContentField implements java.io.Serializable
         this.generate = generate;
     }
 
+//GERALD
+    /**
+     * Returns the extractor for this configuration.
+     */
+    public ContentFieldExtractor getExtractor()
+    {
+        return extractor;
+    }
+
+//GERALD
+    /**
+     * Returns the 2nd extractor for this configuration.
+     */
+    public ContentFieldExtractor getExtractor2()
+    {
+        return extractor2;
+    }
+
     /**
      * Reads the configuration from the given YAML Document.
      */
@@ -536,23 +577,52 @@ public class ContentField implements java.io.Serializable
             setMultiple((Boolean)map.get(MULTIPLE));
         if(map.containsKey(SEPARATOR))
             setSeparator((String)map.get(SEPARATOR));
-        if(map.containsKey(EXPR))
-            setExpr((String)map.get(EXPR));
-        if(map.containsKey(EXPR2))
-            setExpr2((String)map.get(EXPR2));
+//GERALD
+//        if(map.containsKey(EXPR))
+//            setExpr((String)map.get(EXPR));
+//        if(map.containsKey(EXPR2))
+//            setExpr2((String)map.get(EXPR2));
         if(map.containsKey(DATE_PATTERN))
             setDatePattern((String)map.get(DATE_PATTERN));
         if(map.containsKey(DATE_PATTERN2))
             setDatePattern2((String)map.get(DATE_PATTERN2));
-        if(map.containsKey(FORMAT))
-            setFormat((String)map.get(FORMAT));
-        if(map.containsKey(MATCH))
-            setMatch((String)map.get(MATCH));
+//        if(map.containsKey(FORMAT))
+//            setFormat((String)map.get(FORMAT));
+//        if(map.containsKey(MATCH))
+//            setMatch((String)map.get(MATCH));
         if(map.containsKey(STOP_EXPR))
             setStopExpr((String)map.get(STOP_EXPR));
         if(map.containsKey(REMOVE_PARAMETERS))
             setRemoveParameters((Boolean)map.get(REMOVE_PARAMETERS));
         if(map.containsKey(GENERATE))
             setGenerate((Boolean)map.get(GENERATE));
+
+//GERALD
+        if(map.containsKey(EXTRACTOR))
+        {
+//            extractor = new ContentFieldExtractor(getName(), (Map<String,Object>)map.get(EXTRACTOR));
+            extractor = createExtractor(getName(), map.get(EXTRACTOR));
+        }
+
+//GERALD
+        if(map.containsKey(EXTRACTOR2))
+        {
+//            extractor2 = new ContentFieldExtractor(getName(), (Map<String,Object>)map.get(EXTRACTOR2));
+            extractor2 = createExtractor(getName(), map.get(EXTRACTOR2));
+        }
+    }
+
+//GERALD: test
+    /**
+     * Create an extractor object for the given field.
+     */
+    public ContentFieldExtractor createExtractor(String name, Object value)
+    {
+        ContentFieldExtractor ret = null;
+        if(value instanceof String)
+            ret = new ContentFieldExtractor(name, (String)value);
+        else if(value instanceof Map)
+            ret = new ContentFieldExtractor(name, (Map<String,Object>)value);
+        return ret;
     }
 }

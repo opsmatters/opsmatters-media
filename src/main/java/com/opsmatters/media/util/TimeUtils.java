@@ -654,7 +654,9 @@ public class TimeUtils
     {
         Instant ret = null;
 
-        if(str != null && str.length() > 0)
+//GERALD
+//        if(str != null && str.length() > 0)
+        if(str != null && str.length() > 0 && !str.equals("-"))
         {
             DateTimeFormatter formatter = getFormatter(pattern);
             TemporalAccessor dt = formatter.parse(preprocessDateString(str), new ParsePosition(0));

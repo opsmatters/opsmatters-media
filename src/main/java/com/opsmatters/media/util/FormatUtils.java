@@ -433,32 +433,37 @@ public class FormatUtils
         if(ret != null)
         {
             // Replace spaces with dashes
-            ret = ret.replaceAll(" ", "-");
+            ret = ret.replaceAll(" |%20", "-");
 
             // Replace escaped spaces with dashes
-            ret = ret.replaceAll("%20", "-");
+//GERALD
+//            ret = ret.replaceAll("%20", "-");
 
-            // Replace escaped plus with plus
-            ret = ret.replaceAll("%2B", "+");
+            // Replace escaped plus, ampersand with plus
+            ret = ret.replaceAll("%2B|%26", "+");
 
             // Replace escaped ampersand with ampersand
-            ret = ret.replaceAll("%26", "+");
+//GERALD
+//            ret = ret.replaceAll("%26", "+");
 
-            // Replace escaped brackets with brackets
+            // Replace some escaped chars with original char
+            ret = ret.replaceAll("%24", "\\$");
             ret = ret.replaceAll("%28", "(");
             ret = ret.replaceAll("%29", ")");
             ret = ret.replaceAll("%5B", "[");
             ret = ret.replaceAll("%5D", "]");
 
             // Remove other special characters
-            ret = ret.replaceAll("%23", ""); // hash
-            ret = ret.replaceAll("%25", ""); // percent
-            ret = ret.replaceAll("%27", ""); // apostrophe
-            ret = ret.replaceAll("%2C", ""); // comma
-            ret = ret.replaceAll("%3F", ""); // question mark
-            ret = ret.replaceAll("%7C", ""); // pipe
+//GERALD
+//            ret = ret.replaceAll("%23", ""); // hash
+//            ret = ret.replaceAll("%25", ""); // percent
+//            ret = ret.replaceAll("%27", ""); // apostrophe
+//            ret = ret.replaceAll("%2C", ""); // comma
+//            ret = ret.replaceAll("%3F", ""); // question mark
+//            ret = ret.replaceAll("%7C", ""); // pipe
+            ret = ret.replaceAll("%23|%25|%27|%2C|%3F|%7C", ""); // hash
 
-            // Remove quotes etc
+            // Remove quotes, dashes etc
             ret = ret.replaceAll("'|‘|’|‚|‛|“|”|„|′|″", "");
             ret = ret.replaceAll("‐|‑|‒|–|—|―|‖|‗|‾	", "-");
             ret = ret.replaceAll("…", "-");

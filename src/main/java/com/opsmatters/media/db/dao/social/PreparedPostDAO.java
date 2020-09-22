@@ -70,7 +70,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, DRAFT_ID, CODE, "
       + "TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, ERROR_CODE, ERROR_MESSAGE, CREATED_BY "
-      + "FROM PREPARED_POSTS WHERE CREATED_DATE >= (NOW() + INTERVAL -3 DAY) ORDER BY CREATED_DATE";
+      + "FROM PREPARED_POSTS WHERE CREATED_DATE >= (NOW() + INTERVAL -? DAY) ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the PREPARED_POSTS table.
@@ -78,7 +78,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     private static final String LIST_BY_STATUS_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, DRAFT_ID, CODE, "
       + "TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, ERROR_CODE, ERROR_MESSAGE, CREATED_BY "
-      + "FROM PREPARED_POSTS WHERE STATUS=? AND CREATED_DATE >= (NOW() + INTERVAL -3 DAY) ORDER BY CREATED_DATE";
+      + "FROM PREPARED_POSTS WHERE STATUS=? AND CREATED_DATE >= (NOW() + INTERVAL -? DAY) ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the PREPARED_POSTS table.
@@ -271,7 +271,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     /**
      * Returns the posts from the PREPARED_POSTS table.
      */
-    public List<PreparedPost> list() throws SQLException
+    public List<PreparedPost> list(int interval) throws SQLException
     {
         List<PreparedPost> ret = null;
 
@@ -287,6 +287,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
 
         try
         {
+            listStmt.setInt(1, interval);
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
             ret = new ArrayList<PreparedPost>();
@@ -331,7 +332,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     /**
      * Returns the posts from the PREPARED_POSTS table by status.
      */
-    public List<PreparedPost> list(DeliveryStatus status) throws SQLException
+    public List<PreparedPost> list(DeliveryStatus status, int interval) throws SQLException
     {
         List<PreparedPost> ret = null;
 
@@ -348,6 +349,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
         try
         {
             listByStatusStmt.setString(1, status != null ? status.name() : "");
+            listByStatusStmt.setInt(2, interval);
             listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByStatusStmt.executeQuery();
             ret = new ArrayList<PreparedPost>();
