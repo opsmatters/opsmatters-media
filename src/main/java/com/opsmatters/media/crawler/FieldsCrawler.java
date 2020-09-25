@@ -34,7 +34,6 @@ import com.opsmatters.media.config.content.ContentField;
 import com.opsmatters.media.config.content.ContentFields;
 import com.opsmatters.media.config.content.ContentFieldMatch;
 import com.opsmatters.media.config.content.ContentFieldCase;
-//GERALD
 import com.opsmatters.media.config.content.ContentFieldExtractor;
 import com.opsmatters.media.model.content.ContentSummary;
 
@@ -244,34 +243,24 @@ public abstract class FieldsCrawler<T extends ContentSummary>
     {
         String ret = value;
 
-//GERALD
-        // Try the first extractor
-//        if(field.getExprPattern() != null)
-//            ret = getValue(field, field.getExprPattern(), value);
-        if(field.getExtractor() != null)
-{
-            ret = extract(field.getExtractor(), value);
-//GERALD
-//System.out.println("1: FieldsCrawler.getValue: name="+field.getName()+" value="+value+" ret="+ret);
-}
+        // Try each extractor in turn
+        if(field.hasExtractors())
+        {
+            for(ContentFieldExtractor extractor : field.getExtractors())
+            {
+                ret = extract(extractor, value);
+                if(ret != null && ret.length() > 0)
+                    break;
+            }
+        }
 
-        // If that fails, try the second extractor
-//        if((ret == null || ret.length() == 0) && field.hasExpr2())
-//            ret = getValue(field, field.getExprPattern2(), value);
-        if((ret == null || ret.length() == 0) && field.getExtractor2() != null)
-{
-            ret = extract(field.getExtractor2(), value);
-//GERALD
-//System.out.println("2: FieldsCrawler.getValue: name="+field.getName()+" value="+value+" ret="+ret);
-}
-
-//GERALD: test
         if(ret == null)
         {
             logger.warning(String.format("No match found for field %s: value=[%s]", 
                 field.getName(), value));
-//GERALD: test
-ret = value;
+
+            // Just pass through the selection if none of the extractors matched
+            ret = value;
         }
 
         if(ret != null && field.getTextCase() != ContentFieldCase.NONE)
@@ -291,8 +280,6 @@ ret = value;
                 logger.info(String.format("Changed case for field %s: ret=[%s], case=[%s]", 
                         field.getName(), ret, field.getTextCase()));
         }
-//GERALD
-//System.out.println("3: FieldsCrawler.getValue: name="+field.getName()+" value="+value+" ret="+ret);
 
         return ret;
     }
@@ -304,8 +291,7 @@ ret = value;
     {
         String ret = null;
 
-//GERALD
-Pattern pattern = extractor.getExprPattern();
+        Pattern pattern = extractor.getExprPattern();
         if(pattern != null)
         {
             if(debug())
@@ -317,14 +303,7 @@ Pattern pattern = extractor.getExprPattern();
             if(m.find())
             {
                 // Get the field format (can including properties)
-/* GERALD
-                String format = "$1";
-                if(extractor.hasFormat())
-                {
-                    format = getFormatSubstitutor().replace(extractor.getFormat());
-                }
-*/
-String format = getFormatSubstitutor().replace(extractor.getFormat());
+                String format = getFormatSubstitutor().replace(extractor.getFormat());
 
                 // Make the necessary field replacements
                 if(extractor.getMatch() == ContentFieldMatch.ALL)
@@ -336,13 +315,6 @@ String format = getFormatSubstitutor().replace(extractor.getFormat());
                     logger.info(String.format("Match found for field %s: ret=[%s] match=[%s]", 
                         extractor.getName(), ret, extractor.getMatch()));
             }
-/* GERALD
-            else
-            {
-                logger.warning(String.format("No match found for field %s: value=[%s]", 
-                    extractor.getName(), value));
-            }
-*/
         }
 
         return ret;

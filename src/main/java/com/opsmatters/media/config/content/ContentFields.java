@@ -140,7 +140,7 @@ public class ContentFields implements java.io.Serializable
      */
     public boolean hasTitle()
     {
-        return title != null && title.getSelector().length() > 0;
+        return title != null && title.hasSelectors();
     }
 
     /**
@@ -164,7 +164,7 @@ public class ContentFields implements java.io.Serializable
      */
     public boolean hasAuthor()
     {
-        return author != null && author.getSelector(). length() > 0;
+        return author != null && author.hasSelectors();
     }
 
     /**
@@ -188,7 +188,7 @@ public class ContentFields implements java.io.Serializable
      */
     public boolean hasAuthorLink()
     {
-        return authorLink != null && authorLink.getSelector(). length() > 0;
+        return authorLink != null && authorLink.hasSelectors();
     }
 
     /**
@@ -212,7 +212,7 @@ public class ContentFields implements java.io.Serializable
      */
     public boolean hasPublishedDate()
     {
-        return publishedDate != null && publishedDate.getSelector().length() > 0;
+        return publishedDate != null && publishedDate.hasSelectors();
     }
 
     /**
@@ -236,7 +236,7 @@ public class ContentFields implements java.io.Serializable
      */
     public boolean hasStartDate()
     {
-        return startDate != null && startDate.getSelector().length() > 0;
+        return startDate != null && startDate.hasSelectors();
     }
 
     /**
@@ -260,7 +260,7 @@ public class ContentFields implements java.io.Serializable
      */
     public boolean hasStartTime()
     {
-        return startTime != null && startTime.getSelector().length() > 0;
+        return startTime != null && startTime.hasSelectors();
     }
 
     /**
@@ -284,7 +284,7 @@ public class ContentFields implements java.io.Serializable
      */
     public boolean hasEndDate()
     {
-        return endDate != null && endDate.getSelector().length() > 0;
+        return endDate != null && endDate.hasSelectors();
     }
 
     /**
@@ -308,7 +308,7 @@ public class ContentFields implements java.io.Serializable
      */
     public boolean hasEndTime()
     {
-        return endTime != null && endTime.getSelector().length() > 0;
+        return endTime != null && endTime.hasSelectors();
     }
 
     /**
@@ -332,7 +332,7 @@ public class ContentFields implements java.io.Serializable
      */
     public boolean hasTimeZone()
     {
-        return timezone != null && timezone.getSelector(). length() > 0;
+        return timezone != null && timezone.hasSelectors();
     }
 
     /**
@@ -356,7 +356,7 @@ public class ContentFields implements java.io.Serializable
      */
     public boolean hasBody()
     {
-        return body != null && body.getSelector(). length() > 0;
+        return body != null && body.hasSelectors();
     }
 
     /**
@@ -380,7 +380,7 @@ public class ContentFields implements java.io.Serializable
      */
     public boolean hasImage()
     {
-        return image != null && image.getSelector().length() > 0;
+        return image != null && image.hasSelectors();
     }
 
     /**
@@ -404,7 +404,7 @@ public class ContentFields implements java.io.Serializable
      */
     public boolean hasBackgroundImage()
     {
-        return backgroundImage != null && backgroundImage.getSelector().length() > 0;
+        return backgroundImage != null && backgroundImage.hasSelectors();
     }
 
     /**
@@ -428,7 +428,7 @@ public class ContentFields implements java.io.Serializable
      */
     public boolean hasUrl()
     {
-        return url != null && url.getSelector().length() > 0;
+        return url != null && url.hasSelectors();
     }
 
     /**

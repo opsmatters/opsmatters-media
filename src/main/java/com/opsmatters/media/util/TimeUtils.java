@@ -654,8 +654,6 @@ public class TimeUtils
     {
         Instant ret = null;
 
-//GERALD
-//        if(str != null && str.length() > 0)
         if(str != null && str.length() > 0 && !str.equals("-"))
         {
             DateTimeFormatter formatter = getFormatter(pattern);

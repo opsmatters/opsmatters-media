@@ -160,24 +160,29 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
         if(fields.hasStartTime())
         {
             ContentField field = fields.getStartTime();
-            String start = getElement(field, root, "content");
+            String start = getElements(field, root, "content");
             if(start != null)
             {
                 try
                 {
-                    try
+                    // Try each date pattern
+                    DateTimeParseException ex = null;
+                    for(String datePattern : field.getDatePatterns())
                     {
-                        // Try the 1st date pattern
-                        starttm = TimeUtils.toMillisTime(start, field.getDatePattern());
+                        try
+                        {
+                            starttm = TimeUtils.toMillisTime(start, datePattern);
+                            ex = null;
+                            break;
+                        }
+                        catch(DateTimeParseException e)
+                        {
+                            ex = e;
+                        }
                     }
-                    catch(DateTimeParseException e)
-                    {
-                        // If the 1st date pattern fails, try the 2nd format
-                        if(field.hasDatePattern2())
-                            starttm = TimeUtils.toMillisTime(start, field.getDatePattern2());
-                        else
-                            throw e;
-                    }
+
+                    if(ex != null)
+                        throw ex;
 
                     if(debug())
                         logger.info("Found start time: "+starttm);
@@ -201,7 +206,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
 
         if(fields.hasTimeZone())
         {
-            String timezone = getElement(fields.getTimeZone(), root, "content");
+            String timezone = getElements(fields.getTimeZone(), root, "content");
             if(timezone != null)
                 content.setTimeZone(timezone);
         }
@@ -234,7 +239,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
         if(fields.hasTitle())
         {
             ContentField field = fields.getTitle();
-            String title = getElements(field, root, type, field.isMultiple(), field.getSeparator());
+            String title = getElements(field, root, type);
             if(title != null)
             {
                 // Event title should always start with the organisation name
@@ -256,24 +261,29 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
         if(fields.hasStartDate())
         {
             ContentField field = fields.getStartDate();
-            String startDate = getElement(field, root, type);
+            String startDate = getElements(field, root, type);
             if(startDate != null)
             {
                 try
                 {
-                    try
+                    // Try each date pattern
+                    DateTimeParseException ex = null;
+                    for(String datePattern : field.getDatePatterns())
                     {
-                        // Try the 1st date pattern
-                        content.setStartDateAsString(startDate, field.getDatePattern());
+                        try
+                        {
+                            content.setStartDateAsString(startDate, datePattern);
+                            ex = null;
+                            break;
+                        }
+                        catch(DateTimeParseException e)
+                        {
+                            ex = e;
+                        }
                     }
-                    catch(DateTimeParseException e)
-                    {
-                        // If the 1st date pattern fails, try the 2nd format
-                        if(field.hasDatePattern2())
-                            content.setStartDateAsString(startDate, field.getDatePattern2());
-                        else
-                            throw e;
-                    }
+
+                    if(ex != null)
+                        throw ex;
                 }
                 catch(DateTimeParseException e)
                 {

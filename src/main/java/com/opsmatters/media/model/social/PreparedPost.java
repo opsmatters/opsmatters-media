@@ -464,6 +464,14 @@ public class PreparedPost extends SocialPost
     }
 
     /**
+     * Returns <CODE>true</CODE> if the post error message has been set.
+     */
+    public boolean hasErrorMessage()
+    {
+        return getErrorMessage() != null && getErrorMessage().length() > 0;
+    }
+
+    /**
      * Send the post using a client.
      */
     public void send() throws Exception
@@ -481,25 +489,25 @@ public class PreparedPost extends SocialPost
             {
                 setExternalId(sent.getId());
                 setStatus(DeliveryStatus.SENT);
+                setErrorCode(0);
+                setErrorMessage("");
             }
         }
         catch(Exception e)
         {
-            if(client == null)
+            if(client != null)
             {
-                // eg. OAuth token expired
-                setStatus(DeliveryStatus.ERROR);
-                setErrorMessage(e.getMessage());
-            }
-            else if(client.isRecoverable(e))
-            {
-                throw e;
-            }
-            else
-            {
-                setStatus(DeliveryStatus.ERROR);
                 setErrorCode(client.getErrorCode(e));
                 setErrorMessage(client.getErrorMessage(e));
+                if(!client.isRecoverable(e))
+                    setStatus(DeliveryStatus.ERROR);
+                else
+                    throw e;
+            }
+            else // eg. OAuth token expired
+            {
+                setStatus(DeliveryStatus.ERROR);
+                setErrorMessage(e.getMessage());
             }
         }
     }

@@ -162,7 +162,7 @@ public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
         if(fields.hasTitle())
         {
             ContentField field = fields.getTitle();
-            String title = getElements(field, root, type, field.isMultiple(), field.getSeparator());
+            String title = getElements(field, root, type);
             if(title != null)
                 content.setTitle(title);
         }
@@ -170,24 +170,29 @@ public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
         if(fields.hasPublishedDate())
         {
             ContentField field = fields.getPublishedDate();
-            String publishedDate = getElement(field, root, type);
+            String publishedDate = getElements(field, root, type);
             if(publishedDate != null)
             {
                 try
                 {
-                    try
+                    // Try each date pattern
+                    DateTimeParseException ex = null;
+                    for(String datePattern : field.getDatePatterns())
                     {
-                        // Try the 1st date pattern
-                        content.setPublishedDateAsString(publishedDate, field.getDatePattern());
+                        try
+                        {
+                            content.setPublishedDateAsString(publishedDate, datePattern);
+                            ex = null;
+                            break;
+                        }
+                        catch(DateTimeParseException e)
+                        {
+                            ex = e;
+                        }
                     }
-                    catch(DateTimeParseException e)
-                    {
-                        // If the 1st date pattern fails, try the 2nd format
-                        if(field.hasDatePattern2())
-                            content.setPublishedDateAsString(publishedDate, field.getDatePattern2());
-                        else
-                            throw e;
-                    }
+
+                    if(ex != null)
+                        throw ex;
                 }
                 catch(DateTimeParseException e)
                 {

@@ -90,7 +90,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
                 String url = null;
                 ContentField field = fields.getUrl();
                 if(field.generate())
-                    url = FormatUtils.generateUrl(getBasePath(), getElement(field, root, "teaser"));
+                    url = FormatUtils.generateUrl(getBasePath(), getElements(field, root, "teaser"));
                 else
                     url = getAnchor(field, root, "teaser", field.removeParameters());
                 if(url != null)
@@ -200,7 +200,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
         if(fields.hasTitle())
         {
             ContentField field = fields.getTitle();
-            String title = getElements(field, root, type, field.isMultiple(), field.getSeparator());
+            String title = getElements(field, root, type);
             if(title != null)
             {
                 title = title.replaceAll("&amp;", "&"); // Remove &amp;
@@ -211,24 +211,29 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
         if(fields.hasPublishedDate())
         {
             ContentField field = fields.getPublishedDate();
-            String publishedDate = getElement(field, root, type);
+            String publishedDate = getElements(field, root, type);
             if(publishedDate != null)
             {
                 try
                 {
-                    try
+                    // Try each date pattern
+                    DateTimeParseException ex = null;
+                    for(String datePattern : field.getDatePatterns())
                     {
-                        // Try the 1st date pattern
-                        content.setPublishedDateAsString(publishedDate, field.getDatePattern());
+                        try
+                        {
+                            content.setPublishedDateAsString(publishedDate, datePattern);
+                            ex = null;
+                            break;
+                        }
+                        catch(DateTimeParseException e)
+                        {
+                            ex = e;
+                        }
                     }
-                    catch(DateTimeParseException e)
-                    {
-                        // If the 1st date pattern fails, try the 2nd format
-                        if(field.hasDatePattern2())
-                            content.setPublishedDateAsString(publishedDate, field.getDatePattern2());
-                        else
-                            throw e;
-                    }
+
+                    if(ex != null)
+                        throw ex;
                 }
                 catch(DateTimeParseException e)
                 {
@@ -248,7 +253,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
         if(fields.hasAuthor())
         {
             ContentField field = fields.getAuthor();
-            String author = getElements(field, root, type, field.isMultiple(), field.getSeparator());
+            String author = getElements(field, root, type);
             if(author != null)
                 content.setAuthor(author);
         }

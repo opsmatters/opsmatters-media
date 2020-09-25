@@ -46,11 +46,10 @@ public class ContentFieldExtractor implements java.io.Serializable
     }
 
     /**
-     * Constructor that takes a selector.
+     * Constructor that takes an expression.
      */
     public ContentFieldExtractor(String name, String expr)
     {
-//GERALD: fix
         setName(name);
         setExpr(expr);
         setFormat("$1");

@@ -127,7 +127,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("EXTERNAL_ID", Types.VARCHAR, 36, false);
         table.addColumn("ERROR_CODE", Types.INTEGER, false);
-        table.addColumn("ERROR_MESSAGE", Types.VARCHAR, 128, false);
+        table.addColumn("ERROR_MESSAGE", Types.VARCHAR, 256, false);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("PREPARED_POSTS_PK", new String[] {"ID"});
         table.addIndex("PREPARED_POSTS_STATUS_IDX", new String[] {"STATUS"});

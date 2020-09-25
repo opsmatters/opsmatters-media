@@ -170,7 +170,7 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
         if(fields.hasBody())
         {
             ContentField field = fields.getBody();
-            String body = getBody(field, video.getString(field.getSelector()), "content");
+            String body = getBody(field, video.getString(field.getSelector(0).getExpr()), "content");
             if(body != null)
                 content.setDescription(body);
         }
@@ -190,7 +190,7 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
         if(fields.hasTitle())
         {
             ContentField field = fields.getTitle();
-            String title = getValue(field, video.getString(field.getSelector()));
+            String title = getValue(field, video.getString(field.getSelector(0).getExpr()));
             if(title != null)
                 content.setTitle(EmojiParser.removeAllEmojis(title));
         }
@@ -198,7 +198,7 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
         if(fields.hasPublishedDate())
         {
             ContentField field = fields.getPublishedDate();
-            String publishedDate = getValue(field, video.getString(field.getSelector()));
+            String publishedDate = getValue(field, video.getString(field.getSelector(0).getExpr()));
             if(publishedDate != null)
                 content.setPublishedDateAsString(publishedDate, field.getDatePattern());
         }

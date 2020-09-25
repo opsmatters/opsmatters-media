@@ -435,16 +435,8 @@ public class FormatUtils
             // Replace spaces with dashes
             ret = ret.replaceAll(" |%20", "-");
 
-            // Replace escaped spaces with dashes
-//GERALD
-//            ret = ret.replaceAll("%20", "-");
-
             // Replace escaped plus, ampersand with plus
             ret = ret.replaceAll("%2B|%26", "+");
-
-            // Replace escaped ampersand with ampersand
-//GERALD
-//            ret = ret.replaceAll("%26", "+");
 
             // Replace some escaped chars with original char
             ret = ret.replaceAll("%24", "\\$");
@@ -454,14 +446,7 @@ public class FormatUtils
             ret = ret.replaceAll("%5D", "]");
 
             // Remove other special characters
-//GERALD
-//            ret = ret.replaceAll("%23", ""); // hash
-//            ret = ret.replaceAll("%25", ""); // percent
-//            ret = ret.replaceAll("%27", ""); // apostrophe
-//            ret = ret.replaceAll("%2C", ""); // comma
-//            ret = ret.replaceAll("%3F", ""); // question mark
-//            ret = ret.replaceAll("%7C", ""); // pipe
-            ret = ret.replaceAll("%23|%25|%27|%2C|%3F|%7C", ""); // hash
+            ret = ret.replaceAll("%23|%25|%27|%2C|%3F|%7C", "");
 
             // Remove quotes, dashes etc
             ret = ret.replaceAll("'|‘|’|‚|‛|“|”|„|′|″", "");

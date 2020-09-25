@@ -45,6 +45,7 @@ import com.opsmatters.media.config.content.MoreLinkConfiguration;
 import com.opsmatters.media.config.content.SummaryConfiguration;
 import com.opsmatters.media.config.content.ContentField;
 import com.opsmatters.media.config.content.ContentFields;
+import com.opsmatters.media.config.content.ContentFieldSelector;
 import com.opsmatters.media.model.admin.TraceObject;
 import com.opsmatters.media.model.content.ContentSummary;
 import com.opsmatters.media.util.FormatUtils;
@@ -456,8 +457,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     /**
      * Process an element field returning multiple results.
      */
-    protected String getElements(ContentField field, WebElement root, String type,
-        boolean multiple, String separator)
+    protected String getElements(ContentField field, WebElement root, String type)
     {
         String ret = null;
 
@@ -467,69 +467,26 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                 logger.info("Looking for elements for "+type+" field: "+field.getName());
 
             List<WebElement> nodes = null;
-            try
+            for(ContentFieldSelector selector : field.getSelectors())
             {
-                // Try the first selector
-                nodes = root.findElements(By.cssSelector(field.getSelector()));
-            }
-            catch(StaleElementReferenceException e)
-            {
-            }
-
-            try
-            {
-                // Try the second selector
-                if(nodes != null && nodes.size() == 0 && field.hasSelector2())
-                    nodes = root.findElements(By.cssSelector(field.getSelector2()));
-            }
-            catch(StaleElementReferenceException e)
-            {
-            }
-
-            if(nodes != null && nodes.size() > 0)
-            {
-                int i = 0; 
-                StringBuilder str = new StringBuilder();
-                for(WebElement node : nodes)
+                try
                 {
-                    String value = null;
-                    if(field.getAttribute() != null && field.getAttribute().length() > 0)
+                    // Try each selector
+                    nodes = root.findElements(By.cssSelector(selector.getExpr()));
+                    if(nodes != null && nodes.size() > 0)
                     {
-                        value = node.getAttribute(field.getAttribute());
-                    }
-                    else
-                    {
-                        // Get the node text
-                        if(browser == CrawlerBrowser.CHROME)
-                        {
-                            value = node.getAttribute("innerHTML");
-                            if(value.indexOf("<") != -1) // Remove any markup
-                                value = value.replaceAll("<.+?>","").trim();
-                        }
-                        else // HtmlUnit
-                        {
-                            value = node.getText();
-                        }
-                    }
-
-                    if(value.length() > 0)
-                    {
-                        if(i > 0 && separator != null && separator.length() > 0)
-                            str.append(separator);
-                        str.append(value);
-                    }
-
-                    if(!multiple)
+                        ret = getValue(field, select(selector, nodes));
+                        if(debug())
+                            logger.info("Found elements for "+type+" field "+field.getName()+": "+ret);
                         break;
-                    ++i;
+                    }
                 }
-
-                ret = getValue(field, str.toString().trim());
-
-                if(debug())
-                    logger.info("Found elements for "+type+" field "+field.getName()+": "+ret);
+                catch(StaleElementReferenceException e)
+                {
+                }
             }
-            else
+
+            if(ret == null)
             {
                 logger.warning("Elements not found for "+type+" field: "+field.getName());
             }
@@ -539,7 +496,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             if(debug())
                 logger.info("Looking for element metatag for "+type+" field: "+field.getName());
 
-            String tag = getPropertyMetatag(field.getSelector());
+            String tag = field.hasSelectors() ? getPropertyMetatag(field.getSelector(0).getExpr()) : null;
             if(tag != null)
             {
                 ret = getValue(field, tag);
@@ -557,11 +514,47 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     }
 
     /**
-     * Process an element field returning a single result.
+     *  Select the value from the list of elements.
      */
-    protected String getElement(ContentField field, WebElement root, String type)
+    private String select(ContentFieldSelector selector, List<WebElement> nodes)
     {
-        return getElements(field, root, type, false, null);
+        int i = 0; 
+        StringBuilder str = new StringBuilder();
+        for(WebElement node : nodes)
+        {
+            String value = null;
+            if(selector.getAttribute() != null && selector.getAttribute().length() > 0)
+            {
+                value = node.getAttribute(selector.getAttribute());
+            }
+            else
+            {
+                // Get the node text
+                if(browser == CrawlerBrowser.CHROME)
+                {
+                    value = node.getAttribute("innerHTML");
+                    if(value.indexOf("<") != -1) // Remove any markup
+                        value = value.replaceAll("<.+?>","").trim();
+                }
+                else // HtmlUnit
+                {
+                    value = node.getText();
+                }
+            }
+
+            if(value.length() > 0)
+            {
+                if(i > 0 && selector.getSeparator() != null && selector.getSeparator().length() > 0)
+                    str.append(selector.getSeparator());
+                str.append(value);
+            }
+
+            if(!selector.isMultiple())
+                break;
+            ++i;
+        }
+
+        return str.toString().trim();
     }
 
     /**
@@ -576,59 +569,63 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             if(debug())
                 logger.info("Looking for anchor for "+type+" field: "+field.getName());
 
-            WebElement anchor = null;
-            WebElement div = null;
-            WebElement section = null;
+            for(ContentFieldSelector selector : field.getSelectors())
+            {
+                WebElement anchor = null;
+                WebElement div = null;
+                WebElement section = null;
 
-            if(field.getSelector().equals(ROOT)) // The anchor is the root node itself
-            {
-                if(root.getTagName().equals(ANCHOR))
-                    anchor = root;
-                else if(root.getTagName().equals(DIV))
-                    div = root;
-            }
-            else
-            {
-                WebElement element = null;
-                try
+                if(selector.getExpr().equals(ROOT)) // The anchor is the root node itself
                 {
-                    element = root.findElement(By.cssSelector(field.getSelector()));
-                    if(element.getTagName().equals(ANCHOR))
-                        anchor = element;
-                    else if(element.getTagName().equals(DIV))
-                        div = element;
-                    else if(element.getTagName().equals(SECTION))
-                        section = element;
+                    if(root.getTagName().equals(ANCHOR))
+                        anchor = root;
+                    else if(root.getTagName().equals(DIV))
+                        div = root;
                 }
-                catch(NoSuchElementException e)
+                else
                 {
+                    WebElement element = null;
+                    try
+                    {
+                        element = root.findElement(By.cssSelector(selector.getExpr()));
+                        if(element.getTagName().equals(ANCHOR))
+                            anchor = element;
+                        else if(element.getTagName().equals(DIV))
+                            div = element;
+                        else if(element.getTagName().equals(SECTION))
+                            section = element;
+                    }
+                    catch(NoSuchElementException e)
+                    {
+                    }
+                }
+
+                String attribute = selector.hasAttribute() ? selector.getAttribute() : "href";
+
+                if(anchor != null)
+                {
+                    ret = FormatUtils.getFormattedUrl(getBasePath(), anchor.getAttribute(attribute), removeParameters);
+                    if(debug())
+                        logger.info("Found anchor for "+type+" field "+field.getName()+": "+ret);
+                    break;
+                }
+                else if(div != null) // Sometimes the link is a div with a href attribute
+                {
+                    ret = FormatUtils.getFormattedUrl(getBasePath(), div.getAttribute(attribute), removeParameters);
+                    if(debug())
+                        logger.info("Found anchor div for "+type+" field "+field.getName()+": "+ret);
+                    break;
+                }
+                else if(section != null) // Sometimes the link is a section with a custom attribute
+                {
+                    ret = FormatUtils.getFormattedUrl(getBasePath(), section.getAttribute(attribute), removeParameters);
+                    if(debug())
+                        logger.info("Found anchor section for "+type+" field "+field.getName()+": "+ret);
+                    break;
                 }
             }
 
-            String attribute = field.hasAttribute() ? field.getAttribute() : "href";
-
-            if(anchor != null)
-            {
-                ret = FormatUtils.getFormattedUrl(getBasePath(), anchor.getAttribute(attribute), removeParameters);
-
-                if(debug())
-                    logger.info("Found anchor for "+type+" field "+field.getName()+": "+ret);
-            }
-            else if(div != null) // Sometimes the link is a div with a href attribute
-            {
-                ret = FormatUtils.getFormattedUrl(getBasePath(), div.getAttribute(attribute), removeParameters);
-
-                if(debug())
-                    logger.info("Found anchor div for "+type+" field "+field.getName()+": "+ret);
-            }
-            else if(section != null) // Sometimes the link is a section with a custom attribute
-            {
-                ret = FormatUtils.getFormattedUrl(getBasePath(), section.getAttribute(attribute), removeParameters);
-
-                if(debug())
-                    logger.info("Found anchor section for "+type+" field "+field.getName()+": "+ret);
-            }
-            else
+            if(ret == null)
             {
                 logger.warning("Anchor not found for "+type+" field: "+field.getName());
             }
@@ -638,7 +635,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             if(debug())
                 logger.info("Looking for anchor metatag for "+type+" field: "+field.getName());
 
-            String tag = getPropertyMetatag(field.getSelector());
+            String tag = field.hasSelectors() ? getPropertyMetatag(field.getSelector(0).getExpr()) : null;
             if(tag != null)
             {
                 ret = FormatUtils.getFormattedUrl(getBasePath(), tag, removeParameters);
@@ -809,18 +806,19 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             if(debug())
                 logger.info("Looking for body summary for "+type+" field: "+field.getName());
 
-            String body = getFormattedSummary(field.getSelector(), root, summary, debug);
-            if(body.length() == 0 && field.hasSelector2())
-                body = getFormattedSummary(field.getSelector2(), root, summary, debug);
-
-            if(body.length() > 0)
+            for(ContentFieldSelector selector : field.getSelectors())
             {
-                ret = String.format("<p>%s</p>", body);
-
-                if(debug())
-                    logger.info("Found body summary for "+type+" field "+field.getName()+": "+ret);
+                String body = getFormattedSummary(selector.getExpr(), root, summary, debug);
+                if(body.length() > 0)
+                {
+                    ret = String.format("<p>%s</p>", body);
+                    if(debug())
+                        logger.info("Found body summary for "+type+" field "+field.getName()+": "+ret);
+                    break;
+                }
             }
-            else
+
+            if(ret == null)
             {
                 logger.warning("Body summary not found for "+type+" field: "+field.getName());
             }
@@ -830,7 +828,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             if(debug())
                 logger.info("Looking for body summary metatag for "+type+" field: "+field.getName());
 
-            String tag = getPropertyMetatag(field.getSelector());
+            String tag = field.hasSelectors() ? getPropertyMetatag(field.getSelector(0).getExpr()) : null;
             if(tag != null)
             {
                 ret = String.format("<p>%s</p>", getValue(field, tag));
@@ -909,18 +907,19 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             if(debug())
                 logger.info("Looking for body for "+type+" field: "+field.getName());
 
-            String body = getFormattedParagraphs(field.getSelector(), root, field.getStopExprPattern());
-            if(body.length() == 0 && field.hasSelector2())
-                body = getFormattedParagraphs(field.getSelector2(), root, field.getStopExprPattern());
-
-            if(body.length() > 0)
+            for(ContentFieldSelector selector : field.getSelectors())
             {
-                ret = body;
-
-                if(debug())
-                    logger.info("Found body for "+type+" field "+field.getName()+": "+ret);
+                String body = getFormattedParagraphs(selector.getExpr(), root, field.getStopExprPattern());
+                if(body.length() > 0)
+                {
+                    ret = body;
+                    if(debug())
+                        logger.info("Found body for "+type+" field "+field.getName()+": "+ret);
+                    break;
+                }
             }
-            else
+
+            if(ret == null)
             {
                 logger.warning("Body not found for "+type+" field: "+field.getName());
             }
@@ -930,7 +929,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             if(debug())
                 logger.info("Looking for body metatag for "+type+" field: "+field.getName());
 
-            String tag = getPropertyMetatag(field.getSelector());
+            String tag = field.hasSelectors() ? getPropertyMetatag(field.getSelector(0).getExpr()) : null;
             if(tag != null)
             {
                 ret = getValue(field, tag);
@@ -959,33 +958,37 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             if(debug())
                 logger.info("Looking for image for "+type+" field: "+field.getName());
 
-            WebElement image = null;
-            try
+            for(ContentFieldSelector selector : field.getSelectors())
             {
-                image = root.findElement(By.cssSelector(field.getSelector()));
-            }
-            catch(NoSuchElementException e)
-            {
-            }
-
-            if(image != null)
-            {
-                if(field.getAttribute() != null && field.getAttribute().length() > 0)
+                WebElement image = null;
+                try
                 {
-                    ret = getValue(field, image.getAttribute(field.getAttribute()));
-
-                    if(debug())
-                        logger.info("Found image "+field.getAttribute()+" for "+type+" field "+field.getName()+": "+ret);
+                    image = root.findElement(By.cssSelector(selector.getExpr()));
                 }
-                else
+                catch(NoSuchElementException e)
                 {
-                    ret = getValue(field, image.getAttribute("src"));
+                }
 
-                    if(debug())
-                        logger.info("Found image src for "+type+" field "+field.getName()+": "+ret);
+                if(image != null)
+                {
+                    if(selector.getAttribute() != null && selector.getAttribute().length() > 0)
+                    {
+                        ret = getValue(field, image.getAttribute(selector.getAttribute()));
+                        if(debug())
+                            logger.info("Found image "+selector.getAttribute()+" for "+type+" field "+field.getName()+": "+ret);
+                        break;
+                    }
+                    else
+                    {
+                        ret = getValue(field, image.getAttribute("src"));
+                        if(debug())
+                            logger.info("Found image src for "+type+" field "+field.getName()+": "+ret);
+                        break;
+                    }
                 }
             }
-            else
+
+            if(ret == null)
             {
                 logger.warning("Image not found for "+type+" field: "+field.getName());
             }
@@ -995,7 +998,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             if(debug())
                 logger.info("Looking for image metatag for "+type+" field: "+field.getName());
 
-            String tag = getPropertyMetatag(field.getSelector());
+            String tag = field.hasSelectors() ? getPropertyMetatag(field.getSelector(0).getExpr()) : null;
             if(tag != null)
             {
                 ret = getValue(field, tag);
@@ -1024,23 +1027,27 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             if(debug())
                 logger.info("Looking for style for "+type+" field: "+field.getName());
 
-            WebElement element = null;
-            try
+            for(ContentFieldSelector selector : field.getSelectors())
             {
-                element = root.findElement(By.cssSelector(field.getSelector()));
-            }
-            catch(NoSuchElementException e)
-            {
+                WebElement element = null;
+                try
+                {
+                    element = root.findElement(By.cssSelector(selector.getExpr()));
+                }
+                catch(NoSuchElementException e)
+                {
+                }
+
+                if(element != null)
+                {
+                    ret = getValue(field, element.getAttribute("style"));
+                    if(debug())
+                        logger.info("Found style for "+type+" field "+field.getName()+": "+ret);
+                    break;
+                }
             }
 
-            if(element != null)
-            {
-                ret = getValue(field, element.getAttribute("style"));
-
-                if(debug())
-                    logger.info("Found style for "+type+" field "+field.getName()+": "+ret);
-            }
-            else
+            if(ret == null)
             {
                 logger.warning("Style not found for "+type+" field: "+field.getName());
             }
