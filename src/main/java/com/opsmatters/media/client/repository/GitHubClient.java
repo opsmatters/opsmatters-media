@@ -233,7 +233,8 @@ public class GitHubClient extends Client implements RepositoryClient
             project.setPublishedDate(Instant.now());
             project.setTitle(repository.getName());
             project.setSummary(repository.getDescription());
-            project.setDescription(StringUtils.markdownToHtml(getReadme(repository)));
+            //GC: 29/09/2020 removed because it causes errors
+            //project.setDescription(StringUtils.markdownToHtml(getReadme(repository)));
             project.setWebsite(repository.getHomepage());
             project.setFounded(getFounded(repository));
 

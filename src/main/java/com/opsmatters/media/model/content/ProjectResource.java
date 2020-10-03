@@ -206,7 +206,7 @@ public class ProjectResource extends Resource
      */
     public void init(Organisation organisation)
     {
-        if(getWebsite().length() == 0)
+        if(!hasWebsite())
             setWebsite(organisation.getWebsite());
     }
 
