@@ -132,7 +132,7 @@ public class VideoConfiguration extends ContentConfiguration<VideoArticle>
      */
     public VideoChannelConfiguration getChannel(int i)
     {
-        return channels.get(i);
+        return channels.size() > i ? channels.get(i) : null;
     }
 
     /**

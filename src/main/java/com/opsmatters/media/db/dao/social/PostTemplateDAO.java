@@ -51,9 +51,9 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO POST_TEMPLATES"
-      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, POSTED_DATE, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a post template in the POST_TEMPLATES table.
@@ -206,7 +206,8 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
             String properties = template.getPropertiesAsJson().toString();
             reader = new StringReader(properties);
             insertStmt.setCharacterStream(11, reader, properties.length());
-            insertStmt.setString(12, template.getCreatedBy());
+            insertStmt.setTimestamp(12, new Timestamp(template.getPostedDateMillis()), UTC);
+            insertStmt.setString(13, template.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created post template '"+template.getId()+"' in POST_TEMPLATES");
