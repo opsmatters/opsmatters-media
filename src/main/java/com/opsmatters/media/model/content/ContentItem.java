@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.file.CommonFiles;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
@@ -431,6 +432,82 @@ public abstract class ContentItem implements java.io.Serializable
     public void setSummary(String summary)
     {
         details.setSummary(summary != null ? summary : "");
+    }
+
+    /**
+     * Returns the content image name.
+     * <P>
+     * Always returns <CODE>null</CODE>.
+     */
+    public String getImage()
+    {
+        return null;
+    }
+
+    /**
+     * Sets the content image name.
+     * <P>
+     * Empty implementation.
+     */
+    public void setImage(String image)
+    {
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content image has been set.
+     * <P>
+     * Always returns <CODE>false</CODE>.
+     */
+    public boolean hasImage()
+    {
+        return false;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content image name has a JPG extension.
+     */
+    public boolean isJpgImage()
+    {
+        String image = getImage() != null ? getImage().toLowerCase() : "";
+        return image.endsWith("."+CommonFiles.JPG_EXT) || image.endsWith("."+CommonFiles.JPEG_EXT);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content image name has a PNG extension.
+     */
+    public boolean isPngImage()
+    {
+        String image = getImage() != null ? getImage().toLowerCase() : "";
+        return image.endsWith("."+CommonFiles.PNG_EXT);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content image name has a GIF extension.
+     */
+    public boolean isGifImage()
+    {
+        String image = getImage() != null ? getImage().toLowerCase() : "";
+        return image.endsWith("."+CommonFiles.GIF_EXT);
+    }
+
+    /**
+     * Returns the content image source.
+     * <P>
+     * Always returns <CODE>null</CODE>.
+     */
+    public String getImageSource()
+    {
+        return null;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content image source has been set.
+     * <P>
+     * Always returns <CODE>false</CODE>.
+     */
+    public boolean hasImageSource()
+    {
+        return false;
     }
 
     /**

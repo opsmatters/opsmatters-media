@@ -476,9 +476,12 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                     if(nodes != null && nodes.size() > 0)
                     {
                         ret = getValue(field, select(selector, nodes));
-                        if(debug())
-                            logger.info("Found elements for "+type+" field "+field.getName()+": "+ret);
-                        break;
+                        if(ret.length() > 0)
+                        {
+                            if(debug())
+                                logger.info("Found elements for "+type+" field "+field.getName()+": "+ret);
+                            break;
+                        }
                     }
                 }
                 catch(StaleElementReferenceException e)

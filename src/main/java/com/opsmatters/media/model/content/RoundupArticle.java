@@ -28,7 +28,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupArticle extends ImageArticle
+public class RoundupArticle extends Article
 {
     private RoundupDetails details = new RoundupDetails();
 
@@ -305,7 +305,6 @@ public class RoundupArticle extends ImageArticle
         setImageSource(new String(obj.getImageSource() != null ? obj.getImageSource() : ""));
         setImagePrefix(new String(obj.getImagePrefix() != null ? obj.getImagePrefix() : ""));
         setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
-        setImageRefresh(obj.isImageRefresh());
         setAuthor(new String(obj.getAuthor() != null ? obj.getAuthor() : ""));
         setAuthorLink(new String(obj.getAuthorLink() != null ? obj.getAuthorLink() : ""));
     }
@@ -337,6 +336,7 @@ public class RoundupArticle extends ImageArticle
     /**
      * Returns the image source.
      */
+    @Override
     public String getImageSource()
     {
         return details.getImageSource();
@@ -353,6 +353,7 @@ public class RoundupArticle extends ImageArticle
     /**
      * Returns <CODE>true</CODE> if the roundup image source has been set.
      */
+    @Override
     public boolean hasImageSource()
     {
         return details.hasImageSource();
@@ -361,6 +362,7 @@ public class RoundupArticle extends ImageArticle
     /**
      * Returns the image name.
      */
+    @Override
     public String getImage()
     {
         return details.getImage();
@@ -369,6 +371,7 @@ public class RoundupArticle extends ImageArticle
     /**
      * Sets the image name.
      */
+    @Override
     public void setImage(String image)
     {
         details.setImage(image);
@@ -385,6 +388,7 @@ public class RoundupArticle extends ImageArticle
     /**
      * Returns <CODE>true</CODE> if the roundup image has been set.
      */
+    @Override
     public boolean hasImage()
     {
         return details.hasImage();
@@ -404,22 +408,6 @@ public class RoundupArticle extends ImageArticle
     public void setImagePrefix(String imagePrefix)
     {
         details.setImagePrefix(imagePrefix);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the image needs to be refreshed after being rendered.
-     */
-    public boolean isImageRefresh()
-    {
-        return details.isImageRefresh();
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the image needs to be refreshed after being rendered.
-     */
-    public void setImageRefresh(boolean imageRefresh)
-    {
-        details.setImageRefresh(imageRefresh);
     }
 
     /**

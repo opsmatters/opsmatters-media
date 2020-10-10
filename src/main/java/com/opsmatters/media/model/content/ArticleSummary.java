@@ -26,7 +26,6 @@ public abstract class ArticleSummary extends ContentSummary
 {
     private String author = "";
     private String authorLink = "";
-    private String image = "";
 
     /**
      * Default constructor.
@@ -44,7 +43,6 @@ public abstract class ArticleSummary extends ContentSummary
 
         if(obj != null)
         {
-            setImage(obj.getImage());
             setAuthor(obj.getAuthor());
             setAuthorLink(obj.getAuthorLink());
         }
@@ -92,29 +90,5 @@ public abstract class ArticleSummary extends ContentSummary
         // Excape spaces in the URL
         if(this.authorLink != null)
             this.authorLink = this.authorLink.replaceAll(" ", "%20");
-    }
-
-    /**
-     * Returns the content image filename.
-     */
-    public String getImage()
-    {
-        return image;
-    }
-
-    /**
-     * Sets the content image filename.
-     */
-    public void setImage(String image)
-    {
-        this.image = image;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the content image has been set.
-     */
-    public boolean hasImage()
-    {
-        return image != null && image.length() > 0;
     }
 }

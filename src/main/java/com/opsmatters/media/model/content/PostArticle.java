@@ -27,7 +27,7 @@ import com.opsmatters.media.util.TimeUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PostArticle extends ImageArticle
+public class PostArticle extends Article
 {
     private PostDetails details = new PostDetails();
     private String link = "";
@@ -357,6 +357,7 @@ public class PostArticle extends ImageArticle
     /**
      * Returns the image name.
      */
+    @Override
     public String getImage()
     {
         return details.getImage();
@@ -365,6 +366,7 @@ public class PostArticle extends ImageArticle
     /**
      * Sets the image name.
      */
+    @Override
     public void setImage(String image)
     {
         details.setImage(image);
@@ -373,6 +375,7 @@ public class PostArticle extends ImageArticle
     /**
      * Returns <CODE>true</CODE> if the post image has been set.
      */
+    @Override
     public boolean hasImage()
     {
         return details.hasImage();
@@ -383,6 +386,7 @@ public class PostArticle extends ImageArticle
      * <p>
      * Always returns <CODE>false</CODE>.
      */
+    @Override
     public boolean hasImageSource()
     {
         return false;
@@ -393,6 +397,7 @@ public class PostArticle extends ImageArticle
      * <p>
      * Always returns <CODE>null</CODE>.
      */
+    @Override
     public String getImageSource()
     {
         return null;

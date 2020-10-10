@@ -72,15 +72,18 @@ public abstract class PublicationResource extends Resource
         String linkText = values[6];
         String organisation = values[7];
         String tags = values[8];
-        String thumbnail = values[9];
-        String thumbnailText = values[10];
-        String thumbnailTitle = values[11];
-        String creator = values[12];
-        String creatorEmail = values[13];
-        String createdBy = values[14];
-        String published = values[15];
-        String promote = values[16];
-        String canonicalUrl = values.length > 17 ? values[17] : "";
+        String image = values[9];
+        String imageText = values[10];
+        String imageTitle = values[11];
+        String thumbnail = values[12];
+        String thumbnailText = values[13];
+        String thumbnailTitle = values[14];
+        String creator = values[15];
+        String creatorEmail = values[16];
+        String createdBy = values[17];
+        String published = values[18];
+        String promote = values[19];
+        String canonicalUrl = values.length > 20 ? values[20] : "";
 
         setCode(code);
         setId(Integer.parseInt(id.substring(id.lastIndexOf("-")+1)));
@@ -88,6 +91,7 @@ public abstract class PublicationResource extends Resource
         setTitle(title);
         setSummary(summary);
         setDescription(description);
+        setImage(image);
         setUrl(url, false);
         setLinkText(linkText);
         setTags(tags);
@@ -108,6 +112,7 @@ public abstract class PublicationResource extends Resource
         setTags(obj.optString(Fields.TAGS));
         setCreatorEmail(obj.optString(Fields.EMAIL));
         setCanonicalUrl(obj.optString(Fields.CANONICAL_URL));
+        setImage(obj.optString(Fields.IMAGE));
     }
 
     /**
@@ -120,6 +125,7 @@ public abstract class PublicationResource extends Resource
         ret.putOpt(Fields.TAGS, getTags());
         ret.putOpt(Fields.EMAIL, getCreatorEmail());
         ret.putOpt(Fields.CANONICAL_URL, getCanonicalUrl());
+        ret.putOpt(Fields.IMAGE, getImage());
 
         return ret;
     }
@@ -135,6 +141,7 @@ public abstract class PublicationResource extends Resource
         ret.put(Fields.TAGS, getTags());
         ret.put(Fields.EMAIL, getCreatorEmail());
         ret.put(Fields.CANONICAL_URL, getCanonicalUrl());
+        ret.put(Fields.IMAGE, getImage());
         ret.put(Fields.METATAGS, getMetatags());
 
         return ret;
@@ -199,6 +206,7 @@ public abstract class PublicationResource extends Resource
     {
         super.setContentSummary(obj);
         setUrl(new String(obj.getUrl()), false);
+        setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
     }
 
     /**
@@ -247,6 +255,33 @@ public abstract class PublicationResource extends Resource
     public void setCreatorEmail(String creatorEmail)
     {
         this.creatorEmail = creatorEmail;
+    }
+
+    /**
+     * Returns the image name.
+     */
+    @Override
+    public String getImage()
+    {
+        return details.getImage();
+    }
+
+    /**
+     * Sets the image name.
+     */
+    @Override
+    public void setImage(String image)
+    {
+        details.setImage(image);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the roundup image has been set.
+     */
+    @Override
+    public boolean hasImage()
+    {
+        return details.hasImage();
     }
 
     /**

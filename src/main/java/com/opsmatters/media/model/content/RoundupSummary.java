@@ -27,7 +27,6 @@ public class RoundupSummary extends ArticleSummary
     private String url = "";
     private String imageSource = "";
     private String imagePrefix = "";
-    private boolean imageRefresh = false;
 
     /**
      * Default constructor.
@@ -153,21 +152,5 @@ public class RoundupSummary extends ArticleSummary
 
         setImage(path);
         setImage(FormatUtils.getFormattedImageFilename(getImage()));
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the image needs to be refreshed after being rendered.
-     */
-    public boolean isImageRefresh()
-    {
-        return imageRefresh;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the image needs to be refreshed after being rendered.
-     */
-    public void setImageRefresh(boolean imageRefresh)
-    {
-        this.imageRefresh = imageRefresh;
     }
 }

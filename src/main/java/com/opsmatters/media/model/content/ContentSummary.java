@@ -32,6 +32,7 @@ public abstract class ContentSummary implements java.io.Serializable
     private String title = "";
     private Instant publishedDate;
     private String summary = "";
+    private String image = "";
     private boolean valid = true;
 
     /**
@@ -52,6 +53,7 @@ public abstract class ContentSummary implements java.io.Serializable
             setTitle(obj.getTitle());
             setPublishedDate(obj.getPublishedDate());
             setSummary(obj.getSummary());
+            setImage(obj.getImage());
         }
     }
 
@@ -217,5 +219,29 @@ public abstract class ContentSummary implements java.io.Serializable
     public void setSummary(String summary)
     {
         this.summary = summary;
+    }
+
+    /**
+     * Returns the content image filename.
+     */
+    public String getImage()
+    {
+        return image;
+    }
+
+    /**
+     * Sets the content image filename.
+     */
+    public void setImage(String image)
+    {
+        this.image = image;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content image has been set.
+     */
+    public boolean hasImage()
+    {
+        return image != null && image.length() > 0;
     }
 }
