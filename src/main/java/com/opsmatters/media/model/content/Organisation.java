@@ -35,6 +35,8 @@ import com.opsmatters.media.util.StringUtils;
  */
 public class Organisation extends OwnedItem implements FieldSource
 {
+    public static final String MISCELLANEOUS = "Miscellaneous";
+
     private String code = "";
     private String name = "";
     private String website = "";

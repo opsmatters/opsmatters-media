@@ -244,8 +244,11 @@ public class PostArticle extends Article
      */
     public void init(Organisation organisation)
     {
-        setLink(organisation.getWebsite());
-        setCreatorEmail(organisation.getEmail());
+        if(organisation != null)
+        {
+            setLink(organisation.getWebsite());
+            setCreatorEmail(organisation.getEmail());
+        }
     }
 
     /**

@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import com.opsmatters.media.config.YamlConfiguration;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
+import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.model.content.OrganisationListing;
 import com.opsmatters.media.handler.ContentHandler;
 import com.opsmatters.media.db.dao.content.ContentDAO;
@@ -347,6 +348,32 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 fields.remove(Fields.PUBLISHED);
                 fields.add(handler.getOrganisation(content.getCode()),
                     handler.getConfiguration(content.getTitle()));
+
+                // Add the path to the thumbnail and logo
+                String thumbnail = fields.get(Fields.THUMBNAIL);
+                fields.put(Fields.THUMBNAIL, String.format("%s/%s",
+                    System.getProperty("opsmatters.site.app.logos"), thumbnail));
+                String image = fields.get(Fields.IMAGE);
+                fields.put(Fields.IMAGE, String.format("%s/%s",
+                    System.getProperty("opsmatters.site.app.logos"), image));
+            }
+            else
+            {
+                // Add the path to the image if present
+                String image = fields.get(Fields.IMAGE);
+                if(image != null && image.length() > 0)
+                {
+                    fields.put(Fields.IMAGE, String.format("%s/%s",
+                        System.getProperty("opsmatters.site.app.images"), image));
+                }
+
+                // Allow for Miscellaneous posts with no organisation
+                String organisation = fields.get(Fields.ORGANISATION);
+                if(organisation != null && organisation.equals(Organisation.MISCELLANEOUS))
+                {
+                    fields.put(Fields.ORGANISATION, "");
+                    fields.put(Fields.IMAGE_TEXT, "");
+                }
             }
 
             // Check if the URL needs a trailing slash (to avoid redirects)
