@@ -35,7 +35,7 @@ public class ContentFieldSelector implements java.io.Serializable
     private String name = "";
     private String expr = "";
     private String attribute = "";
-    private boolean multiple = false;
+    private boolean multiple = true;
     private String separator = "";
 
     /**
