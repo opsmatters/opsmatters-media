@@ -326,6 +326,30 @@ public class PreparedPost extends SocialPost
     }
 
     /**
+     * Returns <CODE>true</CODE> if the delivery status is WAITING.
+     */
+    public boolean isWaiting()
+    {
+        return status == DeliveryStatus.WAITING;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the delivery status is SENT.
+     */
+    public boolean isSent()
+    {
+        return status == DeliveryStatus.SENT;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the delivery status is ERROR.
+     */
+    public boolean isError()
+    {
+        return status == DeliveryStatus.ERROR;
+    }
+
+    /**
      * Returns the post external id.
      */
     public String getExternalId()

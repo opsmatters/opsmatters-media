@@ -658,15 +658,16 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     /**
      * Coalesces the given paragraphs into a single string by accumulating paragraphs up to a heading or maximum length.
      */
-    protected String getFormattedSummary(String selector, WebElement root, SummaryConfiguration config, boolean debug)
+    protected String getFormattedSummary(String selector, boolean multiple, WebElement root,
+        SummaryConfiguration config, boolean debug)
     {
-        return getFormattedSummary(selector, root, config.getMinLength(), config.getMaxLength(), config.getMinParagraph(), debug);
+        return getFormattedSummary(selector, multiple, root, config.getMinLength(), config.getMaxLength(), config.getMinParagraph(), debug);
     }
 
     /**
      * Coalesces the given paragraphs into a single string by accumulating paragraphs up to a heading or maximum length.
      */
-    protected String getFormattedSummary(String selector, WebElement root, 
+    protected String getFormattedSummary(String selector, boolean multiple, WebElement root, 
         int minLength, int maxLength, int minParagraph, boolean debug)
     {
         StringBuilder ret = new StringBuilder();
@@ -768,6 +769,9 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                     break;
                 }
             }
+
+            if(!multiple && text.length() > 0)
+                break;
         }
 
         // Handle descriptions less than the min paragraph length
@@ -811,10 +815,13 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
 
             for(ContentFieldSelector selector : field.getSelectors())
             {
-                String body = getFormattedSummary(selector.getExpr(), root, summary, debug);
+                String body = getFormattedSummary(selector.getExpr(), selector.isMultiple(), root, summary, debug);
                 if(body.length() > 0)
                 {
-                    ret = String.format("<p>%s</p>", body);
+                    // Replace "thin" spaces with normal space
+                    body = body.replaceAll("\\u2005|\\u2009|\\u202F", " ");
+
+                    ret = String.format("<p>%s</p>", body.trim());
                     if(debug())
                         logger.info("Found body summary for "+type+" field "+field.getName()+": "+ret);
                     break;
