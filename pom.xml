@@ -439,7 +439,7 @@ built.on=${TODAY}
 <dependency>
   <groupId>org.seleniumhq.selenium</groupId>
   <artifactId>htmlunit-driver</artifactId>
-  <version>2.38.0</version>
+  <version>2.44.0</version>
 </dependency>
 
 <dependency>

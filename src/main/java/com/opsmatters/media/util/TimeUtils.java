@@ -466,6 +466,34 @@ public class TimeUtils
     }
 
     /**
+     * Returns the given time formatted as a number of days, hours and minutes.
+     * @param dt The time to be parsed
+     * @return The given time formatted as a number of days, hours and minutes
+     */
+    static public String getShortFormattedDays(long dt)
+    {
+        StringBuffer ret = new StringBuffer();
+
+        long days = dt/86400000L;
+        long millis = dt-(days*86400000L);
+        long hours = millis/3600000L;
+        millis = millis-(hours*3600000L);
+        long minutes = millis/60000L;
+        millis = millis-(minutes*60000L);
+        long seconds = millis/1000L;
+
+        if(days > 0)
+        {
+            ret.append(String.format("%dd", days));
+            ret.append(" ");
+        }
+
+        ret.append(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+
+        return ret.toString();
+    }
+
+    /**
      * Returns the given fractional number of seconds formatted as "0.0##".
      * @param t The seconds to be formatted
      * @return The given fractional number of seconds formatted as "0.0##"

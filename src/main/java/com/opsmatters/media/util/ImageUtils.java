@@ -15,8 +15,10 @@
  */
 package com.opsmatters.media.util;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -62,7 +64,8 @@ public class ImageUtils
     /**
      * The timeout for a HTTP connection
      */
-    private static final int CONNECT_TIMEOUT = 30000;
+    private static final int READ_TIMEOUT = 10000;
+    private static final int CONNECT_TIMEOUT = 5000;
 
     /**
      * Private constructor as this class shouldn't be instantiated.
@@ -83,15 +86,24 @@ public class ImageUtils
         {
             conn = (HttpURLConnection)url.openConnection();
             conn.setRequestProperty("User-Agent", USER_AGENT);
+            conn.setReadTimeout(READ_TIMEOUT);
             conn.setConnectTimeout(CONNECT_TIMEOUT);
             TrustAnyTrustManager.setTrustManager(conn);
 
             ret = ImageIO.read(conn.getInputStream());
         }
-        finally
+        catch(IOException e)
         {
-            if(conn != null)
-                conn.disconnect();
+            try
+            {
+                if(conn != null && conn.getErrorStream() != null)
+                    conn.getErrorStream().close();
+            }
+            catch(IOException ex)
+            {
+            }
+
+            throw e;
         }
 
         return ret;
@@ -190,6 +202,47 @@ public class ImageUtils
         String ret = str;
         if(str != null && str.endsWith("px"))
             ret = str.substring(0, str.length()-2);
+        return ret;
+    }
+
+    /**
+     * Returns the dimensions of the image at the given URL.
+     */
+    static public Dimension getImageDimension(URL url) throws IOException
+    {
+        Dimension ret = null;
+        ImageInputStream in = null;
+
+        try
+        {
+            in = ImageIO.createImageInputStream(url.openStream());
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
+            if(readers.hasNext())
+            {
+                ImageReader reader = readers.next();
+                try
+                {
+                    reader.setInput(in);
+                    ret = new Dimension(reader.getWidth(0), reader.getHeight(0));
+                }
+                finally
+                {
+                    reader.dispose();
+                }
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(in != null)
+                    in.close();
+            }
+            catch(IOException e)
+            {
+            }
+        }
+
         return ret;
     }
 

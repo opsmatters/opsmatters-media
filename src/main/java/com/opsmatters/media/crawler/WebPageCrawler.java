@@ -145,6 +145,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     {
         if(driver != null)
             driver.quit();
+        driver = null;
     }
 
     /**

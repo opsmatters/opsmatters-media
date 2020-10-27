@@ -539,7 +539,7 @@ public class PreparedPost extends SocialPost
     /**
      * Returns the email for an errored post.
      */
-    public Email getErrorEmail()
+    public Email getAlertEmail()
     {
         String subject = String.format("Post %s: %s",
             getStatus().name(), getId());

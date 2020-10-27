@@ -66,7 +66,17 @@ public class FileUtils
     /**
      * The timeout for a HTTP connection
      */
-    private static final int CONNECT_TIMEOUT = 30000;
+    private static final int READ_TIMEOUT = 10000;
+    private static final int CONNECT_TIMEOUT = 5000;
+
+    private static Map<URL,FileResponse> responses = new Hashtable<>();
+
+    static
+    {
+        System.setProperty("http.maxConnections", "20");
+        System.setProperty("sun.net.http.errorstream.enableBuffering", "true");
+        System.setProperty("http.keepAlive","false");
+    }
 
     /**
      * Private constructor as this class shouldn't be instantiated.
@@ -203,18 +213,23 @@ public class FileUtils
         if(file.isFile() || addingFile)
         {
             HttpURLConnection conn = null;
+            BufferedInputStream bis = null;
+            FileOutputStream os = null;
+            BufferedOutputStream bos = null;
 
             try
             {
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestProperty("User-Agent", USER_AGENT);
+                conn.setReadTimeout(READ_TIMEOUT);
                 conn.setConnectTimeout(CONNECT_TIMEOUT);
                 TrustAnyTrustManager.setTrustManager(conn);
 
                 int buffer = 4096;
-                BufferedInputStream bis = new BufferedInputStream(conn.getInputStream(), buffer);
-                FileOutputStream os = new FileOutputStream(file, false);
-                BufferedOutputStream bos = new BufferedOutputStream(os, buffer);
+                bis = new BufferedInputStream(conn.getInputStream(), buffer);
+                os = new FileOutputStream(file, false);
+                bos = new BufferedOutputStream(os, buffer);
+
                 int len = 0;
                 int loaded = 0;
                 while(len != -1)
@@ -227,17 +242,54 @@ public class FileUtils
                         bos.write(array, 0, len);
                     }
                 }
+            }
+            catch(IOException e)
+            {
+                try
+                {
+                    if(conn != null && conn.getErrorStream() != null)
+                        conn.getErrorStream().close();
+                }
+                catch(IOException ex)
+                {
+                }
 
-                bis.close();
-                bos.flush();
-                bos.close();
-                os.flush();
-                os.close();
+                throw e;
             }
             finally
             {
-                if(conn != null)
-                    conn.disconnect();
+                try
+                {
+                    if(bis != null)
+                        bis.close();
+                }
+                catch(IOException e)
+                {
+                }
+
+                try
+                {
+                    if(bos != null)
+                    {
+                        bos.flush();
+                        bos.close();
+                    }
+                }
+                catch(IOException e)
+                {
+                }
+
+                try
+                {
+                    if(os != null)
+                    {
+                        os.flush();
+                        os.close();
+                    }
+                }
+                catch(IOException e)
+                {
+                }
             }
         }
     }
@@ -528,28 +580,37 @@ public class FileUtils
      */
     static public long getFileSize(URL url) throws IOException
     {
-        URLConnection conn = null;
+        HttpURLConnection httpConn = null;
         long ret = -1L;
 
         try
         {
-            conn = (URLConnection)url.openConnection();
+            URLConnection conn = (URLConnection)url.openConnection();
 
             if(conn instanceof HttpURLConnection)
             {
-                HttpURLConnection httpConn = (HttpURLConnection)conn;
+                httpConn = (HttpURLConnection)conn;
                 httpConn.setRequestProperty("User-Agent", USER_AGENT);
                 httpConn.setRequestMethod("HEAD");
+                httpConn.setReadTimeout(READ_TIMEOUT);
                 httpConn.setConnectTimeout(CONNECT_TIMEOUT);
                 TrustAnyTrustManager.setTrustManager(httpConn);
             }
 
             ret = conn.getContentLengthLong();
         }
-        finally
+        catch(IOException e)
         {
-            if(conn instanceof HttpURLConnection)
-                ((HttpURLConnection)conn).disconnect();
+            try
+            {
+                if(httpConn != null && httpConn.getErrorStream() != null)
+                    httpConn.getErrorStream().close();
+            }
+            catch(IOException ex)
+            {
+            }
+
+            throw e;
         }
 
         return ret;
@@ -568,6 +629,7 @@ public class FileUtils
             conn = (HttpURLConnection)url.openConnection();
             conn.setRequestMethod(method);
             conn.setRequestProperty("User-Agent", USER_AGENT);
+            conn.setReadTimeout(READ_TIMEOUT);
             conn.setConnectTimeout(CONNECT_TIMEOUT);
 
             if(message != null && message.length() > 0) // POST
@@ -585,10 +647,18 @@ public class FileUtils
 
             ret = conn.getHeaderField(0);
         }
-        finally
+        catch(IOException e)
         {
-            if(conn != null)
-                conn.disconnect();
+            try
+            {
+                if(conn != null && conn.getErrorStream() != null)
+                    conn.getErrorStream().close();
+            }
+            catch(IOException ex)
+            {
+            }
+
+            throw e;
         }
 
         return ret;
@@ -603,6 +673,28 @@ public class FileUtils
     }
 
     /**
+     * Class to capture cached HTTP responses for files
+     */
+    static class FileResponse
+    {
+        FileResponse(URL url, String response)
+        {
+            this.url = url;
+            this.response = response;
+            tm = System.currentTimeMillis();
+        }
+
+        boolean hasExpired()
+        {
+            return (System.currentTimeMillis()-tm) > 500L;
+        }
+
+        URL url;
+        String response;
+        long tm = -1;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the file at the given HTTP URL exists.
      */
     static public boolean exists(URL url)
@@ -611,15 +703,31 @@ public class FileUtils
 
         try
         {
-            String response = getResponse(url, "HEAD", null);
-            if(response != null)
-                ret = response.matches("HTTP\\/1\\.1 20\\d .*");
+            if(url != null)
+            {
+                String response = null;
+                FileResponse cached = responses.get(url);
+                if(cached != null && !cached.hasExpired())
+                {
+                    response = cached.response;
+                }
+                else
+                {
+                    response = getResponse(url, "HEAD", null);
+                    responses.put(url, new FileResponse(url, response));
+                }
+
+                if(response != null)
+                    ret = response.matches("HTTP\\/1\\.1 20\\d .*");
+            }
         }
         catch(FileNotFoundException e)
         {
+            responses.put(url, new FileResponse(url, e.getClass().getName()));
         }
         catch(IOException e)
         {
+            responses.put(url, new FileResponse(url, e.getClass().getName()));
             logger.severe(StringUtils.serialize(e, 30));
         }
 
@@ -635,7 +743,8 @@ public class FileUtils
 
         try
         {
-            ret = exists(new URL(url));
+            if(url != null && url.length() > 0)
+                ret = exists(new URL(url));
         }
         catch(MalformedURLException e)
         {
