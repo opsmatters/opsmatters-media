@@ -33,7 +33,7 @@ public class BitlyClient extends Client
     public static final String AUTH = ".bitly";
     public static final String DEFAULT_DOMAIN = "bit.ly";
 
-    private static Bitly client;
+    private Bitly client;
     private String accessToken = "";
 
     /**
@@ -94,6 +94,15 @@ public class BitlyClient extends Client
             logger.info("Created bitly client successfully");
 
         return true;
+    }
+
+    /**
+     * Close the client.
+     */
+    @Override
+    public void close() 
+    {
+        client = null;
     }
 
     /**

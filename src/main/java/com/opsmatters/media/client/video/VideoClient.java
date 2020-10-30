@@ -29,6 +29,11 @@ import com.opsmatters.media.model.content.VideoProvider;
 public interface VideoClient
 {
     /**
+     * Close the client.
+     */
+    public void close();
+
+    /**
      * Returns <CODE>true</CODE> if debug is enabled.
      */
     public boolean debug();

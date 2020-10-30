@@ -57,6 +57,9 @@ public class ContentHandler implements FieldSource
 
     public static final String DEFAULT_SHEET = "Sheet1";
 
+    private static Map<String,SshClient> sshClients = new HashMap<String,SshClient>();
+    private static S3Client s3client;
+
     private String name = "";
     private String filename = "";
     private String sheet = "";
@@ -493,7 +496,13 @@ public class ContentHandler implements FieldSource
         try
         {
             // Connect to the remote server using S3
-            client = S3Client.newClient();
+            client = s3client;
+            if(client == null)
+            {
+                client = S3Client.newClient();
+                s3client = client;
+            }
+
             client.changeBucket(bucket); 
         }
         catch(IOException e)
@@ -611,6 +620,7 @@ public class ContentHandler implements FieldSource
                 .withOutputStream(os)
                 .build();
             writer.write(lines);
+            writer.close();
             logger.info("Wrote "+lines.size()+" lines to file: "+filename);
         }
         finally
@@ -722,14 +732,19 @@ public class ContentHandler implements FieldSource
         if(directory == null || directory.length() == 0)
             throw new IllegalArgumentException("target directory null");
 
-        SshClient client = null;
         InputStream is = null;
         File sourceFile = new File(workingDir, filename);
         boolean ret = false;
 
         try
         {
-            client = SshClient.newClient(env);
+            SshClient client = sshClients.get(env);
+            if(client == null)
+            {
+                client = SshClient.newClient(env);
+                sshClients.put(env, client);
+            }
+
             client.cd(directory); 
 
             // Transfer the file to the remote feeds directory using SSH
@@ -757,12 +772,21 @@ public class ContentHandler implements FieldSource
             catch(IOException e)
             {
             }
-
-            if(client != null)
-                client.close();
         }
 
         return ret;
+    }
+
+    /**
+     * Close the ssh clients and release resources.
+     */
+    public static void closeClients()
+    {
+        for(SshClient client : sshClients.values())
+            client.close();
+
+        if(s3client != null)
+            s3client.close();
     }
 
     /**
@@ -788,7 +812,13 @@ public class ContentHandler implements FieldSource
         try
         {
             // Connect to the remote server using S3
-            client = S3Client.newClient();
+            client = s3client;
+            if(client == null)
+            {
+                client = S3Client.newClient();
+                s3client = client;
+            }
+
             client.changeBucket(System.getProperty("opsmatters.s3.content")); 
         }
         catch(IOException e)
@@ -819,9 +849,6 @@ public class ContentHandler implements FieldSource
             catch(IOException e)
             {
             }
-
-            if(client != null)
-                client.close();
         }
 
         return ret;

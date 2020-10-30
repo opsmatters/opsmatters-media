@@ -47,8 +47,8 @@ public class FacebookClient extends Client implements SocialClient
 
     public static final String AUTH = ".facebook";
 
-    private static Facebook client;
-    private static AccessToken accessToken;
+    private Facebook client;
+    private AccessToken accessToken;
     private String appId = "";
     private String appSecret = "";
     private String token = "";
@@ -145,6 +145,16 @@ public class FacebookClient extends Client implements SocialClient
             logger.info("Created facebook client successfully: "+channel.getName());
 
         return id != null;
+    }
+
+    /**
+     * Close the client.
+     */
+    @Override
+    public void close() 
+    {
+        client.shutdown();
+        client = null;
     }
 
     /**

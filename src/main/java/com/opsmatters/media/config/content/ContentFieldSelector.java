@@ -35,7 +35,7 @@ public class ContentFieldSelector implements java.io.Serializable
     private String name = "";
     private String expr = "";
     private String attribute = "";
-    private boolean multiple = true;
+    private boolean multiple = false;
     private String separator = "";
 
     /**
@@ -52,6 +52,7 @@ public class ContentFieldSelector implements java.io.Serializable
     {
         setName(name);
         setExpr(expr);
+        setMultiple(getMultipleDefault(name));
     }
 
     /**
@@ -60,6 +61,7 @@ public class ContentFieldSelector implements java.io.Serializable
     public ContentFieldSelector(String name, Map<String, Object> map)
     {
         setName(name);
+        setMultiple(getMultipleDefault(name));
         parse(map);
     }
 
@@ -149,6 +151,14 @@ public class ContentFieldSelector implements java.io.Serializable
     public void setMultiple(boolean multiple)
     {
         this.multiple = multiple;
+    }
+
+    /**
+     * Set the default for the multiple field depending on the field name.
+     */
+    public boolean getMultipleDefault(String name)
+    {
+        return name == ContentFields.BODY ? true : false;
     }
 
     /**

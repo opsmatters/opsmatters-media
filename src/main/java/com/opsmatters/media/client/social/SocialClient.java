@@ -30,6 +30,11 @@ import com.opsmatters.media.model.social.PreparedPost;
 public interface SocialClient
 {
     /**
+     * Close the client.
+     */
+    public void close();
+
+    /**
      * Returns <CODE>true</CODE> if debug is enabled.
      */
     public boolean debug();

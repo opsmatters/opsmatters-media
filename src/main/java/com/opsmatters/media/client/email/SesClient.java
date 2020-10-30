@@ -46,7 +46,7 @@ public class SesClient extends Client implements EmailClient
 
     public static final String AUTH = ".ses";
 
-    private static AmazonSimpleEmailService client;
+    private AmazonSimpleEmailService client;
     private String accessKeyId = "";
     private String secretAccessKey = "";
 
@@ -199,6 +199,7 @@ public class SesClient extends Client implements EmailClient
     /**
      * Close the client.
      */
+    @Override
     public void close() 
     {
         client.shutdown();

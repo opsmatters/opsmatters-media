@@ -28,6 +28,11 @@ import com.opsmatters.media.model.admin.Email;
 public interface EmailClient
 {
     /**
+     * Close the client.
+     */
+    public void close();
+
+    /**
      * Returns <CODE>true</CODE> if debug is enabled.
      */
     public boolean debug();

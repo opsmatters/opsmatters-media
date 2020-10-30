@@ -348,8 +348,12 @@ public class SshClient extends Client
     /**
      * Close the session.
      */
+    @Override
     public void close() 
     {
+        if(channel != null && channel.isConnected())
+            channel.disconnect();
+
         if(session != null && session.isConnected())
             session.disconnect();
     }

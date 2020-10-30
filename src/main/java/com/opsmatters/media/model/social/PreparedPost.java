@@ -534,6 +534,11 @@ public class PreparedPost extends SocialPost
                 setErrorMessage(e.getMessage());
             }
         }
+        finally
+        {
+            if(client != null)
+                client.close();
+        }
     }
 
     /**

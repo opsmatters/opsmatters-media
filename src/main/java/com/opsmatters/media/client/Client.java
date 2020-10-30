@@ -35,6 +35,11 @@ public abstract class Client
     public abstract boolean create() throws Exception;
 
     /**
+     * Close the client.
+     */
+    public abstract void close();
+
+    /**
      * Returns <CODE>true</CODE> if debug is enabled.
      */
     public boolean debug()

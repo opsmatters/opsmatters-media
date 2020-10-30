@@ -43,8 +43,8 @@ public class TwitterClient extends Client implements SocialClient
 
     public static final String AUTH = ".twitter";
 
-    private static Twitter client;
-    private static AccessToken accessToken;
+    private Twitter client;
+    private AccessToken accessToken;
     private String consumerKey = "";
     private String consumerSecret = "";
     private String token = "";
@@ -140,6 +140,15 @@ public class TwitterClient extends Client implements SocialClient
             logger.info("Created twitter client successfully: "+channel.getName());
 
         return id > 0L;
+    }
+
+    /**
+     * Close the client.
+     */
+    @Override
+    public void close() 
+    {
+        client = null;
     }
 
     /**

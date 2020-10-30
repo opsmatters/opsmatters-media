@@ -168,6 +168,15 @@ public class LinkedInClient extends Client implements SocialClient
     }
 
     /**
+     * Close the client.
+     */
+    @Override
+    public void close() 
+    {
+        ugcConnection = null;
+    }
+
+    /**
      * Returns the organization id for the client.
      */
     public String getOrganizationId() 

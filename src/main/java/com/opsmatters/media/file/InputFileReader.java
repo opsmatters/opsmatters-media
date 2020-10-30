@@ -347,7 +347,6 @@ public class InputFileReader
 
             for(int column = 0; column < columnCount; column++)
             {
-
                 // Check that the row column count matches the header column count
                 if(column >= line.length)
                 {

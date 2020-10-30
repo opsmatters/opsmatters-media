@@ -45,7 +45,7 @@ public class VimeoClient extends Client implements VideoClient
     public static final String LIST_FIELDS = "uri,name,created_time";
     public static final String DETAIL_FIELDS = "uri,name,created_time,description,duration,user.name,user.link";
 
-    private static Vimeo client;
+    private Vimeo client;
     private String accessToken = "";
 
     /**
@@ -114,6 +114,15 @@ public class VimeoClient extends Client implements VideoClient
             logger.info("Created vimeo client successfully");
 
         return true;
+    }
+
+    /**
+     * Close the client.
+     */
+    @Override
+    public void close() 
+    {
+        client = null;
     }
 
     /**

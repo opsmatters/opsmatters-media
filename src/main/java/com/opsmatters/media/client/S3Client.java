@@ -451,8 +451,10 @@ public class S3Client extends Client
     /**
      * Close the client.
      */
+    @Override
     public void close() 
     {
+        client.shutdown();
         client = null;
     }
 

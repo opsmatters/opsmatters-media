@@ -80,7 +80,7 @@ public class YouTubeClient extends Client implements VideoClient
     public static final String LIST_FIELDS = "id,snippet";
     public static final String DETAIL_FIELDS = "snippet,contentDetails";
 
-    private static YouTube client;
+    private YouTube client;
     private Credential credential;
 
     /**
@@ -158,6 +158,15 @@ public class YouTubeClient extends Client implements VideoClient
             logger.info("Created youtube client successfully");
 
         return true;
+    }
+
+    /**
+     * Close the client.
+     */
+    @Override
+    public void close() 
+    {
+        client = null;
     }
 
     /**

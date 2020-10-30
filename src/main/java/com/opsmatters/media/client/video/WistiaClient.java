@@ -43,7 +43,7 @@ public class WistiaClient extends Client implements VideoClient
 
     public static final String AUTH = ".wistia";
 
-    private static Wistia client;
+    private Wistia client;
     private String accessToken = "";
 
     /**
@@ -112,6 +112,15 @@ public class WistiaClient extends Client implements VideoClient
             logger.info("Created wistia client successfully");
 
         return true;
+    }
+
+    /**
+     * Close the client.
+     */
+    @Override
+    public void close() 
+    {
+        client = null;
     }
 
     /**

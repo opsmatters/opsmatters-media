@@ -28,6 +28,11 @@ import com.opsmatters.media.model.content.ProjectDetails;
 public interface RepositoryClient
 {
     /**
+     * Close the client.
+     */
+    public void close();
+
+    /**
      * Returns <CODE>true</CODE> if debug is enabled.
      */
     public boolean debug();

@@ -49,7 +49,7 @@ public class GitHubClient extends Client implements RepositoryClient
 
     public static final String AUTH = ".github";
 
-    private static GitHub client;
+    private GitHub client;
     private String accessToken = "";
 
     private static final String LINKS = "<p>Download source code as "
@@ -125,6 +125,15 @@ public class GitHubClient extends Client implements RepositoryClient
             logger.info("Created github client successfully");
 
         return true;
+    }
+
+    /**
+     * Close the client.
+     */
+    @Override
+    public void close() 
+    {
+        client = null;
     }
 
     /**

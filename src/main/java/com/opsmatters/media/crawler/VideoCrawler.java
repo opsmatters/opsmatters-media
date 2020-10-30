@@ -64,6 +64,8 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
      */
     public void close()
     {
+        if(client != null)
+            client.close();
     }
 
     /**
