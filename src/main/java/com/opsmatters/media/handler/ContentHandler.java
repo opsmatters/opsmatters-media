@@ -552,11 +552,6 @@ public class ContentHandler implements FieldSource
             catch(IOException e)
             {
             }
-
-            if(client != null)
-            {
-                client.close();
-            }
         }
 
         if(lines != null)
