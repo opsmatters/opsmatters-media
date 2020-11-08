@@ -822,6 +822,9 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                 String body = getFormattedSummary(selector.getExpr(), selector.isMultiple(), root, summary, debug);
                 if(body.length() > 0)
                 {
+                    // Apply any extractors to the selection
+                    body = getValue(field, body);
+
                     // Replace "thin" spaces with normal space
                     body = body.replaceAll("\\u2005|\\u2009|\\u202F", " ");
 
