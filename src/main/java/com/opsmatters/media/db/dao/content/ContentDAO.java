@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.db.dao.BaseDAO;
@@ -135,7 +136,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
                 ret = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
             }
         }
-        catch(IllegalAccessException | NoSuchMethodException e)
+        catch(IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
         {
             logger.severe(StringUtils.serialize(e));
         }
@@ -185,7 +186,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
                 ret = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
             }
         }
-        catch(IllegalAccessException | NoSuchMethodException e)
+        catch(IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
         {
             logger.severe(StringUtils.serialize(e));
         }
@@ -235,11 +236,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
                 ret.add(newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes }));
             }
         }
-        catch(IllegalAccessException e)
-        {
-            logger.severe(StringUtils.serialize(e));
-        }
-        catch(NoSuchMethodException e)
+        catch(IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
         {
             logger.severe(StringUtils.serialize(e));
         }
@@ -289,11 +286,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
                 ret.add(newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes }));
             }
         }
-        catch(IllegalAccessException e)
-        {
-            logger.severe(StringUtils.serialize(e));
-        }
-        catch(NoSuchMethodException e)
+        catch(IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
         {
             logger.severe(StringUtils.serialize(e));
         }
@@ -469,7 +462,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
      * Returns an instance of the template class.
      */
     private T newContentInstance(Class[] parameterTypes, Object[] parameters)
-        throws IllegalAccessException, NoSuchMethodException
+        throws IllegalAccessException, NoSuchMethodException, InvocationTargetException
     {
         ParameterizedType superClass = (ParameterizedType)getClass().getGenericSuperclass();
         Class<T> contentClass = (Class<T>)superClass.getActualTypeArguments()[0];

@@ -37,6 +37,10 @@ public class ClassUtils
         {
             logger.severe(StringUtils.serialize(e));
         }
+        catch(InvocationTargetException e)
+        {
+            logger.severe(StringUtils.serialize(e));
+        }
 
         return ret;
     }
@@ -46,7 +50,7 @@ public class ClassUtils
      */
     public static Object newInstance(String name,
         Class[] parameterTypes, Object[] parameters)
-        throws IllegalAccessException, NoSuchMethodException
+        throws IllegalAccessException, NoSuchMethodException, InvocationTargetException
     {
         Class cl = null;
         Object ret = null;
@@ -74,11 +78,6 @@ public class ClassUtils
         {
             logger.severe(StringUtils.serialize(e));
         }
-        catch(InvocationTargetException e)
-        {
-            logger.severe(StringUtils.serialize(e));
-        }
-
         return ret;
     }
 
@@ -87,7 +86,7 @@ public class ClassUtils
      */
     public static Object newInstance(Class cl,
         Class[] parameterTypes, Object[] parameters)
-        throws IllegalAccessException, NoSuchMethodException
+        throws IllegalAccessException, NoSuchMethodException, InvocationTargetException
     {
         Object ret = null;
 
@@ -101,10 +100,6 @@ public class ClassUtils
                 ret = con.newInstance(parameters);
         }
         catch(InstantiationException e)
-        {
-            logger.severe(StringUtils.serialize(e));
-        }
-        catch(InvocationTargetException e)
         {
             logger.severe(StringUtils.serialize(e));
         }
