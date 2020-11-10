@@ -241,6 +241,14 @@ public abstract class FieldsCrawler<T extends ContentSummary>
      */
     public String getValue(ContentField field, String value)
     {
+        return getValue(field, value, value);
+    }
+
+    /**
+     * Apply the configured regular expression to the given field value.
+     */
+    public String getValue(ContentField field, String value, String dflt)
+    {
         String ret = value;
 
         // Try each extractor in turn
@@ -252,15 +260,15 @@ public abstract class FieldsCrawler<T extends ContentSummary>
                 if(ret != null && ret.length() > 0)
                     break;
             }
-        }
 
-        if(ret == null)
-        {
-            logger.warning(String.format("No match found for field %s: value=[%s]", 
-                field.getName(), value));
+            if(ret == null)
+            {
+                logger.warning(String.format("No match found for field %s: value=[%s]", 
+                    field.getName(), value));
 
-            // Just pass through the selection if none of the extractors matched
-            ret = value;
+                // Use the default if none of the extractors matched
+                ret = dflt;
+            }
         }
 
         if(ret != null && field.getTextCase() != ContentFieldCase.NONE)

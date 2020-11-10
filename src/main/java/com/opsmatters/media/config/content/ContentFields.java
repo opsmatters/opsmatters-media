@@ -41,7 +41,7 @@ public class ContentFields implements java.io.Serializable
     public static final String URL = "url";
 
     private String root = "";
-    private String validator = "";
+    private ContentField validator;
     private ContentField title;
     private ContentField author;
     private ContentField authorLink;
@@ -96,17 +96,17 @@ public class ContentFields implements java.io.Serializable
     }
 
     /**
-     * Returns the validator selector for this configuration.
+     * Returns the validator for this configuration.
      */
-    public String getValidator()
+    public ContentField getValidator()
     {
         return validator;
     }
 
     /**
-     * Sets the validator selector for this configuration.
+     * Sets the validator for this configuration.
      */
-    public void setValidator(String validator)
+    public void setValidator(ContentField validator)
     {
         this.validator = validator;
     }
@@ -116,7 +116,7 @@ public class ContentFields implements java.io.Serializable
      */
     public boolean hasValidator()
     {
-        return validator != null && validator.length() > 0;
+        return validator != null && validator.hasSelectors();
     }
 
     /**
@@ -439,7 +439,7 @@ public class ContentFields implements java.io.Serializable
         if(map.containsKey(ROOT))
             setRoot((String)map.get(ROOT));
         if(map.containsKey(VALIDATOR))
-            setValidator((String)map.get(VALIDATOR));
+            setValidator(createField(VALIDATOR, map.get(VALIDATOR)));
         if(map.containsKey(TITLE))
             setTitle(createField(TITLE, map.get(TITLE)));
         if(map.containsKey(AUTHOR))

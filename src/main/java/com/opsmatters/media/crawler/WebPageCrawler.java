@@ -443,18 +443,46 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     /**
      * Returns <CODE>true</CODE> if the content validator is found.
      */
-    protected void validateContent(T content, String validator, WebElement root, String type)
+    protected void validateContent(T content, ContentField field, WebElement root, String type)
     {
-        List<WebElement> elements = root.findElements(By.cssSelector(validator));
-        content.setValid(elements.size() > 0);
-        if(elements.size() > 0)
+        boolean valid = false;
+
+        for(ContentFieldSelector selector : field.getSelectors())
+        {
+            try
+            {
+                // Try each selector
+                List<WebElement> nodes = root.findElements(By.cssSelector(selector.getExpr()));
+                if(nodes != null && nodes.size() > 0)
+                {
+                    if(field.hasExtractors())
+                    {
+                        String result = getValue(field, select(selector, nodes), null);
+                        valid = result != null && result.length() > 0;
+                    }
+                    else
+                    {
+                        valid = true;
+                    }
+
+                    if(valid)
+                        break;
+                }
+            }
+            catch(StaleElementReferenceException e)
+            {
+            }
+        }
+
+        content.setValid(valid);
+        if(content.isValid())
         {
             if(debug())
-                logger.info("Validation successful for "+type+": "+validator);
+                logger.info("Validation successful for "+type+": "+field.getSelector(0).getExpr());
         }
         else
         {
-            logger.warning("Validation failed for "+type+", skipping: "+validator);
+            logger.warning("Validation failed for "+type+", skipping: "+field.getSelector(0).getExpr());
         }
     }
 
