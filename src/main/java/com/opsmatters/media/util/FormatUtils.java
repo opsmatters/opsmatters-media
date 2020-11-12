@@ -319,6 +319,7 @@ public class FormatUtils
 
             // Replace special characters
             ret = ret.replaceAll("→", "->");
+            ret = ret.replaceAll("►", ">");
 
             // Turn linefeeds into <br> tags
             ret = ret.replaceAll("\r\n?|\n", "<br>");

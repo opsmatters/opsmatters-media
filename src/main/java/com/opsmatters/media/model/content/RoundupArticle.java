@@ -265,8 +265,13 @@ public class RoundupArticle extends Article
         }
 
         // Use the default image if a content image wasn't found
-        if(config.hasField(Fields.IMAGE) && getImage().length() == 0)
-            setImage(config.getField(Fields.IMAGE));
+        if(getImage().length() == 0)
+        {
+            if(config.hasField(Fields.IMAGE))
+                setImage(config.getField(Fields.IMAGE));
+            else if(page.hasField(Fields.IMAGE))
+                setImage(page.getField(Fields.IMAGE, ""));
+        }
     }
 
     /**
