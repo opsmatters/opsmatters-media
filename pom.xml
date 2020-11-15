@@ -43,7 +43,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<aws.sdk.version>1.11.778</aws.sdk.version>
+		<aws.sdk.version>1.11.870</aws.sdk.version>
 		<twelvemonkeys.imageio.version>3.5</twelvemonkeys.imageio.version>
   </properties>
 
