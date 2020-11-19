@@ -44,7 +44,6 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
     public static final String SHEET = "sheet";
     public static final String SOURCE = "source";
     public static final String DEFAULT_DATE_PATTERN = "default-date-pattern";
-    public static final String TRAILING_SLASH = "trailing-slash";
     public static final String SUMMARY = "summary";
     public static final String FIELDS = "fields";
     public static final String OUTPUT = "output";
@@ -53,7 +52,6 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
     private String sheet = "";
     private ContentSource source = ContentSource.STORE;
     private String defaultDatePattern = "";
-    private boolean trailingSlash = false;
     private SummaryConfiguration summary; 
     private Fields fields;
     private Map<String,String> output;
@@ -78,7 +76,6 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
             setSheet(obj.getSheet());
             setSource(obj.getSource());
             setDefaultDatePattern(obj.getDefaultDatePattern());
-            setTrailingSlash(obj.hasTrailingSlash());
             if(obj.getSummary() != null)
                 setSummary(new SummaryConfiguration(obj.getSummary()));
             setFields(new Fields(obj.getFields()));
@@ -157,22 +154,6 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
     public void setDefaultDatePattern(String defaultDatePattern)
     {
         this.defaultDatePattern = defaultDatePattern;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the content URL should have a trailing slash.
-     */
-    public boolean hasTrailingSlash()
-    {
-        return trailingSlash;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the content URL should have a trailing slash.
-     */
-    public void setTrailingSlash(boolean trailingSlash)
-    {
-        this.trailingSlash = trailingSlash;
     }
 
     /**
@@ -306,8 +287,6 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
             setSheet((String)map.get(SHEET));
         if(map.containsKey(DEFAULT_DATE_PATTERN))
             setDefaultDatePattern((String)map.get(DEFAULT_DATE_PATTERN));
-        if(map.containsKey(TRAILING_SLASH))
-            setTrailingSlash((Boolean)map.get(TRAILING_SLASH));
         if(map.containsKey(SOURCE))
             setSource(ContentSource.fromCode((String)map.get(SOURCE)));
         if(map.containsKey(FIELDS))
@@ -374,14 +353,6 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                     fields.put(Fields.ORGANISATION, "");
                     fields.put(Fields.IMAGE_TEXT, "");
                 }
-            }
-
-            // Check if the URL needs a trailing slash (to avoid redirects)
-            if(hasTrailingSlash() && fields.containsKey(Fields.URL))
-            {
-                String url = fields.get(Fields.URL);
-                if(url != null && url.length() > 0 && !url.endsWith("/"))
-                    fields.put(Fields.URL, url+"/");
             }
 
             fields.add(handler);

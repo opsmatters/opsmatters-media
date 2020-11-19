@@ -29,11 +29,13 @@ public class MonitorConfiguration extends YamlConfiguration
     public static final String INTERVAL = "interval";
     public static final String DIFFERENCE = "difference";
     public static final String SORT = "sort";
+    public static final String MAX_RESULTS = "max-results";
 
     private boolean active = false;
     private int interval = 0;
     private int difference = 0;
     private String sort = "";
+    private int maxResults = 0;
 
     /**
      * Default constructor.
@@ -64,6 +66,7 @@ public class MonitorConfiguration extends YamlConfiguration
             setInterval(obj.getInterval());
             setMinDifference(obj.getMinDifference());
             setSort(obj.getSort());
+            setMaxResults(obj.getMaxResults());
         }
     }
 
@@ -132,6 +135,22 @@ public class MonitorConfiguration extends YamlConfiguration
     }
 
     /**
+     * Returns the maximum results to be returned by a monitor check.
+     */
+    public int getMaxResults()
+    {
+        return maxResults;
+    }
+
+    /**
+     * Sets the maximum results to be returned by a monitor check.
+     */
+    public void setMaxResults(int maxResults)
+    {
+        this.maxResults = maxResults;
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     @Override
@@ -145,5 +164,7 @@ public class MonitorConfiguration extends YamlConfiguration
             setMinDifference((Integer)map.get(DIFFERENCE));
         if(map.containsKey(SORT))
             setSort((String)map.get(SORT));
+        if(map.containsKey(MAX_RESULTS))
+            setMaxResults((Integer)map.get(MAX_RESULTS));
     }
 }

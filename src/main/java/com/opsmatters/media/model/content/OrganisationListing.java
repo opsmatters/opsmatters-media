@@ -125,10 +125,10 @@ public class OrganisationListing extends ContentItem
         String stockSymbol = values[11];
         String website = values[12];
         String email = values[14];
-        String facebook = values[15];
-        String facebookUsername = values[16];
-        String twitter = values[17];
-        String twitterUsername = values[18];
+        String feedProvider = values[15];
+        String feedUsername = values[16];
+        String facebook = values[17];
+        String twitter = values[18];
         String linkedin = values[19];
         String instagram = values[20];
         String youtube = values[21];

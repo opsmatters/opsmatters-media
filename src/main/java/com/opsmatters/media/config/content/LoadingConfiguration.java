@@ -32,6 +32,7 @@ public class LoadingConfiguration extends YamlConfiguration
     public static final String INTERVAL = "interval";
     public static final String MAX_WAIT = "max-wait";
     public static final String REMOVE_PARAMETERS = "remove-parameters";
+    public static final String TRAILING_SLASH = "trailing-slash";
     public static final String ANTI_CACHE = "anti-cache";
     public static final String KEYWORDS = "keywords";
 
@@ -40,6 +41,7 @@ public class LoadingConfiguration extends YamlConfiguration
     private long interval = 0L;
     private long maxWait = 0L;
     private boolean removeParameters = true;
+    private boolean trailingSlash = false;
     private boolean antiCache = false;
     private String keywords = "";
     private List<String> keywordList;
@@ -74,6 +76,7 @@ public class LoadingConfiguration extends YamlConfiguration
             setWait(obj.getWait());
             setMaxWait(obj.getMaxWait());
             setRemoveParameters(obj.removeParameters());
+            setTrailingSlash(obj.hasTrailingSlash());
             setAntiCache(obj.isAntiCache());
             setKeywords(obj.getKeywords());
         }
@@ -160,6 +163,22 @@ public class LoadingConfiguration extends YamlConfiguration
     }
 
     /**
+     * Returns <CODE>true</CODE> if the URL should have a trailing slash.
+     */
+    public boolean hasTrailingSlash()
+    {
+        return trailingSlash;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the URL should have a trailing slash.
+     */
+    public void setTrailingSlash(boolean trailingSlash)
+    {
+        this.trailingSlash = trailingSlash;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if a timestamp parameter should be appended to the URL to prevent caching.
      */
     public boolean isAntiCache()
@@ -238,6 +257,8 @@ public class LoadingConfiguration extends YamlConfiguration
             setMaxWait((Integer)map.get(MAX_WAIT));
         if(map.containsKey(REMOVE_PARAMETERS))
             setRemoveParameters((Boolean)map.get(REMOVE_PARAMETERS));
+        if(map.containsKey(TRAILING_SLASH))
+            setTrailingSlash((Boolean)map.get(TRAILING_SLASH));
         if(map.containsKey(ANTI_CACHE))
             setAntiCache((Boolean)map.get(ANTI_CACHE));
         if(map.containsKey(KEYWORDS))

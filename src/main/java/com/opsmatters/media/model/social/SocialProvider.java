@@ -16,6 +16,9 @@
 
 package com.opsmatters.media.model.social;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * Represents a social media provider.
  * 
@@ -186,5 +189,19 @@ public enum SocialProvider
     public static boolean contains(String code)
     {
         return fromCode(code) != null;
+    }
+
+    /**
+     * Returns a list of the social providers.
+     */
+    public static List<SocialProvider> toList()
+    {
+        List<SocialProvider> ret = new ArrayList<SocialProvider>();
+
+        ret.add(TWITTER);
+        ret.add(FACEBOOK);
+        ret.add(LINKEDIN);
+
+        return ret;
     }
 }

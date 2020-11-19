@@ -76,10 +76,10 @@ public class Fields extends LinkedHashMap<String,String>
     public static final String CONTENT = "content";
     public static final String FOUNDED = "founded";
     public static final String STOCK_SYMBOL = "stock-symbol";
+    public static final String FEED_PROVIDER = "feed-provider";
+    public static final String FEED_USERNAME = "feed-username";
     public static final String FACEBOOK = "facebook";
-    public static final String FACEBOOK_USERNAME = "facebook-username";
     public static final String TWITTER = "twitter";
-    public static final String TWITTER_USERNAME = "twitter-username";
     public static final String LINKEDIN = "linkedin";
     public static final String INSTAGRAM = "instagram";
     public static final String YOUTUBE = "youtube";

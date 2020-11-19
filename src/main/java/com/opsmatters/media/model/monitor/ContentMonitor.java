@@ -21,6 +21,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
+import org.json.JSONArray;
+import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.monitor.MonitorConfiguration;
 import com.opsmatters.media.model.BaseItem;
@@ -45,6 +47,7 @@ public class ContentMonitor extends BaseItem
     public static final String INTERVAL = "interval";
     public static final String DIFFERENCE = "difference";
     public static final String SORT = "sort";
+    public static final String MAX_RESULTS = "max-results";
     public static final String EXECUTION_TIME = "execution-time";
     public static final String ERROR_MESSAGE = "error-message";
     public static final String RETRY = "retry";
@@ -64,6 +67,7 @@ public class ContentMonitor extends BaseItem
     private int interval = -1;
     private int difference = 0;
     private ContentSort sort;
+    private int maxResults = -1;
     private boolean active = false;
     private String errorMessage = "";
     private int retry = 0;
@@ -93,6 +97,7 @@ public class ContentMonitor extends BaseItem
         setInterval(config.getInterval());
         setMinDifference(config.getMinDifference());
         setSort(config.getSort());
+        setMaxResults(config.getMaxResults());
         setActive(config.isActive());
     }
 
@@ -126,6 +131,7 @@ public class ContentMonitor extends BaseItem
             setInterval(obj.getInterval());
             setMinDifference(obj.getMinDifference());
             setSort(obj.getSort());
+            setMaxResults(obj.getMaxResults());
             setActive(obj.isActive());
             setErrorMessage(obj.getErrorMessage());
             setRetry(obj.getRetry());
@@ -146,6 +152,7 @@ public class ContentMonitor extends BaseItem
         ret.putOpt(INTERVAL, getInterval());
         ret.putOpt(DIFFERENCE, getMinDifference());
         ret.putOpt(SORT, getSort().name());
+        ret.putOpt(MAX_RESULTS, getMaxResults());
         ret.putOpt(EXECUTION_TIME, getExecutionTime());
         ret.putOpt(ERROR_MESSAGE, getErrorMessage());
         ret.putOpt(RETRY, getRetry());
@@ -165,6 +172,7 @@ public class ContentMonitor extends BaseItem
         setInterval(obj.optInt(INTERVAL));
         setMinDifference(obj.optInt(DIFFERENCE));
         setSort(obj.optString(SORT));
+        setMaxResults(obj.optInt(MAX_RESULTS));
         setExecutionTime(obj.optLong(EXECUTION_TIME));
         setErrorMessage(obj.optString(ERROR_MESSAGE));
         setRetry(obj.optInt(RETRY));
@@ -548,6 +556,34 @@ public class ContentMonitor extends BaseItem
     }
 
     /**
+     * Compare the given snapshot with the current one.
+     */
+    public boolean compareSnapshot(JSONObject snapshot)
+    {
+        String snapshot1 = processSnapshot(getSnapshotAsJson());
+        String snapshot2 = processSnapshot(snapshot);
+        return snapshot1.equals(snapshot2);
+    }
+
+    /**
+     * Process the given snapshot to prepare it for comparison.
+     */
+    private String processSnapshot(JSONObject snapshot)
+    {
+        String ret = snapshot.toString();
+        if(ret.indexOf(Fields.PUBLISHED_DATE) != -1)
+        {
+            JSONObject obj = new JSONObject(ret);
+            JSONArray array = obj.getJSONArray(contentType.tag());
+            for(int i = 0; i < array.length(); i++)
+                array.getJSONObject(i).remove(Fields.PUBLISHED_DATE);
+            ret = obj.toString();
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the change id.
      */
     public String getChangeId()
@@ -625,6 +661,22 @@ public class ContentMonitor extends BaseItem
     public void setSort(ContentSort sort)
     {
         this.sort = sort;
+    }
+
+    /**
+     * Returns the maximum results to be returned by a monitor check.
+     */
+    public int getMaxResults()
+    {
+        return maxResults;
+    }
+
+    /**
+     * Sets the maximum results to be returned by a monitor check.
+     */
+    public void setMaxResults(int maxResults)
+    {
+        this.maxResults = maxResults;
     }
 
     /**

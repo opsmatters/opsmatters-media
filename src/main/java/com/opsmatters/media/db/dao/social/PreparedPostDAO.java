@@ -121,7 +121,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
         table.addColumn("TYPE", Types.VARCHAR, 15, true);
         table.addColumn("DRAFT_ID", Types.VARCHAR, 36, true);
         table.addColumn("CODE", Types.VARCHAR, 5, false);
-        table.addColumn("TITLE", Types.VARCHAR, 128, false);
+        table.addColumn("TITLE", Types.VARCHAR, 192, false);
         table.addColumn("MESSAGE", Types.VARCHAR, 512, true);
         table.addColumn("CHANNEL", Types.VARCHAR, 15, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);

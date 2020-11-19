@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.config.content.FieldSource;
 import com.opsmatters.media.model.OwnedItem;
+import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
@@ -41,8 +42,8 @@ public class Organisation extends OwnedItem implements FieldSource
     private String name = "";
     private String website = "";
     private String email = "";
-    private String facebookUsername = "";
-    private String twitterUsername = "";
+    private SocialProvider feedProvider;
+    private String feedUsername = "";
     private String hashtag = "";
     private boolean sponsor = false;
     private String thumbnail = "";
@@ -71,8 +72,8 @@ public class Organisation extends OwnedItem implements FieldSource
             setName(obj.getName());
             setWebsite(new String(obj.getWebsite() != null ? obj.getWebsite() : ""));
             setEmail(new String(obj.getEmail() != null ? obj.getEmail() : ""));
-            setFacebookUsername(new String(obj.getFacebookUsername() != null ? obj.getFacebookUsername() : ""));
-            setTwitterUsername(new String(obj.getTwitterUsername() != null ? obj.getTwitterUsername() : ""));
+            setFeedProvider(obj.getFeedProvider());
+            setFeedUsername(new String(obj.getFeedUsername() != null ? obj.getFeedUsername() : ""));
             setHashtag(new String(obj.getHashtag() != null ? obj.getHashtag() : ""));
             setSponsor(obj.isSponsor());
             setThumbnail(new String(obj.getThumbnail() != null ? obj.getThumbnail() : ""));
@@ -94,8 +95,8 @@ public class Organisation extends OwnedItem implements FieldSource
         ret.putOpt(Fields.WEBSITE, getWebsite());
         ret.putOpt(Fields.EMAIL, getEmail());
         ret.putOpt(Fields.HASHTAG, getHashtag());
-        ret.putOpt(Fields.TWITTER_USERNAME, getTwitterUsername());
-        ret.putOpt(Fields.FACEBOOK_USERNAME, getFacebookUsername());
+        ret.putOpt(Fields.FEED_PROVIDER, getFeedProvider().name());
+        ret.putOpt(Fields.FEED_USERNAME, getFeedUsername());
         ret.putOpt(Fields.THUMBNAIL, getThumbnail());
         ret.putOpt(Fields.THUMBNAIL_TEXT, getThumbnailText());
 
@@ -111,8 +112,8 @@ public class Organisation extends OwnedItem implements FieldSource
         setWebsite(obj.optString(Fields.WEBSITE));
         setEmail(obj.optString(Fields.EMAIL));
         setHashtag(obj.optString(Fields.HASHTAG));
-        setTwitterUsername(obj.optString(Fields.TWITTER_USERNAME));
-        setFacebookUsername(obj.optString(Fields.FACEBOOK_USERNAME));
+        setFeedProvider(obj.optString(Fields.FEED_PROVIDER));
+        setFeedUsername(obj.optString(Fields.FEED_USERNAME));
         setThumbnail(obj.optString(Fields.THUMBNAIL));
         setThumbnailText(obj.optString(Fields.THUMBNAIL_TEXT));
     }
@@ -127,8 +128,8 @@ public class Organisation extends OwnedItem implements FieldSource
         ret.put(Fields.SPONSOR, isSponsor() ? "1" : "0");
         ret.put(Fields.WEBSITE, getWebsite());
         ret.put(Fields.EMAIL, getEmail());
-        ret.put(Fields.FACEBOOK_USERNAME, getFacebookUsername());
-        ret.put(Fields.TWITTER_USERNAME, getTwitterUsername());
+        ret.put(Fields.FEED_PROVIDER, getFeedProvider().name());
+        ret.put(Fields.FEED_USERNAME, getFeedUsername());
         ret.put(Fields.HASHTAG, getHashtag());
         ret.put(Fields.THUMBNAIL, getThumbnail());
         ret.put(Fields.THUMBNAIL_TEXT, getThumbnailText());
@@ -150,6 +151,7 @@ public class Organisation extends OwnedItem implements FieldSource
         organisation.setCreatedDate(Instant.now());
         organisation.setThumbnail("tbd-thumb.png");
         organisation.setThumbnailText("tbd logo");
+        organisation.setFeedProvider(SocialProvider.TWITTER);
 
         return organisation;
     }
@@ -283,35 +285,43 @@ public class Organisation extends OwnedItem implements FieldSource
     }
 
     /**
-     * Returns the organisation's facebook username.
+     * Returns the organisation's feed provider.
      */
-    public String getFacebookUsername()
+    public SocialProvider getFeedProvider()
     {
-        return facebookUsername;
+        return feedProvider;
     }
 
     /**
-     * Sets the organisation's facebook username.
+     * Sets the organisation's feed provider.
      */
-    public void setFacebookUsername(String facebookUsername)
+    public void setFeedProvider(String feedProvider)
     {
-        this.facebookUsername = facebookUsername;
+        setFeedProvider(SocialProvider.valueOf(feedProvider));
     }
 
     /**
-     * Returns the organisation's twitter username.
+     * Sets the organisation's feed provider.
      */
-    public String getTwitterUsername()
+    public void setFeedProvider(SocialProvider feedProvider)
     {
-        return twitterUsername;
+        this.feedProvider = feedProvider;
     }
 
     /**
-     * Sets the organisation's twitter username.
+     * Returns the organisation's feed username.
      */
-    public void setTwitterUsername(String twitterUsername)
+    public String getFeedUsername()
     {
-        this.twitterUsername = twitterUsername;
+        return feedUsername;
+    }
+
+    /**
+     * Sets the organisation's feed username.
+     */
+    public void setFeedUsername(String feedUsername)
+    {
+        this.feedUsername = feedUsername;
     }
 
     /**

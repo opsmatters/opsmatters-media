@@ -237,8 +237,14 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
      */
     protected void loadPage(String url, LoadingConfiguration loading) throws IOException
     {
-        if(loading != null && loading.isAntiCache())
-            url = FormatUtils.addAntiCacheParameter(url);
+        if(loading != null)
+        {
+            if(loading.isAntiCache())
+                url = FormatUtils.addAntiCacheParameter(url);
+            if(loading.hasTrailingSlash())
+                url += "/";
+        }
+
         if(debug())
             logger.info("Loading page: "+url);
         driver.get(url);
