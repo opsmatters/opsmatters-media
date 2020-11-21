@@ -570,17 +570,20 @@ public class ContentMonitor extends BaseItem
      */
     private String processSnapshot(JSONObject snapshot)
     {
-        String ret = snapshot.toString();
-        if(ret.indexOf(Fields.PUBLISHED_DATE) != -1)
+        JSONObject obj = new JSONObject(snapshot.toString());
+        JSONArray array = obj.getJSONArray(contentType.tag());
+        for(int i = array.length()-1; i >= 0; i--)
         {
-            JSONObject obj = new JSONObject(ret);
-            JSONArray array = obj.getJSONArray(contentType.tag());
-            for(int i = 0; i < array.length(); i++)
-                array.getJSONObject(i).remove(Fields.PUBLISHED_DATE);
-            ret = obj.toString();
+            JSONObject item = array.getJSONObject(i);
+            item.remove(Fields.PUBLISHED_DATE);
+            item.remove(Fields.START_DATE);
+
+            //  Trim array if max results set
+            if(maxResults > 0 && (i+1) > maxResults)
+                array.remove(i);
         }
 
-        return ret;
+        return obj.toString();
     }
 
     /**

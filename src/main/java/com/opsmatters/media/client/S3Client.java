@@ -449,6 +449,34 @@ public class S3Client extends Client
     }
 
     /**
+     * Download the files from the given S3 bucket into the given directory.
+     */
+    public List<S3ObjectSummary> downloadFiles(String bucket, String directory, String ext) throws IOException
+    {
+        changeBucket(bucket); 
+
+        List<S3ObjectSummary> items = listFiles(bucket);
+        List<S3ObjectSummary> ret = new ArrayList<S3ObjectSummary>();
+        for(S3ObjectSummary item : items)
+        {
+            if(ext != null && !item.getKey().endsWith(ext))
+                continue;
+
+            File file = new File(directory, item.getKey());
+            if(!file.exists() || file.lastModified() < item.getLastModified().getTime())
+            {
+                if(getFile(get(file.getName()), file))
+                {
+                    ret.add(item);
+                    logger.info("Downloaded config file: "+file.getName());
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * Close the client.
      */
     @Override
