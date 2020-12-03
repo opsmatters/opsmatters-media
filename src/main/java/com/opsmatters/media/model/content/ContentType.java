@@ -23,34 +23,37 @@ package com.opsmatters.media.model.content;
  */
 public enum ContentType
 {
-    ORGANISATION("ORG", "Organisation", "organisations"),
-    VIDEO("VD", "Video", "videos"),
-    ROUNDUP("RP", "Roundup", "roundups"),
-    POST("PO", "Post", "posts"),
-    EVENT("EV", "Event", "events"),
-    WHITE_PAPER("WP", "White Paper", "white-papers"),
-    EBOOK("EB", "EBook", "ebooks"),
-    PROJECT("PR", "Project", "projects"),
-    TOOL("TL", "Tool", "tools"),
-    JOB("JB", "Job", "jobs");
+    ORGANISATION("ORG", "Organisation", "organisations", "glyphicon-th-list"),
+    VIDEO("VD", "Video", "videos", "glyphicon-film"),
+    ROUNDUP("RP", "Roundup", "roundups", "glyphicon-file"),
+    POST("PO", "Post", "posts", "glyphicon-file"),
+    EVENT("EV", "Event", "events", "glyphicon-calendar"),
+    WHITE_PAPER("WP", "White Paper", "white-papers", "glyphicon-book"),
+    EBOOK("EB", "EBook", "ebooks", "glyphicon-book"),
+    PROJECT("PR", "Project", "projects", "glyphicon-tasks"),
+    TOOL("TL", "Tool", "tools", "glyphicon-wrench"),
+    JOB("JB", "Job", "jobs", "glyphicon-briefcase");
 
     private String code;
     private String value;
     private String tag;
     private String title;
+    private String icon;
 
     /**
      * Constructor that takes the type code, value and tag.
      * @param code The code for the type
      * @param value The value for the type
      * @param tag The tag for the type
+     * @param icon The glyphicon for the type
      */
-    ContentType(String code, String value, String tag)
+    ContentType(String code, String value, String tag, String icon)
     {
         this.code = code;
         this.value = value;
         this.tag = tag;
         this.title = value+"s";
+        this.icon = icon;
     }
 
     /**
@@ -87,6 +90,15 @@ public enum ContentType
     public String title()
     {
         return title;
+    }
+
+    /**
+     * Returns the glyphicon of the type.
+     * @return The glyphicon of the type.
+     */
+    public String icon()
+    {
+        return icon;
     }
 
     /**

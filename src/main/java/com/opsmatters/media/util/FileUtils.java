@@ -24,7 +24,6 @@ import java.io.BufferedInputStream;
 import java.io.InputStreamReader;
 import java.io.FileReader;
 import java.io.Writer;
-import java.io.BufferedWriter;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
@@ -213,9 +212,6 @@ public class FileUtils
         if(file.isFile() || addingFile)
         {
             HttpURLConnection conn = null;
-            BufferedInputStream bis = null;
-            FileOutputStream os = null;
-            BufferedOutputStream bos = null;
 
             try
             {
@@ -224,24 +220,7 @@ public class FileUtils
                 conn.setReadTimeout(READ_TIMEOUT);
                 conn.setConnectTimeout(CONNECT_TIMEOUT);
                 TrustAnyTrustManager.setTrustManager(conn);
-
-                int buffer = 4096;
-                bis = new BufferedInputStream(conn.getInputStream(), buffer);
-                os = new FileOutputStream(file, false);
-                bos = new BufferedOutputStream(os, buffer);
-
-                int len = 0;
-                int loaded = 0;
-                while(len != -1)
-                {
-                    byte[] array = new byte[buffer];
-                    len = bis.read(array);
-                    if(len != -1)
-                    {
-                        loaded += len;
-                        bos.write(array, 0, len);
-                    }
-                }
+                org.apache.commons.io.FileUtils.copyToFile(conn.getInputStream(), file);
             }
             catch(IOException e)
             {
@@ -256,41 +235,6 @@ public class FileUtils
 
                 throw e;
             }
-            finally
-            {
-                try
-                {
-                    if(bis != null)
-                        bis.close();
-                }
-                catch(IOException e)
-                {
-                }
-
-                try
-                {
-                    if(bos != null)
-                    {
-                        bos.flush();
-                        bos.close();
-                    }
-                }
-                catch(IOException e)
-                {
-                }
-
-                try
-                {
-                    if(os != null)
-                    {
-                        os.flush();
-                        os.close();
-                    }
-                }
-                catch(IOException e)
-                {
-                }
-            }
         }
     }
 
@@ -304,7 +248,6 @@ public class FileUtils
 
         int size = 4096;
         Writer ow = new OutputStreamWriter(conn.getOutputStream());
-        Writer bw = new BufferedWriter(ow, size);
         Reader r = new FileReader(file);
         int len = 0;
         while(len != -1)
@@ -317,7 +260,6 @@ public class FileUtils
 
         r.close();
         ow.flush();
-        bw.close();
         ow.close();
     }
 

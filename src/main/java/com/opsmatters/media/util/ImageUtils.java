@@ -81,6 +81,7 @@ public class ImageUtils
     {
         HttpURLConnection conn = null;
         BufferedImage ret = null;
+        InputStream stream = null;
 
         try
         {
@@ -90,7 +91,8 @@ public class ImageUtils
             conn.setConnectTimeout(CONNECT_TIMEOUT);
             TrustAnyTrustManager.setTrustManager(conn);
 
-            ret = ImageIO.read(conn.getInputStream());
+            stream = conn.getInputStream();
+            ret = ImageIO.read(stream);
         }
         catch(IOException e)
         {
@@ -104,6 +106,11 @@ public class ImageUtils
             }
 
             throw e;
+        }
+        finally
+        {
+            if(stream != null)           
+                stream.close();
         }
 
         return ret;
@@ -267,19 +274,7 @@ public class ImageUtils
     static public BufferedImage getResizedImage(File file, int scaledWidth, int scaledHeight)
         throws IOException
     {
-        // Read the input image
-        BufferedImage inputImage = ImageIO.read(file);
- 
-        // Create the output image
-        BufferedImage outputImage = new BufferedImage(scaledWidth,
-            scaledHeight, getImageType(inputImage));
- 
-        // Scale the input image to the output image
-        Graphics2D g2d = outputImage.createGraphics();
-        g2d.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
-        g2d.dispose();
- 
-        return outputImage;
+        return getResizedImage(ImageIO.read(file), scaledWidth, scaledHeight);
     }
 
     /**
@@ -293,9 +288,33 @@ public class ImageUtils
         throws IOException
     {
         BufferedImage inputImage = ImageIO.read(file);
-        return getResizedImage(file,
+        return getResizedImage(inputImage,
             (int)(inputImage.getWidth()*percent)/100,
             (int)(inputImage.getHeight()*percent)/100);
+    }
+
+    /**
+     * Returns an image resized to a absolute width and height.
+     * @param inputImage The input image
+     * @param scaledWidth absolute width in pixels
+     * @param scaledHeight absolute height in pixels
+     * @return the scaled image
+     * @throws IOException
+     */
+    static public BufferedImage getResizedImage(BufferedImage inputImage, int scaledWidth, int scaledHeight)
+        throws IOException
+    {
+        // Create the output image
+        BufferedImage outputImage = new BufferedImage(scaledWidth,
+            scaledHeight, getImageType(inputImage));
+ 
+        // Scale the input image to the output image
+        Graphics2D g2d = outputImage.createGraphics();
+        g2d.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
+        g2d.dispose();
+        inputImage.flush();
+ 
+        return outputImage;
     }
 
     /**
@@ -348,6 +367,7 @@ public class ImageUtils
         }
 
         ImageIO.write(image, suffix, file);
+        image.flush();
     }
 
     /**
@@ -367,7 +387,7 @@ public class ImageUtils
             Graphics2D g2d = convertedImage.createGraphics();
             g2d.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
             g2d.dispose();
-
+            image.flush();
             ret = convertedImage;
         }
 
@@ -386,6 +406,7 @@ public class ImageUtils
         {
             ret = new BufferedImage(image.getWidth(),
                 image.getHeight(), getImageType(image));
+            image.flush();
         }
 
         return ret;

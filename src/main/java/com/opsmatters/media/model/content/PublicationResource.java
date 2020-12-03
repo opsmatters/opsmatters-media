@@ -65,7 +65,7 @@ public abstract class PublicationResource extends Resource
 
         // Throw exception if there are not enough columns
         //   - probably means the image, imageText and imageTitle columns are missing
-        if(values.length != 20)
+        if(values.length < 20)
             throw new IllegalStateException("Sheet has incorrect number of columns");
 
         String id = values[0];
