@@ -35,6 +35,7 @@ public class AdminDAOFactory extends DAOFactory
 
         getUserDAO();
         getEmailDAO();
+        getParameterDAO();
     }
 
     /**
@@ -58,6 +59,16 @@ public class AdminDAOFactory extends DAOFactory
     }
 
     /**
+     * Returns the parameter DAO.
+     */
+    public ParameterDAO getParameterDAO()
+    {
+        if(parameterDAO == null)
+            parameterDAO = new ParameterDAO(this);
+        return parameterDAO;
+    }
+
+    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
@@ -66,8 +77,10 @@ public class AdminDAOFactory extends DAOFactory
         super.close();
         userDAO = null;
         emailDAO = null;
+        parameterDAO = null;
     }
 
     private UserDAO userDAO;
     private EmailDAO emailDAO;
+    private ParameterDAO parameterDAO;
 }
