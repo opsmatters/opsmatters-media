@@ -89,6 +89,7 @@ public class EBookResource extends PublicationResource
         resource.init();
         resource.setTitle("New EBook");
         resource.setDescription(StringUtils.EMPTY);
+        resource.setImagePrefix(config.getImagePrefix());
         resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
 
         return resource;

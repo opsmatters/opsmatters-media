@@ -20,6 +20,7 @@ import java.util.List;
 import java.time.format.DateTimeParseException;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
+import com.opsmatters.media.util.FormatUtils;
 
 /**
  * Class representing a content item summary.
@@ -33,6 +34,8 @@ public abstract class ContentSummary implements java.io.Serializable
     private Instant publishedDate;
     private String summary = "";
     private String image = "";
+    private String imageSource = "";
+    private String imagePrefix = "";
     private boolean valid = true;
 
     /**
@@ -54,6 +57,8 @@ public abstract class ContentSummary implements java.io.Serializable
             setPublishedDate(obj.getPublishedDate());
             setSummary(obj.getSummary());
             setImage(obj.getImage());
+            setImageSource(obj.getImageSource());
+            setImagePrefix(obj.getImagePrefix());
         }
     }
 
@@ -243,5 +248,71 @@ public abstract class ContentSummary implements java.io.Serializable
     public boolean hasImage()
     {
         return image != null && image.length() > 0;
+    }
+
+    /**
+     * Returns the content image source.
+     */
+    public String getImageSource()
+    {
+        return imageSource;
+    }
+
+    /**
+     * Sets the content image source.
+     */
+    public void setImageSource(String imageSource)
+    {
+        setImageSource("", imageSource, false);
+    }
+
+    /**
+     * Sets the content image source.
+     */
+    public void setImageSource(String basePath, String imageSource, boolean removeParameters)
+    {
+        this.imageSource = FormatUtils.getFormattedUrl(basePath, imageSource, removeParameters);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content image source has been set.
+     */
+    public boolean hasImageSource()
+    {
+        return imageSource != null && imageSource.length() > 0;
+    }
+
+    /**
+     * Returns the image prefix.
+     */
+    public String getImagePrefix()
+    {
+        return imagePrefix;
+    }
+
+    /**
+     * Sets the image prefix.
+     */
+    public void setImagePrefix(String imagePrefix)
+    {
+        this.imagePrefix = imagePrefix;
+    }
+
+    /**
+     * Sets the content image name.
+     */
+    public void setImageFromPath(String path)
+    {
+        if(path != null && path.length() > 0)
+        {
+            path = path.substring(path.lastIndexOf("/")+1);
+
+            String prefix = getImagePrefix()+"-";
+            if(!path.startsWith(prefix))
+                path = prefix+path;
+        }
+
+        setImage(path);
+        setImage(FormatUtils.getFormattedImageFilename(getImage()));
     }
 }

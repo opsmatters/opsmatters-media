@@ -31,8 +31,10 @@ public abstract class PublicationConfiguration<C extends ContentItem> extends Co
 {
     private static final Logger logger = Logger.getLogger(PublicationConfiguration.class.getName());
 
+    public static final String IMAGE_PREFIX = "image-prefix";
     public static final String PAGES = "pages";
 
+    private String imagePrefix = "";
     private List<WebPageConfiguration> pages = new ArrayList<WebPageConfiguration>();
 
     /**
@@ -41,6 +43,22 @@ public abstract class PublicationConfiguration<C extends ContentItem> extends Co
     public PublicationConfiguration(String name)
     {
         super(name);
+    }
+
+    /**
+     * Returns the image prefix for this configuration.
+     */
+    public String getImagePrefix()
+    {
+        return imagePrefix;
+    }
+
+    /**
+     * Sets the image prefix for this configuration.
+     */
+    public void setImagePrefix(String imagePrefix)
+    {
+        this.imagePrefix = imagePrefix;
     }
 
     /**
@@ -107,6 +125,8 @@ public abstract class PublicationConfiguration<C extends ContentItem> extends Co
     protected void parseDocument(Map<String,Object> map)
     {
         super.parseDocument(map);
+        if(map.containsKey(IMAGE_PREFIX))
+            setImagePrefix((String)map.get(IMAGE_PREFIX));
         if(map.containsKey(PAGES))
         {
             List<Map<String,Object>> pages = (List<Map<String,Object>>)map.get(PAGES);

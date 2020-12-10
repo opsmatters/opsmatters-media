@@ -166,6 +166,7 @@ public class PostArticle extends Article
         setUrlAlias(obj.optString(Fields.URL));
         setCanonicalUrl(obj.optString(Fields.CANONICAL_URL));
         setImage(obj.optString(Fields.IMAGE));
+        setImageSource(obj.optString(Fields.IMAGE_SOURCE));
         setAuthor(obj.optString(Fields.AUTHOR));
         setAuthorLink(obj.optString(Fields.AUTHOR_LINK));
     }
@@ -183,6 +184,7 @@ public class PostArticle extends Article
         ret.putOpt(Fields.URL, getUrlAlias());
         ret.putOpt(Fields.CANONICAL_URL, getCanonicalUrl());
         ret.putOpt(Fields.IMAGE, getImage());
+        ret.putOpt(Fields.IMAGE_SOURCE, getImageSource());
         ret.putOpt(Fields.AUTHOR, getAuthor());
         ret.putOpt(Fields.AUTHOR_LINK, getAuthorLink());
 
@@ -234,6 +236,7 @@ public class PostArticle extends Article
         article.init();
         article.setTitle("New Post");
         article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        article.setImagePrefix(config.getImagePrefix());
         article.setSocial(true);
 
         return article;
@@ -336,6 +339,8 @@ public class PostArticle extends Article
     public void setContentSummary(PostSummary obj)
     {
         super.setContentSummary(obj);
+        setImageSource(new String(obj.getImageSource() != null ? obj.getImageSource() : ""));
+        setImagePrefix(new String(obj.getImagePrefix() != null ? obj.getImagePrefix() : ""));
         setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
         setAuthor(new String(obj.getAuthor() != null ? obj.getAuthor() : ""));
         setAuthorLink(new String(obj.getAuthorLink() != null ? obj.getAuthorLink() : ""));
@@ -376,23 +381,21 @@ public class PostArticle extends Article
     }
 
     /**
+     * Sets the image name.
+     */
+    @Override
+    public void setImageFromPath(String path)
+    {
+        details.setImageFromPath(path);
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the post image has been set.
      */
     @Override
     public boolean hasImage()
     {
         return details.hasImage();
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the post image source has been set.
-     * <p>
-     * Always returns <CODE>false</CODE>.
-     */
-    @Override
-    public boolean hasImageSource()
-    {
-        return false;
     }
 
     /**
@@ -403,7 +406,43 @@ public class PostArticle extends Article
     @Override
     public String getImageSource()
     {
-        return null;
+        return details.getImageSource();
+    }
+
+    /**
+     * Sets the image source.
+     */
+    public void setImageSource(String imageSource)
+    {
+        details.setImageSource(imageSource);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the post image source has been set.
+     * <p>
+     * Always returns <CODE>false</CODE>.
+     */
+    @Override
+    public boolean hasImageSource()
+    {
+        return details.hasImageSource();
+    }
+
+    /**
+     * Returns the image prefix.
+     */
+    @Override
+    public String getImagePrefix()
+    {
+        return details.getImagePrefix();
+    }
+
+    /**
+     * Sets the image prefix.
+     */
+    public void setImagePrefix(String imagePrefix)
+    {
+        details.setImagePrefix(imagePrefix);
     }
 
     /**

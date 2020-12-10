@@ -385,6 +385,7 @@ public class RoundupArticle extends Article
     /**
      * Sets the image name.
      */
+    @Override
     public void setImageFromPath(String path)
     {
         details.setImageFromPath(path);
@@ -402,6 +403,7 @@ public class RoundupArticle extends Article
     /**
      * Returns the image prefix.
      */
+    @Override
     public String getImagePrefix()
     {
         return details.getImagePrefix();

@@ -44,6 +44,7 @@ public class WhitePaperConfiguration extends PublicationConfiguration<WhitePaper
         if(obj != null)
         {
             copyAttributes(obj);
+            setImagePrefix(obj.getImagePrefix());
             for(WebPageConfiguration page : obj.getPages())
                 addPage(new WebPageConfiguration(page));
         }

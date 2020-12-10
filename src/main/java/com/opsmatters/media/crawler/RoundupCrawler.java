@@ -63,6 +63,14 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
     }
 
     /**
+     * Returns the image extension for this configuration.
+     */
+    public String getImageExt()
+    {
+        return config.getImageExt();
+    }
+
+    /**
      * Returns the image prefix for this configuration.
      */
     public String getImagePrefix()
@@ -185,7 +193,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
     {
         setFormatProperty(URL_CONTEXT, StringUtils.getUrlContext(content.getUrl()));
         setFormatProperty(IMAGE_NAME, FileUtils.getName(content.getImage()));
-        setFormatProperty(IMAGE_EXT, FileUtils.getExtension(content.getImage()));
+        setFormatProperty(IMAGE_EXT, FileUtils.getExtension(content.getImage()), getImageExt());
     }
 
     /**

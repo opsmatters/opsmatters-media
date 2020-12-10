@@ -25,8 +25,6 @@ import com.opsmatters.media.util.FormatUtils;
 public class RoundupSummary extends ArticleSummary
 {
     private String url = "";
-    private String imageSource = "";
-    private String imagePrefix = "";
 
     /**
      * Default constructor.
@@ -50,8 +48,6 @@ public class RoundupSummary extends ArticleSummary
         if(obj != null)
         {
             setUrl(obj.getUrl(), false);
-            setImageSource(obj.getImageSource());
-            setImagePrefix(obj.getImagePrefix());
         }
     }
 
@@ -86,71 +82,5 @@ public class RoundupSummary extends ArticleSummary
     public void setUrl(String basePath, String url, boolean removeParameters)
     {
         this.url = FormatUtils.getFormattedUrl(basePath, url, removeParameters);
-    }
-
-    /**
-     * Returns the roundup image source.
-     */
-    public String getImageSource()
-    {
-        return imageSource;
-    }
-
-    /**
-     * Sets the roundup image source.
-     */
-    public void setImageSource(String imageSource)
-    {
-        setImageSource("", imageSource, false);
-    }
-
-    /**
-     * Sets the roundup image source.
-     */
-    public void setImageSource(String basePath, String imageSource, boolean removeParameters)
-    {
-        this.imageSource = FormatUtils.getFormattedUrl(basePath, imageSource, removeParameters);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the roundup image source has been set.
-     */
-    public boolean hasImageSource()
-    {
-        return imageSource != null && imageSource.length() > 0;
-    }
-
-    /**
-     * Returns the image prefix.
-     */
-    public String getImagePrefix()
-    {
-        return imagePrefix;
-    }
-
-    /**
-     * Sets the image prefix.
-     */
-    public void setImagePrefix(String imagePrefix)
-    {
-        this.imagePrefix = imagePrefix;
-    }
-
-    /**
-     * Sets the roundup image name.
-     */
-    public void setImageFromPath(String path)
-    {
-        if(path != null && path.length() > 0)
-        {
-            path = path.substring(path.lastIndexOf("/")+1);
-
-            String prefix = getImagePrefix()+"-";
-            if(!path.startsWith(prefix))
-                path = prefix+path;
-        }
-
-        setImage(path);
-        setImage(FormatUtils.getFormattedImageFilename(getImage()));
     }
 }

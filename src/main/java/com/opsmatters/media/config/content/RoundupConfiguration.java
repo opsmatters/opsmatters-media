@@ -33,10 +33,12 @@ public class RoundupConfiguration extends ContentConfiguration<RoundupArticle>
     private static final Logger logger = Logger.getLogger(RoundupConfiguration.class.getName());
 
     public static final String IMAGE_PREFIX = "image-prefix";
+    public static final String IMAGE_EXT = "image-ext";
     public static final String IMAGE_FORMAT = "image-format";
     public static final String PAGES = "pages";
 
     private String imagePrefix = "";
+    private String imageExt = "";
     private String imageFormat = "";
     private List<WebPageConfiguration> pages = new ArrayList<WebPageConfiguration>();
 
@@ -67,6 +69,7 @@ public class RoundupConfiguration extends ContentConfiguration<RoundupArticle>
             super.copyAttributes(obj);
             setImagePrefix(obj.getImagePrefix());
             setImageFormat(obj.getImageFormat());
+            setImageExt(obj.getImageExt());
             for(WebPageConfiguration page : obj.getPages())
                 addPage(new WebPageConfiguration(page));
         }
@@ -120,6 +123,22 @@ public class RoundupConfiguration extends ContentConfiguration<RoundupArticle>
     public void setImageFormat(String imageFormat)
     {
         this.imageFormat = imageFormat;
+    }
+
+    /**
+     * Returns the image extension for this configuration.
+     */
+    public String getImageExt()
+    {
+        return imageExt;
+    }
+
+    /**
+     * Sets the image extension for this configuration.
+     */
+    public void setImageExt(String imageExt)
+    {
+        this.imageExt = imageExt;
     }
 
     /**
@@ -188,6 +207,8 @@ public class RoundupConfiguration extends ContentConfiguration<RoundupArticle>
         super.parseDocument(map);
         if(map.containsKey(IMAGE_PREFIX))
             setImagePrefix((String)map.get(IMAGE_PREFIX));
+        if(map.containsKey(IMAGE_EXT))
+            setImageExt((String)map.get(IMAGE_EXT));
         if(map.containsKey(IMAGE_FORMAT))
             setImageFormat((String)map.get(IMAGE_FORMAT));
         if(map.containsKey(PAGES))

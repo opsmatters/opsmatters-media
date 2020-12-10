@@ -118,6 +118,7 @@ public abstract class PublicationResource extends Resource
         setCreatorEmail(obj.optString(Fields.EMAIL));
         setCanonicalUrl(obj.optString(Fields.CANONICAL_URL));
         setImage(obj.optString(Fields.IMAGE));
+        setImageSource(obj.optString(Fields.IMAGE_SOURCE));
     }
 
     /**
@@ -131,6 +132,7 @@ public abstract class PublicationResource extends Resource
         ret.putOpt(Fields.EMAIL, getCreatorEmail());
         ret.putOpt(Fields.CANONICAL_URL, getCanonicalUrl());
         ret.putOpt(Fields.IMAGE, getImage());
+        ret.putOpt(Fields.IMAGE_SOURCE, getImageSource());
 
         return ret;
     }
@@ -211,6 +213,8 @@ public abstract class PublicationResource extends Resource
     {
         super.setContentSummary(obj);
         setUrl(new String(obj.getUrl()), false);
+        setImageSource(new String(obj.getImageSource() != null ? obj.getImageSource() : ""));
+        setImagePrefix(new String(obj.getImagePrefix() != null ? obj.getImagePrefix() : ""));
         setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
     }
 
@@ -281,12 +285,64 @@ public abstract class PublicationResource extends Resource
     }
 
     /**
-     * Returns <CODE>true</CODE> if the roundup image has been set.
+     * Sets the image name.
+     */
+    @Override
+    public void setImageFromPath(String path)
+    {
+        details.setImageFromPath(path);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the publication image has been set.
      */
     @Override
     public boolean hasImage()
     {
         return details.hasImage();
+    }
+
+    /**
+     * Returns the image source.
+     */
+    @Override
+    public String getImageSource()
+    {
+        return details.getImageSource();
+    }
+
+    /**
+     * Sets the image source.
+     */
+    public void setImageSource(String imageSource)
+    {
+        details.setImageSource(imageSource);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the publication image source has been set.
+     */
+    @Override
+    public boolean hasImageSource()
+    {
+        return details.hasImageSource();
+    }
+
+    /**
+     * Returns the image prefix.
+     */
+    @Override
+    public String getImagePrefix()
+    {
+        return details.getImagePrefix();
+    }
+
+    /**
+     * Sets the image prefix.
+     */
+    public void setImagePrefix(String imagePrefix)
+    {
+        details.setImagePrefix(imagePrefix);
     }
 
     /**

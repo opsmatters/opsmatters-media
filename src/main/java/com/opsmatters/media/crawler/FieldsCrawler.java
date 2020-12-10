@@ -221,11 +221,30 @@ public abstract class FieldsCrawler<T extends ContentSummary>
     }
 
     /**
+     * Returns the given field format property.
+     */
+    protected Object getFormatProperty(String name)
+    {
+        return properties.get(name);
+    }
+
+    /**
      * Adds the given property to be used in field formats.
      */
     protected void setFormatProperty(String name, String value)
     {
         properties.put(name, value);
+    }
+
+    /**
+     * Adds the given property to be used in field formats, using the default if the value is empty.
+     */
+    protected void setFormatProperty(String name, String value, Object dflt)
+    {
+        if(value != null && value.length() > 0)
+            setFormatProperty(name, value);
+        else if(dflt != null)
+            setFormatProperty(name, dflt.toString());
     }
 
     /**

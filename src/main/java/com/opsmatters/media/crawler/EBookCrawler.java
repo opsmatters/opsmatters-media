@@ -60,6 +60,14 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
     }
 
     /**
+     * Returns the image prefix for this configuration.
+     */
+    public String getImagePrefix()
+    {
+        return config.getImagePrefix();
+    }
+
+    /**
      * Create the ebook summary from a selected node.
      */
     @Override
@@ -159,6 +167,8 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
         ContentFields fields, PublicationSummary content, String type)
         throws DateTimeParseException
     {
+        content.setImagePrefix(getImagePrefix());
+
         if(fields.hasTitle())
         {
             ContentField field = fields.getTitle();
@@ -199,6 +209,24 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
                     logger.severe(StringUtils.serialize(e));
                     logger.warning("Unparseable published date, using default instead: "+publishedDate);
                     content.setPublishedDate(TimeUtils.truncateTimeUTC());
+                }
+            }
+        }
+
+        if(fields.hasImage())
+        {
+            ContentField field = fields.getImage();
+            String src = getImageSrc(field, root, type);
+            if(src != null)
+            {
+                content.setImageFromPath(src);
+                content.setImageSource(getBasePath(), encodeUrl(src), field.removeParameters());
+
+                if(debug())
+                {
+                    String name = fields.getImage().getName();
+                    logger.info("Image source for "+name+": "+content.getImageSource());
+                    logger.info("Image for "+name+": "+content.getImage());
                 }
             }
         }
