@@ -84,6 +84,14 @@ public class TextCommandVisitor implements CommandVisitor<Character>
     }
 
     /**
+     * Append the given string.
+     */
+    public void append(String s)
+    {
+        text.append(s);
+    }
+
+    /**
      * Return the diff text in HTML format.
      */
     public String getText()

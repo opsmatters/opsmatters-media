@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.monitor.ContentChange;
+import com.opsmatters.media.model.monitor.ChangeStatus;
 
 /**
  * DAO that provides operations on the CONTENT_CHANGES table in the database.
@@ -65,6 +66,13 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, CREATED_BY "
       + "FROM CONTENT_CHANGES WHERE CREATED_DATE >= (NOW() + INTERVAL -7 DAY) ORDER BY CREATED_DATE";
+
+    /**
+     * The query to use to select the changes from the CONTENT_CHANGES table by status.
+     */
+    private static final String LIST_BY_STATUS_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, CREATED_BY "
+      + "FROM CONTENT_CHANGES WHERE STATUS=? AND CREATED_DATE >= (NOW() + INTERVAL -7 DAY) ORDER BY CREATED_DATE";
 
     /**
      * The query to use to get the count of changes from the CONTENT_CHANGES table.
@@ -309,6 +317,63 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
     }
 
     /**
+     * Returns the changes from the CONTENT_CHANGES table by status.
+     */
+    public List<ContentChange> list(ChangeStatus status) throws SQLException
+    {
+        List<ContentChange> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByStatusStmt == null)
+            listByStatusStmt = prepareStatement(getConnection(), LIST_BY_STATUS_SQL);
+        clearParameters(listByStatusStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByStatusStmt.setString(1, status.name());
+            listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByStatusStmt.executeQuery();
+            ret = new ArrayList<ContentChange>();
+            while(rs.next())
+            {
+                ContentChange change = new ContentChange();
+                change.setId(rs.getString(1));
+                change.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                change.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                change.setCode(rs.getString(4));
+                change.setSnapshotBefore(getClob(rs, 5));
+                change.setSnapshotAfter(getClob(rs, 6));
+                change.setStatus(rs.getString(7));
+                change.setMonitorId(rs.getString(8));
+                change.setExecutionTime(rs.getLong(9));
+                change.setDifference(rs.getInt(10));
+                change.setCreatedBy(rs.getString(11));
+                ret.add(change);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the count of changes from the table.
      */
     public int count() throws SQLException
@@ -358,6 +423,8 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
+        closeStatement(listByStatusStmt);
+        listByStatusStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -368,6 +435,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
+    private PreparedStatement listByStatusStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }

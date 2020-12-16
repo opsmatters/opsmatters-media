@@ -19,7 +19,7 @@ import java.time.Instant;
 import org.json.JSONObject;
 import com.opsmatters.media.model.OwnedItem;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.TextDiff;
+import com.opsmatters.media.util.SnapshotDiff;
 
 /**
  * Class representing a content monitor change.
@@ -57,7 +57,7 @@ public class ContentChange extends OwnedItem
         setSnapshotAfter(snapshot);
         setMonitorId(monitor.getId());
         setExecutionTime(monitor.getExecutionTime());
-        setDifference(TextDiff.getDifferencePercent(getSnapshotBefore(), getSnapshotAfter()));
+        setDifference(SnapshotDiff.getDifferencePercent(getSnapshotBefore(), getSnapshotAfter()));
     }
 
     /**
