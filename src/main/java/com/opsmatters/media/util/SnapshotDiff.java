@@ -106,7 +106,7 @@ public class SnapshotDiff
                     StringsComparator leftComparator = new StringsComparator(left, "\n");
                     appendLine(textVisitor, leftProperty, leftUrl, leftComparator);
                     StringsComparator rightComparator = new StringsComparator("\n", right);
-                    appendLine(textVisitor, !rightProperty.equals(leftProperty) ? rightProperty : "", rightUrl, rightComparator);
+                    appendLine(textVisitor, rightProperty != null && !rightProperty.equals(leftProperty) ? rightProperty : "", rightUrl, rightComparator);
                 }
 
                 if(!empty)

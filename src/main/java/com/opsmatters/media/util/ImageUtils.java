@@ -284,7 +284,7 @@ public class ImageUtils
      * @return the scaled image
      * @throws IOException
      */
-    public static BufferedImage getResizedImage(File file, int percent)
+    public static BufferedImage getResizedImage(File file, float percent)
         throws IOException
     {
         BufferedImage inputImage = ImageIO.read(file);
@@ -322,7 +322,7 @@ public class ImageUtils
      * @param suffix The suffix of the image file (JPG, PNG, GIF)
      * @return <CODE>true</CODE> if the given suffix is JPEG format
      */
-    private static boolean isJPEG(String suffix)
+    public static boolean isJPEG(String suffix)
     {
         return suffix != null 
             && (suffix.equalsIgnoreCase(CommonFiles.JPG_EXT)
