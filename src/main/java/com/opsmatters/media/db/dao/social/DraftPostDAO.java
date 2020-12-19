@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
+import com.opsmatters.media.model.DeliveryStatus;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.content.Organisation;
@@ -78,6 +79,13 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, TEMPLATE_ID, PROPERTIES, ATTRIBUTES, MESSAGE, STATUS, CREATED_BY "
       + "FROM DRAFT_POSTS WHERE TYPE=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS='NEW') ORDER BY CREATED_DATE";
+
+    /**
+     * The query to use to select the posts from the DRAFT_POSTS table by status.
+     */
+    private static final String LIST_BY_STATUS_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, TEMPLATE_ID, PROPERTIES, ATTRIBUTES, MESSAGE, STATUS, CREATED_BY "
+      + "FROM DRAFT_POSTS WHERE TYPE=? AND STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS='NEW') ORDER BY CREATED_DATE";
 
     /**
      * The query to use to get the count of posts from the DRAFT_POSTS table.
@@ -451,6 +459,64 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     }
 
     /**
+     * Returns the posts from the DRAFT_POSTS table by type and status.
+     */
+    public List<DraftPost> list(PostType type, DeliveryStatus status, int interval) throws SQLException
+    {
+        List<DraftPost> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByStatusStmt == null)
+            listByStatusStmt = prepareStatement(getConnection(), LIST_BY_STATUS_SQL);
+        clearParameters(listByStatusStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByStatusStmt.setString(1, type.name());
+            listByStatusStmt.setString(2, status != null ? status.name() : "");
+            listByStatusStmt.setInt(3, interval);
+            listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByStatusStmt.executeQuery();
+            ret = new ArrayList<DraftPost>();
+            while(rs.next())
+            {
+                DraftPost post = DraftPostFactory.newInstance(PostType.valueOf(rs.getString(5)));
+                post.setId(rs.getString(1));
+                post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                post.setScheduledDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                post.setTemplateId(rs.getString(6));
+                post.setProperties(new JSONObject(getClob(rs, 7)));
+                post.setAttributes(new JSONObject(getClob(rs, 8)));
+                post.setMessage(rs.getString(9));
+                post.setStatus(rs.getString(10));
+                post.setCreatedBy(rs.getString(11));
+                ret.add(post);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the count of posts from the table.
      */
     public int count() throws SQLException
@@ -524,6 +590,8 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
+        closeStatement(listByStatusStmt);
+        listByStatusStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -535,6 +603,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
+    private PreparedStatement listByStatusStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }

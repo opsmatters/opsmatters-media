@@ -46,6 +46,7 @@ public class PostTemplate extends SocialPost
     private String name = "";
     private PostType type;
     private String code = "";
+    private String organisation = "";
     private ContentType contentType;
     private boolean isDefault = false;
     private boolean shortenUrl = false;
@@ -110,6 +111,7 @@ public class PostTemplate extends SocialPost
             setName(obj.getName());
             setType(obj.getType());
             setCode(obj.getCode());
+            setOrganisation(obj.getOrganisation());
             setContentType(obj.getContentType());
             setDefault(obj.isDefault());
             setShortenUrl(obj.isShortenUrl());
@@ -212,6 +214,30 @@ public class PostTemplate extends SocialPost
     public boolean hasCode()
     {
         return code != null && code.length() > 0;
+    }
+
+    /**
+     * Returns the organisation name.
+     */
+    public String getOrganisation()
+    {
+        return organisation;
+    }
+
+    /**
+     * Sets the organisation name.
+     */
+    public void setOrganisation(String organisation)
+    {
+        this.organisation = organisation;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the organisation name has been set.
+     */
+    public boolean hasOrganisation()
+    {
+        return organisation != null && organisation.length() > 0;
     }
 
     /**
