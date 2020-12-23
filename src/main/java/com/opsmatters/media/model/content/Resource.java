@@ -228,7 +228,7 @@ public abstract class Resource extends ContentItem
      */
     public Boolean getPromoteObject()
     {
-        return new Boolean(isPromoted());
+        return Boolean.valueOf(isPromoted());
     }
 
     /**

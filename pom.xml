@@ -76,10 +76,9 @@
     <plugin>
       <groupId>org.apache.maven.plugins</groupId>
       <artifactId>maven-compiler-plugin</artifactId>
-      <version>3.3</version>
+      <version>3.8.1</version>
       <configuration>
-        <source>1.8</source>
-        <target>1.8</target>
+        <release>12</release>
         <fork>true</fork>
         <debug>on</debug>
         <meminitial>128m</meminitial>
@@ -124,9 +123,8 @@ built.on=${TODAY}
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.6</version>
+        <version>3.2.0</version>
         <configuration>
-          <useDefaultManifestFile>true</useDefaultManifestFile>
         </configuration>
       </plugin>
 

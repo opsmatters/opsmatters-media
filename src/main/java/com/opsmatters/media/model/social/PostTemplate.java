@@ -300,7 +300,7 @@ public class PostTemplate extends SocialPost
      */
     public Boolean getDefaultObject()
     {
-        return new Boolean(isDefault());
+        return Boolean.valueOf(isDefault());
     }
 
     /**
@@ -332,7 +332,7 @@ public class PostTemplate extends SocialPost
      */
     public Boolean getShortenUrlObject()
     {
-        return new Boolean(isShortenUrl());
+        return Boolean.valueOf(isShortenUrl());
     }
 
     /**

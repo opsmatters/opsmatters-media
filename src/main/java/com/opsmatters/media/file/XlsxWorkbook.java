@@ -431,7 +431,7 @@ public class XlsxWorkbook extends Workbook
     {
         if(numFmts == null)
             cacheFormatCodes();
-        return (String)numFmts.get(new Long(id));
+        return (String)numFmts.get(Long.valueOf(id));
     }
 
     /**
@@ -1076,7 +1076,7 @@ public class XlsxWorkbook extends Workbook
             for(int i = 0; i < list.size(); i++)
             {
                 CTRst ctrst = (CTRst)list.get(i);
-                stringMap.put(ctrst.getT(), new Integer(i));
+                stringMap.put(ctrst.getT(), Integer.valueOf(i));
             }
         }
 
@@ -1108,7 +1108,7 @@ public class XlsxWorkbook extends Workbook
             crt.setT(csw);
             strings.getSi().add(crt);
             pos = stringMap.size();
-            stringMap.put(data, new Integer(pos));
+            stringMap.put(data, Integer.valueOf(pos));
         }
         else
         {
@@ -1382,38 +1382,38 @@ public class XlsxWorkbook extends Workbook
     static
     {
         // Add the built in formats to the cache
-        builtinNumFmts.put("0", new Long(1L));
-        builtinNumFmts.put("0.00", new Long(2L));
-        builtinNumFmts.put("#,##0", new Long(3L));
-        builtinNumFmts.put("#,##0.00", new Long(4L));
-        builtinNumFmts.put("0%", new Long(9L));
-        builtinNumFmts.put("0.00%", new Long(10L));
-        builtinNumFmts.put("0.00E+00", new Long(11L));
-        builtinNumFmts.put("# ?/?", new Long(12L));
-        builtinNumFmts.put("# ??/??", new Long(13L));
-        builtinNumFmts.put("mm-dd-yy", new Long(14L));
-        builtinNumFmts.put("d-mmm-yy", new Long(15L));
-        builtinNumFmts.put("d-mmm", new Long(16L));
-        builtinNumFmts.put("mmm-yy", new Long(17L));
-        builtinNumFmts.put("h:mm AM/PM", new Long(18L));
-        builtinNumFmts.put("h:mm:ss AM/PM", new Long(19L));
-        builtinNumFmts.put("h:mm", new Long(20L));
-        builtinNumFmts.put("h:mm:ss", new Long(21L));
-        builtinNumFmts.put("m/d/yy h:mm", new Long(22L));
-        builtinNumFmts.put("[$-404]e/m/d", new Long(27L));
-        builtinNumFmts.put("m/d/yy", new Long(30L));
-        builtinNumFmts.put("[$-404]e/m/d", new Long(36L));
-        builtinNumFmts.put("#,##0 ;(#,##0)", new Long(37L));
-        builtinNumFmts.put("#,##0 ;[Red](#,##0)", new Long(38L));
-        builtinNumFmts.put("#,##0.00;(#,##0.00)", new Long(39L));
-        builtinNumFmts.put("#,##0.00;[Red](#,##0.00)", new Long(40L));
-        builtinNumFmts.put("mm:ss", new Long(45L));
-        builtinNumFmts.put("[h]:mm:ss", new Long(46L));
-        builtinNumFmts.put("mmss.0", new Long(47L));
-        builtinNumFmts.put("##0.0E+0", new Long(48L));
-        builtinNumFmts.put("@", new Long(49L));
-        builtinNumFmts.put("[$-404]e/m/d", new Long(50L));
-        builtinNumFmts.put("[$-404]e/m/d", new Long(57L));
+        builtinNumFmts.put("0", Long.valueOf(1L));
+        builtinNumFmts.put("0.00", Long.valueOf(2L));
+        builtinNumFmts.put("#,##0", Long.valueOf(3L));
+        builtinNumFmts.put("#,##0.00", Long.valueOf(4L));
+        builtinNumFmts.put("0%", Long.valueOf(9L));
+        builtinNumFmts.put("0.00%", Long.valueOf(10L));
+        builtinNumFmts.put("0.00E+00", Long.valueOf(11L));
+        builtinNumFmts.put("# ?/?", Long.valueOf(12L));
+        builtinNumFmts.put("# ??/??", Long.valueOf(13L));
+        builtinNumFmts.put("mm-dd-yy", Long.valueOf(14L));
+        builtinNumFmts.put("d-mmm-yy", Long.valueOf(15L));
+        builtinNumFmts.put("d-mmm", Long.valueOf(16L));
+        builtinNumFmts.put("mmm-yy", Long.valueOf(17L));
+        builtinNumFmts.put("h:mm AM/PM", Long.valueOf(18L));
+        builtinNumFmts.put("h:mm:ss AM/PM", Long.valueOf(19L));
+        builtinNumFmts.put("h:mm", Long.valueOf(20L));
+        builtinNumFmts.put("h:mm:ss", Long.valueOf(21L));
+        builtinNumFmts.put("m/d/yy h:mm", Long.valueOf(22L));
+        builtinNumFmts.put("[$-404]e/m/d", Long.valueOf(27L));
+        builtinNumFmts.put("m/d/yy", Long.valueOf(30L));
+        builtinNumFmts.put("[$-404]e/m/d", Long.valueOf(36L));
+        builtinNumFmts.put("#,##0 ;(#,##0)", Long.valueOf(37L));
+        builtinNumFmts.put("#,##0 ;[Red](#,##0)", Long.valueOf(38L));
+        builtinNumFmts.put("#,##0.00;(#,##0.00)", Long.valueOf(39L));
+        builtinNumFmts.put("#,##0.00;[Red](#,##0.00)", Long.valueOf(40L));
+        builtinNumFmts.put("mm:ss", Long.valueOf(45L));
+        builtinNumFmts.put("[h]:mm:ss", Long.valueOf(46L));
+        builtinNumFmts.put("mmss.0", Long.valueOf(47L));
+        builtinNumFmts.put("##0.0E+0", Long.valueOf(48L));
+        builtinNumFmts.put("@", Long.valueOf(49L));
+        builtinNumFmts.put("[$-404]e/m/d", Long.valueOf(50L));
+        builtinNumFmts.put("[$-404]e/m/d", Long.valueOf(57L));
     }
 
     protected SpreadsheetMLPackage pkg;

@@ -538,7 +538,7 @@ public abstract class ContentItem implements java.io.Serializable
      */
     public Boolean getPublishedObject()
     {
-        return new Boolean(isPublished());
+        return Boolean.valueOf(isPublished());
     }
 
     /**
@@ -642,7 +642,7 @@ public abstract class ContentItem implements java.io.Serializable
      */
     public Boolean getSocialObject()
     {
-        return new Boolean(hasSocial());
+        return Boolean.valueOf(hasSocial());
     }
 
     /**

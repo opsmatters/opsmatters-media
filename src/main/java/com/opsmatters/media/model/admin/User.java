@@ -251,7 +251,7 @@ public class User extends BaseItem
      */
     public Boolean getAdminObject()
     {
-        return new Boolean(admin);
+        return Boolean.valueOf(admin);
     }
 
     /**
@@ -315,7 +315,7 @@ public class User extends BaseItem
      */
     public Boolean getDebugObject()
     {
-        return new Boolean(debug);
+        return Boolean.valueOf(debug);
     }
 
     /**

@@ -669,7 +669,7 @@ public class OrganisationListing extends ContentItem
      */
     public Boolean getProjectsObject()
     {
-        return new Boolean(hasProjects());
+        return Boolean.valueOf(hasProjects());
     }
 
     /**
@@ -725,7 +725,7 @@ public class OrganisationListing extends ContentItem
      */
     public Boolean getToolsObject()
     {
-        return new Boolean(hasTools());
+        return Boolean.valueOf(hasTools());
     }
 
     /**
@@ -757,7 +757,7 @@ public class OrganisationListing extends ContentItem
      */
     public Boolean getJobsObject()
     {
-        return new Boolean(hasJobs());
+        return Boolean.valueOf(hasJobs());
     }
 
     /**

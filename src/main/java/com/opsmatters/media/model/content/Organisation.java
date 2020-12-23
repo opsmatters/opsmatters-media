@@ -265,7 +265,7 @@ public class Organisation extends OwnedItem implements FieldSource
      */
     public Boolean getSponsorObject()
     {
-        return new Boolean(isSponsor());
+        return Boolean.valueOf(isSponsor());
     }
 
     /**

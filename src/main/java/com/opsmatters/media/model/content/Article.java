@@ -239,7 +239,7 @@ public abstract class Article extends ContentItem
      */
     public Boolean getPromoteObject()
     {
-        return new Boolean(isPromoted());
+        return Boolean.valueOf(isPromoted());
     }
 
     /**
@@ -271,7 +271,7 @@ public abstract class Article extends ContentItem
      */
     public Boolean getNewsletterObject()
     {
-        return new Boolean(isNewsletter());
+        return Boolean.valueOf(isNewsletter());
     }
 
     /**
@@ -311,7 +311,7 @@ public abstract class Article extends ContentItem
      */
     public Boolean getFeaturedObject()
     {
-        return new Boolean(isFeatured());
+        return Boolean.valueOf(isFeatured());
     }
 
     /**
@@ -343,7 +343,7 @@ public abstract class Article extends ContentItem
      */
     public Boolean getSponsoredObject()
     {
-        return new Boolean(isSponsored());
+        return Boolean.valueOf(isSponsored());
     }
 
     /**
