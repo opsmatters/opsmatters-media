@@ -61,6 +61,14 @@ public class Organisation extends OwnedItem implements FieldSource
     }
 
     /**
+     * Returns the name of the organisation.
+     */
+    public String toString()
+    {
+        return getName();
+    }
+
+    /**
      * Copies the attributes of the given object.
      */
     public void copyAttributes(Organisation obj)

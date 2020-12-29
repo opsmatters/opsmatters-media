@@ -799,9 +799,12 @@ public class StringUtils
     public static List<String> toList(String str, String delimiter)
     {
         List<String> ret = new ArrayList<String>();
-        String[] tokens = str.split(delimiter);
-        for(String token : tokens)
-            ret.add(token.trim());
+        if(str != null && str.length() > 0)
+        {
+            String[] tokens = str.split(delimiter);
+            for(String token : tokens)
+                ret.add(token.trim());
+        }
         return ret;
     }
 
