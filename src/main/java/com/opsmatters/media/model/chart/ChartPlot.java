@@ -258,7 +258,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
             dataset = dataset.withFill(getFill().configure());
 
         // Provide an array if the attribute is indexable
-        if(type == ChartJsChartType.LINE || type == ChartJsChartType.SCATTER || type == ChartJsChartType.RADAR)
+        if(type == ChartJsChartType.LINE)
         {
             if(getBorderWidth() != null)
                 dataset = dataset.withBorderWidth(getBorderWidth());

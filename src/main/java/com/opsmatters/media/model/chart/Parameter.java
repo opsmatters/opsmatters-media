@@ -17,7 +17,7 @@
 package com.opsmatters.media.model.chart;
 
 /**
- * Represents the values of a parameter.
+ * Represents the names of a parameter.
  * 
  * @author Gerald Curley (opsmatters)
  */

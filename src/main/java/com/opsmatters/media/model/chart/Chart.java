@@ -19,6 +19,7 @@ package com.opsmatters.media.model.chart;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.LinkedHashMap;
 import java.io.Serializable;
 import nl.crashdata.chartjs.data.ChartJsChartType;
 import nl.crashdata.chartjs.data.ChartJsInteractionMode;
@@ -39,6 +40,7 @@ public class Chart<X extends Serializable, Y extends Serializable>
     public static final String X_AXIS = "x-axis";
     public static final String Y_AXIS = "y-axis";
     public static final String PLOTS = "plots";
+    public static final String SELECTIONS = "selections";
 
     private String code = "";
     private String title = "";
@@ -46,6 +48,7 @@ public class Chart<X extends Serializable, Y extends Serializable>
     private ChartXAxis<X> xAxis;
     private ChartYAxis<Y> yAxis;
     private List<ChartPlot<X,Y>> plots = new ArrayList<ChartPlot<X,Y>>();
+    private Map<Parameter,ChartSelection<?>> selections = new LinkedHashMap<Parameter,ChartSelection<?>>();
 
     /**
      * Default constructor.
@@ -77,6 +80,8 @@ public class Chart<X extends Serializable, Y extends Serializable>
             setYAxis(new ChartYAxis<Y>(obj.getYAxis()));
             for(ChartPlot<X,Y> plot : obj.getPlots())
                 addPlot(new ChartPlot<X,Y>(plot));
+            for(ChartSelection<?> selection : obj.getSelections().values())
+                addSelection(ChartSelectionFactory.newInstance(selection));
         }
     }
 
@@ -100,6 +105,13 @@ public class Chart<X extends Serializable, Y extends Serializable>
             List<Map<String,Object>> plots = (List<Map<String,Object>>)map.get(PLOTS);
             for(Map<String,Object> config : plots)
                 addPlot(new ChartPlot<X,Y>(getType(), (Map<String,Object>)config));
+        }
+
+        if(map.containsKey(SELECTIONS))
+        {
+            Map<String,Map<String,Object>> selections = (Map<String,Map<String,Object>>)map.get(SELECTIONS);
+            for(Map.Entry<String,Map<String,Object>> entry : selections.entrySet())
+                addSelection(ChartSelectionFactory.newInstance(entry.getKey(), (Map<String,Object>)entry.getValue()));
         }
     }
 
@@ -229,6 +241,62 @@ public class Chart<X extends Serializable, Y extends Serializable>
     public ChartPlot<X,Y> getPlot(int i)
     {
         return plots.get(i);
+    }
+
+    /**
+     * Adds a selection for the chart.
+     */
+    public Map<Parameter,ChartSelection<?>> getSelections()
+    {
+        return this.selections;
+    }
+
+    /**
+     * Adds a selection for the chart.
+     */
+    public void addSelection(ChartSelection<?> selection)
+    {
+        this.selections.put(selection.getParameter(), selection);
+    }
+
+    /**
+     * Returns the number of selections.
+     */
+    public int numSelections()
+    {
+        return selections.size();
+    }
+
+    /**
+     * Returns the selection for the given parameter.
+     */
+    public ChartSelection<?> getSelection(Parameter parameter)
+    {
+        return selections.get(parameter);
+    }
+
+    /**
+     * Returns the string selection for the given parameter.
+     */
+    public StringSelection getStringSelection(Parameter parameter)
+    {
+        return (StringSelection)getSelection(parameter);
+    }
+
+    /**
+     * Returns the LocalDate selection for the given parameter.
+     */
+    public LocalDateTimeSelection getLocalDateTimeSelection(Parameter parameter)
+    {
+        return (LocalDateTimeSelection)getSelection(parameter);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if there exists a selection for the given parameter.
+     */
+    public boolean hasSelection(Parameter parameter)
+    {
+        return selections.get(parameter) != null;
     }
 
     /**

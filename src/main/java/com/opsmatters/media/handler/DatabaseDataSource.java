@@ -168,6 +168,11 @@ public class DatabaseDataSource<X extends Serializable,Y extends Serializable> i
             long millis = rs.getTimestamp(idx, UTC).getTime();
             ret = LocalDate.ofInstant(Instant.ofEpochMilli(millis), ZoneOffset.UTC);
         }
+        else if(type == ParameterType.LOCAL_DATE_TIME)
+        {
+            long millis = rs.getTimestamp(idx, UTC).getTime();
+            ret = LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneOffset.UTC);
+        }
         else if(type == ParameterType.INTEGER)
         {
             ret = Integer.valueOf(rs.getInt(idx));

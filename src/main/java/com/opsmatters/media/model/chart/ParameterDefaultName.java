@@ -17,14 +17,17 @@
 package com.opsmatters.media.model.chart;
 
 /**
- * Represents the values of a parameter type.
+ * Represents the default value name of a parameter.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ParameterType
+public enum ParameterDefaultName
 {
-    LOCAL_DATE,
-    LOCAL_DATE_TIME,
-    STRING,
-    INTEGER;
+    START_OF_TODAY,
+    START_OF_TOMORROW,
+    START_OF_WEEK,
+    START_OF_MONTH,
+    LAST_7_DAYS,
+    LAST_14_DAYS,
+    LAST_30_DAYS;
 }
