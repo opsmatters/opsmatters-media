@@ -28,11 +28,11 @@ import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsConfigBuilder;
 import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsDatasetBuilder;
 
 /**
- * Represents a single plot on a chart.
+ * Represents a single dataset on a chart.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ChartPlot<X extends Serializable, Y extends Serializable>
+public class ChartDataset<X extends Serializable, Y extends Serializable>
 {
     public static final String LABEL = "label";
     public static final String TYPE = "type";
@@ -53,7 +53,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     /**
      * Default constructor.
      */
-    public ChartPlot(ChartJsChartType type)
+    public ChartDataset(ChartJsChartType type)
     {
         setType(type);
     }
@@ -61,7 +61,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     /**
      * Copy constructor.
      */
-    public ChartPlot(ChartPlot obj)
+    public ChartDataset(ChartDataset obj)
     {
         copyAttributes(obj);
     }
@@ -69,7 +69,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ChartPlot<X,Y> obj)
+    public void copyAttributes(ChartDataset<X,Y> obj)
     {
         if(obj != null)
         {
@@ -86,7 +86,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     /**
      * Reads the object from the given YAML Document.
      */
-    public ChartPlot(ChartJsChartType type, Map<String, Object> map)
+    public ChartDataset(ChartJsChartType type, Map<String, Object> map)
     {
         setType(type);
         if(map.containsKey(LABEL))
@@ -106,7 +106,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Returns the label for the plot.
+     * Returns the label for the dataset.
      */
     public String getLabel()
     {
@@ -114,7 +114,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Sets the label for the plot.
+     * Sets the label for the dataset.
      */
     public void setLabel(String label)
     {
@@ -122,7 +122,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Returns the type of the plot.
+     * Returns the type of the dataset.
      */
     public ChartJsChartType getType()
     {
@@ -130,7 +130,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Sets the type for the plot.
+     * Sets the type for the dataset.
      */
     public void setType(ChartJsChartType type)
     {
@@ -138,7 +138,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Sets the type for the plot.
+     * Sets the type for the dataset.
      */
     public void setType(String type)
     {
@@ -146,7 +146,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Returns the color for the plot border.
+     * Returns the color for the dataset border.
      */
     public ChartColor getBorderColor()
     {
@@ -154,7 +154,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Sets the color for the plot border.
+     * Sets the color for the dataset border.
      */
     public void setBorderColor(ChartColor borderColor)
     {
@@ -162,7 +162,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Sets the color for the plot border.
+     * Sets the color for the dataset border.
      */
     public void setBorderColor(String borderColor)
     {
@@ -170,7 +170,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Returns the width of the plot border.
+     * Returns the width of the dataset border.
      */
     public Integer getBorderWidth()
     {
@@ -178,7 +178,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Sets the width of the plot border.
+     * Sets the width of the dataset border.
      */
     public void setBorderWidth(Integer borderWidth)
     {
@@ -186,7 +186,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Returns the fill for the plot.
+     * Returns the fill for the dataset.
      */
     public ChartFill getFill()
     {
@@ -194,7 +194,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Sets the fill for the plot.
+     * Sets the fill for the dataset.
      */
     public void setFill(ChartFill fill)
     {
@@ -202,7 +202,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Returns the color for the plot background.
+     * Returns the color for the dataset background.
      */
     public ChartColor getBackgroundColor()
     {
@@ -210,7 +210,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Sets the color for the plot background.
+     * Sets the color for the dataset background.
      */
     public void setBackgroundColor(ChartColor backgroundColor)
     {
@@ -218,7 +218,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Sets the color for the plot background.
+     * Sets the color for the dataset background.
      */
     public void setBackgroundColor(String backgroundColor)
     {
@@ -226,7 +226,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Returns the source for the plot.
+     * Returns the source for the dataset.
      */
     public ChartSource getSource()
     {
@@ -234,7 +234,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Sets the source for the plot.
+     * Sets the source for the dataset.
      */
     public void setSource(ChartSource source)
     {
@@ -242,7 +242,7 @@ public class ChartPlot<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Configure the plot.
+     * Configure the dataset.
      */
     public void configure(SimpleChartJsConfigBuilder<SimpleChartJsXYDataPoint<X,Y>> config, Map<X,Y> points)
     {

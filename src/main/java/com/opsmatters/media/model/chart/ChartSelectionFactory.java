@@ -47,6 +47,8 @@ public class ChartSelectionFactory
     {
         if(parameter == Parameter.FROM_DATE || parameter == Parameter.TO_DATE)
             return new LocalDateTimeSelection(parameter);
+        else if(parameter == Parameter.ORGANISATIONS)
+            return new StringSelection(parameter, true);
         return new StringSelection(parameter);
     }
 

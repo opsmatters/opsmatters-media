@@ -26,11 +26,20 @@ import java.util.Map;
 public class StringSelection extends ChartSelection<String>
 {
     /**
-     * Default constructor.
+     * Constructor that takes a parameter.
      */
     public StringSelection(Parameter parameter)
     {
         setParameter(parameter);
+    }
+
+    /**
+     * Constructor that takes a parameter and boolean.
+     */
+    public StringSelection(Parameter parameter, boolean multiple)
+    {
+        this(parameter);
+        setMultiple(multiple);
     }
 
     /**

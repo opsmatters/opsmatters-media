@@ -23,7 +23,7 @@ import nl.crashdata.chartjs.data.simple.SimpleChartJsConfig;
 import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsConfigBuilder;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.model.chart.Chart;
-import com.opsmatters.media.model.chart.ChartPlot;
+import com.opsmatters.media.model.chart.ChartDataset;
 import com.opsmatters.media.model.chart.SourceType;
 import com.opsmatters.media.model.chart.Parameters;
 
@@ -115,18 +115,18 @@ public class ChartHandler<X extends Serializable, Y extends Serializable>
             if(config == null)
                 throw new IllegalArgumentException("invalid chart type: "+chart.getType());
 
-            for(ChartPlot<X,Y> plot : chart.getPlots())
+            for(ChartDataset<X,Y> dataset : chart.getDatasets())
             {
                 DataSource<X,Y> source = null;
-                if(plot.getSource() != null)
+                if(dataset.getSource() != null)
                 {
-                    if(plot.getSource().getType() == SourceType.DATABASE)
+                    if(dataset.getSource().getType() == SourceType.DATABASE)
                         source = new DatabaseDataSource<X,Y>(conn);
                 }
 
                 if(source != null)
-                    plot.configure(config,
-                        source.getDataPoints(plot.getSource(), getParameters()));
+                    dataset.configure(config,
+                        source.getDataPoints(dataset.getSource(), getParameters()));
             }
         }
     }

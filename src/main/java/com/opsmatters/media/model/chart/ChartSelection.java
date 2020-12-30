@@ -29,10 +29,12 @@ public abstract class ChartSelection<T extends Serializable>
     public static final String PARAMETER = "parameter";
     public static final String VALUE = "value";
     public static final String DEFAULT = "default";
+    public static final String MULTIPLE = "multiple";
 
     private Parameter parameter;
     private T value;
     private ParameterDefaultName defaultName;
+    private boolean multiple = false;
 
     /**
      * Default constructor.
@@ -59,6 +61,7 @@ public abstract class ChartSelection<T extends Serializable>
             setParameter(obj.getParameter());
             setValue(obj.getValue());
             setDefaultName(obj.getDefaultName());
+            setMultiple(obj.isMultiple());
         }
     }
 
@@ -81,6 +84,8 @@ public abstract class ChartSelection<T extends Serializable>
             setValue((T)map.get(VALUE));
         if(map.containsKey(DEFAULT))
             setDefaultName((String)map.get(DEFAULT));
+        if(map.containsKey(MULTIPLE))
+            setMultiple((Boolean)map.get(MULTIPLE));
     }
 
     /**
@@ -155,5 +160,21 @@ public abstract class ChartSelection<T extends Serializable>
     public void setDefaultName(String defaultName)
     {
         setDefaultName(ParameterDefaultName.valueOf(defaultName));
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the selection is list of items.
+     */
+    public boolean isMultiple()
+    {
+        return multiple;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the selection is list of items.
+     */
+    public void setMultiple(boolean multiple)
+    {
+        this.multiple = multiple;
     }
 }

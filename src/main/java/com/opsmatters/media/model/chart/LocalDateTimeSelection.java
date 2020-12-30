@@ -32,7 +32,7 @@ import static com.opsmatters.media.model.chart.ParameterDefaultName.*;
 public class LocalDateTimeSelection extends ChartSelection<LocalDateTime>
 {
     /**
-     * Default constructor.
+     * Constructor that takes a parameter.
      */
     public LocalDateTimeSelection(Parameter parameter)
     {

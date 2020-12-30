@@ -28,34 +28,34 @@ import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsConfigBuilder;
 import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsOptionsBuilder;
 
 /**
- * Represents a chart containing plots.
+ * Represents a chart containing datasets.
  * 
  * @author Gerald Curley (opsmatters)
  */
 public class Chart<X extends Serializable, Y extends Serializable>
 {
-    public static final String CODE = "code";
+    public static final String ID = "id";
     public static final String TITLE = "title";
     public static final String TYPE = "type";
     public static final String X_AXIS = "x-axis";
     public static final String Y_AXIS = "y-axis";
-    public static final String PLOTS = "plots";
+    public static final String DATASETS = "datasets";
     public static final String SELECTIONS = "selections";
 
-    private String code = "";
+    private String id = "";
     private String title = "";
     private ChartJsChartType type;
     private ChartXAxis<X> xAxis;
     private ChartYAxis<Y> yAxis;
-    private List<ChartPlot<X,Y>> plots = new ArrayList<ChartPlot<X,Y>>();
+    private List<ChartDataset<X,Y>> datasets = new ArrayList<ChartDataset<X,Y>>();
     private Map<Parameter,ChartSelection<?>> selections = new LinkedHashMap<Parameter,ChartSelection<?>>();
 
     /**
      * Default constructor.
      */
-    public Chart(String code)
+    public Chart(String id)
     {
-        setCode(code);
+        setId(id);
     }
 
     /**
@@ -73,13 +73,13 @@ public class Chart<X extends Serializable, Y extends Serializable>
     {
         if(obj != null)
         {
-            setCode(obj.getCode());
+            setId(obj.getId());
             setTitle(obj.getTitle());
             setType(obj.getType());
             setXAxis(new ChartXAxis<X>(obj.getXAxis()));
             setYAxis(new ChartYAxis<Y>(obj.getYAxis()));
-            for(ChartPlot<X,Y> plot : obj.getPlots())
-                addPlot(new ChartPlot<X,Y>(plot));
+            for(ChartDataset<X,Y> dataset : obj.getDatasets())
+                addDataset(new ChartDataset<X,Y>(dataset));
             for(ChartSelection<?> selection : obj.getSelections().values())
                 addSelection(ChartSelectionFactory.newInstance(selection));
         }
@@ -88,9 +88,10 @@ public class Chart<X extends Serializable, Y extends Serializable>
     /**
      * Reads the object from the given YAML Document.
      */
-    public Chart(String code, Map<String, Object> map)
+    public Chart(String id, Map<String, Object> map)
     {
-        this(code);
+        this(id);
+
         if(map.containsKey(TITLE))
             setTitle((String)map.get(TITLE));
         if(map.containsKey(TYPE))
@@ -100,11 +101,11 @@ public class Chart<X extends Serializable, Y extends Serializable>
         if(map.containsKey(Y_AXIS))
             setYAxis(new ChartYAxis<Y>((Map<String,Object>)map.get(Y_AXIS)));
 
-        if(map.containsKey(PLOTS))
+        if(map.containsKey(DATASETS))
         {
-            List<Map<String,Object>> plots = (List<Map<String,Object>>)map.get(PLOTS);
-            for(Map<String,Object> config : plots)
-                addPlot(new ChartPlot<X,Y>(getType(), (Map<String,Object>)config));
+            List<Map<String,Object>> datasets = (List<Map<String,Object>>)map.get(DATASETS);
+            for(Map<String,Object> config : datasets)
+                addDataset(new ChartDataset<X,Y>(getType(), (Map<String,Object>)config));
         }
 
         if(map.containsKey(SELECTIONS))
@@ -124,19 +125,19 @@ public class Chart<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Returns the code of the chart.
+     * Returns the id of the chart.
      */
-    public String getCode()
+    public String getId()
     {
-        return code;
+        return id;
     }
 
     /**
-     * Sets the code for the chart.
+     * Sets the id for the chart.
      */
-    public void setCode(String code)
+    public void setId(String id)
     {
-        this.code = code;
+        this.id = id;
     }
 
     /**
@@ -212,35 +213,35 @@ public class Chart<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Adds a plot to the plots for the chart.
+     * Adds a dataset to the datasets for the chart.
      */
-    public List<ChartPlot<X,Y>> getPlots()
+    public List<ChartDataset<X,Y>> getDatasets()
     {
-        return this.plots;
+        return this.datasets;
     }
 
     /**
-     * Adds a plot to the plots for the chart.
+     * Adds a dataset to the datasets for the chart.
      */
-    public void addPlot(ChartPlot<X,Y> plot)
+    public void addDataset(ChartDataset<X,Y> dataset)
     {
-        this.plots.add(plot);
+        this.datasets.add(dataset);
     }
 
     /**
-     * Returns the number of plots.
+     * Returns the number of datasets.
      */
-    public int numPlots()
+    public int numDatasets()
     {
-        return plots.size();
+        return datasets.size();
     }
 
     /**
-     * Returns the plot at the given index.
+     * Returns the dataset at the given index.
      */
-    public ChartPlot<X,Y> getPlot(int i)
+    public ChartDataset<X,Y> getDataset(int i)
     {
-        return plots.get(i);
+        return datasets.get(i);
     }
 
     /**

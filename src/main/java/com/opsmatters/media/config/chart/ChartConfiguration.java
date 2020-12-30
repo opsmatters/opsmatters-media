@@ -23,9 +23,10 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.config.YamlConfiguration;
 import com.opsmatters.media.model.chart.Chart;
+import com.opsmatters.media.model.chart.Widget;
 
 /**
- * Class that represents the configuration for charts.
+ * Class that represents the configuration for charts and widgets.
  * 
  * @author Gerald Curley (opsmatters)
  */
@@ -36,8 +37,10 @@ public class ChartConfiguration extends YamlConfiguration
     public static final String FILENAME = "charts.yml";
 
     public static final String CHARTS = "charts";
+    public static final String WIDGETS = "widgets";
 
     private List<Chart> charts = new ArrayList<Chart>();
+    private List<Widget> widgets = new ArrayList<Widget>();
 
     /**
      * Default constructor.
@@ -66,6 +69,8 @@ public class ChartConfiguration extends YamlConfiguration
             super.copyAttributes(obj);
             for(Chart chart : obj.getCharts())
                 addChart(new Chart(chart));
+            for(Widget widget : obj.getWidgets())
+                addWidget(new Widget(widget));
         }
     }
 
@@ -110,6 +115,46 @@ public class ChartConfiguration extends YamlConfiguration
     }
 
     /**
+     * Returns the widgets for this configuration.
+     */
+    public List<Widget> getWidgets()
+    {
+        return widgets;
+    }
+
+    /**
+     * Sets the widget for this configuration.
+     */
+    public void setWidgets(List<Widget> widgets)
+    {
+        this.widgets = widgets;
+    }
+
+    /**
+     * Adds a widget for this configuration.
+     */
+    public void addWidget(Widget widget)
+    {
+        this.widgets.add(widget);
+    }
+
+    /**
+     * Returns the number of widgets.
+     */
+    public int numWidgets()
+    {
+        return widgets.size();
+    }
+
+    /**
+     * Returns the widget at the given index.
+     */
+    public Widget getWidget(int i)
+    {
+        return widgets.get(i);
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     @Override
@@ -122,6 +167,16 @@ public class ChartConfiguration extends YamlConfiguration
             {
                 for(Map.Entry<String,Object> entry : config.entrySet())
                     addChart(new Chart(entry.getKey(), (Map<String,Object>)entry.getValue()));
+            }
+        }
+
+        if(map.containsKey(WIDGETS))
+        {
+            List<Map<String,Object>> widgets = (List<Map<String,Object>>)map.get(WIDGETS);
+            for(Map<String,Object> config : widgets)
+            {
+                for(Map.Entry<String,Object> entry : config.entrySet())
+                    addWidget(new Widget(entry.getKey(), (Map<String,Object>)entry.getValue()));
             }
         }
     }
