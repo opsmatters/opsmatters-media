@@ -16,12 +16,14 @@
 
 package com.opsmatters.media.model.chart;
 
+import java.io.Serializable;
+
 /**
  * Represents the names of a parameter.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum Parameter
+public enum Parameter implements Serializable
 {
     FROM_DATE,
     TO_DATE,

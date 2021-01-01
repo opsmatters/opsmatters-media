@@ -23,10 +23,10 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.config.YamlConfiguration;
 import com.opsmatters.media.model.chart.Chart;
-import com.opsmatters.media.model.chart.Widget;
+import com.opsmatters.media.model.chart.Dashboard;
 
 /**
- * Class that represents the configuration for charts and widgets.
+ * Class that represents the configuration for charts and dashboards.
  * 
  * @author Gerald Curley (opsmatters)
  */
@@ -37,10 +37,10 @@ public class ChartConfiguration extends YamlConfiguration
     public static final String FILENAME = "charts.yml";
 
     public static final String CHARTS = "charts";
-    public static final String WIDGETS = "widgets";
+    public static final String DASHBOARDS = "dashboards";
 
     private List<Chart> charts = new ArrayList<Chart>();
-    private List<Widget> widgets = new ArrayList<Widget>();
+    private List<Dashboard> dashboards = new ArrayList<Dashboard>();
 
     /**
      * Default constructor.
@@ -69,8 +69,8 @@ public class ChartConfiguration extends YamlConfiguration
             super.copyAttributes(obj);
             for(Chart chart : obj.getCharts())
                 addChart(new Chart(chart));
-            for(Widget widget : obj.getWidgets())
-                addWidget(new Widget(widget));
+            for(Dashboard dashboard : obj.getDashboards())
+                addDashboard(new Dashboard(dashboard));
         }
     }
 
@@ -115,43 +115,43 @@ public class ChartConfiguration extends YamlConfiguration
     }
 
     /**
-     * Returns the widgets for this configuration.
+     * Returns the dashboards for this configuration.
      */
-    public List<Widget> getWidgets()
+    public List<Dashboard> getDashboards()
     {
-        return widgets;
+        return dashboards;
     }
 
     /**
-     * Sets the widget for this configuration.
+     * Sets the dashboard for this configuration.
      */
-    public void setWidgets(List<Widget> widgets)
+    public void setDashboards(List<Dashboard> dashboards)
     {
-        this.widgets = widgets;
+        this.dashboards = dashboards;
     }
 
     /**
-     * Adds a widget for this configuration.
+     * Adds a dashboard for this configuration.
      */
-    public void addWidget(Widget widget)
+    public void addDashboard(Dashboard dashboard)
     {
-        this.widgets.add(widget);
+        this.dashboards.add(dashboard);
     }
 
     /**
-     * Returns the number of widgets.
+     * Returns the number of dashboards.
      */
-    public int numWidgets()
+    public int numDashboards()
     {
-        return widgets.size();
+        return dashboards.size();
     }
 
     /**
-     * Returns the widget at the given index.
+     * Returns the dashboard at the given index.
      */
-    public Widget getWidget(int i)
+    public Dashboard getDashboard(int i)
     {
-        return widgets.get(i);
+        return dashboards.get(i);
     }
 
     /**
@@ -170,13 +170,13 @@ public class ChartConfiguration extends YamlConfiguration
             }
         }
 
-        if(map.containsKey(WIDGETS))
+        if(map.containsKey(DASHBOARDS))
         {
-            List<Map<String,Object>> widgets = (List<Map<String,Object>>)map.get(WIDGETS);
-            for(Map<String,Object> config : widgets)
+            List<Map<String,Object>> dashboards = (List<Map<String,Object>>)map.get(DASHBOARDS);
+            for(Map<String,Object> config : dashboards)
             {
                 for(Map.Entry<String,Object> entry : config.entrySet())
-                    addWidget(new Widget(entry.getKey(), (Map<String,Object>)entry.getValue()));
+                    addDashboard(new Dashboard(entry.getKey(), (Map<String,Object>)entry.getValue()));
             }
         }
     }

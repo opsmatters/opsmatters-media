@@ -24,7 +24,7 @@ import java.io.Serializable;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ChartSelection<T extends Serializable>
+public abstract class ChartSelection<T extends Serializable> implements Serializable
 {
     public static final String PARAMETER = "parameter";
     public static final String VALUE = "value";

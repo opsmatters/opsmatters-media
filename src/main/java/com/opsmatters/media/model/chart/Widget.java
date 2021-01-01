@@ -18,6 +18,7 @@ package com.opsmatters.media.model.chart;
 
 import java.util.Map;
 import java.util.LinkedHashMap;
+import java.io.Serializable;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -25,14 +26,16 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Widget
+public class Widget implements Serializable
 {
     public static final String ID = "id";
     public static final String CHART_ID = "chart-id";
+    public static final String CSS_CLASS = "css-class";
     public static final String SELECTIONS = "selections";
 
     private String id = "";
     private String chartId = "";
+    private String cssClass = "";
     private Map<Parameter,ChartSelection<?>> selections = new LinkedHashMap<Parameter,ChartSelection<?>>();
 
     /**
@@ -60,6 +63,7 @@ public class Widget
         {
             setId(obj.getId());
             setChartId(obj.getChartId());
+            setCssClass(obj.getCssClass());
             for(ChartSelection<?> selection : obj.getSelections().values())
                 addSelection(ChartSelectionFactory.newInstance(selection));
         }
@@ -74,6 +78,8 @@ public class Widget
 
         if(map.containsKey(CHART_ID))
             setChartId((String)map.get(CHART_ID));
+        if(map.containsKey(CSS_CLASS))
+            setCssClass((String)map.get(CSS_CLASS));
 
         if(map.containsKey(SELECTIONS))
         {
@@ -121,6 +127,22 @@ public class Widget
     public void setChartId(String chartId)
     {
         this.chartId = chartId;
+    }
+
+    /**
+     * Returns the css classes for the widget.
+     */
+    public String getCssClass()
+    {
+        return cssClass;
+    }
+
+    /**
+     * Sets the css classes for the widget.
+     */
+    public void setCssClass(String cssClass)
+    {
+        this.cssClass = cssClass;
     }
 
     /**
