@@ -30,12 +30,16 @@ public class Widget implements Serializable
 {
     public static final String ID = "id";
     public static final String CHART_ID = "chart-id";
+    public static final String SHOW_TITLE = "show-title";
     public static final String CSS_CLASS = "css-class";
+    public static final String CSS_STYLE = "css-style";
     public static final String SELECTIONS = "selections";
 
     private String id = "";
+    private boolean showTitle = false;
     private String chartId = "";
     private String cssClass = "";
+    private String cssStyle = "";
     private Map<Parameter,ChartSelection<?>> selections = new LinkedHashMap<Parameter,ChartSelection<?>>();
 
     /**
@@ -63,7 +67,9 @@ public class Widget implements Serializable
         {
             setId(obj.getId());
             setChartId(obj.getChartId());
+            setShowTitle(obj.showTitle());
             setCssClass(obj.getCssClass());
+            setCssStyle(obj.getCssStyle());
             for(ChartSelection<?> selection : obj.getSelections().values())
                 addSelection(ChartSelectionFactory.newInstance(selection));
         }
@@ -78,8 +84,12 @@ public class Widget implements Serializable
 
         if(map.containsKey(CHART_ID))
             setChartId((String)map.get(CHART_ID));
+        if(map.containsKey(SHOW_TITLE))
+            setShowTitle((Boolean)map.get(SHOW_TITLE));
         if(map.containsKey(CSS_CLASS))
             setCssClass((String)map.get(CSS_CLASS));
+        if(map.containsKey(CSS_STYLE))
+            setCssStyle((String)map.get(CSS_STYLE));
 
         if(map.containsKey(SELECTIONS))
         {
@@ -138,6 +148,22 @@ public class Widget implements Serializable
     }
 
     /**
+     * Returns <CODE>true</CODE> if the title should be shown for the widget.
+     */
+    public boolean showTitle()
+    {
+        return showTitle;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the title should be shown for the widget.
+     */
+    public void setShowTitle(boolean showTitle)
+    {
+        this.showTitle = showTitle;
+    }
+
+    /**
      * Returns the css classes for the widget.
      */
     public String getCssClass()
@@ -151,6 +177,22 @@ public class Widget implements Serializable
     public void setCssClass(String cssClass)
     {
         this.cssClass = cssClass;
+    }
+
+    /**
+     * Returns the css styles for the widget.
+     */
+    public String getCssStyle()
+    {
+        return cssStyle;
+    }
+
+    /**
+     * Sets the css styles for the widget.
+     */
+    public void setCssStyle(String cssStyle)
+    {
+        this.cssStyle = cssStyle;
     }
 
     /**
