@@ -40,7 +40,7 @@ public class Widget implements Serializable
     private String chartId = "";
     private String cssClass = "";
     private String cssStyle = "";
-    private Map<Parameter,ChartSelection<?>> selections = new LinkedHashMap<Parameter,ChartSelection<?>>();
+    private Map<ParameterName,ChartSelection<?>> selections = new LinkedHashMap<ParameterName,ChartSelection<?>>();
 
     /**
      * Default constructor.
@@ -198,7 +198,7 @@ public class Widget implements Serializable
     /**
      * Adds a selection for the chart.
      */
-    public Map<Parameter,ChartSelection<?>> getSelections()
+    public Map<ParameterName,ChartSelection<?>> getSelections()
     {
         return this.selections;
     }
@@ -222,7 +222,7 @@ public class Widget implements Serializable
     /**
      * Returns the selection for the given parameter.
      */
-    public ChartSelection<?> getSelection(Parameter parameter)
+    public ChartSelection<?> getSelection(ParameterName parameter)
     {
         return selections.get(parameter);
     }
@@ -230,7 +230,7 @@ public class Widget implements Serializable
     /**
      * Returns the string selection for the given parameter.
      */
-    public StringSelection getStringSelection(Parameter parameter)
+    public StringSelection getStringSelection(ParameterName parameter)
     {
         return (StringSelection)getSelection(parameter);
     }
@@ -238,7 +238,7 @@ public class Widget implements Serializable
     /**
      * Returns the LocalDate selection for the given parameter.
      */
-    public LocalDateTimeSelection getLocalDateTimeSelection(Parameter parameter)
+    public LocalDateTimeSelection getLocalDateTimeSelection(ParameterName parameter)
     {
         return (LocalDateTimeSelection)getSelection(parameter);
     }
@@ -246,7 +246,7 @@ public class Widget implements Serializable
     /**
      * Returns <CODE>true</CODE> if there exists a selection for the given parameter.
      */
-    public boolean hasSelection(Parameter parameter)
+    public boolean hasSelection(ParameterName parameter)
     {
         return selections.get(parameter) != null;
     }

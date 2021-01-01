@@ -18,27 +18,27 @@ package com.opsmatters.media.model.admin;
 import com.opsmatters.media.model.BaseItem;
 
 /**
- * Class representing a parameter.
+ * Class representing an application parameter.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Parameter extends BaseItem
+public class AppParameter extends BaseItem
 {
-    private ParameterType type;
-    private ParameterName name;
+    private AppParameterType type;
+    private AppParameterName name;
     private String value = "";
 
     /**
      * Default constructor.
      */
-    public Parameter()
+    public AppParameter()
     {
     }
 
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(Parameter obj)
+    public void copyAttributes(AppParameter obj)
     {
         if(obj != null)
         {
@@ -60,7 +60,7 @@ public class Parameter extends BaseItem
     /**
      * Returns the type.
      */
-    public ParameterType getType()
+    public AppParameterType getType()
     {
         return type;
     }
@@ -68,7 +68,7 @@ public class Parameter extends BaseItem
     /**
      * Sets the type.
      */
-    public void setType(ParameterType type)
+    public void setType(AppParameterType type)
     {
         this.type = type;
     }
@@ -84,7 +84,7 @@ public class Parameter extends BaseItem
     /**
      * Returns the name.
      */
-    public ParameterName getName()
+    public AppParameterName getName()
     {
         return name;
     }
@@ -92,7 +92,7 @@ public class Parameter extends BaseItem
     /**
      * Sets the name.
      */
-    public void setName(ParameterName name)
+    public void setName(AppParameterName name)
     {
         this.name = name;
     }

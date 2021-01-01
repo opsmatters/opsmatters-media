@@ -19,17 +19,13 @@ package com.opsmatters.media.model.chart;
 import java.io.Serializable;
 
 /**
- * Represents the default value name of a parameter.
+ * Represents the names of a parameter.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ParameterDefaultName implements Serializable
+public enum ParameterName implements Serializable
 {
-    START_OF_TODAY,
-    START_OF_TOMORROW,
-    START_OF_WEEK,
-    START_OF_MONTH,
-    LAST_7_DAYS,
-    LAST_14_DAYS,
-    LAST_30_DAYS;
+    FROM_DATE,
+    TO_DATE,
+    ORGANISATIONS;
 }

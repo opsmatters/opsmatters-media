@@ -28,9 +28,11 @@ import java.io.Serializable;
  */
 public class Dashboard implements Serializable
 {
+    public static final String TITLE = "title";
     public static final String WIDGETS = "widgets";
 
     private String id = "";
+    private String title = "";
     private Map<String,Widget> widgets = new LinkedHashMap<String,Widget>();
 
     /**
@@ -57,6 +59,7 @@ public class Dashboard implements Serializable
         if(obj != null)
         {
             setId(obj.getId());
+            setTitle(obj.getTitle());
             for(Widget widget : obj.getWidgets().values())
                 addWidget(new Widget(widget));
         }
@@ -68,6 +71,9 @@ public class Dashboard implements Serializable
     public Dashboard(String id, Map<String, Object> map)
     {
         this(id);
+
+        if(map.containsKey(TITLE))
+            setTitle((String)map.get(TITLE));
 
         if(map.containsKey(WIDGETS))
         {
@@ -85,7 +91,7 @@ public class Dashboard implements Serializable
      */
     public String toString()
     {
-        return getId();
+        return getTitle();
     }
 
     /**
@@ -102,6 +108,22 @@ public class Dashboard implements Serializable
     public void setId(String id)
     {
         this.id = id;
+    }
+
+    /**
+     * Returns the title of the dashboard.
+     */
+    public String getTitle()
+    {
+        return title;
+    }
+
+    /**
+     * Sets the title for the dashboard.
+     */
+    public void setTitle(String title)
+    {
+        this.title = title;
     }
 
     /**

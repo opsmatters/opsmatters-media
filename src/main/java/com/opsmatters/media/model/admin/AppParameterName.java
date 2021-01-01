@@ -17,34 +17,48 @@
 package com.opsmatters.media.model.admin;
 
 /**
- * Represents the type of a parameter.
+ * Represents the name of an application parameter.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ParameterType
+public enum AppParameterName
 {
-    UI("ui"),
-    NEWSLETTER("newsletter"),
-    FEEDS("feeds"),
-    MONITOR_MANAGER("monitor-manager"),
-    POST_MANAGER("post-manager"),
-    EMAIL_MANAGER("email-manager"),
-    THREAD_MANAGER("thread-manager");
+    DRAFT_POST_INTERVAL("draft-post-interval"),
+    PREPARED_POST_INTERVAL("prepared-post-interval"),
+    DAY_OF_WEEK("day-of-week"),
+    HOUR_OF_DAY("hour-of-day"),
+    MAX_ITEMS("max-items"),
+    INIT_DELAY("init-delay"),
+    BATCH_DELAY("batch-delay"),
+    ITEM_DELAY("item-delay"),
+    STALLED_INTERVAL("stalled-interval"),
+    SCAN_INTERVAL("scan-interval"),
+    MIN_AGE("min-age"),
+    MAX_BATCH_SIZE("max-batch-size"),
+    MAX_ERRORS("max-errors"),
+    MAX_RESULTS("max-results"),
+    MAX_RETRIES("max-retries"),
+    MAX_PENDING("max-pending"),
+    MAX_OLD_PENDING("max-old-pending"),
+    SUB_LEASE("sub-lease"),
+    SUB_EXPIRY("sub-expiry"),
+    PUBLISHER("publisher"),
+    DIRECTOR("director");
 
     private String value;
 
     /**
-     * Constructor that takes the type value.
-     * @param value The value for the type
+     * Constructor that takes the name value.
+     * @param value The value for the name
      */
-    ParameterType(String value)
+    AppParameterName(String value)
     {
         this.value = value;
     }
 
     /**
-     * Returns the value of the type.
-     * @return The value of the type.
+     * Returns the value of the name.
+     * @return The value of the name.
      */
     public String toString()
     {
@@ -65,10 +79,10 @@ public enum ParameterType
      * @param value The type value
      * @return The type for the given value
      */
-    public static ParameterType fromValue(String value)
+    public static AppParameterName fromValue(String value)
     {
-        ParameterType[] types = values();
-        for(ParameterType type : types)
+        AppParameterName[] types = values();
+        for(AppParameterName type : types)
         {
             if(type.value().equals(value))
                 return type;

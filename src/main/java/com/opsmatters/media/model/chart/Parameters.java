@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Gerald Curley
+ * Copyright 2020 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.util.LinkedHashMap;
  *
  * @author Gerald Curley (opsmatters)
  */
-public class Parameters extends LinkedHashMap<Parameter,Object>
+public class Parameters extends LinkedHashMap<ParameterName,Object>
 {
     /**
      * Default constructor.
@@ -44,7 +44,7 @@ public class Parameters extends LinkedHashMap<Parameter,Object>
     /**
      * Copies all of the mappings from the specified map to this map (optional operation).
      */
-    public void putAll(Map<? extends Parameter,?> map)
+    public void putAll(Map<? extends ParameterName,?> map)
     {
         if(map != null)
             super.putAll(map);

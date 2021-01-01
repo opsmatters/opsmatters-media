@@ -20,45 +20,45 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.Instant;
-import com.opsmatters.media.model.admin.Parameter;
-import com.opsmatters.media.model.admin.ParameterType;
-import com.opsmatters.media.model.admin.ParameterName;
+import com.opsmatters.media.model.admin.AppParameter;
+import com.opsmatters.media.model.admin.AppParameterType;
+import com.opsmatters.media.model.admin.AppParameterName;
 
 /**
  * Class representing the set of parameters.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Parameters extends LinkedHashMap<ParameterType,Map>
+public class AppParameters extends LinkedHashMap<AppParameterType,Map>
 {
-    private static Map<ParameterType,Map<ParameterName,Parameter>> types = new LinkedHashMap<ParameterType,Map<ParameterName,Parameter>>();
+    private static Map<AppParameterType,Map<AppParameterName,AppParameter>> types = new LinkedHashMap<AppParameterType,Map<AppParameterName,AppParameter>>();
 
     /**
      * Private constructor.
      */
-    private Parameters()
+    private AppParameters()
     {
     }
 
     /**
      * Loads the set of parameters.
      */
-    public static void load(List<Parameter> parameters)
+    public static void load(List<AppParameter> parameters)
     {
         types.clear();
-        for(Parameter parameter : parameters)
+        for(AppParameter parameter : parameters)
             add(parameter);
     }
 
     /**
      * Adds the given parameter.
      */
-    private static void add(Parameter parameter)
+    private static void add(AppParameter parameter)
     {
-        Map<ParameterName,Parameter> map = types.get(parameter.getType());
+        Map<AppParameterName,AppParameter> map = types.get(parameter.getType());
         if(map == null)
         {
-            map = new LinkedHashMap<ParameterName,Parameter>();
+            map = new LinkedHashMap<AppParameterName,AppParameter>();
             types.put(parameter.getType(), map);
         }
 
@@ -68,10 +68,10 @@ public class Parameters extends LinkedHashMap<ParameterType,Map>
     /**
      * Returns the list of parameters with the given type.
      */
-    public static List<Parameter> get(ParameterType type)
+    public static List<AppParameter> get(AppParameterType type)
     {
-        List<Parameter> ret = new ArrayList<Parameter>();
-        Map<ParameterName,Parameter> map = types.get(type);
+        List<AppParameter> ret = new ArrayList<AppParameter>();
+        Map<AppParameterName,AppParameter> map = types.get(type);
         if(map != null)
             ret.addAll(map.values());
         return ret;
@@ -80,10 +80,10 @@ public class Parameters extends LinkedHashMap<ParameterType,Map>
     /**
      * Returns the parameter with the given type and name.
      */
-    public static Parameter get(ParameterType type, ParameterName name)
+    public static AppParameter get(AppParameterType type, AppParameterName name)
     {
-        Parameter ret = null;
-        Map<ParameterName,Parameter> map = types.get(type);
+        AppParameter ret = null;
+        Map<AppParameterName,AppParameter> map = types.get(type);
         if(map != null)
             ret = map.get(name);
         return ret;
@@ -92,9 +92,9 @@ public class Parameters extends LinkedHashMap<ParameterType,Map>
     /**
      * Sets the parameter with the given type and name to the given value.
      */
-    public static void put(ParameterType type, ParameterName name, String value)
+    public static void put(AppParameterType type, AppParameterName name, String value)
     {
-        Parameter parameter = get(type, name);
+        AppParameter parameter = get(type, name);
         if(parameter == null)
             throw new IllegalStateException("parameter does not exist");
         parameter.setUpdatedDate(Instant.now());
@@ -104,7 +104,7 @@ public class Parameters extends LinkedHashMap<ParameterType,Map>
     /**
      * Sets the parameter with the given type and name to the given value.
      */
-    public static void put(ParameterType type, ParameterName name, int value)
+    public static void put(AppParameterType type, AppParameterName name, int value)
     {
         put(type, name, Integer.toString(value));
     }

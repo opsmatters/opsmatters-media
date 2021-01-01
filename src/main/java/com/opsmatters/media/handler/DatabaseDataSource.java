@@ -34,9 +34,11 @@ import java.sql.ResultSet;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.model.chart.SourceType;
 import com.opsmatters.media.model.chart.ChartSource;
-import com.opsmatters.media.model.chart.Parameter;
+import com.opsmatters.media.model.chart.ParameterName;
 import com.opsmatters.media.model.chart.Parameters;
 import com.opsmatters.media.model.chart.ParameterType;
+
+import static com.opsmatters.media.model.chart.ParameterType.*;
 
 /**
  * Represents a chart data source.
@@ -87,7 +89,7 @@ public class DatabaseDataSource<X extends Serializable,Y extends Serializable> i
                 // Replace the configured parameters in the query
                 int idx = 1;
                 String sql = source.getQuery();
-                for(Parameter parameter : source.getParameters())
+                for(ParameterName parameter : source.getParameters())
                 {
                     Object obj = parameters.get(parameter);
                     if(obj != null)
@@ -161,23 +163,28 @@ public class DatabaseDataSource<X extends Serializable,Y extends Serializable> i
      */
     private Object getResult(int idx, ParameterType type, ResultSet rs) throws SQLException
     {
-        Object ret = null;
+        switch(type)
+        {
+            case LOCAL_DATE:
+            {
+                long millis = rs.getTimestamp(idx, UTC).getTime();
+                return LocalDate.ofInstant(Instant.ofEpochMilli(millis), ZoneOffset.UTC);
+            }
+            case LOCAL_DATE_TIME:
+            {
+                long millis = rs.getTimestamp(idx, UTC).getTime();
+                return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneOffset.UTC);
+            }
+            case STRING:
+            {
+                return rs.getString(idx);
+            }
+            case INTEGER:
+            {
+                return Integer.valueOf(rs.getInt(idx));
+            }
+        }
 
-        if(type == ParameterType.LOCAL_DATE)
-        {
-            long millis = rs.getTimestamp(idx, UTC).getTime();
-            ret = LocalDate.ofInstant(Instant.ofEpochMilli(millis), ZoneOffset.UTC);
-        }
-        else if(type == ParameterType.LOCAL_DATE_TIME)
-        {
-            long millis = rs.getTimestamp(idx, UTC).getTime();
-            ret = LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneOffset.UTC);
-        }
-        else if(type == ParameterType.INTEGER)
-        {
-            ret = Integer.valueOf(rs.getInt(idx));
-        }
-
-        return ret;
+        return null;
     }
 }
