@@ -114,6 +114,14 @@ public class Widget implements Serializable
     }
 
     /**
+     * Returns the markup id of the widget.
+     */
+    public String getMarkupId()
+    {
+        return getId().toLowerCase();
+    }
+
+    /**
      * Returns the id of the chart.
      */
     public String getChartId()
