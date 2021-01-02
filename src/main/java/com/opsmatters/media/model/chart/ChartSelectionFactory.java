@@ -17,7 +17,7 @@
 package com.opsmatters.media.model.chart;
 
 import java.util.Map;
-import static com.opsmatters.media.model.chart.ParameterName.*;
+import static com.opsmatters.media.model.chart.ChartParameterName.*;
 
 /**
  * Creates a selection for a chart.
@@ -38,13 +38,13 @@ public class ChartSelectionFactory
      */
     public static ChartSelection newInstance(String parameter)
     {
-        return newInstance(ParameterName.valueOf(parameter));
+        return newInstance(ChartParameterName.valueOf(parameter));
     }
 
     /**
      * Create a new selection.
      */
-    public static ChartSelection newInstance(ParameterName parameter)
+    public static ChartSelection newInstance(ChartParameterName parameter)
     {
         if(parameter == FROM_DATE || parameter == TO_DATE)
             return new LocalDateTimeSelection(parameter);

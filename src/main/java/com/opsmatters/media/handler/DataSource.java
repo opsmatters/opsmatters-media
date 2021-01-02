@@ -20,7 +20,7 @@ import java.util.Map;
 import java.io.Serializable;
 import com.opsmatters.media.model.chart.SourceType;
 import com.opsmatters.media.model.chart.ChartSource;
-import com.opsmatters.media.model.chart.Parameters;
+import com.opsmatters.media.model.chart.ChartParameters;
 
 /**
  * Represents a chart data source.
@@ -37,5 +37,5 @@ public interface DataSource<X extends Serializable,Y extends Serializable>
     /**
      * Returns the data from the plot.
      */
-    public Map<X,Y> getDataPoints(ChartSource source, Parameters parameters) throws Exception;
+    public Map<X,Y> getDataPoints(ChartSource source, ChartParameters parameters) throws Exception;
 }

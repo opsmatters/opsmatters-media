@@ -25,7 +25,7 @@ import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.model.chart.Chart;
 import com.opsmatters.media.model.chart.ChartDataset;
 import com.opsmatters.media.model.chart.SourceType;
-import com.opsmatters.media.model.chart.Parameters;
+import com.opsmatters.media.model.chart.ChartParameters;
 
 /**
  * Handler to create chart config for ChartJS.
@@ -38,7 +38,7 @@ public class ChartHandler<X extends Serializable, Y extends Serializable>
 
     private Chart<X,Y> chart;
     private JDBCDatabaseConnection conn;
-    private Parameters parameters = null;
+    private ChartParameters parameters = null;
     private SimpleChartJsConfigBuilder<SimpleChartJsXYDataPoint<X,Y>> config = null;
 
     /**
@@ -83,7 +83,7 @@ public class ChartHandler<X extends Serializable, Y extends Serializable>
     /**
      * Returns the parameters for the handler.
      */
-    public Parameters getParameters() 
+    public ChartParameters getParameters() 
     {
         return parameters;
     }
@@ -91,7 +91,7 @@ public class ChartHandler<X extends Serializable, Y extends Serializable>
     /**
      * Sets the parameters for the handler.
      */
-    public void setParameters(Parameters parameters) 
+    public void setParameters(ChartParameters parameters) 
     {
         this.parameters = parameters;
     }
@@ -174,7 +174,7 @@ public class ChartHandler<X extends Serializable, Y extends Serializable>
          * @param parameters The parameters
          * @return This object
          */
-        public Builder withParameters(Parameters parameters)
+        public Builder withParameters(ChartParameters parameters)
         {
             handler.setParameters(parameters);
             return this;

@@ -30,9 +30,9 @@ public abstract class ChartSelection<T extends Serializable> implements Serializ
     public static final String DEFAULT = "default";
     public static final String MULTIPLE = "multiple";
 
-    private ParameterName parameter;
+    private ChartParameterName parameter;
     private T value;
-    private ParameterValue defaultValue;
+    private ChartParameterValue defaultValue;
     private boolean multiple = false;
 
     /**
@@ -88,7 +88,7 @@ public abstract class ChartSelection<T extends Serializable> implements Serializ
     /**
      * Returns the parameter type for the selection.
      */
-    public abstract ParameterType getType();
+    public abstract ChartParameterType getType();
 
     /**
      * Returns the parameter value for the selection.
@@ -98,7 +98,7 @@ public abstract class ChartSelection<T extends Serializable> implements Serializ
     /**
      * Returns the parameter for the selection.
      */
-    public ParameterName getParameter()
+    public ChartParameterName getParameter()
     {
         return parameter;
     }
@@ -106,7 +106,7 @@ public abstract class ChartSelection<T extends Serializable> implements Serializ
     /**
      * Sets the parameter for the selection.
      */
-    public void setParameter(ParameterName parameter)
+    public void setParameter(ChartParameterName parameter)
     {
         this.parameter = parameter;
     }
@@ -116,7 +116,7 @@ public abstract class ChartSelection<T extends Serializable> implements Serializ
      */
     public void setParameter(String parameter)
     {
-        setParameter(ParameterName.valueOf(parameter));
+        setParameter(ChartParameterName.valueOf(parameter));
     }
 
     /**
@@ -138,7 +138,7 @@ public abstract class ChartSelection<T extends Serializable> implements Serializ
     /**
      * Returns the default default value for the selection.
      */
-    public ParameterValue getDefaultValue()
+    public ChartParameterValue getDefaultValue()
     {
         return defaultValue;
     }
@@ -146,7 +146,7 @@ public abstract class ChartSelection<T extends Serializable> implements Serializ
     /**
      * Sets the parameter default value for the selection.
      */
-    public void setDefaultValue(ParameterValue defaultValue)
+    public void setDefaultValue(ChartParameterValue defaultValue)
     {
         this.defaultValue = defaultValue;
     }
@@ -156,7 +156,7 @@ public abstract class ChartSelection<T extends Serializable> implements Serializ
      */
     public void setDefaultValue(String defaultValue)
     {
-        setDefaultValue(ParameterValue.valueOf(defaultValue));
+        setDefaultValue(ChartParameterValue.valueOf(defaultValue));
     }
 
     /**

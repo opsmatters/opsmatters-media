@@ -16,37 +16,20 @@
 
 package com.opsmatters.media.model.chart;
 
-import java.util.Map;
-import java.util.LinkedHashMap;
+import java.io.Serializable;
 
 /**
- * Contains a list of chart parameters.
- *
+ * Represents the name of a default value for a parameter.
+ * 
  * @author Gerald Curley (opsmatters)
  */
-public class Parameters extends LinkedHashMap<ParameterName,Object>
+public enum ChartParameterValue implements Serializable
 {
-    /**
-     * Default constructor.
-     */
-    public Parameters()
-    {
-    }
-
-    /**
-     * Copy constructor.
-     */
-    public Parameters(Parameters parameters)
-    {
-        putAll(parameters);
-    }
-
-    /**
-     * Copies all of the mappings from the specified map to this map (optional operation).
-     */
-    public void putAll(Map<? extends ParameterName,?> map)
-    {
-        if(map != null)
-            super.putAll(map);
-    }
+    START_OF_TODAY,
+    START_OF_TOMORROW,
+    START_OF_WEEK,
+    START_OF_MONTH,
+    LAST_7_DAYS,
+    LAST_14_DAYS,
+    LAST_30_DAYS;
 }

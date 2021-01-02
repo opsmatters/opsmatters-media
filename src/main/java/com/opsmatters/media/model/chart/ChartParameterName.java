@@ -16,15 +16,16 @@
 
 package com.opsmatters.media.model.chart;
 
+import java.io.Serializable;
+
 /**
- * Represents the values of a parameter type.
+ * Represents the names of a chart parameter.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ParameterType
+public enum ChartParameterName implements Serializable
 {
-    LOCAL_DATE,
-    LOCAL_DATE_TIME,
-    STRING,
-    INTEGER;
+    FROM_DATE,
+    TO_DATE,
+    ORGANISATIONS;
 }

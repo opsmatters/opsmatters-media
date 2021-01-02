@@ -34,11 +34,11 @@ import java.sql.ResultSet;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.model.chart.SourceType;
 import com.opsmatters.media.model.chart.ChartSource;
-import com.opsmatters.media.model.chart.ParameterName;
-import com.opsmatters.media.model.chart.Parameters;
-import com.opsmatters.media.model.chart.ParameterType;
+import com.opsmatters.media.model.chart.ChartParameterName;
+import com.opsmatters.media.model.chart.ChartParameters;
+import com.opsmatters.media.model.chart.ChartParameterType;
 
-import static com.opsmatters.media.model.chart.ParameterType.*;
+import static com.opsmatters.media.model.chart.ChartParameterType.*;
 
 /**
  * Represents a chart data source.
@@ -75,12 +75,12 @@ public class DatabaseDataSource<X extends Serializable,Y extends Serializable> i
      * Returns the data from the plot.
      */
     @Override
-    public Map<X,Y> getDataPoints(ChartSource source, Parameters parameters) throws Exception
+    public Map<X,Y> getDataPoints(ChartSource source, ChartParameters parameters) throws Exception
     {
         ResultSet rs = null;
         PreparedStatement statement = null;
         Map<X,Y> ret = null;
-        List<ParameterType> types = source.getResultTypes();
+        List<ChartParameterType> types = source.getResultTypes();
 
         try
         {
@@ -89,7 +89,7 @@ public class DatabaseDataSource<X extends Serializable,Y extends Serializable> i
                 // Replace the configured parameters in the query
                 int idx = 1;
                 String sql = source.getQuery();
-                for(ParameterName parameter : source.getParameters())
+                for(ChartParameterName parameter : source.getParameters())
                 {
                     Object obj = parameters.get(parameter);
                     if(obj != null)
@@ -161,7 +161,7 @@ public class DatabaseDataSource<X extends Serializable,Y extends Serializable> i
     /**
      * Returns the result from the query for the given index.
      */
-    private Object getResult(int idx, ParameterType type, ResultSet rs) throws SQLException
+    private Object getResult(int idx, ChartParameterType type, ResultSet rs) throws SQLException
     {
         switch(type)
         {

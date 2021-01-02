@@ -48,7 +48,7 @@ public class Chart<X extends Serializable, Y extends Serializable>
     private ChartXAxis<X> xAxis;
     private ChartYAxis<Y> yAxis;
     private List<ChartDataset<X,Y>> datasets = new ArrayList<ChartDataset<X,Y>>();
-    private Map<ParameterName,ChartSelection<?>> selections = new LinkedHashMap<ParameterName,ChartSelection<?>>();
+    private Map<ChartParameterName,ChartSelection<?>> selections = new LinkedHashMap<ChartParameterName,ChartSelection<?>>();
 
     /**
      * Default constructor.
@@ -247,7 +247,7 @@ public class Chart<X extends Serializable, Y extends Serializable>
     /**
      * Adds a selection for the chart.
      */
-    public Map<ParameterName,ChartSelection<?>> getSelections()
+    public Map<ChartParameterName,ChartSelection<?>> getSelections()
     {
         return this.selections;
     }
@@ -271,7 +271,7 @@ public class Chart<X extends Serializable, Y extends Serializable>
     /**
      * Returns the selection for the given parameter.
      */
-    public ChartSelection<?> getSelection(ParameterName parameter)
+    public ChartSelection<?> getSelection(ChartParameterName parameter)
     {
         return selections.get(parameter);
     }
@@ -279,7 +279,7 @@ public class Chart<X extends Serializable, Y extends Serializable>
     /**
      * Returns the string selection for the given parameter.
      */
-    public StringSelection getStringSelection(ParameterName parameter)
+    public StringSelection getStringSelection(ChartParameterName parameter)
     {
         return (StringSelection)getSelection(parameter);
     }
@@ -287,7 +287,7 @@ public class Chart<X extends Serializable, Y extends Serializable>
     /**
      * Returns the LocalDate selection for the given parameter.
      */
-    public LocalDateTimeSelection getLocalDateTimeSelection(ParameterName parameter)
+    public LocalDateTimeSelection getLocalDateTimeSelection(ChartParameterName parameter)
     {
         return (LocalDateTimeSelection)getSelection(parameter);
     }
@@ -295,7 +295,7 @@ public class Chart<X extends Serializable, Y extends Serializable>
     /**
      * Returns <CODE>true</CODE> if there exists a selection for the given parameter.
      */
-    public boolean hasSelection(ParameterName parameter)
+    public boolean hasSelection(ChartParameterName parameter)
     {
         return selections.get(parameter) != null;
     }

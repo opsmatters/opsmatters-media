@@ -22,7 +22,7 @@ import java.time.DayOfWeek;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 
-import static com.opsmatters.media.model.chart.ParameterValue.*;
+import static com.opsmatters.media.model.chart.ChartParameterValue.*;
 
 /**
  * Represents a LocalDateTime selection for a chart.
@@ -34,7 +34,7 @@ public class LocalDateTimeSelection extends ChartSelection<LocalDateTime>
     /**
      * Constructor that takes a parameter.
      */
-    public LocalDateTimeSelection(ParameterName parameter)
+    public LocalDateTimeSelection(ChartParameterName parameter)
     {
         setParameter(parameter);
     }
@@ -50,7 +50,7 @@ public class LocalDateTimeSelection extends ChartSelection<LocalDateTime>
     /**
      * Reads the object from the given YAML Document.
      */
-    public LocalDateTimeSelection(ParameterName parameter, Map<String, Object> map)
+    public LocalDateTimeSelection(ChartParameterName parameter, Map<String, Object> map)
     {
         super(map);
         setParameter(parameter);
@@ -59,9 +59,9 @@ public class LocalDateTimeSelection extends ChartSelection<LocalDateTime>
     /**
      * Returns the parameter type for the selection.
      */
-    public ParameterType getType()
+    public ChartParameterType getType()
     {
-        return ParameterType.LOCAL_DATE_TIME;
+        return ChartParameterType.LOCAL_DATE_TIME;
     }
 
     /**
