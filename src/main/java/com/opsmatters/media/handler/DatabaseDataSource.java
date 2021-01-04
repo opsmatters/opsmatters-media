@@ -16,9 +16,8 @@
 
 package com.opsmatters.media.handler;
 
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.logging.Logger;
@@ -31,21 +30,22 @@ import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
+import nl.crashdata.chartjs.data.simple.SimpleChartJsXYDataPoint;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.model.chart.SourceType;
 import com.opsmatters.media.model.chart.ChartSource;
-import com.opsmatters.media.model.chart.ChartParameterName;
+import com.opsmatters.media.model.chart.ChartParameter;
 import com.opsmatters.media.model.chart.ChartParameters;
 import com.opsmatters.media.model.chart.ChartParameterType;
 
 import static com.opsmatters.media.model.chart.ChartParameterType.*;
 
 /**
- * Represents a chart data source.
+ * Represents a chart data source from a database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class DatabaseDataSource<X extends Serializable,Y extends Serializable> implements DataSource<X,Y>
+public class DatabaseDataSource<E extends Serializable> implements DataSource<E>
 {
     private static final Logger logger = Logger.getLogger(DatabaseDataSource.class.getName());
 
@@ -75,11 +75,11 @@ public class DatabaseDataSource<X extends Serializable,Y extends Serializable> i
      * Returns the data from the plot.
      */
     @Override
-    public Map<X,Y> getDataPoints(ChartSource source, ChartParameters parameters) throws Exception
+    public List<E> getDataPoints(ChartSource source, ChartParameters parameters) throws Exception
     {
         ResultSet rs = null;
         PreparedStatement statement = null;
-        Map<X,Y> ret = null;
+        List<E> ret = null;
         List<ChartParameterType> types = source.getResultTypes();
 
         try
@@ -89,7 +89,7 @@ public class DatabaseDataSource<X extends Serializable,Y extends Serializable> i
                 // Replace the configured parameters in the query
                 int idx = 1;
                 String sql = source.getQuery();
-                for(ChartParameterName parameter : source.getParameters())
+                for(ChartParameter parameter : source.getParameters())
                 {
                     Object obj = parameters.get(parameter);
                     if(obj != null)
@@ -136,9 +136,20 @@ public class DatabaseDataSource<X extends Serializable,Y extends Serializable> i
                 statement = conn.getConnection().prepareStatement(sql);
                 statement.setQueryTimeout(QUERY_TIMEOUT);
                 rs = statement.executeQuery();
-                ret = new TreeMap<X,Y>();
+                ret = new ArrayList<E>();
                 while(rs.next())
-                    ret.put((X)getResult(1, types.get(0), rs), (Y)getResult(2, types.get(1), rs));
+                {
+                    if(types.size() == 2) // X,Y co-ordinates
+                    {
+                        Serializable x = getResult(1, types.get(0), rs);
+                        Serializable y = getResult(2, types.get(1), rs);
+                        ret.add((E)new SimpleChartJsXYDataPoint(x, y));
+                    }
+                    else // Single number value
+                    {
+                        ret.add((E)getResult(1, types.get(0), rs));
+                    }
+                }
             }
         }
         finally
@@ -161,7 +172,7 @@ public class DatabaseDataSource<X extends Serializable,Y extends Serializable> i
     /**
      * Returns the result from the query for the given index.
      */
-    private Object getResult(int idx, ChartParameterType type, ResultSet rs) throws SQLException
+    private Serializable getResult(int idx, ChartParameterType type, ResultSet rs) throws SQLException
     {
         switch(type)
         {

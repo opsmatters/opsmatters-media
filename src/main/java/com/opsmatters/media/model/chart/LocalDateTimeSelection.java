@@ -34,7 +34,7 @@ public class LocalDateTimeSelection extends ChartSelection<LocalDateTime>
     /**
      * Constructor that takes a parameter.
      */
-    public LocalDateTimeSelection(ChartParameterName parameter)
+    public LocalDateTimeSelection(ChartParameter parameter)
     {
         setParameter(parameter);
     }
@@ -50,7 +50,7 @@ public class LocalDateTimeSelection extends ChartSelection<LocalDateTime>
     /**
      * Reads the object from the given YAML Document.
      */
-    public LocalDateTimeSelection(ChartParameterName parameter, Map<String, Object> map)
+    public LocalDateTimeSelection(ChartParameter parameter, Map<String, Object> map)
     {
         super(map);
         setParameter(parameter);
@@ -86,6 +86,12 @@ public class LocalDateTimeSelection extends ChartSelection<LocalDateTime>
                 return LocalDateTime.now().minus(14, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS);
             case LAST_30_DAYS:
                 return LocalDateTime.now().minus(30, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS);
+            case LAST_1_MONTH:
+                return LocalDateTime.now().minus(1, ChronoUnit.MONTHS).truncatedTo(ChronoUnit.DAYS);
+            case LAST_2_MONTHS:
+                return LocalDateTime.now().minus(2, ChronoUnit.MONTHS).truncatedTo(ChronoUnit.DAYS);
+            case LAST_3_MONTHS:
+                return LocalDateTime.now().minus(3, ChronoUnit.MONTHS).truncatedTo(ChronoUnit.DAYS);
             default:
                 return getValue();
         }

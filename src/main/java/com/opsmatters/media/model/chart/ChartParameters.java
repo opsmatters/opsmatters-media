@@ -24,7 +24,7 @@ import java.util.LinkedHashMap;
  *
  * @author Gerald Curley (opsmatters)
  */
-public class ChartParameters extends LinkedHashMap<ChartParameterName,Object>
+public class ChartParameters extends LinkedHashMap<ChartParameter,Object>
 {
     /**
      * Default constructor.
@@ -44,7 +44,7 @@ public class ChartParameters extends LinkedHashMap<ChartParameterName,Object>
     /**
      * Copies all of the mappings from the specified map to this map (optional operation).
      */
-    public void putAll(Map<? extends ChartParameterName,?> map)
+    public void putAll(Map<? extends ChartParameter,?> map)
     {
         if(map != null)
             super.putAll(map);

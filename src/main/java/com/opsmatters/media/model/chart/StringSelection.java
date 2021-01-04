@@ -28,7 +28,7 @@ public class StringSelection extends ChartSelection<String>
     /**
      * Constructor that takes a parameter.
      */
-    public StringSelection(ChartParameterName parameter)
+    public StringSelection(ChartParameter parameter)
     {
         setParameter(parameter);
     }
@@ -36,7 +36,7 @@ public class StringSelection extends ChartSelection<String>
     /**
      * Constructor that takes a parameter and boolean.
      */
-    public StringSelection(ChartParameterName parameter, boolean multiple)
+    public StringSelection(ChartParameter parameter, boolean multiple)
     {
         this(parameter);
         setMultiple(multiple);
@@ -53,7 +53,7 @@ public class StringSelection extends ChartSelection<String>
     /**
      * Reads the object from the given YAML Document.
      */
-    public StringSelection(ChartParameterName parameter, Map<String, Object> map)
+    public StringSelection(ChartParameter parameter, Map<String, Object> map)
     {
         super(map);
         setParameter(parameter);

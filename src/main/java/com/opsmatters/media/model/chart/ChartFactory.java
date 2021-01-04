@@ -17,56 +17,58 @@
 package com.opsmatters.media.model.chart;
 
 import java.util.Map;
-import static com.opsmatters.media.model.chart.ChartParameter.*;
+import nl.crashdata.chartjs.data.ChartJsChartType;
+
+import static nl.crashdata.chartjs.data.ChartJsChartType.*;
 
 /**
- * Creates a selection for a chart.
+ * Creates a chart of the given types.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ChartSelectionFactory
+public class ChartFactory
 {
     /**
      * Private constructor.
      */
-    private ChartSelectionFactory()
+    private ChartFactory()
     {
     }
 
     /**
-     * Create a new selection.
+     * Creates a new chart.
      */
-    public static ChartSelection newInstance(String parameter)
+    public static Chart newInstance(String type, String id)
     {
-        return newInstance(ChartParameter.valueOf(parameter));
+        return newInstance(ChartJsChartType.valueOf(type), id);
     }
 
     /**
-     * Create a new selection.
+     * Creates a new chart.
      */
-    public static ChartSelection newInstance(ChartParameter parameter)
+    public static Chart newInstance(ChartJsChartType type, String id)
     {
-        if(parameter == FROM_DATE || parameter == TO_DATE)
-            return new LocalDateTimeSelection(parameter);
-        return new StringSelection(parameter, parameter.multiple());
+        if(type == PIE || type == DOUGHNUT || type == RADAR || type == POLAR_AREA)
+            return new RadialChart(id);
+        return new CartesianChart(id);
     }
 
     /**
      * Copy constructor.
      */
-    public static ChartSelection newInstance(ChartSelection<?> selection)
+    public static Chart newInstance(Chart chart)
     {
-        ChartSelection ret = newInstance(selection.getParameter());
-        ret.copyAttributes(selection);
+        Chart ret = newInstance(chart.getType(), chart.getId());
+        ret.copyAttributes(chart);
         return ret;
     }
 
     /**
      * Reads the object from the given YAML Document.
      */
-    public static ChartSelection newInstance(String parameter, Map<String,Object> map)
+    public static Chart newInstance(String id, Map<String,Object> map)
     {
-        ChartSelection ret = newInstance(parameter);
+        Chart ret = newInstance((String)map.get(Chart.TYPE), id);
         ret.parse(map);
         return ret;
     }

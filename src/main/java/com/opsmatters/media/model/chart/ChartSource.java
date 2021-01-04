@@ -34,7 +34,7 @@ public class ChartSource
 
     private SourceType type;
     private String query;
-    private List<ChartParameterName> parameters;
+    private List<ChartParameter> parameters;
     private List<ChartParameterType> resultTypes;
 
     /**
@@ -61,7 +61,7 @@ public class ChartSource
         {
             setType(obj.getType());
             setQuery(obj.getQuery());
-            setParameters(new ArrayList<ChartParameterName>(obj.getParameters()));
+            setParameters(new ArrayList<ChartParameter>(obj.getParameters()));
             setResultTypes(new ArrayList<ChartParameterType>(obj.getResultTypes()));
         }
     }
@@ -124,7 +124,7 @@ public class ChartSource
     /**
      * Returns the parameters for the source.
      */
-    public List<ChartParameterName> getParameters()
+    public List<ChartParameter> getParameters()
     {
         return parameters;
     }
@@ -132,7 +132,7 @@ public class ChartSource
     /**
      * Sets the parameters for the source.
      */
-    public void setParameters(List<ChartParameterName> parameters)
+    public void setParameters(List<ChartParameter> parameters)
     {
         this.parameters = parameters;
     }
@@ -143,10 +143,10 @@ public class ChartSource
     public void setStringParameters(List<String> parameters)
     {
         if(this.parameters == null)
-            this.parameters = new ArrayList<ChartParameterName>();
+            this.parameters = new ArrayList<ChartParameter>();
         this.parameters.clear();
         for(String parameter : parameters)
-            this.parameters.add(ChartParameterName.valueOf(parameter));
+            this.parameters.add(ChartParameter.valueOf(parameter));
     }
 
     /**

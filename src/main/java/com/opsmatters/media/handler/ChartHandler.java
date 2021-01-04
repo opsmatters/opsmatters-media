@@ -18,7 +18,6 @@ package com.opsmatters.media.handler;
 
 import java.io.Serializable;
 import java.util.logging.Logger;
-import nl.crashdata.chartjs.data.simple.SimpleChartJsXYDataPoint;
 import nl.crashdata.chartjs.data.simple.SimpleChartJsConfig;
 import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsConfigBuilder;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
@@ -32,14 +31,14 @@ import com.opsmatters.media.model.chart.ChartParameters;
  *
  * @author Gerald Curley (opsmatters)
  */
-public class ChartHandler<X extends Serializable, Y extends Serializable>
+public class ChartHandler<E extends Serializable>
 {
     private static final Logger logger = Logger.getLogger(ChartHandler.class.getName());
 
-    private Chart<X,Y> chart;
+    private Chart<E> chart;
     private JDBCDatabaseConnection conn;
     private ChartParameters parameters = null;
-    private SimpleChartJsConfigBuilder<SimpleChartJsXYDataPoint<X,Y>> config = null;
+    private SimpleChartJsConfigBuilder<E> config = null;
 
     /**
      * Default constructor.
@@ -51,7 +50,7 @@ public class ChartHandler<X extends Serializable, Y extends Serializable>
     /**
      * Returns the chart for the handler.
      */
-    public Chart<X,Y> getChart()
+    public Chart<E> getChart()
     {
         return chart;
     }
@@ -59,7 +58,7 @@ public class ChartHandler<X extends Serializable, Y extends Serializable>
     /**
      * Sets the chart for the handler.
      */
-    public void setChart(Chart<X,Y> chart)
+    public void setChart(Chart<E> chart)
     {
         this.chart = chart;
     }
@@ -99,7 +98,7 @@ public class ChartHandler<X extends Serializable, Y extends Serializable>
     /**
      * Returns the chartjs config for the handler.
      */
-    public SimpleChartJsConfig<SimpleChartJsXYDataPoint<X,Y>> getConfig()
+    public SimpleChartJsConfig<E> getConfig()
     {
         return config != null ? config.build() : null;
     }
@@ -115,18 +114,20 @@ public class ChartHandler<X extends Serializable, Y extends Serializable>
             if(config == null)
                 throw new IllegalArgumentException("invalid chart type: "+chart.getType());
 
-            for(ChartDataset<X,Y> dataset : chart.getDatasets())
+            for(ChartDataset<E> dataset : chart.getDatasets())
             {
-                DataSource<X,Y> source = null;
+                DataSource<E> source = null;
                 if(dataset.getSource() != null)
                 {
                     if(dataset.getSource().getType() == SourceType.DATABASE)
-                        source = new DatabaseDataSource<X,Y>(conn);
+                        source = new DatabaseDataSource<E>(conn);
                 }
 
                 if(source != null)
+                {
                     dataset.configure(config,
                         source.getDataPoints(dataset.getSource(), getParameters()));
+                }
             }
         }
     }
@@ -143,16 +144,16 @@ public class ChartHandler<X extends Serializable, Y extends Serializable>
     /**
      * Builder to make handler construction easier.
      */
-    public static class Builder<X extends Serializable,Y extends Serializable>
+    public static class Builder<E extends Serializable>
     {
-        private ChartHandler handler = new ChartHandler<X,Y>();
+        private ChartHandler handler = new ChartHandler<E>();
 
         /**
          * Sets the chart to use with the handler.
          * @param chart The chart
          * @return This object
          */
-        public Builder withChart(Chart<X,Y> chart)
+        public Builder withChart(Chart<E> chart)
         {
             handler.setChart(chart);
             return this;

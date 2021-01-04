@@ -19,13 +19,33 @@ package com.opsmatters.media.model.chart;
 import java.io.Serializable;
 
 /**
- * Represents the names of a chart parameter.
+ * Represents the attributes of a chart parameter.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ChartParameterName implements Serializable
+public enum ChartParameter implements Serializable
 {
-    FROM_DATE,
-    TO_DATE,
-    ORGANISATIONS;
+    FROM_DATE(false),
+    TO_DATE(false),
+    ORGANISATIONS(true);
+
+    private boolean multiple;
+
+    /**
+     * Constructor that takes the parameter value.
+     * @param value The value for the parameter
+     */
+    ChartParameter(boolean multiple)
+    {
+        this.multiple = multiple;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the parameter value is a list of multiple values
+     * @return <CODE>true</CODE> if the parameter value is a list of multiple values
+     */
+    public boolean multiple()
+    {
+        return multiple;
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Gerald Curley
+ * Copyright 2020 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.config.YamlConfiguration;
 import com.opsmatters.media.model.chart.Chart;
+import com.opsmatters.media.model.chart.ChartFactory;
 import com.opsmatters.media.model.chart.Dashboard;
 
 /**
@@ -68,7 +69,7 @@ public class ChartConfiguration extends YamlConfiguration
         {
             super.copyAttributes(obj);
             for(Chart chart : obj.getCharts())
-                addChart(new Chart(chart));
+                addChart(ChartFactory.newInstance(chart));
             for(Dashboard dashboard : obj.getDashboards())
                 addDashboard(new Dashboard(dashboard));
         }
@@ -166,7 +167,7 @@ public class ChartConfiguration extends YamlConfiguration
             for(Map<String,Object> config : charts)
             {
                 for(Map.Entry<String,Object> entry : config.entrySet())
-                    addChart(new Chart(entry.getKey(), (Map<String,Object>)entry.getValue()));
+                    addChart(ChartFactory.newInstance(entry.getKey(), (Map<String,Object>)entry.getValue()));
             }
         }
 

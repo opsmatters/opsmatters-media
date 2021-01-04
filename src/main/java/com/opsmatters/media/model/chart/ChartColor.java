@@ -32,7 +32,8 @@ public enum ChartColor
     BLUE(ChartJsRGBAColor.BLUE),
     PURPLE(ChartJsRGBAColor.PURPLE),
     GREY(ChartJsRGBAColor.GREY),
-    WHITE(new ChartJsRGBAColor(0,0,0,0));
+    WHITE(new ChartJsRGBAColor(255,255,255)),
+    BLACK(new ChartJsRGBAColor(0,0,0));
 
     private ChartJsRGBAColor rgba;
 

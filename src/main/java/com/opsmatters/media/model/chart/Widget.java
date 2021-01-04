@@ -40,7 +40,7 @@ public class Widget implements Serializable
     private String chartId = "";
     private String cssClass = "";
     private String cssStyle = "";
-    private Map<ChartParameterName,ChartSelection<?>> selections = new LinkedHashMap<ChartParameterName,ChartSelection<?>>();
+    private Map<ChartParameter,ChartSelection<?>> selections = new LinkedHashMap<ChartParameter,ChartSelection<?>>();
 
     /**
      * Default constructor.
@@ -198,7 +198,7 @@ public class Widget implements Serializable
     /**
      * Adds a selection for the chart.
      */
-    public Map<ChartParameterName,ChartSelection<?>> getSelections()
+    public Map<ChartParameter,ChartSelection<?>> getSelections()
     {
         return this.selections;
     }
@@ -222,7 +222,7 @@ public class Widget implements Serializable
     /**
      * Returns the selection for the given parameter.
      */
-    public ChartSelection<?> getSelection(ChartParameterName parameter)
+    public ChartSelection<?> getSelection(ChartParameter parameter)
     {
         return selections.get(parameter);
     }
@@ -230,7 +230,7 @@ public class Widget implements Serializable
     /**
      * Returns the string selection for the given parameter.
      */
-    public StringSelection getStringSelection(ChartParameterName parameter)
+    public StringSelection getStringSelection(ChartParameter parameter)
     {
         return (StringSelection)getSelection(parameter);
     }
@@ -238,7 +238,7 @@ public class Widget implements Serializable
     /**
      * Returns the LocalDate selection for the given parameter.
      */
-    public LocalDateTimeSelection getLocalDateTimeSelection(ChartParameterName parameter)
+    public LocalDateTimeSelection getLocalDateTimeSelection(ChartParameter parameter)
     {
         return (LocalDateTimeSelection)getSelection(parameter);
     }
@@ -246,7 +246,7 @@ public class Widget implements Serializable
     /**
      * Returns <CODE>true</CODE> if there exists a selection for the given parameter.
      */
-    public boolean hasSelection(ChartParameterName parameter)
+    public boolean hasSelection(ChartParameter parameter)
     {
         return selections.get(parameter) != null;
     }
@@ -258,12 +258,12 @@ public class Widget implements Serializable
     {
         ChartParameters parameters = new ChartParameters();
 
-        for(ChartSelection<?> selection : selections.values())
+        for(ChartParameter parameter : ChartParameter.values())
         {
-            Object value = selection.value();
-            if(selection.isMultiple())
+            Object value = hasSelection(parameter) ? getSelection(parameter).value() : "";
+            if(parameter.multiple())
                 value = StringUtils.toList((String)value);
-            parameters.put(selection.getParameter(), value);
+            parameters.put(parameter, value);
         }
 
         return parameters;

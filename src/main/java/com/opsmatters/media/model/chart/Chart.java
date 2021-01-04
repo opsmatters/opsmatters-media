@@ -23,7 +23,6 @@ import java.util.LinkedHashMap;
 import java.io.Serializable;
 import nl.crashdata.chartjs.data.ChartJsChartType;
 import nl.crashdata.chartjs.data.ChartJsInteractionMode;
-import nl.crashdata.chartjs.data.simple.SimpleChartJsXYDataPoint;
 import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsConfigBuilder;
 import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsOptionsBuilder;
 
@@ -32,54 +31,40 @@ import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsOptionsBuilder;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Chart<X extends Serializable, Y extends Serializable>
+public abstract class Chart<E extends Serializable>
 {
     public static final String ID = "id";
     public static final String TITLE = "title";
     public static final String TYPE = "type";
-    public static final String X_AXIS = "x-axis";
-    public static final String Y_AXIS = "y-axis";
     public static final String DATASETS = "datasets";
     public static final String SELECTIONS = "selections";
 
     private String id = "";
     private String title = "";
     private ChartJsChartType type;
-    private ChartXAxis<X> xAxis;
-    private ChartYAxis<Y> yAxis;
-    private List<ChartDataset<X,Y>> datasets = new ArrayList<ChartDataset<X,Y>>();
-    private Map<ChartParameterName,ChartSelection<?>> selections = new LinkedHashMap<ChartParameterName,ChartSelection<?>>();
+    private List<ChartDataset<E>> datasets = new ArrayList<ChartDataset<E>>();
+    private Map<ChartParameter,ChartSelection<?>> selections = new LinkedHashMap<ChartParameter,ChartSelection<?>>();
 
     /**
-     * Default constructor.
+     * Constructor that takes an id.
      */
-    public Chart(String id)
+    protected Chart(String id)
     {
         setId(id);
     }
 
     /**
-     * Copy constructor.
-     */
-    public Chart(Chart obj)
-    {
-        copyAttributes(obj);
-    }
-
-    /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(Chart<X,Y> obj)
+    public void copyAttributes(Chart<E> obj)
     {
         if(obj != null)
         {
             setId(obj.getId());
             setTitle(obj.getTitle());
             setType(obj.getType());
-            setXAxis(new ChartXAxis<X>(obj.getXAxis()));
-            setYAxis(new ChartYAxis<Y>(obj.getYAxis()));
-            for(ChartDataset<X,Y> dataset : obj.getDatasets())
-                addDataset(new ChartDataset<X,Y>(dataset));
+            for(ChartDataset<E> dataset : obj.getDatasets())
+                addDataset(new ChartDataset<E>(dataset));
             for(ChartSelection<?> selection : obj.getSelections().values())
                 addSelection(ChartSelectionFactory.newInstance(selection));
         }
@@ -88,24 +73,18 @@ public class Chart<X extends Serializable, Y extends Serializable>
     /**
      * Reads the object from the given YAML Document.
      */
-    public Chart(String id, Map<String, Object> map)
+    protected void parse(Map<String, Object> map)
     {
-        this(id);
-
         if(map.containsKey(TITLE))
             setTitle((String)map.get(TITLE));
         if(map.containsKey(TYPE))
             setType((String)map.get(TYPE));
-        if(map.containsKey(X_AXIS))
-            setXAxis(new ChartXAxis<X>((Map<String,Object>)map.get(X_AXIS)));
-        if(map.containsKey(Y_AXIS))
-            setYAxis(new ChartYAxis<Y>((Map<String,Object>)map.get(Y_AXIS)));
 
         if(map.containsKey(DATASETS))
         {
             List<Map<String,Object>> datasets = (List<Map<String,Object>>)map.get(DATASETS);
             for(Map<String,Object> config : datasets)
-                addDataset(new ChartDataset<X,Y>(getType(), (Map<String,Object>)config));
+                addDataset(new ChartDataset<E>(getType(), (Map<String,Object>)config));
         }
 
         if(map.containsKey(SELECTIONS))
@@ -181,41 +160,9 @@ public class Chart<X extends Serializable, Y extends Serializable>
     }
 
     /**
-     * Returns the x-axis for the chart.
-     */
-    public ChartXAxis<X> getXAxis()
-    {
-        return xAxis;
-    }
-
-    /**
-     * Sets the x-axis for the chart.
-     */
-    public void setXAxis(ChartXAxis<X> xAxis)
-    {
-        this.xAxis = xAxis;
-    }
-
-    /**
-     * Returns the y-axis for the chart.
-     */
-    public ChartYAxis<Y> getYAxis()
-    {
-        return yAxis;
-    }
-
-    /**
-     * Sets the y-axis for the chart.
-     */
-    public void setYAxis(ChartYAxis<Y> yAxis)
-    {
-        this.yAxis = yAxis;
-    }
-
-    /**
      * Adds a dataset to the datasets for the chart.
      */
-    public List<ChartDataset<X,Y>> getDatasets()
+    public List<ChartDataset<E>> getDatasets()
     {
         return this.datasets;
     }
@@ -223,7 +170,7 @@ public class Chart<X extends Serializable, Y extends Serializable>
     /**
      * Adds a dataset to the datasets for the chart.
      */
-    public void addDataset(ChartDataset<X,Y> dataset)
+    public void addDataset(ChartDataset<E> dataset)
     {
         this.datasets.add(dataset);
     }
@@ -239,7 +186,7 @@ public class Chart<X extends Serializable, Y extends Serializable>
     /**
      * Returns the dataset at the given index.
      */
-    public ChartDataset<X,Y> getDataset(int i)
+    public ChartDataset<E> getDataset(int i)
     {
         return datasets.get(i);
     }
@@ -247,7 +194,7 @@ public class Chart<X extends Serializable, Y extends Serializable>
     /**
      * Adds a selection for the chart.
      */
-    public Map<ChartParameterName,ChartSelection<?>> getSelections()
+    public Map<ChartParameter,ChartSelection<?>> getSelections()
     {
         return this.selections;
     }
@@ -271,7 +218,7 @@ public class Chart<X extends Serializable, Y extends Serializable>
     /**
      * Returns the selection for the given parameter.
      */
-    public ChartSelection<?> getSelection(ChartParameterName parameter)
+    public ChartSelection<?> getSelection(ChartParameter parameter)
     {
         return selections.get(parameter);
     }
@@ -279,7 +226,7 @@ public class Chart<X extends Serializable, Y extends Serializable>
     /**
      * Returns the string selection for the given parameter.
      */
-    public StringSelection getStringSelection(ChartParameterName parameter)
+    public StringSelection getStringSelection(ChartParameter parameter)
     {
         return (StringSelection)getSelection(parameter);
     }
@@ -287,7 +234,7 @@ public class Chart<X extends Serializable, Y extends Serializable>
     /**
      * Returns the LocalDate selection for the given parameter.
      */
-    public LocalDateTimeSelection getLocalDateTimeSelection(ChartParameterName parameter)
+    public LocalDateTimeSelection getLocalDateTimeSelection(ChartParameter parameter)
     {
         return (LocalDateTimeSelection)getSelection(parameter);
     }
@@ -295,7 +242,7 @@ public class Chart<X extends Serializable, Y extends Serializable>
     /**
      * Returns <CODE>true</CODE> if there exists a selection for the given parameter.
      */
-    public boolean hasSelection(ChartParameterName parameter)
+    public boolean hasSelection(ChartParameter parameter)
     {
         return selections.get(parameter) != null;
     }
@@ -303,37 +250,15 @@ public class Chart<X extends Serializable, Y extends Serializable>
     /**
      * Returns the config for the current chart type.
      */
-    public SimpleChartJsConfigBuilder<SimpleChartJsXYDataPoint<X,Y>> configure()
+    public abstract SimpleChartJsConfigBuilder<E> configure();
+
+    /**
+     * Configure the config options.
+     */
+    protected void configure(SimpleChartJsOptionsBuilder options)
     {
-        SimpleChartJsConfigBuilder<SimpleChartJsXYDataPoint<X,Y>> ret = null;
-
-        if(type == ChartJsChartType.LINE)
-            ret = SimpleChartJsConfigBuilder.lineChart();
-        else if(type == ChartJsChartType.BAR)
-            ret = SimpleChartJsConfigBuilder.barChart();
-        else if(type == ChartJsChartType.PIE)
-            ret = SimpleChartJsConfigBuilder.pieChart();
-        else if(type == ChartJsChartType.RADAR)
-            ret = SimpleChartJsConfigBuilder.radarChart();
-        else if(type == ChartJsChartType.SCATTER)
-            ret = SimpleChartJsConfigBuilder.scatterPlot();
-        else if(type == ChartJsChartType.BUBBLE)
-            ret = SimpleChartJsConfigBuilder.bubbleChart();
-        else if(type == ChartJsChartType.POLAR_AREA)
-            ret = SimpleChartJsConfigBuilder.polarAreaChart();
-        else if(type == ChartJsChartType.DOUGHNUT)
-            ret = SimpleChartJsConfigBuilder.doughnut();
-
-        if(ret != null)
-        {
-            SimpleChartJsOptionsBuilder options = ret.options();
-            options.withResponsive(true);
-            options.hoverConfig().withIntersect(true).withMode(ChartJsInteractionMode.NEAREST);
-            options.tooltipConfig().withIntersect(false).withMode(ChartJsInteractionMode.INDEX);
-            getXAxis().configure(options.scalesConfig());
-            getYAxis().configure(options.scalesConfig());
-        }
-
-        return ret;
+        options.withResponsive(true);
+        options.hoverConfig().withIntersect(true).withMode(ChartJsInteractionMode.NEAREST);
+        options.tooltipConfig().withIntersect(false).withMode(ChartJsInteractionMode.INDEX);
     }
 }

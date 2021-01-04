@@ -16,7 +16,7 @@
 
 package com.opsmatters.media.handler;
 
-import java.util.Map;
+import java.util.List;
 import java.io.Serializable;
 import com.opsmatters.media.model.chart.SourceType;
 import com.opsmatters.media.model.chart.ChartSource;
@@ -27,7 +27,7 @@ import com.opsmatters.media.model.chart.ChartParameters;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public interface DataSource<X extends Serializable,Y extends Serializable>
+public interface DataSource<E extends Serializable>
 {
     /**
      * Returns the data source type.
@@ -35,7 +35,7 @@ public interface DataSource<X extends Serializable,Y extends Serializable>
     public SourceType getType();
 
     /**
-     * Returns the data from the plot.
+     * Returns the data points from the dataset.
      */
-    public Map<X,Y> getDataPoints(ChartSource source, ChartParameters parameters) throws Exception;
+    public List<E> getDataPoints(ChartSource source, ChartParameters parameters) throws Exception;
 }
