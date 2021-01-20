@@ -44,6 +44,7 @@ public abstract class ChartAxis<T extends Serializable>
     public static final String STEP_SIZE = "step-size";
     public static final String MIN = "min";
     public static final String MAX = "max";
+    public static final String STACKED = "stacked";
 
     private boolean display;
     private AxisType type;
@@ -51,6 +52,7 @@ public abstract class ChartAxis<T extends Serializable>
     private ChartJsTimeUnit timeUnit;
     private Number stepSize;
     private T min, max;
+    private boolean stacked;
 
     /**
      * Default constructor.
@@ -81,6 +83,7 @@ public abstract class ChartAxis<T extends Serializable>
             setStepSize(obj.getStepSize());
             setMin(obj.getMin());
             setMax(obj.getMax());
+            setStacked(obj.getStacked());
         }
     }
 
@@ -103,6 +106,8 @@ public abstract class ChartAxis<T extends Serializable>
             setMin((T)map.get(MIN));
         if(map.containsKey(MAX))
             setMax((T)map.get(MAX));
+        if(map.containsKey(STACKED))
+            setStacked((Boolean)map.get(STACKED));
     }
 
     /**
@@ -234,6 +239,22 @@ public abstract class ChartAxis<T extends Serializable>
     }
 
     /**
+     * Returns <CODE>true</CODE> if the axis should be stacked.
+     */
+    public boolean getStacked()
+    {
+        return stacked;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the axis should be stacked.
+     */
+    public void setStacked(boolean stacked)
+    {
+        this.stacked = stacked;
+    }
+
+    /**
      * Configure the axis.
      */
     public abstract void configure(SimpleChartJsScalesConfigBuilder scalesConfig);
@@ -311,5 +332,7 @@ public abstract class ChartAxis<T extends Serializable>
             tickConfig = tickConfig.withForcedMinimum(getMin());
         if(getMax() != null)
             tickConfig = tickConfig.withForcedMaximum(getMax());
+
+        axisConfig.withStacked(getStacked());
     }
 }

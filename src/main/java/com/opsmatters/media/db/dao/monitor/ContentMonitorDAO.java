@@ -26,6 +26,8 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.monitor.ContentMonitor;
+import com.opsmatters.media.model.monitor.MonitorStatus;
+import com.opsmatters.media.model.content.ContentType;
 
 /**
  * DAO that provides operations on the CONTENT_MONITORS table in the database.
@@ -406,7 +408,34 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     }
 
     /**
-     * Returns the count of monitors from the table.
+     * Returns the monitors from the CONTENT_MONITORS table by organisation code and content type.
+     */
+    public List<ContentMonitor> listPending(String code, String name, ContentType type) throws SQLException
+    {
+        List<ContentMonitor> ret = new ArrayList<ContentMonitor>();
+        for(ContentMonitor monitor : list(code))
+        {
+            if(monitor.getContentType() == type
+                && monitor.getName().equals(name)
+                && monitor.getStatus() == MonitorStatus.PENDING)
+            {
+                ret.add(monitor);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the count of monitors from the CONTENT_MONITORS table by organisation code and content type.
+     */
+    public int getPendingCount(String code, String name, ContentType type) throws SQLException
+    {
+        return listPending(code, name, type).size();
+    }
+
+    /**
+     * Returns the count of monitors from the CONTENT_MONITORS table.
      */
     public int count() throws SQLException
     {

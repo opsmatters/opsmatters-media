@@ -29,6 +29,8 @@ public enum RepositoryLicense
     BSD_3_CLAUSE("bsd-3-clause", "BSD 3 Clause"),
     CC_BY_SA_3_0("cc-by-sa-3.0", "CC-BY-SA 3.0"),
     CC_BY_NC_SA_4_0("cc-by-nc-sa-4.0", "CC-BY-NC-SA 4.0"),
+    CDDL_1_0("cddl-1.0", "CDDL 1.0"),
+    CDDL_1_1("cddl-1.1", "CDDL 1.1"),
     GPL_2_0("gpl-2.0", "GPL 2.0"),
     GPL_3_0("gpl-3.0", "GPL 3.0"),
     GPL_3_0_PLUS("gpl-3.0-or-later", "GPL v3+"),

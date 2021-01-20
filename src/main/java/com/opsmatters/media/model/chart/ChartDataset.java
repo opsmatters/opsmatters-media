@@ -43,6 +43,8 @@ public class ChartDataset<E extends Serializable>
     public static final String BORDER_WIDTHS = "border-widths";
     public static final String FILL = "fill";
     public static final String SOURCE = "source";
+    public static final String STACK = "stack";
+    public static final String ORDER = "order";
 
     private String label;
     private ChartJsChartType type;
@@ -54,6 +56,8 @@ public class ChartDataset<E extends Serializable>
     private List<Integer> borderWidths;
     private ChartFill fill;
     private ChartSource source;
+    private String stack;
+    private Integer order;
 
     /**
      * Default constructor.
@@ -88,6 +92,8 @@ public class ChartDataset<E extends Serializable>
             setBorderWidths(obj.getBorderWidths());
             setFill(new ChartFill(obj.getFill()));
             setSource(new ChartSource(obj.getSource()));
+            setStack(obj.getStack());
+            setOrder(obj.getOrder());
         }
     }
 
@@ -117,6 +123,10 @@ public class ChartDataset<E extends Serializable>
             setFill(new ChartFill((Map<String,Object>)map.get(FILL)));
         if(map.containsKey(SOURCE))
             setSource(new ChartSource((Map<String,Object>)map.get(SOURCE)));
+        if(map.containsKey(STACK))
+            setStack((String)map.get(STACK));
+        if(map.containsKey(ORDER))
+            setOrder((Integer)map.get(ORDER));
     }
 
     /**
@@ -324,6 +334,38 @@ public class ChartDataset<E extends Serializable>
     }
 
     /**
+     * Returns the stack for the dataset.
+     */
+    public String getStack()
+    {
+        return stack;
+    }
+
+    /**
+     * Sets the stack for the dataset.
+     */
+    public void setStack(String stack)
+    {
+        this.stack = stack;
+    }
+
+    /**
+     * Returns the order for the dataset.
+     */
+    public Integer getOrder()
+    {
+        return order;
+    }
+
+    /**
+     * Sets the order for the dataset.
+     */
+    public void setOrder(Integer order)
+    {
+        this.order = order;
+    }
+
+    /**
      * Configure the dataset.
      */
     public void configure(SimpleChartJsConfigBuilder<E> config, List<E> points)
@@ -375,5 +417,11 @@ public class ChartDataset<E extends Serializable>
 
         if(getFill() != null)
             dataset = dataset.withFill(getFill().configure());
+
+        if(getStack() != null)
+            dataset = dataset.withStack(getStack());
+
+        if(getOrder() != null)
+            dataset = dataset.withOrder(getOrder());
     }
 }

@@ -21,6 +21,7 @@ import java.io.Serializable;
 import nl.crashdata.chartjs.data.ChartJsChartType;
 import nl.crashdata.chartjs.data.simple.SimpleChartJsXYDataPoint;
 import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsConfigBuilder;
+import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsOptionsBuilder;
 
 /**
  * Represents a chart containing x and y axes with datasets.
@@ -31,9 +32,11 @@ public class CartesianChart<X extends Serializable,Y extends Serializable> exten
 {
     public static final String X_AXIS = "x-axis";
     public static final String Y_AXIS = "y-axis";
+    public static final String STACKED = "stacked";
 
     private ChartXAxis<X> xAxis;
     private ChartYAxis<Y> yAxis;
+    private boolean stacked;
 
     /**
      * Constructor that takes an id.
@@ -62,6 +65,7 @@ public class CartesianChart<X extends Serializable,Y extends Serializable> exten
             super.copyAttributes(obj);
             setXAxis(new ChartXAxis<X>(obj.getXAxis()));
             setYAxis(new ChartYAxis<Y>(obj.getYAxis()));
+            setStacked(obj.getStacked());
         }
     }
 
@@ -77,6 +81,8 @@ public class CartesianChart<X extends Serializable,Y extends Serializable> exten
             setXAxis(new ChartXAxis<X>((Map<String,Object>)map.get(X_AXIS)));
         if(map.containsKey(Y_AXIS))
             setYAxis(new ChartYAxis<Y>((Map<String,Object>)map.get(Y_AXIS)));
+        if(map.containsKey(STACKED))
+            setStacked((Boolean)map.get(STACKED));
     }
 
     /**
@@ -112,6 +118,22 @@ public class CartesianChart<X extends Serializable,Y extends Serializable> exten
     }
 
     /**
+     * Returns <CODE>true</CODE> if the axis should be stacked.
+     */
+    public boolean getStacked()
+    {
+        return stacked;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the axis should be stacked.
+     */
+    public void setStacked(boolean stacked)
+    {
+        this.stacked = stacked;
+    }
+
+    /**
      * Returns the config for the current chart type.
      */
     @Override
@@ -131,10 +153,21 @@ public class CartesianChart<X extends Serializable,Y extends Serializable> exten
         if(ret != null)
         {
             configure(ret.options());
-            getXAxis().configure(ret.options().scalesConfig());
-            getYAxis().configure(ret.options().scalesConfig());
+            if(getXAxis() != null)
+                getXAxis().configure(ret.options().scalesConfig());
+            if(getYAxis() != null)
+                getYAxis().configure(ret.options().scalesConfig());
         }
 
         return ret;
+    }
+
+    /**
+     * Configure the config options.
+     */
+    @Override
+    protected void configure(SimpleChartJsOptionsBuilder options)
+    {
+        super.configure(options);
     }
 }
