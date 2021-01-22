@@ -156,14 +156,6 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
         if(trace(root))
             logger.info("roundup-node="+root.getAttribute("innerHTML"));
 
-        // Default the published date to today if not found
-        if(!fields.hasPublishedDate() && content.getPublishedDate() == null)
-        {
-            content.setPublishedDate(Instant.now());
-            if(debug())
-                logger.info("Defaulting published date: "+content.getPublishedDateAsString());
-        }
-
         if(root != null && fields.hasBody())
         {
             String body = getBodySummary(fields.getBody(), root, "content", config.getSummary(), debug());
@@ -247,15 +239,8 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
                 catch(DateTimeParseException e)
                 {
                     logger.severe(StringUtils.serialize(e));
-                    logger.warning("Unparseable published date, using default instead: "+publishedDate);
-                    content.setPublishedDate(TimeUtils.truncateTimeUTC());
+                    logger.warning("Unparseable published date: "+publishedDate);
                 }
-            }
-            else if(field.getSource().isMetatag()) // Date metatag not found
-            {
-                // Default date to today if not found
-                logger.warning("Published date not found, defaulting to today");
-                content.setPublishedDate(TimeUtils.truncateTimeUTC());
             }
         }
 

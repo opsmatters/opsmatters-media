@@ -181,7 +181,7 @@ public class FormatUtils
                             buff.append(segment);
                         }
                     }
-                    else if(!segment.startsWith("#") && !segment.startsWith("=")) // Ignore hashtags or delimiter
+                    else if(!segment.startsWith("#") && !segment.startsWith("=") && !segment.startsWith("_")) // Ignore strings of delimiters
                     {
                         if(buff.length() > 0 && buff.charAt(buff.length()-1) != ' ')
                             buff.append(" ");
@@ -220,7 +220,7 @@ public class FormatUtils
                     // Skip paragraph if it starts with numbers
                     continue;
                 }
-                else if(text.startsWith("#") || text.startsWith("=")) // Ignore Hashtags or delimiter
+                else if(text.startsWith("#") || text.startsWith("=") || text.startsWith("_")) // Ignore strings of delimiters
                 {
                     // Skip paragraph if it starts with hashtags
                     continue;

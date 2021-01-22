@@ -410,14 +410,13 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     /**
      * Returns the monitors from the CONTENT_MONITORS table by organisation code and content type.
      */
-    public List<ContentMonitor> listPending(String code, String name, ContentType type) throws SQLException
+    public List<ContentMonitor> list(String code, String name, ContentType type) throws SQLException
     {
         List<ContentMonitor> ret = new ArrayList<ContentMonitor>();
         for(ContentMonitor monitor : list(code))
         {
             if(monitor.getContentType() == type
-                && monitor.getName().equals(name)
-                && monitor.getStatus() == MonitorStatus.PENDING)
+                && monitor.getName().equals(name))
             {
                 ret.add(monitor);
             }
@@ -431,7 +430,14 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
      */
     public int getPendingCount(String code, String name, ContentType type) throws SQLException
     {
-        return listPending(code, name, type).size();
+        int ret = 0;
+        for(ContentMonitor monitor : list(code))
+        {
+            if(monitor.getStatus() == MonitorStatus.PENDING)
+                ++ret;
+        }
+
+        return ret;
     }
 
     /**

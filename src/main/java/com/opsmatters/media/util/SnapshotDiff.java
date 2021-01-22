@@ -61,13 +61,6 @@ public class SnapshotDiff
                 String left = (iterator1.hasNext() ? iterator1.nextLine() : "") + "\n";
                 String right = (iterator2.hasNext() ? iterator2.nextLine() : "") + "\n";
 
-                // Markup only if the row is not blank
-                boolean empty = left.length() == 1 && right.length() == 1;
-                if(empty)
-                    textVisitor.append(left); // blank line
-                else
-                    textVisitor.append("<div class=\"comparison\">");
-
                 // Parse the left hand string
                 String leftProperty = getProperty(left, "=");
                 String leftUrl = null;
@@ -94,22 +87,38 @@ public class SnapshotDiff
                     rightProperty = NAMES.get(rightProperty);
                 }
 
-                StringsComparator comparator = new StringsComparator(left, right);
-                if(comparator.getScript().getLCSLength() > (Integer.max(left.length(), right.length())*COMMONALITY))
-                {
-                    // Merge both lines if they have at least 40% commonality
-                    appendLine(textVisitor, rightProperty, rightUrl, comparator);
-                }
+                // Markup only if the row is not blank
+                boolean emptyKeys = left.length() == 1 && right.length() == 1;
+                boolean emptyProperties = leftProperty == null && rightProperty == null;
+                boolean empty = emptyKeys && emptyProperties;
+                if(empty)
+                    textVisitor.append(left); // blank line
                 else
-                {
-                    // Otherwise show the two lines separately
-                    StringsComparator leftComparator = new StringsComparator(left, "\n");
-                    appendLine(textVisitor, leftProperty, leftUrl, leftComparator);
+                    textVisitor.append("<div class=\"comparison\">");
 
-                    if(rightProperty != null)
+
+                if(!emptyKeys)
+                {
+                    StringsComparator comparator = new StringsComparator(left, right);
+                    if(comparator.getScript().getLCSLength() > (Integer.max(left.length(), right.length())*COMMONALITY))
                     {
-                        StringsComparator rightComparator = new StringsComparator("\n", right);
-                        appendLine(textVisitor, !rightProperty.equals(leftProperty) ? rightProperty : "", rightUrl, rightComparator);
+                        // Merge both lines if they have at least 40% commonality
+                        appendLine(textVisitor, rightProperty, rightUrl, comparator);
+                    }
+                    else
+                    {
+                        // Otherwise show the two lines separately
+                        if(leftProperty != null && left.length() > 1)
+                        {
+                            StringsComparator leftComparator = new StringsComparator(left, "\n");
+                            appendLine(textVisitor, leftProperty, leftUrl, leftComparator);
+                        }
+
+                        if(rightProperty != null && right.length() > 1)
+                        {
+                            StringsComparator rightComparator = new StringsComparator("\n", right);
+                            appendLine(textVisitor, !rightProperty.equals(leftProperty) || left.length() == 1 ? rightProperty : "", rightUrl, rightComparator);
+                        }
                     }
                 }
 

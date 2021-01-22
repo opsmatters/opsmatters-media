@@ -135,25 +135,11 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
         if(trace(root))
             logger.info("event-node="+root.getAttribute("innerHTML"));
 
-        // Default the published date to today if not found
-        if(!fields.hasPublishedDate() && content.getPublishedDate() == null)
-        {
-            content.setPublishedDate(TimeUtils.truncateTimeUTC());
-            if(debug())
-                logger.info("Defaulting published date: "+content.getPublishedDateAsString());
-        }
+        content.setPublishedDate(TimeUtils.truncateTimeUTC());
 
         boolean hasTime = false;
         if(content.getStartDate() != null)
             hasTime = TimeUtils.hasTime(content.getStartDateMillis());
-
-        // Default the start date to today if not found
-        if(content.getStartDate() == null)
-        {
-            content.setStartDate(TimeUtils.truncateTimeUTC());
-            if(debug())
-                logger.info("Defaulting start date: "+content.getStartDateAsString());
-        }
 
         long starttm = 0L;
 
@@ -219,7 +205,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
         }
 
         // Add the start time if it is a separate field
-        if(starttm > 0L)
+        if(starttm > 0L && content.getStartDateMillis() > 0L)
         {
             content.setStartDateMillis(content.getStartDateMillis()+starttm);
             if(debug())
@@ -288,15 +274,8 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
                 catch(DateTimeParseException e)
                 {
                     logger.severe(StringUtils.serialize(e));
-                    logger.warning("Unparseable start date, using default instead: "+startDate);
-                    content.setStartDate(TimeUtils.truncateTimeUTC());
+                    logger.warning("Unparseable start date: "+startDate);
                 }
-            }
-            else //if(field.getSource().isMetatag()) // Date metatag not found
-            {
-                // Default date to today if not found
-                logger.warning("Start date not found, defaulting to today");
-                content.setStartDate(TimeUtils.truncateTimeUTC());
             }
         }
     }

@@ -207,8 +207,7 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
                 catch(DateTimeParseException e)
                 {
                     logger.severe(StringUtils.serialize(e));
-                    logger.warning("Unparseable published date, using default instead: "+publishedDate);
-                    content.setPublishedDate(TimeUtils.truncateTimeUTC());
+                    logger.warning("Unparseable published date: "+publishedDate);
                 }
             }
         }
