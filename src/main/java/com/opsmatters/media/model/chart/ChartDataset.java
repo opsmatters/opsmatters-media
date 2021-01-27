@@ -41,6 +41,14 @@ public class ChartDataset<E extends Serializable>
     public static final String BORDER_COLORS = "border-colors";
     public static final String BORDER_WIDTH = "border-width";
     public static final String BORDER_WIDTHS = "border-widths";
+    public static final String POINT_BACKGROUND_COLOR = "point-background-color";
+    public static final String POINT_BACKGROUND_COLORS = "point-background-colors";
+    public static final String POINT_BORDER_COLOR = "point-border-color";
+    public static final String POINT_BORDER_COLORS = "point-border-colors";
+    public static final String POINT_BORDER_WIDTH = "point-border-width";
+    public static final String POINT_BORDER_WIDTHS = "point-border-widths";
+    public static final String POINT_RADIUS = "point-radius";
+    public static final String POINT_RADIUSES = "point-radiuses";
     public static final String FILL = "fill";
     public static final String SOURCE = "source";
     public static final String STACK = "stack";
@@ -54,6 +62,14 @@ public class ChartDataset<E extends Serializable>
     private List<ChartColor> borderColors;
     private Integer borderWidth;
     private List<Integer> borderWidths;
+    private ChartColor pointBackgroundColor;
+    private List<ChartColor> pointBackgroundColors;
+    private ChartColor pointBorderColor;
+    private List<ChartColor> pointBorderColors;
+    private Integer pointBorderWidth;
+    private List<Integer> pointBorderWidths;
+    private Integer pointRadius;
+    private List<Integer> pointRadiuses;
     private ChartFill fill;
     private ChartSource source;
     private String stack;
@@ -90,6 +106,14 @@ public class ChartDataset<E extends Serializable>
             setBorderColors(obj.getBorderColors());
             setBorderWidth(obj.getBorderWidth());
             setBorderWidths(obj.getBorderWidths());
+            setPointBackgroundColor(obj.getPointBackgroundColor());
+            setPointBackgroundColors(obj.getPointBackgroundColors());
+            setPointBorderColor(obj.getPointBorderColor());
+            setPointBorderColors(obj.getPointBorderColors());
+            setPointBorderWidth(obj.getPointBorderWidth());
+            setPointBorderWidths(obj.getPointBorderWidths());
+            setPointRadius(obj.getPointRadius());
+            setPointRadiuses(obj.getPointRadiuses());
             setFill(new ChartFill(obj.getFill()));
             setSource(new ChartSource(obj.getSource()));
             setStack(obj.getStack());
@@ -119,6 +143,22 @@ public class ChartDataset<E extends Serializable>
             setBorderWidth((Integer)map.get(BORDER_WIDTH));
         if(map.containsKey(BORDER_WIDTHS))
             setBorderWidths((List<Integer>)map.get(BORDER_WIDTHS));
+        if(map.containsKey(POINT_BACKGROUND_COLOR))
+            setPointBackgroundColor((String)map.get(POINT_BACKGROUND_COLOR));
+        if(map.containsKey(POINT_BACKGROUND_COLORS))
+            setStringPointBackgroundColors((List<String>)map.get(POINT_BACKGROUND_COLORS));
+        if(map.containsKey(POINT_BORDER_COLOR))
+            setPointBorderColor((String)map.get(POINT_BORDER_COLOR));
+        if(map.containsKey(POINT_BORDER_COLORS))
+            setStringPointBorderColors((List<String>)map.get(POINT_BORDER_COLORS));
+        if(map.containsKey(POINT_BORDER_WIDTH))
+            setPointBorderWidth((Integer)map.get(POINT_BORDER_WIDTH));
+        if(map.containsKey(POINT_BORDER_WIDTHS))
+            setPointBorderWidths((List<Integer>)map.get(POINT_BORDER_WIDTHS));
+        if(map.containsKey(POINT_RADIUS))
+            setPointRadius((Integer)map.get(POINT_RADIUS));
+        if(map.containsKey(POINT_RADIUSES))
+            setPointRadiuses((List<Integer>)map.get(POINT_RADIUSES));
         if(map.containsKey(FILL))
             setFill(new ChartFill((Map<String,Object>)map.get(FILL)));
         if(map.containsKey(SOURCE))
@@ -302,6 +342,170 @@ public class ChartDataset<E extends Serializable>
     }
 
     /**
+     * Returns the color for the dataset point background.
+     */
+    public ChartColor getPointBackgroundColor()
+    {
+        return pointBackgroundColor;
+    }
+
+    /**
+     * Sets the color for the dataset point background.
+     */
+    public void setPointBackgroundColor(ChartColor pointBackgroundColor)
+    {
+        this.pointBackgroundColor = pointBackgroundColor;
+    }
+
+    /**
+     * Sets the color for the dataset point background.
+     */
+    public void setPointBackgroundColor(String pointBackgroundColor)
+    {
+        setPointBackgroundColor(ChartColor.valueOf(pointBackgroundColor));
+    }
+
+    /**
+     * Returns the colors for the dataset point backgrounds.
+     */
+    public List<ChartColor> getPointBackgroundColors()
+    {
+        return pointBackgroundColors;
+    }
+
+    /**
+     * Sets the colors for the dataset point backgrounds.
+     */
+    public void setPointBackgroundColors(List<ChartColor> pointBackgroundColors)
+    {
+        this.pointBackgroundColors = pointBackgroundColors;
+    }
+
+    /**
+     * Sets the colors for the dataset point backgrounds.
+     */
+    public void setStringPointBackgroundColors(List<String> pointBackgroundColors)
+    {
+        setPointBackgroundColors(new ArrayList<ChartColor>());
+        for(String pointBackgroundColor : pointBackgroundColors)
+            getPointBackgroundColors().add(ChartColor.valueOf(pointBackgroundColor));
+    }
+
+    /**
+     * Returns the color for the dataset point border.
+     */
+    public ChartColor getPointBorderColor()
+    {
+        return pointBorderColor;
+    }
+
+    /**
+     * Sets the color for the dataset point border.
+     */
+    public void setPointBorderColor(ChartColor pointBorderColor)
+    {
+        this.pointBorderColor = pointBorderColor;
+    }
+
+    /**
+     * Sets the color for the dataset point border.
+     */
+    public void setPointBorderColor(String pointBorderColor)
+    {
+        setPointBorderColor(ChartColor.valueOf(pointBorderColor));
+    }
+
+    /**
+     * Returns the colors for the dataset point borders.
+     */
+    public List<ChartColor> getPointBorderColors()
+    {
+        return pointBorderColors;
+    }
+
+    /**
+     * Sets the colors for the dataset point borders.
+     */
+    public void setPointBorderColors(List<ChartColor> pointBorderColors)
+    {
+        this.pointBorderColors = pointBorderColors;
+    }
+
+    /**
+     * Sets the colors for the dataset point borders.
+     */
+    public void setStringPointBorderColors(List<String> pointBorderColors)
+    {
+        setPointBorderColors(new ArrayList<ChartColor>());
+        for(String pointBorderColor : pointBorderColors)
+            getPointBorderColors().add(ChartColor.valueOf(pointBorderColor));
+    }
+
+    /**
+     * Returns the width of the dataset point border.
+     */
+    public Integer getPointBorderWidth()
+    {
+        return pointBorderWidth;
+    }
+
+    /**
+     * Sets the width of the dataset point border.
+     */
+    public void setPointBorderWidth(Integer pointBorderWidth)
+    {
+        this.pointBorderWidth = pointBorderWidth;
+    }
+
+    /**
+     * Returns the widths of the dataset point borders.
+     */
+    public List<Integer> getPointBorderWidths()
+    {
+        return pointBorderWidths;
+    }
+
+    /**
+     * Sets the widths of the dataset point borders.
+     */
+    public void setPointBorderWidths(List<Integer> pointBorderWidths)
+    {
+        this.pointBorderWidths = pointBorderWidths;
+    }
+
+    /**
+     * Returns the width of the dataset point radius.
+     */
+    public Integer getPointRadius()
+    {
+        return pointRadius;
+    }
+
+    /**
+     * Sets the width of the dataset point radius.
+     */
+    public void setPointRadius(Integer pointRadius)
+    {
+        this.pointRadius = pointRadius;
+    }
+
+    /**
+     * Returns the widths of the dataset point radiuses.
+     */
+    public List<Integer> getPointRadiuses()
+    {
+        return pointRadiuses;
+    }
+
+    /**
+     * Sets the widths of the dataset point radiuses.
+     */
+    public void setPointRadiuses(List<Integer> pointRadiuses)
+    {
+        this.pointRadiuses = pointRadiuses;
+    }
+
+    /**
      * Returns the fill for the dataset.
      */
     public ChartFill getFill()
@@ -390,6 +594,10 @@ public class ChartDataset<E extends Serializable>
             dataset = dataset.withBackgroundColors(colors);
         }
 
+        // Fill in the array if only a single value was provided
+        if(getBackgroundColor() != null && getBackgroundColors() == null)
+            dataset = dataset.withBackgroundColors(Collections.nCopies(points.size(), getBackgroundColor().rgba()));
+
         if(getBorderColor() != null)
             dataset = dataset.withBorderColor(getBorderColor().rgba());
 
@@ -401,19 +609,69 @@ public class ChartDataset<E extends Serializable>
             dataset = dataset.withBorderColors(colors);
         }
 
+        // Fill in the array if only a single value was provided
+        if(getBorderColor() != null && getBorderColors() == null)
+            dataset = dataset.withBorderColors(Collections.nCopies(points.size(), getBorderColor().rgba()));
+
         if(getBorderWidth() != null)
             dataset = dataset.withBorderWidth(getBorderWidth());
 
         if(getBorderWidths() != null)
             dataset = dataset.withBorderWidths(getBorderWidths());
 
-        // Fill in the arrays if the attribute is indexable and only a single value is provided
-        if(getBackgroundColor() != null && getBackgroundColors() == null)
-            dataset = dataset.withBackgroundColors(Collections.nCopies(points.size(), getBackgroundColor().rgba()));
-        if(getBorderColor() != null && getBorderColors() == null)
-            dataset = dataset.withBorderColors(Collections.nCopies(points.size(), getBorderColor().rgba()));
+        // Fill in the array if only a single value was provided
         if(getBorderWidth() != null && getBorderWidths() == null)
             dataset = dataset.withBorderWidths(Collections.nCopies(points.size(), getBorderWidth()));
+
+        if(getPointBackgroundColor() != null)
+            dataset = dataset.withPointBackgroundColor(getPointBackgroundColor().rgba());
+
+        if(getPointBackgroundColors() != null)
+        {
+            List<ChartJsRGBAColor> colors = new ArrayList<ChartJsRGBAColor>();
+            for(ChartColor color : getPointBackgroundColors())
+                colors.add(color.rgba());
+            dataset = dataset.withPointBackgroundColors(colors);
+        }
+
+        // Fill in the array if only a single value was provided
+        if(getPointBackgroundColor() != null && getPointBackgroundColors() == null)
+            dataset = dataset.withPointBackgroundColors(Collections.nCopies(points.size(), getPointBackgroundColor().rgba()));
+
+        if(getPointBorderColor() != null)
+            dataset = dataset.withPointBorderColor(getPointBorderColor().rgba());
+
+        if(getPointBorderColors() != null)
+        {
+            List<ChartJsRGBAColor> colors = new ArrayList<ChartJsRGBAColor>();
+            for(ChartColor color : getPointBackgroundColors())
+                colors.add(color.rgba());
+            dataset = dataset.withPointBorderColors(colors);
+        }
+
+        // Fill in the array if only a single value was provided
+        if(getPointBorderColor() != null && getPointBorderColors() == null)
+            dataset = dataset.withPointBorderColors(Collections.nCopies(points.size(), getPointBorderColor().rgba()));
+
+        if(getPointBorderWidth() != null)
+            dataset = dataset.withPointBorderWidth(getPointBorderWidth());
+
+        if(getPointBorderWidths() != null)
+            dataset = dataset.withPointBorderWidths(getPointBorderWidths());
+
+        // Fill in the array if only a single value was provided
+        if(getPointBorderWidth() != null && getPointBorderWidths() == null)
+            dataset = dataset.withPointBorderWidths(Collections.nCopies(points.size(), getPointBorderWidth()));
+
+        if(getPointRadius() != null)
+            dataset = dataset.withPointRadius(getPointRadius());
+
+        if(getPointRadiuses() != null)
+            dataset = dataset.withPointRadiuses(getPointRadiuses());
+
+        // Fill in the array if only a single value was provided
+        if(getPointRadius() != null && getPointRadiuses() == null)
+            dataset = dataset.withPointRadiuses(Collections.nCopies(points.size(), getPointRadius()));
 
         if(getFill() != null)
             dataset = dataset.withFill(getFill().configure());

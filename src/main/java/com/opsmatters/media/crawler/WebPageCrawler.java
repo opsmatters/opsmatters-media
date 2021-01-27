@@ -30,6 +30,8 @@ import com.google.common.net.UrlEscapers;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.By;
@@ -111,6 +113,19 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                 options.setHeadless(true);
 
                 driver = new ChromeDriver(options);
+                this.browser = browser;
+            }
+            else if(browser == CrawlerBrowser.FIREFOX)
+            {
+                FirefoxOptions options = new FirefoxOptions();
+                options.setPageLoadStrategy(PageLoadStrategy.EAGER);
+                options.addArguments("--window-size=1920,1080");
+                options.addArguments("--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36");
+                options.addArguments("--no-proxy-server");
+                options.addArguments("--proxy-server='direct://'");
+                options.addArguments("--proxy-bypass-list=*");
+                options.setHeadless(true);
+                driver = new FirefoxDriver(options);
                 this.browser = browser;
             }
             else // Defaults to HtmlUnit

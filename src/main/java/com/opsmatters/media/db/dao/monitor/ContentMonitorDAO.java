@@ -431,7 +431,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     public int getPendingCount(String code, String name, ContentType type) throws SQLException
     {
         int ret = 0;
-        for(ContentMonitor monitor : list(code))
+        for(ContentMonitor monitor : list(code, name, type))
         {
             if(monitor.getStatus() == MonitorStatus.PENDING)
                 ++ret;

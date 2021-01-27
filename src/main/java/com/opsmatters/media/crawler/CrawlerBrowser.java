@@ -24,7 +24,8 @@ package com.opsmatters.media.crawler;
 public enum CrawlerBrowser
 {
     HTMLUNIT("htmlunit"),
-    CHROME("chrome"); 
+    CHROME("chrome"),
+    FIREFOX("firefox");
 
     private String value;
 
