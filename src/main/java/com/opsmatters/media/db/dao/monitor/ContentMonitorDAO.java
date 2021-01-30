@@ -41,7 +41,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     /**
      * The query to use to select a monitor from the CONTENT_MONITORS table by id.
      */
-//GERALD
     private static final String GET_BY_ID_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, CHANGE_ID, ACTIVE "
       + "FROM CONTENT_MONITORS WHERE ID=?";
@@ -49,7 +48,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     /**
      * The query to use to insert a monitor into the CONTENT_MONITORS table.
      */
-//GERALD
     private static final String INSERT_SQL =  
       "INSERT INTO CONTENT_MONITORS"
       + "( ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, CHANGE_ID, ACTIVE )"
@@ -66,7 +64,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     /**
      * The query to use to select the monitors from the CONTENT_MONITORS table.
      */
-//GERALD
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, CHANGE_ID, ACTIVE "
       + "FROM CONTENT_MONITORS ORDER BY CREATED_DATE";
@@ -74,7 +71,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     /**
      * The query to use to select the monitors from the CONTENT_MONITORS table by organisation code.
      */
-//GERALD
     private static final String LIST_BY_CODE_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, CHANGE_ID, ACTIVE "
       + "FROM CONTENT_MONITORS WHERE CODE=? ORDER BY CREATED_DATE";
@@ -111,7 +107,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
         table.addColumn("EXECUTED_DATE", Types.TIMESTAMP, false);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("NAME", Types.VARCHAR, 25, true);
-//GERALD
         table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, true);
         table.addColumn("SNAPSHOT", Types.LONGVARCHAR, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
@@ -155,7 +150,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
                 monitor.setExecutedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 monitor.setCode(rs.getString(5));
                 monitor.setName(rs.getString(6));
-//GERALD
                 monitor.setContentType(rs.getString(7));
                 monitor.setSnapshot(getClob(rs, 8));
                 monitor.setAttributes(new JSONObject(getClob(rs, 9)));
@@ -204,7 +198,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
             insertStmt.setTimestamp(4, new Timestamp(monitor.getExecutedDateMillis()), UTC);
             insertStmt.setString(5, monitor.getCode());
             insertStmt.setString(6, monitor.getName());
-//GERALD
             insertStmt.setString(7, monitor.getContentType().name());
             String snapshot = monitor.getSnapshot();
             reader = new StringReader(snapshot);
@@ -335,7 +328,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
                 monitor.setExecutedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 monitor.setCode(rs.getString(5));
                 monitor.setName(rs.getString(6));
-//GERALD
                 monitor.setContentType(rs.getString(7));
                 monitor.setSnapshot(getClob(rs, 8));
                 monitor.setAttributes(new JSONObject(getClob(rs, 9)));
@@ -394,7 +386,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
                 monitor.setExecutedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 monitor.setCode(rs.getString(5));
                 monitor.setName(rs.getString(6));
-//GERALD
                 monitor.setContentType(rs.getString(7));
                 monitor.setSnapshot(getClob(rs, 8));
                 monitor.setAttributes(new JSONObject(getClob(rs, 9)));
