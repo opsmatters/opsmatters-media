@@ -41,16 +41,18 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     /**
      * The query to use to select a monitor from the CONTENT_MONITORS table by id.
      */
+//GERALD
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, SNAPSHOT, ATTRIBUTES, STATUS, CHANGE_ID, ACTIVE "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, CHANGE_ID, ACTIVE "
       + "FROM CONTENT_MONITORS WHERE ID=?";
 
     /**
      * The query to use to insert a monitor into the CONTENT_MONITORS table.
      */
+//GERALD
     private static final String INSERT_SQL =  
       "INSERT INTO CONTENT_MONITORS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, SNAPSHOT, ATTRIBUTES, STATUS, CHANGE_ID, ACTIVE )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, CHANGE_ID, ACTIVE )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
@@ -64,15 +66,17 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     /**
      * The query to use to select the monitors from the CONTENT_MONITORS table.
      */
+//GERALD
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, SNAPSHOT, ATTRIBUTES, STATUS, CHANGE_ID, ACTIVE "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, CHANGE_ID, ACTIVE "
       + "FROM CONTENT_MONITORS ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the monitors from the CONTENT_MONITORS table by organisation code.
      */
+//GERALD
     private static final String LIST_BY_CODE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, SNAPSHOT, ATTRIBUTES, STATUS, CHANGE_ID, ACTIVE "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, CHANGE_ID, ACTIVE "
       + "FROM CONTENT_MONITORS WHERE CODE=? ORDER BY CREATED_DATE";
 
     /**
@@ -107,6 +111,8 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
         table.addColumn("EXECUTED_DATE", Types.TIMESTAMP, false);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("NAME", Types.VARCHAR, 25, true);
+//GERALD
+        table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, true);
         table.addColumn("SNAPSHOT", Types.LONGVARCHAR, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
@@ -149,11 +155,13 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
                 monitor.setExecutedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 monitor.setCode(rs.getString(5));
                 monitor.setName(rs.getString(6));
-                monitor.setSnapshot(getClob(rs, 7));
-                monitor.setAttributes(new JSONObject(getClob(rs, 8)));
-                monitor.setStatus(rs.getString(9));
-                monitor.setChangeId(rs.getString(10));
-                monitor.setActive(rs.getBoolean(11));
+//GERALD
+                monitor.setContentType(rs.getString(7));
+                monitor.setSnapshot(getClob(rs, 8));
+                monitor.setAttributes(new JSONObject(getClob(rs, 9)));
+                monitor.setStatus(rs.getString(10));
+                monitor.setChangeId(rs.getString(11));
+                monitor.setActive(rs.getBoolean(12));
                 ret = monitor;
             }
         }
@@ -196,15 +204,17 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
             insertStmt.setTimestamp(4, new Timestamp(monitor.getExecutedDateMillis()), UTC);
             insertStmt.setString(5, monitor.getCode());
             insertStmt.setString(6, monitor.getName());
+//GERALD
+            insertStmt.setString(7, monitor.getContentType().name());
             String snapshot = monitor.getSnapshot();
             reader = new StringReader(snapshot);
-            insertStmt.setCharacterStream(7, reader, snapshot.length());
+            insertStmt.setCharacterStream(8, reader, snapshot.length());
             String attributes = monitor.getAttributes().toString();
             reader2 = new StringReader(attributes);
-            insertStmt.setCharacterStream(8, reader2, attributes.length());
-            insertStmt.setString(9, monitor.getStatus().name());
-            insertStmt.setString(10, monitor.getChangeId());
-            insertStmt.setBoolean(11, monitor.isActive());
+            insertStmt.setCharacterStream(9, reader2, attributes.length());
+            insertStmt.setString(10, monitor.getStatus().name());
+            insertStmt.setString(11, monitor.getChangeId());
+            insertStmt.setBoolean(12, monitor.isActive());
             insertStmt.executeUpdate();
 
             logger.info("Created monitor '"+monitor.getId()+"' in CONTENT_MONITORS");
@@ -325,11 +335,13 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
                 monitor.setExecutedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 monitor.setCode(rs.getString(5));
                 monitor.setName(rs.getString(6));
-                monitor.setSnapshot(getClob(rs, 7));
-                monitor.setAttributes(new JSONObject(getClob(rs, 8)));
-                monitor.setStatus(rs.getString(9));
-                monitor.setChangeId(rs.getString(10));
-                monitor.setActive(rs.getBoolean(11));
+//GERALD
+                monitor.setContentType(rs.getString(7));
+                monitor.setSnapshot(getClob(rs, 8));
+                monitor.setAttributes(new JSONObject(getClob(rs, 9)));
+                monitor.setStatus(rs.getString(10));
+                monitor.setChangeId(rs.getString(11));
+                monitor.setActive(rs.getBoolean(12));
                 ret.add(monitor);
             }
         }
@@ -382,11 +394,13 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
                 monitor.setExecutedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 monitor.setCode(rs.getString(5));
                 monitor.setName(rs.getString(6));
-                monitor.setSnapshot(getClob(rs, 7));
-                monitor.setAttributes(new JSONObject(getClob(rs, 8)));
-                monitor.setStatus(rs.getString(9));
-                monitor.setChangeId(rs.getString(10));
-                monitor.setActive(rs.getBoolean(11));
+//GERALD
+                monitor.setContentType(rs.getString(7));
+                monitor.setSnapshot(getClob(rs, 8));
+                monitor.setAttributes(new JSONObject(getClob(rs, 9)));
+                monitor.setStatus(rs.getString(10));
+                monitor.setChangeId(rs.getString(11));
+                monitor.setActive(rs.getBoolean(12));
                 ret.add(monitor);
             }
         }
