@@ -32,12 +32,10 @@ public class RoundupConfiguration extends ContentConfiguration<RoundupArticle>
 {
     private static final Logger logger = Logger.getLogger(RoundupConfiguration.class.getName());
 
-    public static final String IMAGE_PREFIX = "image-prefix";
     public static final String IMAGE_EXT = "image-ext";
     public static final String IMAGE_FORMAT = "image-format";
     public static final String PAGES = "pages";
 
-    private String imagePrefix = "";
     private String imageExt = "";
     private String imageFormat = "";
     private List<WebPageConfiguration> pages = new ArrayList<WebPageConfiguration>();
@@ -67,7 +65,6 @@ public class RoundupConfiguration extends ContentConfiguration<RoundupArticle>
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setImagePrefix(obj.getImagePrefix());
             setImageFormat(obj.getImageFormat());
             setImageExt(obj.getImageExt());
             for(WebPageConfiguration page : obj.getPages())
@@ -91,22 +88,6 @@ public class RoundupConfiguration extends ContentConfiguration<RoundupArticle>
     public boolean trimDeployedContent()
     {
         return true;
-    }
-
-    /**
-     * Returns the image prefix for this configuration.
-     */
-    public String getImagePrefix()
-    {
-        return imagePrefix;
-    }
-
-    /**
-     * Sets the image prefix for this configuration.
-     */
-    public void setImagePrefix(String imagePrefix)
-    {
-        this.imagePrefix = imagePrefix;
     }
 
     /**
@@ -205,8 +186,6 @@ public class RoundupConfiguration extends ContentConfiguration<RoundupArticle>
     protected void parseDocument(Map<String,Object> map)
     {
         super.parseDocument(map);
-        if(map.containsKey(IMAGE_PREFIX))
-            setImagePrefix((String)map.get(IMAGE_PREFIX));
         if(map.containsKey(IMAGE_EXT))
             setImageExt((String)map.get(IMAGE_EXT));
         if(map.containsKey(IMAGE_FORMAT))

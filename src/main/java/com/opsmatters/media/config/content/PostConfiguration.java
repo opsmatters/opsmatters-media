@@ -32,10 +32,6 @@ public class PostConfiguration extends ContentConfiguration<PostArticle>
 {
     private static final Logger logger = Logger.getLogger(PostConfiguration.class.getName());
 
-    public static final String IMAGE_PREFIX = "image-prefix";
-
-    private String imagePrefix = "";
-
     /**
      * Default constructor.
      */
@@ -54,50 +50,11 @@ public class PostConfiguration extends ContentConfiguration<PostArticle>
     }
 
     /**
-     * Copies the attributes of the given object.
-     */
-    public void copyAttributes(PostConfiguration obj)
-    {
-        if(obj != null)
-        {
-            super.copyAttributes(obj);
-            setImagePrefix(obj.getImagePrefix());
-        }
-    }
-
-    /**
      * Returns the type for this configuration.
      */
     @Override
     public ContentType getType()
     {
         return ContentType.POST;
-    }
-
-    /**
-     * Returns the image prefix for this configuration.
-     */
-    public String getImagePrefix()
-    {
-        return imagePrefix;
-    }
-
-    /**
-     * Sets the image prefix for this configuration.
-     */
-    public void setImagePrefix(String imagePrefix)
-    {
-        this.imagePrefix = imagePrefix;
-    }
-
-    /**
-     * Reads the configuration from the given YAML Document.
-     */
-    @Override
-    protected void parseDocument(Map<String,Object> map)
-    {
-        super.parseDocument(map);
-        if(map.containsKey(IMAGE_PREFIX))
-            setImagePrefix((String)map.get(IMAGE_PREFIX));
     }
 }

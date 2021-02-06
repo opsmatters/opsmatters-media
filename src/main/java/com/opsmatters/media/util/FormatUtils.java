@@ -447,7 +447,7 @@ public class FormatUtils
             ret = ret.replaceAll("%5D", "]");
 
             // Remove other special characters
-            ret = ret.replaceAll("%23|%25|%27|%2C|%3B|%3F|%7C|%CC%81|%CC%83", "");
+            ret = ret.replaceAll("%22|%23|%25|%27|%2C|%3B|%3F|%7C|%CC%81|%CC%83", "");
 
             // Remove quotes, dashes etc
             ret = ret.replaceAll("'|‘|’|‚|‛|“|”|„|′|″", "");

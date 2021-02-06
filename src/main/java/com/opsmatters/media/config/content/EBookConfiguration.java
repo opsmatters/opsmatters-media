@@ -44,7 +44,6 @@ public class EBookConfiguration extends PublicationConfiguration<EBookResource>
         if(obj != null)
         {
             copyAttributes(obj);
-            setImagePrefix(obj.getImagePrefix());
             for(WebPageConfiguration page : obj.getPages())
                 addPage(new WebPageConfiguration(page));
         }

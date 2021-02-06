@@ -44,6 +44,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
     public static final String SHEET = "sheet";
     public static final String SOURCE = "source";
     public static final String DEFAULT_DATE_PATTERN = "default-date-pattern";
+    public static final String IMAGE_PREFIX = "image-prefix";
     public static final String SUMMARY = "summary";
     public static final String FIELDS = "fields";
     public static final String OUTPUT = "output";
@@ -52,6 +53,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
     private String sheet = "";
     private ContentSource source = ContentSource.STORE;
     private String defaultDatePattern = "";
+    private String imagePrefix = "";
     private SummaryConfiguration summary; 
     private Fields fields;
     private Map<String,String> output;
@@ -76,6 +78,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
             setSheet(obj.getSheet());
             setSource(obj.getSource());
             setDefaultDatePattern(obj.getDefaultDatePattern());
+            setImagePrefix(obj.getImagePrefix());
             if(obj.getSummary() != null)
                 setSummary(new SummaryConfiguration(obj.getSummary()));
             setFields(new Fields(obj.getFields()));
@@ -170,6 +173,30 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
     public void setSource(ContentSource source)
     {
         this.source = source;
+    }
+
+    /**
+     * Returns the image prefix for this configuration.
+     */
+    public String getImagePrefix()
+    {
+        return imagePrefix;
+    }
+
+    /**
+     * Sets the image prefix for this configuration.
+     */
+    public void setImagePrefix(String imagePrefix)
+    {
+        this.imagePrefix = imagePrefix;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the image prefix has been set for this configuration.
+     */
+    public boolean hasImagePrefix()
+    {
+        return imagePrefix != null && imagePrefix.length() > 0;
     }
 
     /**
