@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Gerald Curley
+ * Copyright 2021 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,37 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.db.dao.drupal;
+package com.opsmatters.media.db.dao.feed;
 
 import com.opsmatters.media.db.JDBCDatabaseDriver;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.db.dao.DAOFactory;
 
 /**
- * The class for all drupal data access object factories.
+ * The class for all feed data access object factories.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class DrupalDAOFactory extends DAOFactory
+public class FeedDAOFactory extends DAOFactory
 {
     /**
      * Constructor that takes a database driver and connection.
      */
-    public DrupalDAOFactory(JDBCDatabaseDriver driver, JDBCDatabaseConnection conn)
+    public FeedDAOFactory(JDBCDatabaseDriver driver, JDBCDatabaseConnection conn)
     {
         super(driver, conn);
 
-        getFeedsDAO();
+        getContentFeedDAO();
+        getFeedImportDAO();
     }
 
     /**
      * Returns the feeds DAO.
      */
-    public FeedsDAO getFeedsDAO()
+    public ContentFeedDAO getContentFeedDAO()
     {
-        if(feedsDAO == null)
-            feedsDAO = new FeedsDAO(this);
-        return feedsDAO;
+        if(contentFeedDAO == null)
+            contentFeedDAO = new ContentFeedDAO(this);
+        return contentFeedDAO;
+    }
+
+    /**
+     * Returns the feed imports DAO.
+     */
+    public FeedImportDAO getFeedImportDAO()
+    {
+        if(feedImportDAO == null)
+            feedImportDAO = new FeedImportDAO(this);
+        return feedImportDAO;
     }
 
     /**
@@ -53,8 +64,10 @@ public class DrupalDAOFactory extends DAOFactory
     public void close()
     {
         super.close();
-        feedsDAO = null;
+        contentFeedDAO = null;
+        feedImportDAO = null;
     }
 
-    private FeedsDAO feedsDAO;
+    private ContentFeedDAO contentFeedDAO;
+    private FeedImportDAO feedImportDAO;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Gerald Curley
+ * Copyright 2021 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,39 +14,37 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.admin;
+package com.opsmatters.media.model.feed;
 
 /**
- * Represents the type of an application parameter.
+ * Represents the status of a feed.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum AppParameterType
+public enum FeedStatus
 {
-    UI("ui"),
-    NEWSLETTER("newsletter"),
-    FEEDS("feeds"),
-    DASHBOARD("dashboard"),
-    MONITOR_MANAGER("monitor-manager"),
-    POST_MANAGER("post-manager"),
-    EMAIL_MANAGER("email-manager"),
-    FEED_MANAGER("feed-manager"),
-    THREAD_MANAGER("thread-manager");
+    NEW("New"),
+    PENDING("Pending"),
+    WAITING("Waiting"),
+    EXECUTING("Executing"),
+    ERROR("Error"),
+    COMPLETED("Completed"),
+    ALL("All");
 
     private String value;
 
     /**
-     * Constructor that takes the type value.
-     * @param value The value for the type
+     * Constructor that takes the status value.
+     * @param value The value for the status
      */
-    AppParameterType(String value)
+    FeedStatus(String value)
     {
         this.value = value;
     }
 
     /**
-     * Returns the value of the type.
-     * @return The value of the type.
+     * Returns the value of the status.
+     * @return The value of the status.
      */
     public String toString()
     {
@@ -67,10 +65,10 @@ public enum AppParameterType
      * @param value The type value
      * @return The type for the given value
      */
-    public static AppParameterType fromValue(String value)
+    public static FeedStatus fromValue(String value)
     {
-        AppParameterType[] types = values();
-        for(AppParameterType type : types)
+        FeedStatus[] types = values();
+        for(FeedStatus type : types)
         {
             if(type.value().equals(value))
                 return type;

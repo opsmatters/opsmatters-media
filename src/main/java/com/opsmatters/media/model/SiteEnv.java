@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Gerald Curley
+ * Copyright 2021 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,39 +14,35 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.admin;
+package com.opsmatters.media.model;
 
 /**
- * Represents the type of an application parameter.
+ * Represents the environments for a site.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum AppParameterType
+public enum SiteEnv
 {
-    UI("ui"),
-    NEWSLETTER("newsletter"),
-    FEEDS("feeds"),
-    DASHBOARD("dashboard"),
-    MONITOR_MANAGER("monitor-manager"),
-    POST_MANAGER("post-manager"),
-    EMAIL_MANAGER("email-manager"),
-    FEED_MANAGER("feed-manager"),
-    THREAD_MANAGER("thread-manager");
+    STAGE("stage", "Stage"),
+    PROD("prod", "Production");
 
+    private String code;
     private String value;
 
     /**
-     * Constructor that takes the type value.
-     * @param value The value for the type
+     * Constructor that takes the env code and value.
+     * @param code The code for the env
+     * @param value The value for the env
      */
-    AppParameterType(String value)
+    SiteEnv(String code, String value)
     {
+        this.code = code;
         this.value = value;
     }
 
     /**
-     * Returns the value of the type.
-     * @return The value of the type.
+     * Returns the value of the env.
+     * @return The value of the env.
      */
     public String toString()
     {
@@ -54,8 +50,17 @@ public enum AppParameterType
     }
 
     /**
-     * Returns the value of the status.
-     * @return The value of the status.
+     * Returns the code of the env.
+     * @return The code of the env.
+     */
+    public String code()
+    {
+        return code;
+    }
+
+    /**
+     * Returns the value of the env.
+     * @return The value of the env.
      */
     public String value()
     {
@@ -67,10 +72,10 @@ public enum AppParameterType
      * @param value The type value
      * @return The type for the given value
      */
-    public static AppParameterType fromValue(String value)
+    public static SiteEnv fromValue(String value)
     {
-        AppParameterType[] types = values();
-        for(AppParameterType type : types)
+        SiteEnv[] types = values();
+        for(SiteEnv type : types)
         {
             if(type.value().equals(value))
                 return type;

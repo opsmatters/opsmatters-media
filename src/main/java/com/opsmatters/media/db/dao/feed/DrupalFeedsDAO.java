@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.db.dao.drupal;
+package com.opsmatters.media.db.dao.feed;
 
 import java.util.logging.Logger;
 import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.db.dao.DAOFactory;
 
 /**
- * DAO that provides operations on a drupal table in the database.
+ * DAO that provides operations on a drupal feeds table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class DrupalDAO<T> extends BaseDAO
+public abstract class DrupalFeedsDAO<T> extends BaseDAO
 {
-    private static final Logger logger = Logger.getLogger(DrupalDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(DrupalFeedsDAO.class.getName());
 
     /**
      * Constructor that takes a DAO factory and a table name.
      */
-    public DrupalDAO(DAOFactory factory, String tableName)
+    public DrupalFeedsDAO(DAOFactory factory, String tableName)
     {
         super(factory, tableName);
     }

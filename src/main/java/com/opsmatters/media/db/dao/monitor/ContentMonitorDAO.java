@@ -52,7 +52,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
       "INSERT INTO CONTENT_MONITORS"
       + "( ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, CHANGE_ID, ACTIVE )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a monitor in the CONTENT_MONITORS table.

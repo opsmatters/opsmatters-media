@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 import java.sql.SQLException;
 import com.opsmatters.media.config.YamlConfiguration;
+import com.opsmatters.media.model.SiteEnv;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.content.Organisation;
@@ -401,8 +402,8 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
             handler.trimFirstLines(maxItems);
         handler.convertLinesToAscii(getHtmlFields());
         handler.writeFile();
-        handler.copyFileToHost(System.getProperty("opsmatters.files.stage.feeds."+type), "stage");
-        handler.copyFileToHost(System.getProperty("opsmatters.files.prod.feeds."+type), "prod");
+        for(SiteEnv env : SiteEnv.values())
+            handler.copyFileToHost(System.getProperty(String.format("opsmatters.files.%s.feeds.%s", env.code(), type)), env.code());
         handler.deleteFile();
 
         return items;
