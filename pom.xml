@@ -72,9 +72,10 @@
         <filtering>true</filtering>
       </resource>
       <resource>
+				<filtering>false</filtering>
         <directory>target</directory>
         <includes>
-            <include>**/build.properties</include>
+          <include>build.properties</include>
         </includes>
       </resource>
     </resources>

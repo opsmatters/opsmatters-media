@@ -66,7 +66,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
      */
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, CHANGE_ID, ACTIVE "
-      + "FROM CONTENT_MONITORS ORDER BY CREATED_DATE";
+      + "FROM CONTENT_MONITORS ORDER BY EXECUTED_DATE";
 
     /**
      * The query to use to select the monitors from the CONTENT_MONITORS table by organisation code.
