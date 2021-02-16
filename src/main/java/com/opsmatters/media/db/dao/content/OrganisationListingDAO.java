@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.content.OrganisationListing;
+import com.opsmatters.media.model.content.ContentStatus;
 
 /**
  * DAO that provides operations on the ORGANISATION_LISTINGS table in the database.
@@ -71,15 +72,15 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO ORGANISATION_LISTINGS"
-      + "( ID, PUBLISHED_DATE, UUID, CODE, TITLE, ATTRIBUTES, CREATED_BY )"
+      + "( ID, PUBLISHED_DATE, UUID, CODE, TITLE, STATUS, ATTRIBUTES, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update an organisation listing in the ORGANISATION_LISTINGS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE ORGANISATION_LISTINGS SET PUBLISHED_DATE=?, UUID=?, CODE=?, TITLE=?, ATTRIBUTES=? "
+      "UPDATE ORGANISATION_LISTINGS SET PUBLISHED_DATE=?, UUID=?, CODE=?, TITLE=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE ID=?";
 
     /**
@@ -113,11 +114,13 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
         table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("TITLE", Types.VARCHAR, 60, true);
+        table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.setPrimaryKey("ORGANISATION_LISTINGS_PK", new String[] {"ID"});
         table.addIndex("ORGANISATION_LISTINGS_UUID_IDX", new String[] {"UUID"});
         table.addIndex("ORGANISATION_LISTINGS_TITLE_IDX", new String[] {"TITLE"});
+        table.addIndex("ORGANISATION_LISTINGS_STATUS_IDX", new String[] {"STATUS"});
         table.setInitialised(true);
     }
 
@@ -383,10 +386,11 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
             insertStmt.setString(3, listing.getUuid());
             insertStmt.setString(4, listing.getCode());
             insertStmt.setString(5, listing.getTitle());
+            insertStmt.setString(6, listing.getStatus().name());
             String attributes = listing.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(6, reader, attributes.length());
-            insertStmt.setString(7, listing.getCreatedBy());
+            insertStmt.setCharacterStream(7, reader, attributes.length());
+            insertStmt.setString(8, listing.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s, code=%s)", 
@@ -437,10 +441,11 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
             updateStmt.setString(2, listing.getUuid());
             updateStmt.setString(3, listing.getCode());
             updateStmt.setString(4, listing.getTitle());
+            updateStmt.setString(5, listing.getStatus().name());
             String attributes = listing.toJson().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(5, reader, attributes.length());
-            updateStmt.setInt(6, listing.getId());
+            updateStmt.setCharacterStream(6, reader, attributes.length());
+            updateStmt.setInt(7, listing.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s, code=%s)", 
@@ -543,38 +548,6 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
                 listing.setId(getMaxId()+1);
                 add(listing);
                 ret = true;
-            }
-        }
-
-        return ret;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if all the organisation listings have been deployed.
-     */
-    @Override
-    public boolean isDeployed(String code) throws SQLException
-    {
-        return isDeployed();
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if all the organisation listings have been deployed.
-     */
-    public boolean isDeployed() throws SQLException
-    {
-        boolean ret = true;
-
-        List<OrganisationListing> listings = list();
-        if(listings.size() > 0)
-        {
-            for(OrganisationListing listing : listings)
-            {
-                if(!listing.isDeployed())
-                {
-                    ret = false;
-                    break;
-                }
             }
         }
 

@@ -32,7 +32,8 @@ public enum ContentType
     EBOOK("EB", "EBook", "ebooks", "glyphicon-book"),
     PROJECT("PR", "Project", "projects", "glyphicon-tasks"),
     TOOL("TL", "Tool", "tools", "glyphicon-wrench"),
-    JOB("JB", "Job", "jobs", "glyphicon-briefcase");
+    JOB("JB", "Job", "jobs", "glyphicon-briefcase"),
+    ARTICLE("", "Article", "", "glyphicon-file");
 
     private String code;
     private String value;

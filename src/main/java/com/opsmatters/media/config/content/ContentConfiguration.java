@@ -28,6 +28,7 @@ import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.model.content.OrganisationListing;
+import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.handler.ContentHandler;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.util.FileUtils;
@@ -359,10 +360,10 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 // Add the path to the thumbnail and logo
                 String thumbnail = fields.get(Fields.THUMBNAIL);
                 fields.put(Fields.THUMBNAIL, String.format("%s/%s",
-                    System.getProperty("opsmatters.site.app.logos"), thumbnail));
+                    System.getProperty("opsmatters.site.publisher.logos"), thumbnail));
                 String image = fields.get(Fields.IMAGE);
                 fields.put(Fields.IMAGE, String.format("%s/%s",
-                    System.getProperty("opsmatters.site.app.logos"), image));
+                    System.getProperty("opsmatters.site.publisher.logos"), image));
             }
             else
             {
@@ -371,7 +372,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 if(image != null && image.length() > 0)
                 {
                     fields.put(Fields.IMAGE, String.format("%s/%s",
-                        System.getProperty("opsmatters.site.app.images"), image));
+                        System.getProperty("opsmatters.site.publisher.images"), image));
                 }
 
                 // Allow for Miscellaneous posts with no organisation
@@ -385,7 +386,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
 
             fields.add(handler);
             handler.appendLine(handler.getValues(fields));
-            content.setDeployed(true);
+            content.setStatus(ContentStatus.DEPLOYED);
             if(content.isDeployed() != deployed)
                 contentDAO.update(content);
         }

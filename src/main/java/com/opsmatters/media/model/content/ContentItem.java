@@ -46,9 +46,9 @@ public abstract class ContentItem implements java.io.Serializable
     private String code = "";
     private boolean published = false;
     private String createdBy = "";
-    private boolean deployed = false;
     private boolean social = false;
     private String canonicalUrl = "";
+    private ContentStatus status = ContentStatus.NEW;
 
     /**
      * Default constructor.
@@ -86,9 +86,9 @@ public abstract class ContentItem implements java.io.Serializable
         setId(obj.getId());
         setPublished(obj.isPublished());
         setCreatedBy(new String(obj.getCreatedBy() != null ? obj.getCreatedBy() : ""));
-        setDeployed(obj.isDeployed());
         setSocial(obj.hasSocial());
         setCanonicalUrl(new String(obj.getCanonicalUrl() != null ? obj.getCanonicalUrl() : ""));
+        setStatus(obj.getStatus());
     }
 
     /**
@@ -104,8 +104,8 @@ public abstract class ContentItem implements java.io.Serializable
         setSummary(EmojiParser.parseToUnicode(obj.optString(Fields.SUMMARY)));
         setPublished(obj.optBoolean(Fields.PUBLISHED, false));
         setCreatedBy(obj.optString(Fields.CREATED_BY));
-        setDeployed(obj.optBoolean(Fields.DEPLOYED));
         setSocial(obj.optBoolean(Fields.SOCIAL, false));
+        setStatus(obj.optString(Fields.STATUS));
     }
 
     /**
@@ -124,8 +124,8 @@ public abstract class ContentItem implements java.io.Serializable
             ret.putOpt(Fields.SUMMARY, EmojiParser.parseToAliases(getSummary()));
         ret.put(Fields.PUBLISHED, isPublished());
         ret.put(Fields.CREATED_BY, getCreatedBy());
-        ret.put(Fields.DEPLOYED, isDeployed());
         ret.put(Fields.SOCIAL, hasSocial());
+        ret.put(Fields.STATUS, getStatus().name());
 
         return ret;
     }
@@ -582,22 +582,6 @@ public abstract class ContentItem implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if this content has been deployed.
-     */
-    public boolean isDeployed()
-    {
-        return deployed;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if this content has been deployed.
-     */
-    public void setDeployed(boolean deployed)
-    {
-        this.deployed = deployed;
-    }
-
-    /**
      * Returns <CODE>true</CODE> if this content has metatags to set.
      */
     public boolean hasMetatags()
@@ -683,5 +667,37 @@ public abstract class ContentItem implements java.io.Serializable
     public boolean hasCanonicalUrl()
     {
         return canonicalUrl != null && canonicalUrl.length() > 0;
+    }
+
+    /**
+     * Returns the content status.
+     */
+    public ContentStatus getStatus()
+    {
+        return status;
+    }
+
+    /**
+     * Sets the content status.
+     */
+    public void setStatus(String status)
+    {
+        setStatus(ContentStatus.valueOf(status));
+    }
+
+    /**
+     * Sets the content status.
+     */
+    public void setStatus(ContentStatus status)
+    {
+        this.status = status;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this content has been deployed.
+     */
+    public boolean isDeployed()
+    {
+        return getStatus() == ContentStatus.DEPLOYED;
     }
 }

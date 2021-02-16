@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.content.PostArticle;
+import com.opsmatters.media.model.content.ContentStatus;
 
 /**
  * DAO that provides operations on the POSTS table in the database.
@@ -39,15 +40,15 @@ public class PostArticleDAO extends ContentDAO<PostArticle>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO POSTS"
-      + "( CODE, ID, PUBLISHED_DATE, UUID, PUBLISHED, CREATED_BY, ATTRIBUTES )"
+      + "( CODE, ID, PUBLISHED_DATE, UUID, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a post in the POSTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE POSTS SET PUBLISHED_DATE=?, UUID=?, PUBLISHED=?, ATTRIBUTES=? "
+      "UPDATE POSTS SET PUBLISHED_DATE=?, UUID=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE CODE=? AND ID=?";
 
     /**
@@ -69,10 +70,12 @@ public class PostArticleDAO extends ContentDAO<PostArticle>
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
+        table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.setPrimaryKey("POSTS_PK", new String[] {"CODE","ID"});
         table.addIndex("POSTS_UUID_IDX", new String[] {"CODE","UUID"});
+        table.addIndex("POSTS_STATUS_IDX", new String[] {"STATUS"});
         table.setInitialised(true);
     }
 
@@ -100,10 +103,11 @@ public class PostArticleDAO extends ContentDAO<PostArticle>
             insertStmt.setTimestamp(3, new Timestamp(content.getPublishedDateMillis()), UTC);
             insertStmt.setString(4, content.getUuid());
             insertStmt.setBoolean(5, content.isPublished());
-            insertStmt.setString(6, content.getCreatedBy());
+            insertStmt.setString(6, content.getStatus().name());
+            insertStmt.setString(7, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(7, reader, attributes.length());
+            insertStmt.setCharacterStream(8, reader, attributes.length());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -151,11 +155,12 @@ public class PostArticleDAO extends ContentDAO<PostArticle>
             updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
             updateStmt.setString(2, content.getUuid());
             updateStmt.setBoolean(3, content.isPublished());
+            updateStmt.setString(4, content.getStatus().name());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(4, reader, attributes.length());
-            updateStmt.setString(5, content.getCode());
-            updateStmt.setInt(6, content.getId());
+            updateStmt.setCharacterStream(5, reader, attributes.length());
+            updateStmt.setString(6, content.getCode());
+            updateStmt.setInt(7, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 

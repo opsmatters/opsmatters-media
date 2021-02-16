@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.feed;
+package com.opsmatters.media.model.content;
 
 /**
- * Represents the status of a feed.
+ * Represents the status of a content item.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum FeedStatus
+public enum ContentStatus
 {
     NEW("New"),
     PENDING("Pending"),
-    WAITING("Waiting"),
     DEPLOYING("Deploying"),
-    EXECUTING("Executing"),
-    ERROR("Error"),
-    COMPLETED("Completed"),
-    ALL("All");
+    DEPLOYED("Deployed");
 
     private String value;
 
@@ -38,7 +34,7 @@ public enum FeedStatus
      * Constructor that takes the status value.
      * @param value The value for the status
      */
-    FeedStatus(String value)
+    ContentStatus(String value)
     {
         this.value = value;
     }
@@ -66,10 +62,10 @@ public enum FeedStatus
      * @param value The type value
      * @return The type for the given value
      */
-    public static FeedStatus fromValue(String value)
+    public static ContentStatus fromValue(String value)
     {
-        FeedStatus[] types = values();
-        for(FeedStatus type : types)
+        ContentStatus[] types = values();
+        for(ContentStatus type : types)
         {
             if(type.value().equals(value))
                 return type;

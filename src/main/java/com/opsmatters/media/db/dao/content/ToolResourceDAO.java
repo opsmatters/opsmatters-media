@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.content.ToolResource;
+import com.opsmatters.media.model.content.ContentStatus;
 
 /**
  * DAO that provides operations on the TOOLS table in the database.
@@ -39,17 +40,15 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO TOOLS"
-      + "( CODE, ID, PUBLISHED_DATE, UUID, TITLE, "
-      + "PUBLISHED, CREATED_BY, ATTRIBUTES )"
+      + "( CODE, ID, PUBLISHED_DATE, UUID, TITLE, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a tool in the TOOLS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE TOOLS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, "
-      + "PUBLISHED=?, ATTRIBUTES=? "
+      "UPDATE TOOLS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE CODE=? AND ID=?";
 
     /**
@@ -72,10 +71,12 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
         table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("TITLE", Types.VARCHAR, 128, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
+        table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.setPrimaryKey("TOOLS_PK", new String[] {"CODE","ID"});
         table.addIndex("TOOLS_UUID_IDX", new String[] {"CODE","UUID"});
+        table.addIndex("TOOLS_STATUS_IDX", new String[] {"STATUS"});
         table.setInitialised(true);
     }
 
@@ -104,10 +105,11 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
             insertStmt.setString(4, content.getUuid());
             insertStmt.setString(5, content.getTitle());
             insertStmt.setBoolean(6, content.isPublished());
-            insertStmt.setString(7, content.getCreatedBy());
+            insertStmt.setString(7, content.getStatus().name());
+            insertStmt.setString(8, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(8, reader, attributes.length());
+            insertStmt.setCharacterStream(9, reader, attributes.length());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -156,11 +158,12 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
             updateStmt.setString(2, content.getUuid());
             updateStmt.setString(3, content.getTitle());
             updateStmt.setBoolean(4, content.isPublished());
+            updateStmt.setString(5, content.getStatus().name());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(5, reader, attributes.length());
-            updateStmt.setString(6, content.getCode());
-            updateStmt.setInt(7, content.getId());
+            updateStmt.setCharacterStream(6, reader, attributes.length());
+            updateStmt.setString(7, content.getCode());
+            updateStmt.setInt(8, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 

@@ -104,6 +104,7 @@ public class Fields extends LinkedHashMap<String,String>
     public static final String CONTACT = "contact";
     public static final String CANONICAL_URL = "canonical-url";
     public static final String METATAGS = "metatags";
+    public static final String STATUS = "status";
 
     /**
      * Default constructor.

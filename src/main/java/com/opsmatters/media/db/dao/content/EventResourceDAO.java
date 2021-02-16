@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.content.EventResource;
+import com.opsmatters.media.model.content.ContentStatus;
 
 /**
  * DAO that provides operations on the EVENTS table in the database.
@@ -45,17 +46,15 @@ public class EventResourceDAO extends ContentDAO<EventResource>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO EVENTS"
-      + "( CODE, ID, PUBLISHED_DATE, START_DATE, UUID, URL, ACTIVITY_TYPE, "
-      + "PUBLISHED, CREATED_BY, ATTRIBUTES )"
+      + "( CODE, ID, PUBLISHED_DATE, START_DATE, UUID, URL, ACTIVITY_TYPE, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a event in the EVENTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE EVENTS SET PUBLISHED_DATE=?, START_DATE=?, UUID=?, URL=?, ACTIVITY_TYPE=?, "
-      + "PUBLISHED=?, ATTRIBUTES=? "
+      "UPDATE EVENTS SET PUBLISHED_DATE=?, START_DATE=?, UUID=?, URL=?, ACTIVITY_TYPE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE CODE=? AND ID=?";
 
     /**
@@ -80,11 +79,13 @@ public class EventResourceDAO extends ContentDAO<EventResource>
         table.addColumn("URL", Types.VARCHAR, 512, true);
         table.addColumn("ACTIVITY_TYPE", Types.VARCHAR, 30, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
+        table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.setPrimaryKey("EVENTS_PK", new String[] {"CODE","ID"});
         table.addIndex("EVENTS_UUID_IDX", new String[] {"CODE","UUID"});
         table.addIndex("EVENTS_URL_IDX", new String[] {"CODE","URL"});
+        table.addIndex("EVENTS_STATUS_IDX", new String[] {"STATUS"});
         table.setInitialised(true);
     }
 
@@ -163,10 +164,11 @@ public class EventResourceDAO extends ContentDAO<EventResource>
             insertStmt.setString(6, content.getUrl());
             insertStmt.setString(7, content.getActivityType());
             insertStmt.setBoolean(8, content.isPublished());
-            insertStmt.setString(9, content.getCreatedBy());
+            insertStmt.setString(9, content.getStatus().name());
+            insertStmt.setString(10, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(10, reader, attributes.length());
+            insertStmt.setCharacterStream(11, reader, attributes.length());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -217,11 +219,12 @@ public class EventResourceDAO extends ContentDAO<EventResource>
             updateStmt.setString(4, content.getUrl());
             updateStmt.setString(5, content.getActivityType());
             updateStmt.setBoolean(6, content.isPublished());
+            updateStmt.setString(7, content.getStatus().name());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(7, reader, attributes.length());
-            updateStmt.setString(8, content.getCode());
-            updateStmt.setInt(9, content.getId());
+            updateStmt.setCharacterStream(8, reader, attributes.length());
+            updateStmt.setString(9, content.getCode());
+            updateStmt.setInt(10, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 

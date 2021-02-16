@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.db.dao.DAOFactory;
 import com.opsmatters.media.model.content.ContentItem;
+import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.util.ClassUtils;
 import com.opsmatters.media.util.StringUtils;
 
@@ -64,6 +65,12 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
      */
     private static final String LIST_BY_DATE_SQL =  
       "SELECT ATTRIBUTES FROM %s WHERE PUBLISHED=1 AND PUBLISHED_DATE>? ORDER BY ID";
+
+    /**
+     * The query to use to select the content from the table by status.
+     */
+    private static final String LIST_BY_STATUS_SQL =  
+      "SELECT ATTRIBUTES FROM %s WHERE STATUS=? ORDER BY CODE";
 
     /**
      * The query to use to get the count of content items from the table.
@@ -308,6 +315,56 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
     }
 
     /**
+     * Returns the content items from the table by status.
+     */
+    public List<T> list(ContentStatus status) throws SQLException
+    {
+        List<T> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByStatusStmt == null)
+            listByStatusStmt = prepareStatement(getConnection(), String.format(LIST_BY_STATUS_SQL, getTableName()));
+        clearParameters(listByStatusStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByStatusStmt.setString(1, status.name());
+            listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByStatusStmt.executeQuery();
+            ret = new ArrayList<T>();
+            while(rs.next())
+            {
+                JSONObject attributes = new JSONObject(getClob(rs, 1));
+                ret.add(newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes }));
+            }
+        }
+        catch(IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
+        {
+            logger.severe(StringUtils.serialize(e));
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the count of content items from the table.
      */
     public int count() throws SQLException
@@ -434,31 +491,6 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
     }
 
     /**
-     * Returns <CODE>true</CODE> if all the content items for the given organisation code have been deployed.
-     */
-    public boolean isDeployed(String code) throws SQLException
-    {
-        boolean ret = true;
-
-        List<T> items = list(code);
-        if(items.size() > 0)
-        {
-            for(T content : items)
-            {
-                if(!content.isDeployed())
-                {
-                    logger.info(String.format("Organisation %s %s content not deployed: %s (GUID=%s)", 
-                        code, getTableName(), content.getTitle(), content.getGuid()));
-                    ret = false;
-                    break;
-                }
-            }
-        }
-
-        return ret;
-    }
-
-    /**
      * Returns an instance of the template class.
      */
     private T newContentInstance(Class[] parameterTypes, Object[] parameters)
@@ -483,6 +515,8 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
         listByCodeStmt = null;
         closeStatement(listByDateStmt);
         listByDateStmt = null;
+        closeStatement(listByStatusStmt);
+        listByStatusStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(countByCodeStmt);
@@ -497,6 +531,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
     private PreparedStatement getByIdStmt;
     private PreparedStatement listByCodeStmt;
     private PreparedStatement listByDateStmt;
+    private PreparedStatement listByStatusStmt;
     private PreparedStatement countStmt;
     private PreparedStatement countByCodeStmt;
     private PreparedStatement maxIdStmt;
