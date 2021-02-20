@@ -323,13 +323,16 @@ public class ContentMonitor extends BaseItem
     /**
      * Clear the monitor status after PENDING.
      */
-    public void clearPending()
+    public void clearPending(ContentChange change)
     {
-        if(getStatus() == MonitorStatus.PENDING)
+        if(change == null || getChangeId().equals(change.getId()))
         {
-            setStatus(MonitorStatus.RESUMING);
-            setUpdatedDate(Instant.now());
-            setChangeId("");
+            if(getStatus() == MonitorStatus.PENDING)
+            {
+                setStatus(MonitorStatus.RESUMING);
+                setUpdatedDate(Instant.now());
+                setChangeId("");
+            }
         }
     }
 

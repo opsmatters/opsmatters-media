@@ -32,9 +32,9 @@ public enum MonitorStatus
     ERROR("Error", 1),
     SUSPENDED("Suspended", -1),
     DISABLED("Disabled", -1),
-    RUNNING("Running", 1),
-    STOPPED("Stopped", -1),
-    ALL("All", 0);
+    RUNNING("Running", 1), // Pseudo status
+    STOPPED("Stopped", -1), // Pseudo status
+    ALL("All", 0); // Pseudo status
 
     private String value;
     private int state;
@@ -70,7 +70,7 @@ public enum MonitorStatus
 
     /**
      * Returns <CODE>true<CODE> if the monitor state is RUNNING.
-     * @return The monitor state.
+     * @return <CODE>true<CODE> if the monitor state is RUNNING.
      */
     public boolean isRunning()
     {
@@ -79,7 +79,7 @@ public enum MonitorStatus
 
     /**
      * Returns <CODE>true<CODE> if the monitor state is STOPPED.
-     * @return The monitor state.
+     * @return <CODE>true<CODE> if the monitor state is STOPPED.
      */
     public boolean isStopped()
     {

@@ -26,7 +26,7 @@ public enum ChangeStatus
     NEW("New"),
     RESOLVED("Resolved"),
     SKIPPED("Skipped"),
-    ALL("All");
+    ALL("All"); // Pseudo status
 
     private String value;
 

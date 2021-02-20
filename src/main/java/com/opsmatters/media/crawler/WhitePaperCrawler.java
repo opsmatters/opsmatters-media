@@ -173,7 +173,7 @@ public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
         {
             ContentField field = fields.getTitle();
             String title = getElements(field, root, type);
-            if(title != null)
+            if(title != null && title.length() > 0)
                 content.setTitle(title);
         }
 
@@ -216,7 +216,7 @@ public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
         {
             ContentField field = fields.getImage();
             String src = getImageSrc(field, root, type);
-            if(src != null)
+            if(src != null && src.length() > 0)
             {
                 content.setImageFromPath(src);
                 content.setImageSource(getBasePath(), encodeUrl(src), field.removeParameters());

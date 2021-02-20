@@ -23,24 +23,47 @@ package com.opsmatters.media.model.feed;
  */
 public enum FeedStatus
 {
-    NEW("New"),
-    PENDING("Pending"),
-    WAITING("Waiting"),
-    DEPLOYING("Deploying"),
-    EXECUTING("Executing"),
-    ERROR("Error"),
-    COMPLETED("Completed"),
-    ALL("All");
+    NEW("New", 1),
+    PENDING("Pending", -1),
+    SUBMITTED("Submitted", -1),
+    DEPLOYING("Deploying", -1),
+    EXECUTING("Executing", -1),
+    ERROR("Error", 1),
+    COMPLETED("Completed", 1),
+    WAITING("Waiting", 0), // Pseudo status
+    PROCESSED("Processed", 0), // Pseudo status
+    ALL("All", 0); // Pseudo status
 
     private String value;
+    private int state;
 
     /**
      * Constructor that takes the status value.
      * @param value The value for the status
+     * @param state The state for the status
      */
-    FeedStatus(String value)
+    FeedStatus(String value, int state)
     {
         this.value = value;
+        this.state = state;
+    }
+
+    /**
+     * Returns <CODE>true<CODE> if the feed state is WAITING.
+     * @return <CODE>true<CODE> if the feed state is WAITING.
+     */
+    public boolean isWaiting()
+    {
+        return state < 0;
+    }
+
+    /**
+     * Returns <CODE>true<CODE> if the feed state is PROCESSED.
+     * @return <CODE>true<CODE> if the feed state is PROCESSED.
+     */
+    public boolean isProcessed()
+    {
+        return state > 0;
     }
 
     /**

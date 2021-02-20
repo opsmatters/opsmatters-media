@@ -226,7 +226,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
         {
             ContentField field = fields.getTitle();
             String title = getElements(field, root, type);
-            if(title != null)
+            if(title != null && title.length() > 0)
             {
                 // Event title should always start with the organisation name
                 if(!title.startsWith(config.getOrganisation()))

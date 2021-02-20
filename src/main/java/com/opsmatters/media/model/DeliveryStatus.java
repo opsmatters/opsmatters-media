@@ -30,7 +30,7 @@ public enum DeliveryStatus
     RECEIVED("Received"),
     ERROR("Error"),
     DELETED("Deleted"),
-    ALL("All");
+    ALL("All"); // Pseudo status
 
     private String value;
 

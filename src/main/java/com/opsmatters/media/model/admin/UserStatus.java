@@ -28,7 +28,7 @@ public enum UserStatus
 {
     ACTIVE("Active"),
     DISABLED("Disabled"),
-    ALL("All");
+    ALL("All"); // Pseudo status
 
     private String value;
 

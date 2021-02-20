@@ -193,7 +193,7 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
         {
             ContentField field = fields.getTitle();
             String title = getValue(field, video.getString(field.getSelector(0).getExpr()));
-            if(title != null)
+            if(title != null && title.length() > 0)
                 content.setTitle(EmojiParser.removeAllEmojis(title));
         }
 

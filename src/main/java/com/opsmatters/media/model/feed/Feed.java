@@ -113,7 +113,7 @@ public abstract class Feed extends BaseItem
     public boolean canSubmit()
     {
         return getStatus() != FeedStatus.PENDING
-            && getStatus() != FeedStatus.WAITING
+            && getStatus() != FeedStatus.SUBMITTED
             && getStatus() != FeedStatus.EXECUTING;
     }
 
@@ -136,11 +136,11 @@ public abstract class Feed extends BaseItem
     }
 
     /**
-     * Set the feed status to WAITING.
+     * Set the feed status to SUBMITTED.
      */
-    public void setWaiting()
+    public void setSubmitted()
     {
-        setStatus(FeedStatus.WAITING);
+        setStatus(FeedStatus.SUBMITTED);
         setUpdatedDate(Instant.now());
     }
 

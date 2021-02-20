@@ -25,7 +25,7 @@ public enum NewsletterStatus
 {
     INCLUDED("Included"),
     NOT_INCLUDED("Not Included"),
-    ALL("All");
+    ALL("All"); // Pseudo status
 
     private String value;
 

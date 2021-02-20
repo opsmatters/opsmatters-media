@@ -201,7 +201,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
         {
             ContentField field = fields.getTitle();
             String title = getElements(field, root, type);
-            if(title != null)
+            if(title != null && title.length() > 0)
             {
                 title = title.replaceAll("&amp;", "&"); // Remove &amp;
                 title = title.replaceAll("\\u2005|\\u2009|\\u202F", " "); // Replace "thin" spaces with normal space
@@ -248,7 +248,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
         {
             ContentField field = fields.getAuthor();
             String author = getElements(field, root, type);
-            if(author != null)
+            if(author != null && author.length() > 0)
                 content.setAuthor(author);
         }
 
@@ -256,7 +256,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
         {
             ContentField field = fields.getAuthorLink();
             String authorLink = getAnchor(field, root, type, field.removeParameters());
-            if(authorLink != null)
+            if(authorLink != null && authorLink.length() > 0)
                 content.setAuthorLink(authorLink);
         }
 
@@ -264,7 +264,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
         {
             ContentField field = fields.getImage();
             String src = getImageSrc(field, root, type);
-            if(src != null)
+            if(src != null && src.length() > 0)
             {
                 content.setImageFromPath(src);
                 content.setImageSource(getBasePath(), encodeUrl(src), field.removeParameters());
@@ -282,7 +282,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
         {
             ContentField field = fields.getBackgroundImage();
             String style = getStyle(field, root, type);
-            if(style != null)
+            if(style != null && style.length() > 0)
             {
                 String src = getBackgroundImage(style);
                 content.setImageFromPath(src);

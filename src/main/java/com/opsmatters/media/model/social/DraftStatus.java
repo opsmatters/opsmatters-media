@@ -28,7 +28,7 @@ public enum DraftStatus
     PROCESSED("Processed"),
     ERROR("Error"),
     SKIPPED("Skipped"),
-    ALL("All");
+    ALL("All"); // Pseudo status
 
     private String value;
 
