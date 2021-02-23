@@ -360,10 +360,10 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 // Add the path to the thumbnail and logo
                 String thumbnail = fields.get(Fields.THUMBNAIL);
                 fields.put(Fields.THUMBNAIL, String.format("%s/%s",
-                    System.getProperty("opsmatters.site.publisher.logos"), thumbnail));
+                    System.getProperty("app.site.publisher.logos"), thumbnail));
                 String image = fields.get(Fields.IMAGE);
                 fields.put(Fields.IMAGE, String.format("%s/%s",
-                    System.getProperty("opsmatters.site.publisher.logos"), image));
+                    System.getProperty("app.site.publisher.logos"), image));
             }
             else
             {
@@ -372,7 +372,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 if(image != null && image.length() > 0)
                 {
                     fields.put(Fields.IMAGE, String.format("%s/%s",
-                        System.getProperty("opsmatters.site.publisher.images"), image));
+                        System.getProperty("app.site.publisher.images"), image));
                 }
 
                 // Allow for Miscellaneous posts with no organisation
@@ -393,7 +393,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
 
         // Process the import file
         handler.writeFile();
-        handler.copyFileToBucket(System.getProperty("opsmatters.s3.content"));
+        handler.copyFileToBucket(System.getProperty("app.s3.content"));
         handler.deleteFile();
 
         // Process the CSV file
@@ -404,7 +404,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
         handler.convertLinesToAscii(getHtmlFields());
         handler.writeFile();
         for(SiteEnv env : SiteEnv.values())
-            handler.copyFileToHost(System.getProperty(String.format("opsmatters.files.%s.feeds.%s", env.code(), type)), env.code());
+            handler.copyFileToHost(System.getProperty(String.format("app.files.%s.feeds.%s", env.code(), type)), env.code());
         handler.deleteFile();
 
         return items;

@@ -304,7 +304,7 @@ public class StringUtils
      * @param s The string to search
      * @return The number of occurences
      */
-    public static int getOccurenceCount(char c, String s) 
+    public static int getOccurrenceCount(char c, String s) 
     {
         int ret = 0;
 

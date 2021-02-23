@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.time.format.DateTimeParseException;
-import com.opsmatters.wistia.Wistia;
-import com.opsmatters.wistia.WistiaResponse;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -31,6 +29,8 @@ import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.content.VideoProvider;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.util.FormatUtils;
+import com.opsmatters.wistia.Wistia;
+import com.opsmatters.wistia.WistiaResponse;
 
 /**
  * Print a list of videos uploaded to the user's Wistia channel.
@@ -78,7 +78,7 @@ public class WistiaClient extends Client implements VideoClient
         if(debug())
             logger.info("Configuring wistia client");
 
-        String directory = System.getProperty("opsmatters.auth", ".");
+        String directory = System.getProperty("app.auth", ".");
 
         File auth = new File(directory, AUTH);
         try

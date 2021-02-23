@@ -119,6 +119,22 @@ public enum ContentType
     }
 
     /**
+     * Returns the type for the given tag.
+     * @param value The type tag
+     * @return The type for the given tag
+     */
+    public static ContentType fromTag(String tag)
+    {
+        ContentType[] types = values();
+        for(ContentType type : types)
+        {
+            if(type.tag().equals(tag))
+                return type;
+        }
+        return null;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the given value is contained in the list of types.
      * @param value The type value
      * @return <CODE>true</CODE> if the given value is contained in the list of types

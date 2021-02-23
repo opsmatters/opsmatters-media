@@ -80,7 +80,7 @@ public class VimeoClient extends Client implements VideoClient
         if(debug())
             logger.info("Configuring vimeo client");
 
-        String directory = System.getProperty("opsmatters.auth", ".");
+        String directory = System.getProperty("app.auth", ".");
 
         File auth = new File(directory, AUTH);
         try

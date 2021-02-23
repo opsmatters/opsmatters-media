@@ -60,7 +60,7 @@ public class BitlyClient extends Client
         if(debug())
             logger.info("Configuring bitly client");
 
-        String directory = System.getProperty("opsmatters.auth", ".");
+        String directory = System.getProperty("app.auth", ".");
 
         File auth = new File(directory, AUTH);
         try
@@ -110,7 +110,7 @@ public class BitlyClient extends Client
      */
     public static String getDomain()
     {
-        String custom = System.getProperty("opsmatters.site.prod.short-domain");
+        String custom = System.getProperty("app.site.prod.short-domain");
         return custom != null ? custom : DEFAULT_DOMAIN;
     }
 

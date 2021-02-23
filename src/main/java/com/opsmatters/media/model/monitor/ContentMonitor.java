@@ -21,8 +21,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
-import org.json.JSONArray;
-import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.monitor.MonitorConfiguration;
 import com.opsmatters.media.model.BaseItem;
@@ -93,7 +91,7 @@ public class ContentMonitor extends BaseItem
         setContentType(content.getType());
         setName(config.getName());
         setStatus(MonitorStatus.NEW);
-        setSnapshot(new JSONObject());
+        setSnapshot(new ContentSnapshot(content.getType()));
         setInterval(config.getInterval());
         setMinDifference(config.getMinDifference());
         setSort(config.getSort());
@@ -519,19 +517,11 @@ public class ContentMonitor extends BaseItem
     }
 
     /**
-     * Returns the last monitor snapshot.
-     */
-    public JSONObject getSnapshotAsJson()
-    {
-        return new JSONObject(snapshot);
-    }
-
-    /**
      * Returns the last monitor snapshot with pretty print.
      */
     public String getPrettySnapshot()
     {
-        return getSnapshotAsJson().toString(2);
+        return new ContentSnapshot(snapshot).toString(2);
     }
 
     /**
@@ -545,7 +535,7 @@ public class ContentMonitor extends BaseItem
     /**
      * Sets the last monitor snapshot.
      */
-    public void setSnapshot(JSONObject snapshot)
+    public void setSnapshot(ContentSnapshot snapshot)
     {
         setSnapshot(snapshot.toString());
     }
@@ -555,38 +545,17 @@ public class ContentMonitor extends BaseItem
      */
     public void setPrettySnapshot(String snapshot)
     {
-        setSnapshot(new JSONObject(snapshot));
+        setSnapshot(new ContentSnapshot(snapshot));
     }
 
     /**
      * Compare the given snapshot with the current one.
      */
-    public boolean compareSnapshot(JSONObject snapshot)
+    public boolean compareSnapshot(ContentSnapshot snapshot)
     {
-        String snapshot1 = processSnapshot(getSnapshotAsJson());
-        String snapshot2 = processSnapshot(snapshot);
-        return snapshot1.equals(snapshot2);
-    }
-
-    /**
-     * Process the given snapshot to prepare it for comparison.
-     */
-    private String processSnapshot(JSONObject snapshot)
-    {
-        JSONObject obj = new JSONObject(snapshot.toString());
-        JSONArray array = obj.getJSONArray(contentType.tag());
-        for(int i = array.length()-1; i >= 0; i--)
-        {
-            JSONObject item = array.getJSONObject(i);
-            item.remove(Fields.PUBLISHED_DATE);
-            item.remove(Fields.START_DATE);
-
-            //  Trim array if max results set
-            if(maxResults > 0 && (i+1) > maxResults)
-                array.remove(i);
-        }
-
-        return obj.toString();
+        ContentSnapshot snapshot1 = new ContentSnapshot(getSnapshot());
+        ContentSnapshot snapshot2 = new ContentSnapshot(snapshot);
+        return ContentSnapshot.compare(snapshot1, snapshot2, maxResults);
     }
 
     /**

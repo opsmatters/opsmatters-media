@@ -91,7 +91,7 @@ public class GitHubClient extends Client implements RepositoryClient
         if(debug())
             logger.info("Configuring github client");
 
-        String directory = System.getProperty("opsmatters.auth", ".");
+        String directory = System.getProperty("app.auth", ".");
 
         File auth = new File(directory, AUTH);
         try

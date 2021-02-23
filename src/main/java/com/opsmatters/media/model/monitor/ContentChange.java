@@ -16,7 +16,6 @@
 package com.opsmatters.media.model.monitor;
 
 import java.time.Instant;
-import org.json.JSONObject;
 import com.opsmatters.media.model.OwnedItem;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.SnapshotDiff;
@@ -47,7 +46,7 @@ public class ContentChange extends OwnedItem
     /**
      * Constructor that takes a monitor.
      */
-    public ContentChange(ContentMonitor monitor, JSONObject snapshot)
+    public ContentChange(ContentMonitor monitor, ContentSnapshot snapshot)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
@@ -178,22 +177,6 @@ public class ContentChange extends OwnedItem
     }
 
     /**
-     * Returns the monitor snapshot before the change.
-     */
-    public JSONObject getSnapshotBeforeAsJson()
-    {
-        return new JSONObject(snapshotBefore);
-    }
-
-    /**
-     * Returns the monitor snapshot before the change with pretty print.
-     */
-    public String getPrettySnapshotBefore()
-    {
-        return getSnapshotBeforeAsJson().toString(2);
-    }
-
-    /**
      * Sets the monitor snapshot before the change.
      */
     public void setSnapshotBefore(String snapshotBefore)
@@ -202,43 +185,11 @@ public class ContentChange extends OwnedItem
     }
 
     /**
-     * Sets the monitor snapshot before the change.
-     */
-    public void setSnapshotBefore(JSONObject snapshotBefore)
-    {
-        setSnapshotBefore(snapshotBefore.toString());
-    }
-
-    /**
-     * Sets the monitor snapshot before the change with pretty print.
-     */
-    public void setPrettySnapshotBefore(String snapshotBefore)
-    {
-        setSnapshotBefore(new JSONObject(snapshotBefore));
-    }
-
-    /**
      * Returns the monitor snapshot after the change.
      */
     public String getSnapshotAfter()
     {
         return snapshotAfter;
-    }
-
-    /**
-     * Returns the monitor snapshot after the change.
-     */
-    public JSONObject getSnapshotAfterAsJson()
-    {
-        return new JSONObject(snapshotAfter);
-    }
-
-    /**
-     * Returns the monitor snapshot after the change with pretty print.
-     */
-    public String getPrettySnapshotAfter()
-    {
-        return getSnapshotAfterAsJson().toString(2);
     }
 
     /**
@@ -252,17 +203,9 @@ public class ContentChange extends OwnedItem
     /**
      * Sets the monitor snapshot after the change.
      */
-    public void setSnapshotAfter(JSONObject snapshotAfter)
+    public void setSnapshotAfter(ContentSnapshot snapshotAfter)
     {
         setSnapshotAfter(snapshotAfter.toString());
-    }
-
-    /**
-     * Sets the monitor snapshot after the change with pretty print.
-     */
-    public void setPrettySnapshotAfter(String snapshotAfter)
-    {
-        setSnapshotAfter(new JSONObject(snapshotAfter));
     }
 
     /**

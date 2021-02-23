@@ -65,11 +65,11 @@ public class SshClient extends Client
     {
         SshClient ret = SshClient.builder()
             .env(env)
-            .hostname(StringUtils.getEnvProperty("opsmatters.ssh.%s.hostname", env))
-            .port(Integer.parseInt(StringUtils.getEnvProperty("opsmatters.ssh.%s.port", env, "0")))
-            .username(StringUtils.getEnvProperty("opsmatters.ssh.%s.username", env))
-            .password(StringUtils.getEnvProperty("opsmatters.ssh.%s.password", env))
-            .keyfile(StringUtils.getEnvProperty("opsmatters.ssh.%s.keyfile", env))
+            .hostname(StringUtils.getEnvProperty("app.ssh.%s.hostname", env))
+            .port(Integer.parseInt(StringUtils.getEnvProperty("app.ssh.%s.port", env, "0")))
+            .username(StringUtils.getEnvProperty("app.ssh.%s.username", env))
+            .password(StringUtils.getEnvProperty("app.ssh.%s.password", env))
+            .keyfile(StringUtils.getEnvProperty("app.ssh.%s.keyfile", env))
             .build();
 
         // Configure and create the SSH client
@@ -89,7 +89,7 @@ public class SshClient extends Client
         if(debug())
             logger.info("Configuring SSH client: "+getHostname());
 
-        String directory = System.getProperty("opsmatters.auth", ".");
+        String directory = System.getProperty("app.auth", ".");
 
         if(port == 0)
             port = DEFAULT_SSH_PORT;

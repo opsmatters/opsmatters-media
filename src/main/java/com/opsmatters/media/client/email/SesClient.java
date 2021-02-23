@@ -56,8 +56,8 @@ public class SesClient extends Client implements EmailClient
     static public SesClient newClient() throws IOException
     {
         SesClient ret = SesClient.builder()
-            .accessKeyId(System.getProperty("opsmatters.ses.accessKeyId"))
-            .secretAccessKey(System.getProperty("opsmatters.ses.secretAccessKey"))
+            .accessKeyId(System.getProperty("app.ses.accessKeyId"))
+            .secretAccessKey(System.getProperty("app.ses.secretAccessKey"))
             .build();
 
         // Configure and create the SES client
@@ -85,7 +85,7 @@ public class SesClient extends Client implements EmailClient
         if(debug())
             logger.info("Configuring SES client");
 
-        String directory = System.getProperty("opsmatters.auth", ".");
+        String directory = System.getProperty("app.auth", ".");
 
         File auth = new File(directory, AUTH);
         try
@@ -120,7 +120,7 @@ public class SesClient extends Client implements EmailClient
 
         // Create the client
         AmazonSimpleEmailService sesClient = AmazonSimpleEmailServiceClientBuilder.standard()
-            .withRegion(System.getProperty("opsmatters.ses.region"))
+            .withRegion(System.getProperty("app.ses.region"))
             .withCredentials(new AWSStaticCredentialsProvider(credentials))
             .build();
 

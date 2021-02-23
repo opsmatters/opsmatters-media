@@ -814,7 +814,7 @@ public class ContentHandler implements FieldSource
                 s3client = client;
             }
 
-            client.changeBucket(System.getProperty("opsmatters.s3.content")); 
+            client.changeBucket(System.getProperty("app.s3.content")); 
         }
         catch(IOException e)
         {

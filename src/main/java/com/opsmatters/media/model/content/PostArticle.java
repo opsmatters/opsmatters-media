@@ -514,7 +514,7 @@ public class PostArticle extends Article
      */
     public String getUrl()
     {
-        return System.getProperty("opsmatters.site.prod")+getUrlAlias();
+        return System.getProperty("app.site.prod")+getUrlAlias();
     }
 
     /**
@@ -522,7 +522,7 @@ public class PostArticle extends Article
      */
     public void setUrl(String url)
     {
-        String path = System.getProperty("opsmatters.site.prod");
+        String path = System.getProperty("app.site.prod");
         if(url.startsWith(path))
             url = url.substring(path.length());
         setUrlAlias(url);
