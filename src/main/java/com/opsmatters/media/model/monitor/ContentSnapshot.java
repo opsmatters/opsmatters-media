@@ -221,7 +221,7 @@ public class ContentSnapshot extends JSONObject
         }
 
         if(decrease > 50.0f)
-            throw new IllegalStateException(String.format("Detected abnormal decrease in items: %d%%", decrease));
+            throw new IllegalStateException(String.format("Detected abnormal decrease in items: %.2f%%", decrease));
 
         snapshot1.process(maxResults);
         snapshot2.process(maxResults);
