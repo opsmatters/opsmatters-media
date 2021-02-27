@@ -229,14 +229,6 @@ public class ContentSnapshot extends JSONObject
     }
 
     /**
-     * Returns <CODE>true<CODE> if this snapshot is a suspension.
-     */
-    public boolean isSuspension()
-    {
-        return toString().indexOf(MonitorStatus.SUSPENDED.name()) != -1;
-    }
-
-    /**
      * Returns the snapshot as a list of items.
      */
     public String format()

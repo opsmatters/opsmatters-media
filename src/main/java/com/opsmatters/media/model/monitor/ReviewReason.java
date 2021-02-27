@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Gerald Curley
+ * Copyright 2021 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,42 +17,30 @@
 package com.opsmatters.media.model.monitor;
 
 /**
- * Represents the status of a content monitor.
+ * Represents the reason for a content monitor review.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum MonitorStatus
+public enum ReviewReason
 {
-    NEW("New", -1),
-    WAITING("Waiting", 1),
-    EXECUTING("Executing", 1),
-    CHANGED("Changed", 0),
-    REVIEW("Review", 0),
-    RESUMING("Resuming", 1),
-    RETRYING("Retrying", 1),
-    ERROR("Error", 1),
-    DISABLED("Disabled", -1),
-    RUNNING("Running", 1), // Pseudo status
-    STOPPED("Stopped", -1), // Pseudo status
-    ALL("All", 0); // Pseudo status
+    NO_CHANGES("No Changes"),
+    SUSPENDED("Suspended"),
+    ALL("All"); // Pseudo status
 
     private String value;
-    private int state;
 
     /**
-     * Constructor that takes the status value.
-     * @param value The value for the status
-     * @param state The state for the status
+     * Constructor that takes the reason value.
+     * @param value The value for the reason
      */
-    MonitorStatus(String value, int state)
+    ReviewReason(String value)
     {
         this.value = value;
-        this.state = state;
     }
 
     /**
-     * Returns the value of the status.
-     * @return The value of the status.
+     * Returns the value of the reason.
+     * @return The value of the reason.
      */
     public String toString()
     {
@@ -60,8 +48,8 @@ public enum MonitorStatus
     }
 
     /**
-     * Returns the value of the status.
-     * @return The value of the status.
+     * Returns the value of the reason.
+     * @return The value of the reason.
      */
     public String value()
     {
@@ -69,32 +57,14 @@ public enum MonitorStatus
     }
 
     /**
-     * Returns <CODE>true<CODE> if the monitor state is RUNNING.
-     * @return <CODE>true<CODE> if the monitor state is RUNNING.
-     */
-    public boolean isRunning()
-    {
-        return state > 0;
-    }
-
-    /**
-     * Returns <CODE>true<CODE> if the monitor state is STOPPED.
-     * @return <CODE>true<CODE> if the monitor state is STOPPED.
-     */
-    public boolean isStopped()
-    {
-        return state < 0;
-    }
-
-    /**
      * Returns the type for the given value.
      * @param value The type value
      * @return The type for the given value
      */
-    public static MonitorStatus fromValue(String value)
+    public static ReviewReason fromValue(String value)
     {
-        MonitorStatus[] types = values();
-        for(MonitorStatus type : types)
+        ReviewReason[] types = values();
+        for(ReviewReason type : types)
         {
             if(type.value().equals(value))
                 return type;

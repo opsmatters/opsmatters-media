@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Gerald Curley
+ * Copyright 2021 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,37 +17,27 @@
 package com.opsmatters.media.model.monitor;
 
 /**
- * Represents the status of a content monitor.
+ * Represents the status of a content monitor review.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum MonitorStatus
+public enum ReviewStatus
 {
-    NEW("New", -1),
-    WAITING("Waiting", 1),
-    EXECUTING("Executing", 1),
-    CHANGED("Changed", 0),
-    REVIEW("Review", 0),
-    RESUMING("Resuming", 1),
-    RETRYING("Retrying", 1),
-    ERROR("Error", 1),
-    DISABLED("Disabled", -1),
-    RUNNING("Running", 1), // Pseudo status
-    STOPPED("Stopped", -1), // Pseudo status
-    ALL("All", 0); // Pseudo status
+    NEW("New"),
+    UPDATED("Updated"),
+    CLEARED("Cleared"),
+    DEFUNCT("Defunct"),
+    ALL("All"); // Pseudo status
 
     private String value;
-    private int state;
 
     /**
      * Constructor that takes the status value.
      * @param value The value for the status
-     * @param state The state for the status
      */
-    MonitorStatus(String value, int state)
+    ReviewStatus(String value)
     {
         this.value = value;
-        this.state = state;
     }
 
     /**
@@ -69,32 +59,14 @@ public enum MonitorStatus
     }
 
     /**
-     * Returns <CODE>true<CODE> if the monitor state is RUNNING.
-     * @return <CODE>true<CODE> if the monitor state is RUNNING.
-     */
-    public boolean isRunning()
-    {
-        return state > 0;
-    }
-
-    /**
-     * Returns <CODE>true<CODE> if the monitor state is STOPPED.
-     * @return <CODE>true<CODE> if the monitor state is STOPPED.
-     */
-    public boolean isStopped()
-    {
-        return state < 0;
-    }
-
-    /**
      * Returns the type for the given value.
      * @param value The type value
      * @return The type for the given value
      */
-    public static MonitorStatus fromValue(String value)
+    public static ReviewStatus fromValue(String value)
     {
-        MonitorStatus[] types = values();
-        for(MonitorStatus type : types)
+        ReviewStatus[] types = values();
+        for(ReviewStatus type : types)
         {
             if(type.value().equals(value))
                 return type;

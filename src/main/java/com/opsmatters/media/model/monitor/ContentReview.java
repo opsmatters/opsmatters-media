@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Gerald Curley
+ * Copyright 2021 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,51 +18,45 @@ package com.opsmatters.media.model.monitor;
 import java.time.Instant;
 import com.opsmatters.media.model.OwnedItem;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.SnapshotDiff;
 
 /**
- * Class representing a content monitor change.
+ * Class representing a content monitor review.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentChange extends OwnedItem
+public class ContentReview extends OwnedItem
 {
     private String code = "";
     private String organisation = "";
-    private ChangeStatus status;
-    private String snapshotBefore = "";
-    private String snapshotAfter = "";
+    private ReviewReason reason;
+    private ReviewStatus status;
     private String monitorId = "";
-    private long executionTime = -1L;
-    private int difference = 0;
+    private String notes = "";
 
     /**
      * Default constructor.
      */
-    public ContentChange()
+    public ContentReview()
     {
     }
 
     /**
      * Constructor that takes a monitor.
      */
-    public ContentChange(ContentMonitor monitor, ContentSnapshot snapshot)
+    public ContentReview(ContentMonitor monitor, ReviewReason reason)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setCode(monitor.getCode());
-        setStatus(ChangeStatus.NEW);
-        setSnapshotBefore(monitor.getSnapshot());
-        setSnapshotAfter(snapshot);
+        setReason(reason);
+        setStatus(ReviewStatus.NEW);
         setMonitorId(monitor.getId());
-        setExecutionTime(monitor.getExecutionTime());
-        setDifference(SnapshotDiff.getDifferencePercent(getSnapshotBefore(), getSnapshotAfter()));
     }
 
     /**
      * Copy constructor.
      */
-    public ContentChange(ContentChange obj)
+    public ContentReview(ContentReview obj)
     {
         copyAttributes(obj);
     }
@@ -70,19 +64,17 @@ public class ContentChange extends OwnedItem
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ContentChange obj)
+    public void copyAttributes(ContentReview obj)
     {
         if(obj != null)
         {
             super.copyAttributes(obj);
             setCode(obj.getCode());
             setOrganisation(obj.getOrganisation());
+            setReason(obj.getReason());
             setStatus(obj.getStatus());
-            setSnapshotBefore(obj.getSnapshotBefore());
-            setSnapshotAfter(obj.getSnapshotAfter());
             setMonitorId(obj.getMonitorId());
-            setExecutionTime(obj.getExecutionTime());
-            setDifference(obj.getDifference());
+            setNotes(obj.getNotes());
         }
     }
 
@@ -135,77 +127,61 @@ public class ContentChange extends OwnedItem
     }
 
     /**
-     * Returns the change status.
+     * Returns the review reason.
      */
-    public ChangeStatus getStatus()
+    public ReviewReason getReason()
+    {
+        return reason;
+    }
+
+    /**
+     * Sets the review reason.
+     */
+    public void setReason(String reason)
+    {
+        setReason(ReviewReason.valueOf(reason));
+    }
+
+    /**
+     * Sets the review reason.
+     */
+    public void setReason(ReviewReason reason)
+    {
+        this.reason = reason;
+    }
+
+    /**
+     * Returns the review status.
+     */
+    public ReviewStatus getStatus()
     {
         return status;
     }
 
     /**
-     * Sets the change status.
+     * Sets the review status.
      */
     public void setStatus(String status)
     {
-        setStatus(ChangeStatus.valueOf(status));
+        setStatus(ReviewStatus.valueOf(status));
     }
 
     /**
-     * Sets the change status.
+     * Sets the review status.
      */
-    public void setStatus(ChangeStatus status)
+    public void setStatus(ReviewStatus status)
     {
         this.status = status;
     }
 
     /**
-     * Sets the change status by the given user.
+     * Sets the review status by the given user.
      */
-    public void setStatus(ChangeStatus status, String username)
+    public void setStatus(ReviewStatus status, String username)
     {
         setStatus(status);
         setUpdatedDate(Instant.now());
         setCreatedBy(username);
-    }
-
-    /**
-     * Returns the monitor snapshot before the change.
-     */
-    public String getSnapshotBefore()
-    {
-        return snapshotBefore;
-    }
-
-    /**
-     * Sets the monitor snapshot before the change.
-     */
-    public void setSnapshotBefore(String snapshotBefore)
-    {
-        this.snapshotBefore = snapshotBefore;
-    }
-
-    /**
-     * Returns the monitor snapshot after the change.
-     */
-    public String getSnapshotAfter()
-    {
-        return snapshotAfter;
-    }
-
-    /**
-     * Sets the monitor snapshot after the change.
-     */
-    public void setSnapshotAfter(String snapshotAfter)
-    {
-        this.snapshotAfter = snapshotAfter;
-    }
-
-    /**
-     * Sets the monitor snapshot after the change.
-     */
-    public void setSnapshotAfter(ContentSnapshot snapshotAfter)
-    {
-        setSnapshotAfter(snapshotAfter.toString());
     }
 
     /**
@@ -233,34 +209,26 @@ public class ContentChange extends OwnedItem
     }
 
     /**
-     * Returns the time taken for the monitor execution.
+     * Returns the review notes.
      */
-    public long getExecutionTime()
+    public String getNotes()
     {
-        return executionTime;
+        return notes;
     }
 
     /**
-     * Sets the time taken for the monitor execution.
+     * Sets the review notes.
      */
-    public void setExecutionTime(long executionTime)
+    public void setNotes(String notes)
     {
-        this.executionTime = executionTime;
+        this.notes = notes;
     }
 
     /**
-     * Returns the % difference between the snapshots.
+     * Returns <CODE>true</CODE> if the review notes has been set.
      */
-    public int getDifference()
+    public boolean hasNotes()
     {
-        return difference;
-    }
-
-    /**
-     * Sets the % difference between the snapshots.
-     */
-    public void setDifference(int difference)
-    {
-        this.difference = difference;
+        return notes != null && notes.length() > 0;
     }
 }

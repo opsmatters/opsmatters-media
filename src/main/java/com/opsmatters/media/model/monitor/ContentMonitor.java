@@ -62,6 +62,7 @@ public class ContentMonitor extends BaseItem
     private String channelId = "";
     private String snapshot = "";
     private String changeId = "";
+    private String reviewId = "";
     private int interval = -1;
     private int difference = 0;
     private ContentSort sort;
@@ -126,6 +127,7 @@ public class ContentMonitor extends BaseItem
             setChannelId(obj.getChannelId());
             setSnapshot(obj.getSnapshot());
             setChangeId(obj.getChangeId());
+            setReviewId(obj.getReviewId());
             setInterval(obj.getInterval());
             setMinDifference(obj.getMinDifference());
             setSort(obj.getSort());
@@ -306,30 +308,59 @@ public class ContentMonitor extends BaseItem
     }
 
     /**
-     * Set the monitor status to PENDING.
+     * Set the monitor status to CHANGED.
      */
-    public void setPending(ContentChange change)
+    public void setChanged(ContentChange change)
     {
-        if(getStatus() != MonitorStatus.PENDING)
+        if(getStatus() != MonitorStatus.CHANGED)
         {
-            setStatus(MonitorStatus.PENDING);
+            setStatus(MonitorStatus.CHANGED);
             setUpdatedDate(Instant.now());
             setChangeId(change.getId());
         }
     }
 
     /**
-     * Clear the monitor status after PENDING.
+     * Clear the monitor status after CHANGED.
      */
-    public void clearPending(ContentChange change)
+    public void clearChanged(ContentChange change)
     {
         if(change == null || getChangeId().equals(change.getId()))
         {
-            if(getStatus() == MonitorStatus.PENDING)
+            if(getStatus() == MonitorStatus.CHANGED)
             {
                 setStatus(MonitorStatus.RESUMING);
                 setUpdatedDate(Instant.now());
                 setChangeId("");
+            }
+        }
+    }
+
+    /**
+     * Set the monitor status to REVIEW.
+     */
+    public void setReview(ContentReview review)
+    {
+        if(getStatus() != MonitorStatus.REVIEW)
+        {
+            setStatus(MonitorStatus.REVIEW);
+            setUpdatedDate(Instant.now());
+            setReviewId(review.getId());
+        }
+    }
+
+    /**
+     * Clear the monitor status after REVIEW.
+     */
+    public void clearReview(ContentReview review)
+    {
+        if(review == null || getReviewId().equals(review.getId()))
+        {
+            if(getStatus() == MonitorStatus.REVIEW)
+            {
+                setStatus(MonitorStatus.RESUMING);
+                setUpdatedDate(Instant.now());
+                setReviewId("");
             }
         }
     }
@@ -343,6 +374,7 @@ public class ContentMonitor extends BaseItem
         setUpdatedDate(Instant.now());
         setExecutedDate(null);
         setChangeId("");
+        setReviewId("");
         setErrorMessage("");
     }
 
@@ -575,11 +607,35 @@ public class ContentMonitor extends BaseItem
     }
 
     /**
-     * Returns <CODE>true</CODE> if the change id id has been set.
+     * Returns <CODE>true</CODE> if the change id has been set.
      */
     public boolean hasChangeId()
     {
         return changeId != null && changeId.length() > 0;
+    }
+
+    /**
+     * Returns the review id.
+     */
+    public String getReviewId()
+    {
+        return reviewId;
+    }
+
+    /**
+     * Sets the review id.
+     */
+    public void setReviewId(String reviewId)
+    {
+        this.reviewId = reviewId;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the review id has been set.
+     */
+    public boolean hasReviewId()
+    {
+        return reviewId != null && reviewId.length() > 0;
     }
 
     /**
@@ -808,14 +864,13 @@ public class ContentMonitor extends BaseItem
     }
 
     /**
-     * Returns the email for a monitor status change.
+     * Returns the email for a suspended monitor.
      */
-    public Email getStatusEmail()
+    public Email getSuspendEmail()
     {
-        String subject = String.format("Monitor %s: %s",
-            getStatus().name(), getGuid());
+        String subject = String.format("Monitor SUSPENDED: %s", getGuid());
         EmailBody body = new EmailBody()
-            .addParagraph("The status of the following monitor has changed:")
+            .addParagraph("The following monitor has changed:")
             .addTable(new String[][]
             {
                 {"ID", getGuid()},

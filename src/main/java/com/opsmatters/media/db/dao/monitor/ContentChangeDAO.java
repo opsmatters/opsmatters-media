@@ -241,23 +241,14 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
         clearParameters(updateStmt);
 
-        StringReader reader = null;
 
-        try
-        {
-            updateStmt.setTimestamp(1, new Timestamp(change.getUpdatedDateMillis()), UTC);
-            updateStmt.setString(2, change.getStatus().name());
-            updateStmt.setString(3, change.getCreatedBy());
-            updateStmt.setString(4, change.getId());
-            updateStmt.executeUpdate();
+        updateStmt.setTimestamp(1, new Timestamp(change.getUpdatedDateMillis()), UTC);
+        updateStmt.setString(2, change.getStatus().name());
+        updateStmt.setString(3, change.getCreatedBy());
+        updateStmt.setString(4, change.getId());
+        updateStmt.executeUpdate();
 
-            logger.info("Updated change '"+change.getId()+"' in CONTENT_CHANGES");
-        }
-        finally
-        {
-            if(reader != null)
-                reader.close();
-        }
+        logger.info("Updated change '"+change.getId()+"' in CONTENT_CHANGES");
     }
 
     /**
