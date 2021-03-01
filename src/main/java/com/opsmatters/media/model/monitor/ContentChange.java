@@ -44,7 +44,7 @@ public class ContentChange extends OwnedItem
     }
 
     /**
-     * Constructor that takes a monitor.
+     * Constructor that takes a monitor and a snapshot.
      */
     public ContentChange(ContentMonitor monitor, ContentSnapshot snapshot)
     {

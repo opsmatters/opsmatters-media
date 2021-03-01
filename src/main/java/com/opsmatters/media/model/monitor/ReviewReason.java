@@ -23,7 +23,7 @@ package com.opsmatters.media.model.monitor;
  */
 public enum ReviewReason
 {
-    NO_CHANGES("No Changes"),
+    NO_CHANGES("No changes detected"),
     SUSPENDED("Suspended"),
     ALL("All"); // Pseudo status
 

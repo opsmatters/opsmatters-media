@@ -16,7 +16,11 @@
 package com.opsmatters.media.model.monitor;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import com.opsmatters.media.model.OwnedItem;
+import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -28,6 +32,7 @@ public class ContentReview extends OwnedItem
 {
     private String code = "";
     private String organisation = "";
+    private Instant effectiveDate;
     private ReviewReason reason;
     private ReviewStatus status;
     private String monitorId = "";
@@ -47,6 +52,7 @@ public class ContentReview extends OwnedItem
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
+        setEffectiveDate(monitor.getUpdatedDate());
         setCode(monitor.getCode());
         setReason(reason);
         setStatus(ReviewStatus.NEW);
@@ -71,6 +77,7 @@ public class ContentReview extends OwnedItem
             super.copyAttributes(obj);
             setCode(obj.getCode());
             setOrganisation(obj.getOrganisation());
+            setEffectiveDate(obj.getEffectiveDate());
             setReason(obj.getReason());
             setStatus(obj.getStatus());
             setMonitorId(obj.getMonitorId());
@@ -124,6 +131,96 @@ public class ContentReview extends OwnedItem
     public boolean hasOrganisation()
     {
         return organisation != null && organisation.length() > 0;
+    }
+
+    /**
+     * Returns the review effective date.
+     */
+    public Instant getEffectiveDate()
+    {
+        return effectiveDate;
+    }
+
+    /**
+     * Returns the review effective date.
+     */
+    public long getEffectiveDateMillis()
+    {
+        return getEffectiveDate() != null ? getEffectiveDate().toEpochMilli() : 0L;
+    }
+
+    /**
+     * Returns the review effective date.
+     */
+    public LocalDateTime getEffectiveDateUTC()
+    {
+        return TimeUtils.toDateTimeUTC(getEffectiveDate());
+    }
+
+    /**
+     * Returns the review effective date.
+     */
+    public String getEffectiveDateAsString(String pattern)
+    {
+        return TimeUtils.toStringUTC(effectiveDate, pattern);
+    }
+
+    /**
+     * Returns the review effective date.
+     */
+    public String getEffectiveDateAsString(String pattern, String timezone)
+    {
+        return TimeUtils.toString(effectiveDate, pattern, timezone);
+    }
+
+    /**
+     * Returns the review effective date.
+     */
+    public String getEffectiveDateAsString()
+    {
+        return getEffectiveDateAsString(Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Sets the review effective date.
+     */
+    public void setEffectiveDate(Instant effectiveDate)
+    {
+        this.effectiveDate = effectiveDate;
+    }
+
+    /**
+     * Sets the review effective date.
+     */
+    public void setEffectiveDateMillis(long millis)
+    {
+        if(millis > 0L)
+            this.effectiveDate = Instant.ofEpochMilli(millis);
+    }
+
+    /**
+     * Sets the review effective date.
+     */
+    public void setEffectiveDateAsString(String str, String pattern) throws DateTimeParseException
+    {
+        setEffectiveDate(TimeUtils.toInstantUTC(str, pattern));
+    }
+
+    /**
+     * Sets the review effective date.
+     */
+    public void setEffectiveDateAsString(String str) throws DateTimeParseException
+    {
+        setEffectiveDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Sets the review effective date.
+     */
+    public void setEffectiveDateUTC(LocalDateTime effectiveDate)
+    {
+        if(effectiveDate != null)
+            setEffectiveDate(TimeUtils.toInstantUTC(effectiveDate));
     }
 
     /**

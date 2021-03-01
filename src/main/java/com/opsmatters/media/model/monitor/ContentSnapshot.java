@@ -229,6 +229,14 @@ public class ContentSnapshot extends JSONObject
     }
 
     /**
+     * Returns <CODE>true<CODE> if this snapshot contains a list of items.
+     */
+    public boolean containsItems()
+    {
+        return toString().indexOf(String.format("\"%s\"", Fields.COUNT)) != -1;
+    }
+
+    /**
      * Returns the snapshot as a list of items.
      */
     public String format()

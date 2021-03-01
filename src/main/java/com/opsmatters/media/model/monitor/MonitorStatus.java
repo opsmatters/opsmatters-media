@@ -32,6 +32,7 @@ public enum MonitorStatus
     RETRYING("Retrying", 1),
     ERROR("Error", 1),
     DISABLED("Disabled", -1),
+    PENDING("Pending", 0), // Pseudo status
     RUNNING("Running", 1), // Pseudo status
     STOPPED("Stopped", -1), // Pseudo status
     ALL("All", 0); // Pseudo status
@@ -66,6 +67,15 @@ public enum MonitorStatus
     public String value()
     {
         return value;
+    }
+
+    /**
+     * Returns <CODE>true<CODE> if the monitor state is PENDING.
+     * @return <CODE>true<CODE> if the monitor state is PENDING.
+     */
+    public boolean isPending()
+    {
+        return state == 0;
     }
 
     /**

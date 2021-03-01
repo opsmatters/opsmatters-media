@@ -39,7 +39,7 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
      * The query to use to select a review from the CONTENT_REVIEWS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, CREATED_BY "
       + "FROM CONTENT_REVIEWS WHERE ID=?";
 
     /**
@@ -47,9 +47,9 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTENT_REVIEWS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a review in the CONTENT_REVIEWS table.
@@ -62,14 +62,14 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
      * The query to use to select the reviews from the CONTENT_REVIEWS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, CREATED_BY "
       + "FROM CONTENT_REVIEWS WHERE CREATED_DATE >= (NOW() + INTERVAL -30 DAY) ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the reviews from the CONTENT_REVIEWS table by status.
      */
     private static final String LIST_BY_STATUS_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, CREATED_BY "
       + "FROM CONTENT_REVIEWS WHERE STATUS=? AND CREATED_DATE >= (NOW() + INTERVAL -30 DAY) ORDER BY CREATED_DATE";
 
     /**
@@ -101,11 +101,12 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
+        table.addColumn("EFFECTIVE_DATE", Types.TIMESTAMP, false);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("REASON", Types.VARCHAR, 15, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("MONITOR_ID", Types.VARCHAR, 36, true);
-        table.addColumn("NOTES", Types.VARCHAR, 256, true);
+        table.addColumn("NOTES", Types.VARCHAR, 256, false);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("CONTENT_REVIEWS_PK", new String[] {"ID"});
         table.addIndex("CONTENT_REVIEWS_STATUS_IDX", new String[] {"STATUS"});
@@ -140,12 +141,13 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
                 review.setId(rs.getString(1));
                 review.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 review.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                review.setCode(rs.getString(4));
-                review.setReason(rs.getString(5));
-                review.setStatus(rs.getString(6));
-                review.setMonitorId(rs.getString(7));
-                review.setNotes(rs.getString(8));
-                review.setCreatedBy(rs.getString(9));
+                review.setEffectiveDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                review.setCode(rs.getString(5));
+                review.setReason(rs.getString(6));
+                review.setStatus(rs.getString(7));
+                review.setMonitorId(rs.getString(8));
+                review.setNotes(rs.getString(9));
+                review.setCreatedBy(rs.getString(10));
                 ret = review;
             }
         }
@@ -183,12 +185,13 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
             insertStmt.setString(1, review.getId());
             insertStmt.setTimestamp(2, new Timestamp(review.getCreatedDateMillis()), UTC);
             insertStmt.setTimestamp(3, new Timestamp(review.getUpdatedDateMillis()), UTC);
-            insertStmt.setString(4, review.getCode());
-            insertStmt.setString(5, review.getReason().name());
-            insertStmt.setString(6, review.getStatus().name());
-            insertStmt.setString(7, review.getMonitorId());
-            insertStmt.setString(8, review.getNotes());
-            insertStmt.setString(9, review.getCreatedBy());
+            insertStmt.setTimestamp(4, new Timestamp(review.getEffectiveDateMillis()), UTC);
+            insertStmt.setString(5, review.getCode());
+            insertStmt.setString(6, review.getReason().name());
+            insertStmt.setString(7, review.getStatus().name());
+            insertStmt.setString(8, review.getMonitorId());
+            insertStmt.setString(9, review.getNotes());
+            insertStmt.setString(10, review.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created review '"+review.getId()+"' in CONTENT_REVIEWS");
@@ -258,12 +261,13 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
                 review.setId(rs.getString(1));
                 review.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 review.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                review.setCode(rs.getString(4));
-                review.setReason(rs.getString(5));
-                review.setStatus(rs.getString(6));
-                review.setMonitorId(rs.getString(7));
-                review.setNotes(rs.getString(8));
-                review.setCreatedBy(rs.getString(9));
+                review.setEffectiveDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                review.setCode(rs.getString(5));
+                review.setReason(rs.getString(6));
+                review.setStatus(rs.getString(7));
+                review.setMonitorId(rs.getString(8));
+                review.setNotes(rs.getString(9));
+                review.setCreatedBy(rs.getString(10));
                 ret.add(review);
             }
         }
@@ -313,12 +317,13 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
                 review.setId(rs.getString(1));
                 review.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 review.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                review.setCode(rs.getString(4));
-                review.setReason(rs.getString(5));
-                review.setStatus(rs.getString(6));
-                review.setMonitorId(rs.getString(7));
-                review.setNotes(rs.getString(8));
-                review.setCreatedBy(rs.getString(9));
+                review.setEffectiveDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                review.setCode(rs.getString(5));
+                review.setReason(rs.getString(6));
+                review.setStatus(rs.getString(7));
+                review.setMonitorId(rs.getString(8));
+                review.setNotes(rs.getString(9));
+                review.setCreatedBy(rs.getString(10));
                 ret.add(review);
             }
         }
