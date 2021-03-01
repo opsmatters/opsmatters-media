@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Gerald Curley
+ * Copyright 2021 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,31 +17,29 @@
 package com.opsmatters.media.model.monitor;
 
 /**
- * Represents the values of a content sort.
+ * Represents the values of a content event.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ContentSort
+public enum EventType
 {
-    ASCENDING("Ascending"),
-    DESCENDING("Descending"),
-    ALPHABETICAL("Alphabetical"),
-    NONE("None");
+    CHANGE("Change"),
+    REVIEW("Review");
 
     private String value;
 
     /**
-     * Constructor that takes the sort value.
-     * @param value The value for the sort
+     * Constructor that takes the event value.
+     * @param value The value for the event
      */
-    ContentSort(String value)
+    EventType(String value)
     {
         this.value = value;
     }
 
     /**
-     * Returns the value of the sort.
-     * @return The value of the sort.
+     * Returns the value of the event.
+     * @return The value of the event.
      */
     public String toString()
     {
@@ -49,8 +47,8 @@ public enum ContentSort
     }
 
     /**
-     * Returns the value of the sort.
-     * @return The value of the sort.
+     * Returns the value of the event.
+     * @return The value of the event.
      */
     public String value()
     {
@@ -62,10 +60,10 @@ public enum ContentSort
      * @param value The type value
      * @return The type for the given value
      */
-    public static ContentSort fromValue(String value)
+    public static EventType fromValue(String value)
     {
-        ContentSort[] types = values();
-        for(ContentSort type : types)
+        EventType[] types = values();
+        for(EventType type : types)
         {
             if(type.value().equals(value))
                 return type;

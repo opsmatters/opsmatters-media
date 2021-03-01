@@ -61,8 +61,8 @@ public class ContentMonitor extends BaseItem
     private String url = "";
     private String channelId = "";
     private String snapshot = "";
-    private String changeId = "";
-    private String reviewId = "";
+    private EventType eventType;
+    private String eventId = "";
     private int interval = -1;
     private int difference = 0;
     private ContentSort sort;
@@ -126,8 +126,8 @@ public class ContentMonitor extends BaseItem
             setUrl(obj.getUrl());
             setChannelId(obj.getChannelId());
             setSnapshot(obj.getSnapshot());
-            setChangeId(obj.getChangeId());
-            setReviewId(obj.getReviewId());
+            setEventType(obj.getEventType());
+            setEventId(obj.getEventId());
             setInterval(obj.getInterval());
             setMinDifference(obj.getMinDifference());
             setSort(obj.getSort());
@@ -310,28 +310,28 @@ public class ContentMonitor extends BaseItem
     /**
      * Set the monitor status to CHANGED.
      */
-    public void setChanged(ContentChange change)
+    public void setChange(ContentChange change)
     {
         if(getStatus() != MonitorStatus.CHANGED)
         {
             setStatus(MonitorStatus.CHANGED);
             setUpdatedDate(Instant.now());
-            setChangeId(change.getId());
+            setEvent(change);
         }
     }
 
     /**
      * Clear the monitor status after CHANGED.
      */
-    public void clearChanged(ContentChange change)
+    public void clearChange(ContentChange change)
     {
-        if(change == null || getChangeId().equals(change.getId()))
+        if(change == null || getEventId().equals(change.getId()))
         {
             if(getStatus() == MonitorStatus.CHANGED)
             {
                 setStatus(MonitorStatus.RESUMING);
                 setUpdatedDate(Instant.now());
-                setChangeId("");
+                clearEvent();
             }
         }
     }
@@ -345,7 +345,7 @@ public class ContentMonitor extends BaseItem
         {
             setStatus(MonitorStatus.REVIEW);
             setUpdatedDate(Instant.now());
-            setReviewId(review.getId());
+            setEvent(review);
         }
     }
 
@@ -354,13 +354,13 @@ public class ContentMonitor extends BaseItem
      */
     public void clearReview(ContentReview review)
     {
-        if(review == null || getReviewId().equals(review.getId()))
+        if(review == null || getEventId().equals(review.getId()))
         {
             if(getStatus() == MonitorStatus.REVIEW)
             {
                 setStatus(MonitorStatus.RESUMING);
                 setUpdatedDate(Instant.now());
-                setReviewId("");
+                clearEvent();
             }
         }
     }
@@ -373,8 +373,7 @@ public class ContentMonitor extends BaseItem
         setStatus(MonitorStatus.RESUMING);
         setUpdatedDate(Instant.now());
         setExecutedDate(null);
-        setChangeId("");
-        setReviewId("");
+        clearEvent();
         setErrorMessage("");
     }
 
@@ -591,51 +590,70 @@ public class ContentMonitor extends BaseItem
     }
 
     /**
-     * Returns the change id.
+     * Returns the event type.
      */
-    public String getChangeId()
+    public EventType getEventType()
     {
-        return changeId;
+        return eventType;
     }
 
     /**
-     * Sets the change id.
+     * Sets the event type.
      */
-    public void setChangeId(String changeId)
+    public void setEventType(EventType eventType)
     {
-        this.changeId = changeId;
+        this.eventType = eventType;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the change id has been set.
+     * Sets the event type.
      */
-    public boolean hasChangeId()
+    public void setEventType(String eventType)
     {
-        return changeId != null && changeId.length() > 0;
+        if(eventType != null && eventType.length() > 0)
+            setEventType(EventType.valueOf(eventType));
     }
 
     /**
-     * Returns the review id.
+     * Returns the event id.
      */
-    public String getReviewId()
+    public String getEventId()
     {
-        return reviewId;
+        return eventId;
     }
 
     /**
-     * Sets the review id.
+     * Sets the event id.
      */
-    public void setReviewId(String reviewId)
+    public void setEventId(String eventId)
     {
-        this.reviewId = reviewId;
+        this.eventId = eventId;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the review id has been set.
+     * Returns <CODE>true</CODE> if the event id has been set.
      */
-    public boolean hasReviewId()
+    public boolean hasEventId()
     {
-        return reviewId != null && reviewId.length() > 0;
+        return eventId != null && eventId.length() > 0;
+    }
+
+    /**
+     * Sets the given event.
+     */
+    public void setEvent(ContentEvent event)
+    {
+        setEventType(event.getType());
+        setEventId(event.getId());
+    }
+
+    /**
+     * Clears the event id and type.
+     */
+    public void clearEvent()
+    {
+        this.eventType = null;
+        this.eventId = "";
     }
 
     /**

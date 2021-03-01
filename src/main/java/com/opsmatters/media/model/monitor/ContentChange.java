@@ -25,14 +25,11 @@ import com.opsmatters.media.util.SnapshotDiff;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentChange extends OwnedItem
+public class ContentChange extends ContentEvent
 {
-    private String code = "";
-    private String organisation = "";
     private ChangeStatus status;
     private String snapshotBefore = "";
     private String snapshotAfter = "";
-    private String monitorId = "";
     private long executionTime = -1L;
     private int difference = 0;
 
@@ -75,63 +72,21 @@ public class ContentChange extends OwnedItem
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setCode(obj.getCode());
-            setOrganisation(obj.getOrganisation());
             setStatus(obj.getStatus());
             setSnapshotBefore(obj.getSnapshotBefore());
             setSnapshotAfter(obj.getSnapshotAfter());
-            setMonitorId(obj.getMonitorId());
             setExecutionTime(obj.getExecutionTime());
             setDifference(obj.getDifference());
         }
     }
 
     /**
-     * Returns the monitor organisation.
+     * Returns the type of the event.
      */
-    public String getCode()
+    @Override
+    public EventType getType()
     {
-        return code;
-    }
-
-    /**
-     * Sets the monitor organisation.
-     */
-    public void setCode(String code)
-    {
-        this.code = code;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the monitor organisation has been set.
-     */
-    public boolean hasCode()
-    {
-        return code != null && code.length() > 0;
-    }
-
-    /**
-     * Returns the monitor organisation name.
-     */
-    public String getOrganisation()
-    {
-        return organisation;
-    }
-
-    /**
-     * Sets the monitor organisation name.
-     */
-    public void setOrganisation(String organisation)
-    {
-        this.organisation = organisation;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the monitor organisation name has been set.
-     */
-    public boolean hasOrganisation()
-    {
-        return organisation != null && organisation.length() > 0;
+        return EventType.CHANGE;
     }
 
     /**
@@ -206,30 +161,6 @@ public class ContentChange extends OwnedItem
     public void setSnapshotAfter(ContentSnapshot snapshotAfter)
     {
         setSnapshotAfter(snapshotAfter.toString());
-    }
-
-    /**
-     * Returns the monitor id.
-     */
-    public String getMonitorId()
-    {
-        return monitorId;
-    }
-
-    /**
-     * Sets the monitor id.
-     */
-    public void setMonitorId(String monitorId)
-    {
-        this.monitorId = monitorId;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the monitor id has been set.
-     */
-    public boolean hasMonitorId()
-    {
-        return monitorId != null && monitorId.length() > 0;
     }
 
     /**
