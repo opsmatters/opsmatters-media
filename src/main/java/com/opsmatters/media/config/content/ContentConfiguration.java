@@ -360,10 +360,10 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 // Add the path to the thumbnail and logo
                 String thumbnail = fields.get(Fields.THUMBNAIL);
                 fields.put(Fields.THUMBNAIL, String.format("%s/%s",
-                    System.getProperty("app.site.publisher.logos"), thumbnail));
+                    System.getProperty("app.site.image.logos"), thumbnail));
                 String image = fields.get(Fields.IMAGE);
                 fields.put(Fields.IMAGE, String.format("%s/%s",
-                    System.getProperty("app.site.publisher.logos"), image));
+                    System.getProperty("app.site.image.logos"), image));
             }
             else
             {
@@ -372,7 +372,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 if(image != null && image.length() > 0)
                 {
                     fields.put(Fields.IMAGE, String.format("%s/%s",
-                        System.getProperty("app.site.publisher.images"), image));
+                        System.getProperty("app.site.image.images"), image));
                 }
 
                 // Allow for Miscellaneous posts with no organisation

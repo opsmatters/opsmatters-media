@@ -57,6 +57,8 @@ public class FileUtils
 {
     private static final Logger logger = Logger.getLogger(FileUtils.class.getName());
 
+    private static final String SUCCESS_RESPONSE = "HTTP\\/1\\.1 20\\d .*";
+
     /**
      * The user agent to use with URLConnections to avoid 403 rejection errors
      */
@@ -539,7 +541,9 @@ public class FileUtils
                 TrustAnyTrustManager.setTrustManager(httpConn);
             }
 
-            ret = conn.getContentLengthLong();
+            String response = conn.getHeaderField(0);
+            if(response != null && response.matches(SUCCESS_RESPONSE))
+                ret = conn.getContentLengthLong();
         }
         catch(IOException e)
         {
@@ -553,6 +557,26 @@ public class FileUtils
             }
 
             throw e;
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the size of the file using the given URL.
+     */
+    static public long getFileSize(String url)
+    {
+        long ret = -1L;
+
+        try
+        {
+            if(url != null)
+                ret = getFileSize(new URL(url));
+        }
+        catch(IOException e)
+        {
+            logger.severe(StringUtils.serialize(e));
         }
 
         return ret;
@@ -660,7 +684,7 @@ public class FileUtils
                 }
 
                 if(response != null)
-                    ret = response.matches("HTTP\\/1\\.1 20\\d .*");
+                    ret = response.matches(SUCCESS_RESPONSE);
             }
         }
         catch(FileNotFoundException e)

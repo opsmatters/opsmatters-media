@@ -111,9 +111,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
         table.addColumn("SNAPSHOT", Types.LONGVARCHAR, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
-//GERALD
-//        table.addColumn("CHANGE_ID", Types.VARCHAR, 36, false);
-//        table.addColumn("REVIEW_ID", Types.VARCHAR, 36, false);
         table.addColumn("EVENT_TYPE", Types.VARCHAR, 15, false);
         table.addColumn("EVENT_ID", Types.VARCHAR, 36, false);
         table.addColumn("ACTIVE", Types.BOOLEAN, true);
@@ -158,9 +155,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
                 monitor.setSnapshot(getClob(rs, 8));
                 monitor.setAttributes(new JSONObject(getClob(rs, 9)));
                 monitor.setStatus(rs.getString(10));
-//GERALD
-//                monitor.setChangeId(rs.getString(11));
-//                monitor.setReviewId(rs.getString(12));
                 monitor.setEventType(rs.getString(11));
                 monitor.setEventId(rs.getString(12));
                 monitor.setActive(rs.getBoolean(13));
@@ -214,9 +208,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
             reader2 = new StringReader(attributes);
             insertStmt.setCharacterStream(9, reader2, attributes.length());
             insertStmt.setString(10, monitor.getStatus().name());
-//GERALD
-//            insertStmt.setString(11, monitor.getChangeId());
-//            insertStmt.setString(12, monitor.getReviewId());
             insertStmt.setString(11, monitor.getEventType() != null ? monitor.getEventType().name() : "");
             insertStmt.setString(12, monitor.getEventId());
             insertStmt.setBoolean(13, monitor.isActive());
@@ -272,10 +263,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
             reader2 = new StringReader(attributes);
             updateStmt.setCharacterStream(5, reader2, attributes.length());
             updateStmt.setString(6, monitor.getStatus().name());
-//GERALD
-//            updateStmt.setString(7, monitor.getChangeId());
-//            updateStmt.setString(8, monitor.getReviewId());
-//            updateStmt.setString(7, monitor.getEventType().name());
             updateStmt.setString(7, monitor.getEventType() != null ? monitor.getEventType().name() : "");
             updateStmt.setString(8, monitor.getEventId());
             updateStmt.setBoolean(9, monitor.isActive());

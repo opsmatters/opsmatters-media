@@ -773,6 +773,40 @@ public class ContentHandler implements FieldSource
     }
 
     /**
+     * Delete the given file from the given remote directory using SSH.
+     */
+    public void deleteFileFromHost(String filename, String directory, String env) throws IOException
+    {
+        if(directory == null || directory.length() == 0)
+            throw new IllegalArgumentException("directory null");
+
+        try
+        {
+            SshClient client = sshClients.get(env);
+            if(client == null)
+            {
+                client = SshClient.newClient(env);
+                sshClients.put(env, client);
+            }
+
+            client.cd(directory); 
+
+            // Transfer the file to the remote feeds directory using SSH
+            if(directory != null)
+            {
+                client.rm(filename);
+                logger.info("Deleted file "+filename+" from remote directory: "+client.pwd());
+            }
+        }
+        catch(JSchException | SftpException e)
+        {
+            IOException ioe = new IOException(e.getMessage());
+            ioe.initCause(e);
+            throw ioe;
+        }
+    }
+
+    /**
      * Close the ssh clients and release resources.
      */
     public static void closeClients()
