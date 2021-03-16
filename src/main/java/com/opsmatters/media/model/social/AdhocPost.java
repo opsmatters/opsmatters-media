@@ -17,6 +17,7 @@ package com.opsmatters.media.model.social;
 
 import java.time.Instant;
 import org.json.JSONObject;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -40,9 +41,10 @@ public class AdhocPost extends DraftPost
     /**
      * Constructor that takes a title.
      */
-    public AdhocPost(String title)
+    public AdhocPost(Site site, String title)
     {
         setId(StringUtils.getUUID(null));
+        setSiteId(site.getId());
         setTitle(title);
         setCreatedDate(Instant.now());
         setStatus(DraftStatus.NEW);
@@ -55,6 +57,7 @@ public class AdhocPost extends DraftPost
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
+        setSiteId(template.getSiteId());
         setTemplateId(template.getId());
         setStatus(DraftStatus.NEW);
         setTitle(template.getName());

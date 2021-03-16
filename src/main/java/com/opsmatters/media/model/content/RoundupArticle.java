@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.config.content.RoundupConfiguration;
 import com.opsmatters.media.config.content.WebPageConfiguration;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
 
@@ -52,10 +53,11 @@ public class RoundupArticle extends Article
     /**
      * Constructor that takes a roundup.
      */
-    public RoundupArticle(String code, RoundupDetails obj)
+    public RoundupArticle(Site site, String code, RoundupDetails obj)
     {
         this();
         init();
+        setSiteId(site.getId());
         setCode(code);
         setRoundupDetails(obj);
     }
@@ -63,10 +65,11 @@ public class RoundupArticle extends Article
     /**
      * Constructor that takes a roundup summary.
      */
-    public RoundupArticle(String code, RoundupSummary obj)
+    public RoundupArticle(Site site, String code, RoundupSummary obj)
     {
         this();
         init();
+        setSiteId(site.getId());
         setCode(code);
         setContentSummary(obj);
     }
@@ -84,10 +87,12 @@ public class RoundupArticle extends Article
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public RoundupArticle(String code, String[] values) throws DateTimeParseException
+    public RoundupArticle(Site site, String code, String[] values) throws DateTimeParseException
     {
         this();
         init();
+
+        setSiteId(site.getId());
 
         String id = values[0];
         String pubdate = values[1];
@@ -190,11 +195,12 @@ public class RoundupArticle extends Article
     /**
      * Returns a new article with defaults.
      */
-    public static RoundupArticle getDefault(RoundupConfiguration config) throws DateTimeParseException
+    public static RoundupArticle getDefault(Site site, RoundupConfiguration config) throws DateTimeParseException
     {
         RoundupArticle article = new RoundupArticle();
 
         article.init();
+        article.setSiteId(site.getId());
         article.setTitle("New Roundup");
         article.setSummary(StringUtils.EMPTY);
         article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));

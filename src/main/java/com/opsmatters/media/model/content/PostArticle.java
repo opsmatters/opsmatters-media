@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.config.content.PostConfiguration;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
@@ -33,6 +34,7 @@ public class PostArticle extends Article
     private String link = "";
     private String linkText = "";
     private String urlAlias = "";
+    private String basePath = "";
 
     /**
      * Default constructor.
@@ -54,10 +56,11 @@ public class PostArticle extends Article
     /**
      * Constructor that takes a post.
      */
-    public PostArticle(String code, PostDetails obj)
+    public PostArticle(Site site, String code, PostDetails obj)
     {
         this();
         init();
+        setSiteId(site.getId());
         setCode(code);
         setPostDetails(obj);
     }
@@ -65,10 +68,11 @@ public class PostArticle extends Article
     /**
      * Constructor that takes a post summary.
      */
-    public PostArticle(String code, PostSummary obj)
+    public PostArticle(Site site, String code, PostSummary obj)
     {
         this();
         init();
+        setSiteId(site.getId());
         setCode(code);
         setContentSummary(obj);
     }
@@ -81,6 +85,7 @@ public class PostArticle extends Article
         super.copyAttributes(obj);
 
         setPostDetails(obj.getPostDetails());
+        setBasePath(obj.getBasePath());
         setLink(new String(obj.getLink() != null ? obj.getLink() : ""));
         setLinkText(new String(obj.getLinkText() != null ? obj.getLinkText() : ""));
         setUrlAlias(new String(obj.getUrlAlias() != null ? obj.getUrlAlias() : ""));
@@ -89,10 +94,12 @@ public class PostArticle extends Article
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public PostArticle(String code, String[] values) throws DateTimeParseException
+    public PostArticle(Site site, String code, String[] values) throws DateTimeParseException
     {
         this();
         init();
+
+        setSiteId(site.getId());
 
         String id = values[0];
         String pubdate = values[1];
@@ -229,11 +236,12 @@ public class PostArticle extends Article
     /**
      * Returns a new article with defaults.
      */
-    public static PostArticle getDefault(PostConfiguration config) throws DateTimeParseException
+    public static PostArticle getDefault(Site site, PostConfiguration config) throws DateTimeParseException
     {
         PostArticle article = new PostArticle();
 
         article.init();
+        article.setSiteId(site.getId());
         article.setTitle("New Post");
         article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
         article.setImagePrefix(config.getImagePrefix());
@@ -510,11 +518,27 @@ public class PostArticle extends Article
     }
 
     /**
+     * Returns the base path for the URL alias.
+     */
+    public String getBasePath()
+    {
+        return basePath;
+    }
+
+    /**
+     * Sets the base path for the URL alias.
+     */
+    public void setBasePath(String basePath)
+    {
+        this.basePath = basePath;
+    }
+
+    /**
      * Returns the URL for the post.
      */
     public String getUrl()
     {
-        return System.getProperty("app.site.prod")+getUrlAlias();
+        return getBasePath()+getUrlAlias();
     }
 
     /**
@@ -522,7 +546,7 @@ public class PostArticle extends Article
      */
     public void setUrl(String url)
     {
-        String path = System.getProperty("app.site.prod");
+        String path = getBasePath();
         if(url.startsWith(path))
             url = url.substring(path.length());
         setUrlAlias(url);

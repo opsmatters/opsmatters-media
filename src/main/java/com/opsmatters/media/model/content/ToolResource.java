@@ -19,6 +19,7 @@ import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.ToolConfiguration;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
@@ -53,10 +54,11 @@ public class ToolResource extends Resource
     /**
      * Constructor that takes a tool.
      */
-    public ToolResource(String code, ToolDetails obj)
+    public ToolResource(Site site, String code, ToolDetails obj)
     {
         this();
         init();
+        setSiteId(site.getId());
         setCode(code);
         setToolDetails(obj);
     }
@@ -64,10 +66,11 @@ public class ToolResource extends Resource
     /**
      * Constructor that takes a tool summary.
      */
-    public ToolResource(String code, ToolSummary obj)
+    public ToolResource(Site site, String code, ToolSummary obj)
     {
         this();
         init();
+        setSiteId(site.getId());
         setCode(code);
         setContentSummary(obj);
     }
@@ -86,10 +89,12 @@ public class ToolResource extends Resource
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public ToolResource(String code, String[] values) throws DateTimeParseException
+    public ToolResource(Site site, String code, String[] values) throws DateTimeParseException
     {
         this();
         init();
+
+        setSiteId(site.getId());
 
         String id = values[0];
         String pubdate = values[1];
@@ -185,11 +190,12 @@ public class ToolResource extends Resource
     /**
      * Returns a new resource with defaults.
      */
-    public static ToolResource getDefault(ToolConfiguration config) throws DateTimeParseException
+    public static ToolResource getDefault(Site site, ToolConfiguration config) throws DateTimeParseException
     {
         ToolResource resource = new ToolResource();
 
         resource.init();
+        resource.setSiteId(site.getId());
         resource.setTitle("New Tool");
         resource.setDescription(StringUtils.EMPTY);
         resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));

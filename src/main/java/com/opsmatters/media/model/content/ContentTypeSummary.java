@@ -18,6 +18,7 @@ package com.opsmatters.media.model.content;
 import java.time.Instant;
 import java.util.List;
 import com.opsmatters.media.model.BaseItem;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -27,6 +28,7 @@ import com.opsmatters.media.util.StringUtils;
  */
 public class ContentTypeSummary extends BaseItem
 {
+    private String siteId = "";
     private String code = "";
     private ContentType type;
     private String templateId = "";
@@ -47,6 +49,7 @@ public class ContentTypeSummary extends BaseItem
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(organisation.getCreatedDate());
+        setSiteId(organisation.getSiteId());
         setCode(organisation.getCode());
 
         // Go through the items to populate the summary
@@ -73,6 +76,7 @@ public class ContentTypeSummary extends BaseItem
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
+        setSiteId(item.getSiteId());
         setCode(item.getCode());
         setType(item.getType());
         setItemCount(1);
@@ -87,12 +91,29 @@ public class ContentTypeSummary extends BaseItem
         if(obj != null)
         {
             super.copyAttributes(obj);
+            setSiteId(obj.getSiteId());
             setCode(obj.getCode());
             setType(obj.getType());
             setTemplateId(obj.getTemplateId());
             setItemCount(obj.getItemCount());
             setDeployed(obj.isDeployed());
         }
+    }
+
+    /**
+     * Returns the site id.
+     */
+    public String getSiteId()
+    {
+        return siteId;
+    }
+
+    /**
+     * Sets the site id.
+     */
+    public void setSiteId(String siteId)
+    {
+        this.siteId = siteId;
     }
 
     /**

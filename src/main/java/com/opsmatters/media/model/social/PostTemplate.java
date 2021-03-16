@@ -22,10 +22,11 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
-import com.opsmatters.media.util.StringUtils;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
+import com.opsmatters.media.util.StringUtils;
 
 /**
  * Class representing a social media post template.
@@ -43,6 +44,7 @@ public class PostTemplate extends SocialPost
     public static final String URL = "url";
     public static final String ORIGINAL_URL = "original-url";
 
+    private String siteId = "";
     private String name = "";
     private PostType type;
     private String code = "";
@@ -61,12 +63,13 @@ public class PostTemplate extends SocialPost
     }
 
     /**
-     * Constructor that takes a name.
+     * Constructor that takes a site, name and type.
      */
-    public PostTemplate(String name, PostType type)
+    public PostTemplate(Site site, String name, PostType type)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
+        setSiteId(site.getId());
         setName(name);
         setType(type);
     }
@@ -74,11 +77,12 @@ public class PostTemplate extends SocialPost
     /**
      * Constructor that takes a content post.
      */
-    public PostTemplate(ContentPost post, String message)
+    public PostTemplate(Site site, ContentPost post, String message)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setPostedDate(post.getUpdatedDate());
+        setSiteId(site.getId());
         setName(post.getTitle());
         setType(PostType.LIBRARY);
         setCode(post.getCode());
@@ -89,7 +93,7 @@ public class PostTemplate extends SocialPost
             setUrl(post.getOriginalUrl());
         else
             setUrl(post.getUrl());
-        setShortenUrl(post.hasShortenedUrl());
+        setShortenUrl(post.hasShortenedUrl(site.getShortDomain()));
     }
 
     /**
@@ -110,6 +114,7 @@ public class PostTemplate extends SocialPost
             super.copyAttributes(obj);
             setName(obj.getName());
             setType(obj.getType());
+            setSiteId(obj.getSiteId());
             setCode(obj.getCode());
             setOrganisation(obj.getOrganisation());
             setContentType(obj.getContentType());
@@ -190,6 +195,22 @@ public class PostTemplate extends SocialPost
     public void setTypeValue(String type)
     {
         setType(PostType.fromValue(type));
+    }
+
+    /**
+     * Returns the site id.
+     */
+    public String getSiteId()
+    {
+        return siteId;
+    }
+
+    /**
+     * Sets the site id.
+     */
+    public void setSiteId(String siteId)
+    {
+        this.siteId = siteId;
     }
 
     /**

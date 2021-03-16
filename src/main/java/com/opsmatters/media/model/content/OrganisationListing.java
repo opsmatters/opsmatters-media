@@ -22,6 +22,7 @@ import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.OrganisationListingConfiguration;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 
@@ -107,9 +108,11 @@ public class OrganisationListing extends ContentItem
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public OrganisationListing(String[] values) throws DateTimeParseException
+    public OrganisationListing(Site site, String[] values) throws DateTimeParseException
     {
         init();
+
+        setSiteId(site.getId());
 
         String id = values[0];
         String pubdate = values[1];
@@ -305,6 +308,7 @@ public class OrganisationListing extends ContentItem
         OrganisationListing listing = new OrganisationListing();
 
         listing.init();
+        listing.setSiteId(organisation.getId());
         listing.setCode(organisation.getCode());
         listing.setTitle(organisation.getName());
         listing.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));

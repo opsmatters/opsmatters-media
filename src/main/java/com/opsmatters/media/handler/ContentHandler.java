@@ -31,12 +31,15 @@ import org.apache.commons.text.StringSubstitutor;
 import com.google.common.io.Files;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
-import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.config.content.FieldSource;
 import com.opsmatters.media.config.content.OrganisationContentConfiguration;
+import com.opsmatters.media.model.site.Site;
+import com.opsmatters.media.model.site.Environment;
+import com.opsmatters.media.model.site.EnvironmentName;
+import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.client.S3Client;
 import com.opsmatters.media.client.SshClient;
 import com.opsmatters.media.file.InputFileReader;
@@ -714,6 +717,7 @@ public class ContentHandler implements FieldSource
     /**
      * Copy the current file in the working directory to the given remote directory using SSH.
      */
+//GERALD: remove eventually?
     public void copyFileToHost(String directory, String key) throws IOException
     {
         copyFileToHost(filename, directory, key);
@@ -722,6 +726,7 @@ public class ContentHandler implements FieldSource
     /**
      * Copy the given file in the working directory to the given remote directory using SSH.
      */
+//GERALD: remove eventually?
     public boolean copyFileToHost(String filename, String directory, String env) throws IOException
     {
         if(directory == null || directory.length() == 0)
@@ -738,6 +743,68 @@ public class ContentHandler implements FieldSource
             {
                 client = SshClient.newClient(env);
                 sshClients.put(env, client);
+            }
+
+            client.cd(directory); 
+
+            // Transfer the file to the remote feeds directory using SSH
+            if(directory != null)
+            {
+                is = new FileInputStream(sourceFile);
+                ret = client.put(is, filename);
+                logger.info("Copied file "+filename+" to remote directory: "+client.pwd());
+            }
+        }
+        catch(JSchException | SftpException e)
+        {
+            IOException ioe = new IOException(e.getMessage());
+            ioe.initCause(e);
+            throw ioe;
+        }
+        finally
+        {
+            try
+            {
+                // Close the input stream
+                if(is != null)
+                    is.close();
+            }
+            catch(IOException e)
+            {
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Copy the current file in the working directory to the given remote directory using SSH.
+     */
+    public void copyFileToHost(String directory, Site site, EnvironmentName env) throws IOException
+    {
+        copyFileToHost(filename, directory, site, env);
+    }
+
+    /**
+     * Copy the given file in the working directory to the given remote directory using SSH.
+     */
+    public boolean copyFileToHost(String filename, String directory, Site site, EnvironmentName env) throws IOException
+    {
+        if(directory == null || directory.length() == 0)
+            throw new IllegalArgumentException("target directory null");
+
+        InputStream is = null;
+        File sourceFile = new File(workingDir, filename);
+        boolean ret = false;
+
+        try
+        {
+            Environment environment = site.getEnvironment(env);
+            SshClient client = sshClients.get(environment.getKey());
+            if(client == null)
+            {
+                client = SshClient.newClient(environment.getKey(), environment.getSshSettings());
+                sshClients.put(environment.getKey(), client);
             }
 
             client.cd(directory); 
@@ -848,7 +915,7 @@ public class ContentHandler implements FieldSource
                 s3client = client;
             }
 
-            client.changeBucket(System.getProperty("app.s3.content")); 
+            client.changeBucket(bucket); 
         }
         catch(IOException e)
         {

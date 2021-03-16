@@ -23,7 +23,9 @@ import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 import java.sql.SQLException;
 import com.opsmatters.media.config.YamlConfiguration;
-import com.opsmatters.media.model.SiteEnv;
+import com.opsmatters.media.model.site.Site;
+import com.opsmatters.media.model.site.FeedsSettings;
+import com.opsmatters.media.model.site.EnvironmentName;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.content.Organisation;
@@ -341,10 +343,10 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
     /**
      * Extract the list of content items from the database and deploy using the given handler.
      */
-    public List<C> deployContent(ContentDAO contentDAO, ContentHandler handler, int maxItems)
+    public List<C> deployContent(Site site, ContentDAO contentDAO, ContentHandler handler, int maxItems)
         throws IOException, SQLException
     {
-        List<C> items = contentDAO.list(getCode());
+        List<C> items = contentDAO.list(site, getCode());
         for(C content : items)
         {
             boolean deployed = content.isDeployed();
@@ -393,7 +395,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
 
         // Process the import file
         handler.writeFile();
-        handler.copyFileToBucket(System.getProperty("app.s3.content"));
+        handler.copyFileToBucket(site.getS3Settings().getContentBucket());
         handler.deleteFile();
 
         // Process the CSV file
@@ -403,8 +405,14 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
             handler.trimFirstLines(maxItems);
         handler.convertLinesToAscii(getHtmlFields());
         handler.writeFile();
-        for(SiteEnv env : SiteEnv.values())
-            handler.copyFileToHost(System.getProperty(String.format("app.files.%s.feeds.%s", env.code(), type)), env.code());
+
+        // Upload the csv file to each environment
+        for(EnvironmentName name : EnvironmentName.values())
+        {
+            FeedsSettings feeds = site.getEnvironment(name).getFeedsSettings();
+            handler.copyFileToHost(feeds.getPath()+System.getProperty("app.files.feeds."+type), site, name);
+        }
+
         handler.deleteFile();
 
         return items;

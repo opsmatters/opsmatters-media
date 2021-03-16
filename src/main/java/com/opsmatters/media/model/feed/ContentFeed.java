@@ -15,7 +15,8 @@
  */
 package com.opsmatters.media.model.feed;
 
-import com.opsmatters.media.model.SiteEnv;
+import com.opsmatters.media.model.site.Site;
+import com.opsmatters.media.model.site.EnvironmentName;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.StringUtils;
 
@@ -26,7 +27,8 @@ import com.opsmatters.media.util.StringUtils;
  */
 public class ContentFeed extends Feed
 {
-    private SiteEnv env;
+    private String siteId = "";
+    private EnvironmentName environment;
     private ContentType contentType;
 
     /**
@@ -39,14 +41,15 @@ public class ContentFeed extends Feed
     /**
      * Constructor that takes a drupal feed and environment.
      */
-    public ContentFeed(FeedsFeed feed, SiteEnv env, ContentType type)
+    public ContentFeed(FeedsFeed feed, Site site, EnvironmentName environment, ContentType type)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(feed.getCreatedDate());
         setExecutedDate(feed.getImportedDate());
         setName(feed.getTitle());
         setExternalId(feed.getId());
-        setEnv(env);
+        setSiteId(site.getId());
+        setEnvironment(environment);
         setContentType(type);
         setStatus(FeedStatus.NEW);
         setItemCount(feed.getItemCount());
@@ -68,7 +71,8 @@ public class ContentFeed extends Feed
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setEnv(obj.getEnv());
+            setSiteId(obj.getSiteId());
+            setEnvironment(obj.getEnvironment());
             setContentType(obj.getContentType());
         }
     }
@@ -98,26 +102,42 @@ public class ContentFeed extends Feed
     }
 
     /**
-     * Returns the feed env.
+     * Returns the site id.
      */
-    public SiteEnv getEnv()
+    public String getSiteId()
     {
-        return env;
+        return siteId;
     }
 
     /**
-     * Sets the feed env.
+     * Sets the site id.
      */
-    public void setEnv(String env)
+    public void setSiteId(String siteId)
     {
-        setEnv(SiteEnv.valueOf(env));
+        this.siteId = siteId;
     }
 
     /**
-     * Sets the feed env.
+     * Returns the feed environment.
      */
-    public void setEnv(SiteEnv env)
+    public EnvironmentName getEnvironment()
     {
-        this.env = env;
+        return environment;
+    }
+
+    /**
+     * Sets the feed environment.
+     */
+    public void setEnvironment(String environment)
+    {
+        setEnvironment(EnvironmentName.valueOf(environment));
+    }
+
+    /**
+     * Sets the feed environment.
+     */
+    public void setEnvironment(EnvironmentName environment)
+    {
+        this.environment = environment;
     }
 }

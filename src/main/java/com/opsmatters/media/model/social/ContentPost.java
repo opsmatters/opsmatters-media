@@ -18,6 +18,8 @@ package com.opsmatters.media.model.social;
 import java.time.Instant;
 import org.json.JSONObject;
 import com.opsmatters.media.util.StringUtils;
+import com.opsmatters.media.model.site.Site;
+import com.opsmatters.media.model.site.EnvironmentName;
 import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
@@ -48,10 +50,11 @@ public class ContentPost extends DraftPost
     /**
      * Constructor that takes an organisation.
      */
-    public ContentPost(Organisation organisation)
+    public ContentPost(Site site, Organisation organisation)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
+        setSiteId(site.getId());
         setCode(organisation.getCode());
         setTitle(organisation.getName());
         setContentId(organisation.getListingId());
@@ -60,16 +63,17 @@ public class ContentPost extends DraftPost
 
         getProperties().put(PostTemplate.HANDLE, "@"+organisation.getFeedUsername());
         getProperties().put(PostTemplate.HASHTAG, organisation.getHashtag());
-        getProperties().put(PostTemplate.URL, organisation.getUrl(System.getProperty("app.site.prod")));
+        getProperties().put(PostTemplate.URL, organisation.getUrl(site.getEnvironment(EnvironmentName.PROD).getUrl()));
     }
 
     /**
      * Constructor that takes an organisation listing and a content item.
      */
-    public ContentPost(Organisation organisation, ContentItem content)
+    public ContentPost(Site site, Organisation organisation, ContentItem content)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
+        setSiteId(site.getId());
         setCode(organisation.getCode());
         if(content.getType() != ContentType.ROUNDUP)
             setContentId(content.getId());
@@ -79,7 +83,7 @@ public class ContentPost extends DraftPost
         getProperties().put(PostTemplate.HANDLE, "@"+organisation.getFeedUsername());
         getProperties().put(PostTemplate.HASHTAG, organisation.getHashtag());
         if(content.getType() == ContentType.ROUNDUP)
-            getProperties().put(PostTemplate.URL, organisation.getUrl(System.getProperty("app.site.prod")));
+            getProperties().put(PostTemplate.URL, organisation.getUrl(site.getEnvironment(EnvironmentName.PROD).getUrl()));
     }
 
     /**
@@ -90,6 +94,7 @@ public class ContentPost extends DraftPost
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setTemplateId(template.getId());
+        setSiteId(organisation.getSiteId());
         setCode(organisation.getCode());
         setContentType(template.getContentType());
         setStatus(DraftStatus.NEW);

@@ -20,6 +20,7 @@ import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.JobConfiguration;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
@@ -54,10 +55,11 @@ public class JobResource extends Resource
     /**
      * Constructor that takes a job.
      */
-    public JobResource(String code, JobDetails obj)
+    public JobResource(Site site, String code, JobDetails obj)
     {
         this();
         init();
+        setSiteId(site.getId());
         setCode(code);
         setJobDetails(obj);
     }
@@ -65,10 +67,11 @@ public class JobResource extends Resource
     /**
      * Constructor that takes a job summary.
      */
-    public JobResource(String code, JobSummary obj)
+    public JobResource(Site site, String code, JobSummary obj)
     {
         this();
         init();
+        setSiteId(site.getId());
         setCode(code);
         setContentSummary(obj);
     }
@@ -87,10 +90,12 @@ public class JobResource extends Resource
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public JobResource(String code, String[] values) throws DateTimeParseException
+    public JobResource(Site site, String code, String[] values) throws DateTimeParseException
     {
         this();
         init();
+
+        setSiteId(site.getId());
 
         String id = values[0];
         String pubdate = values[1];
@@ -189,11 +194,12 @@ public class JobResource extends Resource
     /**
      * Returns a new resource with defaults.
      */
-    public static JobResource getDefault(JobConfiguration config) throws DateTimeParseException
+    public static JobResource getDefault(Site site, JobConfiguration config) throws DateTimeParseException
     {
         JobResource resource = new JobResource();
 
         resource.init();
+        resource.setSiteId(site.getId());
         resource.setTitle("New Job");
         resource.setDescription(StringUtils.EMPTY);
         resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));

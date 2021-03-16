@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.config.content.EventConfiguration;
 import com.opsmatters.media.config.content.WebPageConfiguration;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
@@ -56,10 +57,11 @@ public class EventResource extends Resource
     /**
      * Constructor that takes an event.
      */
-    public EventResource(String code, EventDetails obj)
+    public EventResource(Site site, String code, EventDetails obj)
     {
         this();
         init();
+        setSiteId(site.getId());
         setCode(code);
         setEventDetails(obj);
     }
@@ -67,10 +69,11 @@ public class EventResource extends Resource
     /**
      * Constructor that takes an event summary.
      */
-    public EventResource(String code, EventSummary obj)
+    public EventResource(Site site, String code, EventSummary obj)
     {
         this();
         init();
+        setSiteId(site.getId());
         setCode(code);
         setContentSummary(obj);
     }
@@ -89,10 +92,12 @@ public class EventResource extends Resource
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public EventResource(String code, String[] values) throws DateTimeParseException
+    public EventResource(Site site, String code, String[] values) throws DateTimeParseException
     {
         this();
         init();
+
+        setSiteId(site.getId());
 
         String id = values[0];
         String pubdate = values[1];
@@ -191,11 +196,12 @@ public class EventResource extends Resource
     /**
      * Returns a new resource with defaults.
      */
-    public static EventResource getDefault(EventConfiguration config) throws DateTimeParseException
+    public static EventResource getDefault(Site site, EventConfiguration config) throws DateTimeParseException
     {
         EventResource resource = new EventResource();
 
         resource.init();
+        resource.setSiteId(site.getId());
         resource.setTitle(config.getOrganisation()+": New Event");
         resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
         resource.setStartDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));

@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.config.content.FieldSource;
 import com.opsmatters.media.model.OwnedItem;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
@@ -38,6 +39,7 @@ public class Organisation extends OwnedItem implements FieldSource
 {
     public static final String MISCELLANEOUS = "Miscellaneous";
 
+    private String siteId = "";
     private String code = "";
     private String name = "";
     private String website = "";
@@ -76,6 +78,7 @@ public class Organisation extends OwnedItem implements FieldSource
         if(obj != null)
         {
             super.copyAttributes(obj);
+            setSiteId(obj.getSiteId());
             setCode(obj.getCode());
             setName(obj.getName());
             setWebsite(new String(obj.getWebsite() != null ? obj.getWebsite() : ""));
@@ -149,11 +152,12 @@ public class Organisation extends OwnedItem implements FieldSource
     /**
      * Returns a new organisation with defaults.
      */
-    public static Organisation getDefault()
+    public static Organisation getDefault(Site site)
     {
         Organisation organisation = new Organisation();
 
         organisation.setId(StringUtils.getUUID(null));
+        organisation.setSiteId(site.getId());
         organisation.setCode("TBD");
         organisation.setName("New Organisation");
         organisation.setCreatedDate(Instant.now());
@@ -162,6 +166,22 @@ public class Organisation extends OwnedItem implements FieldSource
         organisation.setFeedProvider(SocialProvider.TWITTER);
 
         return organisation;
+    }
+
+    /**
+     * Returns the site id.
+     */
+    public String getSiteId()
+    {
+        return siteId;
+    }
+
+    /**
+     * Sets the site id.
+     */
+    public void setSiteId(String siteId)
+    {
+        this.siteId = siteId;
     }
 
     /**

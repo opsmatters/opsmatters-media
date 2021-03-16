@@ -18,6 +18,7 @@ package com.opsmatters.media.model.content;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.EBookConfiguration;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
 
@@ -46,9 +47,10 @@ public class EBookResource extends PublicationResource
     /**
      * Constructor that takes a publication.
      */
-    public EBookResource(String code, PublicationDetails obj)
+    public EBookResource(Site site, String code, PublicationDetails obj)
     {
         init();
+        setSiteId(site.getId());
         setCode(code);
         setPublicationDetails(obj);
     }
@@ -56,9 +58,10 @@ public class EBookResource extends PublicationResource
     /**
      * Constructor that takes a publication summary.
      */
-    public EBookResource(String code, PublicationSummary obj)
+    public EBookResource(Site site, String code, PublicationSummary obj)
     {
         init();
+        setSiteId(site.getId());
         setCode(code);
         setContentSummary(obj);
     }
@@ -66,9 +69,9 @@ public class EBookResource extends PublicationResource
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public EBookResource(String code, String[] values) throws DateTimeParseException
+    public EBookResource(Site site, String code, String[] values) throws DateTimeParseException
     {
-        super(code, values);
+        super(site, code, values);
     }
 
     /**
@@ -82,11 +85,12 @@ public class EBookResource extends PublicationResource
     /**
      * Returns a new resource with defaults.
      */
-    public static EBookResource getDefault(EBookConfiguration config) throws DateTimeParseException
+    public static EBookResource getDefault(Site site, EBookConfiguration config) throws DateTimeParseException
     {
         EBookResource resource = new EBookResource();
 
         resource.init();
+        resource.setSiteId(site.getId());
         resource.setTitle("New EBook");
         resource.setDescription(StringUtils.EMPTY);
         resource.setImagePrefix(config.getImagePrefix());

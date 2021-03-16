@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.file.CommonFiles;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.StringUtils;
@@ -42,6 +43,7 @@ public abstract class ContentItem implements java.io.Serializable
     private boolean detailsSet = false;
 
     private String uuid = "";
+    private String siteId = "";
     private int id = -1;
     private String code = "";
     private boolean published = false;
@@ -82,6 +84,7 @@ public abstract class ContentItem implements java.io.Serializable
     public void copyAttributes(ContentItem obj)
     {
         setUuid(new String(obj.getUuid() != null ? obj.getUuid() : ""));
+        setSiteId(obj.getSiteId());
         setCode(new String(obj.getCode() != null ? obj.getCode() : ""));
         setId(obj.getId());
         setPublished(obj.isPublished());
@@ -294,6 +297,22 @@ public abstract class ContentItem implements java.io.Serializable
     public String getGuid()
     {
         return String.format("%s-%s-%05d", getType().code(), code, id);
+    }
+
+    /**
+     * Returns the site id.
+     */
+    public String getSiteId()
+    {
+        return siteId;
+    }
+
+    /**
+     * Sets the site id.
+     */
+    public void setSiteId(String siteId)
+    {
+        this.siteId = siteId;
     }
 
     /**

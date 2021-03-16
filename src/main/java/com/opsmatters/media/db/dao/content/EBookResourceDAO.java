@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.model.content.EBookResource;
 import com.opsmatters.media.model.content.ContentStatus;
 
@@ -39,16 +40,16 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
      * The query to use to select a ebook from the EBOOKS table by URL.
      */
     private static final String GET_BY_URL_SQL =  
-      "SELECT ATTRIBUTES FROM EBOOKS WHERE CODE=? AND URL=?";
+      "SELECT ATTRIBUTES, SITE_ID FROM EBOOKS WHERE SITE_ID=? AND CODE=? AND URL=?";
 
     /**
      * The query to use to insert a ebook into the EBOOKS table.
      */
     private static final String INSERT_SQL =  
       "INSERT INTO EBOOKS"
-      + "( CODE, ID, PUBLISHED_DATE, UUID, URL, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
+      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, URL, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a ebook in the EBOOKS table.
@@ -71,6 +72,7 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
     @Override
     protected void defineTable()
     {
+        table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
@@ -80,9 +82,9 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
-        table.setPrimaryKey("EBOOKS_PK", new String[] {"CODE","ID"});
-        table.addIndex("EBOOKS_UUID_IDX", new String[] {"CODE","UUID"});
-        table.addIndex("EBOOKS_URL_IDX", new String[] {"CODE","URL"});
+        table.setPrimaryKey("EBOOKS_PK", new String[] {"SITE_ID","CODE","ID"});
+        table.addIndex("EBOOKS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
+        table.addIndex("EBOOKS_URL_IDX", new String[] {"SITE_ID","CODE","URL"});
         table.addIndex("EBOOKS_STATUS_IDX", new String[] {"STATUS"});
         table.setInitialised(true);
     }
@@ -90,7 +92,7 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
     /**
      * Returns a ebook from the EBOOKS table by URL.
      */
-    public EBookResource getByUrl(String code, String url) throws SQLException
+    public EBookResource getByUrl(String siteId, String code, String url) throws SQLException
     {
         EBookResource ret = null;
 
@@ -106,14 +108,16 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
 
         try
         {
-            getByUrlStmt.setString(1, code);
-            getByUrlStmt.setString(2, url);
+            getByUrlStmt.setString(1, siteId);
+            getByUrlStmt.setString(2, code);
+            getByUrlStmt.setString(3, url);
             getByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByUrlStmt.executeQuery();
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
                 ret = new EBookResource(attributes);
+                ret.setSiteId(rs.getString(2));
             }
         }
         finally
@@ -152,17 +156,18 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
 
         try
         {
-            insertStmt.setString(1, content.getCode());
-            insertStmt.setInt(2, content.getId());
-            insertStmt.setTimestamp(3, new Timestamp(content.getPublishedDateMillis()), UTC);
-            insertStmt.setString(4, content.getUuid());
-            insertStmt.setString(5, content.getUrl());
-            insertStmt.setBoolean(6, content.isPublished());
-            insertStmt.setString(7, content.getStatus().name());
-            insertStmt.setString(8, content.getCreatedBy());
+            insertStmt.setString(1, content.getSiteId());
+            insertStmt.setString(2, content.getCode());
+            insertStmt.setInt(3, content.getId());
+            insertStmt.setTimestamp(4, new Timestamp(content.getPublishedDateMillis()), UTC);
+            insertStmt.setString(5, content.getUuid());
+            insertStmt.setString(6, content.getUrl());
+            insertStmt.setBoolean(7, content.isPublished());
+            insertStmt.setString(8, content.getStatus().name());
+            insertStmt.setString(9, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(9, reader, attributes.length());
+            insertStmt.setCharacterStream(10, reader, attributes.length());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 

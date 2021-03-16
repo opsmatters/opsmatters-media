@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model;
+package com.opsmatters.media.model.site;
 
 /**
  * Represents the environments for a site.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum SiteEnv
+public enum EnvironmentName
 {
     STAGE("stage", "Stage"),
     PROD("prod", "Production");
@@ -30,19 +30,19 @@ public enum SiteEnv
     private String value;
 
     /**
-     * Constructor that takes the env code and value.
-     * @param code The code for the env
-     * @param value The value for the env
+     * Constructor that takes the environment code and value.
+     * @param code The code for the environment
+     * @param value The value for the environment
      */
-    SiteEnv(String code, String value)
+    EnvironmentName(String code, String value)
     {
         this.code = code;
         this.value = value;
     }
 
     /**
-     * Returns the value of the env.
-     * @return The value of the env.
+     * Returns the value of the environment.
+     * @return The value of the environment.
      */
     public String toString()
     {
@@ -50,8 +50,8 @@ public enum SiteEnv
     }
 
     /**
-     * Returns the code of the env.
-     * @return The code of the env.
+     * Returns the code of the environment.
+     * @return The code of the environment.
      */
     public String code()
     {
@@ -59,8 +59,8 @@ public enum SiteEnv
     }
 
     /**
-     * Returns the value of the env.
-     * @return The value of the env.
+     * Returns the value of the environment.
+     * @return The value of the environment.
      */
     public String value()
     {
@@ -72,10 +72,10 @@ public enum SiteEnv
      * @param value The type value
      * @return The type for the given value
      */
-    public static SiteEnv fromValue(String value)
+    public static EnvironmentName fromValue(String value)
     {
-        SiteEnv[] types = values();
-        for(SiteEnv type : types)
+        EnvironmentName[] types = values();
+        for(EnvironmentName type : types)
         {
             if(type.value().equals(value))
                 return type;

@@ -24,6 +24,7 @@ import com.echobox.api.linkedin.types.ugc.UGCShare;
 import com.opsmatters.media.client.social.SocialClient;
 import com.opsmatters.media.client.social.SocialClientFactory;
 import com.opsmatters.media.model.DeliveryStatus;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailBody;
 import com.opsmatters.media.util.Formats;
@@ -37,6 +38,7 @@ import com.opsmatters.media.util.StringUtils;
  */
 public class PreparedPost extends SocialPost
 {
+    private String siteId = "";
     private String draftId = "";
     private String code = "";
     private String organisation = "";
@@ -66,6 +68,7 @@ public class PreparedPost extends SocialPost
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
+        setSiteId(post.getSiteId());
         setScheduledDate(post.getScheduledDate());
         setDraftId(post.getId());
         if(post.getType() == PostType.CONTENT)
@@ -151,6 +154,7 @@ public class PreparedPost extends SocialPost
         if(obj != null)
         {
             super.copyAttributes(obj);
+            setSiteId(obj.getSiteId());
             setDraftId(obj.getDraftId());
             setCode(obj.getCode());
             setOrganisation(obj.getOrganisation() != null ? obj.getOrganisation() : "");
@@ -162,6 +166,22 @@ public class PreparedPost extends SocialPost
             setErrorCode(obj.getErrorCode());
             setErrorMessage(obj.getErrorMessage());
         }
+    }
+
+    /**
+     * Returns the site id.
+     */
+    public String getSiteId()
+    {
+        return siteId;
+    }
+
+    /**
+     * Sets the site id.
+     */
+    public void setSiteId(String siteId)
+    {
+        this.siteId = siteId;
     }
 
     /**

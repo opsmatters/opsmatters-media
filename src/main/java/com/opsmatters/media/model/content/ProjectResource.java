@@ -20,6 +20,7 @@ import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.ProjectConfiguration;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
@@ -53,10 +54,11 @@ public class ProjectResource extends Resource
     /**
      * Constructor that takes a project.
      */
-    public ProjectResource(String code, ProjectDetails obj)
+    public ProjectResource(Site site, String code, ProjectDetails obj)
     {
         this();
         init();
+        setSiteId(site.getId());
         setCode(code);
         setProjectDetails(obj);
     }
@@ -64,10 +66,11 @@ public class ProjectResource extends Resource
     /**
      * Constructor that takes a project summary.
      */
-    public ProjectResource(String code, ProjectSummary obj)
+    public ProjectResource(Site site, String code, ProjectSummary obj)
     {
         this();
         init();
+        setSiteId(site.getId());
         setCode(code);
         setContentSummary(obj);
     }
@@ -85,10 +88,12 @@ public class ProjectResource extends Resource
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public ProjectResource(String code, String[] values) throws DateTimeParseException
+    public ProjectResource(Site site, String code, String[] values) throws DateTimeParseException
     {
         this();
         init();
+
+        setSiteId(site.getId());
 
         String id = values[0];
         String pubdate = values[1];
@@ -188,11 +193,12 @@ public class ProjectResource extends Resource
     /**
      * Returns a new resource with defaults.
      */
-    public static ProjectResource getDefault(ProjectConfiguration config) throws DateTimeParseException
+    public static ProjectResource getDefault(Site site, ProjectConfiguration config) throws DateTimeParseException
     {
         ProjectResource resource = new ProjectResource();
 
         resource.init();
+        resource.setSiteId(site.getId());
         resource.setTitle("New Project");
         resource.setDescription(StringUtils.EMPTY);
         resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));

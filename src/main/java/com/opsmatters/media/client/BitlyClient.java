@@ -34,14 +34,16 @@ public class BitlyClient extends Client
     public static final String DEFAULT_DOMAIN = "bit.ly";
 
     private Bitly client;
+    private String domain = "";
     private String accessToken = "";
 
     /**
      * Returns a new bitly client using an access token.
      */
-    static public BitlyClient newClient() throws IOException
+    static public BitlyClient newClient(String domain) throws IOException
     {
         BitlyClient ret = new BitlyClient();
+        ret.setDomain(domain);
 
         // Configure and create the bitly client
         ret.configure();
@@ -106,12 +108,19 @@ public class BitlyClient extends Client
     }
 
     /**
-     * Returns the configured custom domain.
+     * Returns the custom domain.
      */
-    public static String getDomain()
+    public String getDomain()
     {
-        String custom = System.getProperty("app.site.prod.short-domain");
-        return custom != null ? custom : DEFAULT_DOMAIN;
+        return domain;
+    }
+
+    /**
+     * Sets the custom domain.
+     */
+    public void setDomain(String domain)
+    {
+        this.domain = domain;
     }
 
     /**

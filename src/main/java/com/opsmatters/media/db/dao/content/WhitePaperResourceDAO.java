@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.model.content.WhitePaperResource;
 import com.opsmatters.media.model.content.ContentStatus;
 
@@ -39,16 +40,16 @@ public class WhitePaperResourceDAO extends ContentDAO<WhitePaperResource>
      * The query to use to select a white paper from the WHITE_PAPERS table by URL.
      */
     private static final String GET_BY_URL_SQL =  
-      "SELECT ATTRIBUTES FROM WHITE_PAPERS WHERE CODE=? AND URL=?";
+      "SELECT ATTRIBUTES, SITE_ID FROM WHITE_PAPERS WHERE SITE_ID=? AND CODE=? AND URL=?";
 
     /**
      * The query to use to insert a white paper into the WHITE_PAPERS table.
      */
     private static final String INSERT_SQL =  
       "INSERT INTO WHITE_PAPERS"
-      + "( CODE, ID, PUBLISHED_DATE, UUID, URL, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
+      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, URL, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a white paper in the WHITE_PAPERS table.
@@ -71,6 +72,7 @@ public class WhitePaperResourceDAO extends ContentDAO<WhitePaperResource>
     @Override
     protected void defineTable()
     {
+        table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
@@ -80,9 +82,9 @@ public class WhitePaperResourceDAO extends ContentDAO<WhitePaperResource>
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
-        table.setPrimaryKey("WHITE_PAPERS_PK", new String[] {"CODE","ID"});
-        table.addIndex("WHITE_PAPERS_UUID_IDX", new String[] {"CODE","UUID"});
-        table.addIndex("WHITE_PAPERS_URL_IDX", new String[] {"CODE","URL"});
+        table.setPrimaryKey("WHITE_PAPERS_PK", new String[] {"SITE_ID","CODE","ID"});
+        table.addIndex("WHITE_PAPERS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
+        table.addIndex("WHITE_PAPERS_URL_IDX", new String[] {"SITE_ID","CODE","URL"});
         table.addIndex("WHITE_PAPERS_STATUS_IDX", new String[] {"STATUS"});
         table.setInitialised(true);
     }
@@ -90,7 +92,7 @@ public class WhitePaperResourceDAO extends ContentDAO<WhitePaperResource>
     /**
      * Returns a white paper from the WHITE_PAPERS table by URL.
      */
-    public WhitePaperResource getByUrl(String code, String url) throws SQLException
+    public WhitePaperResource getByUrl(String siteId, String code, String url) throws SQLException
     {
         WhitePaperResource ret = null;
 
@@ -106,14 +108,16 @@ public class WhitePaperResourceDAO extends ContentDAO<WhitePaperResource>
 
         try
         {
-            getByUrlStmt.setString(1, code);
-            getByUrlStmt.setString(2, url);
+            getByUrlStmt.setString(1, siteId);
+            getByUrlStmt.setString(2, code);
+            getByUrlStmt.setString(3, url);
             getByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByUrlStmt.executeQuery();
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
                 ret = new WhitePaperResource(attributes);
+                ret.setSiteId(rs.getString(2));
             }
         }
         finally
@@ -152,17 +156,18 @@ public class WhitePaperResourceDAO extends ContentDAO<WhitePaperResource>
 
         try
         {
-            insertStmt.setString(1, content.getCode());
-            insertStmt.setInt(2, content.getId());
-            insertStmt.setTimestamp(3, new Timestamp(content.getPublishedDateMillis()), UTC);
-            insertStmt.setString(4, content.getUuid());
-            insertStmt.setString(5, content.getUrl());
-            insertStmt.setBoolean(6, content.isPublished());
-            insertStmt.setString(7, content.getStatus().name());
-            insertStmt.setString(8, content.getCreatedBy());
+            insertStmt.setString(1, content.getSiteId());
+            insertStmt.setString(2, content.getCode());
+            insertStmt.setInt(3, content.getId());
+            insertStmt.setTimestamp(4, new Timestamp(content.getPublishedDateMillis()), UTC);
+            insertStmt.setString(5, content.getUuid());
+            insertStmt.setString(6, content.getUrl());
+            insertStmt.setBoolean(7, content.isPublished());
+            insertStmt.setString(8, content.getStatus().name());
+            insertStmt.setString(9, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(9, reader, attributes.length());
+            insertStmt.setCharacterStream(10, reader, attributes.length());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 

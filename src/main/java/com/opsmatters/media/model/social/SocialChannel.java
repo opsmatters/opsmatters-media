@@ -24,23 +24,25 @@ import java.util.Map;
  */
 public class SocialChannel implements java.io.Serializable
 {
-    public static final String PROVIDER = "provider";
+    public static final String NAME = "name";
     public static final String HANDLE = "handle";
-    public static final String SCREEN_NAME = "screen-name";
+    public static final String PROVIDER = "provider";
+    public static final String SITE = "site";
     public static final String ENABLED = "enabled";
 
+    private String id = "";
     private String name = "";
     private String handle = "";
-    private String screenName = "";
     private SocialProvider provider;
+    private String siteId = "";
     private boolean enabled = false;
 
     /**
      * Default constructor.
      */
-    public SocialChannel(String name)
+    public SocialChannel(String id)
     {
-        setName(name);
+        setId(id);
     }
 
     /**
@@ -50,36 +52,37 @@ public class SocialChannel implements java.io.Serializable
     {
         if(obj != null)
         {
+            setId(obj.getId());
             setName(obj.getName());
             setHandle(obj.getHandle());
-            setScreenName(obj.getScreenName());
             setProvider(obj.getProvider());
+            setSiteId(obj.getSiteId());
             setEnabled(obj.isEnabled());
         }
     }
 
     /**
-     * Returns the name.
+     * Returns the id.
      */
     public String toString()
     {
-        return getName();
+        return getId();
     }
 
     /**
-     * Returns the channel name.
+     * Returns the channel id.
      */
-    public String getName()
+    public String getId()
     {
-        return name;
+        return id;
     }
 
     /**
-     * Sets the channel name.
+     * Sets the channel id.
      */
-    public void setName(String name)
+    public void setId(String id)
     {
-        this.name = name;
+        this.id = id;
     }
 
     /**
@@ -99,19 +102,19 @@ public class SocialChannel implements java.io.Serializable
     }
 
     /**
-     * Returns the channel screen name.
+     * Returns the channel name.
      */
-    public String getScreenName()
+    public String getName()
     {
-        return screenName;
+        return name;
     }
 
     /**
-     * Sets the channel screen name.
+     * Sets the channel name.
      */
-    public void setScreenName(String screenName)
+    public void setName(String name)
     {
-        this.screenName = screenName;
+        this.name = name;
     }
 
     /**
@@ -139,6 +142,22 @@ public class SocialChannel implements java.io.Serializable
     }
 
     /**
+     * Returns the channel site id.
+     */
+    public String getSiteId()
+    {
+        return siteId;
+    }
+
+    /**
+     * Sets the channel site id.
+     */
+    public void setSiteId(String siteId)
+    {
+        this.siteId = siteId;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if this channel is enabled to send messages.
      */
     public boolean isEnabled()
@@ -161,10 +180,12 @@ public class SocialChannel implements java.io.Serializable
     {
         if(map.containsKey(HANDLE))
             setHandle((String)map.get(HANDLE));
-        if(map.containsKey(SCREEN_NAME))
-            setScreenName((String)map.get(SCREEN_NAME));
+        if(map.containsKey(NAME))
+            setName((String)map.get(NAME));
         if(map.containsKey(PROVIDER))
             setProvider((String)map.get(PROVIDER));
+        if(map.containsKey(SITE))
+            setSiteId((String)map.get(SITE));
         if(map.containsKey(ENABLED))
             setEnabled((Boolean)map.get(ENABLED));
     }

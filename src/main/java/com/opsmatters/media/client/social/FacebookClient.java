@@ -73,7 +73,7 @@ public class FacebookClient extends Client implements SocialClient
         // Configure and create the facebook client
         ret.configure();
         if(!ret.create())
-            logger.severe("Unable to create facebook client: "+channel.getName());
+            logger.severe("Unable to create facebook client: "+channel.getId());
 
         return ret;
     }
@@ -93,11 +93,11 @@ public class FacebookClient extends Client implements SocialClient
     public void configure() throws IOException
     {
         if(debug())
-            logger.info("Configuring facebook client: "+channel.getName());
+            logger.info("Configuring facebook client: "+channel.getId());
 
         String directory = System.getProperty("app.auth", ".");
 
-        File auth = new File(directory, channel.getName()+AUTH);
+        File auth = new File(directory, channel.getId()+AUTH);
         try
         {
             // Read file from auth directory
@@ -116,7 +116,7 @@ public class FacebookClient extends Client implements SocialClient
             accessToken = new AccessToken(getAccessToken(), null);
 
         if(debug())
-            logger.info("Configured facebook client successfully: "+channel.getName());
+            logger.info("Configured facebook client successfully: "+channel.getId());
     }
 
     /**
@@ -126,7 +126,7 @@ public class FacebookClient extends Client implements SocialClient
     public boolean create() throws IOException, FacebookException
     {
         if(debug())
-            logger.info("Creating facebook client: "+channel.getName());
+            logger.info("Creating facebook client: "+channel.getId());
 
         FacebookFactory factory = new FacebookFactory();
 
@@ -142,7 +142,7 @@ public class FacebookClient extends Client implements SocialClient
         client = facebook;
 
         if(debug())
-            logger.info("Created facebook client successfully: "+channel.getName());
+            logger.info("Created facebook client successfully: "+channel.getId());
 
         return id != null;
     }

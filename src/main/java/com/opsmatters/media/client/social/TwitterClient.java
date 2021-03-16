@@ -69,7 +69,7 @@ public class TwitterClient extends Client implements SocialClient
         // Configure and create the twitter client
         ret.configure();
         if(!ret.create())
-            logger.severe("Unable to create twitter client: "+channel.getName());
+            logger.severe("Unable to create twitter client: "+channel.getId());
 
         return ret;
     }
@@ -89,11 +89,11 @@ public class TwitterClient extends Client implements SocialClient
     public void configure() throws IOException
     {
         if(debug())
-            logger.info("Configuring twitter client: "+channel.getName());
+            logger.info("Configuring twitter client: "+channel.getId());
 
         String directory = System.getProperty("app.auth", ".");
 
-        File auth = new File(directory, channel.getName()+AUTH);
+        File auth = new File(directory, channel.getId()+AUTH);
         try
         {
             // Read file from auth directory
@@ -112,7 +112,7 @@ public class TwitterClient extends Client implements SocialClient
             accessToken = new AccessToken(getAccessToken(), getAccessTokenSecret());
 
         if(debug())
-            logger.info("Configured twitter client successfully: "+channel.getName());
+            logger.info("Configured twitter client successfully: "+channel.getId());
     }
 
     /**
@@ -122,7 +122,7 @@ public class TwitterClient extends Client implements SocialClient
     public boolean create() throws IOException, TwitterException
     {
         if(debug())
-            logger.info("Creating twitter client: "+channel.getName());
+            logger.info("Creating twitter client: "+channel.getId());
 
         TwitterFactory factory = new TwitterFactory();
 
@@ -137,7 +137,7 @@ public class TwitterClient extends Client implements SocialClient
         client = twitter;
 
         if(debug())
-            logger.info("Created twitter client successfully: "+channel.getName());
+            logger.info("Created twitter client successfully: "+channel.getId());
 
         return id > 0L;
     }

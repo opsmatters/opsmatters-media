@@ -18,9 +18,11 @@ package com.opsmatters.media.model.content;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
+
 import com.opsmatters.media.config.content.VideoConfiguration;
 import com.opsmatters.media.config.content.VideoChannelConfiguration;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
 
@@ -56,10 +58,11 @@ public class VideoArticle extends Article
     /**
      * Constructor that takes a video.
      */
-    public VideoArticle(String code, VideoDetails obj)
+    public VideoArticle(Site site, String code, VideoDetails obj)
     {
         this();
         init();
+        setSiteId(site.getId());
         setCode(code);
         setVideoDetails(obj);
     }
@@ -67,10 +70,11 @@ public class VideoArticle extends Article
     /**
      * Constructor that takes a video summary.
      */
-    public VideoArticle(String code, VideoSummary obj)
+    public VideoArticle(Site site, String code, VideoSummary obj)
     {
         this();
         init();
+        setSiteId(site.getId());
         setCode(code);
         setContentSummary(obj);
     }
@@ -91,10 +95,12 @@ public class VideoArticle extends Article
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public VideoArticle(String code, String[] values) throws DateTimeParseException
+    public VideoArticle(Site site, String code, String[] values) throws DateTimeParseException
     {
         this();
         init();
+
+        setSiteId(site.getId());
 
         String id = values[0];
         String pubdate = values[1];
@@ -228,11 +234,12 @@ public class VideoArticle extends Article
     /**
      * Returns a new content item with defaults.
      */
-    public static VideoArticle getDefault(VideoConfiguration config) throws DateTimeParseException
+    public static VideoArticle getDefault(Site site, VideoConfiguration config) throws DateTimeParseException
     {
         VideoArticle article = new VideoArticle();
 
         article.init();
+        article.setSiteId(site.getId());
         article.setTitle("New Video");
         article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
 

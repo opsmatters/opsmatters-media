@@ -18,6 +18,7 @@ package com.opsmatters.media.model.content;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.WhitePaperConfiguration;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
 
@@ -46,9 +47,10 @@ public class WhitePaperResource extends PublicationResource
     /**
      * Constructor that takes a publication.
      */
-    public WhitePaperResource(String code, PublicationDetails obj)
+    public WhitePaperResource(Site site, String code, PublicationDetails obj)
     {
         init();
+        setSiteId(site.getId());
         setCode(code);
         setPublicationDetails(obj);
     }
@@ -56,9 +58,10 @@ public class WhitePaperResource extends PublicationResource
     /**
      * Constructor that takes a publication summary.
      */
-    public WhitePaperResource(String code, PublicationSummary obj)
+    public WhitePaperResource(Site site, String code, PublicationSummary obj)
     {
         init();
+        setSiteId(site.getId());
         setCode(code);
         setContentSummary(obj);
     }
@@ -66,9 +69,9 @@ public class WhitePaperResource extends PublicationResource
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public WhitePaperResource(String code, String[] values) throws DateTimeParseException
+    public WhitePaperResource(Site site, String code, String[] values) throws DateTimeParseException
     {
-        super(code, values);
+        super(site, code, values);
     }
 
     /**
@@ -82,11 +85,12 @@ public class WhitePaperResource extends PublicationResource
     /**
      * Returns a new resource with defaults.
      */
-    public static WhitePaperResource getDefault(WhitePaperConfiguration config) throws DateTimeParseException
+    public static WhitePaperResource getDefault(Site site, WhitePaperConfiguration config) throws DateTimeParseException
     {
         WhitePaperResource resource = new WhitePaperResource();
 
         resource.init();
+        resource.setSiteId(site.getId());
         resource.setTitle("New White Paper");
         resource.setDescription(StringUtils.EMPTY);
         resource.setImagePrefix(config.getImagePrefix());

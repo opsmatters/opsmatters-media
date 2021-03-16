@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.db.dao.BaseDAO;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.model.content.ContentTypeSummary;
 
 /**
@@ -41,7 +42,7 @@ public class ContentTypeSummaryDAO extends BaseDAO
      * The query to use to select a summary from the CONTENT_TYPE_SUMMARY table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, TEMPLATE_ID, ITEM_COUNT, DEPLOYED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, TEMPLATE_ID, ITEM_COUNT, DEPLOYED "
       + "FROM CONTENT_TYPE_SUMMARY WHERE ID=?";
 
     /**
@@ -49,9 +50,9 @@ public class ContentTypeSummaryDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTENT_TYPE_SUMMARY"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, TEMPLATE_ID, ITEM_COUNT, DEPLOYED )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, TEMPLATE_ID, ITEM_COUNT, DEPLOYED )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a summary in the CONTENT_TYPE_SUMMARY table.
@@ -64,15 +65,15 @@ public class ContentTypeSummaryDAO extends BaseDAO
      * The query to use to select the summaries from the CONTENT_TYPE_SUMMARY table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, TEMPLATE_ID, ITEM_COUNT, DEPLOYED "
-      + "FROM CONTENT_TYPE_SUMMARY ORDER BY CREATED_DATE";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, TEMPLATE_ID, ITEM_COUNT, DEPLOYED "
+      + "FROM CONTENT_TYPE_SUMMARY WHERE SITE_ID=? ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the summaries from the CONTENT_TYPE_SUMMARY table by organisation code.
      */
     private static final String LIST_BY_CODE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, TEMPLATE_ID, ITEM_COUNT, DEPLOYED "
-      + "FROM CONTENT_TYPE_SUMMARY WHERE CODE=? ORDER BY CREATED_DATE";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, TEMPLATE_ID, ITEM_COUNT, DEPLOYED "
+      + "FROM CONTENT_TYPE_SUMMARY WHERE SITE_ID=? AND CODE=? ORDER BY CREATED_DATE";
 
     /**
      * The query to use to get the count of summaries from the CONTENT_TYPE_SUMMARY table.
@@ -103,13 +104,14 @@ public class ContentTypeSummaryDAO extends BaseDAO
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
+        table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, false);
         table.addColumn("TEMPLATE_ID", Types.VARCHAR, 36, false);
         table.addColumn("ITEM_COUNT", Types.INTEGER, true);
         table.addColumn("DEPLOYED", Types.BOOLEAN, true);
         table.setPrimaryKey("CONTENT_TYPE_SUMMARY_PK", new String[] {"ID"});
-        table.addIndex("CONTENT_TYPE_SUMMARY_CODE", new String[] {"CODE"});
+        table.addIndex("CONTENT_TYPE_SUMMARY_CODE_IDX", new String[] {"SITE_ID","CODE"});
         table.setInitialised(true);
     }
 
@@ -141,11 +143,12 @@ public class ContentTypeSummaryDAO extends BaseDAO
                 summary.setId(rs.getString(1));
                 summary.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 summary.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                summary.setCode(rs.getString(4));
-                summary.setType(rs.getString(5));
-                summary.setTemplateId(rs.getString(6));
-                summary.setItemCount(rs.getInt(7));
-                summary.setDeployed(rs.getBoolean(8));
+                summary.setSiteId(rs.getString(4));
+                summary.setCode(rs.getString(5));
+                summary.setType(rs.getString(6));
+                summary.setTemplateId(rs.getString(7));
+                summary.setItemCount(rs.getInt(8));
+                summary.setDeployed(rs.getBoolean(9));
                 ret = summary;
             }
         }
@@ -183,11 +186,12 @@ public class ContentTypeSummaryDAO extends BaseDAO
             insertStmt.setString(1, summary.getId());
             insertStmt.setTimestamp(2, new Timestamp(summary.getCreatedDateMillis()), UTC);
             insertStmt.setTimestamp(3, new Timestamp(summary.getUpdatedDateMillis()), UTC);
-            insertStmt.setString(4, summary.getCode());
-            insertStmt.setString(5, summary.getType().name());
-            insertStmt.setString(6, summary.getTemplateId());
-            insertStmt.setLong(7, summary.getItemCount());
-            insertStmt.setBoolean(8, summary.isDeployed());
+            insertStmt.setString(4, summary.getSiteId());
+            insertStmt.setString(5, summary.getCode());
+            insertStmt.setString(6, summary.getType().name());
+            insertStmt.setString(7, summary.getTemplateId());
+            insertStmt.setLong(8, summary.getItemCount());
+            insertStmt.setBoolean(9, summary.isDeployed());
             insertStmt.executeUpdate();
 
             logger.info("Created summary '"+summary.getId()+"' in CONTENT_TYPE_SUMMARY");
@@ -242,7 +246,7 @@ public class ContentTypeSummaryDAO extends BaseDAO
     /**
      * Returns the summaries from the CONTENT_TYPE_SUMMARY table.
      */
-    public List<ContentTypeSummary> list() throws SQLException
+    public List<ContentTypeSummary> list(Site site) throws SQLException
     {
         List<ContentTypeSummary> ret = null;
 
@@ -258,6 +262,7 @@ public class ContentTypeSummaryDAO extends BaseDAO
 
         try
         {
+            listStmt.setString(1, site.getId());
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
             ret = new ArrayList<ContentTypeSummary>();
@@ -267,11 +272,12 @@ public class ContentTypeSummaryDAO extends BaseDAO
                 summary.setId(rs.getString(1));
                 summary.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 summary.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                summary.setCode(rs.getString(4));
-                summary.setType(rs.getString(5));
-                summary.setTemplateId(rs.getString(6));
-                summary.setItemCount(rs.getInt(7));
-                summary.setDeployed(rs.getBoolean(8));
+                summary.setSiteId(rs.getString(4));
+                summary.setCode(rs.getString(5));
+                summary.setType(rs.getString(6));
+                summary.setTemplateId(rs.getString(7));
+                summary.setItemCount(rs.getInt(8));
+                summary.setDeployed(rs.getBoolean(9));
                 ret.add(summary);
             }
         }
@@ -295,7 +301,7 @@ public class ContentTypeSummaryDAO extends BaseDAO
     /**
      * Returns the summaries from the CONTENT_TYPE_SUMMARY table by organisation code.
      */
-    public List<ContentTypeSummary> list(String code) throws SQLException
+    public List<ContentTypeSummary> list(Site site, String code) throws SQLException
     {
         List<ContentTypeSummary> ret = null;
 
@@ -311,7 +317,8 @@ public class ContentTypeSummaryDAO extends BaseDAO
 
         try
         {
-            listByCodeStmt.setString(1, code);
+            listByCodeStmt.setString(1, site.getId());
+            listByCodeStmt.setString(2, code);
             listByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByCodeStmt.executeQuery();
             ret = new ArrayList<ContentTypeSummary>();
@@ -321,11 +328,12 @@ public class ContentTypeSummaryDAO extends BaseDAO
                 summary.setId(rs.getString(1));
                 summary.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 summary.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                summary.setCode(rs.getString(4));
-                summary.setType(rs.getString(5));
-                summary.setTemplateId(rs.getString(6));
-                summary.setItemCount(rs.getInt(7));
-                summary.setDeployed(rs.getBoolean(8));
+                summary.setSiteId(rs.getString(4));
+                summary.setCode(rs.getString(5));
+                summary.setType(rs.getString(6));
+                summary.setTemplateId(rs.getString(7));
+                summary.setItemCount(rs.getInt(8));
+                summary.setDeployed(rs.getBoolean(9));
                 ret.add(summary);
             }
         }

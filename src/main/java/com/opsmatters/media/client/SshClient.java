@@ -26,6 +26,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
+import com.opsmatters.media.model.site.SshSettings;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -43,6 +44,7 @@ public class SshClient extends Client
     }
 
     public static final String AUTH = ".ssh";
+    public static final String KEY = ".pk";
     public static final int DEFAULT_SSH_PORT = 22;
 
     private static JSch jsch = new JSch();
@@ -60,6 +62,7 @@ public class SshClient extends Client
      * <p>
      * The env parameter is used as a key to select the configuration and keys for the environment.
      */
+//GERALD: remove eventually?
     static public SshClient newClient(String env) 
         throws JSchException, SftpException
     {
@@ -68,8 +71,29 @@ public class SshClient extends Client
             .hostname(StringUtils.getEnvProperty("app.ssh.%s.hostname", env))
             .port(Integer.parseInt(StringUtils.getEnvProperty("app.ssh.%s.port", env, "0")))
             .username(StringUtils.getEnvProperty("app.ssh.%s.username", env))
-            .password(StringUtils.getEnvProperty("app.ssh.%s.password", env))
             .keyfile(StringUtils.getEnvProperty("app.ssh.%s.keyfile", env))
+            .build();
+
+        // Configure and create the SSH client
+        ret.configure();
+        if(!ret.create())
+            logger.severe("Unable to create SSH client: "+ret.getHostname());
+
+        return ret;
+    }
+
+    /**
+     * Returns a new SSH connection using credentials from the given settings.
+     */
+    static public SshClient newClient(String key, SshSettings settings) 
+        throws JSchException, SftpException
+    {
+        SshClient ret = SshClient.builder()
+            .env(key)
+            .hostname(settings.getHostname())
+            .port(settings.getPort())
+            .username(settings.getUsername())
+            .keyfile(key+KEY)
             .build();
 
         // Configure and create the SSH client
@@ -98,8 +122,7 @@ public class SshClient extends Client
         try
         {
             // Read password from auth directory
-            if(password == null)
-                password = FileUtils.readFileToString(auth, "UTF-8");
+            password = FileUtils.readFileToString(auth, "UTF-8");
         }
         catch(IOException e)
         {

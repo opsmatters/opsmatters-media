@@ -21,6 +21,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.config.content.PublicationConfiguration;
 import com.opsmatters.media.config.content.WebPageConfiguration;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.StringUtils;
 
@@ -58,10 +59,12 @@ public abstract class PublicationResource extends Resource
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public PublicationResource(String code, String[] values) throws DateTimeParseException
+    public PublicationResource(Site site, String code, String[] values) throws DateTimeParseException
     {
         this();
         init();
+
+        setSiteId(site.getId());
 
         // Throw exception if there are not enough columns
         //   - probably means the image, imageText and imageTitle columns are missing

@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.client.BitlyClient;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
@@ -35,6 +36,7 @@ public abstract class DraftPost extends SocialPost
 {
     private static final String ENABLED = ".enabled";
 
+    private String siteId = "";
     private String templateId = "";
     private Map<String,String> properties = new LinkedHashMap<String,String>();
     private DraftStatus status;
@@ -48,6 +50,7 @@ public abstract class DraftPost extends SocialPost
         if(obj != null)
         {
             super.copyAttributes(obj);
+            setSiteId(obj.getSiteId());
             setTemplateId(obj.getTemplateId());
             setProperties(obj.getProperties());
             setStatus(obj.getStatus());
@@ -69,6 +72,22 @@ public abstract class DraftPost extends SocialPost
      * Initialise the attributes using a JSON object.
      */
     public abstract void setAttributes(JSONObject obj);
+
+    /**
+     * Returns the site id.
+     */
+    public String getSiteId()
+    {
+        return siteId;
+    }
+
+    /**
+     * Sets the site id.
+     */
+    public void setSiteId(String siteId)
+    {
+        this.siteId = siteId;
+    }
 
     /**
      * Returns the post template id.
@@ -146,7 +165,7 @@ public abstract class DraftPost extends SocialPost
      */
     public boolean hasEnabled(SocialChannel channel)
     {
-        return hasProperty(channel.getName()+ENABLED);
+        return hasProperty(channel.getId()+ENABLED);
     }
 
     /**
@@ -162,7 +181,7 @@ public abstract class DraftPost extends SocialPost
      */
     public boolean isEnabled(SocialChannel channel)
     {
-        return Boolean.parseBoolean(getProperty(channel.getName()+ENABLED));
+        return Boolean.parseBoolean(getProperty(channel.getId()+ENABLED));
     }
 
     /**
@@ -178,7 +197,7 @@ public abstract class DraftPost extends SocialPost
      */
     public void setEnabled(SocialChannel channel, boolean enabled)
     {
-        setProperty(channel.getName()+ENABLED, Boolean.toString(enabled));
+        setProperty(channel.getId()+ENABLED, Boolean.toString(enabled));
     }
 
     /**
@@ -232,9 +251,9 @@ public abstract class DraftPost extends SocialPost
     /**
      * Returns <CODE>true</CODE> if the post URL has been set and it has been shortened.
      */
-    public boolean hasShortenedUrl()
+    public boolean hasShortenedUrl(String shortDomain)
     {
-        return hasUrl() && getUrl().indexOf(BitlyClient.getDomain()) != -1;
+        return hasUrl() && getUrl().indexOf(shortDomain) != -1;
     }
 
     /**

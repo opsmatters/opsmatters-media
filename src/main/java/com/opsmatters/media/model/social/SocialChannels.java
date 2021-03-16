@@ -18,6 +18,9 @@ package com.opsmatters.media.model.social;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
+import com.opsmatters.media.model.site.Site;
 
 /**
  * Class representing the list of social media channels.
@@ -44,11 +47,11 @@ public class SocialChannels implements java.io.Serializable
     }
 
     /**
-     * Returns the social channel with the given name.
+     * Returns the social channel with the given id.
      */
-    public static SocialChannel get(String name)
+    public static SocialChannel getChannel(String id)
     {
-        return map.get(name);
+        return map.get(id);
     }
 
     /**
@@ -56,7 +59,7 @@ public class SocialChannels implements java.io.Serializable
      */
     public static void add(SocialChannel channel)
     {
-        map.put(channel.getName(), channel);
+        map.put(channel.getId(), channel);
     }
 
     /**
@@ -68,10 +71,17 @@ public class SocialChannels implements java.io.Serializable
     }
 
     /**
-     * Returns the count of social channels.
+     * Returns the list of social channels.
      */
-    public static Collection<SocialChannel> values()
+    public static List<SocialChannel> getChannels(Site site)
     {
-        return map.values();
+        List<SocialChannel> ret = new ArrayList<SocialChannel>();
+        for(SocialChannel channel : map.values())
+        {
+            if(channel.getSiteId().equals(site.getId()))
+                ret.add(channel);
+        }
+
+        return ret;
     }
 }

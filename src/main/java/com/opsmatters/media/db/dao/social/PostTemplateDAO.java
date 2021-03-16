@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
+import com.opsmatters.media.model.site.Site;
 import com.opsmatters.media.model.social.PostTemplate;
 import com.opsmatters.media.model.social.PostType;
 import com.opsmatters.media.model.social.MessageFormat;
@@ -43,7 +44,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
      * The query to use to select a post template from the POST_TEMPLATES table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, POSTED_DATE, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, POSTED_DATE, CREATED_BY "
       + "FROM POST_TEMPLATES WHERE ID=?";
 
     /**
@@ -51,9 +52,9 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO POST_TEMPLATES"
-      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, POSTED_DATE, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, SITE_ID, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, POSTED_DATE, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a post template in the POST_TEMPLATES table.
@@ -66,14 +67,14 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
      * The query to use to select the post templates from the POST_TEMPLATES table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, POSTED_DATE, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, POSTED_DATE, CREATED_BY "
       + "FROM POST_TEMPLATES";
 
     /**
      * The query to use to select the post templates from the POST_TEMPLATES table.
      */
     private static final String LIST_BY_TYPE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, POSTED_DATE, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, POSTED_DATE, CREATED_BY "
       + "FROM POST_TEMPLATES WHERE TYPE=? AND CONTENT_TYPE=?";
 
     /**
@@ -105,6 +106,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
+        table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("NAME", Types.VARCHAR, 128, true);
         table.addColumn("MESSAGE", Types.VARCHAR, 512, true);
         table.addColumn("TYPE", Types.VARCHAR, 15, true);
@@ -147,16 +149,17 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
                 template.setId(rs.getString(1));
                 template.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 template.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                template.setName(rs.getString(4));
-                template.setMessage(rs.getString(5));
-                template.setType(rs.getString(6));
-                template.setCode(rs.getString(7));
-                template.setContentType(rs.getString(8));
-                template.setDefault(rs.getBoolean(9));
-                template.setShortenUrl(rs.getBoolean(10));
-                template.setProperties(new JSONObject(getClob(rs, 11)));
-                template.setPostedDateMillis(rs.getTimestamp(12, UTC) != null ? rs.getTimestamp(12, UTC).getTime() : 0L);
-                template.setCreatedBy(rs.getString(13));
+                template.setSiteId(rs.getString(4));
+                template.setName(rs.getString(5));
+                template.setMessage(rs.getString(6));
+                template.setType(rs.getString(7));
+                template.setCode(rs.getString(8));
+                template.setContentType(rs.getString(9));
+                template.setDefault(rs.getBoolean(10));
+                template.setShortenUrl(rs.getBoolean(11));
+                template.setProperties(new JSONObject(getClob(rs, 12)));
+                template.setPostedDateMillis(rs.getTimestamp(13, UTC) != null ? rs.getTimestamp(13, UTC).getTime() : 0L);
+                template.setCreatedBy(rs.getString(14));
                 ret = template;
             }
         }
@@ -196,18 +199,19 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
             insertStmt.setString(1, template.getId());
             insertStmt.setTimestamp(2, new Timestamp(template.getCreatedDateMillis()), UTC);
             insertStmt.setTimestamp(3, new Timestamp(template.getUpdatedDateMillis()), UTC);
-            insertStmt.setString(4, template.getName());
-            insertStmt.setString(5, template.getMessage(MessageFormat.ENCODED));
-            insertStmt.setString(6, template.getType() != null ? template.getType().name(): "");
-            insertStmt.setString(7, template.getCode());
-            insertStmt.setString(8, template.getContentType() != null ? template.getContentType().name(): "");
-            insertStmt.setBoolean(9, template.isDefault());
-            insertStmt.setBoolean(10, template.isShortenUrl());
+            insertStmt.setString(4, template.getSiteId());
+            insertStmt.setString(5, template.getName());
+            insertStmt.setString(6, template.getMessage(MessageFormat.ENCODED));
+            insertStmt.setString(7, template.getType() != null ? template.getType().name(): "");
+            insertStmt.setString(8, template.getCode());
+            insertStmt.setString(9, template.getContentType() != null ? template.getContentType().name(): "");
+            insertStmt.setBoolean(10, template.isDefault());
+            insertStmt.setBoolean(11, template.isShortenUrl());
             String properties = template.getPropertiesAsJson().toString();
             reader = new StringReader(properties);
-            insertStmt.setCharacterStream(11, reader, properties.length());
-            insertStmt.setTimestamp(12, new Timestamp(template.getPostedDateMillis()), UTC);
-            insertStmt.setString(13, template.getCreatedBy());
+            insertStmt.setCharacterStream(12, reader, properties.length());
+            insertStmt.setTimestamp(13, new Timestamp(template.getPostedDateMillis()), UTC);
+            insertStmt.setString(14, template.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created post template '"+template.getId()+"' in POST_TEMPLATES");
@@ -287,16 +291,17 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
                 template.setId(rs.getString(1));
                 template.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 template.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                template.setName(rs.getString(4));
-                template.setMessage(rs.getString(5));
-                template.setType(rs.getString(6));
-                template.setCode(rs.getString(7));
-                template.setContentType(rs.getString(8));
-                template.setDefault(rs.getBoolean(9));
-                template.setShortenUrl(rs.getBoolean(10));
-                template.setProperties(new JSONObject(getClob(rs, 11)));
-                template.setPostedDateMillis(rs.getTimestamp(12, UTC) != null ? rs.getTimestamp(12, UTC).getTime() : 0L);
-                template.setCreatedBy(rs.getString(13));
+                template.setSiteId(rs.getString(4));
+                template.setName(rs.getString(5));
+                template.setMessage(rs.getString(6));
+                template.setType(rs.getString(7));
+                template.setCode(rs.getString(8));
+                template.setContentType(rs.getString(9));
+                template.setDefault(rs.getBoolean(10));
+                template.setShortenUrl(rs.getBoolean(11));
+                template.setProperties(new JSONObject(getClob(rs, 12)));
+                template.setPostedDateMillis(rs.getTimestamp(13, UTC) != null ? rs.getTimestamp(13, UTC).getTime() : 0L);
+                template.setCreatedBy(rs.getString(14));
                 ret.add(template);
             }
         }
@@ -347,16 +352,17 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
                 template.setId(rs.getString(1));
                 template.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 template.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                template.setName(rs.getString(4));
-                template.setMessage(rs.getString(5));
-                template.setType(rs.getString(6));
-                template.setCode(rs.getString(7));
-                template.setContentType(rs.getString(8));
-                template.setDefault(rs.getBoolean(9));
-                template.setShortenUrl(rs.getBoolean(10));
-                template.setProperties(new JSONObject(getClob(rs, 11)));
-                template.setPostedDateMillis(rs.getTimestamp(12, UTC) != null ? rs.getTimestamp(12, UTC).getTime() : 0L);
-                template.setCreatedBy(rs.getString(13));
+                template.setSiteId(rs.getString(4));
+                template.setName(rs.getString(5));
+                template.setMessage(rs.getString(6));
+                template.setType(rs.getString(7));
+                template.setCode(rs.getString(8));
+                template.setContentType(rs.getString(9));
+                template.setDefault(rs.getBoolean(10));
+                template.setShortenUrl(rs.getBoolean(11));
+                template.setProperties(new JSONObject(getClob(rs, 12)));
+                template.setPostedDateMillis(rs.getTimestamp(13, UTC) != null ? rs.getTimestamp(13, UTC).getTime() : 0L);
+                template.setCreatedBy(rs.getString(14));
                 ret.add(template);
             }
         }

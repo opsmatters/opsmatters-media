@@ -23,7 +23,8 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.SiteEnv;
+import com.opsmatters.media.model.site.Site;
+import com.opsmatters.media.model.site.EnvironmentName;
 import com.opsmatters.media.model.feed.ContentFeed;
 import com.opsmatters.media.model.feed.FeedStatus;
 import com.opsmatters.media.model.content.ContentType;
@@ -41,7 +42,7 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
      * The query to use to select a feed from the CONTENT_FEEDS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, NAME, EXTERNAL_ID, CONTENT_TYPE, ENV, STATUS, ITEM_COUNT "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, NAME, EXTERNAL_ID, CONTENT_TYPE, SITE_ID, ENV, STATUS, ITEM_COUNT "
       + "FROM CONTENT_FEEDS WHERE ID=?";
 
     /**
@@ -49,9 +50,9 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTENT_FEEDS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, NAME, EXTERNAL_ID, CONTENT_TYPE, ENV, STATUS, ITEM_COUNT )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, NAME, EXTERNAL_ID, CONTENT_TYPE, SITE_ID, ENV, STATUS, ITEM_COUNT )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a feed in the CONTENT_FEEDS table.
@@ -64,21 +65,21 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
      * The query to use to select the feeds from the CONTENT_FEEDS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, NAME, EXTERNAL_ID, CONTENT_TYPE, ENV, STATUS, ITEM_COUNT "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, NAME, EXTERNAL_ID, CONTENT_TYPE, SITE_ID, ENV, STATUS, ITEM_COUNT "
       + "FROM CONTENT_FEEDS ORDER BY NAME";
 
     /**
      * The query to use to select the feeds from the CONTENT_FEEDS table by content type.
      */
     private static final String LIST_BY_TYPE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, NAME, EXTERNAL_ID, CONTENT_TYPE, ENV, STATUS, ITEM_COUNT "
-      + "FROM CONTENT_FEEDS WHERE CONTENT_TYPE=? ORDER BY NAME";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, NAME, EXTERNAL_ID, CONTENT_TYPE, SITE_ID, ENV, STATUS, ITEM_COUNT "
+      + "FROM CONTENT_FEEDS WHERE SITE_ID=? AND CONTENT_TYPE=? ORDER BY NAME";
 
     /**
      * The query to use to select the feeds from the CONTENT_FEEDS table by status.
      */
     private static final String LIST_BY_STATUS_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, NAME, EXTERNAL_ID, CONTENT_TYPE, ENV, STATUS, ITEM_COUNT "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, NAME, EXTERNAL_ID, CONTENT_TYPE, SITE_ID, ENV, STATUS, ITEM_COUNT "
       + "FROM CONTENT_FEEDS WHERE STATUS=? ORDER BY NAME";
 
     /**
@@ -114,11 +115,12 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
         table.addColumn("NAME", Types.VARCHAR, 25, true);
         table.addColumn("EXTERNAL_ID", Types.VARCHAR, 36, true);
         table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, true);
+        table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("ENV", Types.VARCHAR, 10, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("ITEM_COUNT", Types.BIGINT, true);
         table.setPrimaryKey("CONTENT_FEEDS_PK", new String[] {"ID"});
-        table.addIndex("CONTENT_FEEDS_TYPE_IDX", new String[] {"CONTENT_TYPE"});
+        table.addIndex("CONTENT_FEEDS_TYPE_IDX", new String[] {"SITE_ID","CONTENT_TYPE"});
         table.addIndex("CONTENT_FEEDS_STATUS_IDX", new String[] {"STATUS"});
         table.setInitialised(true);
     }
@@ -155,9 +157,10 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
                 feed.setName(rs.getString(5));
                 feed.setExternalId(rs.getString(6));
                 feed.setContentType(rs.getString(7));
-                feed.setEnv(rs.getString(8));
-                feed.setStatus(rs.getString(9));
-                feed.setItemCount(rs.getLong(10));
+                feed.setSiteId(rs.getString(8));
+                feed.setEnvironment(rs.getString(9));
+                feed.setStatus(rs.getString(10));
+                feed.setItemCount(rs.getLong(11));
                 ret = feed;
             }
         }
@@ -199,9 +202,10 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
             insertStmt.setString(5, feed.getName());
             insertStmt.setString(6, feed.getExternalId());
             insertStmt.setString(7, feed.getContentType().name());
-            insertStmt.setString(8, feed.getEnv().name());
-            insertStmt.setString(9, feed.getStatus().name());
-            insertStmt.setLong(10, feed.getItemCount());
+            insertStmt.setString(8, feed.getSiteId());
+            insertStmt.setString(9, feed.getEnvironment().name());
+            insertStmt.setString(10, feed.getStatus().name());
+            insertStmt.setLong(11, feed.getItemCount());
             insertStmt.executeUpdate();
 
             logger.info("Created feed '"+feed.getId()+"' in CONTENT_FEEDS");
@@ -298,9 +302,10 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
                 feed.setName(rs.getString(5));
                 feed.setExternalId(rs.getString(6));
                 feed.setContentType(rs.getString(7));
-                feed.setEnv(rs.getString(8));
-                feed.setStatus(rs.getString(9));
-                feed.setItemCount(rs.getLong(10));
+                feed.setSiteId(rs.getString(8));
+                feed.setEnvironment(rs.getString(9));
+                feed.setStatus(rs.getString(10));
+                feed.setItemCount(rs.getLong(11));
                 ret.add(feed);
             }
         }
@@ -324,7 +329,7 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     /**
      * Returns the feeds from the CONTENT_FEEDS table by content type.
      */
-    public List<ContentFeed> list(ContentType type) throws SQLException
+    public List<ContentFeed> list(Site site, ContentType type) throws SQLException
     {
         List<ContentFeed> ret = null;
 
@@ -340,7 +345,8 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
 
         try
         {
-            listByTypeStmt.setString(1, type.name());
+            listByTypeStmt.setString(1, site.getId());
+            listByTypeStmt.setString(2, type.name());
             listByTypeStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByTypeStmt.executeQuery();
             ret = new ArrayList<ContentFeed>();
@@ -354,9 +360,10 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
                 feed.setName(rs.getString(5));
                 feed.setExternalId(rs.getString(6));
                 feed.setContentType(rs.getString(7));
-                feed.setEnv(rs.getString(8));
-                feed.setStatus(rs.getString(9));
-                feed.setItemCount(rs.getLong(10));
+                feed.setSiteId(rs.getString(8));
+                feed.setEnvironment(rs.getString(9));
+                feed.setStatus(rs.getString(10));
+                feed.setItemCount(rs.getLong(11));
                 ret.add(feed);
             }
         }
@@ -410,9 +417,10 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
                 feed.setName(rs.getString(5));
                 feed.setExternalId(rs.getString(6));
                 feed.setContentType(rs.getString(7));
-                feed.setEnv(rs.getString(8));
-                feed.setStatus(rs.getString(9));
-                feed.setItemCount(rs.getLong(10));
+                feed.setSiteId(rs.getString(8));
+                feed.setEnvironment(rs.getString(9));
+                feed.setStatus(rs.getString(10));
+                feed.setItemCount(rs.getLong(11));
                 ret.add(feed);
             }
         }
@@ -436,12 +444,13 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     /**
      * Returns the feeds from the CONTENT_FEEDS table by external id and environment.
      */
-    public List<ContentFeed> list(String id, SiteEnv env) throws SQLException
+    public List<ContentFeed> list(String id, Site site, EnvironmentName environment) throws SQLException
     {
         List<ContentFeed> ret = new ArrayList<ContentFeed>();
         for(ContentFeed feed : list())
         {
-            if(feed.getEnv() == env
+            if(feed.getSiteId().equals(site.getId())
+                && feed.getEnvironment() == environment
                 && feed.getExternalId().equals(id))
             {
                 ret.add(feed);
