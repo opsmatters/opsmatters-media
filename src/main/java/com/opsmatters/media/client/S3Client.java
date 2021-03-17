@@ -48,7 +48,7 @@ public class S3Client extends Client
 {
     private static final Logger logger = Logger.getLogger(S3Client.class.getName());
 
-    public static final String AUTH = ".s3";
+    public static final String SUFFIX = ".s3";
 
     private AmazonS3Client client = null;
     private String endpoint = "";
@@ -88,11 +88,11 @@ public class S3Client extends Client
 
         String directory = System.getProperty("app.auth", ".");
 
-        File auth = new File(directory, AUTH);
+        File file = new File(directory, SUFFIX);
         try
         {
             // Read file from auth directory
-            JSONObject obj = new JSONObject(FileUtils.readFileToString(auth, "UTF-8"));
+            JSONObject obj = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
             setAccessKeyId(obj.optString("accessKeyId"));
             setSecretAccessKey(obj.optString("secretAccessKey"));
         }

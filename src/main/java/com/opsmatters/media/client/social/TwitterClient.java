@@ -41,7 +41,7 @@ public class TwitterClient extends Client implements SocialClient
 {
     private static final Logger logger = Logger.getLogger(TwitterClient.class.getName());
 
-    public static final String AUTH = ".twitter";
+    public static final String SUFFIX = ".twitter";
 
     private Twitter client;
     private AccessToken accessToken;
@@ -93,11 +93,11 @@ public class TwitterClient extends Client implements SocialClient
 
         String directory = System.getProperty("app.auth", ".");
 
-        File auth = new File(directory, channel.getId()+AUTH);
+        File file = new File(directory, channel.getId()+SUFFIX);
         try
         {
             // Read file from auth directory
-            JSONObject obj = new JSONObject(FileUtils.readFileToString(auth, "UTF-8"));
+            JSONObject obj = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
             setConsumerKey(obj.optString("consumerKey"));
             setConsumerSecret(obj.optString("consumerSecret"));
             setAccessToken(obj.optString("accessToken"));

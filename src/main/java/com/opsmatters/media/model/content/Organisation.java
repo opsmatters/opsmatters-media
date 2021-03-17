@@ -24,7 +24,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.config.content.FieldSource;
 import com.opsmatters.media.model.OwnedItem;
-import com.opsmatters.media.model.site.Site;
+import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;

@@ -47,7 +47,7 @@ public class GitHubClient extends Client implements RepositoryClient
 {
     private static final Logger logger = Logger.getLogger(GitHubClient.class.getName());
 
-    public static final String AUTH = ".github";
+    public static final String SUFFIX = ".github";
 
     private GitHub client;
     private String accessToken = "";
@@ -93,11 +93,11 @@ public class GitHubClient extends Client implements RepositoryClient
 
         String directory = System.getProperty("app.auth", ".");
 
-        File auth = new File(directory, AUTH);
+        File file = new File(directory, SUFFIX);
         try
         {
             // Read access token from auth directory
-            accessToken = FileUtils.readFileToString(auth, "UTF-8");
+            accessToken = FileUtils.readFileToString(file, "UTF-8");
         }
         catch(IOException e)
         {

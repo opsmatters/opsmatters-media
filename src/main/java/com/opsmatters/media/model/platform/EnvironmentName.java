@@ -14,30 +14,36 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.site;
+package com.opsmatters.media.model.platform;
 
 /**
- * Represents the environments for a site.
+ * Represents the environments for a platform.
  * 
  * @author Gerald Curley (opsmatters)
  */
 public enum EnvironmentName
 {
-    STAGE("stage", "Stage"),
-    PROD("prod", "Production");
+    APP_PROD("app-prod", "App Prod", false),
+    APP_STAGE("app-stage", "App Stage", false),
+    IMAGE("image", "Image", false),
+    STAGE("stage", "Stage", true),
+    PROD("prod", "Production", true);
 
     private String code;
     private String value;
+    private boolean drupal;
 
     /**
      * Constructor that takes the environment code and value.
      * @param code The code for the environment
      * @param value The value for the environment
+     * @param drupal <CODE>true</CODE> if this is a drupal environment
      */
-    EnvironmentName(String code, String value)
+    EnvironmentName(String code, String value, boolean drupal)
     {
         this.code = code;
         this.value = value;
+        this.drupal = drupal;
     }
 
     /**
@@ -65,6 +71,15 @@ public enum EnvironmentName
     public String value()
     {
         return value;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this is a drupal environment.
+     * @return <CODE>true</CODE> if this is a drupal environment.
+     */
+    public boolean drupal()
+    {
+        return drupal;
     }
 
     /**

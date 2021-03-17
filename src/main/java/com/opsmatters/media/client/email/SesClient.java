@@ -44,7 +44,7 @@ public class SesClient extends Client implements EmailClient
 {
     private static final Logger logger = Logger.getLogger(SesClient.class.getName());
 
-    public static final String AUTH = ".ses";
+    public static final String SUFFIX = ".ses";
 
     private AmazonSimpleEmailService client;
     private String accessKeyId = "";
@@ -87,11 +87,11 @@ public class SesClient extends Client implements EmailClient
 
         String directory = System.getProperty("app.auth", ".");
 
-        File auth = new File(directory, AUTH);
+        File file = new File(directory, SUFFIX);
         try
         {
             // Read file from auth directory
-            JSONObject obj = new JSONObject(FileUtils.readFileToString(auth, "UTF-8"));
+            JSONObject obj = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
             setAccessKeyId(obj.optString("accessKeyId"));
             setSecretAccessKey(obj.optString("secretAccessKey"));
         }

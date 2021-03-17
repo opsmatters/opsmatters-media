@@ -20,7 +20,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.config.content.RoundupConfiguration;
 import com.opsmatters.media.config.content.WebPageConfiguration;
 import com.opsmatters.media.config.content.Fields;
-import com.opsmatters.media.model.site.Site;
+import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
 

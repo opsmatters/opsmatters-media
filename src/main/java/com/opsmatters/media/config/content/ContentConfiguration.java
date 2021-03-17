@@ -23,9 +23,9 @@ import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 import java.sql.SQLException;
 import com.opsmatters.media.config.YamlConfiguration;
-import com.opsmatters.media.model.site.Site;
-import com.opsmatters.media.model.site.FeedsSettings;
-import com.opsmatters.media.model.site.EnvironmentName;
+import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.platform.FeedsSettings;
+import com.opsmatters.media.model.platform.EnvironmentName;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.content.Organisation;
@@ -407,10 +407,13 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
         handler.writeFile();
 
         // Upload the csv file to each environment
-        for(EnvironmentName name : EnvironmentName.values())
+        for(EnvironmentName environment : EnvironmentName.values())
         {
-            FeedsSettings feeds = site.getEnvironment(name).getFeedsSettings();
-            handler.copyFileToHost(feeds.getPath()+System.getProperty("app.files.feeds."+type), site, name);
+            if(environment.drupal())
+            {
+                FeedsSettings feeds = site.getEnvironment(environment).getFeedsSettings();
+                handler.copyFileToHost(feeds.getPath()+System.getProperty("app.files.feeds."+type), site, environment);
+            }
         }
 
         handler.deleteFile();

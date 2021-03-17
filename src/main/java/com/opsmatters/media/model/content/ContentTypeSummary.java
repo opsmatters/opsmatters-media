@@ -18,7 +18,7 @@ package com.opsmatters.media.model.content;
 import java.time.Instant;
 import java.util.List;
 import com.opsmatters.media.model.BaseItem;
-import com.opsmatters.media.model.site.Site;
+import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.util.StringUtils;
 
 /**

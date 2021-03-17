@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.db.dao.DAOFactory;
-import com.opsmatters.media.model.site.Site;
+import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.util.ClassUtils;

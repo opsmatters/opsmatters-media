@@ -24,7 +24,7 @@ import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.content.Fields;
-import com.opsmatters.media.model.site.Site;
+import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.file.CommonFiles;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.StringUtils;

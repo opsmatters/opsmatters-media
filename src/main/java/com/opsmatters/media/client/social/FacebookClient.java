@@ -45,7 +45,7 @@ public class FacebookClient extends Client implements SocialClient
 {
     private static final Logger logger = Logger.getLogger(FacebookClient.class.getName());
 
-    public static final String AUTH = ".facebook";
+    public static final String SUFFIX = ".facebook";
 
     private Facebook client;
     private AccessToken accessToken;
@@ -97,11 +97,11 @@ public class FacebookClient extends Client implements SocialClient
 
         String directory = System.getProperty("app.auth", ".");
 
-        File auth = new File(directory, channel.getId()+AUTH);
+        File file = new File(directory, channel.getId()+SUFFIX);
         try
         {
             // Read file from auth directory
-            JSONObject obj = new JSONObject(FileUtils.readFileToString(auth, "UTF-8"));
+            JSONObject obj = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
             setAppId(obj.optString("appId"));
             setAppSecret(obj.optString("appSecret"));
             setAccessToken(obj.optString("accessToken"));

@@ -30,7 +30,7 @@ public class BitlyClient extends Client
 {
     private static final Logger logger = Logger.getLogger(BitlyClient.class.getName());
 
-    public static final String AUTH = ".bitly";
+    public static final String SUFFIX = ".bitly";
     public static final String DEFAULT_DOMAIN = "bit.ly";
 
     private Bitly client;
@@ -64,11 +64,11 @@ public class BitlyClient extends Client
 
         String directory = System.getProperty("app.auth", ".");
 
-        File auth = new File(directory, AUTH);
+        File file = new File(directory, SUFFIX);
         try
         {
             // Read access token from auth directory
-            accessToken = FileUtils.readFileToString(auth, "UTF-8");
+            accessToken = FileUtils.readFileToString(file, "UTF-8");
         }
         catch(IOException e)
         {

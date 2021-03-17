@@ -52,7 +52,7 @@ public class LinkedInClient extends Client implements SocialClient
 {
     private static final Logger logger = Logger.getLogger(LinkedInClient.class.getName());
 
-    public static final String AUTH = ".linkedin";
+    public static final String SUFFIX = ".linkedin";
 
     private Organization organization;
     private OrganizationConnection organizationConnection;
@@ -108,12 +108,12 @@ public class LinkedInClient extends Client implements SocialClient
 
         String directory = System.getProperty("app.auth", ".");
 
-        File auth = new File(directory, channel.getId()+AUTH);
+        File file = new File(directory, channel.getId()+SUFFIX);
         JSONObject obj = null;
         try
         {
             // Read file from auth directory
-            obj = new JSONObject(FileUtils.readFileToString(auth, "UTF-8"));
+            obj = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
             setOrganizationId(obj.optString("organizationId"));
             setAppId(obj.optString("appId"));
             setAppSecret(obj.optString("appSecret"));
@@ -136,7 +136,7 @@ public class LinkedInClient extends Client implements SocialClient
             setAccessToken(token.getAccessToken());
             obj.putOpt("accessToken", getAccessToken());
             obj.remove("verificationCode");
-            FileUtils.writeStringToFile(auth, obj.toString(), "UTF-8");
+            FileUtils.writeStringToFile(file, obj.toString(), "UTF-8");
         }
 
         if(debug())

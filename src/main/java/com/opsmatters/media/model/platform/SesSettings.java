@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.site;
+package com.opsmatters.media.model.platform;
 
 import java.util.Map;
 
 /**
- * Represents the S3 settings.
+ * Represents the SES settings.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class S3Settings
+public class SesSettings
 {
-    public static final String CONFIG = "config";
-    public static final String CONTENT = "content";
+    public static final String FROM = "from";
+    public static final String REGION = "region";
 
     private String id = "";
-    private String config = "";
-    private String content = "";
+    private String from = "";
+    private String region = "";
 
     /**
      * Default Constructor.
      */
-    protected S3Settings(String id)
+    protected SesSettings(String id)
     {
         setId(id);
     }
@@ -43,7 +43,7 @@ public class S3Settings
     /**
      * Copy constructor.
      */
-    public S3Settings(S3Settings obj)
+    public SesSettings(SesSettings obj)
     {
         copyAttributes(obj);
     }
@@ -51,31 +51,31 @@ public class S3Settings
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(S3Settings obj)
+    public void copyAttributes(SesSettings obj)
     {
         if(obj != null)
         {
             setId(obj.getId());
-            setConfigBucket(obj.getConfigBucket());
-            setContentBucket(obj.getContentBucket());
+            setFrom(obj.getFrom());
+            setRegion(obj.getRegion());
         }
     }
 
     /**
      * Reads the object from the given YAML Document.
      */
-    public S3Settings(String id, Map<String, Object> map)
+    public SesSettings(String id, Map<String, Object> map)
     {
         this(id);
 
-        if(map.containsKey(CONFIG))
-            setConfigBucket((String)map.get(CONFIG));
-        if(map.containsKey(CONTENT))
-            setContentBucket((String)map.get(CONTENT));
+        if(map.containsKey(FROM))
+            setFrom((String)map.get(FROM));
+        if(map.containsKey(REGION))
+            setRegion((String)map.get(REGION));
     }
 
     /**
-     * Returns the id of the S3 settings.
+     * Returns the id of the SES settings.
      */
     public String toString()
     {
@@ -83,7 +83,7 @@ public class S3Settings
     }
 
     /**
-     * Returns the id of the S3 settings.
+     * Returns the id of the SES settings.
      */
     public String getId()
     {
@@ -91,7 +91,7 @@ public class S3Settings
     }
 
     /**
-     * Sets the id for the S3 settings.
+     * Sets the id for the SES settings.
      */
     public void setId(String id)
     {
@@ -99,34 +99,34 @@ public class S3Settings
     }
 
     /**
-     * Returns the config bucket for the S3 settings.
+     * Returns the from address for the SES settings.
      */
-    public String getConfigBucket()
+    public String getFrom()
     {
-        return config;
+        return from;
     }
 
     /**
-     * Sets the config bucket for the S3 settings.
+     * Sets the from address for the SES settings.
      */
-    public void setConfigBucket(String config)
+    public void setFrom(String from)
     {
-        this.config = config;
+        this.from = from;
     }
 
     /**
-     * Returns the content bucket for the S3 settings.
+     * Returns the region for the SES settings.
      */
-    public String getContentBucket()
+    public String getRegion()
     {
-        return content;
+        return region;
     }
 
     /**
-     * Sets the content bucket for the S3 settings.
+     * Sets the region for the SES settings.
      */
-    public void setContentBucket(String content)
+    public void setRegion(String region)
     {
-        this.content = content;
+        this.region = region;
     }
 }

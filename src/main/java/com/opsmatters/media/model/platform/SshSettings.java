@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.site;
+package com.opsmatters.media.model.platform;
 
 import java.util.Map;
 
 /**
- * Represents the feeds settings.
+ * Represents the SSH settings.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class FeedsSettings
+public class SshSettings
 {
-    public static final String PATH = "path";
+    public static final String HOSTNAME = "hostname";
+    public static final String PORT = "port";
     public static final String USERNAME = "username";
 
     private String id = "";
-    private String path = "";
+    private String hostname = "";
+    private int port = -1;
     private String username = "";
 
     /**
      * Default Constructor.
      */
-    protected FeedsSettings(String id)
+    protected SshSettings(String id)
     {
         setId(id);
     }
@@ -43,7 +45,7 @@ public class FeedsSettings
     /**
      * Copy constructor.
      */
-    public FeedsSettings(FeedsSettings obj)
+    public SshSettings(SshSettings obj)
     {
         copyAttributes(obj);
     }
@@ -51,12 +53,13 @@ public class FeedsSettings
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(FeedsSettings obj)
+    public void copyAttributes(SshSettings obj)
     {
         if(obj != null)
         {
             setId(obj.getId());
-            setPath(obj.getPath());
+            setHostname(obj.getHostname());
+            setPort(obj.getPort());
             setUsername(obj.getUsername());
         }
     }
@@ -64,18 +67,20 @@ public class FeedsSettings
     /**
      * Reads the object from the given YAML Document.
      */
-    public FeedsSettings(String id, Map<String, Object> map)
+    public SshSettings(String id, Map<String, Object> map)
     {
         this(id);
 
-        if(map.containsKey(PATH))
-            setPath((String)map.get(PATH));
+        if(map.containsKey(HOSTNAME))
+            setHostname((String)map.get(HOSTNAME));
+        if(map.containsKey(PORT))
+            setPort((Integer)map.get(PORT));
         if(map.containsKey(USERNAME))
             setUsername((String)map.get(USERNAME));
     }
 
     /**
-     * Returns the id of the feeds settings.
+     * Returns the id of the SSH settings.
      */
     public String toString()
     {
@@ -83,7 +88,7 @@ public class FeedsSettings
     }
 
     /**
-     * Returns the id of the feeds settings.
+     * Returns the id of the SSH settings.
      */
     public String getId()
     {
@@ -91,7 +96,7 @@ public class FeedsSettings
     }
 
     /**
-     * Sets the id for the feeds settings.
+     * Sets the id for the SSH settings.
      */
     public void setId(String id)
     {
@@ -99,23 +104,39 @@ public class FeedsSettings
     }
 
     /**
-     * Returns the path for the feeds settings.
+     * Returns the hostname for the SSH settings.
      */
-    public String getPath()
+    public String getHostname()
     {
-        return path;
+        return hostname;
     }
 
     /**
-     * Sets the path for the feeds settings.
+     * Sets the hostname for the SSH settings.
      */
-    public void setPath(String path)
+    public void setHostname(String hostname)
     {
-        this.path = path;
+        this.hostname = hostname;
     }
 
     /**
-     * Returns the username for the feeds settings.
+     * Returns the port for the SSH settings.
+     */
+    public int getPort()
+    {
+        return port;
+    }
+
+    /**
+     * Sets the port for the SSH settings.
+     */
+    public void setPort(int port)
+    {
+        this.port = port;
+    }
+
+    /**
+     * Returns the username for the SSH settings.
      */
     public String getUsername()
     {
@@ -123,7 +144,7 @@ public class FeedsSettings
     }
 
     /**
-     * Sets the username for the feeds settings.
+     * Sets the username for the SSH settings.
      */
     public void setUsername(String username)
     {

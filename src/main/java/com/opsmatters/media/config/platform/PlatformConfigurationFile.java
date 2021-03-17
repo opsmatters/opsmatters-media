@@ -13,27 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.config.site;
+package com.opsmatters.media.config.platform;
 
 import java.io.File;
 import java.util.logging.Logger;
 import com.opsmatters.media.config.ConfigurationFile;
 
 /**
- * Class representing the site configuration file.
+ * Class representing the platform configuration file.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SiteConfigurationFile extends ConfigurationFile
+public class PlatformConfigurationFile extends ConfigurationFile
 {
-    private static final Logger logger = Logger.getLogger(SiteConfigurationFile.class.getName());
+    private static final Logger logger = Logger.getLogger(PlatformConfigurationFile.class.getName());
 
-    private SiteConfiguration config;
+    private PlatformConfiguration config;
 
     /**
      * Constructor that takes a filename.
      */
-    public SiteConfigurationFile(File file)
+    public PlatformConfigurationFile(File file)
     {
         super(file);
     }
@@ -44,13 +44,13 @@ public class SiteConfigurationFile extends ConfigurationFile
     @Override
     public void read()
     {
-        // Get the sites config from the config file
-        config = SiteConfiguration.builder()
+        // Get the config from the config file
+        config = PlatformConfiguration.builder()
             .name(getType())
             .directory(getDirectory())
             .filename(getFilename())
             .build(true);
-        logger.fine("Found sites config file: "+getFilename());
+        logger.fine("Found platform config file: "+getFilename());
     }
 
     /**
@@ -67,13 +67,13 @@ public class SiteConfigurationFile extends ConfigurationFile
     @Override
     public String getType()
     {
-        return "sites";
+        return "platform";
     }
 
     /**
      * Returns the configuration.
      */
-    public SiteConfiguration getConfiguration()
+    public PlatformConfiguration getConfiguration()
     {
         // Load the YAML file
         if(config == null)

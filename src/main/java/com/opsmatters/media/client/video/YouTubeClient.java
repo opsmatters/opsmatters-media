@@ -70,7 +70,7 @@ public class YouTubeClient extends Client implements VideoClient
 {
     private static final Logger logger = Logger.getLogger(YouTubeClient.class.getName());
 
-    public static final String AUTH = ".youtube";
+    public static final String SUFFIX = ".youtube";
     public static final String CREDENTIALS = ".oauth";
 
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
@@ -118,7 +118,7 @@ public class YouTubeClient extends Client implements VideoClient
         String directory = System.getProperty("app.auth", ".");
 
         // Load client secrets
-        File secrets = new File(directory, AUTH);
+        File secrets = new File(directory, SUFFIX);
         Reader clientSecretReader = new InputStreamReader(new FileInputStream(secrets));
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, clientSecretReader);
 

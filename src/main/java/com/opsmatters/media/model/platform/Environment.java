@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.site;
+package com.opsmatters.media.model.platform;
 
 import java.util.Map;
 
@@ -28,6 +28,7 @@ public class Environment
     public static final String NAME = "name";
     public static final String KEY = "key";
     public static final String URL = "url";
+    public static final String PATH = "path";
     public static final String FEEDS = "feeds";
     public static final String DATABASE = "database";
     public static final String SSH = "ssh";
@@ -35,6 +36,7 @@ public class Environment
     private EnvironmentName name;
     private String key = "";
     private String url = "";
+    private String path = "";
     private FeedsSettings feeds;
     private DatabaseSettings database;
     private SshSettings ssh;
@@ -65,6 +67,7 @@ public class Environment
             setName(obj.getName());
             setKey(obj.getKey());
             setUrl(obj.getUrl());
+            setPath(obj.getPath());
             setFeedsSettings(new FeedsSettings(obj.getFeedsSettings()));
             setDatabaseSettings(new DatabaseSettings(obj.getDatabaseSettings()));
             setSshSettings(new SshSettings(obj.getSshSettings()));
@@ -82,6 +85,8 @@ public class Environment
             setKey((String)map.get(KEY));
         if(map.containsKey(URL))
             setUrl((String)map.get(URL));
+        if(map.containsKey(PATH))
+            setPath((String)map.get(PATH));
         if(map.containsKey(FEEDS))
             setFeedsSettings(new FeedsSettings(name, (Map<String,Object>)map.get(FEEDS)));
         if(map.containsKey(DATABASE))
@@ -152,6 +157,22 @@ public class Environment
     public void setUrl(String url)
     {
         this.url = url;
+    }
+
+    /**
+     * Returns the path of the environment.
+     */
+    public String getPath()
+    {
+        return path;
+    }
+
+    /**
+     * Sets the path for the environment.
+     */
+    public void setPath(String path)
+    {
+        this.path = path;
     }
 
     /**

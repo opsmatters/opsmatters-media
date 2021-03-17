@@ -26,7 +26,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
-import com.opsmatters.media.model.site.SshSettings;
+import com.opsmatters.media.model.platform.SshSettings;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -43,7 +43,7 @@ public class SshClient extends Client
         JSch.setConfig("StrictHostKeyChecking", "no");
     }
 
-    public static final String AUTH = ".ssh";
+    public static final String SUFFIX = ".ssh";
     public static final String KEY = ".pk";
     public static final int DEFAULT_SSH_PORT = 22;
 
@@ -118,11 +118,11 @@ public class SshClient extends Client
         if(port == 0)
             port = DEFAULT_SSH_PORT;
 
-        File auth = new File(directory, env+AUTH);
+        File file = new File(directory, env+SUFFIX);
         try
         {
             // Read password from auth directory
-            password = FileUtils.readFileToString(auth, "UTF-8");
+            password = FileUtils.readFileToString(file, "UTF-8");
         }
         catch(IOException e)
         {

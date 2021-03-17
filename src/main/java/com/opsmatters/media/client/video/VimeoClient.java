@@ -41,7 +41,7 @@ public class VimeoClient extends Client implements VideoClient
 {
     private static final Logger logger = Logger.getLogger(VimeoClient.class.getName());
 
-    public static final String AUTH = ".vimeo";
+    public static final String SUFFIX = ".vimeo";
     public static final String LIST_FIELDS = "uri,name,created_time";
     public static final String DETAIL_FIELDS = "uri,name,created_time,description,duration,user.name,user.link";
 
@@ -82,11 +82,11 @@ public class VimeoClient extends Client implements VideoClient
 
         String directory = System.getProperty("app.auth", ".");
 
-        File auth = new File(directory, AUTH);
+        File file = new File(directory, SUFFIX);
         try
         {
             // Read access token from auth directory
-            accessToken = FileUtils.readFileToString(auth, "UTF-8");
+            accessToken = FileUtils.readFileToString(file, "UTF-8");
         }
         catch(IOException e)
         {

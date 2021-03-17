@@ -41,7 +41,7 @@ public class WistiaClient extends Client implements VideoClient
 {
     private static final Logger logger = Logger.getLogger(WistiaClient.class.getName());
 
-    public static final String AUTH = ".wistia";
+    public static final String SUFFIX = ".wistia";
 
     private Wistia client;
     private String accessToken = "";
@@ -80,11 +80,11 @@ public class WistiaClient extends Client implements VideoClient
 
         String directory = System.getProperty("app.auth", ".");
 
-        File auth = new File(directory, AUTH);
+        File file = new File(directory, SUFFIX);
         try
         {
             // Read access token from auth directory
-            accessToken = FileUtils.readFileToString(auth, "UTF-8");
+            accessToken = FileUtils.readFileToString(file, "UTF-8");
         }
         catch(IOException e)
         {

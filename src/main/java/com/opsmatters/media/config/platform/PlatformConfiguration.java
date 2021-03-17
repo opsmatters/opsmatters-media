@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.config.site;
+package com.opsmatters.media.config.platform;
 
 import java.io.File;
 import java.util.Map;
@@ -22,27 +22,37 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.config.YamlConfiguration;
-import com.opsmatters.media.model.site.Site;
+import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.platform.Environment;
+import com.opsmatters.media.model.platform.EnvironmentName;
+import com.opsmatters.media.model.platform.S3Settings;
+import com.opsmatters.media.model.platform.SesSettings;
 
 /**
- * Class that represents the configuration for sites and environments.
+ * Class that represents the configuration for platform components.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SiteConfiguration extends YamlConfiguration
+public class PlatformConfiguration extends YamlConfiguration
 {
-    private static final Logger logger = Logger.getLogger(SiteConfiguration.class.getName());
+    private static final Logger logger = Logger.getLogger(PlatformConfiguration.class.getName());
 
-    public static final String FILENAME = "sites.yml";
+    public static final String FILENAME = "platform.yml";
 
+    public static final String S3 = "s3";
+    public static final String SES = "ses";
+    public static final String ENVIRONMENTS = "environments";
     public static final String SITES = "sites";
 
+    private S3Settings s3;
+    private SesSettings ses;
+    private List<Environment> environments = new ArrayList<Environment>();
     private List<Site> sites = new ArrayList<Site>();
 
     /**
      * Default constructor.
      */
-    public SiteConfiguration(String name)
+    public PlatformConfiguration(String name)
     {
         super(name);
     }
@@ -50,7 +60,7 @@ public class SiteConfiguration extends YamlConfiguration
     /**
      * Copy constructor.
      */
-    public SiteConfiguration(SiteConfiguration obj)
+    public PlatformConfiguration(PlatformConfiguration obj)
     {
         super(obj.getName());
         copyAttributes(obj);
@@ -59,14 +69,74 @@ public class SiteConfiguration extends YamlConfiguration
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(SiteConfiguration obj)
+    public void copyAttributes(PlatformConfiguration obj)
     {
         if(obj != null)
         {
             super.copyAttributes(obj);
+            setS3Settings(new S3Settings(obj.getS3Settings()));
+            setSesSettings(new SesSettings(obj.getSesSettings()));
+            for(Environment environment : obj.getEnvironments())
+                addEnvironment(new Environment(environment));
             for(Site site : obj.getSites())
                 addSite(new Site(site));
         }
+    }
+
+    /**
+     * Returns the S3 settings for the environment.
+     */
+    public S3Settings getS3Settings()
+    {
+        return s3;
+    }
+
+    /**
+     * Sets the S3 settings for the environment.
+     */
+    public void setS3Settings(S3Settings s3)
+    {
+        this.s3 = s3;
+    }
+
+    /**
+     * Returns the SES settings for the environment.
+     */
+    public SesSettings getSesSettings()
+    {
+        return ses;
+    }
+
+    /**
+     * Sets the SES settings for the environment.
+     */
+    public void setSesSettings(SesSettings ses)
+    {
+        this.ses = ses;
+    }
+
+    /**
+     * Adds a environment to the environments for the site.
+     */
+    public List<Environment> getEnvironments()
+    {
+        return this.environments;
+    }
+
+    /**
+     * Adds a environment to the environments for the site.
+     */
+    public void addEnvironment(Environment environment)
+    {
+        this.environments.add(environment);
+    }
+
+    /**
+     * Returns the number of environments.
+     */
+    public int numEnvironments()
+    {
+        return environments.size();
     }
 
     /**
@@ -115,6 +185,22 @@ public class SiteConfiguration extends YamlConfiguration
     @Override
     protected void parseDocument(Map<String,Object> map)
     {
+        if(map.containsKey(S3))
+            setS3Settings(new S3Settings("platform", (Map<String,Object>)map.get(S3)));
+
+        if(map.containsKey(SES))
+            setSesSettings(new SesSettings("platform", (Map<String,Object>)map.get(SES)));
+
+        if(map.containsKey(ENVIRONMENTS))
+        {
+            List<Map<String,Object>> environments = (List<Map<String,Object>>)map.get(ENVIRONMENTS);
+            for(Map<String,Object> config : environments)
+            {
+                for(Map.Entry<String,Object> entry : config.entrySet())
+                    addEnvironment(new Environment(entry.getKey(), (Map<String,Object>)entry.getValue()));
+            }
+        }
+
         if(map.containsKey(SITES))
         {
             List<Map<String,Object>> sites = (List<Map<String,Object>>)map.get(SITES);
@@ -189,9 +275,9 @@ public class SiteConfiguration extends YamlConfiguration
          * Returns the configuration
          * @return The configuration
          */
-        public SiteConfiguration build(boolean read)
+        public PlatformConfiguration build(boolean read)
         {
-            SiteConfiguration ret = new SiteConfiguration(name);
+            PlatformConfiguration ret = new PlatformConfiguration(name);
 
             if(read)
             {

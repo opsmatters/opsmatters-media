@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
-import com.opsmatters.media.model.site.Site;
+import com.opsmatters.media.model.platform.Site;
 
 /**
  * Class representing the list of social media channels.
