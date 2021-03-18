@@ -58,31 +58,6 @@ public class SshClient extends Client
     private ChannelSftp channel;
 
     /**
-     * Returns a new SSH connection using credentials from the system properties.
-     * <p>
-     * The env parameter is used as a key to select the configuration and keys for the environment.
-     */
-//GERALD: remove eventually?
-    static public SshClient newClient(String env) 
-        throws JSchException, SftpException
-    {
-        SshClient ret = SshClient.builder()
-            .env(env)
-            .hostname(StringUtils.getEnvProperty("app.ssh.%s.hostname", env))
-            .port(Integer.parseInt(StringUtils.getEnvProperty("app.ssh.%s.port", env, "0")))
-            .username(StringUtils.getEnvProperty("app.ssh.%s.username", env))
-            .keyfile(StringUtils.getEnvProperty("app.ssh.%s.keyfile", env))
-            .build();
-
-        // Configure and create the SSH client
-        ret.configure();
-        if(!ret.create())
-            logger.severe("Unable to create SSH client: "+ret.getHostname());
-
-        return ret;
-    }
-
-    /**
      * Returns a new SSH connection using credentials from the given settings.
      */
     static public SshClient newClient(String key, SshSettings settings) 

@@ -38,6 +38,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.PutObjectResult;
+import com.opsmatters.media.model.platform.S3Settings;
 
 /**
  * Class that represents a connection to S3 buckets.
@@ -58,15 +59,13 @@ public class S3Client extends Client
     private String bucket = "";
 
     /**
-     * Returns a new S3 client using credentials from the system properties.
+     * Returns a new S3 client using the S3 settings.
      */
-    static public S3Client newClient() throws IOException
+    static public S3Client newClient(S3Settings settings) throws IOException
     {
         S3Client ret = S3Client.builder()
-            .endpoint(System.getProperty("app.s3.endpoint"))
-            .secure(Boolean.parseBoolean(System.getProperty("app.s3.secure", "false")))
-            .accessKeyId(System.getProperty("app.s3.accessKeyId"))
-            .secretAccessKey(System.getProperty("app.s3.secretAccessKey"))
+            .endpoint(settings.getEndpoint())
+            .secure(settings.isSecure())
             .build();
 
         // Configure and create the S3 client

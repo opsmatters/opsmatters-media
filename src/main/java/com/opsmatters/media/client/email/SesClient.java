@@ -34,6 +34,7 @@ import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.admin.EmailProvider;
 import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailFormat;
+import com.opsmatters.media.model.platform.SesSettings;
 
 /**
  * Class that represents a connection to SES for emails.
@@ -47,17 +48,17 @@ public class SesClient extends Client implements EmailClient
     public static final String SUFFIX = ".ses";
 
     private AmazonSimpleEmailService client;
+    private String region;
     private String accessKeyId = "";
     private String secretAccessKey = "";
 
     /**
-     * Returns a new SES client using an access token.
+     * Returns a new SES client using SES settings.
      */
-    static public SesClient newClient() throws IOException
+    static public SesClient newClient(SesSettings settings) throws IOException
     {
         SesClient ret = SesClient.builder()
-            .accessKeyId(System.getProperty("app.ses.accessKeyId"))
-            .secretAccessKey(System.getProperty("app.ses.secretAccessKey"))
+            .region(settings.getRegion())
             .build();
 
         // Configure and create the SES client
@@ -120,7 +121,7 @@ public class SesClient extends Client implements EmailClient
 
         // Create the client
         AmazonSimpleEmailService sesClient = AmazonSimpleEmailServiceClientBuilder.standard()
-            .withRegion(System.getProperty("app.ses.region"))
+            .withRegion(getRegion())
             .withCredentials(new AWSStaticCredentialsProvider(credentials))
             .build();
 
@@ -133,6 +134,22 @@ public class SesClient extends Client implements EmailClient
             logger.info("Created SES client successfully");
 
         return isConnected();
+    }
+
+    /**
+     * Returns the region for the client.
+     */
+    public String getRegion() 
+    {
+        return region;
+    }
+
+    /**
+     * Sets the region for the client.
+     */
+    public void setRegion(String region) 
+    {
+        this.region = region;
     }
 
     /**
@@ -221,6 +238,17 @@ public class SesClient extends Client implements EmailClient
     public static class Builder
     {
         private SesClient client = new SesClient();
+
+        /**
+         * Sets the region for the client.
+         * @param region The region for the client
+         * @return This object
+         */
+        public Builder region(String region)
+        {
+            client.setRegion(region);
+            return this;
+        }
 
         /**
          * Sets the accessKeyId for the client.

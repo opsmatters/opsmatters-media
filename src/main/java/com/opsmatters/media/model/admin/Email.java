@@ -23,6 +23,7 @@ import com.opsmatters.media.client.email.EmailClient;
 import com.opsmatters.media.client.email.EmailClientFactory;
 import com.opsmatters.media.model.BaseItem;
 import com.opsmatters.media.model.DeliveryStatus;
+import com.opsmatters.media.model.platform.SesSettings;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -378,9 +379,9 @@ public class Email extends BaseItem
     /**
      * Send the email using a client.
      */
-    public void send(EmailProvider provider) throws Exception
+    public void send(EmailProvider provider, SesSettings settings) throws Exception
     {
-        EmailClient client = EmailClientFactory.newClient(provider);
+        EmailClient client = EmailClientFactory.newClient(provider, settings);
         if(client == null)
             throw new IllegalArgumentException("unknown email provider: "+provider);
 

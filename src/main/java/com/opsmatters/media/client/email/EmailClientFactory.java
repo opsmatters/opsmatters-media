@@ -19,6 +19,7 @@ package com.opsmatters.media.client.email;
 import java.io.IOException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.admin.EmailProvider;
+import com.opsmatters.media.model.platform.SesSettings;
 
 /**
  * Factory class to create a client for an email provider.
@@ -39,10 +40,10 @@ public class EmailClientFactory
     /**
      * Returns a client for the given provider.
      */
-    public static EmailClient newClient(EmailProvider provider) throws IOException
+    public static EmailClient newClient(EmailProvider provider, SesSettings settings) throws IOException
     {
         if(provider == EmailProvider.SES)
-            return SesClient.newClient();
+            return SesClient.newClient(settings);
         throw new IllegalArgumentException("Email provider not found: "+provider);
     }
 }

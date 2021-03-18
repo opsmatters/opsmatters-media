@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import com.opsmatters.media.config.YamlConfiguration;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.platform.FeedsSettings;
+import com.opsmatters.media.model.platform.Environment;
 import com.opsmatters.media.model.platform.EnvironmentName;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
@@ -343,7 +344,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
     /**
      * Extract the list of content items from the database and deploy using the given handler.
      */
-    public List<C> deployContent(Site site, ContentDAO contentDAO, ContentHandler handler, int maxItems)
+    public List<C> deployContent(Site site, Environment images, ContentDAO contentDAO, ContentHandler handler, int maxItems)
         throws IOException, SQLException
     {
         List<C> items = contentDAO.list(site, getCode());
@@ -361,11 +362,11 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
 
                 // Add the path to the thumbnail and logo
                 String thumbnail = fields.get(Fields.THUMBNAIL);
-                fields.put(Fields.THUMBNAIL, String.format("%s/%s",
-                    System.getProperty("app.site.image.logos"), thumbnail));
+                fields.put(Fields.THUMBNAIL, String.format("%s%s/%s",
+                    images.getUrl(), System.getProperty("app.path.logos"), thumbnail));
                 String image = fields.get(Fields.IMAGE);
-                fields.put(Fields.IMAGE, String.format("%s/%s",
-                    System.getProperty("app.site.image.logos"), image));
+                fields.put(Fields.IMAGE, String.format("%s%s/%s",
+                    images.getUrl(), System.getProperty("app.path.logos"), image));
             }
             else
             {
@@ -373,8 +374,8 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 String image = fields.get(Fields.IMAGE);
                 if(image != null && image.length() > 0)
                 {
-                    fields.put(Fields.IMAGE, String.format("%s/%s",
-                        System.getProperty("app.site.image.images"), image));
+                    fields.put(Fields.IMAGE, String.format("%s%s/%s",
+                        images.getUrl(), System.getProperty("app.path.images"), image));
                 }
 
                 // Allow for Miscellaneous posts with no organisation
@@ -407,12 +408,13 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
         handler.writeFile();
 
         // Upload the csv file to each environment
-        for(EnvironmentName environment : EnvironmentName.values())
+        for(EnvironmentName env : EnvironmentName.values())
         {
-            if(environment.drupal())
+            if(env.drupal())
             {
-                FeedsSettings feeds = site.getEnvironment(environment).getFeedsSettings();
-                handler.copyFileToHost(feeds.getPath()+System.getProperty("app.files.feeds."+type), site, environment);
+                Environment environment = site.getEnvironment(env);
+                String path = environment.getFeedsSettings().getPath()+System.getProperty("app.files.feeds."+type);
+                handler.copyFileToHost(path, environment);
             }
         }
 

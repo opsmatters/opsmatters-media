@@ -35,9 +35,8 @@ import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.config.content.FieldSource;
 import com.opsmatters.media.config.content.OrganisationContentConfiguration;
-import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.platform.Environment;
-import com.opsmatters.media.model.platform.EnvironmentName;
+import com.opsmatters.media.model.platform.S3Settings;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.client.S3Client;
@@ -74,6 +73,7 @@ public class ContentHandler implements FieldSource
     private Fields fields;
     private Map<String,OrganisationContentConfiguration> configurationMap;
     private Map<String,Organisation> organisationMap;
+    private S3Settings s3Settings;
 
     /**
      * Default constructor.
@@ -219,6 +219,22 @@ public class ContentHandler implements FieldSource
     public Organisation getOrganisation(String code)
     {
         return organisationMap.get(code);
+    }
+
+    /**
+     * Returns the S3 settings for the handler.
+     */
+    public S3Settings getS3Settings()
+    {
+        return s3Settings;
+    }
+
+    /**
+     * Sets the S3 settings for the handler.
+     */
+    public void setS3Settings(S3Settings s3Settings)
+    {
+        this.s3Settings = s3Settings;
     }
 
     /**
@@ -502,7 +518,7 @@ public class ContentHandler implements FieldSource
             client = s3client;
             if(client == null)
             {
-                client = S3Client.newClient();
+                client = S3Client.newClient(s3Settings);
                 s3client = client;
             }
 
@@ -717,17 +733,15 @@ public class ContentHandler implements FieldSource
     /**
      * Copy the current file in the working directory to the given remote directory using SSH.
      */
-//GERALD: remove eventually?
-    public void copyFileToHost(String directory, String key) throws IOException
+    public void copyFileToHost(String directory, Environment environment) throws IOException
     {
-        copyFileToHost(filename, directory, key);
+        copyFileToHost(filename, directory, environment);
     }
 
     /**
      * Copy the given file in the working directory to the given remote directory using SSH.
      */
-//GERALD: remove eventually?
-    public boolean copyFileToHost(String filename, String directory, String env) throws IOException
+    public boolean copyFileToHost(String filename, String directory, Environment environment) throws IOException
     {
         if(directory == null || directory.length() == 0)
             throw new IllegalArgumentException("target directory null");
@@ -738,68 +752,6 @@ public class ContentHandler implements FieldSource
 
         try
         {
-            SshClient client = sshClients.get(env);
-            if(client == null)
-            {
-                client = SshClient.newClient(env);
-                sshClients.put(env, client);
-            }
-
-            client.cd(directory); 
-
-            // Transfer the file to the remote feeds directory using SSH
-            if(directory != null)
-            {
-                is = new FileInputStream(sourceFile);
-                ret = client.put(is, filename);
-                logger.info("Copied file "+filename+" to remote directory: "+client.pwd());
-            }
-        }
-        catch(JSchException | SftpException e)
-        {
-            IOException ioe = new IOException(e.getMessage());
-            ioe.initCause(e);
-            throw ioe;
-        }
-        finally
-        {
-            try
-            {
-                // Close the input stream
-                if(is != null)
-                    is.close();
-            }
-            catch(IOException e)
-            {
-            }
-        }
-
-        return ret;
-    }
-
-    /**
-     * Copy the current file in the working directory to the given remote directory using SSH.
-     */
-    public void copyFileToHost(String directory, Site site, EnvironmentName env) throws IOException
-    {
-        copyFileToHost(filename, directory, site, env);
-    }
-
-    /**
-     * Copy the given file in the working directory to the given remote directory using SSH.
-     */
-    public boolean copyFileToHost(String filename, String directory, Site site, EnvironmentName env) throws IOException
-    {
-        if(directory == null || directory.length() == 0)
-            throw new IllegalArgumentException("target directory null");
-
-        InputStream is = null;
-        File sourceFile = new File(workingDir, filename);
-        boolean ret = false;
-
-        try
-        {
-            Environment environment = site.getEnvironment(env);
             SshClient client = sshClients.get(environment.getKey());
             if(client == null)
             {
@@ -842,18 +794,18 @@ public class ContentHandler implements FieldSource
     /**
      * Delete the given file from the given remote directory using SSH.
      */
-    public void deleteFileFromHost(String filename, String directory, String env) throws IOException
+    public void deleteFileFromHost(String filename, String directory, Environment environment) throws IOException
     {
         if(directory == null || directory.length() == 0)
             throw new IllegalArgumentException("directory null");
 
         try
         {
-            SshClient client = sshClients.get(env);
+            SshClient client = sshClients.get(environment.getKey());
             if(client == null)
             {
-                client = SshClient.newClient(env);
-                sshClients.put(env, client);
+                client = SshClient.newClient(environment.getKey(), environment.getSshSettings());
+                sshClients.put(environment.getKey(), client);
             }
 
             client.cd(directory); 
@@ -911,7 +863,7 @@ public class ContentHandler implements FieldSource
             client = s3client;
             if(client == null)
             {
-                client = S3Client.newClient();
+                client = S3Client.newClient(s3Settings);
                 s3client = client;
             }
 
@@ -1038,6 +990,17 @@ public class ContentHandler implements FieldSource
         public Builder withOrganisations(Map<String,Organisation> organisationMap)
         {
             handler.setOrganisationMap(organisationMap);
+            return this;
+        }
+
+        /**
+         * Adds S3 settings to the handler.
+         * @param setting The S3 settings to add to the handler
+         * @return This object
+         */
+        public Builder withS3Settings(S3Settings settings)
+        {
+            handler.setS3Settings(settings);
             return this;
         }
 
