@@ -314,9 +314,17 @@ public class JDBCDatabaseConnection
                 +"' with user '"+username+"' using: "+url);
         }
 
+        Properties properties = new Properties();
+        properties.put("user", username);
+        properties.put("password", passwd);
+
         if(connectTimeout > 0)
+        {
             DriverManager.setLoginTimeout(connectTimeout);
-        conn = DriverManager.getConnection(url, username, passwd);
+            properties.put("connectTimeout", Integer.toString(connectTimeout*1000));
+        }
+
+        conn = DriverManager.getConnection(url, properties);
         conn.setAutoCommit(true);
         data = conn.getMetaData();
 
@@ -408,7 +416,7 @@ public class JDBCDatabaseConnection
     /**
      * Returns <CODE>true</CODE> if the database is currently connected.
      */
-    public boolean isConnected() throws Exception
+    public boolean isConnected()
     {
         boolean ret = false;
 
@@ -422,7 +430,6 @@ public class JDBCDatabaseConnection
             catch(Exception e)
             {
                 setConnectionStatus(ERROR);
-                throw e;
             }
         }
 
