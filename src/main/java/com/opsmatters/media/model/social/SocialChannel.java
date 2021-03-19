@@ -26,6 +26,7 @@ public class SocialChannel implements java.io.Serializable
 {
     public static final String NAME = "name";
     public static final String HANDLE = "handle";
+    public static final String ICON = "icon";
     public static final String PROVIDER = "provider";
     public static final String SITE = "site";
     public static final String ENABLED = "enabled";
@@ -33,6 +34,7 @@ public class SocialChannel implements java.io.Serializable
     private String id = "";
     private String name = "";
     private String handle = "";
+    private String icon = "";
     private SocialProvider provider;
     private String siteId = "";
     private boolean enabled = false;
@@ -55,6 +57,7 @@ public class SocialChannel implements java.io.Serializable
             setId(obj.getId());
             setName(obj.getName());
             setHandle(obj.getHandle());
+            setIcon(obj.getIcon());
             setProvider(obj.getProvider());
             setSiteId(obj.getSiteId());
             setEnabled(obj.isEnabled());
@@ -86,6 +89,22 @@ public class SocialChannel implements java.io.Serializable
     }
 
     /**
+     * Returns the channel name.
+     */
+    public String getName()
+    {
+        return name;
+    }
+
+    /**
+     * Sets the channel name.
+     */
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    /**
      * Returns the channel handle.
      */
     public String getHandle()
@@ -102,19 +121,19 @@ public class SocialChannel implements java.io.Serializable
     }
 
     /**
-     * Returns the channel name.
+     * Returns the channel icon.
      */
-    public String getName()
+    public String getIcon()
     {
-        return name;
+        return icon;
     }
 
     /**
-     * Sets the channel name.
+     * Sets the channel icon.
      */
-    public void setName(String name)
+    public void setIcon(String icon)
     {
-        this.name = name;
+        this.icon = icon;
     }
 
     /**
@@ -178,10 +197,12 @@ public class SocialChannel implements java.io.Serializable
      */
     public void parse(Map<String, Object> map)
     {
-        if(map.containsKey(HANDLE))
-            setHandle((String)map.get(HANDLE));
         if(map.containsKey(NAME))
             setName((String)map.get(NAME));
+        if(map.containsKey(HANDLE))
+            setHandle((String)map.get(HANDLE));
+        if(map.containsKey(ICON))
+            setIcon((String)map.get(ICON));
         if(map.containsKey(PROVIDER))
             setProvider((String)map.get(PROVIDER));
         if(map.containsKey(SITE))

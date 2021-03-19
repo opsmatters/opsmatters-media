@@ -31,6 +31,8 @@ public class Site
     public static final String ID = "id";
     public static final String NAME = "name";
     public static final String TITLE = "title";
+    public static final String FAVICON = "favicon";
+    public static final String THUMBNAIL = "thumbnail";
     public static final String SHORT_DOMAIN = "short-domain";
     public static final String ENABLED = "enabled";
     public static final String S3 = "s3";
@@ -39,6 +41,8 @@ public class Site
     private String id = "";
     private String name = "";
     private String title = "";
+    private String favicon = "";
+    private String thumbnail = "";
     private String shortDomain = "";
     private boolean enabled = false;
     private S3Settings s3;
@@ -70,6 +74,8 @@ public class Site
             setId(obj.getId());
             setName(obj.getName());
             setTitle(obj.getTitle());
+            setFavicon(obj.getFavicon());
+            setThumbnail(obj.getThumbnail());
             setShortDomain(obj.getShortDomain());
             setEnabled(obj.isEnabled());
             setS3Settings(new S3Settings(obj.getS3Settings()));
@@ -89,6 +95,10 @@ public class Site
             setName((String)map.get(NAME));
         if(map.containsKey(TITLE))
             setTitle((String)map.get(TITLE));
+        if(map.containsKey(FAVICON))
+            setFavicon((String)map.get(FAVICON));
+        if(map.containsKey(THUMBNAIL))
+            setThumbnail((String)map.get(THUMBNAIL));
         if(map.containsKey(SHORT_DOMAIN))
             setShortDomain((String)map.get(SHORT_DOMAIN));
         if(map.containsKey(ENABLED))
@@ -108,11 +118,11 @@ public class Site
     }
 
     /**
-     * Returns the id of the site.
+     * Returns the title of the site.
      */
     public String toString()
     {
-        return getId();
+        return getTitle();
     }
 
     /**
@@ -161,6 +171,38 @@ public class Site
     public void setTitle(String title)
     {
         this.title = title;
+    }
+
+    /**
+     * Returns the site favicon.
+     */
+    public String getFavicon()
+    {
+        return favicon;
+    }
+
+    /**
+     * Sets the site favicon.
+     */
+    public void setFavicon(String favicon)
+    {
+        this.favicon = favicon;
+    }
+
+    /**
+     * Returns the site thumbnail.
+     */
+    public String getThumbnail()
+    {
+        return thumbnail;
+    }
+
+    /**
+     * Sets the site thumbnail.
+     */
+    public void setThumbnail(String thumbnail)
+    {
+        this.thumbnail = thumbnail;
     }
 
     /**
