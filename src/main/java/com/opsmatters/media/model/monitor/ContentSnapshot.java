@@ -16,6 +16,7 @@
 package com.opsmatters.media.model.monitor;
 
 import java.util.List;
+import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import com.opsmatters.media.config.content.Fields;
@@ -34,6 +35,8 @@ import com.opsmatters.media.util.StringUtils;
  */
 public class ContentSnapshot extends JSONObject
 {
+    private static final Logger logger = Logger.getLogger(ContentSnapshot.class.getName());
+
     /**
      * Constructor that takes a content type and list of items.
      */
@@ -217,7 +220,7 @@ public class ContentSnapshot extends JSONObject
         float decrease = 0.0f;
         if(count1 >= 0 && count2 >= 0 && count2 < count1)
         {
-            decrease = ((count1 - count2) / count1) * 100.0f;
+            decrease = ((count1 - count2) / (float)count1) * 100.0f;
         }
 
         if(decrease > 50.0f)

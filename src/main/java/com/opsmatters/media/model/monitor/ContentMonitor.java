@@ -17,6 +17,7 @@ package com.opsmatters.media.model.monitor;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -40,6 +41,8 @@ import com.opsmatters.media.util.StringUtils;
  */
 public class ContentMonitor extends BaseItem
 {
+    private static final Logger logger = Logger.getLogger(ContentMonitor.class.getName());
+
     public static final String CONTENT_TYPE = "content-type";
     public static final String URL = "url";
     public static final String CHANNEL_ID = "channel-id";
