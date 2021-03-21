@@ -67,6 +67,13 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
      */
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, SITE_ID, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID, ACTIVE "
+      + "FROM CONTENT_MONITORS ORDER BY EXECUTED_DATE";
+
+    /**
+     * The query to use to select the monitors from the CONTENT_MONITORS table by site.
+     */
+    private static final String LIST_BY_SITE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, SITE_ID, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID, ACTIVE "
       + "FROM CONTENT_MONITORS WHERE SITE_ID=? ORDER BY EXECUTED_DATE";
 
     /**
@@ -308,7 +315,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     /**
      * Returns the monitors from the CONTENT_MONITORS table.
      */
-    public List<ContentMonitor> list(Site site) throws SQLException
+    public List<ContentMonitor> list() throws SQLException
     {
         List<ContentMonitor> ret = null;
 
@@ -324,9 +331,68 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
 
         try
         {
-            listStmt.setString(1, site.getId());
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
+            ret = new ArrayList<ContentMonitor>();
+            while(rs.next())
+            {
+                ContentMonitor monitor = new ContentMonitor();
+                monitor.setId(rs.getString(1));
+                monitor.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                monitor.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                monitor.setExecutedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                monitor.setSiteId(rs.getString(5));
+                monitor.setCode(rs.getString(6));
+                monitor.setName(rs.getString(7));
+                monitor.setContentType(rs.getString(8));
+                monitor.setSnapshot(getClob(rs, 9));
+                monitor.setAttributes(new JSONObject(getClob(rs, 10)));
+                monitor.setStatus(rs.getString(11));
+                monitor.setEventType(rs.getString(12));
+                monitor.setEventId(rs.getString(13));
+                monitor.setActive(rs.getBoolean(14));
+                ret.add(monitor);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the monitors from the CONTENT_MONITORS table by site.
+     */
+    public List<ContentMonitor> list(Site site) throws SQLException
+    {
+        List<ContentMonitor> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listBySiteStmt == null)
+            listBySiteStmt = prepareStatement(getConnection(), LIST_BY_SITE_SQL);
+        clearParameters(listBySiteStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listBySiteStmt.setString(1, site.getId());
+            listBySiteStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listBySiteStmt.executeQuery();
             ret = new ArrayList<ContentMonitor>();
             while(rs.next())
             {
@@ -524,6 +590,8 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
+        closeStatement(listBySiteStmt);
+        listBySiteStmt = null;
         closeStatement(listByCodeStmt);
         listByCodeStmt = null;
         closeStatement(countStmt);
@@ -536,6 +604,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
+    private PreparedStatement listBySiteStmt;
     private PreparedStatement listByCodeStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
