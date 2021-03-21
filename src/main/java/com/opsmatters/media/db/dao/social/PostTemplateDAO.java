@@ -68,14 +68,14 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
      */
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, POSTED_DATE, CREATED_BY "
-      + "FROM POST_TEMPLATES";
+      + "FROM POST_TEMPLATES WHERE SITE_ID=?";
 
     /**
      * The query to use to select the post templates from the POST_TEMPLATES table.
      */
     private static final String LIST_BY_TYPE_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, POSTED_DATE, CREATED_BY "
-      + "FROM POST_TEMPLATES WHERE TYPE=? AND CONTENT_TYPE=?";
+      + "FROM POST_TEMPLATES WHERE SITE_ID=? AND TYPE=? AND CONTENT_TYPE=?";
 
     /**
      * The query to use to get the count of post templates from the POST_TEMPLATES table.
@@ -266,7 +266,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
     /**
      * Returns the post templates from the POST_TEMPLATES table.
      */
-    public List<PostTemplate> list() throws SQLException
+    public List<PostTemplate> list(Site site) throws SQLException
     {
         List<PostTemplate> ret = null;
 
@@ -282,6 +282,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
 
         try
         {
+            listStmt.setString(1, site.getId());
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
             ret = new ArrayList<PostTemplate>();
@@ -325,7 +326,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
     /**
      * Returns the post templates from the POST_TEMPLATES table by post type and content type.
      */
-    public List<PostTemplate> list(PostType type, ContentType contentType) throws SQLException
+    public List<PostTemplate> list(Site site, PostType type, ContentType contentType) throws SQLException
     {
         List<PostTemplate> ret = null;
 
@@ -341,8 +342,9 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
 
         try
         {
-            listByTypeStmt.setString(1, type != null ? type.name() : "");
-            listByTypeStmt.setString(2, contentType != null ? contentType.name() : "");
+            listByTypeStmt.setString(1, site.getId());
+            listByTypeStmt.setString(2, type != null ? type.name() : "");
+            listByTypeStmt.setString(3, contentType != null ? contentType.name() : "");
             listByTypeStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByTypeStmt.executeQuery();
             ret = new ArrayList<PostTemplate>();

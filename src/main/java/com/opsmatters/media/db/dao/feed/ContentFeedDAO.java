@@ -69,6 +69,13 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
       + "FROM CONTENT_FEEDS ORDER BY NAME";
 
     /**
+     * The query to use to select the feeds from the CONTENT_FEEDS table by site.
+     */
+    private static final String LIST_BY_SITE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, NAME, EXTERNAL_ID, CONTENT_TYPE, SITE_ID, ENV, STATUS, ITEM_COUNT "
+      + "FROM CONTENT_FEEDS WHERE SITE_ID=? ORDER BY NAME";
+
+    /**
      * The query to use to select the feeds from the CONTENT_FEEDS table by content type.
      */
     private static final String LIST_BY_TYPE_SQL =  
@@ -327,6 +334,63 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     }
 
     /**
+     * Returns the feeds from the CONTENT_FEEDS table by site.
+     */
+    public List<ContentFeed> list(Site site) throws SQLException
+    {
+        List<ContentFeed> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listBySiteStmt == null)
+            listBySiteStmt = prepareStatement(getConnection(), LIST_BY_SITE_SQL);
+        clearParameters(listBySiteStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listBySiteStmt.setString(1, site.getId());
+            listBySiteStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listBySiteStmt.executeQuery();
+            ret = new ArrayList<ContentFeed>();
+            while(rs.next())
+            {
+                ContentFeed feed = new ContentFeed();
+                feed.setId(rs.getString(1));
+                feed.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                feed.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                feed.setExecutedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                feed.setName(rs.getString(5));
+                feed.setExternalId(rs.getString(6));
+                feed.setContentType(rs.getString(7));
+                feed.setSiteId(rs.getString(8));
+                feed.setEnvironment(rs.getString(9));
+                feed.setStatus(rs.getString(10));
+                feed.setItemCount(rs.getLong(11));
+                ret.add(feed);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the feeds from the CONTENT_FEEDS table by content type.
      */
     public List<ContentFeed> list(Site site, ContentType type) throws SQLException
@@ -447,10 +511,9 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     public List<ContentFeed> list(String id, Site site, EnvironmentName environment) throws SQLException
     {
         List<ContentFeed> ret = new ArrayList<ContentFeed>();
-        for(ContentFeed feed : list())
+        for(ContentFeed feed : list(site))
         {
-            if(feed.getSiteId().equals(site.getId())
-                && feed.getEnvironment() == environment
+              if(feed.getEnvironment() == environment
                 && feed.getExternalId().equals(id))
             {
                 ret.add(feed);
@@ -510,6 +573,8 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
+        closeStatement(listBySiteStmt);
+        listBySiteStmt = null;
         closeStatement(listByTypeStmt);
         listByTypeStmt = null;
         closeStatement(listByStatusStmt);
@@ -524,6 +589,7 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
+    private PreparedStatement listBySiteStmt;
     private PreparedStatement listByTypeStmt;
     private PreparedStatement listByStatusStmt;
     private PreparedStatement countStmt;

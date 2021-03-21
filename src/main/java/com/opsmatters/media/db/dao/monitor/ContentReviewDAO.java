@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
+import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.monitor.ContentReview;
 import com.opsmatters.media.model.monitor.ReviewStatus;
 
@@ -62,15 +63,17 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
      * The query to use to select the reviews from the CONTENT_REVIEWS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, CREATED_BY "
-      + "FROM CONTENT_REVIEWS WHERE CREATED_DATE >= (NOW() + INTERVAL -30 DAY) ORDER BY CREATED_DATE";
+      "SELECT CR.ID, CR.CREATED_DATE, CR.UPDATED_DATE, EFFECTIVE_DATE, CR.CODE, REASON, CR.STATUS, MONITOR_ID, NOTES, CREATED_BY "
+      + "FROM CONTENT_REVIEWS CR, CONTENT_MONITORS CM "
+      + "WHERE CR.MONITOR_ID = CM.ID AND SITE_ID=? AND CR.CREATED_DATE >= (NOW() + INTERVAL -30 DAY) ORDER BY CR.CREATED_DATE";
 
     /**
      * The query to use to select the reviews from the CONTENT_REVIEWS table by status.
      */
     private static final String LIST_BY_STATUS_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, CREATED_BY "
-      + "FROM CONTENT_REVIEWS WHERE STATUS=? AND CREATED_DATE >= (NOW() + INTERVAL -30 DAY) ORDER BY CREATED_DATE";
+      "SELECT CR.ID, CR.CREATED_DATE, CR.UPDATED_DATE, EFFECTIVE_DATE, CR.CODE, REASON, CR.STATUS, MONITOR_ID, NOTES, CREATED_BY "
+      + "FROM CONTENT_REVIEWS CR, CONTENT_MONITORS CM "
+      + "WHERE CR.MONITOR_ID = CM.ID AND SITE_ID=? AND CR.STATUS=? AND CR.CREATED_DATE >= (NOW() + INTERVAL -30 DAY) ORDER BY CR.CREATED_DATE";
 
     /**
      * The query to use to get the count of reviews from the CONTENT_REVIEWS table.
@@ -236,7 +239,7 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
     /**
      * Returns the reviews from the CONTENT_REVIEWS table.
      */
-    public List<ContentReview> list() throws SQLException
+    public List<ContentReview> list(Site site) throws SQLException
     {
         List<ContentReview> ret = null;
 
@@ -252,6 +255,7 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
 
         try
         {
+            listStmt.setString(1, site.getId());
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
             ret = new ArrayList<ContentReview>();
@@ -291,7 +295,7 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
     /**
      * Returns the reviews from the CONTENT_REVIEWS table by status.
      */
-    public List<ContentReview> list(ReviewStatus status) throws SQLException
+    public List<ContentReview> list(Site site, ReviewStatus status) throws SQLException
     {
         List<ContentReview> ret = null;
 
@@ -307,7 +311,8 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
 
         try
         {
-            listByStatusStmt.setString(1, status.name());
+            listByStatusStmt.setString(1, site.getId());
+            listByStatusStmt.setString(2, status.name());
             listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByStatusStmt.executeQuery();
             ret = new ArrayList<ContentReview>();

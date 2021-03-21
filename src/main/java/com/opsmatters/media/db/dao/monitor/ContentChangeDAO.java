@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
+import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.monitor.ContentChange;
 import com.opsmatters.media.model.monitor.ChangeStatus;
 
@@ -64,15 +65,17 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
      * The query to use to select the changes from the CONTENT_CHANGES table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, CREATED_BY "
-      + "FROM CONTENT_CHANGES WHERE CREATED_DATE >= (NOW() + INTERVAL -7 DAY) ORDER BY CREATED_DATE";
+      "SELECT CC.ID, CC.CREATED_DATE, CC.UPDATED_DATE, CC.CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, CC.STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, CREATED_BY "
+      + "FROM CONTENT_CHANGES CC, CONTENT_MONITORS CM "
+      + "WHERE CC.MONITOR_ID = CM.ID AND SITE_ID=? AND CC.CREATED_DATE >= (NOW() + INTERVAL -7 DAY) ORDER BY CC.CREATED_DATE";
 
     /**
      * The query to use to select the changes from the CONTENT_CHANGES table by status.
      */
     private static final String LIST_BY_STATUS_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, CREATED_BY "
-      + "FROM CONTENT_CHANGES WHERE STATUS=? AND CREATED_DATE >= (NOW() + INTERVAL -7 DAY) ORDER BY CREATED_DATE";
+      "SELECT CC.ID, CC.CREATED_DATE, CC.UPDATED_DATE, CC.CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, CC.STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, CREATED_BY "
+      + "FROM CONTENT_CHANGES CC, CONTENT_MONITORS CM "
+      + "WHERE CC.MONITOR_ID = CM.ID AND SITE_ID=? AND CC.STATUS=? AND CC.CREATED_DATE >= (NOW() + INTERVAL -7 DAY) ORDER BY CC.CREATED_DATE";
 
     /**
      * The query to use to get the count of changes from the CONTENT_CHANGES table.
@@ -254,7 +257,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
     /**
      * Returns the changes from the CONTENT_CHANGES table.
      */
-    public List<ContentChange> list() throws SQLException
+    public List<ContentChange> list(Site site) throws SQLException
     {
         List<ContentChange> ret = null;
 
@@ -270,6 +273,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
 
         try
         {
+            listStmt.setString(1, site.getId());
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
             ret = new ArrayList<ContentChange>();
@@ -310,7 +314,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
     /**
      * Returns the changes from the CONTENT_CHANGES table by status.
      */
-    public List<ContentChange> list(ChangeStatus status) throws SQLException
+    public List<ContentChange> list(Site site, ChangeStatus status) throws SQLException
     {
         List<ContentChange> ret = null;
 
@@ -326,7 +330,8 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
 
         try
         {
-            listByStatusStmt.setString(1, status.name());
+            listByStatusStmt.setString(1, site.getId());
+            listByStatusStmt.setString(2, status.name());
             listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByStatusStmt.executeQuery();
             ret = new ArrayList<ContentChange>();
