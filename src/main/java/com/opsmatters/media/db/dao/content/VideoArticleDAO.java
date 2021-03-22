@@ -56,7 +56,7 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
      */
     private static final String UPDATE_SQL =  
       "UPDATE VIDEOS SET PUBLISHED_DATE=?, UUID=?, VIDEO_ID=?, VIDEO_TYPE=?, PROVIDER=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
-      + "WHERE CODE=? AND ID=?";
+      + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
      * Constructor that takes a DAO factory.
@@ -226,8 +226,9 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(8, reader, attributes.length());
-            updateStmt.setString(9, content.getCode());
-            updateStmt.setInt(10, content.getId());
+            updateStmt.setString(9, content.getSiteId());
+            updateStmt.setString(10, content.getCode());
+            updateStmt.setInt(11, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 

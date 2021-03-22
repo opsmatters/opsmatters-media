@@ -63,6 +63,14 @@ public class Organisation extends OwnedItem implements FieldSource
     }
 
     /**
+     * Copy constructor.
+     */
+    public Organisation(Organisation obj)
+    {
+        copyAttributes(obj);
+    }
+
+    /**
      * Returns the name of the organisation.
      */
     public String toString()
@@ -602,6 +610,14 @@ public class Organisation extends OwnedItem implements FieldSource
         content.clear();
         for(ContentTypeSummary summary : summaries.values())
             addContent(summary);
+    }
+
+    /**
+     * Clears the content type summaries.
+     */
+    public void clearContent()
+    {
+        content.clear();
     }
 
     /**

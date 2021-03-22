@@ -50,7 +50,7 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
      */
     private static final String UPDATE_SQL =  
       "UPDATE TOOLS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
-      + "WHERE CODE=? AND ID=?";
+      + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
      * Constructor that takes a DAO factory.
@@ -165,8 +165,9 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(6, reader, attributes.length());
-            updateStmt.setString(7, content.getCode());
-            updateStmt.setInt(8, content.getId());
+            updateStmt.setString(7, content.getSiteId());
+            updateStmt.setString(8, content.getCode());
+            updateStmt.setInt(9, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 

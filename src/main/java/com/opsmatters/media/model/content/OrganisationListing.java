@@ -308,7 +308,7 @@ public class OrganisationListing extends ContentItem
         OrganisationListing listing = new OrganisationListing();
 
         listing.init();
-        listing.setSiteId(organisation.getId());
+        listing.setSiteId(organisation.getSiteId());
         listing.setCode(organisation.getCode());
         listing.setTitle(organisation.getName());
         listing.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));

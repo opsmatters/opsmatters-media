@@ -51,6 +51,12 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
       "SELECT ATTRIBUTES, SITE_ID FROM ORGANISATION_LISTINGS WHERE SITE_ID=? AND ID=?";
 
     /**
+     * The query to use to select an organisation listing from the table by code.
+     */
+    private static final String GET_BY_CODE_SQL =  
+      "SELECT ATTRIBUTES, SITE_ID FROM ORGANISATION_LISTINGS WHERE SITE_ID=? AND CODE=?";
+
+    /**
      * The query to use to select all the organisation listings from the table.
      */
     private static final String LIST_SQL =  
@@ -82,7 +88,7 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
      */
     private static final String UPDATE_SQL =  
       "UPDATE ORGANISATION_LISTINGS SET PUBLISHED_DATE=?, UUID=?, CODE=?, TITLE=?, STATUS=?, ATTRIBUTES=? "
-      + "WHERE ID=?";
+      + "WHERE SITE_ID=? AND ID=?";
 
     /**
      * The query to use to get the last ID from the table.
@@ -214,6 +220,53 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
             getByIdStmt.setInt(2, id);
             getByIdStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByIdStmt.executeQuery();
+            while(rs.next())
+            {
+                JSONObject attributes = new JSONObject(getClob(rs, 1));
+                ret = new OrganisationListing(attributes);
+                ret.setSiteId(rs.getString(2));
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns an organisation listing from the table by code.
+     */
+    public OrganisationListing getByCode(String siteId, String code) throws SQLException
+    {
+        OrganisationListing ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(getByCodeStmt == null)
+            getByCodeStmt = prepareStatement(getConnection(), GET_BY_CODE_SQL);
+        clearParameters(getByCodeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            getByCodeStmt.setString(1, siteId);
+            getByCodeStmt.setString(2, code);
+            getByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = getByCodeStmt.executeQuery();
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
@@ -458,7 +511,8 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
             String attributes = listing.toJson().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(6, reader, attributes.length());
-            updateStmt.setInt(7, listing.getId());
+            updateStmt.setString(7, listing.getSiteId());
+            updateStmt.setInt(8, listing.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s, code=%s)", 
@@ -579,6 +633,8 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
         getByUuidStmt = null;
         closeStatement(getByIdStmt);
         getByIdStmt = null;
+        closeStatement(getByCodeStmt);
+        getByCodeStmt = null;
         closeStatement(listStmt);
         listStmt = null;
         closeStatement(listLikeStmt);
@@ -597,6 +653,7 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
 
     private PreparedStatement getByUuidStmt;
     private PreparedStatement getByIdStmt;
+    private PreparedStatement getByCodeStmt;
     private PreparedStatement listStmt;
     private PreparedStatement listLikeStmt;
     private PreparedStatement countStmt;

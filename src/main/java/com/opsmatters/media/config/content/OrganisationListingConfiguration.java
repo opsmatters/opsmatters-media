@@ -33,7 +33,7 @@ public class OrganisationListingConfiguration extends ContentConfiguration<Organ
 {
     private static final Logger logger = Logger.getLogger(OrganisationListingConfiguration.class.getName());
 
-    public static final String FILENAME = "organisations.yml";
+    public static final String SUFFIX = "-organisations.yml";
 
     /**
      * Default constructor.

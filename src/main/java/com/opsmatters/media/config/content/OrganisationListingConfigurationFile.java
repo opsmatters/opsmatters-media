@@ -18,6 +18,7 @@ package com.opsmatters.media.config.content;
 import java.io.File;
 import java.util.logging.Logger;
 import com.opsmatters.media.config.ConfigurationFile;
+import com.opsmatters.media.util.FileUtils;
 
 /**
  * Class representing the organisation's listing configuration file.
@@ -36,6 +37,23 @@ public class OrganisationListingConfigurationFile extends ConfigurationFile
     public OrganisationListingConfigurationFile(File file)
     {
         super(file);
+    }
+
+    /**
+     * Initialise the config file.
+     */
+    @Override
+    protected void init()
+    {
+        String filename = getFilename();
+        if(filename == null)
+            throw new IllegalArgumentException("filename null");
+        int pos = filename.indexOf("-"+getType());
+        if(pos != -1)
+        {
+            String configName = FileUtils.getName(filename);
+            setName(configName.substring(0, pos));
+        }
     }
 
     /**
