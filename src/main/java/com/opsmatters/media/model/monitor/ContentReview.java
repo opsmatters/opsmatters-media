@@ -34,6 +34,7 @@ public class ContentReview extends ContentEvent
     private ReviewReason reason;
     private ReviewStatus status;
     private String notes = "";
+    private boolean change = true;
 
     /**
      * Default constructor.
@@ -76,6 +77,7 @@ public class ContentReview extends ContentEvent
             setReason(obj.getReason());
             setStatus(obj.getStatus());
             setNotes(obj.getNotes());
+            setChange(obj.hasChange());
         }
     }
 
@@ -258,5 +260,37 @@ public class ContentReview extends ContentEvent
     public boolean hasNotes()
     {
         return notes != null && notes.length() > 0;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this review should raise a change.
+     */
+    public boolean hasChange()
+    {
+        return change;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this review should raise a change.
+     */
+    public Boolean getChangeObject()
+    {
+        return Boolean.valueOf(hasChange());
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this review should raise a change.
+     */
+    public void setChange(boolean change)
+    {
+        this.change = change;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this review should raise a change.
+     */
+    public void setChangeObject(Boolean change)
+    {
+        setChange(change != null && change.booleanValue());
     }
 }

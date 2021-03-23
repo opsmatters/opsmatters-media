@@ -35,6 +35,8 @@ import com.opsmatters.media.util.StringUtils;
  */
 public class PostTemplate extends SocialPost
 {
+    public static final String DEFAULT = "New Template";
+
     public static final String HANDLE = "handle";
     public static final String HASHTAG = "hashtag";
     public static final String HASHTAGS = "hashtags";
