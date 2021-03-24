@@ -36,6 +36,7 @@ public class Site
     public static final String SHORT_DOMAIN = "short-domain";
     public static final String ENABLED = "enabled";
     public static final String S3 = "s3";
+    public static final String NEWSLETTER = "newsletter";
     public static final String ENVIRONMENTS = "environments";
 
     private String id = "";
@@ -46,6 +47,7 @@ public class Site
     private String shortDomain = "";
     private boolean enabled = false;
     private S3Settings s3;
+    private NewsletterSettings newsletter;
     private Map<EnvironmentName,Environment> environments = new LinkedHashMap<EnvironmentName,Environment>();
 
     /**
@@ -78,6 +80,7 @@ public class Site
             setThumbnail(obj.getThumbnail());
             setShortDomain(obj.getShortDomain());
             setEnabled(obj.isEnabled());
+            setNewsletterSettings(new NewsletterSettings(obj.getNewsletterSettings()));
             setS3Settings(new S3Settings(obj.getS3Settings()));
             for(Environment environment : obj.getEnvironments().values())
                 addEnvironment(new Environment(environment));
@@ -103,6 +106,8 @@ public class Site
             setShortDomain((String)map.get(SHORT_DOMAIN));
         if(map.containsKey(ENABLED))
             setEnabled((Boolean)map.get(ENABLED));
+        if(map.containsKey(NEWSLETTER))
+            setNewsletterSettings(new NewsletterSettings(id, (Map<String,Object>)map.get(NEWSLETTER)));
         if(map.containsKey(S3))
             setS3Settings(new S3Settings(id, (Map<String,Object>)map.get(S3)));
 
@@ -235,6 +240,22 @@ public class Site
     public void setEnabled(boolean enabled)
     {
         this.enabled = enabled;
+    }
+
+    /**
+     * Returns the newsletter settings for the environment.
+     */
+    public NewsletterSettings getNewsletterSettings()
+    {
+        return newsletter;
+    }
+
+    /**
+     * Sets the newsletter settings for the environment.
+     */
+    public void setNewsletterSettings(NewsletterSettings newsletter)
+    {
+        this.newsletter = newsletter;
     }
 
     /**
