@@ -26,6 +26,7 @@ public enum ContentStatus
     NEW("New"),
     PENDING("Pending"),
     DEPLOYING("Deploying"),
+    STAGED("Staged"),
     DEPLOYED("Deployed");
 
     private String value;

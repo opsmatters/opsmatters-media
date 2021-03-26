@@ -344,13 +344,14 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
     /**
      * Extract the list of content items from the database and deploy using the given handler.
      */
-    public List<C> deployContent(Site site, Environment images, ContentDAO contentDAO, ContentHandler handler, int maxItems)
+    public List<C> deployContent(Site site, EnvironmentName env, Environment images,
+        ContentDAO contentDAO, ContentHandler handler, int maxItems)
         throws IOException, SQLException
     {
         List<C> items = contentDAO.list(site, getCode());
         for(C content : items)
         {
-            boolean deployed = content.isDeployed();
+            ContentStatus status = content.getStatus();
             Fields fields = content.toFields().add(this);
 
             // Add the Organisation fields
@@ -389,8 +390,13 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
 
             fields.add(handler);
             handler.appendLine(handler.getValues(fields));
-            content.setStatus(ContentStatus.DEPLOYED);
-            if(content.isDeployed() != deployed)
+
+            if(env == EnvironmentName.STAGE)
+                content.setStatus(ContentStatus.STAGED);
+            else
+                content.setStatus(ContentStatus.DEPLOYED);
+
+            if(content.getStatus() != status)
                 contentDAO.update(content);
         }
 
@@ -407,16 +413,11 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
         handler.convertLinesToAscii(getHtmlFields());
         handler.writeFile();
 
-        // Upload the csv file to each environment
-        for(EnvironmentName env : EnvironmentName.values())
-        {
-            if(env.drupal())
-            {
-                Environment environment = site.getEnvironment(env);
-                String path = environment.getFeedsSettings().getPath()+System.getProperty("app.files.feeds."+type);
-                handler.copyFileToHost(path, environment);
-            }
-        }
+        // Upload the csv file to the environment
+        Environment environment = site.getEnvironment(env);
+        String path = environment.getFeedsSettings().getPath()
+            +System.getProperty("app.files.feeds."+type);
+        handler.copyFileToHost(path, environment);
 
         handler.deleteFile();
 

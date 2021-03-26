@@ -189,6 +189,14 @@ public class ContentMonitor extends BaseItem
     /**
      * Returns the monitor GUID.
      */
+    public String toString()
+    {
+        return getGuid();
+    }
+
+    /**
+     * Returns the monitor GUID.
+     */
     public String getGuid()
     {
         return getGuid(getContentType(), code, name);
