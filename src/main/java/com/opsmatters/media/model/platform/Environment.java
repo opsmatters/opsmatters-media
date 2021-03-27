@@ -28,6 +28,7 @@ public class Environment
     public static final String NAME = "name";
     public static final String KEY = "key";
     public static final String URL = "url";
+    public static final String PING = "ping";
     public static final String PATH = "path";
     public static final String FEEDS = "feeds";
     public static final String DATABASE = "database";
@@ -36,6 +37,7 @@ public class Environment
     private EnvironmentName name;
     private String key = "";
     private String url = "";
+    private String ping = "";
     private String path = "";
     private FeedsSettings feeds;
     private DatabaseSettings database;
@@ -67,6 +69,7 @@ public class Environment
             setName(obj.getName());
             setKey(obj.getKey());
             setUrl(obj.getUrl());
+            setPing(obj.getPing());
             setPath(obj.getPath());
             setFeedsSettings(new FeedsSettings(obj.getFeedsSettings()));
             setDatabaseSettings(new DatabaseSettings(obj.getDatabaseSettings()));
@@ -85,6 +88,8 @@ public class Environment
             setKey((String)map.get(KEY));
         if(map.containsKey(URL))
             setUrl((String)map.get(URL));
+        if(map.containsKey(PING))
+            setPing((String)map.get(PING));
         if(map.containsKey(PATH))
             setPath((String)map.get(PATH));
         if(map.containsKey(FEEDS))
@@ -157,6 +162,22 @@ public class Environment
     public void setUrl(String url)
     {
         this.url = url;
+    }
+
+    /**
+     * Returns the uri to ping for the environment.
+     */
+    public String getPing()
+    {
+        return ping;
+    }
+
+    /**
+     * Sets the uri to ping for the environment.
+     */
+    public void setPing(String ping)
+    {
+        this.ping = ping;
     }
 
     /**

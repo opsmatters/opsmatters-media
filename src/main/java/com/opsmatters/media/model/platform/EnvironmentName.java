@@ -23,27 +23,27 @@ package com.opsmatters.media.model.platform;
  */
 public enum EnvironmentName
 {
-    APP_PROD("app-prod", "App Prod", false),
-    APP_STAGE("app-stage", "App Stage", false),
-    IMAGE("image", "Image", false),
-    STAGE("stage", "Stage", true),
-    PROD("prod", "Production", true);
+    APP_PROD("app-prod", "App Prod", true),
+    APP_STAGE("app-stage", "App Stage", true),
+    IMAGE("image", "Image", true),
+    STAGE("stage", "Stage", false),
+    PROD("prod", "Production", false);
 
     private String code;
     private String value;
-    private boolean drupal;
+    private boolean internal;
 
     /**
      * Constructor that takes the environment code and value.
      * @param code The code for the environment
      * @param value The value for the environment
-     * @param drupal <CODE>true</CODE> if this is a drupal environment
+     * @param internal <CODE>true</CODE> if this is an internal environment
      */
-    EnvironmentName(String code, String value, boolean drupal)
+    EnvironmentName(String code, String value, boolean internal)
     {
         this.code = code;
         this.value = value;
-        this.drupal = drupal;
+        this.internal = internal;
     }
 
     /**
@@ -74,12 +74,21 @@ public enum EnvironmentName
     }
 
     /**
+     * Returns <CODE>true</CODE> if this is an internal environment.
+     * @return <CODE>true</CODE> if this is an internal environment.
+     */
+    public boolean internal()
+    {
+        return internal;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if this is a drupal environment.
      * @return <CODE>true</CODE> if this is a drupal environment.
      */
     public boolean drupal()
     {
-        return drupal;
+        return !internal;
     }
 
     /**
