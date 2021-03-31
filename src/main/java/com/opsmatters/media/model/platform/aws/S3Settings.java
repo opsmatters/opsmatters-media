@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.platform;
+package com.opsmatters.media.model.platform.aws;
 
 import java.util.Map;
 
@@ -23,26 +23,14 @@ import java.util.Map;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class S3Settings
+public class S3Settings extends AwsSettings
 {
-    public static final String ENDPOINT = "endpoint";
-    public static final String SECURE = "secure";
     public static final String CONFIG = "config";
     public static final String CONTENT = "content";
 
     private String id = "";
-    private String endpoint = "";
-    private boolean secure = false;
     private String config = "";
     private String content = "";
-
-    /**
-     * Default Constructor.
-     */
-    protected S3Settings(String id)
-    {
-        setId(id);
-    }
 
     /**
      * Copy constructor.
@@ -60,8 +48,6 @@ public class S3Settings
         if(obj != null)
         {
             setId(obj.getId());
-            setEndpoint(obj.getEndpoint());
-            setSecure(obj.isSecure());
             setConfigBucket(obj.getConfigBucket());
             setContentBucket(obj.getContentBucket());
         }
@@ -72,72 +58,12 @@ public class S3Settings
      */
     public S3Settings(String id, Map<String, Object> map)
     {
-        this(id);
+        super(id, map);
 
-        if(map.containsKey(ENDPOINT))
-            setEndpoint((String)map.get(ENDPOINT));
-        if(map.containsKey(SECURE))
-            setSecure((Boolean)map.get(SECURE));
         if(map.containsKey(CONFIG))
             setConfigBucket((String)map.get(CONFIG));
         if(map.containsKey(CONTENT))
             setContentBucket((String)map.get(CONTENT));
-    }
-
-    /**
-     * Returns the id of the S3 settings.
-     */
-    public String toString()
-    {
-        return getId();
-    }
-
-    /**
-     * Returns the id of the S3 settings.
-     */
-    public String getId()
-    {
-        return id;
-    }
-
-    /**
-     * Sets the id for the S3 settings.
-     */
-    public void setId(String id)
-    {
-        this.id = id;
-    }
-
-    /**
-     * Returns the endpoint for the S3 settings.
-     */
-    public String getEndpoint()
-    {
-        return endpoint;
-    }
-
-    /**
-     * Sets the endpoint for the S3 settings.
-     */
-    public void setEndpoint(String endpoint)
-    {
-        this.endpoint = endpoint;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the connection is secure.
-     */
-    public boolean isSecure()
-    {
-        return secure;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the connection is secure.
-     */
-    public void setSecure(boolean secure)
-    {
-        this.secure = secure;
     }
 
     /**

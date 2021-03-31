@@ -19,7 +19,8 @@ package com.opsmatters.media.client.email;
 import java.io.IOException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.admin.EmailProvider;
-import com.opsmatters.media.model.platform.SesSettings;
+import com.opsmatters.media.model.platform.aws.SesSettings;
+import com.opsmatters.media.client.aws.SesClient;
 
 /**
  * Factory class to create a client for an email provider.

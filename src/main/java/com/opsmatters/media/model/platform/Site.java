@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.LinkedHashMap;
+import com.opsmatters.media.model.platform.aws.S3Settings;
 
 /**
  * Represents a site containing environments.
@@ -243,7 +244,7 @@ public class Site
     }
 
     /**
-     * Returns the newsletter settings for the environment.
+     * Returns the newsletter settings for the site.
      */
     public NewsletterSettings getNewsletterSettings()
     {
@@ -251,7 +252,7 @@ public class Site
     }
 
     /**
-     * Sets the newsletter settings for the environment.
+     * Sets the newsletter settings for the site.
      */
     public void setNewsletterSettings(NewsletterSettings newsletter)
     {
@@ -259,7 +260,7 @@ public class Site
     }
 
     /**
-     * Returns the S3 settings for the environment.
+     * Returns the S3 settings for the site.
      */
     public S3Settings getS3Settings()
     {
@@ -267,7 +268,7 @@ public class Site
     }
 
     /**
-     * Sets the S3 settings for the environment.
+     * Sets the S3 settings for the site.
      */
     public void setS3Settings(S3Settings s3)
     {
@@ -283,7 +284,7 @@ public class Site
     }
 
     /**
-     * Adds a environment to the environments for the site.
+     * Adds an environment to the environments for the site.
      */
     public void addEnvironment(Environment environment)
     {

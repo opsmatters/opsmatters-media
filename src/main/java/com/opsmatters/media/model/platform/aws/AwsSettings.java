@@ -14,36 +14,33 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.platform;
+package com.opsmatters.media.model.platform.aws;
 
 import java.util.Map;
 
 /**
- * Represents the SES settings.
+ * Represents the base class for AWS settings.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SesSettings
+public abstract class AwsSettings
 {
-    public static final String FROM = "from";
     public static final String REGION = "region";
 
     private String id = "";
-    private String from = "";
     private String region = "";
 
     /**
      * Default Constructor.
      */
-    protected SesSettings(String id)
+    protected AwsSettings()
     {
-        setId(id);
     }
 
     /**
      * Copy constructor.
      */
-    public SesSettings(SesSettings obj)
+    public AwsSettings(AwsSettings obj)
     {
         copyAttributes(obj);
     }
@@ -51,12 +48,11 @@ public class SesSettings
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(SesSettings obj)
+    public void copyAttributes(AwsSettings obj)
     {
         if(obj != null)
         {
             setId(obj.getId());
-            setFrom(obj.getFrom());
             setRegion(obj.getRegion());
         }
     }
@@ -64,18 +60,16 @@ public class SesSettings
     /**
      * Reads the object from the given YAML Document.
      */
-    public SesSettings(String id, Map<String, Object> map)
+    public AwsSettings(String id, Map<String, Object> map)
     {
-        this(id);
+        setId(id);
 
-        if(map.containsKey(FROM))
-            setFrom((String)map.get(FROM));
         if(map.containsKey(REGION))
             setRegion((String)map.get(REGION));
     }
 
     /**
-     * Returns the id of the SES settings.
+     * Returns the id of the settings.
      */
     public String toString()
     {
@@ -83,7 +77,7 @@ public class SesSettings
     }
 
     /**
-     * Returns the id of the SES settings.
+     * Returns the id of the settings.
      */
     public String getId()
     {
@@ -91,7 +85,7 @@ public class SesSettings
     }
 
     /**
-     * Sets the id for the SES settings.
+     * Sets the id for the settings.
      */
     public void setId(String id)
     {
@@ -99,23 +93,7 @@ public class SesSettings
     }
 
     /**
-     * Returns the from address for the SES settings.
-     */
-    public String getFrom()
-    {
-        return from;
-    }
-
-    /**
-     * Sets the from address for the SES settings.
-     */
-    public void setFrom(String from)
-    {
-        this.from = from;
-    }
-
-    /**
-     * Returns the region for the SES settings.
+     * Returns the region for the settings.
      */
     public String getRegion()
     {
@@ -123,7 +101,7 @@ public class SesSettings
     }
 
     /**
-     * Sets the region for the SES settings.
+     * Sets the region for the settings.
      */
     public void setRegion(String region)
     {

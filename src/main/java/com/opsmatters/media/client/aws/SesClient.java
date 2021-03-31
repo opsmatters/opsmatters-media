@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.client.email;
+package com.opsmatters.media.client.aws;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,10 +31,11 @@ import com.amazonaws.services.simpleemail.model.Message;
 import com.amazonaws.services.simpleemail.model.Content;
 import com.amazonaws.services.simpleemail.model.Body;
 import com.opsmatters.media.client.Client;
+import com.opsmatters.media.client.email.EmailClient;
 import com.opsmatters.media.model.admin.EmailProvider;
 import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailFormat;
-import com.opsmatters.media.model.platform.SesSettings;
+import com.opsmatters.media.model.platform.aws.SesSettings;
 
 /**
  * Class that represents a connection to SES for emails.

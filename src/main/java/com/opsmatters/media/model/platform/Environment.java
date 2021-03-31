@@ -17,6 +17,7 @@
 package com.opsmatters.media.model.platform;
 
 import java.util.Map;
+import com.opsmatters.media.model.platform.aws.EC2Settings;
 
 /**
  * Represents a site environment.
@@ -32,6 +33,7 @@ public class Environment
     public static final String PATH = "path";
     public static final String FEEDS = "feeds";
     public static final String DATABASE = "database";
+    public static final String EC2 = "ec2";
     public static final String SSH = "ssh";
 
     private EnvironmentName name;
@@ -41,6 +43,7 @@ public class Environment
     private String path = "";
     private FeedsSettings feeds;
     private DatabaseSettings database;
+    private EC2Settings ec2;
     private SshSettings ssh;
 
     /**
@@ -73,6 +76,7 @@ public class Environment
             setPath(obj.getPath());
             setFeedsSettings(new FeedsSettings(obj.getFeedsSettings()));
             setDatabaseSettings(new DatabaseSettings(obj.getDatabaseSettings()));
+            setEC2Settings(new EC2Settings(obj.getEC2Settings()));
             setSshSettings(new SshSettings(obj.getSshSettings()));
         }
     }
@@ -96,6 +100,8 @@ public class Environment
             setFeedsSettings(new FeedsSettings(name, (Map<String,Object>)map.get(FEEDS)));
         if(map.containsKey(DATABASE))
             setDatabaseSettings(new DatabaseSettings(name, (Map<String,Object>)map.get(DATABASE)));
+        if(map.containsKey(EC2))
+            setEC2Settings(new EC2Settings(name, (Map<String,Object>)map.get(EC2)));
         if(map.containsKey(SSH))
             setSshSettings(new SshSettings(name, (Map<String,Object>)map.get(SSH)));
     }
@@ -226,6 +232,22 @@ public class Environment
     public void setDatabaseSettings(DatabaseSettings database)
     {
         this.database = database;
+    }
+
+    /**
+     * Returns the EC2 settings for the environment.
+     */
+    public EC2Settings getEC2Settings()
+    {
+        return ec2;
+    }
+
+    /**
+     * Sets the EC2 settings for the environment.
+     */
+    public void setEC2Settings(EC2Settings ec2)
+    {
+        this.ec2 = ec2;
     }
 
     /**

@@ -23,7 +23,7 @@ import com.opsmatters.media.client.email.EmailClient;
 import com.opsmatters.media.client.email.EmailClientFactory;
 import com.opsmatters.media.model.BaseItem;
 import com.opsmatters.media.model.DeliveryStatus;
-import com.opsmatters.media.model.platform.SesSettings;
+import com.opsmatters.media.model.platform.aws.SesSettings;
 import com.opsmatters.media.util.StringUtils;
 
 /**

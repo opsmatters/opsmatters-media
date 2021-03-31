@@ -25,8 +25,8 @@ import com.opsmatters.media.config.YamlConfiguration;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.platform.Environment;
 import com.opsmatters.media.model.platform.EnvironmentName;
-import com.opsmatters.media.model.platform.S3Settings;
-import com.opsmatters.media.model.platform.SesSettings;
+import com.opsmatters.media.model.platform.aws.S3Settings;
+import com.opsmatters.media.model.platform.aws.SesSettings;
 
 /**
  * Class that represents the configuration for platform components.
@@ -84,7 +84,7 @@ public class PlatformConfiguration extends YamlConfiguration
     }
 
     /**
-     * Returns the S3 settings for the environment.
+     * Returns the S3 settings for the sites.
      */
     public S3Settings getS3Settings()
     {
@@ -92,7 +92,7 @@ public class PlatformConfiguration extends YamlConfiguration
     }
 
     /**
-     * Sets the S3 settings for the environment.
+     * Sets the S3 settings for the sites.
      */
     public void setS3Settings(S3Settings s3)
     {
@@ -100,7 +100,7 @@ public class PlatformConfiguration extends YamlConfiguration
     }
 
     /**
-     * Returns the SES settings for the environment.
+     * Returns the SES settings for the sites.
      */
     public SesSettings getSesSettings()
     {
@@ -108,7 +108,7 @@ public class PlatformConfiguration extends YamlConfiguration
     }
 
     /**
-     * Sets the SES settings for the environment.
+     * Sets the SES settings for the sites.
      */
     public void setSesSettings(SesSettings ses)
     {
@@ -185,11 +185,11 @@ public class PlatformConfiguration extends YamlConfiguration
     @Override
     protected void parseDocument(Map<String,Object> map)
     {
+        String id = "platform";
         if(map.containsKey(S3))
-            setS3Settings(new S3Settings("platform", (Map<String,Object>)map.get(S3)));
-
+            setS3Settings(new S3Settings(id, (Map<String,Object>)map.get(S3)));
         if(map.containsKey(SES))
-            setSesSettings(new SesSettings("platform", (Map<String,Object>)map.get(SES)));
+            setSesSettings(new SesSettings(id, (Map<String,Object>)map.get(SES)));
 
         if(map.containsKey(ENVIRONMENTS))
         {

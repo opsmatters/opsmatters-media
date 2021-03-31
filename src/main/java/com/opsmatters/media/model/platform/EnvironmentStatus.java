@@ -24,6 +24,8 @@ package com.opsmatters.media.model.platform;
 public enum EnvironmentStatus
 {
     UNKNOWN,
-    UP,
-    DOWN;
+    STARTING,
+    RUNNING,
+    STOPPING,
+    STOPPED;
 }

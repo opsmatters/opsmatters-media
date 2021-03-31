@@ -48,7 +48,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<aws.sdk.version>1.11.870</aws.sdk.version>
+		<aws.sdk.version>1.11.987</aws.sdk.version>
 		<twelvemonkeys.imageio.version>3.5</twelvemonkeys.imageio.version>
 		<chartjs.version>2.1.2-SNAPSHOT</chartjs.version>
   </properties>
@@ -587,6 +587,12 @@ media.built.on=${TODAY}
     <artifactId>aws-java-sdk-ses</artifactId>
     <version>${aws.sdk.version}</version>
   </dependency>
+
+<dependency>
+    <groupId>com.amazonaws</groupId>
+    <artifactId>aws-java-sdk-ec2</artifactId>
+    <version>${aws.sdk.version}</version>
+</dependency>
 
   <dependency>
     <groupId>org.twitter4j</groupId>

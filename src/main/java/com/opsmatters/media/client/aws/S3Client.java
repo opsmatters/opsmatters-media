@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.client;
+package com.opsmatters.media.client.aws;
 
 import java.io.File;
 import java.io.InputStream;
@@ -30,7 +30,9 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
@@ -38,7 +40,8 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.PutObjectResult;
-import com.opsmatters.media.model.platform.S3Settings;
+import com.opsmatters.media.client.Client;
+import com.opsmatters.media.model.platform.aws.S3Settings;
 
 /**
  * Class that represents a connection to S3 buckets.
@@ -51,9 +54,8 @@ public class S3Client extends Client
 
     public static final String SUFFIX = ".s3";
 
-    private AmazonS3Client client = null;
-    private String endpoint = "";
-    private boolean secure = false;
+    private AmazonS3 client = null;
+    private String region;
     private String accessKeyId = "";
     private String secretAccessKey = "";
     private String bucket = "";
@@ -64,14 +66,13 @@ public class S3Client extends Client
     static public S3Client newClient(S3Settings settings) throws IOException
     {
         S3Client ret = S3Client.builder()
-            .endpoint(settings.getEndpoint())
-            .secure(settings.isSecure())
+            .region(settings.getRegion())
             .build();
 
         // Configure and create the S3 client
         ret.configure();
         if(!ret.create())
-            logger.severe("Unable to create S3 client: "+ret.getEndpoint());
+            logger.severe("Unable to create S3 client: "+ret.getRegion());
 
         return ret;
     }
@@ -83,7 +84,7 @@ public class S3Client extends Client
     public void configure() throws IOException
     {
         if(debug())
-            logger.info("Configuring S3 client: "+getEndpoint());
+            logger.info("Configuring S3 client: "+getRegion());
 
         String directory = System.getProperty("app.auth", ".");
 
@@ -101,7 +102,7 @@ public class S3Client extends Client
         }
 
         if(debug())
-            logger.info("Configured S3 client successfully: "+getEndpoint());
+            logger.info("Configured S3 client successfully: "+getRegion());
     }
 
     /**
@@ -111,11 +112,11 @@ public class S3Client extends Client
     public boolean create() 
     {
         if(debug())
-            logger.info("Creating S3 client: "+getEndpoint());
+            logger.info("Creating S3 client: "+getRegion());
 
         // Get the client configuration
         ClientConfiguration config = new ClientConfiguration();
-        config.setProtocol(secure ? Protocol.HTTPS : Protocol.HTTP);
+        config.setProtocol(Protocol.HTTPS);
 
         // Get the credentials object
         AWSCredentials credentials = null;
@@ -123,15 +124,12 @@ public class S3Client extends Client
             credentials = new BasicAWSCredentials(accessKeyId, secretAccessKey);
 
         // Create the client
-        AmazonS3Client s3client = null;
+        AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard();
         if(credentials != null)
-            s3client = new AmazonS3Client(credentials, config);
-        else
-            s3client = new AmazonS3Client(config);
-
-        // Set the client endpoint
-        if(s3client != null)
-            s3client.setEndpoint(endpoint);
+            builder = builder.withCredentials(new AWSStaticCredentialsProvider(credentials));
+        AmazonS3 s3client = builder.withClientConfiguration(config)
+            .withRegion(region)
+            .build();
 
         // Issue command to test connectivity
         s3client.getS3AccountOwner();
@@ -139,41 +137,25 @@ public class S3Client extends Client
         client = s3client;
 
         if(debug())
-            logger.info("Created S3 client successfully: "+getEndpoint());
+            logger.info("Created S3 client successfully: "+getRegion());
 
         return isConnected();
     }
 
     /**
-     * Returns the endpoint for the client.
+     * Returns the region for the client.
      */
-    public String getEndpoint() 
+    public String getRegion() 
     {
-        return endpoint;
+        return region;
     }
 
     /**
-     * Sets the endpoint for the client.
+     * Sets the region for the client.
      */
-    public void setEndpoint(String endpoint) 
+    public void setRegion(String region) 
     {
-        this.endpoint = endpoint;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the endpoint for the client uses https.
-     */
-    public boolean isSecure() 
-    {
-        return secure;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the endpoint for the client uses https.
-     */
-    public void setSecure(boolean secure) 
-    {
-        this.secure = secure;
+        this.region = region;
     }
 
     /**
@@ -502,24 +484,13 @@ public class S3Client extends Client
         private S3Client client = new S3Client();
 
         /**
-         * Sets the endpoint for the client.
-         * @param endpoint The endpoint for the client
+         * Sets the region for the client.
+         * @param region The region for the client
          * @return This object
          */
-        public Builder endpoint(String endpoint)
+        public Builder region(String region)
         {
-            client.setEndpoint(endpoint);
-            return this;
-        }
-
-        /**
-         * Set to <CODE>true</CODE> the if the endpoint for the client uses https.
-         * @param secure <CODE>true</CODE> the if the endpoint for the client uses https
-         * @return This object
-         */
-        public Builder secure(boolean secure)
-        {
-            client.setSecure(secure);
+            client.setRegion(region);
             return this;
         }
 
