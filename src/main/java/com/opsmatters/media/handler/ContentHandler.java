@@ -753,8 +753,10 @@ public class ContentHandler implements FieldSource
         try
         {
             SshClient client = sshClients.get(environment.getKey());
-            if(client == null)
+            if(client == null || !client.isConnected())
             {
+                if(client != null)
+                    client.close();
                 client = SshClient.newClient(environment.getKey(), environment.getSshSettings());
                 sshClients.put(environment.getKey(), client);
             }
@@ -802,8 +804,10 @@ public class ContentHandler implements FieldSource
         try
         {
             SshClient client = sshClients.get(environment.getKey());
-            if(client == null)
+            if(client == null || !client.isConnected())
             {
+                if(client != null)
+                    client.close();
                 client = SshClient.newClient(environment.getKey(), environment.getSshSettings());
                 sshClients.put(environment.getKey(), client);
             }

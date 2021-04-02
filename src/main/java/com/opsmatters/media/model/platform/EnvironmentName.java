@@ -26,6 +26,7 @@ public enum EnvironmentName
     APP_PROD("app-prod", "App Prod", true),
     APP_STAGE("app-stage", "App Stage", true),
     IMAGE("image", "Image", true),
+    PUBLISHER("publisher", "Publisher", true),
     STAGE("stage", "Stage", false),
     PROD("prod", "Production", false);
 

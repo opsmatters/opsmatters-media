@@ -524,6 +524,21 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     }
 
     /**
+     * Returns the feed from the CONTENT_FEEDS table in the given environment.
+     */
+    public ContentFeed getByEnvironment(Site site, ContentType type, EnvironmentName environment) throws SQLException
+    {
+        ContentFeed ret = null;
+        for(ContentFeed feed : list(site, type))
+        {
+            if(feed.getEnvironment() == environment)
+                ret = feed;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the count of feeds from the CONTENT_FEEDS table.
      */
     public int count() throws SQLException

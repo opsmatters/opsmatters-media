@@ -391,10 +391,13 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
             fields.add(handler);
             handler.appendLine(handler.getValues(fields));
 
-            if(env == EnvironmentName.STAGE)
-                content.setStatus(ContentStatus.STAGED);
-            else
-                content.setStatus(ContentStatus.DEPLOYED);
+            if(content.getStatus() != ContentStatus.DEPLOYED)
+            {
+                if(env == EnvironmentName.STAGE)
+                    content.setStatus(ContentStatus.STAGED);
+                else if(content.getStatus() == ContentStatus.STAGED)
+                    content.setStatus(ContentStatus.DEPLOYED);
+            }
 
             if(content.getStatus() != status)
                 contentDAO.update(content);
