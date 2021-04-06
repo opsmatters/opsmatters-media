@@ -23,28 +23,34 @@ package com.opsmatters.media.model.feed;
  */
 public enum FeedStatus
 {
-    NEW("New", 1),
-    PENDING("Pending", -1),
-    SUBMITTED("Submitted", -1),
-    DEPLOYING("Deploying", -1),
-    EXECUTING("Executing", -1),
-    ERROR("Error", 1),
-    COMPLETED("Completed", 1),
-    WAITING("Waiting", 0), // Pseudo status
-    PROCESSED("Processed", 0), // Pseudo status
-    ALL("All", 0); // Pseudo status
+    NEW("New", "glyphicon-unchecked", "", 1),
+    PENDING("Pending", "glyphicon-edit", "status-warn", -1),
+    SUBMITTED("Submitted", "glyphicon-log-in", "status-warn", -1),
+    DEPLOYING("Deploying", "glyphicon-log-out", "status-warn", -1),
+    EXECUTING("Executing", "glyphicon-cog", "status-warn", -1),
+    ERROR("Error", "glyphicon-alert", "status-error", 1),
+    COMPLETED("Completed", "glyphicon-ok-circle", "status-success", 1),
+    WAITING("Waiting", "", "", 0), // Pseudo status
+    PROCESSED("Processed", "", "", 0), // Pseudo status
+    ALL("All", "", "", 0); // Pseudo status
 
     private String value;
+    private String icon;
+    private String css;
     private int state;
 
     /**
      * Constructor that takes the status value.
      * @param value The value for the status
+     * @param icon The glyphicon for the status
+     * @param css The css class for the status
      * @param state The state for the status
      */
-    FeedStatus(String value, int state)
+    FeedStatus(String value, String icon, String css, int state)
     {
         this.value = value;
+        this.icon = icon;
+        this.css = css;
         this.state = state;
     }
 
@@ -82,6 +88,24 @@ public enum FeedStatus
     public String value()
     {
         return value;
+    }
+
+    /**
+     * Returns the glyphicon of the status.
+     * @return The glyphicon of the status.
+     */
+    public String icon()
+    {
+        return icon;
+    }
+
+    /**
+     * Returns the css class of the status.
+     * @return The css class of the status.
+     */
+    public String css()
+    {
+        return css;
     }
 
     /**

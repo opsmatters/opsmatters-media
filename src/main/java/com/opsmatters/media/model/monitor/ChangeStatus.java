@@ -23,20 +23,26 @@ package com.opsmatters.media.model.monitor;
  */
 public enum ChangeStatus
 {
-    NEW("New"),
-    RESOLVED("Resolved"),
-    SKIPPED("Skipped"),
-    ALL("All"); // Pseudo status
+    NEW("New", "glyphicon-unchecked", ""),
+    RESOLVED("Resolved", "glyphicon-ok-circle", "status-success"),
+    SKIPPED("Skipped", "glyphicon-remove-circle", "status-info"),
+    ALL("All", "", ""); // Pseudo status
 
     private String value;
+    private String icon;
+    private String css;
 
     /**
      * Constructor that takes the status value.
      * @param value The value for the status
+     * @param icon The glyphicon for the status
+     * @param css The css class for the status
      */
-    ChangeStatus(String value)
+    ChangeStatus(String value, String icon, String css)
     {
         this.value = value;
+        this.icon = icon;
+        this.css = css;
     }
 
     /**
@@ -55,6 +61,24 @@ public enum ChangeStatus
     public String value()
     {
         return value;
+    }
+
+    /**
+     * Returns the glyphicon of the status.
+     * @return The glyphicon of the status.
+     */
+    public String icon()
+    {
+        return icon;
+    }
+
+    /**
+     * Returns the css class of the status.
+     * @return The css class of the status.
+     */
+    public String css()
+    {
+        return css;
     }
 
     /**

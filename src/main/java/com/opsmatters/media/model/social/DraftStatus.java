@@ -23,22 +23,28 @@ package com.opsmatters.media.model.social;
  */
 public enum DraftStatus
 {
-    NEW("New"),
-    SUBMITTED("Submitted"),
-    PROCESSED("Processed"),
-    ERROR("Error"),
-    SKIPPED("Skipped"),
-    ALL("All"); // Pseudo status
+    NEW("New", "glyphicon-unchecked", ""),
+    SUBMITTED("Submitted", "glyphicon-log-in", "status-warn"),
+    PROCESSED("Processed", "glyphicon-ok-circle", "status-success"),
+    ERROR("Error", "glyphicon-alert", "status-error"),
+    SKIPPED("Skipped", "glyphicon-remove-circle", "status-info"),
+    ALL("All", "", ""); // Pseudo status
 
     private String value;
+    private String icon;
+    private String css;
 
     /**
      * Constructor that takes the status value.
      * @param value The value for the status
+     * @param icon The glyphicon for the status
+     * @param css The css class for the status
      */
-    DraftStatus(String value)
+    DraftStatus(String value, String icon, String css)
     {
         this.value = value;
+        this.icon = icon;
+        this.css = css;
     }
 
     /**
@@ -57,6 +63,24 @@ public enum DraftStatus
     public String value()
     {
         return value;
+    }
+
+    /**
+     * Returns the glyphicon of the status.
+     * @return The glyphicon of the status.
+     */
+    public String icon()
+    {
+        return icon;
+    }
+
+    /**
+     * Returns the css class of the status.
+     * @return The css class of the status.
+     */
+    public String css()
+    {
+        return css;
     }
 
     /**

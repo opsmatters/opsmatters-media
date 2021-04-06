@@ -23,31 +23,37 @@ package com.opsmatters.media.model.monitor;
  */
 public enum MonitorStatus
 {
-    NEW("New", -1),
-    WAITING("Waiting", 1),
-    EXECUTING("Executing", 1),
-    CHANGED("Changed", 0),
-    REVIEW("Review", 0),
-    RESUMING("Resuming", 1),
-    RETRYING("Retrying", 1),
-    ERROR("Error", 1),
-    DISABLED("Disabled", -1),
-    PENDING("Pending", 0), // Pseudo status
-    RUNNING("Running", 1), // Pseudo status
-    STOPPED("Stopped", -1), // Pseudo status
-    ALL("All", 0); // Pseudo status
+    NEW("New", "glyphicon-unchecked", "", -1),
+    WAITING("Waiting", "glyphicon-hourglass", "", 1),
+    EXECUTING("Executing", "glyphicon-cog", "status-warn", 1),
+    CHANGED("Changed", "glyphicon-adjust", "status-warn", 0),
+    REVIEW("Review", "glyphicon-eye-open", "status-warn", 0),
+    RESUMING("Resuming", "glyphicon-hourglass", "status-warn", 1),
+    RETRYING("Retrying", "glyphicon-alert", "status-warn", 1),
+    ERROR("Error", "glyphicon-alert", "status-error", 1),
+    DISABLED("Disabled", "glyphicon-ban-circle", "status-error", -1),
+    PENDING("Pending", "", "", 0), // Pseudo status
+    RUNNING("Running", "", "", 1), // Pseudo status
+    STOPPED("Stopped", "", "", -1), // Pseudo status
+    ALL("All", "", "", 0); // Pseudo status
 
     private String value;
+    private String icon;
+    private String css;
     private int state;
 
     /**
      * Constructor that takes the status value.
      * @param value The value for the status
+     * @param icon The glyphicon for the status
+     * @param css The css class for the status
      * @param state The state for the status
      */
-    MonitorStatus(String value, int state)
+    MonitorStatus(String value, String icon, String css, int state)
     {
         this.value = value;
+        this.icon = icon;
+        this.css = css;
         this.state = state;
     }
 
@@ -67,6 +73,24 @@ public enum MonitorStatus
     public String value()
     {
         return value;
+    }
+
+    /**
+     * Returns the glyphicon of the status.
+     * @return The glyphicon of the status.
+     */
+    public String icon()
+    {
+        return icon;
+    }
+
+    /**
+     * Returns the css class of the status.
+     * @return The css class of the status.
+     */
+    public String css()
+    {
+        return css;
     }
 
     /**

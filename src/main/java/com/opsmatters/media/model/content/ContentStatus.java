@@ -23,21 +23,27 @@ package com.opsmatters.media.model.content;
  */
 public enum ContentStatus
 {
-    NEW("New"),
-    PENDING("Pending"),
-    DEPLOYING("Deploying"),
-    STAGED("Staged"),
-    DEPLOYED("Deployed");
+    NEW("New", "glyphicon-unchecked", ""),
+    PENDING("Pending", "glyphicon-edit", "status-warn"),
+    DEPLOYING("Deploying", "glyphicon-log-out", "status-warn"),
+    STAGED("Staged", "glyphicon-adjust", "status-warn"),
+    DEPLOYED("Deployed", "glyphicon-ok-circle", "status-success");
 
     private String value;
+    private String icon;
+    private String css;
 
     /**
      * Constructor that takes the status value.
      * @param value The value for the status
+     * @param icon The glyphicon for the status
+     * @param css The css class for the status
      */
-    ContentStatus(String value)
+    ContentStatus(String value, String icon, String css)
     {
         this.value = value;
+        this.icon = icon;
+        this.css = css;
     }
 
     /**
@@ -56,6 +62,24 @@ public enum ContentStatus
     public String value()
     {
         return value;
+    }
+
+    /**
+     * Returns the glyphicon of the status.
+     * @return The glyphicon of the status.
+     */
+    public String icon()
+    {
+        return icon;
+    }
+
+    /**
+     * Returns the css class of the status.
+     * @return The css class of the status.
+     */
+    public String css()
+    {
+        return css;
     }
 
     /**

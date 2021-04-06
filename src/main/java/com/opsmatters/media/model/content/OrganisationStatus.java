@@ -26,21 +26,27 @@ import java.util.ArrayList;
  */
 public enum OrganisationStatus
 {
-    NEW("New"),
-    ACTIVE("Active"),
-    DISABLED("Disabled"),
-    DEFUNCT("Defunct"),
-    ALL("All");
+    NEW("New", "glyphicon-unchecked", ""),
+    ACTIVE("Active", "glyphicon-ok-circle", "status-success"),
+    DISABLED("Disabled", "glyphicon-remove-circle", "status-error"),
+    DEFUNCT("Defunct", "glyphicon-trash", "status-error"),
+    ALL("All", "", "");
 
     private String value;
+    private String icon;
+    private String css;
 
     /**
      * Constructor that takes the status value.
      * @param value The value for the status
+     * @param icon The glyphicon for the status
+     * @param css The css class for the status
      */
-    OrganisationStatus(String value)
+    OrganisationStatus(String value, String icon, String css)
     {
         this.value = value;
+        this.icon = icon;
+        this.css = css;
     }
 
     /**
@@ -59,6 +65,24 @@ public enum OrganisationStatus
     public String value()
     {
         return value;
+    }
+
+    /**
+     * Returns the glyphicon of the status.
+     * @return The glyphicon of the status.
+     */
+    public String icon()
+    {
+        return icon;
+    }
+
+    /**
+     * Returns the css class of the status.
+     * @return The css class of the status.
+     */
+    public String css()
+    {
+        return css;
     }
 
     /**
