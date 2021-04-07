@@ -58,7 +58,7 @@ public class OrganisationDAO extends BaseDAO
      * The query to use to update an organisation in the ORGANISATIONS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE ORGANISATIONS SET NAME=?, UPDATED_DATE=?, REVIEWED_DATE=?, ATTRIBUTES=?, STATUS=?, LISTING_ID=? "
+      "UPDATE ORGANISATIONS SET CODE=?, NAME=?, UPDATED_DATE=?, REVIEWED_DATE=?, ATTRIBUTES=?, STATUS=?, LISTING_ID=? "
       + "WHERE ID=?";
 
     /**
@@ -235,15 +235,16 @@ public class OrganisationDAO extends BaseDAO
 
         try
         {
-            updateStmt.setString(1, organisation.getName());
-            updateStmt.setTimestamp(2, new Timestamp(organisation.getUpdatedDateMillis()), UTC);
-            updateStmt.setTimestamp(3, new Timestamp(organisation.getReviewedDateMillis()), UTC);
+            updateStmt.setString(1, organisation.getCode());
+            updateStmt.setString(2, organisation.getName());
+            updateStmt.setTimestamp(3, new Timestamp(organisation.getUpdatedDateMillis()), UTC);
+            updateStmt.setTimestamp(4, new Timestamp(organisation.getReviewedDateMillis()), UTC);
             String attributes = organisation.getAttributes().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(4, reader, attributes.length());
-            updateStmt.setString(5, organisation.getStatus().name());
-            updateStmt.setInt(6, organisation.getListingId());
-            updateStmt.setString(7, organisation.getId());
+            updateStmt.setCharacterStream(5, reader, attributes.length());
+            updateStmt.setString(6, organisation.getStatus().name());
+            updateStmt.setInt(7, organisation.getListingId());
+            updateStmt.setString(8, organisation.getId());
             updateStmt.executeUpdate();
 
             logger.info("Updated organisation '"+organisation.getId()+"' in ORGANISATIONS");
