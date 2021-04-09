@@ -24,7 +24,7 @@ package com.opsmatters.media.model.feed;
 public enum FeedStatus
 {
     NEW("New", "glyphicon-unchecked", "", 1),
-    PENDING("Pending", "glyphicon-edit", "status-warn", -1),
+    PENDING("Pending", "glyphicon-check", "status-warn", -1),
     SUBMITTED("Submitted", "glyphicon-log-in", "status-warn", -1),
     DEPLOYING("Deploying", "glyphicon-log-out", "status-warn", -1),
     EXECUTING("Executing", "glyphicon-cog", "status-warn", -1),

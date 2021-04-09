@@ -108,4 +108,12 @@ public class AppParameters extends LinkedHashMap<AppParameterType,Map>
     {
         put(type, name, Integer.toString(value));
     }
+
+    /**
+     * Sets the parameter with the given type and name to the given value.
+     */
+    public static void put(AppParameterType type, AppParameterName name, boolean value)
+    {
+        put(type, name, Boolean.toString(value));
+    }
 }

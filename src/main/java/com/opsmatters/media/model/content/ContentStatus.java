@@ -24,7 +24,7 @@ package com.opsmatters.media.model.content;
 public enum ContentStatus
 {
     NEW("New", "glyphicon-unchecked", ""),
-    PENDING("Pending", "glyphicon-edit", "status-warn"),
+    PENDING("Pending", "glyphicon-check", "status-warn"),
     DEPLOYING("Deploying", "glyphicon-log-out", "status-warn"),
     STAGED("Staged", "glyphicon-adjust", "status-warn"),
     DEPLOYED("Deployed", "glyphicon-ok-circle", "status-success");

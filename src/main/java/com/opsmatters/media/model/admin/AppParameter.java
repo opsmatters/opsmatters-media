@@ -122,6 +122,14 @@ public class AppParameter extends BaseItem
     }
 
     /**
+     * Returns the value as a boolean.
+     */
+    public boolean getValueAsBoolean()
+    {
+        return Boolean.parseBoolean(value);
+    }
+
+    /**
      * Sets the value.
      */
     public void setValue(String value)

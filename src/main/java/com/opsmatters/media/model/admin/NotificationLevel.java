@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Gerald Curley
+ * Copyright 2021 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,44 +17,35 @@
 package com.opsmatters.media.model.admin;
 
 /**
- * Represents the type of an application parameter.
+ * Represents a notification level.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum AppParameterType
+public enum NotificationLevel
 {
-    UI("ui"),
-    FEEDS("feeds"),
-    DASHBOARD("dashboard"),
-    MONITOR_MANAGER("monitor-manager"),
-    SOCIAL_MANAGER("social-manager"),
-    EMAIL_MANAGER("email-manager"),
-    FEED_MANAGER("feed-manager"),
-    THREAD_MANAGER("thread-manager");
+    ERROR("Error", "notification-error"),
+    WARN("Warning", "notification-warn"),
+    SUCCESS("Success", "notification-success"),
+    INFO("Information", "notification-info"),
+    NONE("None", "");
 
     private String value;
+    private String css;
 
     /**
-     * Constructor that takes the type value.
-     * @param value The value for the type
+     * Constructor that takes the level value and prefix.
+     * @param value The value for the level
+     * @param css The css class for the level
      */
-    AppParameterType(String value)
+    NotificationLevel(String value, String css)
     {
         this.value = value;
+        this.css = css;
     }
 
     /**
-     * Returns the value of the type.
-     * @return The value of the type.
-     */
-    public String toString()
-    {
-        return value();
-    }
-
-    /**
-     * Returns the value of the status.
-     * @return The value of the status.
+     * Returns the value of the level.
+     * @return The value of the level.
      */
     public String value()
     {
@@ -62,14 +53,23 @@ public enum AppParameterType
     }
 
     /**
-     * Returns the type for the given value.
-     * @param value The type value
-     * @return The type for the given value
+     * Returns the css class of the level.
+     * @return The css class of the level.
      */
-    public static AppParameterType fromValue(String value)
+    public String css()
     {
-        AppParameterType[] types = values();
-        for(AppParameterType type : types)
+        return css;
+    }
+
+    /**
+     * Returns the level for the given value.
+     * @param value The level value
+     * @return The level for the given value
+     */
+    public static NotificationLevel fromValue(String value)
+    {
+        NotificationLevel[] types = values();
+        for(NotificationLevel type : types)
         {
             if(type.value().equals(value))
                 return type;

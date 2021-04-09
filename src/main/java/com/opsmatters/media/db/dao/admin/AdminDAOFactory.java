@@ -35,6 +35,7 @@ public class AdminDAOFactory extends DAOFactory
 
         getUserDAO();
         getEmailDAO();
+        getNotificationDAO();
         getAppParameterDAO();
     }
 
@@ -59,6 +60,16 @@ public class AdminDAOFactory extends DAOFactory
     }
 
     /**
+     * Returns the notification DAO.
+     */
+    public NotificationDAO getNotificationDAO()
+    {
+        if(notificationDAO == null)
+            notificationDAO = new NotificationDAO(this);
+        return notificationDAO;
+    }
+
+    /**
      * Returns the application parameter DAO.
      */
     public AppParameterDAO getAppParameterDAO()
@@ -77,10 +88,12 @@ public class AdminDAOFactory extends DAOFactory
         super.close();
         userDAO = null;
         emailDAO = null;
+        notificationDAO = null;
         parameterDAO = null;
     }
 
     private UserDAO userDAO;
     private EmailDAO emailDAO;
+    private NotificationDAO notificationDAO;
     private AppParameterDAO parameterDAO;
 }

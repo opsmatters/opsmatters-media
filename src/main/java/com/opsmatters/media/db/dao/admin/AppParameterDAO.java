@@ -139,6 +139,14 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     }
 
     /**
+     * Sets the default for the given parameter.
+     */
+    public void setDefault(AppParameterType type, AppParameterName name, boolean value) throws SQLException
+    {
+        setDefault(type, name, Boolean.toString(value));
+    }
+
+    /**
      * Returns a parameter from the PARAMETERS table by id.
      */
     public AppParameter getById(String id) throws SQLException

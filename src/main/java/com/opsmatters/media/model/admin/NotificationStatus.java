@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Gerald Curley
+ * Copyright 2021 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,50 +17,32 @@
 package com.opsmatters.media.model.admin;
 
 /**
- * Represents the name of an application parameter.
+ * Represents the status of a notification.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum AppParameterName
+public enum NotificationStatus
 {
-    DRAFT_POST_INTERVAL("draft-post-interval"),
-    PREPARED_POST_INTERVAL("prepared-post-interval"),
-    MAX_ITEMS("max-items"),
-    INIT_DELAY("init-delay"),
-    BATCH_DELAY("batch-delay"),
-    ITEM_DELAY("item-delay"),
-    STALLED_INTERVAL("stalled-interval"),
-    SCAN_INTERVAL("scan-interval"),
-    REVIEW_INTERVAL("review-interval"),
-    MIN_AGE("min-age"),
-    MAX_BATCH_SIZE("max-batch-size"),
-    MAX_ERRORS("max-errors"),
-    MAX_RESULTS("max-results"),
-    MAX_RETRIES("max-retries"),
-    MAX_CHANGED("max-changed"),
-    MAX_REVIEW("max-review"),
-    SUB_LEASE("sub-lease"),
-    SUB_EXPIRY("sub-expiry"),
-    PUBLISHER("publisher"),
-    DIRECTOR("director"),
-    ERROR_COUNT_ERROR("error-count-error"),
-    CHANGED_COUNT_ERROR("changed-count-error"),
-    REVIEW_COUNT_ERROR("review-count-error");
+    NEW("New"),
+    PENDING("Pending"),
+    RESOLVED("Resolved"),
+    COMPLETED("Completed"),
+    ALL("All"); // Pseudo status
 
     private String value;
 
     /**
-     * Constructor that takes the name value.
-     * @param value The value for the name
+     * Constructor that takes the status value.
+     * @param value The value for the status
      */
-    AppParameterName(String value)
+    NotificationStatus(String value)
     {
         this.value = value;
     }
 
     /**
-     * Returns the value of the name.
-     * @return The value of the name.
+     * Returns the value of the status.
+     * @return The value of the status.
      */
     public String toString()
     {
@@ -81,10 +63,10 @@ public enum AppParameterName
      * @param value The type value
      * @return The type for the given value
      */
-    public static AppParameterName fromValue(String value)
+    public static NotificationStatus fromValue(String value)
     {
-        AppParameterName[] types = values();
-        for(AppParameterName type : types)
+        NotificationStatus[] types = values();
+        for(NotificationStatus type : types)
         {
             if(type.value().equals(value))
                 return type;
