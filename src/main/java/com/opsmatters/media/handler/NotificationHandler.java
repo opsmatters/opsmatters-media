@@ -52,11 +52,28 @@ public abstract class NotificationHandler
 
         try
         {
-            Notification notification = new Notification(type, code, summary);
+            boolean update = false;
+            Notification notification = null;
+            List<Notification> notifications = getNotificationDAO().listPending(type, code);
+            if(notifications.size() > 0)
+            {
+                notification = notifications.get(0);
+                notification.setSummary(summary);
+                update = true;
+            }
+            else
+            {
+                notification = new Notification(type, code, summary);
+            }
+
             notification.setLevel(level);
             notification.setStatus(PENDING);
             notification.setExpiry(expiry);
-            getNotificationDAO().add(notification);
+
+            if(update)
+                getNotificationDAO().update(notification);
+            else
+                getNotificationDAO().add(notification);
             ret = notification;
         }
         catch(SQLException e)
@@ -97,6 +114,38 @@ public abstract class NotificationHandler
     public Notification error(NotificationType type, String summary, int expiry)
     {
         return error(type, null, summary, expiry);
+    }
+
+    /**
+     * Raise a warning notification.
+     */
+    public Notification warn(NotificationType type, String code, String summary, int expiry)
+    {
+        return notification(WARN, type, code, summary, expiry);
+    }
+
+    /**
+     * Raise a warning notification.
+     */
+    public Notification warn(NotificationType type, String code, String summary)
+    {
+        return warn(type, code, summary, 0);
+    }
+
+    /**
+     * Raise a warning notification.
+     */
+    public Notification warn(NotificationType type, String summary)
+    {
+        return warn(type, null, summary);
+    }
+
+    /**
+     * Raise a warning notification.
+     */
+    public Notification warn(NotificationType type, String summary, int expiry)
+    {
+        return warn(type, null, summary, expiry);
     }
 
     /**
@@ -168,5 +217,32 @@ public abstract class NotificationHandler
     public Notification resolve(NotificationType type, String summary)
     {
         return resolve(type, null, summary);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if there is a PENDING notification for the given code and type.
+     */
+    public boolean hasPending(NotificationType type, String code)
+    {
+        boolean ret = false;
+
+        try
+        {
+            ret = getNotificationDAO().listPending(type, code).size() > 0;
+        }
+        catch(SQLException e)
+        {
+            logger.severe(StringUtils.serialize(e));
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if there is a PENDING notification for the given type.
+     */
+    public boolean hasPending(NotificationType type)
+    {
+        return hasPending(type, null);
     }
 }

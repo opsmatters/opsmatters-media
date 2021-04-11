@@ -546,6 +546,14 @@ public class TimeUtils
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given instant is after midnight today.
+     */
+    static public boolean isToday(Instant dt)
+    {
+        return truncateTimeUTC(dt).equals(truncateTimeUTC());
+    }
+
+    /**
      * Returns the given instant as a string in UTC.
      */
     public static String toStringUTC(Instant dt, String pattern)

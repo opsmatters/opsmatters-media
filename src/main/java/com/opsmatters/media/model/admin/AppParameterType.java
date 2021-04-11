@@ -28,7 +28,7 @@ public enum AppParameterType
     DASHBOARD("dashboard"),
     MONITOR_MANAGER("monitor-manager"),
     SOCIAL_MANAGER("social-manager"),
-    EMAIL_MANAGER("email-manager"),
+    NOTIFICATION_MANAGER("notification-manager"),
     FEED_MANAGER("feed-manager"),
     THREAD_MANAGER("thread-manager");
 
