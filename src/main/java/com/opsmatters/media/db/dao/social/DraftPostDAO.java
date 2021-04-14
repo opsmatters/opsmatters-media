@@ -26,12 +26,12 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
-import com.opsmatters.media.model.DeliveryStatus;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.model.social.DraftPost;
 import com.opsmatters.media.model.social.DraftPostFactory;
+import com.opsmatters.media.model.social.DraftStatus;
 import com.opsmatters.media.model.social.PostType;
 import com.opsmatters.media.model.social.ContentPost;
 
@@ -468,7 +468,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns the posts from the DRAFT_POSTS table by type and status.
      */
-    public List<DraftPost> list(PostType type, DeliveryStatus status, int interval) throws SQLException
+    public List<DraftPost> list(PostType type, DraftStatus status, int interval) throws SQLException
     {
         List<DraftPost> ret = null;
 
