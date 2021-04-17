@@ -22,12 +22,17 @@ import nl.crashdata.chartjs.data.simple.SimpleChartJsConfig;
 import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsConfigBuilder;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.model.chart.Chart;
+import com.opsmatters.media.model.chart.ChartJsChart;
 import com.opsmatters.media.model.chart.ChartDataset;
 import com.opsmatters.media.model.chart.SourceType;
 import com.opsmatters.media.model.chart.ChartParameters;
+import com.opsmatters.media.model.chart.MetricChart;
+import com.opsmatters.media.model.chart.MetricConfig;
+import com.opsmatters.media.model.chart.MetricsConfig;
+import com.opsmatters.media.model.chart.ChartMetric;
 
 /**
- * Handler to create chart config for ChartJS.
+ * Handler to create chart config for charts.
  *
  * @author Gerald Curley (opsmatters)
  */
@@ -38,7 +43,8 @@ public class ChartHandler<E extends Serializable>
     private Chart<E> chart;
     private JDBCDatabaseConnection conn;
     private ChartParameters parameters = null;
-    private SimpleChartJsConfigBuilder<E> config = null;
+    private SimpleChartJsConfigBuilder<E> chartJsConfig = null;
+    private MetricsConfig.Builder<Number> metricsConfig = null;
 
     /**
      * Default constructor.
@@ -98,9 +104,17 @@ public class ChartHandler<E extends Serializable>
     /**
      * Returns the chartjs config for the handler.
      */
-    public SimpleChartJsConfig<E> getConfig()
+    public SimpleChartJsConfig<E> getChartJsConfig()
     {
-        return config != null ? config.build() : null;
+        return chartJsConfig != null ? chartJsConfig.build() : null;
+    }
+
+    /**
+     * Returns the metrics config for the handler.
+     */
+    public MetricsConfig<Number> getMetricsConfig()
+    {
+        return metricsConfig != null ? metricsConfig.build() : null;
     }
 
     /**
@@ -110,23 +124,48 @@ public class ChartHandler<E extends Serializable>
     {
         if(chart != null)
         {
-            config = chart.configure();
-            if(config == null)
-                throw new IllegalArgumentException("invalid chart type: "+chart.getType());
-
-            for(ChartDataset<E> dataset : chart.getDatasets())
+            if(chart instanceof ChartJsChart)
             {
-                DataSource<E> source = null;
-                if(dataset.getSource() != null)
-                {
-                    if(dataset.getSource().getType() == SourceType.DATABASE)
-                        source = new DatabaseDataSource<E>(conn);
-                }
+                ChartJsChart<E> chartjsChart = (ChartJsChart<E>)chart;
+                chartJsConfig = chartjsChart.configure();
+                if(chartJsConfig == null)
+                    throw new IllegalArgumentException("invalid chart type: "+chartjsChart.getType());
 
-                if(source != null)
+                for(ChartDataset<E> dataset : chartjsChart.getDatasets())
                 {
-                    dataset.configure(config,
-                        source.getDataPoints(dataset.getSource(), getParameters()));
+                    DataSource<E> source = null;
+                    if(dataset.getSource() != null)
+                    {
+                        if(dataset.getSource().getType() == SourceType.DATABASE)
+                            source = new DatabaseDataSource<E>(conn);
+                    }
+
+                    if(source != null)
+                    {
+                        dataset.configure(chartJsConfig,
+                            source.getDataPoints(dataset.getSource(), getParameters()));
+                    }
+                }
+            }
+            else if(chart instanceof MetricChart)
+            {
+                MetricChart<Number> metricChart = (MetricChart<Number>)chart;
+                metricsConfig = metricChart.configure();
+
+                for(ChartMetric<Number> metric : metricChart.getMetrics())
+                {
+                    DataSource<Number> source = null;
+                    if(metric.getSource() != null)
+                    {
+                        if(metric.getSource().getType() == SourceType.DATABASE)
+                            source = new DatabaseDataSource<Number>(conn);
+                    }
+
+                    if(source != null)
+                    {
+                        metric.configure(metricsConfig,
+                            source.getDataPoints(metric.getSource(), getParameters()));
+                    }
                 }
             }
         }

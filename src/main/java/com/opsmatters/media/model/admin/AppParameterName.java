@@ -43,6 +43,7 @@ public enum AppParameterName
     SUB_EXPIRY("sub-expiry"),
     PUBLISHER("publisher"),
     DIRECTOR("director"),
+    STATUS("status"),
     ERROR_COUNT_ERROR("error-count-error"),
     CHANGED_COUNT_ERROR("changed-count-error"),
     REVIEW_COUNT_ERROR("review-count-error");

@@ -16,18 +16,12 @@
 
 package com.opsmatters.media.model.chart;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.io.Serializable;
-import nl.crashdata.chartjs.data.ChartJsChartType;
-import nl.crashdata.chartjs.data.ChartJsInteractionMode;
-import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsConfigBuilder;
-import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsOptionsBuilder;
 
 /**
- * Represents a chart containing datasets.
+ * Represents a chart.
  * 
  * @author Gerald Curley (opsmatters)
  */
@@ -36,13 +30,11 @@ public abstract class Chart<E extends Serializable>
     public static final String ID = "id";
     public static final String TITLE = "title";
     public static final String TYPE = "type";
-    public static final String DATASETS = "datasets";
     public static final String SELECTIONS = "selections";
 
     private String id = "";
     private String title = "";
-    private ChartJsChartType type;
-    private List<ChartDataset<E>> datasets = new ArrayList<ChartDataset<E>>();
+    private String type;
     private Map<ChartParameter,ChartSelection<?>> selections = new LinkedHashMap<ChartParameter,ChartSelection<?>>();
 
     /**
@@ -63,8 +55,6 @@ public abstract class Chart<E extends Serializable>
             setId(obj.getId());
             setTitle(obj.getTitle());
             setType(obj.getType());
-            for(ChartDataset<E> dataset : obj.getDatasets())
-                addDataset(new ChartDataset<E>(dataset));
             for(ChartSelection<?> selection : obj.getSelections().values())
                 addSelection(ChartSelectionFactory.newInstance(selection));
         }
@@ -79,14 +69,6 @@ public abstract class Chart<E extends Serializable>
             setTitle((String)map.get(TITLE));
         if(map.containsKey(TYPE))
             setType((String)map.get(TYPE));
-
-        if(map.containsKey(DATASETS))
-        {
-            List<Map<String,Object>> datasets = (List<Map<String,Object>>)map.get(DATASETS);
-            for(Map<String,Object> config : datasets)
-                addDataset(new ChartDataset<E>(getType(), (Map<String,Object>)config));
-        }
-
         if(map.containsKey(SELECTIONS))
         {
             Map<String,Map<String,Object>> selections = (Map<String,Map<String,Object>>)map.get(SELECTIONS);
@@ -138,7 +120,7 @@ public abstract class Chart<E extends Serializable>
     /**
      * Returns the type of the chart.
      */
-    public ChartJsChartType getType()
+    public String getType()
     {
         return type;
     }
@@ -146,49 +128,9 @@ public abstract class Chart<E extends Serializable>
     /**
      * Sets the type for the chart.
      */
-    public void setType(ChartJsChartType type)
-    {
-        this.type = type;
-    }
-
-    /**
-     * Sets the type for the chart.
-     */
     public void setType(String type)
     {
-        setType(ChartJsChartType.valueOf(type));
-    }
-
-    /**
-     * Adds a dataset to the datasets for the chart.
-     */
-    public List<ChartDataset<E>> getDatasets()
-    {
-        return this.datasets;
-    }
-
-    /**
-     * Adds a dataset to the datasets for the chart.
-     */
-    public void addDataset(ChartDataset<E> dataset)
-    {
-        this.datasets.add(dataset);
-    }
-
-    /**
-     * Returns the number of datasets.
-     */
-    public int numDatasets()
-    {
-        return datasets.size();
-    }
-
-    /**
-     * Returns the dataset at the given index.
-     */
-    public ChartDataset<E> getDataset(int i)
-    {
-        return datasets.get(i);
+        this.type = type;
     }
 
     /**
@@ -245,20 +187,5 @@ public abstract class Chart<E extends Serializable>
     public boolean hasSelection(ChartParameter parameter)
     {
         return selections.get(parameter) != null;
-    }
-
-    /**
-     * Returns the config for the current chart type.
-     */
-    public abstract SimpleChartJsConfigBuilder<E> configure();
-
-    /**
-     * Configure the config options.
-     */
-    protected void configure(SimpleChartJsOptionsBuilder options)
-    {
-        options.withResponsive(true);
-        options.hoverConfig().withIntersect(true).withMode(ChartJsInteractionMode.NEAREST);
-        options.tooltipConfig().withIntersect(false).withMode(ChartJsInteractionMode.INDEX);
     }
 }

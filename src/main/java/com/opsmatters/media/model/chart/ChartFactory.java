@@ -17,7 +17,6 @@
 package com.opsmatters.media.model.chart;
 
 import java.util.Map;
-import nl.crashdata.chartjs.data.ChartJsChartType;
 
 import static nl.crashdata.chartjs.data.ChartJsChartType.*;
 
@@ -40,16 +39,16 @@ public class ChartFactory
      */
     public static Chart newInstance(String type, String id)
     {
-        return newInstance(ChartJsChartType.valueOf(type), id);
-    }
-
-    /**
-     * Creates a new chart.
-     */
-    public static Chart newInstance(ChartJsChartType type, String id)
-    {
-        if(type == PIE || type == DOUGHNUT || type == RADAR || type == POLAR_AREA)
+        if(type.equals(MetricChart.TYPE))
+        {
+            return new MetricChart(id);
+        }
+        else if(type.equals(PIE.name()) || type.equals(DOUGHNUT.name())
+            || type.equals(RADAR.name()) || type.equals(POLAR_AREA.name()))
+        {
             return new RadialChart(id);
+        }
+
         return new CartesianChart(id);
     }
 

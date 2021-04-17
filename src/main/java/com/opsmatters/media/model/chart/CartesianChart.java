@@ -28,7 +28,7 @@ import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsOptionsBuilder;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class CartesianChart<X extends Serializable,Y extends Serializable> extends Chart<SimpleChartJsXYDataPoint<X,Y>>
+public class CartesianChart<X extends Serializable,Y extends Serializable> extends ChartJsChart<SimpleChartJsXYDataPoint<X,Y>>
 {
     public static final String X_AXIS = "x-axis";
     public static final String Y_AXIS = "y-axis";
@@ -141,13 +141,13 @@ public class CartesianChart<X extends Serializable,Y extends Serializable> exten
     {
         SimpleChartJsConfigBuilder<SimpleChartJsXYDataPoint<X,Y>> ret = null;
 
-        if(getType() == ChartJsChartType.LINE)
+        if(getChartJsChartType() == ChartJsChartType.LINE)
             ret = SimpleChartJsConfigBuilder.lineChart();
-        else if(getType() == ChartJsChartType.BAR)
+        else if(getChartJsChartType() == ChartJsChartType.BAR)
             ret = SimpleChartJsConfigBuilder.barChart();
-        else if(getType() == ChartJsChartType.SCATTER)
+        else if(getChartJsChartType() == ChartJsChartType.SCATTER)
             ret = SimpleChartJsConfigBuilder.scatterPlot();
-        else if(getType() == ChartJsChartType.BUBBLE)
+        else if(getChartJsChartType() == ChartJsChartType.BUBBLE)
             ret = SimpleChartJsConfigBuilder.bubbleChart();
 
         if(ret != null)

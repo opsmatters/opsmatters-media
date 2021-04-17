@@ -89,48 +89,51 @@ public class DatabaseDataSource<E extends Serializable> implements DataSource<E>
                 // Replace the configured parameters in the query
                 int idx = 1;
                 String sql = source.getQuery();
-                for(ChartParameter parameter : source.getParameters())
+                if(source.getParameters() != null)
                 {
-                    Object obj = parameters.get(parameter);
-                    if(obj != null)
+                    for(ChartParameter parameter : source.getParameters())
                     {
-                        if(obj instanceof LocalDateTime)
+                        Object obj = parameters.get(parameter);
+                        if(obj != null)
                         {
-                            LocalDateTime dt = (LocalDateTime)obj;
-                            long millis = dt.toInstant(ZoneOffset.UTC).toEpochMilli();
-                            sql = sql.replaceAll(String.format(":%s", parameter.name()),
-                                String.format("'%s'", new Timestamp(millis)));
-                        }
-                        else if(obj instanceof List<?>)
-                        {
-                            List<?> list = (List<?>)obj;
-
-                            // If the list is empty replace with "LIKE '%'" to select all values
-                            if(list.size() == 0)
+                            if(obj instanceof LocalDateTime)
                             {
-                                sql = sql.replaceAll(String.format("IN \\(:%s\\)", parameter.name()), "LIKE '%'");
+                                LocalDateTime dt = (LocalDateTime)obj;
+                                long millis = dt.toInstant(ZoneOffset.UTC).toEpochMilli();
+                                sql = sql.replaceAll(String.format(":%s", parameter.name()),
+                                    String.format("'%s'", new Timestamp(millis)));
                             }
-                            else // otherwise replace with comma-separated list of values
+                            else if(obj instanceof List<?>)
                             {
-                                StringBuilder str = new StringBuilder();
-                                for(Object item : list)
+                                List<?> list = (List<?>)obj;
+
+                                // If the list is empty replace with "LIKE '%'" to select all values
+                                if(list.size() == 0)
                                 {
-                                    if(str.length() > 0)
-                                        str.append(",");
-                                    if(item.toString().length() > 0)
-                                        str.append("'").append(item.toString()).append("'");
+                                    sql = sql.replaceAll(String.format("IN \\(:%s\\)", parameter.name()), "LIKE '%'");
                                 }
+                                else // otherwise replace with comma-separated list of values
+                                {
+                                    StringBuilder str = new StringBuilder();
+                                    for(Object item : list)
+                                    {
+                                        if(str.length() > 0)
+                                            str.append(",");
+                                        if(item.toString().length() > 0)
+                                            str.append("'").append(item.toString()).append("'");
+                                    }
 
-                                sql = sql.replaceAll(String.format(":%s", parameter.name()), str.toString());
+                                    sql = sql.replaceAll(String.format(":%s", parameter.name()), str.toString());
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        logger.warning("parameter not found: "+parameter);
-                    }
+                        else
+                        {
+                            logger.warning("parameter not found: "+parameter);
+                        }
 
-                    ++idx;
+                        ++idx;
+                    }
                 }
 
                 statement = conn.getConnection().prepareStatement(sql);

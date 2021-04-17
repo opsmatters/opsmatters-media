@@ -26,7 +26,7 @@ import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsConfigBuilder;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RadialChart<N extends Number> extends Chart<N>
+public class RadialChart<N extends Number> extends ChartJsChart<N>
 {
     public static final String LABELS = "labels";
 
@@ -98,13 +98,13 @@ public class RadialChart<N extends Number> extends Chart<N>
     {
         SimpleChartJsConfigBuilder<N> ret = null;
 
-        if(getType() == ChartJsChartType.PIE)
+        if(getChartJsChartType() == ChartJsChartType.PIE)
             ret = SimpleChartJsConfigBuilder.pieChart();
-        else if(getType() == ChartJsChartType.RADAR)
+        else if(getChartJsChartType() == ChartJsChartType.RADAR)
             ret = SimpleChartJsConfigBuilder.radarChart();
-        else if(getType() == ChartJsChartType.POLAR_AREA)
+        else if(getChartJsChartType() == ChartJsChartType.POLAR_AREA)
             ret = SimpleChartJsConfigBuilder.polarAreaChart();
-        else if(getType() == ChartJsChartType.DOUGHNUT)
+        else if(getChartJsChartType() == ChartJsChartType.DOUGHNUT)
             ret = SimpleChartJsConfigBuilder.doughnut();
 
         if(ret != null)
