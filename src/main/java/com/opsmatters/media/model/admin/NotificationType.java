@@ -35,6 +35,7 @@ public enum NotificationType
     FEED_SUBMITTED,
     TASK_ERROR_COUNT,
     TASK_PENDING,
+    TASK_UPDATED,
     TASK_DELETED,
     EMAIL_ERROR_COUNT,
     THREAD_STALLED;

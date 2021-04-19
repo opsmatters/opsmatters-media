@@ -27,6 +27,7 @@ import java.util.ArrayList;
 public enum TaskStatus
 {
     NEW("New", "glyphicon-unchecked", ""),
+    ACTIVE("Active", "glyphicon-ok-circle", "status-success"),
     PENDING("Pending", "glyphicon-check", "status-warn"),
     EXECUTING("Executing", "glyphicon-cog", "status-warn"),
     ERROR("Error", "glyphicon-alert", "status-error"),
@@ -121,6 +122,7 @@ public enum TaskStatus
         List<TaskStatus> ret = new ArrayList<TaskStatus>();
 
         ret.add(NEW);
+        ret.add(ACTIVE);
         ret.add(PENDING);
         ret.add(EXECUTING);
         ret.add(ERROR);

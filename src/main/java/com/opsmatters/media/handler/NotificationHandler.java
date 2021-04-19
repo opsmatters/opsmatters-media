@@ -54,20 +54,25 @@ public abstract class NotificationHandler
         {
             boolean update = false;
             Notification notification = null;
-            List<Notification> notifications = getNotificationDAO().listPending(type, code);
-            if(notifications.size() > 0)
+            if(level != INFO)
             {
-                notification = notifications.get(0);
-                notification.setSummary(summary);
-                update = true;
-            }
-            else
-            {
-                notification = new Notification(type, code, summary);
+                List<Notification> notifications = getNotificationDAO().listPending(type, code);
+                if(notifications.size() > 0)
+                {
+                    notification = notifications.get(0);
+                    notification.setSummary(summary);
+                    update = true;
+                }
             }
 
+            if(notification == null)
+                notification = new Notification(type, code, summary);
+
             notification.setLevel(level);
-            notification.setStatus(PENDING);
+            if(level != INFO)
+                notification.setStatus(PENDING);
+            else
+                notification.setStatus(RESOLVED);
             notification.setExpiry(expiry);
 
             if(update)

@@ -62,9 +62,9 @@ public abstract class Task extends OwnedItem
         {
             super.copyAttributes(obj);
             setName(obj.getName());
+            setType(obj.getType());
             setExecutedDate(obj.getExecutedDate());
             setItemCount(obj.getItemCount());
-            setType(obj.getType());
             setInterval(obj.getInterval());
             setIntervalUnit(obj.getIntervalUnit());
             setStatus(obj.getStatus());

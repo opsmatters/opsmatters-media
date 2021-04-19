@@ -28,6 +28,7 @@ public class TaskExecution extends BaseItem
 {
     private String taskId = "";
     private long executionTime = -1L;
+    private int updatedCount = -1;
     private int deletedCount = -1;
     private String errorMessage = "";
 
@@ -66,6 +67,7 @@ public class TaskExecution extends BaseItem
             super.copyAttributes(obj);
             setTaskId(obj.getTaskId());
             setExecutionTime(obj.getExecutionTime());
+            setUpdatedCount(obj.getUpdatedCount());
             setDeletedCount(obj.getDeletedCount());
             setErrorMessage(obj.getErrorMessage());
         }
@@ -101,6 +103,22 @@ public class TaskExecution extends BaseItem
     public void setExecutionTime(long executionTime)
     {
         this.executionTime = executionTime;
+    }
+
+    /**
+     * Returns the updated count.
+     */
+    public int getUpdatedCount()
+    {
+        return updatedCount;
+    }
+
+    /**
+     * Sets the updated count.
+     */
+    public void setUpdatedCount(int updatedCount)
+    {
+        this.updatedCount = updatedCount;
     }
 
     /**

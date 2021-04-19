@@ -16,6 +16,9 @@
 
 package com.opsmatters.media.model.admin;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * Represents the type of a task.
  * 
@@ -23,7 +26,8 @@ package com.opsmatters.media.model.admin;
  */
 public enum TaskType
 {
-    DATA_CLEANING("Data Cleaning");
+    TABLE_UPDATE("Table Update"),
+    TABLE_DELETE("Table Delete");
 
     private String value;
 
@@ -78,5 +82,18 @@ public enum TaskType
     public static boolean contains(String value)
     {
         return valueOf(value) != null;
+    }
+
+    /**
+     * Returns a list of the task types.
+     */
+    public static List<TaskType> toList()
+    {
+        List<TaskType> ret = new ArrayList<TaskType>();
+
+        ret.add(TABLE_UPDATE);
+        ret.add(TABLE_DELETE);
+
+        return ret;
     }
 }

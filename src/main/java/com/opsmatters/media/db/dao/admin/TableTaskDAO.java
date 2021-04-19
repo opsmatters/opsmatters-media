@@ -38,7 +38,7 @@ public class TableTaskDAO extends AdminDAO<TableTask>
      * The query to use to select a task from the TABLE_TASKS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, NAME, TYPE, TABLE_NAME, PERIOD, PERIOD_UNIT, \"INTERVAL\", INTERVAL_UNIT, STATUS, ITEM_COUNT, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, NAME, TYPE, COUNT_QUERY, UPDATE_QUERY, \"INTERVAL\", INTERVAL_UNIT, STATUS, ITEM_COUNT, CREATED_BY "
       + "FROM TABLE_TASKS WHERE ID=?";
 
     /**
@@ -46,22 +46,22 @@ public class TableTaskDAO extends AdminDAO<TableTask>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO TABLE_TASKS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, NAME, TYPE, TABLE_NAME, PERIOD, PERIOD_UNIT, \"INTERVAL\", INTERVAL_UNIT, STATUS, ITEM_COUNT, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, NAME, TYPE, COUNT_QUERY, UPDATE_QUERY, \"INTERVAL\", INTERVAL_UNIT, STATUS, ITEM_COUNT, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a task in the TABLE_TASKS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE TABLE_TASKS SET UPDATED_DATE=?, EXECUTED_DATE=?, NAME=?, TABLE_NAME=?, PERIOD=?, PERIOD_UNIT=?, \"INTERVAL\"=?, INTERVAL_UNIT=?, STATUS=?, ITEM_COUNT=? "
+      "UPDATE TABLE_TASKS SET UPDATED_DATE=?, EXECUTED_DATE=?, NAME=?, TYPE=?, COUNT_QUERY=?, UPDATE_QUERY=?, \"INTERVAL\"=?, INTERVAL_UNIT=?, STATUS=?, ITEM_COUNT=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the tasks from the TABLE_TASKS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, NAME, TYPE, TABLE_NAME, PERIOD, PERIOD_UNIT, \"INTERVAL\", INTERVAL_UNIT, STATUS, ITEM_COUNT, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, NAME, TYPE, COUNT_QUERY, UPDATE_QUERY, \"INTERVAL\", INTERVAL_UNIT, STATUS, ITEM_COUNT, CREATED_BY "
       + "FROM TABLE_TASKS ORDER BY CREATED_DATE";
 
     /**
@@ -96,9 +96,8 @@ public class TableTaskDAO extends AdminDAO<TableTask>
         table.addColumn("EXECUTED_DATE", Types.TIMESTAMP, false);
         table.addColumn("NAME", Types.VARCHAR, 25, true);
         table.addColumn("TYPE", Types.VARCHAR, 15, true);
-        table.addColumn("TABLE_NAME", Types.VARCHAR, 25, true);
-        table.addColumn("PERIOD", Types.INTEGER, true);
-        table.addColumn("PERIOD_UNIT", Types.VARCHAR, 15, true);
+        table.addColumn("COUNT_QUERY", Types.VARCHAR, 256, false);
+        table.addColumn("UPDATE_QUERY", Types.VARCHAR, 256, true);
         table.addColumn("\"INTERVAL\"", Types.INTEGER, true);
         table.addColumn("INTERVAL_UNIT", Types.VARCHAR, 15, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
@@ -139,14 +138,13 @@ public class TableTaskDAO extends AdminDAO<TableTask>
                 task.setExecutedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 task.setName(rs.getString(5));
                 task.setType(rs.getString(6));
-                task.setTableName(rs.getString(7));
-                task.setPeriod(rs.getInt(8));
-                task.setPeriodUnit(rs.getString(9));
-                task.setInterval(rs.getInt(10));
-                task.setIntervalUnit(rs.getString(11));
-                task.setStatus(rs.getString(12));
-                task.setItemCount(rs.getInt(13));
-                task.setCreatedBy(rs.getString(14));
+                task.setCountQuery(rs.getString(7));
+                task.setUpdateQuery(rs.getString(8));
+                task.setInterval(rs.getInt(9));
+                task.setIntervalUnit(rs.getString(10));
+                task.setStatus(rs.getString(11));
+                task.setItemCount(rs.getInt(12));
+                task.setCreatedBy(rs.getString(13));
                 ret = task;
             }
         }
@@ -187,14 +185,13 @@ public class TableTaskDAO extends AdminDAO<TableTask>
             insertStmt.setTimestamp(4, new Timestamp(task.getExecutedDateMillis()), UTC);
             insertStmt.setString(5, task.getName());
             insertStmt.setString(6, task.getType().name());
-            insertStmt.setString(7, task.getTableName());
-            insertStmt.setInt(8, task.getPeriod());
-            insertStmt.setString(9, task.getPeriodUnit().name());
-            insertStmt.setInt(10, task.getInterval());
-            insertStmt.setString(11, task.getIntervalUnit().name());
-            insertStmt.setString(12, task.getStatus().name());
-            insertStmt.setInt(13, task.getItemCount());
-            insertStmt.setString(14, task.getCreatedBy());
+            insertStmt.setString(7, task.getCountQuery());
+            insertStmt.setString(8, task.getUpdateQuery());
+            insertStmt.setInt(9, task.getInterval());
+            insertStmt.setString(10, task.getIntervalUnit().name());
+            insertStmt.setString(11, task.getStatus().name());
+            insertStmt.setInt(12, task.getItemCount());
+            insertStmt.setString(13, task.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created task '"+task.getId()+"' in TABLE_TASKS");
@@ -229,13 +226,13 @@ public class TableTaskDAO extends AdminDAO<TableTask>
         updateStmt.setTimestamp(1, new Timestamp(task.getUpdatedDateMillis()), UTC);
         updateStmt.setTimestamp(2, new Timestamp(task.getExecutedDateMillis()), UTC);
         updateStmt.setString(3, task.getName());
-        updateStmt.setString(4, task.getTableName());
-        updateStmt.setInt(5, task.getPeriod());
-        updateStmt.setString(6, task.getPeriodUnit().name());
+        updateStmt.setString(4, task.getType().name());
+        updateStmt.setString(5, task.getCountQuery());
+        updateStmt.setString(6, task.getUpdateQuery());
         updateStmt.setInt(7, task.getInterval());
         updateStmt.setString(8, task.getIntervalUnit().name());
         updateStmt.setString(9, task.getStatus().name());
-        updateStmt.setLong(10, task.getItemCount());
+        updateStmt.setInt(10, task.getItemCount());
         updateStmt.setString(11, task.getId());
         updateStmt.executeUpdate();
 
@@ -273,14 +270,13 @@ public class TableTaskDAO extends AdminDAO<TableTask>
                 task.setExecutedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 task.setName(rs.getString(5));
                 task.setType(rs.getString(6));
-                task.setTableName(rs.getString(7));
-                task.setPeriod(rs.getInt(8));
-                task.setPeriodUnit(rs.getString(9));
-                task.setInterval(rs.getInt(10));
-                task.setIntervalUnit(rs.getString(11));
-                task.setStatus(rs.getString(12));
-                task.setItemCount(rs.getInt(13));
-                task.setCreatedBy(rs.getString(14));
+                task.setCountQuery(rs.getString(7));
+                task.setUpdateQuery(rs.getString(8));
+                task.setInterval(rs.getInt(9));
+                task.setIntervalUnit(rs.getString(10));
+                task.setStatus(rs.getString(11));
+                task.setItemCount(rs.getInt(12));
+                task.setCreatedBy(rs.getString(13));
                 ret.add(task);
             }
         }

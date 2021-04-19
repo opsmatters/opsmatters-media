@@ -16,7 +16,6 @@
 package com.opsmatters.media.model.admin;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -26,16 +25,15 @@ import com.opsmatters.media.util.StringUtils;
  */
 public class TableTask extends Task
 {
-    private String tableName = "";
-    private int period = -1;
-    private ChronoUnit periodUnit = ChronoUnit.MONTHS;
+    private String countQuery = "";
+    private String updateQuery = "";
 
     /**
      * Default constructor.
      */
     public TableTask()
     {
-        setType(TaskType.DATA_CLEANING);
+        setType(TaskType.TABLE_UPDATE);
     }
 
     /**
@@ -56,7 +54,6 @@ public class TableTask extends Task
         setCreatedDate(Instant.now());
         setName(name);
         setInterval(1);
-        setPeriod(1);
     }
 
     /**
@@ -67,65 +64,56 @@ public class TableTask extends Task
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setTableName(obj.getTableName());
-            setPeriod(obj.getPeriod());
-            setPeriodUnit(obj.getPeriodUnit());
+            setCountQuery(obj.getCountQuery());
+            setUpdateQuery(obj.getUpdateQuery());
         }
     }
 
     /**
-     * Returns the table name.
+     * Returns the count query.
      */
-    public String getTableName()
+    public String getCountQuery()
     {
-        return tableName;
+        return countQuery;
     }
 
     /**
-     * Sets the table name.
+     * Sets the count query.
      */
-    public void setTableName(String tableName)
+    public void setCountQuery(String countQuery)
     {
-        this.tableName = tableName;
+        this.countQuery = countQuery;
     }
 
     /**
-     * Returns the retention period.
+     * Returns <CODE>true</CODE> if the count query has been set.
      */
-    public int getPeriod()
+    public boolean hasCountQuery()
     {
-        return period;
+        return countQuery != null && countQuery.length() > 0;
     }
 
     /**
-     * Sets the retention period.
+     * Returns the update query.
      */
-    public void setPeriod(int period)
+    public String getUpdateQuery()
     {
-        this.period = period;
+        return updateQuery;
     }
 
     /**
-     * Returns the retention period unit.
+     * Sets the update query.
      */
-    public ChronoUnit getPeriodUnit()
+    public void setUpdateQuery(String updateQuery)
     {
-        return periodUnit;
+        this.updateQuery = updateQuery;
     }
 
     /**
-     * Sets the retention period unit.
+     * Returns <CODE>true</CODE> if the update query has been set.
      */
-    public void setPeriodUnit(ChronoUnit periodUnit)
+    public boolean hasUpdateQuery()
     {
-        this.periodUnit = periodUnit;
-    }
-
-    /**
-     * Sets the retention period unit.
-     */
-    public void setPeriodUnit(String periodUnit)
-    {
-        setPeriodUnit(ChronoUnit.valueOf(periodUnit));
+        return updateQuery != null && updateQuery.length() > 0;
     }
 }

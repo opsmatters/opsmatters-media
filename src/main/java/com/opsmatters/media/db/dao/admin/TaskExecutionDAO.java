@@ -38,7 +38,7 @@ public class TaskExecutionDAO extends AdminDAO<TaskExecution>
      * The query to use to select an execution from the TASK_EXECUTIONS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TASK_ID, EXECUTION_TIME, DELETED_COUNT, ERROR_MESSAGE "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TASK_ID, EXECUTION_TIME, UPDATED_COUNT, DELETED_COUNT, ERROR_MESSAGE "
       + "FROM TASK_EXECUTIONS WHERE ID=?";
 
     /**
@@ -46,29 +46,29 @@ public class TaskExecutionDAO extends AdminDAO<TaskExecution>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO TASK_EXECUTIONS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, TASK_ID, EXECUTION_TIME, DELETED_COUNT, ERROR_MESSAGE )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, TASK_ID, EXECUTION_TIME, UPDATED_COUNT, DELETED_COUNT, ERROR_MESSAGE )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update an execution in the TASK_EXECUTIONS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE TASK_EXECUTIONS SET UPDATED_DATE=?, EXECUTION_TIME=?, DELETED_COUNT=?, ERROR_MESSAGE=? "
+      "UPDATE TASK_EXECUTIONS SET UPDATED_DATE=?, EXECUTION_TIME=?, UPDATED_COUNT=?, DELETED_COUNT=?, ERROR_MESSAGE=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the executions from the TASK_EXECUTIONS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TASK_ID, EXECUTION_TIME, DELETED_COUNT, ERROR_MESSAGE "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TASK_ID, EXECUTION_TIME, UPDATED_COUNT, DELETED_COUNT, ERROR_MESSAGE "
       + "FROM TASK_EXECUTIONS ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the executions from the TASK_EXECUTIONS table by task id.
      */
     private static final String LIST_BY_TASK_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TASK_ID, EXECUTION_TIME, DELETED_COUNT, ERROR_MESSAGE "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TASK_ID, EXECUTION_TIME, UPDATED_COUNT, DELETED_COUNT, ERROR_MESSAGE "
       + "FROM TASK_EXECUTIONS WHERE TASK_ID=? AND CREATED_DATE >= (NOW() + INTERVAL -30 DAY) ORDER BY CREATED_DATE";
 
     /**
@@ -102,7 +102,8 @@ public class TaskExecutionDAO extends AdminDAO<TaskExecution>
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("TASK_ID", Types.VARCHAR, 36, true);
         table.addColumn("EXECUTION_TIME", Types.BIGINT, true);
-        table.addColumn("DELETED_COUNT", Types.SMALLINT, true);
+        table.addColumn("UPDATED_COUNT", Types.INTEGER, true);
+        table.addColumn("DELETED_COUNT", Types.INTEGER, true);
         table.addColumn("ERROR_MESSAGE", Types.VARCHAR, 256, false);
         table.setPrimaryKey("TASK_EXECUTIONS_PK", new String[] {"ID"});
         table.addIndex("TASK_EXECUTIONS_TASK_ID_IDX", new String[] {"TASK_ID"});
@@ -139,8 +140,9 @@ public class TaskExecutionDAO extends AdminDAO<TaskExecution>
                 execution.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 execution.setTaskId(rs.getString(4));
                 execution.setExecutionTime(rs.getLong(5));
-                execution.setDeletedCount(rs.getInt(6));
-                execution.setErrorMessage(rs.getString(7));
+                execution.setUpdatedCount(rs.getInt(6));
+                execution.setDeletedCount(rs.getInt(7));
+                execution.setErrorMessage(rs.getString(8));
                 ret = execution;
             }
         }
@@ -180,8 +182,9 @@ public class TaskExecutionDAO extends AdminDAO<TaskExecution>
             insertStmt.setTimestamp(3, new Timestamp(execution.getUpdatedDateMillis()), UTC);
             insertStmt.setString(4, execution.getTaskId());
             insertStmt.setLong(5, execution.getExecutionTime());
-            insertStmt.setInt(6, execution.getDeletedCount());
-            insertStmt.setString(7, execution.getErrorMessage());
+            insertStmt.setInt(6, execution.getUpdatedCount());
+            insertStmt.setInt(7, execution.getDeletedCount());
+            insertStmt.setString(8, execution.getErrorMessage());
             insertStmt.executeUpdate();
 
             logger.info("Created execution '"+execution.getId()+"' in TASK_EXECUTIONS");
@@ -215,9 +218,10 @@ public class TaskExecutionDAO extends AdminDAO<TaskExecution>
 
         updateStmt.setTimestamp(1, new Timestamp(execution.getUpdatedDateMillis()), UTC);
         updateStmt.setLong(2, execution.getExecutionTime());
-        updateStmt.setInt(3, execution.getDeletedCount());
-        updateStmt.setString(4, execution.getErrorMessage());
-        updateStmt.setString(5, execution.getId());
+        updateStmt.setInt(3, execution.getUpdatedCount());
+        updateStmt.setInt(4, execution.getDeletedCount());
+        updateStmt.setString(5, execution.getErrorMessage());
+        updateStmt.setString(6, execution.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated execution '"+execution.getId()+"' in TASK_EXECUTIONS");
@@ -253,8 +257,9 @@ public class TaskExecutionDAO extends AdminDAO<TaskExecution>
                 execution.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 execution.setTaskId(rs.getString(4));
                 execution.setExecutionTime(rs.getLong(5));
-                execution.setDeletedCount(rs.getInt(6));
-                execution.setErrorMessage(rs.getString(7));
+                execution.setUpdatedCount(rs.getInt(6));
+                execution.setDeletedCount(rs.getInt(7));
+                execution.setErrorMessage(rs.getString(8));
                 ret.add(execution);
             }
         }
@@ -306,8 +311,9 @@ public class TaskExecutionDAO extends AdminDAO<TaskExecution>
                 execution.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 execution.setTaskId(rs.getString(4));
                 execution.setExecutionTime(rs.getLong(5));
-                execution.setDeletedCount(rs.getInt(6));
-                execution.setErrorMessage(rs.getString(7));
+                execution.setUpdatedCount(rs.getInt(6));
+                execution.setDeletedCount(rs.getInt(7));
+                execution.setErrorMessage(rs.getString(8));
                 ret.add(execution);
             }
         }
