@@ -149,6 +149,38 @@ public abstract class NotificationHandler
     }
 
     /**
+     * Raise an info notification.
+     */
+    public Notification info(NotificationType type, String code, String summary, int expiry)
+    {
+        return notification(INFO, type, code, summary, expiry);
+    }
+
+    /**
+     * Raise an info notification.
+     */
+    public Notification info(NotificationType type, String code, String summary)
+    {
+        return info(type, code, summary, 0);
+    }
+
+    /**
+     * Raise an info notification.
+     */
+    public Notification info(NotificationType type, String summary)
+    {
+        return info(type, null, summary);
+    }
+
+    /**
+     * Raise an info notification.
+     */
+    public Notification info(NotificationType type, String summary, int expiry)
+    {
+        return info(type, null, summary, expiry);
+    }
+
+    /**
      * Update a notification.
      */
     public Notification update(NotificationType type, String code, String summary)

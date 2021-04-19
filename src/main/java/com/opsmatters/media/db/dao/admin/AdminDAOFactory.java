@@ -37,6 +37,8 @@ public class AdminDAOFactory extends DAOFactory
         getEmailDAO();
         getNotificationDAO();
         getAppParameterDAO();
+        getTableTaskDAO();
+        getTaskExecutionDAO();
     }
 
     /**
@@ -80,6 +82,26 @@ public class AdminDAOFactory extends DAOFactory
     }
 
     /**
+     * Returns the tasks DAO.
+     */
+    public TableTaskDAO getTableTaskDAO()
+    {
+        if(tableTaskDAO == null)
+            tableTaskDAO = new TableTaskDAO(this);
+        return tableTaskDAO;
+    }
+
+    /**
+     * Returns the task executions DAO.
+     */
+    public TaskExecutionDAO getTaskExecutionDAO()
+    {
+        if(taskExecutionDAO == null)
+            taskExecutionDAO = new TaskExecutionDAO(this);
+        return taskExecutionDAO;
+    }
+
+    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
@@ -90,10 +112,14 @@ public class AdminDAOFactory extends DAOFactory
         emailDAO = null;
         notificationDAO = null;
         parameterDAO = null;
+        tableTaskDAO = null;
+        taskExecutionDAO = null;
     }
 
     private UserDAO userDAO;
     private EmailDAO emailDAO;
     private NotificationDAO notificationDAO;
     private AppParameterDAO parameterDAO;
+    private TableTaskDAO tableTaskDAO;
+    private TaskExecutionDAO taskExecutionDAO;
 }

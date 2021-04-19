@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Gerald Curley
+ * Copyright 2021 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,13 @@
 package com.opsmatters.media.model.admin;
 
 /**
- * Represents the type of an application parameter.
+ * Represents the type of a task.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum AppParameterType
+public enum TaskType
 {
-    UI("ui"),
-    FEEDS("feeds"),
-    DASHBOARD("dashboard"),
-    MONITOR_MANAGER("monitor-manager"),
-    SOCIAL_MANAGER("social-manager"),
-    NOTIFICATION_MANAGER("notification-manager"),
-    FEED_MANAGER("feed-manager"),
-    TASK_MANAGER("task-manager"),
-    THREAD_MANAGER("thread-manager");
+    DATA_CLEANING("Data Cleaning");
 
     private String value;
 
@@ -39,7 +31,7 @@ public enum AppParameterType
      * Constructor that takes the type value.
      * @param value The value for the type
      */
-    AppParameterType(String value)
+    TaskType(String value)
     {
         this.value = value;
     }
@@ -54,8 +46,8 @@ public enum AppParameterType
     }
 
     /**
-     * Returns the value of the status.
-     * @return The value of the status.
+     * Returns the value of the type.
+     * @return The value of the type.
      */
     public String value()
     {
@@ -67,10 +59,10 @@ public enum AppParameterType
      * @param value The type value
      * @return The type for the given value
      */
-    public static AppParameterType fromValue(String value)
+    public static TaskType fromValue(String value)
     {
-        AppParameterType[] types = values();
-        for(AppParameterType type : types)
+        TaskType[] types = values();
+        for(TaskType type : types)
         {
             if(type.value().equals(value))
                 return type;
