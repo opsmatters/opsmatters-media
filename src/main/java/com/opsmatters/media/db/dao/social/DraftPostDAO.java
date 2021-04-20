@@ -134,7 +134,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns a post from the DRAFT_POSTS table by id.
      */
-    public DraftPost getById(String id) throws SQLException
+    public synchronized DraftPost getById(String id) throws SQLException
     {
         DraftPost ret = null;
 
@@ -190,7 +190,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns the pending posts from the DRAFT_POSTS table for the given type.
      */
-    public List<DraftPost> getPendingPosts(PostType type) throws SQLException
+    public synchronized List<DraftPost> getPendingPosts(PostType type) throws SQLException
     {
         List<DraftPost> ret = null;
 
@@ -310,7 +310,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Stores the given post in the DRAFT_POSTS table.
      */
-    public void add(DraftPost post) throws SQLException
+    public synchronized void add(DraftPost post) throws SQLException
     {
         if(!hasConnection() || post == null)
             return;
@@ -368,7 +368,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Updates the given post in the DRAFT_POSTS table.
      */
-    public void update(DraftPost post) throws SQLException
+    public synchronized void update(DraftPost post) throws SQLException
     {
         if(!hasConnection() || post == null)
             return;
@@ -409,7 +409,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns the posts from the DRAFT_POSTS table.
      */
-    public List<DraftPost> list(Site site, PostType type, int interval) throws SQLException
+    public synchronized List<DraftPost> list(Site site, PostType type, int interval) throws SQLException
     {
         List<DraftPost> ret = null;
 
@@ -468,7 +468,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns the posts from the DRAFT_POSTS table by type and status.
      */
-    public List<DraftPost> list(PostType type, DraftStatus status, int interval) throws SQLException
+    public synchronized List<DraftPost> list(PostType type, DraftStatus status, int interval) throws SQLException
     {
         List<DraftPost> ret = null;
 
@@ -545,7 +545,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Removes the given post from the DRAFT_POSTS table.
      */
-    public void delete(DraftPost post) throws SQLException
+    public synchronized void delete(DraftPost post) throws SQLException
     {
         if(!hasConnection() || post == null)
             return;

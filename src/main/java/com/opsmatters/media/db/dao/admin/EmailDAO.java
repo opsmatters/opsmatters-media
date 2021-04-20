@@ -118,7 +118,7 @@ public class EmailDAO extends AdminDAO<Email>
     /**
      * Returns a email from the EMAILS table by id.
      */
-    public Email getById(String id) throws SQLException
+    public synchronized Email getById(String id) throws SQLException
     {
         Email ret = null;
 
@@ -173,7 +173,7 @@ public class EmailDAO extends AdminDAO<Email>
     /**
      * Stores the given email in the EMAILS table.
      */
-    public void add(Email email) throws SQLException
+    public synchronized void add(Email email) throws SQLException
     {
         if(!hasConnection() || email == null)
             return;
@@ -223,7 +223,7 @@ public class EmailDAO extends AdminDAO<Email>
     /**
      * Updates the given email in the EMAILS table.
      */
-    public void update(Email email) throws SQLException
+    public synchronized void update(Email email) throws SQLException
     {
         if(!hasConnection() || email == null)
             return;
@@ -259,7 +259,7 @@ public class EmailDAO extends AdminDAO<Email>
     /**
      * Returns the emails from the EMAILS table.
      */
-    public List<Email> list() throws SQLException
+    public synchronized List<Email> list() throws SQLException
     {
         List<Email> ret = null;
 
@@ -314,7 +314,7 @@ public class EmailDAO extends AdminDAO<Email>
     /**
      * Returns the emails from the EMAILS table by status.
      */
-    public List<Email> list(DeliveryStatus status) throws SQLException
+    public synchronized List<Email> list(DeliveryStatus status) throws SQLException
     {
         List<Email> ret = null;
 
@@ -388,7 +388,7 @@ public class EmailDAO extends AdminDAO<Email>
     /**
      * Removes the given email from the EMAILS table.
      */
-    public void delete(Email email) throws SQLException
+    public synchronized void delete(Email email) throws SQLException
     {
         if(!hasConnection() || email == null)
             return;

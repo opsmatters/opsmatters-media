@@ -92,7 +92,7 @@ public class RoundupArticleDAO extends ContentDAO<RoundupArticle>
     /**
      * Returns a roundup from the ROUNDUPS table by URL.
      */
-    public RoundupArticle getByUrl(String siteId, String code, String url, long publishedDate) throws SQLException
+    public synchronized RoundupArticle getByUrl(String siteId, String code, String url, long publishedDate) throws SQLException
     {
         RoundupArticle ret = null;
 
@@ -142,7 +142,7 @@ public class RoundupArticleDAO extends ContentDAO<RoundupArticle>
     /**
      * Stores the given roundup in the ROUNDUPS table.
      */
-    public void add(RoundupArticle content) throws SQLException
+    public synchronized void add(RoundupArticle content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
@@ -198,7 +198,7 @@ public class RoundupArticleDAO extends ContentDAO<RoundupArticle>
     /**
      * Updates the given roundup in the ROUNDUPS table.
      */
-    public void update(RoundupArticle content) throws SQLException
+    public synchronized void update(RoundupArticle content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;

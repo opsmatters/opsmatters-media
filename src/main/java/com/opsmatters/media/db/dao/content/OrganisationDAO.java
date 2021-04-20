@@ -113,7 +113,7 @@ public class OrganisationDAO extends BaseDAO
     /**
      * Returns an organisation from the ORGANISATIONS table by id.
      */
-    public Organisation getById(String id) throws SQLException
+    public synchronized Organisation getById(String id) throws SQLException
     {
         Organisation ret = null;
 
@@ -169,7 +169,7 @@ public class OrganisationDAO extends BaseDAO
     /**
      * Stores the given organisation in the ORGANISATIONS table.
      */
-    public void add(Organisation organisation) throws SQLException
+    public synchronized void add(Organisation organisation) throws SQLException
     {
         if(!hasConnection() || organisation == null)
             return;
@@ -222,7 +222,7 @@ public class OrganisationDAO extends BaseDAO
     /**
      * Updates the given organisation in the ORGANISATIONS table.
      */
-    public void update(Organisation organisation) throws SQLException
+    public synchronized void update(Organisation organisation) throws SQLException
     {
         if(!hasConnection() || organisation == null)
             return;
@@ -280,7 +280,7 @@ public class OrganisationDAO extends BaseDAO
     /**
      * Returns the organisations from the ORGANISATIONS table.
      */
-    public List<Organisation> list(Site site) throws SQLException
+    public synchronized List<Organisation> list(Site site) throws SQLException
     {
         List<Organisation> ret = null;
 
@@ -355,7 +355,7 @@ public class OrganisationDAO extends BaseDAO
     /**
      * Removes the given organisation from the ORGANISATIONS table.
      */
-    public void delete(Organisation organisation) throws SQLException
+    public synchronized void delete(Organisation organisation) throws SQLException
     {
         if(!hasConnection() || organisation == null)
             return;

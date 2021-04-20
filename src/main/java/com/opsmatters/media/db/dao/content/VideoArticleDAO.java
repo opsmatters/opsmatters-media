@@ -94,7 +94,7 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
     /**
      * Returns a video from the VIDEOS table by videoId.
      */
-    public VideoArticle getByVideoId(String siteId, String code, String videoId) throws SQLException
+    public synchronized VideoArticle getByVideoId(String siteId, String code, String videoId) throws SQLException
     {
         VideoArticle ret = null;
 
@@ -142,7 +142,7 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
     /**
      * Stores the given video in the VIDEOS table.
      */
-    public void add(VideoArticle content) throws SQLException
+    public synchronized void add(VideoArticle content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
@@ -200,7 +200,7 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
     /**
      * Updates the given video in the VIDEOS table.
      */
-    public void update(VideoArticle content) throws SQLException
+    public synchronized void update(VideoArticle content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;

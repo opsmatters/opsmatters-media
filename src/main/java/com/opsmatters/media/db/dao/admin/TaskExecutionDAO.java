@@ -113,7 +113,7 @@ public class TaskExecutionDAO extends AdminDAO<TaskExecution>
     /**
      * Returns an execution from the TASK_EXECUTIONS table by id.
      */
-    public TaskExecution getById(String id) throws SQLException
+    public synchronized TaskExecution getById(String id) throws SQLException
     {
         TaskExecution ret = null;
 
@@ -166,7 +166,7 @@ public class TaskExecutionDAO extends AdminDAO<TaskExecution>
     /**
      * Stores the given execution in the TASK_EXECUTIONS table.
      */
-    public void add(TaskExecution execution) throws SQLException
+    public synchronized void add(TaskExecution execution) throws SQLException
     {
         if(!hasConnection() || execution == null)
             return;
@@ -207,7 +207,7 @@ public class TaskExecutionDAO extends AdminDAO<TaskExecution>
     /**
      * Updates the given execution in the TASK_EXECUTIONS table.
      */
-    public void update(TaskExecution execution) throws SQLException
+    public synchronized void update(TaskExecution execution) throws SQLException
     {
         if(!hasConnection() || execution == null)
             return;
@@ -230,7 +230,7 @@ public class TaskExecutionDAO extends AdminDAO<TaskExecution>
     /**
      * Returns the executions from the TASK_EXECUTIONS table.
      */
-    public List<TaskExecution> list() throws SQLException
+    public synchronized List<TaskExecution> list() throws SQLException
     {
         List<TaskExecution> ret = null;
 
@@ -283,7 +283,7 @@ public class TaskExecutionDAO extends AdminDAO<TaskExecution>
     /**
      * Returns the executions from the TASK_EXECUTIONS table by task id.
      */
-    public List<TaskExecution> list(String taskId) throws SQLException
+    public synchronized List<TaskExecution> list(String taskId) throws SQLException
     {
         List<TaskExecution> ret = null;
 
@@ -355,7 +355,7 @@ public class TaskExecutionDAO extends AdminDAO<TaskExecution>
     /**
      * Removes the given execution from the TASK_EXECUTIONS table.
      */
-    public void delete(TaskExecution execution) throws SQLException
+    public synchronized void delete(TaskExecution execution) throws SQLException
     {
         if(!hasConnection() || execution == null)
             return;

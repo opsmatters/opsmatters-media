@@ -239,7 +239,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
                 catch(DateTimeParseException e)
                 {
                     logger.severe(StringUtils.serialize(e));
-                    logger.warning("Unparseable published date: "+publishedDate);
+                    logger.warning("Unparseable published date: "+publishedDate+" code="+config.getCode());
                 }
             }
         }

@@ -92,7 +92,7 @@ public class WhitePaperResourceDAO extends ContentDAO<WhitePaperResource>
     /**
      * Returns a white paper from the WHITE_PAPERS table by URL.
      */
-    public WhitePaperResource getByUrl(String siteId, String code, String url) throws SQLException
+    public synchronized WhitePaperResource getByUrl(String siteId, String code, String url) throws SQLException
     {
         WhitePaperResource ret = null;
 
@@ -140,7 +140,7 @@ public class WhitePaperResourceDAO extends ContentDAO<WhitePaperResource>
     /**
      * Stores the given white paper in the WHITE_PAPERS table.
      */
-    public void add(WhitePaperResource content) throws SQLException
+    public synchronized void add(WhitePaperResource content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
@@ -196,7 +196,7 @@ public class WhitePaperResourceDAO extends ContentDAO<WhitePaperResource>
     /**
      * Updates the given white paper in the WHITE_PAPERS table.
      */
-    public void update(WhitePaperResource content) throws SQLException
+    public synchronized void update(WhitePaperResource content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;

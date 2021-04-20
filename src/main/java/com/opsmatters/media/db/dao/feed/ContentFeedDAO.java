@@ -135,7 +135,7 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     /**
      * Returns a feed from the CONTENT_FEEDS table by id.
      */
-    public ContentFeed getById(String id) throws SQLException
+    public synchronized ContentFeed getById(String id) throws SQLException
     {
         ContentFeed ret = null;
 
@@ -191,7 +191,7 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     /**
      * Stores the given feed in the CONTENT_FEEDS table.
      */
-    public void add(ContentFeed feed) throws SQLException
+    public synchronized void add(ContentFeed feed) throws SQLException
     {
         if(!hasConnection() || feed == null)
             return;
@@ -235,7 +235,7 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     /**
      * Updates the given feed in the CONTENT_FEEDS table.
      */
-    public void update(ContentFeed feed) throws SQLException
+    public synchronized void update(ContentFeed feed) throws SQLException
     {
         if(!hasConnection() || feed == null)
             return;
@@ -280,7 +280,7 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     /**
      * Returns the feeds from the CONTENT_FEEDS table.
      */
-    public List<ContentFeed> list() throws SQLException
+    public synchronized List<ContentFeed> list() throws SQLException
     {
         List<ContentFeed> ret = null;
 
@@ -336,7 +336,7 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     /**
      * Returns the feeds from the CONTENT_FEEDS table by site.
      */
-    public List<ContentFeed> list(Site site) throws SQLException
+    public synchronized List<ContentFeed> list(Site site) throws SQLException
     {
         List<ContentFeed> ret = null;
 
@@ -393,7 +393,7 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     /**
      * Returns the feeds from the CONTENT_FEEDS table by content type.
      */
-    public List<ContentFeed> list(Site site, ContentType type) throws SQLException
+    public synchronized List<ContentFeed> list(Site site, ContentType type) throws SQLException
     {
         List<ContentFeed> ret = null;
 
@@ -451,7 +451,7 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     /**
      * Returns the feeds from the CONTENT_FEEDS table by status.
      */
-    public List<ContentFeed> list(FeedStatus status) throws SQLException
+    public synchronized List<ContentFeed> list(FeedStatus status) throws SQLException
     {
         List<ContentFeed> ret = null;
 
@@ -559,7 +559,7 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     /**
      * Removes the given feed from the CONTENT_FEEDS table.
      */
-    public void delete(ContentFeed feed) throws SQLException
+    public synchronized void delete(ContentFeed feed) throws SQLException
     {
         if(!hasConnection() || feed == null)
             return;

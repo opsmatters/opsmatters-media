@@ -84,7 +84,7 @@ public class PostArticleDAO extends ContentDAO<PostArticle>
     /**
      * Stores the given post in the POSTS table.
      */
-    public void add(PostArticle content) throws SQLException
+    public synchronized void add(PostArticle content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
@@ -139,7 +139,7 @@ public class PostArticleDAO extends ContentDAO<PostArticle>
     /**
      * Updates the given post in the POSTS table.
      */
-    public void update(PostArticle content) throws SQLException
+    public synchronized void update(PostArticle content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;

@@ -110,7 +110,7 @@ public class TableTaskDAO extends AdminDAO<TableTask>
     /**
      * Returns a task from the TABLE_TASKS table by id.
      */
-    public TableTask getById(String id) throws SQLException
+    public synchronized TableTask getById(String id) throws SQLException
     {
         TableTask ret = null;
 
@@ -168,7 +168,7 @@ public class TableTaskDAO extends AdminDAO<TableTask>
     /**
      * Stores the given task in the TABLE_TASKS table.
      */
-    public void add(TableTask task) throws SQLException
+    public synchronized void add(TableTask task) throws SQLException
     {
         if(!hasConnection() || task == null)
             return;
@@ -214,7 +214,7 @@ public class TableTaskDAO extends AdminDAO<TableTask>
     /**
      * Updates the given task in the TABLE_TASKS table.
      */
-    public void update(TableTask task) throws SQLException
+    public synchronized void update(TableTask task) throws SQLException
     {
         if(!hasConnection() || task == null)
             return;
@@ -242,7 +242,7 @@ public class TableTaskDAO extends AdminDAO<TableTask>
     /**
      * Returns the tasks from the TABLE_TASKS table.
      */
-    public List<TableTask> list() throws SQLException
+    public synchronized List<TableTask> list() throws SQLException
     {
         List<TableTask> ret = null;
 
@@ -318,7 +318,7 @@ public class TableTaskDAO extends AdminDAO<TableTask>
     /**
      * Removes the given task from the TABLE_TASKS table.
      */
-    public void delete(TableTask task) throws SQLException
+    public synchronized void delete(TableTask task) throws SQLException
     {
         if(!hasConnection() || task == null)
             return;

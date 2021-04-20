@@ -91,7 +91,7 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
     /**
      * Returns a project from the PROJECTS table by URL.
      */
-    public ProjectResource getByUrl(String siteId, String code, String url) throws SQLException
+    public synchronized ProjectResource getByUrl(String siteId, String code, String url) throws SQLException
     {
         ProjectResource ret = null;
 
@@ -139,7 +139,7 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
     /**
      * Stores the given project in the PROJECTS table.
      */
-    public void add(ProjectResource content) throws SQLException
+    public synchronized void add(ProjectResource content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
@@ -195,7 +195,7 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
     /**
      * Updates the given project in the PROJECTS table.
      */
-    public void update(ProjectResource content) throws SQLException
+    public synchronized void update(ProjectResource content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;

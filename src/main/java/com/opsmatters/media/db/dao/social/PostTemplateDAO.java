@@ -124,7 +124,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
     /**
      * Returns a post template from the POST_TEMPLATES table by id.
      */
-    public PostTemplate getById(String id) throws SQLException
+    public synchronized PostTemplate getById(String id) throws SQLException
     {
         PostTemplate ret = null;
 
@@ -183,7 +183,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
     /**
      * Stores the given post template in the POST_TEMPLATES table.
      */
-    public void add(PostTemplate template) throws SQLException
+    public synchronized void add(PostTemplate template) throws SQLException
     {
         if(!hasConnection() || template == null)
             return;
@@ -234,7 +234,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
     /**
      * Updates the given post template in the POST_TEMPLATES table.
      */
-    public void update(PostTemplate template) throws SQLException
+    public synchronized void update(PostTemplate template) throws SQLException
     {
         if(!hasConnection() || template == null)
             return;
@@ -266,7 +266,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
     /**
      * Returns the post templates from the POST_TEMPLATES table.
      */
-    public List<PostTemplate> list(Site site) throws SQLException
+    public synchronized List<PostTemplate> list(Site site) throws SQLException
     {
         List<PostTemplate> ret = null;
 
@@ -326,7 +326,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
     /**
      * Returns the post templates from the POST_TEMPLATES table by post type and content type.
      */
-    public List<PostTemplate> list(Site site, PostType type, ContentType contentType) throws SQLException
+    public synchronized List<PostTemplate> list(Site site, PostType type, ContentType contentType) throws SQLException
     {
         List<PostTemplate> ret = null;
 
@@ -406,7 +406,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
     /**
      * Removes the given post template from the POST_TEMPLATES table.
      */
-    public void delete(PostTemplate template) throws SQLException
+    public synchronized void delete(PostTemplate template) throws SQLException
     {
         if(!hasConnection() || template == null)
             return;

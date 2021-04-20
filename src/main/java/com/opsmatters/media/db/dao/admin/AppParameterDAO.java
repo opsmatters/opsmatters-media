@@ -149,7 +149,7 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     /**
      * Returns a parameter from the PARAMETERS table by id.
      */
-    public AppParameter getById(String id) throws SQLException
+    public synchronized AppParameter getById(String id) throws SQLException
     {
         AppParameter ret = null;
 
@@ -200,7 +200,7 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     /**
      * Returns a parameter from the PARAMETERS table by name.
      */
-    public AppParameter getByName(AppParameterType type, AppParameterName name) throws SQLException
+    public synchronized AppParameter getByName(AppParameterType type, AppParameterName name) throws SQLException
     {
         AppParameter ret = null;
 
@@ -252,7 +252,7 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     /**
      * Stores the given parameter in the PARAMETERS table.
      */
-    public void add(AppParameter parameter) throws SQLException
+    public synchronized void add(AppParameter parameter) throws SQLException
     {
         if(!hasConnection() || parameter == null)
             return;
@@ -271,7 +271,8 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
             insertStmt.setString(6, parameter.getValue());
             insertStmt.executeUpdate();
 
-            logger.info("Created parameter '"+parameter.getId()+"' in PARAMETERS");
+            logger.info(String.format("Created parameter %s/%s in PARAMETERS",
+                parameter.getType(), parameter.getName()));
         }
         catch(SQLException ex)
         {
@@ -294,13 +295,13 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     public void update(List<AppParameter> parameters) throws SQLException
     {
         for(AppParameter parameter : parameters)
-            update(parameter);
+            update(parameter, false);
     }
 
     /**
      * Updates the given parameter in the PARAMETERS table.
      */
-    public void update(AppParameter parameter) throws SQLException
+    public synchronized void update(AppParameter parameter, boolean log) throws SQLException
     {
         if(!hasConnection() || parameter == null)
             return;
@@ -316,13 +317,23 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
         updateStmt.setString(5, parameter.getId());
         updateStmt.executeUpdate();
 
-        logger.info("Updated parameter '"+parameter.getId()+"' in PARAMETERS");
+        if(log)
+          logger.info(String.format("Updated parameter %s/%s in PARAMETERS",
+              parameter.getType(), parameter.getName()));
+    }
+
+    /**
+     * Updates the given parameter in the PARAMETERS table.
+     */
+    public void update(AppParameter parameter) throws SQLException
+    {
+        update(parameter, true);
     }
 
     /**
      * Returns the parameters from the PARAMETERS table.
      */
-    public List<AppParameter> list() throws SQLException
+    public synchronized List<AppParameter> list() throws SQLException
     {
         List<AppParameter> ret = null;
 
@@ -391,7 +402,7 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     /**
      * Removes the given parameter from the PARAMETERS table.
      */
-    public void delete(AppParameter parameter) throws SQLException
+    public synchronized void delete(AppParameter parameter) throws SQLException
     {
         if(!hasConnection() || parameter == null)
             return;
@@ -403,7 +414,8 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
         deleteStmt.setString(1, parameter.getId());
         deleteStmt.executeUpdate();
 
-        logger.info("Deleted parameter '"+parameter.getId()+"' in PARAMETERS");
+        logger.info(String.format("Deleted parameter %s/%s in PARAMETERS",
+            parameter.getType(), parameter.getName()));
     }
 
     /**

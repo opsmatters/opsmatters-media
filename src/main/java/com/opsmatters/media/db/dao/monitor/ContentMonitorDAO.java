@@ -132,7 +132,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     /**
      * Returns a monitor from the CONTENT_MONITORS table by id.
      */
-    public ContentMonitor getById(String id) throws SQLException
+    public synchronized ContentMonitor getById(String id) throws SQLException
     {
         ContentMonitor ret = null;
 
@@ -191,7 +191,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     /**
      * Stores the given monitor in the CONTENT_MONITORS table.
      */
-    public void add(ContentMonitor monitor) throws SQLException
+    public synchronized void add(ContentMonitor monitor) throws SQLException
     {
         if(!hasConnection() || monitor == null)
             return;
@@ -224,7 +224,8 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
             insertStmt.setBoolean(14, monitor.isActive());
             insertStmt.executeUpdate();
 
-            logger.info("Created monitor '"+monitor.getId()+"' in CONTENT_MONITORS");
+            logger.info(String.format("Created monitor %s/%s in CONTENT_MONITORS",
+                monitor.getCode(), monitor.getName()));
         }
         catch(SQLException ex)
         {
@@ -251,7 +252,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     /**
      * Updates the given monitor in the CONTENT_MONITORS table.
      */
-    public void update(ContentMonitor monitor) throws SQLException
+    public synchronized void update(ContentMonitor monitor, boolean log) throws SQLException
     {
         if(!hasConnection() || monitor == null)
             return;
@@ -280,7 +281,9 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
             updateStmt.setString(10, monitor.getId());
             updateStmt.executeUpdate();
 
-            logger.info("Updated monitor '"+monitor.getId()+"' in CONTENT_MONITORS");
+            if(log)
+              logger.info(String.format("Updated monitor %s/%s in CONTENT_MONITORS",
+                  monitor.getCode(), monitor.getName()));
         }
         finally
         {
@@ -289,6 +292,14 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
             if(reader2 != null)
                 reader2.close();
         }
+    }
+
+    /**
+     * Updates the given monitor in the CONTENT_MONITORS table.
+     */
+    public void update(ContentMonitor monitor) throws SQLException
+    {
+        update(monitor, true);
     }
 
     /**
@@ -315,7 +326,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     /**
      * Returns the monitors from the CONTENT_MONITORS table.
      */
-    public List<ContentMonitor> list() throws SQLException
+    public synchronized List<ContentMonitor> list() throws SQLException
     {
         List<ContentMonitor> ret = null;
 
@@ -374,7 +385,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     /**
      * Returns the monitors from the CONTENT_MONITORS table by site.
      */
-    public List<ContentMonitor> list(Site site) throws SQLException
+    public synchronized List<ContentMonitor> list(Site site) throws SQLException
     {
         List<ContentMonitor> ret = null;
 
@@ -434,7 +445,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     /**
      * Returns the monitors from the CONTENT_MONITORS table by organisation code.
      */
-    public List<ContentMonitor> list(Site site, String code) throws SQLException
+    public synchronized List<ContentMonitor> list(Site site, String code) throws SQLException
     {
         List<ContentMonitor> ret = null;
 
@@ -495,7 +506,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     /**
      * Returns the monitors from the CONTENT_MONITORS table by organisation code and content type.
      */
-    public List<ContentMonitor> list(Site site, String code, String name, ContentType type) throws SQLException
+    public synchronized List<ContentMonitor> list(Site site, String code, String name, ContentType type) throws SQLException
     {
         List<ContentMonitor> ret = new ArrayList<ContentMonitor>();
         for(ContentMonitor monitor : list(site, code))
@@ -561,7 +572,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     /**
      * Removes the given monitor from the CONTENT_MONITORS table.
      */
-    public void delete(ContentMonitor monitor) throws SQLException
+    public synchronized void delete(ContentMonitor monitor) throws SQLException
     {
         if(!hasConnection() || monitor == null)
             return;
@@ -573,7 +584,8 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
         deleteStmt.setString(1, monitor.getId());
         deleteStmt.executeUpdate();
 
-        logger.info("Deleted monitor '"+monitor.getId()+"' in CONTENT_MONITORS");
+        logger.info(String.format("Deleted monitor %s/%s in CONTENT_MONITORS",
+            monitor.getCode(), monitor.getName()));
     }
 
     /**

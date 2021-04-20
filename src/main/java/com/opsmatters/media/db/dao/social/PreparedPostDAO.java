@@ -148,7 +148,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     /**
      * Returns a post from the PREPARED_POSTS table by id.
      */
-    public PreparedPost getById(String id) throws SQLException
+    public synchronized PreparedPost getById(String id) throws SQLException
     {
         PreparedPost ret = null;
 
@@ -209,7 +209,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     /**
      * Stores the given post in the PREPARED_POSTS table.
      */
-    public void add(PreparedPost post) throws SQLException
+    public synchronized void add(PreparedPost post) throws SQLException
     {
         if(!hasConnection() || post == null)
             return;
@@ -256,7 +256,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     /**
      * Updates the given post in the PREPARED_POSTS table.
      */
-    public void update(PreparedPost post) throws SQLException
+    public synchronized void update(PreparedPost post) throws SQLException
     {
         if(!hasConnection() || post == null)
             return;
@@ -283,7 +283,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     /**
      * Returns the posts from the PREPARED_POSTS table.
      */
-    public List<PreparedPost> list(int interval) throws SQLException
+    public synchronized List<PreparedPost> list(int interval) throws SQLException
     {
         List<PreparedPost> ret = null;
 
@@ -345,7 +345,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     /**
      * Returns the posts from the PREPARED_POSTS table by status.
      */
-    public List<PreparedPost> list(DeliveryStatus status, int interval) throws SQLException
+    public synchronized List<PreparedPost> list(DeliveryStatus status, int interval) throws SQLException
     {
         List<PreparedPost> ret = null;
 
@@ -408,7 +408,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     /**
      * Returns the posts from the PREPARED_POSTS table by site.
      */
-    public List<PreparedPost> list(Site site, int interval) throws SQLException
+    public synchronized List<PreparedPost> list(Site site, int interval) throws SQLException
     {
         List<PreparedPost> ret = null;
 
@@ -471,7 +471,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     /**
      * Returns the posts from the PREPARED_POSTS table by draft post id.
      */
-    public List<PreparedPost> list(DraftPost draft) throws SQLException
+    public synchronized List<PreparedPost> list(DraftPost draft) throws SQLException
     {
         List<PreparedPost> ret = null;
 
@@ -551,7 +551,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     /**
      * Removes the given post from the PREPARED_POSTS table.
      */
-    public void delete(PreparedPost post) throws SQLException
+    public synchronized void delete(PreparedPost post) throws SQLException
     {
         if(!hasConnection() || post == null)
             return;

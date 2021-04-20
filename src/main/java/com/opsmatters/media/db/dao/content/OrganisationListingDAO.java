@@ -144,7 +144,7 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
     /**
      * Returns an organisation listing from the ORGANISATION_LISTINGS table by UUID.
      */
-    public OrganisationListing getByUuid(String siteId, String uuid) throws SQLException
+    public synchronized OrganisationListing getByUuid(String siteId, String uuid) throws SQLException
     {
         OrganisationListing ret = null;
 
@@ -200,7 +200,7 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
     /**
      * Returns an organisation listing from the table by id.
      */
-    public OrganisationListing getById(String siteId, int id) throws SQLException
+    public synchronized OrganisationListing getById(String siteId, int id) throws SQLException
     {
         OrganisationListing ret = null;
 
@@ -247,7 +247,7 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
     /**
      * Returns an organisation listing from the table by code.
      */
-    public OrganisationListing getByCode(String siteId, String code) throws SQLException
+    public synchronized OrganisationListing getByCode(String siteId, String code) throws SQLException
     {
         OrganisationListing ret = null;
 
@@ -303,7 +303,7 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
     /**
      * Returns the organisation listings from the table.
      */
-    public List<OrganisationListing> list(Site site) throws SQLException
+    public synchronized List<OrganisationListing> list(Site site) throws SQLException
     {
         List<OrganisationListing> ret = null;
 
@@ -351,7 +351,7 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
     /**
      * Returns the matching organisation listings from the table.
      */
-    public List<OrganisationListing> listByName(Site site, String name) throws SQLException
+    public synchronized List<OrganisationListing> listByName(Site site, String name) throws SQLException
     {
         List<OrganisationListing> ret = null;
 
@@ -430,7 +430,7 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
      * Stores the given organisation listing in the ORGANISATION_LISTINGS table.
      */
     @Override
-    public void add(OrganisationListing listing) throws SQLException
+    public synchronized void add(OrganisationListing listing) throws SQLException
     {
         if(!hasConnection() || listing == null)
             return;
@@ -487,7 +487,7 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
      * Updates the given organisation listing in the ORGANISATION_LISTINGS table.
      */
     @Override
-    public void update(OrganisationListing listing) throws SQLException
+    public synchronized void update(OrganisationListing listing) throws SQLException
     {
         if(!hasConnection() || listing == null)
             return;
@@ -530,7 +530,7 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
      * Removes the given organisation listing from the table.
      */
     @Override
-    public void delete(OrganisationListing listing) throws SQLException
+    public synchronized void delete(OrganisationListing listing) throws SQLException
     {
         if(!hasConnection() || listing == null)
             return;
@@ -560,7 +560,7 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
     /**
      * Returns the maximum ID from the table.
      */
-    private int getMaxId(String siteId) throws SQLException
+    private synchronized int getMaxId(String siteId) throws SQLException
     {
         if(!hasConnection())
             return -1;

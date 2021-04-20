@@ -122,7 +122,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
     /**
      * Returns a change from the CONTENT_CHANGES table by id.
      */
-    public ContentChange getById(String id) throws SQLException
+    public synchronized ContentChange getById(String id) throws SQLException
     {
         ContentChange ret = null;
 
@@ -178,7 +178,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
     /**
      * Stores the given change in the CONTENT_CHANGES table.
      */
-    public void add(ContentChange change) throws SQLException
+    public synchronized void add(ContentChange change) throws SQLException
     {
         if(!hasConnection() || change == null)
             return;
@@ -235,7 +235,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
     /**
      * Updates the given change in the CONTENT_CHANGES table.
      */
-    public void update(ContentChange change) throws SQLException
+    public synchronized void update(ContentChange change) throws SQLException
     {
         if(!hasConnection() || change == null)
             return;
@@ -257,7 +257,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
     /**
      * Returns the changes from the CONTENT_CHANGES table.
      */
-    public List<ContentChange> list(Site site) throws SQLException
+    public synchronized List<ContentChange> list(Site site) throws SQLException
     {
         List<ContentChange> ret = null;
 
@@ -314,7 +314,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
     /**
      * Returns the changes from the CONTENT_CHANGES table by status.
      */
-    public List<ContentChange> list(Site site, ChangeStatus status) throws SQLException
+    public synchronized List<ContentChange> list(Site site, ChangeStatus status) throws SQLException
     {
         List<ContentChange> ret = null;
 
@@ -390,7 +390,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
     /**
      * Removes the given change from the CONTENT_CHANGES table.
      */
-    public void delete(ContentChange change) throws SQLException
+    public synchronized void delete(ContentChange change) throws SQLException
     {
         if(!hasConnection() || change == null)
             return;

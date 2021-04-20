@@ -94,7 +94,7 @@ public class EventResourceDAO extends ContentDAO<EventResource>
     /**
      * Returns a event from the EVENTS table by URL.
      */
-    public EventResource getByUrl(String siteId, String code, String url, long startDate) throws SQLException
+    public synchronized EventResource getByUrl(String siteId, String code, String url, long startDate) throws SQLException
     {
         EventResource ret = null;
 
@@ -144,7 +144,7 @@ public class EventResourceDAO extends ContentDAO<EventResource>
     /**
      * Stores the given event in the EVENTS table.
      */
-    public void add(EventResource content) throws SQLException
+    public synchronized void add(EventResource content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
@@ -202,7 +202,7 @@ public class EventResourceDAO extends ContentDAO<EventResource>
     /**
      * Updates the given event in the EVENTS table.
      */
-    public void update(EventResource content) throws SQLException
+    public synchronized void update(EventResource content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;

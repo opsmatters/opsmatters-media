@@ -118,7 +118,7 @@ public class ContentTypeSummaryDAO extends BaseDAO
     /**
      * Returns a summary from the CONTENT_TYPE_SUMMARY table by id.
      */
-    public ContentTypeSummary getById(String id) throws SQLException
+    public synchronized ContentTypeSummary getById(String id) throws SQLException
     {
         ContentTypeSummary ret = null;
 
@@ -172,7 +172,7 @@ public class ContentTypeSummaryDAO extends BaseDAO
     /**
      * Stores the given summary in the CONTENT_TYPE_SUMMARY table.
      */
-    public void add(ContentTypeSummary summary) throws SQLException
+    public synchronized void add(ContentTypeSummary summary) throws SQLException
     {
         if(!hasConnection() || summary == null)
             return;
@@ -214,7 +214,7 @@ public class ContentTypeSummaryDAO extends BaseDAO
     /**
      * Updates the given summary in the CONTENT_TYPE_SUMMARY table.
      */
-    public void update(ContentTypeSummary summary) throws SQLException
+    public synchronized void update(ContentTypeSummary summary) throws SQLException
     {
         if(!hasConnection() || summary == null)
             return;
@@ -246,7 +246,7 @@ public class ContentTypeSummaryDAO extends BaseDAO
     /**
      * Returns the summaries from the CONTENT_TYPE_SUMMARY table.
      */
-    public List<ContentTypeSummary> list(Site site) throws SQLException
+    public synchronized List<ContentTypeSummary> list(Site site) throws SQLException
     {
         List<ContentTypeSummary> ret = null;
 
@@ -301,7 +301,7 @@ public class ContentTypeSummaryDAO extends BaseDAO
     /**
      * Returns the summaries from the CONTENT_TYPE_SUMMARY table by organisation code.
      */
-    public List<ContentTypeSummary> list(Site site, String code) throws SQLException
+    public synchronized List<ContentTypeSummary> list(Site site, String code) throws SQLException
     {
         List<ContentTypeSummary> ret = null;
 
@@ -375,7 +375,7 @@ public class ContentTypeSummaryDAO extends BaseDAO
     /**
      * Removes the given summary from the CONTENT_TYPE_SUMMARY table.
      */
-    public void delete(ContentTypeSummary summary) throws SQLException
+    public synchronized void delete(ContentTypeSummary summary) throws SQLException
     {
         if(!hasConnection() || summary == null)
             return;

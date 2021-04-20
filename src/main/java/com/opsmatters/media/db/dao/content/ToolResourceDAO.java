@@ -85,7 +85,7 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
     /**
      * Stores the given tool in the TOOLS table.
      */
-    public void add(ToolResource content) throws SQLException
+    public synchronized void add(ToolResource content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
@@ -141,7 +141,7 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
     /**
      * Updates the given tool in the TOOLS table.
      */
-    public void update(ToolResource content) throws SQLException
+    public synchronized void update(ToolResource content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;

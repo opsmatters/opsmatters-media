@@ -120,7 +120,7 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
     /**
      * Returns a review from the CONTENT_REVIEWS table by id.
      */
-    public ContentReview getById(String id) throws SQLException
+    public synchronized ContentReview getById(String id) throws SQLException
     {
         ContentReview ret = null;
 
@@ -176,7 +176,7 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
     /**
      * Stores the given review in the CONTENT_REVIEWS table.
      */
-    public void add(ContentReview review) throws SQLException
+    public synchronized void add(ContentReview review) throws SQLException
     {
         if(!hasConnection() || review == null)
             return;
@@ -220,7 +220,7 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
     /**
      * Updates the given review in the CONTENT_REVIEWS table.
      */
-    public void update(ContentReview review) throws SQLException
+    public synchronized void update(ContentReview review) throws SQLException
     {
         if(!hasConnection() || review == null)
             return;
@@ -243,7 +243,7 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
     /**
      * Returns the reviews from the CONTENT_REVIEWS table.
      */
-    public List<ContentReview> list(Site site) throws SQLException
+    public synchronized List<ContentReview> list(Site site) throws SQLException
     {
         List<ContentReview> ret = null;
 
@@ -300,7 +300,7 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
     /**
      * Returns the reviews from the CONTENT_REVIEWS table by status.
      */
-    public List<ContentReview> list(Site site, ReviewStatus status) throws SQLException
+    public synchronized List<ContentReview> list(Site site, ReviewStatus status) throws SQLException
     {
         List<ContentReview> ret = null;
 
@@ -376,7 +376,7 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
     /**
      * Removes the given review from the CONTENT_REVIEWS table.
      */
-    public void delete(ContentReview review) throws SQLException
+    public synchronized void delete(ContentReview review) throws SQLException
     {
         if(!hasConnection() || review == null)
             return;

@@ -92,7 +92,7 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
     /**
      * Returns a ebook from the EBOOKS table by URL.
      */
-    public EBookResource getByUrl(String siteId, String code, String url) throws SQLException
+    public synchronized EBookResource getByUrl(String siteId, String code, String url) throws SQLException
     {
         EBookResource ret = null;
 
@@ -140,7 +140,7 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
     /**
      * Stores the given ebook in the EBOOKS table.
      */
-    public void add(EBookResource content) throws SQLException
+    public synchronized void add(EBookResource content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
@@ -196,7 +196,7 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
     /**
      * Updates the given ebook in the EBOOKS table.
      */
-    public void update(EBookResource content) throws SQLException
+    public synchronized void update(EBookResource content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;

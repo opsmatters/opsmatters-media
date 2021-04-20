@@ -85,7 +85,7 @@ public class JobResourceDAO extends ContentDAO<JobResource>
     /**
      * Stores the given job in the JOBS table.
      */
-    public void add(JobResource content) throws SQLException
+    public synchronized void add(JobResource content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
@@ -141,7 +141,7 @@ public class JobResourceDAO extends ContentDAO<JobResource>
     /**
      * Updates the given job in the JOBS table.
      */
-    public void update(JobResource content) throws SQLException
+    public synchronized void update(JobResource content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;

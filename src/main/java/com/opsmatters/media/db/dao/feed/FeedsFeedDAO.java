@@ -79,7 +79,7 @@ public class FeedsFeedDAO extends DrupalFeedsDAO<FeedsFeed>
     /**
      * Returns a feed from the FEEDS_FEED table by id.
      */
-    public FeedsFeed getById(String id) throws SQLException
+    public synchronized FeedsFeed getById(String id) throws SQLException
     {
         FeedsFeed ret = null;
 
@@ -132,7 +132,7 @@ public class FeedsFeedDAO extends DrupalFeedsDAO<FeedsFeed>
     /**
      * Returns a feeds item from the FEEDS tables by the item GUID and types.
      */
-    public FeedsItem getItem(String type, String guid) throws SQLException
+    public synchronized FeedsItem getItem(String type, String guid) throws SQLException
     {
         FeedsItem ret = null;
 
@@ -185,7 +185,7 @@ public class FeedsFeedDAO extends DrupalFeedsDAO<FeedsFeed>
     /**
      * Returns the feeds from the FEEDS_FEED table.
      */
-    public List<FeedsFeed> list() throws SQLException
+    public synchronized List<FeedsFeed> list() throws SQLException
     {
         List<FeedsFeed> ret = null;
 

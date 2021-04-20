@@ -123,7 +123,7 @@ public class UserDAO extends AdminDAO<User>
     /**
      * Returns a user from the USERS table by id.
      */
-    public User getById(String id) throws SQLException
+    public synchronized User getById(String id) throws SQLException
     {
         User ret = null;
 
@@ -179,7 +179,7 @@ public class UserDAO extends AdminDAO<User>
     /**
      * Returns a user from the USERS table by username.
      */
-    public User getByUsername(String username) throws SQLException
+    public synchronized User getByUsername(String username) throws SQLException
     {
         User ret = null;
 
@@ -235,7 +235,7 @@ public class UserDAO extends AdminDAO<User>
     /**
      * Returns a user from the USERS table by email.
      */
-    public User getByEmail(String email) throws SQLException
+    public synchronized User getByEmail(String email) throws SQLException
     {
         User ret = null;
 
@@ -291,7 +291,7 @@ public class UserDAO extends AdminDAO<User>
     /**
      * Stores the given user in the USERS table.
      */
-    public void add(User user) throws SQLException
+    public synchronized void add(User user) throws SQLException
     {
         if(!hasConnection() || user == null)
             return;
@@ -335,7 +335,7 @@ public class UserDAO extends AdminDAO<User>
     /**
      * Updates the given user in the USERS table.
      */
-    public void update(User user) throws SQLException
+    public synchronized void update(User user) throws SQLException
     {
         if(!hasConnection() || user == null)
             return;
@@ -362,7 +362,7 @@ public class UserDAO extends AdminDAO<User>
     /**
      * Returns the users from the USERS table.
      */
-    public List<User> list() throws SQLException
+    public synchronized List<User> list() throws SQLException
     {
         List<User> ret = null;
 
@@ -436,7 +436,7 @@ public class UserDAO extends AdminDAO<User>
     /**
      * Removes the given user from the USERS table.
      */
-    public void delete(User user) throws SQLException
+    public synchronized void delete(User user) throws SQLException
     {
         if(!hasConnection() || user == null)
             return;

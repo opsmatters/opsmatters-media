@@ -274,7 +274,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
                 catch(DateTimeParseException e)
                 {
                     logger.severe(StringUtils.serialize(e));
-                    logger.warning("Unparseable start date: "+startDate);
+                    logger.warning("Unparseable start date: "+startDate+" code="+config.getCode());
                 }
             }
         }

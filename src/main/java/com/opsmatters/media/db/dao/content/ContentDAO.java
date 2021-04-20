@@ -118,7 +118,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
     /**
      * Returns a content item from the table by UUID.
      */
-    public T getByUuid(String siteId, String code, String uuid) throws SQLException
+    public synchronized T getByUuid(String siteId, String code, String uuid) throws SQLException
     {
         T ret = null;
 
@@ -170,7 +170,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
     /**
      * Returns a content item from the table by id.
      */
-    public T getById(String siteId, String code, int id) throws SQLException
+    public synchronized T getById(String siteId, String code, int id) throws SQLException
     {
         T ret = null;
 
@@ -222,7 +222,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
     /**
      * Returns the content items from the table by organisation code.
      */
-    public List<T> list(Site site, String code) throws SQLException
+    public synchronized List<T> list(Site site, String code) throws SQLException
     {
         List<T> ret = null;
 
@@ -275,7 +275,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
     /**
      * Returns the content items from the table by published date.
      */
-    public List<T> list(Site site, Instant date) throws SQLException
+    public synchronized List<T> list(Site site, Instant date) throws SQLException
     {
         List<T> ret = null;
 
@@ -328,7 +328,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
     /**
      * Returns the content items from the table by status.
      */
-    public List<T> list(Site site, ContentStatus status) throws SQLException
+    public synchronized List<T> list(Site site, ContentStatus status) throws SQLException
     {
         List<T> ret = null;
 
@@ -419,7 +419,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
     /**
      * Removes the given content item from the table.
      */
-    public void delete(T content) throws SQLException
+    public synchronized void delete(T content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
@@ -440,7 +440,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
     /**
      * Returns the maximum ID from the table.
      */
-    protected int getMaxId(String siteId, String code) throws SQLException
+    protected synchronized int getMaxId(String siteId, String code) throws SQLException
     {
         if(!hasConnection())
             return -1;

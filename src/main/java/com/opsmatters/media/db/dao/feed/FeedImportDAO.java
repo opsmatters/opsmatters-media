@@ -115,7 +115,7 @@ public class FeedImportDAO extends FeedDAO<FeedImport>
     /**
      * Returns an import from the FEED_IMPORTS table by id.
      */
-    public FeedImport getById(String id) throws SQLException
+    public synchronized FeedImport getById(String id) throws SQLException
     {
         FeedImport ret = null;
 
@@ -169,7 +169,7 @@ public class FeedImportDAO extends FeedDAO<FeedImport>
     /**
      * Stores the given import in the FEED_IMPORTS table.
      */
-    public void add(FeedImport imprt) throws SQLException
+    public synchronized void add(FeedImport imprt) throws SQLException
     {
         if(!hasConnection() || imprt == null)
             return;
@@ -211,7 +211,7 @@ public class FeedImportDAO extends FeedDAO<FeedImport>
     /**
      * Updates the given import in the FEED_IMPORTS table.
      */
-    public void update(FeedImport imprt) throws SQLException
+    public synchronized void update(FeedImport imprt) throws SQLException
     {
         if(!hasConnection() || imprt == null)
             return;
@@ -235,7 +235,7 @@ public class FeedImportDAO extends FeedDAO<FeedImport>
     /**
      * Returns the imports from the FEED_IMPORTS table.
      */
-    public List<FeedImport> list() throws SQLException
+    public synchronized List<FeedImport> list() throws SQLException
     {
         List<FeedImport> ret = null;
 
@@ -289,7 +289,7 @@ public class FeedImportDAO extends FeedDAO<FeedImport>
     /**
      * Returns the imports from the FEED_IMPORTS table by feed.
      */
-    public List<FeedImport> list(String feedId) throws SQLException
+    public synchronized List<FeedImport> list(String feedId) throws SQLException
     {
         List<FeedImport> ret = null;
 
@@ -362,7 +362,7 @@ public class FeedImportDAO extends FeedDAO<FeedImport>
     /**
      * Removes the given import from the FEED_IMPORTS table.
      */
-    public void delete(FeedImport imprt) throws SQLException
+    public synchronized void delete(FeedImport imprt) throws SQLException
     {
         if(!hasConnection() || imprt == null)
             return;

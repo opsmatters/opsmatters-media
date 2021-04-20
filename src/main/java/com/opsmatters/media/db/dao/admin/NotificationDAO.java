@@ -124,7 +124,7 @@ public class NotificationDAO extends AdminDAO<Notification>
     /**
      * Returns a notification from the NOTIFICATIONS table by id.
      */
-    public Notification getById(String id) throws SQLException
+    public synchronized Notification getById(String id) throws SQLException
     {
         Notification ret = null;
 
@@ -178,7 +178,7 @@ public class NotificationDAO extends AdminDAO<Notification>
     /**
      * Stores the given notification in the NOTIFICATIONS table.
      */
-    public void add(Notification notification) throws SQLException
+    public synchronized void add(Notification notification) throws SQLException
     {
         if(!hasConnection() || notification == null)
             return;
@@ -220,7 +220,7 @@ public class NotificationDAO extends AdminDAO<Notification>
     /**
      * Updates the given notification in the NOTIFICATIONS table.
      */
-    public void update(Notification notification) throws SQLException
+    public synchronized void update(Notification notification) throws SQLException
     {
         if(!hasConnection() || notification == null)
             return;
@@ -244,7 +244,7 @@ public class NotificationDAO extends AdminDAO<Notification>
     /**
      * Returns the notifications from the NOTIFICATIONS table.
      */
-    public List<Notification> list() throws SQLException
+    public synchronized List<Notification> list() throws SQLException
     {
         List<Notification> ret = null;
 
@@ -298,7 +298,7 @@ public class NotificationDAO extends AdminDAO<Notification>
     /**
      * Returns the notifications from the NOTIFICATIONS table by status.
      */
-    public List<Notification> list(NotificationStatus status) throws SQLException
+    public synchronized List<Notification> list(NotificationStatus status) throws SQLException
     {
         List<Notification> ret = null;
 
@@ -353,7 +353,7 @@ public class NotificationDAO extends AdminDAO<Notification>
     /**
      * Returns the notifications from the NOTIFICATIONS table by type.
      */
-    public List<Notification> list(NotificationType type) throws SQLException
+    public synchronized List<Notification> list(NotificationType type) throws SQLException
     {
         List<Notification> ret = null;
 
@@ -408,7 +408,7 @@ public class NotificationDAO extends AdminDAO<Notification>
     /**
      * Returns the notifications from the NOTIFICATIONS table by type and code.
      */
-    public List<Notification> listPending(NotificationType type, String code) throws SQLException
+    public synchronized List<Notification> listPending(NotificationType type, String code) throws SQLException
     {
         List<Notification> ret = new ArrayList<Notification>();
         List<Notification> notifications = list(type);
@@ -447,7 +447,7 @@ public class NotificationDAO extends AdminDAO<Notification>
     /**
      * Removes the given notification from the NOTIFICATIONS table.
      */
-    public void delete(Notification notification) throws SQLException
+    public synchronized void delete(Notification notification) throws SQLException
     {
         if(!hasConnection() || notification == null)
             return;
