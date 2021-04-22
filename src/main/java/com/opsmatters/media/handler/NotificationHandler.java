@@ -37,6 +37,8 @@ public abstract class NotificationHandler
 {
     private static final Logger logger = Logger.getLogger(NotificationHandler.class.getName());
 
+    private static final int DEFAULT_EXPIRY = 1440;
+
     /**
      * Raturns the Notification DAO.
      */
@@ -166,7 +168,7 @@ public abstract class NotificationHandler
      */
     public Notification info(NotificationType type, String code, String summary)
     {
-        return info(type, code, summary, 0);
+        return info(type, code, summary, DEFAULT_EXPIRY);
     }
 
     /**
@@ -235,7 +237,7 @@ public abstract class NotificationHandler
                 notification.setLevel(SUCCESS);
                 notification.setSummary(summary);
                 notification.setStatus(RESOLVED);
-                notification.setExpiry(1440);
+                notification.setExpiry(DEFAULT_EXPIRY);
                 getNotificationDAO().update(notification);
                 ret = notification;
             }

@@ -109,7 +109,7 @@ public class NotificationDAO extends AdminDAO<Notification>
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
-        table.addColumn("CODE", Types.VARCHAR, 5, false);
+        table.addColumn("CODE", Types.VARCHAR, 35, false);
         table.addColumn("SUMMARY", Types.VARCHAR, 128, true);
         table.addColumn("LEVEL", Types.VARCHAR, 10, true);
         table.addColumn("TYPE", Types.VARCHAR, 25, true);

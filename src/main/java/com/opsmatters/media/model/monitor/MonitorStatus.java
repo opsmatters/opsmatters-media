@@ -16,6 +16,9 @@
 
 package com.opsmatters.media.model.monitor;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * Represents the status of a content monitor.
  * 
@@ -144,5 +147,25 @@ public enum MonitorStatus
     public static boolean contains(String value)
     {
         return valueOf(value) != null;
+    }
+
+    /**
+     * Returns a list of the monitor statuses.
+     */
+    public static List<MonitorStatus> toList()
+    {
+        List<MonitorStatus> ret = new ArrayList<MonitorStatus>();
+
+        ret.add(NEW);
+        ret.add(WAITING);
+        ret.add(EXECUTING);
+        ret.add(CHANGED);
+        ret.add(REVIEW);
+        ret.add(RESUMING);
+        ret.add(RETRYING);
+        ret.add(ERROR);
+        ret.add(DISABLED);
+
+        return ret;
     }
 }

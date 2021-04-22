@@ -43,7 +43,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
      * The query to use to select a monitor from the CONTENT_MONITORS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, SITE_ID, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID, ACTIVE "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, SITE_ID, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID "
       + "FROM CONTENT_MONITORS WHERE ID=?";
 
     /**
@@ -51,36 +51,36 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTENT_MONITORS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, SITE_ID, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID, ACTIVE )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, SITE_ID, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a monitor in the CONTENT_MONITORS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTENT_MONITORS SET UPDATED_DATE=?, EXECUTED_DATE=?, NAME=?, SNAPSHOT=?, ATTRIBUTES=?, STATUS=?, EVENT_TYPE=?, EVENT_ID=?, ACTIVE=? "
+      "UPDATE CONTENT_MONITORS SET UPDATED_DATE=?, EXECUTED_DATE=?, NAME=?, SNAPSHOT=?, ATTRIBUTES=?, STATUS=?, EVENT_TYPE=?, EVENT_ID=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the monitors from the CONTENT_MONITORS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, SITE_ID, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID, ACTIVE "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, SITE_ID, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID "
       + "FROM CONTENT_MONITORS ORDER BY EXECUTED_DATE";
 
     /**
      * The query to use to select the monitors from the CONTENT_MONITORS table by site.
      */
     private static final String LIST_BY_SITE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, SITE_ID, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID, ACTIVE "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, SITE_ID, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID "
       + "FROM CONTENT_MONITORS WHERE SITE_ID=? ORDER BY EXECUTED_DATE";
 
     /**
      * The query to use to select the monitors from the CONTENT_MONITORS table by organisation code.
      */
     private static final String LIST_BY_CODE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, SITE_ID, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID, ACTIVE "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, SITE_ID, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID "
       + "FROM CONTENT_MONITORS WHERE SITE_ID=? AND CODE=? ORDER BY CREATED_DATE";
 
     /**
@@ -122,7 +122,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("EVENT_TYPE", Types.VARCHAR, 15, false);
         table.addColumn("EVENT_ID", Types.VARCHAR, 36, false);
-        table.addColumn("ACTIVE", Types.BOOLEAN, true);
         table.setPrimaryKey("CONTENT_MONITORS_PK", new String[] {"ID"});
         table.addIndex("CONTENT_MONITORS_CODE_IDX", new String[] {"SITE_ID, CODE"});
         table.addIndex("CONTENT_MONITORS_STATUS_IDX", new String[] {"STATUS"});
@@ -167,7 +166,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
                 monitor.setStatus(rs.getString(11));
                 monitor.setEventType(rs.getString(12));
                 monitor.setEventId(rs.getString(13));
-                monitor.setActive(rs.getBoolean(14));
                 ret = monitor;
             }
         }
@@ -221,7 +219,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
             insertStmt.setString(11, monitor.getStatus().name());
             insertStmt.setString(12, monitor.getEventType() != null ? monitor.getEventType().name() : "");
             insertStmt.setString(13, monitor.getEventId());
-            insertStmt.setBoolean(14, monitor.isActive());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created monitor %s/%s in CONTENT_MONITORS",
@@ -277,8 +274,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
             updateStmt.setString(6, monitor.getStatus().name());
             updateStmt.setString(7, monitor.getEventType() != null ? monitor.getEventType().name() : "");
             updateStmt.setString(8, monitor.getEventId());
-            updateStmt.setBoolean(9, monitor.isActive());
-            updateStmt.setString(10, monitor.getId());
+            updateStmt.setString(9, monitor.getId());
             updateStmt.executeUpdate();
 
             if(log)
@@ -361,7 +357,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
                 monitor.setStatus(rs.getString(11));
                 monitor.setEventType(rs.getString(12));
                 monitor.setEventId(rs.getString(13));
-                monitor.setActive(rs.getBoolean(14));
                 ret.add(monitor);
             }
         }
@@ -421,7 +416,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
                 monitor.setStatus(rs.getString(11));
                 monitor.setEventType(rs.getString(12));
                 monitor.setEventId(rs.getString(13));
-                monitor.setActive(rs.getBoolean(14));
                 ret.add(monitor);
             }
         }
@@ -482,7 +476,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
                 monitor.setStatus(rs.getString(11));
                 monitor.setEventType(rs.getString(12));
                 monitor.setEventId(rs.getString(13));
-                monitor.setActive(rs.getBoolean(14));
                 ret.add(monitor);
             }
         }

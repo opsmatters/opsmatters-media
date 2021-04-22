@@ -16,6 +16,9 @@
 
 package com.opsmatters.media.model.monitor;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * Represents the values of a content sort.
  * 
@@ -81,5 +84,20 @@ public enum ContentSort
     public static boolean contains(String value)
     {
         return valueOf(value) != null;
+    }
+
+    /**
+     * Returns a list of the content sorts.
+     */
+    public static List<ContentSort> toList()
+    {
+        List<ContentSort> ret = new ArrayList<ContentSort>();
+
+        ret.add(NONE);
+        ret.add(ASCENDING);
+        ret.add(DESCENDING);
+        ret.add(ALPHABETICAL);
+
+        return ret;
     }
 }

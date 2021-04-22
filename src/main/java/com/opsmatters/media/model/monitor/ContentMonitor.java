@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.ContentConfiguration;
-import com.opsmatters.media.config.monitor.MonitorConfiguration;
+import com.opsmatters.media.config.content.FieldsConfiguration;
 import com.opsmatters.media.model.BaseItem;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentType;
@@ -42,6 +42,8 @@ import com.opsmatters.media.util.StringUtils;
 public class ContentMonitor extends BaseItem
 {
     private static final Logger logger = Logger.getLogger(ContentMonitor.class.getName());
+
+    private static final int DEFAULT_INTERVAL = 60;
 
     public static final String CONTENT_TYPE = "content-type";
     public static final String URL = "url";
@@ -70,9 +72,8 @@ public class ContentMonitor extends BaseItem
     private String eventId = "";
     private int interval = -1;
     private int difference = 0;
-    private ContentSort sort;
-    private int maxResults = -1;
-    private boolean active = false;
+    private ContentSort sort = ContentSort.NONE;
+    private int maxResults = 0;
     private String errorMessage = "";
     private int retry = 0;
     private Instant subscribedDate;
@@ -87,9 +88,9 @@ public class ContentMonitor extends BaseItem
     }
 
     /**
-     * Constructor that takes a site, content configuration and a monitor configuration.
+     * Constructor that takes a site and, content configuration.
      */
-    public ContentMonitor(Site site, ContentConfiguration content, MonitorConfiguration config)
+    public ContentMonitor(Site site, ContentConfiguration content, FieldsConfiguration config)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
@@ -99,11 +100,7 @@ public class ContentMonitor extends BaseItem
         setName(config.getName());
         setStatus(MonitorStatus.NEW);
         setSnapshot(new ContentSnapshot(content.getType()));
-        setInterval(config.getInterval());
-        setMinDifference(config.getMinDifference());
-        setSort(config.getSort());
-        setMaxResults(config.getMaxResults());
-        setActive(config.isActive());
+        setInterval(DEFAULT_INTERVAL);
     }
 
     /**
@@ -139,7 +136,6 @@ public class ContentMonitor extends BaseItem
             setMinDifference(obj.getMinDifference());
             setSort(obj.getSort());
             setMaxResults(obj.getMaxResults());
-            setActive(obj.isActive());
             setErrorMessage(obj.getErrorMessage());
             setRetry(obj.getRetry());
             setSubscribedDate(obj.getSubscribedDate());
@@ -336,6 +332,14 @@ public class ContentMonitor extends BaseItem
     public void setStatus(MonitorStatus status)
     {
         this.status = status;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the monitor is enabled.
+     */
+    public boolean isActive()
+    {
+        return getStatus() != MonitorStatus.DISABLED;
     }
 
     /**
@@ -730,17 +734,17 @@ public class ContentMonitor extends BaseItem
     /**
      * Sets the monitor content sort.
      */
-    public void setSort(String sort)
+    public void setSort(ContentSort sort)
     {
-        setSort(sort != null && sort.length() > 0 ? ContentSort.valueOf(sort) : ContentSort.NONE);
+        this.sort = sort;
     }
 
     /**
      * Sets the monitor content sort.
      */
-    public void setSort(ContentSort sort)
+    public void setSort(String sort)
     {
-        this.sort = sort;
+        setSort(ContentSort.valueOf(sort));
     }
 
     /**
@@ -757,22 +761,6 @@ public class ContentMonitor extends BaseItem
     public void setMaxResults(int maxResults)
     {
         this.maxResults = maxResults;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the monitor is enabled.
-     */
-    public boolean isActive()
-    {
-        return active;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the monitor is enabled.
-     */
-    public void setActive(boolean active)
-    {
-        this.active = active;
     }
 
     /**
