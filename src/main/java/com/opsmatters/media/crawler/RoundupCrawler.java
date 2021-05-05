@@ -203,8 +203,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
             String title = getElements(field, root, type);
             if(title != null && title.length() > 0)
             {
-                title = title.replaceAll("&amp;", "&"); // Remove &amp;
-                title = title.replaceAll("\\u2005|\\u2009|\\u202F", " "); // Replace "thin" spaces with normal space
+                title = processTitle(title);
                 content.setTitle(EmojiParser.removeAllEmojis(title.trim()));
             }
         }

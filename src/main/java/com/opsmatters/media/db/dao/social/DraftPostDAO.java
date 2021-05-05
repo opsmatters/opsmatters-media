@@ -255,7 +255,8 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
         for(DraftPost draft : posts)
         {
             ContentPost post = (ContentPost)draft;
-            if(post.getCode().equals(content.getCode())
+            if(post.getSiteId().equals(content.getSiteId())
+                && post.getCode().equals(content.getCode())
                 && post.getContentType() == content.getType())
             {
                 // Roundups don't have a content id
@@ -289,7 +290,8 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
         for(DraftPost draft : posts)
         {
             ContentPost post = (ContentPost)draft;
-            if(post.getCode().equals(organisation.getCode())
+            if(post.getSiteId().equals(organisation.getSiteId())
+                && post.getCode().equals(organisation.getCode())
                 && post.getContentType() == ContentType.ORGANISATION)
             {
                 ret.add(post);

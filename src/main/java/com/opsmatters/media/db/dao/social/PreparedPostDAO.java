@@ -39,6 +39,8 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
 {
     private static final Logger logger = Logger.getLogger(PreparedPostDAO.class.getName());
 
+    private static final int MAX_ERROR_MESSAGE = 256;
+
     /**
      * The query to use to select a post from the PREPARED_POSTS table by id.
      */
@@ -137,7 +139,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("EXTERNAL_ID", Types.VARCHAR, 36, false);
         table.addColumn("ERROR_CODE", Types.INTEGER, false);
-        table.addColumn("ERROR_MESSAGE", Types.VARCHAR, 256, false);
+        table.addColumn("ERROR_MESSAGE", Types.VARCHAR, MAX_ERROR_MESSAGE, false);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("PREPARED_POSTS_PK", new String[] {"ID"});
         table.addIndex("PREPARED_POSTS_STATUS_IDX", new String[] {"STATUS"});
@@ -265,6 +267,10 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
         clearParameters(updateStmt);
 
+        String errorMessage = post.getErrorMessage();
+        if(errorMessage.length() > MAX_ERROR_MESSAGE)
+            errorMessage = post.getErrorMessage().substring(0, MAX_ERROR_MESSAGE-1);
+
         updateStmt.setTimestamp(1, new Timestamp(post.getUpdatedDateMillis()), UTC);
         updateStmt.setTimestamp(2, new Timestamp(post.getScheduledDateMillis()), UTC);
         updateStmt.setString(3, post.getCode());
@@ -273,7 +279,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
         updateStmt.setString(6, post.getStatus().name());
         updateStmt.setString(7, post.getExternalId());
         updateStmt.setInt(8, post.getErrorCode());
-        updateStmt.setString(9, post.getErrorMessage());
+        updateStmt.setString(9, errorMessage);
         updateStmt.setString(10, post.getId());
         updateStmt.executeUpdate();
 

@@ -1179,4 +1179,14 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
 
         return ret;
     }
+
+    /**
+     * Process the given title.
+     */
+    protected String processTitle(String title)
+    {
+        title = title.replaceAll("&amp;", "&"); // Remove &amp;
+        title = title.replaceAll("\\u2005|\\u2009|\\u202F", " "); // Replace "thin" spaces with normal space
+        return title;
+    }
 }
