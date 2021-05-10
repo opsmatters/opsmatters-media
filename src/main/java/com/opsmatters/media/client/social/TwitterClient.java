@@ -296,7 +296,8 @@ public class TwitterClient extends Client implements SocialClient
         int errorCode = getErrorCode(e);
         return errorCode != 186  // Message too long
             && errorCode != 187  // Status is a duplicate
-            && errorCode != 261; // Application cannot perform write actions
+            && errorCode != 261  // Application cannot perform write actions
+            && errorCode != 326; // Account Locked
     }
 
     /**

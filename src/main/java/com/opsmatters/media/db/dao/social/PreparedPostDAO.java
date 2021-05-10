@@ -268,7 +268,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
         clearParameters(updateStmt);
 
         String errorMessage = post.getErrorMessage();
-        if(errorMessage.length() > MAX_ERROR_MESSAGE)
+        if(errorMessage != null && errorMessage.length() > MAX_ERROR_MESSAGE)
             errorMessage = post.getErrorMessage().substring(0, MAX_ERROR_MESSAGE-1);
 
         updateStmt.setTimestamp(1, new Timestamp(post.getUpdatedDateMillis()), UTC);
