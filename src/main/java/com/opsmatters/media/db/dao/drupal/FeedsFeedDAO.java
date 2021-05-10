@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.db.dao.feed;
+package com.opsmatters.media.db.dao.drupal;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -23,8 +23,8 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.feed.FeedsFeed;
-import com.opsmatters.media.model.feed.FeedsItem;
+import com.opsmatters.media.model.drupal.FeedsFeed;
+import com.opsmatters.media.model.drupal.FeedsItem;
 
 /**
  * DAO that provides operations on the FEEDS_FEED table in the drupal database.

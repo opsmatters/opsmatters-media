@@ -18,6 +18,7 @@ package com.opsmatters.media.model.feed;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.platform.EnvironmentName;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.drupal.FeedsFeed;
 import com.opsmatters.media.util.StringUtils;
 
 /**
