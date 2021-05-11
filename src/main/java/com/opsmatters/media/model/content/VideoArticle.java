@@ -284,7 +284,48 @@ public class VideoArticle extends Article
         setDescription(FormatUtils.getFormattedDescription(getDescription()));
         setSummary(FormatUtils.getFormattedSummary(getDescription(), config.getSummary()));
         String text = String.format("%s %s", getTitle(), getDescription());
-        setVideoType(VideoType.fromText(text, VideoType.fromValue(getVideoType())));
+        setVideoType(guessVideoType(text, getVideoType()));
+    }
+
+    /**
+     * Guesses the video type from the given description.
+     */
+    private String guessVideoType(String text, String deflt)
+    {
+        text = text.toLowerCase();
+        String ret = testVideoType(text, "Webinar");
+        if(ret == null)
+            ret = testVideoType(text, "Webcast");
+        if(ret == null)
+            ret = testVideoType(text, "Podcast");
+        if(ret == null)
+            ret = testVideoType(text, "Conference");
+        if(ret == null)
+            ret = testVideoType(text, "Meetup");
+        if(ret == null)
+            ret = testVideoType(text, "Seminar");
+        if(ret == null)
+            ret = testVideoType(text, "User Group");
+        if(ret == null)
+            ret = testVideoType(text, "Panel");
+        if(ret == null)
+            ret = testVideoType(text, "Interview");
+        if(ret == null)
+            ret = testVideoType(text, "How to");
+        if(ret == null)
+            ret = testVideoType(text, "Demo");
+
+        return ret != null ? ret : deflt;
+    }
+
+    /**
+     * Returns the type for the given text.
+     */
+    private String testVideoType(String text, String type)
+    {
+        if(text.indexOf(type.toLowerCase()) != -1)
+            return type;
+        return null;
     }
 
     /**
@@ -333,14 +374,6 @@ public class VideoArticle extends Article
     public String getVideoType()
     {
         return videoType;
-    }
-
-    /**
-     * Sets the video type.
-     */
-    public void setVideoType(VideoType videoType)
-    {
-        setVideoType(videoType != null ? videoType.value() : "");
     }
 
     /**

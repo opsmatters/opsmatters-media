@@ -34,7 +34,7 @@ import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHLicense;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.content.RepositoryProvider;
-import com.opsmatters.media.model.content.RepositoryLicense;
+import com.opsmatters.media.model.content.OpenSourceLicense;
 import com.opsmatters.media.model.content.ProjectDetails;
 import com.opsmatters.media.util.StringUtils;
 
@@ -253,7 +253,7 @@ public class GitHubClient extends Client implements RepositoryClient
             GHLicense license = repository.getLicense();
             if(license != null)
             {
-                RepositoryLicense l = RepositoryLicense.fromCode(license.getKey());
+                OpenSourceLicense l = OpenSourceLicense.fromCode(license.getKey());
                 if(l != null)
                     project.setLicense(l.value());
                 else

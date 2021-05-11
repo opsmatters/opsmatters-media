@@ -31,7 +31,7 @@ import com.opsmatters.media.model.drupal.FeedsItem;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class FeedsFeedDAO extends DrupalFeedsDAO<FeedsFeed>
+public class FeedsFeedDAO extends DrupalDAO<FeedsFeed>
 {
     private static final Logger logger = Logger.getLogger(FeedsFeedDAO.class.getName());
 
@@ -71,7 +71,7 @@ public class FeedsFeedDAO extends DrupalFeedsDAO<FeedsFeed>
     /**
      * Constructor that takes a DAO factory.
      */
-    public FeedsFeedDAO(DrupalFeedsDAOFactory factory)
+    public FeedsFeedDAO(DrupalDAOFactory factory)
     {
         super(factory, "FEEDS_FEED");
     }

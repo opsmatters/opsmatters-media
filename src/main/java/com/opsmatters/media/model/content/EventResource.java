@@ -326,14 +326,6 @@ public class EventResource extends Resource
     /**
      * Sets the activity type.
      */
-    public void setActivityType(ActivityType activityType)
-    {
-        setActivityType(activityType != null ? activityType.value() : "");
-    }
-
-    /**
-     * Sets the activity type.
-     */
     public void setActivityType(String activityType)
     {
         this.activityType = activityType;

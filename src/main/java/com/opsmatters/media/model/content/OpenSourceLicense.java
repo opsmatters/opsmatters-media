@@ -17,11 +17,11 @@
 package com.opsmatters.media.model.content;
 
 /**
- * Represents a repository open source license.
+ * Represents an open source license.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum RepositoryLicense
+public enum OpenSourceLicense
 {
     AGPL_3_0("agpl-3.0", "AGPL 3.0"),
     APACHE_2_0("apache-2.0", "Apache 2.0"),
@@ -50,7 +50,7 @@ public enum RepositoryLicense
      * @param code The code for the license
      * @param value The value of the license
      */
-    RepositoryLicense(String code, String value)
+    OpenSourceLicense(String code, String value)
     {
         this.code = code;
         this.value = value;
@@ -88,10 +88,10 @@ public enum RepositoryLicense
      * @param code The type code
      * @return The type for the given code
      */
-    public static RepositoryLicense fromCode(String code)
+    public static OpenSourceLicense fromCode(String code)
     {
-        RepositoryLicense[] types = values();
-        for(RepositoryLicense type : types)
+        OpenSourceLicense[] types = values();
+        for(OpenSourceLicense type : types)
         {
             if(type.code().equals(code))
                 return type;

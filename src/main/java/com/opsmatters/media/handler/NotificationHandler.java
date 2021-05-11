@@ -29,7 +29,7 @@ import static com.opsmatters.media.model.admin.NotificationLevel.*;
 import static com.opsmatters.media.model.admin.NotificationStatus.*;
 
 /**
- * Class representing a handler for the notifications.
+ * Class representing a handler for notifications.
  * 
  * @author Gerald Curley (opsmatters)
  */

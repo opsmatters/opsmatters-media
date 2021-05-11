@@ -26,7 +26,7 @@ import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailType;
 
 /**
- * Class representing a handler for the emails.
+ * Class representing a handler for emails.
  * 
  * @author Gerald Curley (opsmatters)
  */

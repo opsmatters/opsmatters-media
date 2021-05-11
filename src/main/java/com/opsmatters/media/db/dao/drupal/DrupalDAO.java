@@ -20,18 +20,18 @@ import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.db.dao.DAOFactory;
 
 /**
- * DAO that provides operations on a drupal feeds table in the database.
+ * DAO that provides operations on a drupal table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class DrupalFeedsDAO<T> extends BaseDAO
+public abstract class DrupalDAO<T> extends BaseDAO
 {
-    private static final Logger logger = Logger.getLogger(DrupalFeedsDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(DrupalDAO.class.getName());
 
     /**
      * Constructor that takes a DAO factory and a table name.
      */
-    public DrupalFeedsDAO(DAOFactory factory, String tableName)
+    public DrupalDAO(DAOFactory factory, String tableName)
     {
         super(factory, tableName);
     }

@@ -20,30 +20,41 @@ import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.db.dao.DAOFactory;
 
 /**
- * The class for all drupal feeds data access object factories.
+ * The class for all drupal data access object factories.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class DrupalFeedsDAOFactory extends DAOFactory
+public class DrupalDAOFactory extends DAOFactory
 {
     /**
      * Constructor that takes a database driver and connection.
      */
-    public DrupalFeedsDAOFactory(JDBCDatabaseDriver driver, JDBCDatabaseConnection conn)
+    public DrupalDAOFactory(JDBCDatabaseDriver driver, JDBCDatabaseConnection conn)
     {
         super(driver, conn);
 
         getFeedsFeedDAO();
+        getTaxonomyTermDAO();
     }
 
     /**
-     * Returns the feeds DAO.
+     * Returns the feeds feed DAO.
      */
     public FeedsFeedDAO getFeedsFeedDAO()
     {
         if(feedsFeedDAO == null)
             feedsFeedDAO = new FeedsFeedDAO(this);
         return feedsFeedDAO;
+    }
+
+    /**
+     * Returns the taxonomy term DAO.
+     */
+    public TaxonomyTermDAO getTaxonomyTermDAO()
+    {
+        if(taxonomyTermDAO == null)
+            taxonomyTermDAO = new TaxonomyTermDAO(this);
+        return taxonomyTermDAO;
     }
 
     /**
@@ -54,7 +65,9 @@ public class DrupalFeedsDAOFactory extends DAOFactory
     {
         super.close();
         feedsFeedDAO = null;
+        taxonomyTermDAO = null;
     }
 
     private FeedsFeedDAO feedsFeedDAO;
+    private TaxonomyTermDAO taxonomyTermDAO;
 }
