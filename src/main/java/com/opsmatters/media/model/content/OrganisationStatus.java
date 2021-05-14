@@ -30,6 +30,7 @@ public enum OrganisationStatus
     ACTIVE("Active", "glyphicon-ok-circle", "status-success"),
     DISABLED("Disabled", "glyphicon-remove-circle", "status-error"),
     DEFUNCT("Defunct", "glyphicon-trash", "status-error"),
+    ARCHIVED("Archived", "glyphicon-book", ""),
     ALL("All", "", "");
 
     private String value;
@@ -122,6 +123,7 @@ public enum OrganisationStatus
         ret.add(ACTIVE);
         ret.add(DISABLED);
         ret.add(DEFUNCT);
+        ret.add(ARCHIVED);
 
         return ret;
     }

@@ -54,7 +54,6 @@ public class OrganisationListing extends ContentItem
     private boolean jobs = false;
     private String alternatives = "";
     private String features = "";
-    private String tags = "";
     private String image = "";
     private String imageText = "";
 
@@ -100,7 +99,6 @@ public class OrganisationListing extends ContentItem
         setJobs(obj.hasJobs());
         setAlternatives(new String(obj.getAlternatives() != null ? obj.getAlternatives() : ""));
         setFeatures(new String(obj.getFeatures() != null ? obj.getFeatures() : ""));
-        setTags(new String(obj.getTags() != null ? obj.getTags() : ""));
         setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
         setImageText(new String(obj.getImageText() != null ? obj.getImageText() : ""));
     }
@@ -142,16 +140,15 @@ public class OrganisationListing extends ContentItem
         String jobs = values[26];
         String alternatives = values[27];
         String features = values[28];
-        String tags = values[29];
-        String hashtag = values[30];
-        String image = values[31];
-        String imageText = values[32];
-        String imageTitle = values[33]; // not used
-        String thumbnail = values[34];
-        String thumbnailText = values[35];
-        String thumbnailTitle = values[36]; // not used
-        String createdBy = values[37];
-        String published = values[38];
+        String hashtag = values[29];
+        String image = values[30];
+        String imageText = values[31];
+        String imageTitle = values[32]; // not used
+        String thumbnail = values[33];
+        String thumbnailText = values[34];
+        String thumbnailTitle = values[35]; // not used
+        String createdBy = values[36];
+        String published = values[37];
 
         // Remove feeds path from images
         if(image.indexOf("/") != -1)
@@ -186,7 +183,6 @@ public class OrganisationListing extends ContentItem
         setJobs(jobs != null && jobs.equals("1"));
         setAlternatives(alternatives);
         setFeatures(features);
-        setTags(tags);
         //setHashtag(hashtag);
         setImage(image);
         setImageText(imageText);
@@ -228,7 +224,6 @@ public class OrganisationListing extends ContentItem
         setJobs(obj.optBoolean(Fields.JOBS, false));
         setAlternatives(obj.optString(Fields.ALTERNATIVES));
         setFeatures(obj.optString(Fields.FEATURES));
-        setTags(obj.optString(Fields.TAGS));
         setImage(obj.optString(Fields.IMAGE));
         setImageText(obj.optString(Fields.IMAGE_TEXT));
     }
@@ -258,7 +253,6 @@ public class OrganisationListing extends ContentItem
         ret.put(Fields.JOBS, hasJobs());
         ret.putOpt(Fields.ALTERNATIVES, getAlternatives());
         ret.putOpt(Fields.FEATURES, getFeatures());
-        ret.putOpt(Fields.TAGS, getTags());
         ret.putOpt(Fields.IMAGE, getImage());
         ret.putOpt(Fields.IMAGE_TEXT, getImageText());
 
@@ -292,7 +286,6 @@ public class OrganisationListing extends ContentItem
         ret.put(Fields.JOBS, hasJobs() ? "1" : "0");
         ret.put(Fields.ALTERNATIVES, getAlternatives());
         ret.put(Fields.FEATURES, getFeatures());
-        ret.put(Fields.TAGS, getTags());
         ret.put(Fields.IMAGE, getImage());
         ret.put(Fields.IMAGE_TEXT, getImageText());
 
@@ -834,38 +827,6 @@ public class OrganisationListing extends ContentItem
     public void setFeaturesList(List<String> features)
     {
         setFeatures(StringUtils.fromList(features));
-    }
-
-    /**
-     * Returns the organisation's tags.
-     */
-    public String getTags()
-    {
-        return tags;
-    }
-
-    /**
-     * Returns the list of tags.
-     */
-    public List<String> getTagsList()
-    {
-        return StringUtils.toList(getTags());
-    }
-
-    /**
-     * Sets the organisation's tags.
-     */
-    public void setTags(String tags)
-    {
-        this.tags = tags;
-    }
-
-    /**
-     * Sets the list of tags.
-     */
-    public void setTagsList(List<String> tags)
-    {
-        setTags(StringUtils.fromList(tags));
     }
 
     /**
