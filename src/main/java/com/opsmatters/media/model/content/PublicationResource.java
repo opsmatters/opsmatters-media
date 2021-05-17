@@ -93,6 +93,10 @@ public abstract class PublicationResource extends Resource
         String promote = values[19];
         String canonicalUrl = values.length > 20 ? values[20] : "";
 
+        // Remove feeds path from image
+        if(image.indexOf("/") != -1)
+            image = image.substring(image.lastIndexOf("/")+1);
+
         setCode(code);
         setId(Integer.parseInt(id.substring(id.lastIndexOf("-")+1)));
         setPublishedDateAsString(pubdate);

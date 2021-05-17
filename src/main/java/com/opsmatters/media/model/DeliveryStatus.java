@@ -29,7 +29,7 @@ public enum DeliveryStatus
     SENT("Sent", "glyphicon-ok-circle", "status-success"),
     RECEIVED("Received", "", ""),
     ERROR("Error", "glyphicon-alert", "status-error"),
-    DELETED("Deleted", "glyphicon-ban-circle", "status-error"),
+    DELETED("Deleted", "glyphicon-trash", "status-error"),
     ALL("All", "", ""); // Pseudo status
 
     private String value;

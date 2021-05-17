@@ -62,6 +62,14 @@ public class TaxonomyTerm extends BaseItem
     /**
      * Returns the term name.
      */
+    public String toString()
+    {
+        return getName();
+    }
+
+    /**
+     * Returns the term name.
+     */
     public String getName()
     {
         return name;

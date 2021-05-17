@@ -40,6 +40,7 @@ public class TaxonomyHandler
     public static final String PRICINGS = "pricing_model";
     public static final String ACTIVITY_TYPES = "activity_type";
     public static final String VIDEO_TYPES = "video_type";
+    public static final String ORGANISATIONS = "organisation";
 
     private Map<String,List<TaxonomyTerm>> terms = new HashMap<String,List<TaxonomyTerm>>();
     private Map<String,Map<String,List<String>>> names = new HashMap<String,Map<String,List<String>>>();
@@ -58,7 +59,10 @@ public class TaxonomyHandler
     public void loadTerms(List<TaxonomyTerm> terms, Site site)
     {
         if(terms != null && terms.size() > 0)
+        {
             this.terms.put(site.getId(), terms);
+            names.remove(site.getId());
+        }
     }
 
     /**
@@ -102,11 +106,10 @@ public class TaxonomyHandler
                     if(term.getType().equals(type))
                         ret.add(term.getName());
                 }
+
+                Collections.sort(ret, comparator);
+                map.put(type, ret);
             }
-
-            Collections.sort(ret, comparator);
-
-            map.put(type, ret);
         }
 
         return ret;
@@ -158,6 +161,34 @@ public class TaxonomyHandler
     public List<String> getVideoTypes(Site site)
     {
         return getTermNames(site, VIDEO_TYPES);
+    }
+
+    /**
+     * Returns the term with the given name for the given site.
+     */
+    private TaxonomyTerm getTerm(Site site, String name, String type)
+    {
+        TaxonomyTerm ret = null;
+        List<TaxonomyTerm> terms = getTerms(site);
+        for(TaxonomyTerm term : terms)
+        {
+            if(term.getType().equals(type)
+                && term.getName().equals(name))
+            {
+                ret = term;
+                break;
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the organisation with the given name for the given site.
+     */
+    public TaxonomyTerm getOrganisation(Site site, String name)
+    {
+        return getTerm(site, name, ORGANISATIONS);
     }
 
     /**
