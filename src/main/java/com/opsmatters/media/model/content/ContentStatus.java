@@ -28,7 +28,7 @@ public enum ContentStatus
     DEPLOYING("Deploying", "glyphicon-log-out", "status-warn"),
     STAGED("Staged", "glyphicon-adjust", "status-warn"),
     DEPLOYED("Deployed", "glyphicon-ok-circle", "status-success"),
-    ARCHIVED("Archived", "glyphicon-book", "");
+    ARCHIVED("Archived", "glyphicon-trash", "status-error");
 
     private String value;
     private String icon;

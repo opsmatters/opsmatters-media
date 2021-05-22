@@ -32,7 +32,7 @@ public enum TaskStatus
     EXECUTING("Executing", "glyphicon-cog", "status-warn"),
     ERROR("Error", "glyphicon-alert", "status-error"),
     COMPLETED("Completed", "glyphicon-ok-circle", "status-success"),
-    DISABLED("Disabled", "glyphicon-remove-circle", "status-error"),
+    DISABLED("Disabled", "glyphicon-ban-circle", "status-error"),
     ALL("All", "", ""); // Pseudo status
 
     private String value;

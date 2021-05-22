@@ -243,7 +243,7 @@ public class ApiClient extends Client
      */
     public String post(String url) throws IOException
     {
-        return execute(new HttpPost(url));
+        return post(url, null, null);
     }
 
     /**
@@ -251,14 +251,24 @@ public class ApiClient extends Client
      */
     public String post(String url, String contentType) throws IOException
     {
+        return post(url, contentType, null);
+    }
+
+    /**
+     * Executes a POST operation with an optional content type and message body.
+     */
+    public String post(String url, String contentType, String body) throws IOException
+    {
         HttpPost request = new HttpPost(url);
         if(contentType != null)
             request.addHeader("Content-Type", contentType);
+        if(body != null)
+            request.setEntity(new StringEntity(body));
         return execute(request);
     }
 
     /**
-     * Executes a DELETE operation with an optional message body.
+     * Executes a DELETE operation without a message body.
      */
     public String delete(String url) throws IOException
     {

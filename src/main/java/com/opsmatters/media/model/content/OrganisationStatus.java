@@ -26,28 +26,30 @@ import java.util.ArrayList;
  */
 public enum OrganisationStatus
 {
-    NEW("New", "glyphicon-unchecked", ""),
-    ACTIVE("Active", "glyphicon-ok-circle", "status-success"),
-    DISABLED("Disabled", "glyphicon-remove-circle", "status-error"),
-    DEFUNCT("Defunct", "glyphicon-trash", "status-error"),
-    MIGRATED("Migrated", "glyphicon-send", ""),
-    ALL("All", "", "");
+    NEW("New", "glyphicon-unchecked", "", -1),
+    ACTIVE("Active", "glyphicon-ok-circle", "status-success", 1),
+    DISABLED("Disabled", "glyphicon-ban-circle", "status-error", 0),
+    ARCHIVED("Archived", "glyphicon-trash", "status-error", 0),
+    ALL("All", "", "", 0); // Pseudo status
 
     private String value;
     private String icon;
     private String css;
+    private int state;
 
     /**
      * Constructor that takes the status value.
      * @param value The value for the status
      * @param icon The glyphicon for the status
      * @param css The css class for the status
+     * @param state The state for the status
      */
-    OrganisationStatus(String value, String icon, String css)
+    OrganisationStatus(String value, String icon, String css, int state)
     {
         this.value = value;
         this.icon = icon;
         this.css = css;
+        this.state = state;
     }
 
     /**
@@ -87,6 +89,24 @@ public enum OrganisationStatus
     }
 
     /**
+     * Returns <CODE>true<CODE> if the organisation state is ACTIVE.
+     * @return <CODE>true<CODE> if the organisation state is ACTIVE.
+     */
+    public boolean isActive()
+    {
+        return state > 0;
+    }
+
+    /**
+     * Returns <CODE>true<CODE> if the organisation state is INACTIVE.
+     * @return <CODE>true<CODE> if the organisation state is INACTIVE.
+     */
+    public boolean isInactive()
+    {
+        return state == 0;
+    }
+
+    /**
      * Returns the type for the given value.
      * @param value The type value
      * @return The type for the given value
@@ -122,8 +142,7 @@ public enum OrganisationStatus
         ret.add(NEW);
         ret.add(ACTIVE);
         ret.add(DISABLED);
-        ret.add(DEFUNCT);
-        ret.add(MIGRATED);
+        ret.add(ARCHIVED);
 
         return ret;
     }

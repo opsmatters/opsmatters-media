@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Gerald Curley
+ * Copyright 2021 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,55 +14,40 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.admin;
+package com.opsmatters.media.model.content;
+
+import java.util.List;
+import java.util.ArrayList;
 
 /**
- * Represents the name of an application parameter.
+ * Represents the reason for an organisation being archived.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum AppParameterName
+public enum ArchiveReason
 {
-    DRAFT_POST_INTERVAL("draft-post-interval"),
-    PREPARED_POST_INTERVAL("prepared-post-interval"),
-    MAX_ITEMS("max-items"),
-    INIT_DELAY("init-delay"),
-    BATCH_DELAY("batch-delay"),
-    ITEM_DELAY("item-delay"),
-    STALLED_INTERVAL("stalled-interval"),
-    SCAN_INTERVAL("scan-interval"),
-    REVIEW_INTERVAL("review-interval"),
-    MIN_AGE("min-age"),
-    MAX_BATCH_SIZE("max-batch-size"),
-    MAX_ERRORS("max-errors"),
-    MAX_RESULTS("max-results"),
-    MAX_RETRIES("max-retries"),
-    MAX_CHANGED("max-changed"),
-    MAX_REVIEW("max-review"),
-    SUB_LEASE("sub-lease"),
-    SUB_EXPIRY("sub-expiry"),
-    PUBLISHER("publisher"),
-    DIRECTOR("director"),
-    STATUS("status"),
-    ERROR_COUNT_ERROR("error-count-error"),
-    CHANGED_COUNT_ERROR("changed-count-error"),
-    REVIEW_COUNT_ERROR("review-count-error"),
-    STALLED_ERROR("stalled-error");
+    NONE("None"),
+    REJECTED("Rejected"),
+    DISAPPROVED("Disapproved"),
+    DISCONTINUED("Discontinued"),
+    DEFUNCT("Defunct"),
+    MIGRATED("Migrated"),
+    ALL("All"); // Pseudo status
 
     private String value;
 
     /**
-     * Constructor that takes the name value.
-     * @param value The value for the name
+     * Constructor that takes the reason value.
+     * @param value The value for the reason
      */
-    AppParameterName(String value)
+    ArchiveReason(String value)
     {
         this.value = value;
     }
 
     /**
-     * Returns the value of the name.
-     * @return The value of the name.
+     * Returns the value of the reason.
+     * @return The value of the reason.
      */
     public String toString()
     {
@@ -70,8 +55,8 @@ public enum AppParameterName
     }
 
     /**
-     * Returns the value of the status.
-     * @return The value of the status.
+     * Returns the value of the reason.
+     * @return The value of the reason.
      */
     public String value()
     {
@@ -83,10 +68,10 @@ public enum AppParameterName
      * @param value The type value
      * @return The type for the given value
      */
-    public static AppParameterName fromValue(String value)
+    public static ArchiveReason fromValue(String value)
     {
-        AppParameterName[] types = values();
-        for(AppParameterName type : types)
+        ArchiveReason[] types = values();
+        for(ArchiveReason type : types)
         {
             if(type.value().equals(value))
                 return type;
@@ -102,5 +87,22 @@ public enum AppParameterName
     public static boolean contains(String value)
     {
         return valueOf(value) != null;
+    }
+
+    /**
+     * Returns a list of the archive reasons.
+     */
+    public static List<ArchiveReason> toList()
+    {
+        List<ArchiveReason> ret = new ArrayList<ArchiveReason>();
+
+        ret.add(NONE);
+        ret.add(REJECTED);
+        ret.add(DISAPPROVED);
+        ret.add(DISCONTINUED);
+        ret.add(DEFUNCT);
+        ret.add(MIGRATED);
+
+        return ret;
     }
 }

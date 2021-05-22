@@ -31,6 +31,7 @@ import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.model.content.OrganisationListing;
+import com.opsmatters.media.model.content.OrganisationStatus;
 import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.handler.ContentHandler;
 import com.opsmatters.media.db.dao.content.ContentDAO;
@@ -357,9 +358,13 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
             // Add the Organisation fields
             if(content instanceof OrganisationListing)
             {
+                // Exclude archived organisations
+                Organisation organisation = handler.getOrganisation(content.getCode());
+                if(organisation.getStatus() == OrganisationStatus.ARCHIVED)
+                    continue;
+
                 fields.remove(Fields.PUBLISHED);
-                fields.add(handler.getOrganisation(content.getCode()),
-                    handler.getConfiguration(content.getTitle()));
+                fields.add(organisation, handler.getConfiguration(content.getTitle()));
 
                 // Add the path to the thumbnail and logo
                 String thumbnail = fields.get(Fields.THUMBNAIL);

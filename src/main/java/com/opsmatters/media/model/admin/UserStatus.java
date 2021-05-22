@@ -27,7 +27,7 @@ import java.util.ArrayList;
 public enum UserStatus
 {
     ACTIVE("Active", "glyphicon-ok-circle", "status-success"),
-    DISABLED("Disabled", "glyphicon-remove-circle", "status-error"),
+    DISABLED("Disabled", "glyphicon-ban-circle", "status-error"),
     ALL("All", "", ""); // Pseudo status
 
     private String value;

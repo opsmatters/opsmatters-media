@@ -430,6 +430,14 @@ public class S3Client extends Client
     }
 
     /**
+     * Return a list of files from the current bucket.
+     */
+    public List<S3ObjectSummary> listFiles()
+    {
+        return listFiles(this.bucket);
+    }
+
+    /**
      * Download the files from the given S3 bucket into the given directory.
      */
     public List<S3ObjectSummary> downloadFiles(String bucket, String directory, String ext) throws IOException

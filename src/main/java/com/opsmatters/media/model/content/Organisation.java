@@ -51,6 +51,7 @@ public class Organisation extends OwnedItem implements FieldSource
     private String thumbnail = "";
     private String thumbnailText = "";
     private OrganisationStatus status = OrganisationStatus.NEW;
+    private ArchiveReason reason = ArchiveReason.NONE;
     private Map<ContentType, ContentTypeSummary> content = new HashMap<ContentType, ContentTypeSummary>();
     private Instant reviewedDate;
     private int listingId = -1;
@@ -98,6 +99,7 @@ public class Organisation extends OwnedItem implements FieldSource
             setThumbnail(new String(obj.getThumbnail() != null ? obj.getThumbnail() : ""));
             setThumbnailText(new String(obj.getThumbnailText() != null ? obj.getThumbnailText() : ""));
             setStatus(obj.getStatus());
+            setReason(obj.getReason());
             setReviewedDate(obj.getReviewedDate());
             setListingId(obj.getListingId());
         }
@@ -446,6 +448,30 @@ public class Organisation extends OwnedItem implements FieldSource
     public void setStatus(OrganisationStatus status)
     {
         this.status = status;
+    }
+
+    /**
+     * Returns the archive reason.
+     */
+    public ArchiveReason getReason()
+    {
+        return reason;
+    }
+
+    /**
+     * Sets the archive reason.
+     */
+    public void setReason(String reason)
+    {
+        setReason(ArchiveReason.valueOf(reason));
+    }
+
+    /**
+     * Sets the archive reason.
+     */
+    public void setReason(ArchiveReason reason)
+    {
+        this.reason = reason;
     }
 
     /**
