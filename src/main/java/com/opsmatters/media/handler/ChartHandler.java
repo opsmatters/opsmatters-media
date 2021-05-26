@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import nl.crashdata.chartjs.data.simple.SimpleChartJsConfig;
 import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsConfigBuilder;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
+import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.chart.Chart;
 import com.opsmatters.media.model.chart.ChartJsChart;
 import com.opsmatters.media.model.chart.ChartDataset;
@@ -42,6 +43,7 @@ public class ChartHandler<E extends Serializable>
 
     private Chart<E> chart;
     private JDBCDatabaseConnection conn;
+    private Site site;
     private ChartParameters parameters = null;
     private SimpleChartJsConfigBuilder<E> chartJsConfig = null;
     private MetricsConfig.Builder<Number> metricsConfig = null;
@@ -83,6 +85,22 @@ public class ChartHandler<E extends Serializable>
     public void setConnection(JDBCDatabaseConnection conn)
     {
         this.conn = conn;
+    }
+
+    /**
+     * Returns the site for the handler.
+     */
+    public Site getSite()
+    {
+        return site;
+    }
+
+    /**
+     * Sets the site for the handler.
+     */
+    public void setSite(Site site)
+    {
+        this.site = site;
     }
 
     /**
@@ -137,7 +155,7 @@ public class ChartHandler<E extends Serializable>
                     if(dataset.getSource() != null)
                     {
                         if(dataset.getSource().getType() == SourceType.DATABASE)
-                            source = new DatabaseDataSource<E>(conn);
+                            source = new DatabaseDataSource<E>(conn, site);
                     }
 
                     if(source != null)
@@ -158,7 +176,7 @@ public class ChartHandler<E extends Serializable>
                     if(metric.getSource() != null)
                     {
                         if(metric.getSource().getType() == SourceType.DATABASE)
-                            source = new DatabaseDataSource<Number>(conn);
+                            source = new DatabaseDataSource<Number>(conn, site);
                     }
 
                     if(source != null)
@@ -206,6 +224,17 @@ public class ChartHandler<E extends Serializable>
         public Builder withConnection(JDBCDatabaseConnection conn)
         {
             handler.setConnection(conn);
+            return this;
+        }
+
+        /**
+         * Sets the site to use with the handler.
+         * @param site The site
+         * @return This object
+         */
+        public Builder withSite(Site site)
+        {
+            handler.setSite(site);
             return this;
         }
 

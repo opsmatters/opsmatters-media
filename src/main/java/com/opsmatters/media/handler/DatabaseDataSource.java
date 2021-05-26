@@ -32,6 +32,7 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import nl.crashdata.chartjs.data.simple.SimpleChartJsXYDataPoint;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
+import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.chart.SourceType;
 import com.opsmatters.media.model.chart.ChartSource;
 import com.opsmatters.media.model.chart.ChartParameter;
@@ -39,6 +40,7 @@ import com.opsmatters.media.model.chart.ChartParameters;
 import com.opsmatters.media.model.chart.ChartParameterType;
 
 import static com.opsmatters.media.model.chart.ChartParameterType.*;
+import static com.opsmatters.media.model.chart.ChartParameterValue.*;
 
 /**
  * Represents a chart data source from a database.
@@ -53,13 +55,15 @@ public class DatabaseDataSource<E extends Serializable> implements DataSource<E>
     private static int QUERY_TIMEOUT = 60;
 
     private JDBCDatabaseConnection conn;
+    private Site site;
 
     /**
-     * Default constructor.
+     * Constructor that takes a connection and site.
      */
-    public DatabaseDataSource(JDBCDatabaseConnection conn)
+    public DatabaseDataSource(JDBCDatabaseConnection conn, Site site)
     {
         this.conn = conn;
+        this.site = site;
     }
 
     /**
@@ -96,7 +100,21 @@ public class DatabaseDataSource<E extends Serializable> implements DataSource<E>
                         Object obj = parameters.get(parameter);
                         if(obj != null)
                         {
-                            if(obj instanceof LocalDateTime)
+                            if(obj instanceof String)
+                            {
+                                String str = (String)obj;
+
+                                // Replace the site default with the current site id
+                                if(str == CURRENT_SITE.name())
+                                    str = site != null ? site.getId() : "";
+
+                                if(str == null || str.length() == 0)
+                                    sql = sql.replaceAll(String.format("=[ ]?:%s", parameter.name()), "LIKE '%'");
+                                else
+                                    sql = sql.replaceAll(String.format(":%s", parameter.name()),
+                                        String.format("'%s'", str));
+                            }
+                            else if(obj instanceof LocalDateTime)
                             {
                                 LocalDateTime dt = (LocalDateTime)obj;
                                 long millis = dt.toInstant(ZoneOffset.UTC).toEpochMilli();

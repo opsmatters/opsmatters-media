@@ -334,7 +334,7 @@ public class FormatUtils
             ret = ret.replaceAll("<li>", "\n<li>");
 
             // Turn "<br>1.", "<br>2.", "<br>3.", etc into <oli> tags to indicate an <ol> list
-            ret = ret.replaceAll("(<br>)+[ ]*\\d+[\\. ]+", "<oli> ");
+            ret = ret.replaceAll("(<br>)+[ ]*\\d{1,2}\\.[ ]*", "<oli> ");
 
             // Add a linefeed to <oli> tags to improve readability
             ret = ret.replaceAll("<oli>", "\n<oli>");
@@ -477,6 +477,13 @@ public class FormatUtils
 
             // Remove query parameters
             ret = ret.replaceAll("(.*)\\?(.*)", "$1");
+
+            // Remove any other file extensions included in the filename
+            //   as drupal rejects these as a security issue
+            if(ret.lastIndexOf(".") != -1)
+            {
+                ret = ret.replaceAll("(.+)\\.(?:phar|php|pl|py|cgi|asp|js)(\\..+)", "$1$2");
+            }
         }
 
         return ret;

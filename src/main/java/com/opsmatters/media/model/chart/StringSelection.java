@@ -18,6 +18,8 @@ package com.opsmatters.media.model.chart;
 
 import java.util.Map;
 
+import static com.opsmatters.media.model.chart.ChartParameterValue.*;
+
 /**
  * Represents a String selection for a chart.
  * 
@@ -73,6 +75,12 @@ public class StringSelection extends ChartSelection<String>
     @Override
     public String value()
     {
-        return getValue();
+        switch(getDefaultValue())
+        {
+            case CURRENT_SITE:
+                return CURRENT_SITE.name(); // evaluated later
+            default:
+                return getValue();
+        }
     }
 }

@@ -27,7 +27,8 @@ public enum ChartParameter implements Serializable
 {
     FROM_DATE(false),
     TO_DATE(false),
-    ORGANISATIONS(true);
+    ORGANISATIONS(true),
+    SITE(false);
 
     private boolean multiple;
 
