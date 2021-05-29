@@ -78,7 +78,7 @@ public class SocialChannels implements java.io.Serializable
         List<SocialChannel> ret = new ArrayList<SocialChannel>();
         for(SocialChannel channel : map.values())
         {
-            if(channel.getSiteId().equals(site.getId()))
+            if(channel.hasSite(site))
                 ret.add(channel);
         }
 

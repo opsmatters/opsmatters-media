@@ -16,6 +16,10 @@
 package com.opsmatters.media.model.social;
 
 import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.util.StringUtils;
 
 /**
  * Class representing a social media channel.
@@ -28,7 +32,7 @@ public class SocialChannel implements java.io.Serializable
     public static final String HANDLE = "handle";
     public static final String ICON = "icon";
     public static final String PROVIDER = "provider";
-    public static final String SITE = "site";
+    public static final String SITES = "sites";
     public static final String ENABLED = "enabled";
 
     private String id = "";
@@ -36,7 +40,8 @@ public class SocialChannel implements java.io.Serializable
     private String handle = "";
     private String icon = "";
     private SocialProvider provider;
-    private String siteId = "";
+    private String sites = "";
+    private Map<String,String> siteMap = new HashMap<String,String>();
     private boolean enabled = false;
 
     /**
@@ -59,7 +64,7 @@ public class SocialChannel implements java.io.Serializable
             setHandle(obj.getHandle());
             setIcon(obj.getIcon());
             setProvider(obj.getProvider());
-            setSiteId(obj.getSiteId());
+            setSites(obj.getSites());
             setEnabled(obj.isEnabled());
         }
     }
@@ -161,19 +166,32 @@ public class SocialChannel implements java.io.Serializable
     }
 
     /**
-     * Returns the channel site id.
+     * Returns the channel sites.
      */
-    public String getSiteId()
+    public String getSites()
     {
-        return siteId;
+        return sites;
     }
 
     /**
-     * Sets the channel site id.
+     * Sets the channel sites.
      */
-    public void setSiteId(String siteId)
+    public void setSites(String sites)
     {
-        this.siteId = siteId;
+        this.sites = sites;
+
+        siteMap.clear();
+        List<String> siteList = StringUtils.toList(sites);
+        for(String site : siteList)
+            siteMap.put(site, site);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this channel is configured for the given site.
+     */
+    public boolean hasSite(Site site)
+    {
+        return siteMap.get(site.getId()) != null;
     }
 
     /**
@@ -205,8 +223,8 @@ public class SocialChannel implements java.io.Serializable
             setIcon((String)map.get(ICON));
         if(map.containsKey(PROVIDER))
             setProvider((String)map.get(PROVIDER));
-        if(map.containsKey(SITE))
-            setSiteId((String)map.get(SITE));
+        if(map.containsKey(SITES))
+            setSites((String)map.get(SITES));
         if(map.containsKey(ENABLED))
             setEnabled((Boolean)map.get(ENABLED));
     }
