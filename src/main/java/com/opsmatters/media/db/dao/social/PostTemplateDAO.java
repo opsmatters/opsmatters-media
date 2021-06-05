@@ -68,6 +68,13 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
      */
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, POSTED_DATE, CREATED_BY "
+      + "FROM POST_TEMPLATES";
+
+    /**
+     * The query to use to select the post templates from the POST_TEMPLATES table by site.
+     */
+    private static final String LIST_BY_SITE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, NAME, MESSAGE, TYPE, CODE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, PROPERTIES, POSTED_DATE, CREATED_BY "
       + "FROM POST_TEMPLATES WHERE SITE_ID=?";
 
     /**
@@ -266,7 +273,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
     /**
      * Returns the post templates from the POST_TEMPLATES table.
      */
-    public synchronized List<PostTemplate> list(Site site) throws SQLException
+    public synchronized List<PostTemplate> list() throws SQLException
     {
         List<PostTemplate> ret = null;
 
@@ -282,9 +289,68 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
 
         try
         {
-            listStmt.setString(1, site.getId());
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
+            ret = new ArrayList<PostTemplate>();
+            while(rs.next())
+            {
+                PostTemplate template = new PostTemplate();
+                template.setId(rs.getString(1));
+                template.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                template.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                template.setSiteId(rs.getString(4));
+                template.setName(rs.getString(5));
+                template.setMessage(rs.getString(6));
+                template.setType(rs.getString(7));
+                template.setCode(rs.getString(8));
+                template.setContentType(rs.getString(9));
+                template.setDefault(rs.getBoolean(10));
+                template.setShortenUrl(rs.getBoolean(11));
+                template.setProperties(new JSONObject(getClob(rs, 12)));
+                template.setPostedDateMillis(rs.getTimestamp(13, UTC) != null ? rs.getTimestamp(13, UTC).getTime() : 0L);
+                template.setCreatedBy(rs.getString(14));
+                ret.add(template);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the post templates from the POST_TEMPLATES table by site.
+     */
+    public synchronized List<PostTemplate> list(Site site) throws SQLException
+    {
+        List<PostTemplate> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listBySiteStmt == null)
+            listBySiteStmt = prepareStatement(getConnection(), LIST_BY_SITE_SQL);
+        clearParameters(listBySiteStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listBySiteStmt.setString(1, site.getId());
+            listBySiteStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listBySiteStmt.executeQuery();
             ret = new ArrayList<PostTemplate>();
             while(rs.next())
             {
@@ -435,6 +501,8 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
+        closeStatement(listBySiteStmt);
+        listBySiteStmt = null;
         closeStatement(listByTypeStmt);
         listByTypeStmt = null;
         closeStatement(countStmt);
@@ -447,6 +515,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
+    private PreparedStatement listBySiteStmt;
     private PreparedStatement listByTypeStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;

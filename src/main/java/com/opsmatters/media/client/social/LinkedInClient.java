@@ -108,22 +108,37 @@ public class LinkedInClient extends Client implements SocialClient
 
         String directory = System.getProperty("app.auth", ".");
 
-        File file = new File(directory, channel.getId()+SUFFIX);
+        File file = new File(directory, SUFFIX);
         JSONObject obj = null;
         try
         {
             // Read file from auth directory
             obj = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
-            setOrganizationId(obj.optString("organizationId"));
             setAppId(obj.optString("appId"));
             setAppSecret(obj.optString("appSecret"));
             setRedirectUri(obj.optString("redirectUri"));
-            setVerificationCode(obj.optString("verificationCode"));
             setAccessToken(obj.optString("accessToken"));
         }
         catch(IOException e)
         {
-            logger.severe("Unable to read linkedin auth file: "+e.getClass().getName()+": "+e.getMessage());
+            logger.severe("Unable to read default linkedin auth file: "+e.getClass().getName()+": "+e.getMessage());
+        }
+
+        file = new File(directory, channel.getId()+SUFFIX);
+        try
+        {
+            // Read file from auth directory
+            obj = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
+            setOrganizationId(obj.optString("organizationId"));
+            setAppId(obj.optString("appId", getAppId()));
+            setAppSecret(obj.optString("appSecret", getAppSecret()));
+            setRedirectUri(obj.optString("redirectUri", getRedirectUri()));
+            setVerificationCode(obj.optString("verificationCode"));
+            setAccessToken(obj.optString("accessToken", getAccessToken()));
+        }
+        catch(IOException e)
+        {
+            logger.severe("Unable to read channel linkedin auth file: "+e.getClass().getName()+": "+e.getMessage());
         }
 
         // Get the access token using the credentials

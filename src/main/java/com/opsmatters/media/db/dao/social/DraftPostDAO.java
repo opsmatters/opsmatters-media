@@ -79,6 +79,13 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
      */
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, SITE_ID, TEMPLATE_ID, PROPERTIES, ATTRIBUTES, MESSAGE, STATUS, CREATED_BY "
+      + "FROM DRAFT_POSTS WHERE TYPE=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS='NEW') ORDER BY CREATED_DATE";
+
+    /**
+     * The query to use to select the posts from the DRAFT_POSTS table by site.
+     */
+    private static final String LIST_BY_SITE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, SITE_ID, TEMPLATE_ID, PROPERTIES, ATTRIBUTES, MESSAGE, STATUS, CREATED_BY "
       + "FROM DRAFT_POSTS WHERE SITE_ID=? AND TYPE=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS='NEW') ORDER BY CREATED_DATE";
 
     /**
@@ -411,7 +418,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns the posts from the DRAFT_POSTS table.
      */
-    public synchronized List<DraftPost> list(Site site, PostType type, int interval) throws SQLException
+    public synchronized List<DraftPost> list(PostType type, int interval) throws SQLException
     {
         List<DraftPost> ret = null;
 
@@ -427,11 +434,69 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
 
         try
         {
-            listStmt.setString(1, site.getId());
-            listStmt.setString(2, type.name());
-            listStmt.setInt(3, interval);
+            listStmt.setString(1, type.name());
+            listStmt.setInt(2, interval);
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
+            ret = new ArrayList<DraftPost>();
+            while(rs.next())
+            {
+                DraftPost post = DraftPostFactory.newInstance(PostType.valueOf(rs.getString(5)));
+                post.setId(rs.getString(1));
+                post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                post.setScheduledDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                post.setSiteId(rs.getString(6));
+                post.setTemplateId(rs.getString(7));
+                post.setProperties(new JSONObject(getClob(rs, 8)));
+                post.setAttributes(new JSONObject(getClob(rs, 9)));
+                post.setMessage(rs.getString(10));
+                post.setStatus(rs.getString(11));
+                post.setCreatedBy(rs.getString(12));
+                ret.add(post);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the posts from the DRAFT_POSTS table by site.
+     */
+    public synchronized List<DraftPost> list(Site site, PostType type, int interval) throws SQLException
+    {
+        List<DraftPost> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listBySiteStmt == null)
+            listBySiteStmt = prepareStatement(getConnection(), LIST_BY_SITE_SQL);
+        clearParameters(listBySiteStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listBySiteStmt.setString(1, site.getId());
+            listBySiteStmt.setString(2, type.name());
+            listBySiteStmt.setInt(3, interval);
+            listBySiteStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listBySiteStmt.executeQuery();
             ret = new ArrayList<DraftPost>();
             while(rs.next())
             {
@@ -600,6 +665,8 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
+        closeStatement(listBySiteStmt);
+        listBySiteStmt = null;
         closeStatement(listByStatusStmt);
         listByStatusStmt = null;
         closeStatement(countStmt);
@@ -613,6 +680,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
+    private PreparedStatement listBySiteStmt;
     private PreparedStatement listByStatusStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;

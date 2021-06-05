@@ -34,7 +34,7 @@ public class ContentReview extends ContentEvent
     private ReviewReason reason;
     private ReviewStatus status;
     private String notes = "";
-    private boolean change = true;
+    private boolean change = false;
 
     /**
      * Default constructor.
@@ -51,6 +51,7 @@ public class ContentReview extends ContentEvent
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setEffectiveDate(monitor.getUpdatedDate());
+        setSiteId(monitor.getSiteId());
         setCode(monitor.getCode());
         setReason(reason);
         setStatus(ReviewStatus.NEW);
