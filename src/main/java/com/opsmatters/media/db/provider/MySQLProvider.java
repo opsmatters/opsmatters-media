@@ -16,7 +16,7 @@
 package com.opsmatters.media.db.provider;
 
 import java.sql.Types;
-import com.mysql.jdbc.exceptions.jdbc4.*;
+import java.sql.SQLIntegrityConstraintViolationException;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 
@@ -56,7 +56,7 @@ public class MySQLProvider extends DBProvider
     {
         boolean ret = false;
         if(ex != null)
-            ret = ex instanceof MySQLIntegrityConstraintViolationException;
+            ret = ex instanceof SQLIntegrityConstraintViolationException;
         return ret;
     }
 
