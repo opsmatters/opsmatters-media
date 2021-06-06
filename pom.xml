@@ -49,7 +49,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<aws.sdk.version>1.11.987</aws.sdk.version>
-		<twelvemonkeys.imageio.version>3.5</twelvemonkeys.imageio.version>
+		<twelvemonkeys.imageio.version>3.7.0</twelvemonkeys.imageio.version>
 		<chartjs.version>2.1.2-SNAPSHOT</chartjs.version>
   </properties>
 
@@ -652,6 +652,12 @@ media.built.on=${TODAY}
     <groupId>nl.crashdata.java-chartjs</groupId>
     <artifactId>java-chartjs-data</artifactId>
     <version>${chartjs.version}</version>
+  </dependency>
+
+  <dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-lang3</artifactId>
+    <version>3.12.0</version>
   </dependency>
 
 </dependencies>

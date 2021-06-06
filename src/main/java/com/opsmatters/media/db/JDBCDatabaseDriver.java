@@ -375,7 +375,7 @@ public class JDBCDatabaseDriver extends DatabaseDriver
 
         // MySQL driver definition
         MYSQL = new JDBCDatabaseDriver("mysql", "MySQL", 
-            "com.mysql.jdbc.Driver", 
+            "com.mysql.cj.jdbc.Driver", 
             "jdbc:mysql://${hostname}:${port}${other-hostnames}/${database}");
         MYSQL.setClustered(true);
         MYSQL.setProvider(new MySQLProvider());

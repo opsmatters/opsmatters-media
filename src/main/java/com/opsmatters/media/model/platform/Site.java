@@ -27,7 +27,7 @@ import com.opsmatters.media.model.platform.aws.S3Settings;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Site
+public class Site implements java.io.Serializable
 {
     public static final String ID = "id";
     public static final String NAME = "name";

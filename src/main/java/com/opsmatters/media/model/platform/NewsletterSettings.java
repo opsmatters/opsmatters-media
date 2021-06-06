@@ -23,7 +23,7 @@ import java.util.Map;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class NewsletterSettings
+public class NewsletterSettings implements java.io.Serializable
 {
     public static final String DAY = "day";
     public static final String HOUR = "hour";

@@ -23,7 +23,7 @@ import java.util.Map;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class FeedsSettings
+public class FeedsSettings implements java.io.Serializable
 {
     public static final String PATH = "path";
     public static final String USERNAME = "username";

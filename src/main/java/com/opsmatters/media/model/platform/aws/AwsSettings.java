@@ -23,7 +23,7 @@ import java.util.Map;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class AwsSettings
+public abstract class AwsSettings implements java.io.Serializable
 {
     public static final String REGION = "region";
 

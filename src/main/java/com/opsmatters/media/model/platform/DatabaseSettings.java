@@ -23,7 +23,7 @@ import java.util.Map;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class DatabaseSettings
+public class DatabaseSettings implements java.io.Serializable
 {
     public static final String NAME = "name";
     public static final String TYPE = "type";

@@ -23,7 +23,7 @@ import java.util.Map;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SshSettings
+public class SshSettings implements java.io.Serializable
 {
     public static final String HOSTNAME = "hostname";
     public static final String PORT = "port";

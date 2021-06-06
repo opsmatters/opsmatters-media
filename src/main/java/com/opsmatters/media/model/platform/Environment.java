@@ -24,7 +24,7 @@ import com.opsmatters.media.model.platform.aws.EC2Settings;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Environment
+public class Environment implements java.io.Serializable
 {
     public static final String NAME = "name";
     public static final String KEY = "key";
