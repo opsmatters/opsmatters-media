@@ -34,6 +34,7 @@ public enum AppParameterName
     REVIEW_INTERVAL("review-interval"),
     MIN_AGE("min-age"),
     MAX_BATCH_SIZE("max-batch-size"),
+    MAX_WAITING("max-waiting"),
     MAX_ERRORS("max-errors"),
     MAX_RESULTS("max-results"),
     MAX_RETRIES("max-retries"),

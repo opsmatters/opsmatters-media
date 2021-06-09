@@ -60,7 +60,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
      * The query to use to update a post template in the POST_TEMPLATES table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE POST_TEMPLATES SET UPDATED_DATE=?, NAME=?, MESSAGE=?, TYPE=?, CODE=?, CONTENT_TYPE=?, IS_DEFAULT=?, SHORTEN_URL=?, PROPERTIES=?, POSTED_DATE=? "
+      "UPDATE POST_TEMPLATES SET UPDATED_DATE=?, SITE_ID=?, NAME=?, MESSAGE=?, TYPE=?, CODE=?, CONTENT_TYPE=?, IS_DEFAULT=?, SHORTEN_URL=?, PROPERTIES=?, POSTED_DATE=? "
       + "WHERE ID=?";
 
     /**
@@ -253,18 +253,19 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
         StringReader reader = null;
 
         updateStmt.setTimestamp(1, new Timestamp(template.getUpdatedDateMillis()), UTC);
-        updateStmt.setString(2, template.getName());
-        updateStmt.setString(3, template.getMessage(MessageFormat.ENCODED));
-        updateStmt.setString(4, template.getType() != null ? template.getType().name(): "");
-        updateStmt.setString(5, template.getCode());
-        updateStmt.setString(6, template.getContentType() != null ? template.getContentType().name(): "");
-        updateStmt.setBoolean(7, template.isDefault());
-        updateStmt.setBoolean(8, template.isShortenUrl());
+        updateStmt.setString(2, template.getSiteId());
+        updateStmt.setString(3, template.getName());
+        updateStmt.setString(4, template.getMessage(MessageFormat.ENCODED));
+        updateStmt.setString(5, template.getType() != null ? template.getType().name(): "");
+        updateStmt.setString(6, template.getCode());
+        updateStmt.setString(7, template.getContentType() != null ? template.getContentType().name(): "");
+        updateStmt.setBoolean(8, template.isDefault());
+        updateStmt.setBoolean(9, template.isShortenUrl());
         String properties = template.getPropertiesAsJson().toString();
         reader = new StringReader(properties);
-        updateStmt.setCharacterStream(9, reader, properties.length());
-        updateStmt.setTimestamp(10, new Timestamp(template.getPostedDateMillis()), UTC);
-        updateStmt.setString(11, template.getId());
+        updateStmt.setCharacterStream(10, reader, properties.length());
+        updateStmt.setTimestamp(11, new Timestamp(template.getPostedDateMillis()), UTC);
+        updateStmt.setString(12, template.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated post template '"+template.getId()+"' in POST_TEMPLATES");

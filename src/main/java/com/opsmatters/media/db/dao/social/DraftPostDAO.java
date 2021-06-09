@@ -71,7 +71,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
      * The query to use to update a post in the DRAFT_POSTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE DRAFT_POSTS SET UPDATED_DATE=?, SCHEDULED_DATE=?, TEMPLATE_ID=?, PROPERTIES=?, ATTRIBUTES=?, MESSAGE=?, STATUS=? "
+      "UPDATE DRAFT_POSTS SET UPDATED_DATE=?, SCHEDULED_DATE=?, SITE_ID=?, TEMPLATE_ID=?, PROPERTIES=?, ATTRIBUTES=?, MESSAGE=?, STATUS=? "
       + "WHERE ID=?";
 
     /**
@@ -392,16 +392,17 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
         {
             updateStmt.setTimestamp(1, new Timestamp(post.getUpdatedDateMillis()), UTC);
             updateStmt.setTimestamp(2, new Timestamp(post.getScheduledDateMillis()), UTC);
-            updateStmt.setString(3, post.getTemplateId());
+            updateStmt.setString(3, post.getSiteId());
+            updateStmt.setString(4, post.getTemplateId());
             String properties = post.getPropertiesAsJson().toString();
             reader = new StringReader(properties);
-            updateStmt.setCharacterStream(4, reader, properties.length());
+            updateStmt.setCharacterStream(5, reader, properties.length());
             String attributes = post.getAttributes().toString();
             reader2 = new StringReader(attributes);
-            updateStmt.setCharacterStream(5, reader2, attributes.length());
-            updateStmt.setString(6, post.getMessage());
-            updateStmt.setString(7, post.getStatus().name());
-            updateStmt.setString(8, post.getId());
+            updateStmt.setCharacterStream(6, reader2, attributes.length());
+            updateStmt.setString(7, post.getMessage());
+            updateStmt.setString(8, post.getStatus().name());
+            updateStmt.setString(9, post.getId());
             updateStmt.executeUpdate();
 
             logger.info("Updated post '"+post.getId()+"' in DRAFT_POSTS");
