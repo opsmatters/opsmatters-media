@@ -29,6 +29,7 @@ public enum DeliveryStatus
     SENT("Sent", "glyphicon-ok-circle", "status-success"),
     RECEIVED("Received", "", ""),
     ERROR("Error", "glyphicon-alert", "status-error"),
+    PAUSED("Paused", "glyphicon-pause", "status-warn"),
     DELETED("Deleted", "glyphicon-trash", "status-error"),
     ALL("All", "", ""); // Pseudo status
 
