@@ -621,7 +621,8 @@ public class ContentMonitor extends BaseItem
     {
         ContentSnapshot snapshot1 = new ContentSnapshot(getSnapshot());
         ContentSnapshot snapshot2 = new ContentSnapshot(snapshot);
-        return ContentSnapshot.compare(snapshot1, snapshot2, maxResults);
+        return ContentSnapshot.compare(snapshot1, snapshot2, maxResults,
+            getContentType() != ContentType.VIDEO);
     }
 
     /**

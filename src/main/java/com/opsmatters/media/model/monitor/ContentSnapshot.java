@@ -213,7 +213,7 @@ public class ContentSnapshot extends JSONObject
     /**
      * Returns <CODE>true<CODE> if the two snapshots do not match.
      */
-    public static boolean compare(ContentSnapshot snapshot1, ContentSnapshot snapshot2, int maxResults)
+    public static boolean compare(ContentSnapshot snapshot1, ContentSnapshot snapshot2, int maxResults, boolean checkDecrease)
     {
         int count1 = snapshot1.getCount();
         int count2 = snapshot2.getCount();
@@ -223,7 +223,7 @@ public class ContentSnapshot extends JSONObject
             decrease = ((count1 - count2) / (float)count1) * 100.0f;
         }
 
-        if(decrease > 50.0f)
+        if(checkDecrease && decrease > 50.0f)
             throw new IllegalStateException(String.format("Detected abnormal decrease in items: %.2f%%", decrease));
 
         snapshot1.process(maxResults);

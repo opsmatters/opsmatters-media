@@ -18,6 +18,7 @@ package com.opsmatters.media.model.platform;
 
 import java.util.Map;
 import com.opsmatters.media.model.platform.aws.EC2Settings;
+import com.opsmatters.media.model.platform.aws.RDSSettings;
 
 /**
  * Represents a site environment.
@@ -34,6 +35,7 @@ public class Environment implements java.io.Serializable
     public static final String FEEDS = "feeds";
     public static final String DATABASE = "database";
     public static final String EC2 = "ec2";
+    public static final String RDS = "rds";
     public static final String SSH = "ssh";
 
     private EnvironmentName name;
@@ -44,6 +46,7 @@ public class Environment implements java.io.Serializable
     private FeedsSettings feeds;
     private DatabaseSettings database;
     private EC2Settings ec2;
+    private RDSSettings rds;
     private SshSettings ssh;
 
     /**
@@ -77,6 +80,7 @@ public class Environment implements java.io.Serializable
             setFeedsSettings(new FeedsSettings(obj.getFeedsSettings()));
             setDatabaseSettings(new DatabaseSettings(obj.getDatabaseSettings()));
             setEC2Settings(new EC2Settings(obj.getEC2Settings()));
+            setRDSSettings(new RDSSettings(obj.getRDSSettings()));
             setSshSettings(new SshSettings(obj.getSshSettings()));
         }
     }
@@ -102,6 +106,8 @@ public class Environment implements java.io.Serializable
             setDatabaseSettings(new DatabaseSettings(name, (Map<String,Object>)map.get(DATABASE)));
         if(map.containsKey(EC2))
             setEC2Settings(new EC2Settings(name, (Map<String,Object>)map.get(EC2)));
+        if(map.containsKey(RDS))
+            setRDSSettings(new RDSSettings(name, (Map<String,Object>)map.get(RDS)));
         if(map.containsKey(SSH))
             setSshSettings(new SshSettings(name, (Map<String,Object>)map.get(SSH)));
     }
@@ -248,6 +254,22 @@ public class Environment implements java.io.Serializable
     public void setEC2Settings(EC2Settings ec2)
     {
         this.ec2 = ec2;
+    }
+
+    /**
+     * Returns the RDS settings for the environment.
+     */
+    public RDSSettings getRDSSettings()
+    {
+        return rds;
+    }
+
+    /**
+     * Sets the RDS settings for the environment.
+     */
+    public void setRDSSettings(RDSSettings rds)
+    {
+        this.rds = rds;
     }
 
     /**

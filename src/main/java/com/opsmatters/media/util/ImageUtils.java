@@ -25,9 +25,12 @@ import java.net.URL;
 import java.net.HttpURLConnection;
 import java.util.Iterator;
 import java.util.logging.Logger;
+import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import javax.swing.ImageIcon;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.ImageReadParam;
@@ -147,6 +150,23 @@ public class ImageUtils
             catch(IOException e)
             {
                 exception = e;
+            }
+            catch(ArrayIndexOutOfBoundsException e)
+            {
+                // Deal with JDK bug that causes some GIF files to throw ArrayIndexOutOfBoundsException
+                ImageIcon icon = new ImageIcon(file.getAbsolutePath());
+                Image image = icon.getImage();
+
+                // Create empty BufferedImage, sized to Image
+                BufferedImage buffImage = new BufferedImage(
+                  image.getWidth(null), 
+                  image.getHeight(null), 
+                  BufferedImage.TYPE_INT_ARGB);
+
+                // Draw Image into BufferedImage
+                Graphics g = buffImage.getGraphics();
+                g.drawImage(image, 0, 0, null);
+                ret = buffImage;
             }
             finally
             {
