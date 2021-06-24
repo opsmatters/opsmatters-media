@@ -56,6 +56,7 @@ public class PostTemplate extends SocialPost
     private boolean shortenUrl = false;
     private Map<String,String> properties = new LinkedHashMap<String,String>();
     private Instant postedDate;
+    private TemplateStatus status;
 
     /**
      * Default constructor.
@@ -74,6 +75,7 @@ public class PostTemplate extends SocialPost
         setSiteId(site.getId());
         setName(name);
         setType(type);
+        setStatus(TemplateStatus.NEW);
     }
 
     /**
@@ -96,6 +98,7 @@ public class PostTemplate extends SocialPost
         else
             setUrl(post.getUrl());
         setShortenUrl(post.hasShortenedUrl(site.getShortDomain()));
+        setStatus(TemplateStatus.ACTIVE);
     }
 
     /**
@@ -124,6 +127,7 @@ public class PostTemplate extends SocialPost
             setShortenUrl(obj.isShortenUrl());
             setProperties(obj.getProperties());
             setPostedDate(obj.getPostedDate());
+            setStatus(obj.getStatus());
         }
     }
 
@@ -557,5 +561,29 @@ public class PostTemplate extends SocialPost
     {
         if(postedDate != null)
             setPostedDate(TimeUtils.toInstantUTC(postedDate));
+    }
+
+    /**
+     * Returns the template status.
+     */
+    public TemplateStatus getStatus()
+    {
+        return status;
+    }
+
+    /**
+     * Sets the template status.
+     */
+    public void setStatus(String status)
+    {
+        setStatus(TemplateStatus.valueOf(status));
+    }
+
+    /**
+     * Sets the template status.
+     */
+    public void setStatus(TemplateStatus status)
+    {
+        this.status = status;
     }
 }

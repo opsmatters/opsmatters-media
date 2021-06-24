@@ -79,4 +79,37 @@ public enum OrganisationTabs
     {
         return valueOf(value) != null;
     }
+
+    /**
+     * Returns <CODE>true</CODE> if the given content type is contained in the list of types.
+     * @param type The content type
+     * @return <CODE>true</CODE> if the given content type is contained in the list of types
+     */
+    public boolean contains(ContentType type)
+    {
+        boolean ret = false;
+
+        if(this != NONE)
+        {
+            switch(type)
+            {
+                case VIDEO:
+                    ret = this == ALL || name().indexOf("V") != -1;
+                    break;
+                case ROUNDUP:
+                case POST:
+                    ret = this == ALL || name().indexOf("N") != -1;
+                    break;
+                case EVENT:
+                    ret = this == ALL || name().indexOf("E") != -1;
+                    break;
+                case WHITE_PAPER:
+                case EBOOK:
+                    ret = this == ALL || name().indexOf("P") != -1;
+                    break;
+            }
+        }
+
+        return ret;
+    }
 }
