@@ -16,6 +16,9 @@
 
 package com.opsmatters.media.model.content;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * Represents a content type.
  * 
@@ -142,5 +145,25 @@ public enum ContentType
     public static boolean contains(String value)
     {
         return valueOf(value) != null;
+    }
+
+    /**
+     * Returns a list of the types.
+     */
+    public static List<ContentType> toList()
+    {
+        List<ContentType> ret = new ArrayList<ContentType>();
+
+        ret.add(VIDEO);
+        ret.add(ROUNDUP);
+        ret.add(POST);
+        ret.add(EVENT);
+        ret.add(WHITE_PAPER);
+        ret.add(EBOOK);
+        ret.add(PROJECT);
+        ret.add(TOOL);
+        ret.add(JOB);
+
+        return ret;
     }
 }

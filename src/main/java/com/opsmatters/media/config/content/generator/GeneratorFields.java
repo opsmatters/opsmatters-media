@@ -17,6 +17,8 @@ package com.opsmatters.media.config.content.generator;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.model.content.OrganisationListing;
 import com.opsmatters.media.model.content.OrganisationTabs;
@@ -40,17 +42,8 @@ public class GeneratorFields implements java.io.Serializable
     private String blogUrl = "";
     private String features = "";
 
-    private Boolean videos = false;
-    private Boolean roundups = false;
-    private Boolean posts = false;
-    private Boolean events = false;
-    private Boolean whitePapers = false;
-    private Boolean ebooks = false;
-    private Boolean projects = false;
-    private Boolean tools = false;
-    private Boolean jobs = false;
-
-    private List<EventPage> eventPages = new ArrayList<EventPage>();
+    Map<ContentType,Boolean> types = new HashMap<ContentType,Boolean>();
+    Map<EventPage,Boolean> pages = new HashMap<EventPage,Boolean>();
 
     /**
      * Default constructor.
@@ -78,8 +71,8 @@ public class GeneratorFields implements java.io.Serializable
         setRoundups(tabs.contains(ContentType.ROUNDUP));
         setPosts(tabs.contains(ContentType.POST));
         setEvents(tabs.contains(ContentType.EVENT));
-        setWhitePapers(tabs.contains(ContentType.WHITE_PAPER));
-        setEBooks(tabs.contains(ContentType.EBOOK));
+        setWhitepapers(tabs.contains(ContentType.WHITE_PAPER));
+        setEbooks(tabs.contains(ContentType.EBOOK));
 
         setProjects(listing.hasProjects());
         setTools(listing.hasTools());
@@ -263,11 +256,38 @@ public class GeneratorFields implements java.io.Serializable
     }
 
     /**
+     * Returns the list of content types.
+     */
+    public List<ContentType> getContentTypes()
+    {
+        return new ArrayList<ContentType>(types.keySet());
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given content type is enabled.
+     */
+    private Boolean hasType(ContentType type)
+    {
+        return types.containsKey(type);
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the given content type is enabled.
+     */
+    private void setType(boolean enabled, ContentType type)
+    {
+        if(enabled)
+            types.put(type, Boolean.TRUE);
+        else
+            types.remove(type);
+    }
+
+    /**
      * Returns <CODE>true</CODE> if videos are enabled.
      */
     public Boolean getVideos()
     {
-        return videos;
+        return hasType(ContentType.VIDEO);
     }
 
     /**
@@ -275,7 +295,7 @@ public class GeneratorFields implements java.io.Serializable
      */
     public void setVideos(Boolean videos)
     {
-        this.videos = videos;
+        setType(videos, ContentType.VIDEO);
     }
 
     /**
@@ -283,7 +303,7 @@ public class GeneratorFields implements java.io.Serializable
      */
     public Boolean getRoundups()
     {
-        return roundups;
+        return hasType(ContentType.ROUNDUP);
     }
 
     /**
@@ -291,7 +311,7 @@ public class GeneratorFields implements java.io.Serializable
      */
     public void setRoundups(Boolean roundups)
     {
-        this.roundups = roundups;
+        setType(roundups, ContentType.ROUNDUP);
     }
 
     /**
@@ -299,7 +319,7 @@ public class GeneratorFields implements java.io.Serializable
      */
     public Boolean getEvents()
     {
-        return events;
+        return hasType(ContentType.EVENT);
     }
 
     /**
@@ -307,39 +327,39 @@ public class GeneratorFields implements java.io.Serializable
      */
     public void setEvents(Boolean events)
     {
-        this.events = events;
+        setType(events, ContentType.EVENT);
     }
 
     /**
      * Returns <CODE>true</CODE> if white papers are enabled.
      */
-    public Boolean getWhitePapers()
+    public Boolean getWhitepapers()
     {
-        return whitePapers;
+        return hasType(ContentType.WHITE_PAPER);
     }
 
     /**
      * Set to <CODE>true</CODE> if white papers are enabled.
      */
-    public void setWhitePapers(Boolean whitePapers)
+    public void setWhitepapers(Boolean whitePapers)
     {
-        this.whitePapers = whitePapers;
+        setType(whitePapers, ContentType.WHITE_PAPER);
     }
 
     /**
      * Returns <CODE>true</CODE> if ebooks are enabled.
      */
-    public Boolean getEBooks()
+    public Boolean getEbooks()
     {
-        return ebooks;
+        return hasType(ContentType.EBOOK);
     }
 
     /**
      * Set to <CODE>true</CODE> if ebooks are enabled.
      */
-    public void setEBooks(Boolean ebooks)
+    public void setEbooks(Boolean ebooks)
     {
-        this.ebooks = ebooks;
+        setType(ebooks, ContentType.EBOOK);
     }
 
     /**
@@ -347,7 +367,7 @@ public class GeneratorFields implements java.io.Serializable
      */
     public Boolean getPosts()
     {
-        return posts;
+        return hasType(ContentType.POST);
     }
 
     /**
@@ -355,7 +375,7 @@ public class GeneratorFields implements java.io.Serializable
      */
     public void setPosts(Boolean posts)
     {
-        this.posts = posts;
+        setType(posts, ContentType.POST);
     }
 
     /**
@@ -363,7 +383,7 @@ public class GeneratorFields implements java.io.Serializable
      */
     public Boolean getProjects()
     {
-        return projects;
+        return hasType(ContentType.PROJECT);
     }
 
     /**
@@ -371,7 +391,7 @@ public class GeneratorFields implements java.io.Serializable
      */
     public void setProjects(Boolean projects)
     {
-        this.projects = projects;
+        setType(projects, ContentType.PROJECT);
     }
 
     /**
@@ -379,7 +399,7 @@ public class GeneratorFields implements java.io.Serializable
      */
     public Boolean getTools()
     {
-        return tools;
+        return hasType(ContentType.TOOL);
     }
 
     /**
@@ -387,7 +407,7 @@ public class GeneratorFields implements java.io.Serializable
      */
     public void setTools(Boolean tools)
     {
-        this.tools = tools;
+        setType(tools, ContentType.TOOL);
     }
 
     /**
@@ -395,7 +415,7 @@ public class GeneratorFields implements java.io.Serializable
      */
     public Boolean getJobs()
     {
-        return jobs;
+        return hasType(ContentType.JOB);
     }
 
     /**
@@ -403,6 +423,129 @@ public class GeneratorFields implements java.io.Serializable
      */
     public void setJobs(Boolean jobs)
     {
-        this.jobs = jobs;
+        setType(jobs, ContentType.JOB);
+    }
+
+    /**
+     * Returns the list of event pages.
+     */
+    public List<EventPage> getEventPages()
+    {
+        return new ArrayList<EventPage>(pages.keySet());
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given page is enabled.
+     */
+    private Boolean hasPage(EventPage page)
+    {
+        return pages.containsKey(page);
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the given page is enabled.
+     */
+    private void setPage(boolean enabled, EventPage page)
+    {
+        if(enabled)
+            pages.put(page, Boolean.TRUE);
+        else
+            pages.remove(page);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if webinar events are enabled.
+     */
+    public Boolean getWebinars()
+    {
+        return hasPage(EventPage.WEBINARS);
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if webinar events are enabled.
+     */
+    public void setWebinars(Boolean webinars)
+    {
+        setPage(webinars, EventPage.WEBINARS);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if Zoom events are enabled.
+     */
+    public Boolean getZoom()
+    {
+        return hasPage(EventPage.ZOOM);
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if Zoom events are enabled.
+     */
+    public void setZoom(Boolean zoom)
+    {
+        setPage(zoom, EventPage.ZOOM);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if BrightTalk events are enabled.
+     */
+    public Boolean getBrighttalk()
+    {
+        return hasPage(EventPage.BRIGHTTALK);
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if BrightTalk events are enabled.
+     */
+    public void setBrighttalk(Boolean brightTalk)
+    {
+        setPage(brightTalk, EventPage.BRIGHTTALK);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if GoToWebinar events are enabled.
+     */
+    public Boolean getGotowebinar()
+    {
+        return hasPage(EventPage.GOTOWEBINAR);
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if GoToWebinar events are enabled.
+     */
+    public void setGotowebinar(Boolean goToWebinar)
+    {
+        setPage(goToWebinar, EventPage.GOTOWEBINAR);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if on24 events are enabled.
+     */
+    public Boolean getOn24()
+    {
+        return hasPage(EventPage.ON24);
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if on24 events are enabled.
+     */
+    public void setOn24(Boolean on24)
+    {
+        setPage(on24, EventPage.ON24);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if Livestorm events are enabled.
+     */
+    public Boolean getLivestorm()
+    {
+        return hasPage(EventPage.LIVESTORM);
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if Livestorm events are enabled.
+     */
+    public void setLivestorm(Boolean livestorm)
+    {
+        setPage(livestorm, EventPage.LIVESTORM);
     }
 }
