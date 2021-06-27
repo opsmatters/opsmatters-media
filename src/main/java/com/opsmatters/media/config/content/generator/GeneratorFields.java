@@ -77,6 +77,8 @@ public class GeneratorFields implements java.io.Serializable
         setProjects(listing.hasProjects());
         setTools(listing.hasTools());
         setJobs(listing.hasJobs());
+
+        setWebinars(true);
     }
 
     /**
