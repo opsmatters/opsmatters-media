@@ -29,7 +29,9 @@ public class TextCommandVisitor implements CommandVisitor<Character>
 
     private static final String BREAK = "<br/>";
     private static final String SPACE = "&nbsp;";
+    private static final String AMPERSAND = "&amp;";
     private static final String QUOTE = "&quot;";
+    private static final String APOSTROPHE = "&apos;";
     private static final String LESS_THAN = "&lt;";
     private static final String GREATER_THAN = "&gt;";
 
@@ -71,7 +73,11 @@ public class TextCommandVisitor implements CommandVisitor<Character>
         if(c == '\n')
             ret = BREAK;
         else if(c == '&')
+            ret = AMPERSAND;
+        else if(c == '"')
             ret = QUOTE;
+        else if(c == '\'')
+            ret = APOSTROPHE;
         else if(c == '<')
             ret = LESS_THAN;
         else if(c == '>')
