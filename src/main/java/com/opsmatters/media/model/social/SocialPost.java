@@ -25,6 +25,18 @@ import com.opsmatters.media.model.OwnedItem;
  */
 public abstract class SocialPost extends OwnedItem
 {
+    public static final String HANDLE = "handle";
+    public static final String HASHTAG = "hashtag";
+    public static final String HASHTAGS = "hashtags";
+    public static final String TITLE = "title";
+    public static final String TITLE1 = "title1";
+    public static final String TITLE2 = "title2";
+    public static final String URL = "url";
+    public static final String ORIGINAL_URL = "original-url";
+    public static final String ORGANISATION = "organisation";
+    public static final String CONTENT_TYPE = "content-type";
+    public static final String CONTENT_ID = "content-id";
+
     private String message = "";
 
     /**

@@ -19,30 +19,30 @@ package com.opsmatters.media.model.social;
 import java.util.logging.Logger;
 
 /**
- * Factory class to create an instance of a draft post depending on the type.
+ * Factory class to create an instance of a saved post depending on the type.
  *
  * @author Gerald Curley (opsmatters)
  */
-public class DraftPostFactory
+public class SavedPostFactory
 {
-    private static final Logger logger = Logger.getLogger(DraftPostFactory.class.getName());
+    private static final Logger logger = Logger.getLogger(SavedPostFactory.class.getName());
 
     /**
      * Private constructor.
      */
-    private DraftPostFactory()
+    private SavedPostFactory()
     {
     }
 
     /**
-     * Returns a draft post for the given type.
+     * Returns a saved post for the given type.
      */
-    public static DraftPost newInstance(PostType type)
+    public static SavedPost newInstance(PostType type)
     {
         if(type == PostType.CONTENT)
-            return new DraftContentPost();
+            return new SavedContentPost();
         else if(type == PostType.ADHOC)
-            return new DraftAdhocPost();
+            return new SavedAdhocPost();
         throw new IllegalArgumentException("Post type not found: "+type);
     }
 }

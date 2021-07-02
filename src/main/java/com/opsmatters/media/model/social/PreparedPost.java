@@ -72,7 +72,7 @@ public class PreparedPost extends SocialPost
         setScheduledDate(post.getScheduledDate());
         setDraftId(post.getId());
         if(post.getType() == PostType.CONTENT)
-            setCode(((ContentPost)post).getCode());
+            setCode(((DraftContentPost)post).getCode());
         setTitle(post.getTitle());
         setMessage(message);
         setChannel(channel);

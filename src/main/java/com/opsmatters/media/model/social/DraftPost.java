@@ -37,7 +37,7 @@ public abstract class DraftPost extends SocialPost
     private static final String ENABLED = ".enabled";
 
     private String siteId = "";
-    private String templateId = "";
+    private String sourceId = "";
     private Map<String,String> properties = new LinkedHashMap<String,String>();
     private DraftStatus status;
     private Instant scheduledDate;
@@ -51,7 +51,7 @@ public abstract class DraftPost extends SocialPost
         {
             super.copyAttributes(obj);
             setSiteId(obj.getSiteId());
-            setTemplateId(obj.getTemplateId());
+            setSourceId(obj.getSourceId());
             setProperties(obj.getProperties());
             setStatus(obj.getStatus());
             setScheduledDate(obj.getScheduledDate());
@@ -90,27 +90,27 @@ public abstract class DraftPost extends SocialPost
     }
 
     /**
-     * Returns the post template id.
+     * Returns the post source id.
      */
-    public String getTemplateId()
+    public String getSourceId()
     {
-        return templateId;
+        return sourceId;
     }
 
     /**
-     * Sets the post template id.
+     * Sets the post source id.
      */
-    public void setTemplateId(String templateId)
+    public void setSourceId(String sourceId)
     {
-        this.templateId = templateId;
+        this.sourceId = sourceId;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the post template id has been set.
+     * Returns <CODE>true</CODE> if the post source id has been set.
      */
-    public boolean hasTemplateId()
+    public boolean hasSourceId()
     {
-        return templateId != null && templateId.length() > 0;
+        return sourceId != null && sourceId.length() > 0;
     }
 
     /**
@@ -205,7 +205,7 @@ public abstract class DraftPost extends SocialPost
      */
     public String getHashtags()
     {
-        return getProperties().get(PostTemplate.HASHTAGS);
+        return getProperties().get(HASHTAGS);
     }
 
     /**
@@ -213,7 +213,7 @@ public abstract class DraftPost extends SocialPost
      */
     public void setHashtags(String hashtags)
     {
-        getProperties().put(PostTemplate.HASHTAGS, hashtags);
+        getProperties().put(HASHTAGS, hashtags);
     }
 
     /**
@@ -229,7 +229,7 @@ public abstract class DraftPost extends SocialPost
      */
     public String getUrl()
     {
-        return getProperties().get(PostTemplate.URL);
+        return getProperties().get(URL);
     }
 
     /**
@@ -237,7 +237,7 @@ public abstract class DraftPost extends SocialPost
      */
     public void setUrl(String url)
     {
-        getProperties().put(PostTemplate.URL, url);
+        getProperties().put(URL, url);
     }
 
     /**
@@ -261,7 +261,7 @@ public abstract class DraftPost extends SocialPost
      */
     public String getOriginalUrl()
     {
-        return getProperties().get(PostTemplate.ORIGINAL_URL);
+        return getProperties().get(ORIGINAL_URL);
     }
 
     /**
@@ -269,7 +269,7 @@ public abstract class DraftPost extends SocialPost
      */
     public void setOriginalUrl(String url)
     {
-        getProperties().put(PostTemplate.ORIGINAL_URL, url);
+        getProperties().put(ORIGINAL_URL, url);
     }
 
     /**

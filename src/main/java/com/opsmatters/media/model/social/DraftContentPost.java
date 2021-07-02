@@ -29,12 +29,8 @@ import com.opsmatters.media.model.content.ContentItem;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentPost extends DraftPost
+public class DraftContentPost extends DraftPost
 {
-    public static final String ORGANISATION = "organisation";
-    public static final String CONTENT_TYPE = "content-type";
-    public static final String CONTENT_ID = "content-id";
-
     private String code = "";
     private String organisation = "";
     private ContentType contentType;
@@ -43,14 +39,14 @@ public class ContentPost extends DraftPost
     /**
      * Default constructor.
      */
-    public ContentPost()
+    public DraftContentPost()
     {
     }
 
     /**
      * Constructor that takes an organisation.
      */
-    public ContentPost(Site site, Organisation organisation)
+    public DraftContentPost(Site site, Organisation organisation)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
@@ -61,15 +57,15 @@ public class ContentPost extends DraftPost
         setContentType(ContentType.ORGANISATION);
         setStatus(DraftStatus.NEW);
 
-        getProperties().put(PostTemplate.HANDLE, "@"+organisation.getFeedUsername());
-        getProperties().put(PostTemplate.HASHTAG, organisation.getHashtag());
-        getProperties().put(PostTemplate.URL, organisation.getUrl(site.getEnvironment(EnvironmentName.PROD).getUrl()));
+        getProperties().put(HANDLE, "@"+organisation.getFeedUsername());
+        getProperties().put(HASHTAG, organisation.getHashtag());
+        getProperties().put(URL, organisation.getUrl(site.getEnvironment(EnvironmentName.PROD).getUrl()));
     }
 
     /**
      * Constructor that takes an organisation listing and a content item.
      */
-    public ContentPost(Site site, Organisation organisation, ContentItem content)
+    public DraftContentPost(Site site, Organisation organisation, ContentItem content)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
@@ -80,36 +76,36 @@ public class ContentPost extends DraftPost
         setContentType(content.getType());
         setStatus(DraftStatus.NEW);
 
-        getProperties().put(PostTemplate.HANDLE, "@"+organisation.getFeedUsername());
-        getProperties().put(PostTemplate.HASHTAG, organisation.getHashtag());
+        getProperties().put(HANDLE, "@"+organisation.getFeedUsername());
+        getProperties().put(HASHTAG, organisation.getHashtag());
         if(content.getType() == ContentType.ROUNDUP)
-            getProperties().put(PostTemplate.URL, organisation.getUrl(site.getEnvironment(EnvironmentName.PROD).getUrl()));
+            getProperties().put(URL, organisation.getUrl(site.getEnvironment(EnvironmentName.PROD).getUrl()));
     }
 
     /**
-     * Constructor that takes a library post template.
+     * Constructor that takes a saved post.
      */
-    public ContentPost(Organisation organisation, PostTemplate template)
+    public DraftContentPost(Organisation organisation, SavedContentPost post)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
-        setTemplateId(template.getId());
+        setSourceId(post.getId());
         setSiteId(organisation.getSiteId());
         setCode(organisation.getCode());
-        setContentType(template.getContentType());
+        setContentType(post.getContentType());
         setStatus(DraftStatus.NEW);
 
-        getProperties().put(PostTemplate.HANDLE, "@"+organisation.getFeedUsername());
-        getProperties().put(PostTemplate.HASHTAG, organisation.getHashtag());
-        setTitle(template.getName());
-        setHashtags(template.getHashtags());
-        setUrl(template.getUrl());
+        getProperties().put(HANDLE, "@"+organisation.getFeedUsername());
+        getProperties().put(HASHTAG, organisation.getHashtag());
+        setTitle(post.getName());
+        setHashtags(post.getHashtags());
+        setUrl(post.getUrl());
     }
 
     /**
      * Copy constructor.
      */
-    public ContentPost(ContentPost obj)
+    public DraftContentPost(DraftContentPost obj)
     {
         copyAttributes(obj);
     }
@@ -117,7 +113,7 @@ public class ContentPost extends DraftPost
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ContentPost obj)
+    public void copyAttributes(DraftContentPost obj)
     {
         if(obj != null)
         {
@@ -278,7 +274,7 @@ public class ContentPost extends DraftPost
      */
     public String getHandle()
     {
-        return getProperties().get(PostTemplate.HANDLE);
+        return getProperties().get(HANDLE);
     }
 
     /**
@@ -286,7 +282,7 @@ public class ContentPost extends DraftPost
      */
     public void setHandle(String handle)
     {
-        getProperties().put(PostTemplate.HANDLE, handle);
+        getProperties().put(HANDLE, handle);
     }
 
     /**
@@ -302,7 +298,7 @@ public class ContentPost extends DraftPost
      */
     public String getHashtag()
     {
-        return getProperties().get(PostTemplate.HASHTAG);
+        return getProperties().get(HASHTAG);
     }
 
     /**
@@ -310,7 +306,7 @@ public class ContentPost extends DraftPost
      */
     public void setHashtag(String hashtag)
     {
-        getProperties().put(PostTemplate.HASHTAG, hashtag);
+        getProperties().put(HASHTAG, hashtag);
     }
 
     /**
@@ -327,7 +323,7 @@ public class ContentPost extends DraftPost
     @Override
     public String getTitle()
     {
-        return getProperties().get(PostTemplate.TITLE);
+        return getProperties().get(TITLE);
     }
 
     /**
@@ -335,7 +331,7 @@ public class ContentPost extends DraftPost
      */
     public void setTitle(String title)
     {
-        getProperties().put(PostTemplate.TITLE, title);
+        getProperties().put(TITLE, title);
     }
 
     /**
@@ -351,7 +347,7 @@ public class ContentPost extends DraftPost
      */
     public String getTitle1()
     {
-        return getProperties().get(PostTemplate.TITLE1);
+        return getProperties().get(TITLE1);
     }
 
     /**
@@ -359,7 +355,7 @@ public class ContentPost extends DraftPost
      */
     public void setTitle1(String title1)
     {
-        getProperties().put(PostTemplate.TITLE1, title1);
+        getProperties().put(TITLE1, title1);
     }
 
     /**
@@ -375,7 +371,7 @@ public class ContentPost extends DraftPost
      */
     public String getTitle2()
     {
-        return getProperties().get(PostTemplate.TITLE2);
+        return getProperties().get(TITLE2);
     }
 
     /**
@@ -383,7 +379,7 @@ public class ContentPost extends DraftPost
      */
     public void setTitle2(String title2)
     {
-        getProperties().put(PostTemplate.TITLE2, title2);
+        getProperties().put(TITLE2, title2);
     }
 
     /**

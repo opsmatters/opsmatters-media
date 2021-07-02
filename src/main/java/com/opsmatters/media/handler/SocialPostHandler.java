@@ -25,7 +25,7 @@ import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.SocialProvider;
-import com.opsmatters.media.model.social.PostTemplate;
+import com.opsmatters.media.model.social.SocialPost;
 
 /**
  * Class representing a handler used to prepare social media posts.
@@ -197,13 +197,13 @@ public class SocialPostHandler
 
             // Process the message to find any hashtags in the message
             //   that can be removed from the hashtag list
-            properties.remove(PostTemplate.HASHTAGS);
+            properties.remove(SocialPost.HASHTAGS);
             parseTokens(new StringSubstitutor(properties).replace(message));
 
             // Put back the amended hashtag list and process the message again
             //   to resolve the HASHTAGS property with the new value
             if(hashtags != null)
-                properties.put(PostTemplate.HASHTAGS, getHashtags());
+                properties.put(SocialPost.HASHTAGS, getHashtags());
             parseTokens(new StringSubstitutor(properties).replace(createMessage(false)));
         }
     }

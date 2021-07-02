@@ -20,11 +20,11 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Represents the status of a post template.
+ * Represents the status of a post source.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum TemplateStatus
+public enum SourceStatus
 {
     NEW("New", "glyphicon-unchecked", "", -1),
     ACTIVE("Active", "glyphicon-ok-circle", "status-success", 1),
@@ -44,7 +44,7 @@ public enum TemplateStatus
      * @param css The css class for the status
      * @param state The state for the status
      */
-    TemplateStatus(String value, String icon, String css, int state)
+    SourceStatus(String value, String icon, String css, int state)
     {
         this.value = value;
         this.icon = icon;
@@ -111,10 +111,10 @@ public enum TemplateStatus
      * @param value The type value
      * @return The type for the given value
      */
-    public static TemplateStatus fromValue(String value)
+    public static SourceStatus fromValue(String value)
     {
-        TemplateStatus[] types = values();
-        for(TemplateStatus type : types)
+        SourceStatus[] types = values();
+        for(SourceStatus type : types)
         {
             if(type.value().equals(value))
                 return type;
@@ -133,11 +133,11 @@ public enum TemplateStatus
     }
 
     /**
-     * Returns a list of the template statuses.
+     * Returns a list of the source statuses.
      */
-    public static List<TemplateStatus> toList()
+    public static List<SourceStatus> toList()
     {
-        List<TemplateStatus> ret = new ArrayList<TemplateStatus>();
+        List<SourceStatus> ret = new ArrayList<SourceStatus>();
 
         ret.add(NEW);
         ret.add(ACTIVE);

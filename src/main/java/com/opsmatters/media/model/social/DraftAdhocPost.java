@@ -25,23 +25,21 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class AdhocPost extends DraftPost
+public class DraftAdhocPost extends DraftPost
 {
-    public static final String TITLE = "title";
-
     private String title = "";
 
     /**
      * Default constructor.
      */
-    public AdhocPost()
+    public DraftAdhocPost()
     {
     }
 
     /**
      * Constructor that takes a title.
      */
-    public AdhocPost(Site site, String title)
+    public DraftAdhocPost(Site site, String title)
     {
         setId(StringUtils.getUUID(null));
         setSiteId(site.getId());
@@ -51,24 +49,24 @@ public class AdhocPost extends DraftPost
     }
 
     /**
-     * Constructor that takes a library post template.
+     * Constructor that takes a saved post.
      */
-    public AdhocPost(PostTemplate template)
+    public DraftAdhocPost(SavedAdhocPost post)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
-        setSiteId(template.getSiteId());
-        setTemplateId(template.getId());
+        setSiteId(post.getSiteId());
+        setSourceId(post.getId());
         setStatus(DraftStatus.NEW);
-        setTitle(template.getName());
-        setHashtags(template.getHashtags());
-        setUrl(template.getUrl());
+        setTitle(post.getName());
+        setHashtags(post.getHashtags());
+        setUrl(post.getUrl());
     }
 
     /**
      * Copy constructor.
      */
-    public AdhocPost(AdhocPost obj)
+    public DraftAdhocPost(DraftAdhocPost obj)
     {
         copyAttributes(obj);
     }
@@ -76,7 +74,7 @@ public class AdhocPost extends DraftPost
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(AdhocPost obj)
+    public void copyAttributes(DraftAdhocPost obj)
     {
         if(obj != null)
         {
