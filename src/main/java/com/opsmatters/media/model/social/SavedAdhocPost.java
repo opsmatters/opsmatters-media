@@ -18,7 +18,10 @@ package com.opsmatters.media.model.social;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.Iterator;
+import java.time.Instant;
 import org.json.JSONObject;
+import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.util.StringUtils;
 
 /**
  * Class representing a saved social media ad-hoc post.
@@ -34,6 +37,18 @@ public class SavedAdhocPost extends SavedPost
      */
     public SavedAdhocPost()
     {
+    }
+
+    /**
+     * Constructor that takes a site and name.
+     */
+    public SavedAdhocPost(Site site, String name)
+    {
+        setId(StringUtils.getUUID(null));
+        setCreatedDate(Instant.now());
+        setSiteId(site.getId());
+        setName(name);
+        setStatus(SourceStatus.NEW);
     }
 
     /**

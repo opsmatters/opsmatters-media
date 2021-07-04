@@ -79,9 +79,16 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
       + "FROM SAVED_POSTS WHERE SITE_ID=?";
 
     /**
-     * The query to use to select the saved posts from the SAVED_POSTS table.
+     * The query to use to select the saved posts from the SAVED_POSTS table by type.
      */
     private static final String LIST_BY_TYPE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, TYPE, SITE_ID, NAME, MESSAGE, SHORTEN_URL, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM SAVED_POSTS WHERE TYPE=?";
+
+    /**
+     * The query to use to select the saved posts from the SAVED_POSTS table by content type.
+     */
+    private static final String LIST_BY_CONTENT_TYPE_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, TYPE, SITE_ID, NAME, MESSAGE, SHORTEN_URL, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM SAVED_POSTS WHERE SITE_ID=? AND TYPE=?";
 
@@ -404,9 +411,9 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
     }
 
     /**
-     * Returns the saved posts from the SAVED_POSTS table by post type and content type.
+     * Returns the saved posts from the SAVED_POSTS table by post type.
      */
-    public synchronized List<SavedPost> list(Site site, PostType type, ContentType contentType) throws SQLException
+    public synchronized List<SavedPost> list(PostType type) throws SQLException
     {
         List<SavedPost> ret = null;
 
@@ -422,10 +429,68 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
 
         try
         {
-            listByTypeStmt.setString(1, site.getId());
-            listByTypeStmt.setString(2, type.name());
+            listByTypeStmt.setString(1, type.name());
             listByTypeStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByTypeStmt.executeQuery();
+            ret = new ArrayList<SavedPost>();
+            while(rs.next())
+            {
+                SavedPost post = SavedPostFactory.newInstance(PostType.valueOf(rs.getString(5)));
+                post.setId(rs.getString(1));
+                post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                post.setPostedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                post.setSiteId(rs.getString(6));
+                post.setName(rs.getString(7));
+                post.setMessage(rs.getString(8));
+                post.setShortenUrl(rs.getBoolean(9));
+                post.setProperties(new JSONObject(getClob(rs, 10)));
+                post.setAttributes(new JSONObject(getClob(rs, 11)));
+                post.setStatus(rs.getString(12));
+                post.setCreatedBy(rs.getString(13));
+                ret.add(post);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the saved posts from the SAVED_POSTS table by post type and content type.
+     */
+    public synchronized List<SavedPost> list(Site site, PostType type, ContentType contentType) throws SQLException
+    {
+        List<SavedPost> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByContentTypeStmt == null)
+            listByContentTypeStmt = prepareStatement(getConnection(), LIST_BY_CONTENT_TYPE_SQL);
+        clearParameters(listByContentTypeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByContentTypeStmt.setString(1, site.getId());
+            listByContentTypeStmt.setString(2, type.name());
+            listByContentTypeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByContentTypeStmt.executeQuery();
             ret = new ArrayList<SavedPost>();
             while(rs.next())
             {
@@ -518,6 +583,8 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
         listBySiteStmt = null;
         closeStatement(listByTypeStmt);
         listByTypeStmt = null;
+        closeStatement(listByContentTypeStmt);
+        listByContentTypeStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -530,6 +597,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
     private PreparedStatement listStmt;
     private PreparedStatement listBySiteStmt;
     private PreparedStatement listByTypeStmt;
+    private PreparedStatement listByContentTypeStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }

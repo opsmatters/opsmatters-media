@@ -28,6 +28,7 @@ import com.opsmatters.media.model.content.ContentType;
  */
 public abstract class SavedPost extends PostSource
 {
+    public static final String DEFAULT = "New Post";
 
     private Map<String,String> properties = new LinkedHashMap<String,String>();
 
