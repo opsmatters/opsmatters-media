@@ -96,6 +96,13 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
       + "FROM DRAFT_POSTS WHERE TYPE=? AND STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS='NEW') ORDER BY CREATED_DATE";
 
     /**
+     * The query to use to select the posts from the DRAFT_POSTS table by source id.
+     */
+    private static final String LIST_BY_SOURCE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, MESSAGE, STATUS, CREATED_BY "
+      + "FROM DRAFT_POSTS WHERE TYPE=? AND SOURCE_ID=? ORDER BY CREATED_DATE";
+
+    /**
      * The query to use to get the count of posts from the DRAFT_POSTS table.
      */
     private static final String COUNT_SQL =  
@@ -593,6 +600,64 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     }
 
     /**
+     * Returns the posts from the DRAFT_POSTS table by type and source id.
+     */
+    public synchronized List<DraftPost> list(PostType type, String sourceId) throws SQLException
+    {
+        List<DraftPost> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listBySourceStmt == null)
+            listBySourceStmt = prepareStatement(getConnection(), LIST_BY_SOURCE_SQL);
+        clearParameters(listBySourceStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listBySourceStmt.setString(1, type.name());
+            listBySourceStmt.setString(2, sourceId);
+            listBySourceStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listBySourceStmt.executeQuery();
+            ret = new ArrayList<DraftPost>();
+            while(rs.next())
+            {
+                DraftPost post = DraftPostFactory.newInstance(PostType.valueOf(rs.getString(5)));
+                post.setId(rs.getString(1));
+                post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                post.setScheduledDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                post.setSiteId(rs.getString(6));
+                post.setSourceId(rs.getString(7));
+                post.setProperties(new JSONObject(getClob(rs, 8)));
+                post.setAttributes(new JSONObject(getClob(rs, 9)));
+                post.setMessage(rs.getString(10));
+                post.setStatus(rs.getString(11));
+                post.setCreatedBy(rs.getString(12));
+                ret.add(post);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the count of posts from the table.
      */
     public int count() throws SQLException
@@ -670,6 +735,8 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
         listBySiteStmt = null;
         closeStatement(listByStatusStmt);
         listByStatusStmt = null;
+        closeStatement(listBySourceStmt);
+        listBySourceStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -683,6 +750,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     private PreparedStatement listStmt;
     private PreparedStatement listBySiteStmt;
     private PreparedStatement listByStatusStmt;
+    private PreparedStatement listBySourceStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }

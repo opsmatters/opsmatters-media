@@ -24,6 +24,7 @@ package com.opsmatters.media.model.social;
 public enum DraftStatus
 {
     NEW("New", "glyphicon-unchecked", ""),
+    REPOSTED("Reposted", "glyphicon-retweet", ""),
     SUBMITTED("Submitted", "glyphicon-log-in", "status-warn"),
     PROCESSED("Processed", "glyphicon-ok-circle", "status-success"),
     ERROR("Error", "glyphicon-alert", "status-error"),
