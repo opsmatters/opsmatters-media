@@ -321,6 +321,9 @@ public class FormatUtils
             ret = ret.replaceAll("→", "->");
             ret = ret.replaceAll("►", ">");
 
+            // Remove special characters that won't save to the db
+            ret = ret.replaceAll("▬|▬|▬|❏|➡️", "");
+
             // Turn linefeeds into <br> tags
             ret = ret.replaceAll("\r\n?|\n", "<br>");
 
@@ -447,7 +450,11 @@ public class FormatUtils
             ret = ret.replaceAll("%5D", "]");
 
             // Remove other special characters
-            ret = ret.replaceAll("%22|%23|%25|%27|%2C|%3B|%3F|%7C|%CC%81|%CC%83", "");
+            ret = ret.replaceAll("%22|%23|%25|%27|%2C|%3B|%3F|%7C", "");
+
+            // Remove "combining" accent characters
+            ret = ret.replaceAll("[\\u0300-\\u036F]", "");
+            ret = ret.replaceAll("%C[CD]%[89ab][0-9a-f]", "");
 
             // Remove quotes, dashes etc
             ret = ret.replaceAll("'|‘|’|‚|‛|“|”|„|′|″", "");

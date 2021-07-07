@@ -161,20 +161,23 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
         if(video == null)
             return null;
 
-        ContentFields fields = getContentFields();
         VideoDetails content = new VideoDetails(videoId);
-        populateSummaryFields(video, fields, content, "content");
-
-        content.setDuration(video.getInt(Fields.DURATION));
-        content.setChannelTitle(video.getString(Fields.CHANNEL_TITLE));
-        content.setChannelId(video.getString(Fields.CHANNEL_ID));
-
-        if(fields.hasBody())
+        List<ContentFields> articles = getArticleFields();
+        for(ContentFields fields : articles)
         {
-            ContentField field = fields.getBody();
-            String body = getBody(field, video.getString(field.getSelector(0).getExpr()), "content");
-            if(body != null)
-                content.setDescription(body);
+            populateSummaryFields(video, fields, content, "content");
+
+            content.setDuration(video.getInt(Fields.DURATION));
+            content.setChannelTitle(video.getString(Fields.CHANNEL_TITLE));
+            content.setChannelId(video.getString(Fields.CHANNEL_ID));
+
+            if(fields.hasBody())
+            {
+                ContentField field = fields.getBody();
+                String body = getBody(field, video.getString(field.getSelector(0).getExpr()), "content");
+                if(body != null)
+                    content.setDescription(body);
+            }
         }
 
         return content;

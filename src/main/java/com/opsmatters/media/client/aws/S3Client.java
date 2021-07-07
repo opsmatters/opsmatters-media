@@ -199,17 +199,24 @@ public class S3Client extends Client
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given bucket exists.
+     */
+    public boolean bucketExists(String bucket) 
+    {
+        boolean ret = false;
+        if(isConnected() && bucket.length() > 0)
+            ret = client.doesBucketExist(bucket);
+        return ret;
+    }
+
+    /**
      * Change to the given bucket.
      */
     public boolean changeBucket(String bucket) 
     {
-        boolean ret = false;
-        if(isConnected() && bucket.length() > 0)
-        {
-            ret = client.doesBucketExist(bucket);
+        boolean ret = bucketExists(bucket);
+        if(ret)
             this.bucket = bucket;
-        }
-
         return ret;
     }
 
@@ -281,6 +288,14 @@ public class S3Client extends Client
      */
     public boolean put(InputStream stream, String filename, long size)
     {
+        return put(stream, filename, bucket, size);
+    }
+
+    /**
+     * Write the given file to S3.
+     */
+    public boolean put(InputStream stream, String filename, String bucket, long size)
+    {
         boolean ret = false;
 
         if(isConnected())
@@ -292,6 +307,16 @@ public class S3Client extends Client
             ret = result != null;
         }
 
+        return ret;
+    }
+
+    /**
+     * Move the given file from the current bucket to the target bucket in S3.
+     */
+    public boolean move(String filename, String targetBucket)
+    {
+        boolean ret = put(get(filename), filename, targetBucket, getSize(filename));
+        delete(filename);
         return ret;
     }
 
@@ -442,24 +467,29 @@ public class S3Client extends Client
      */
     public List<S3ObjectSummary> downloadFiles(String bucket, String directory, String ext) throws IOException
     {
-        changeBucket(bucket); 
-
-        List<S3ObjectSummary> items = listFiles(bucket);
         List<S3ObjectSummary> ret = new ArrayList<S3ObjectSummary>();
-        for(S3ObjectSummary item : items)
+        if(changeBucket(bucket)) 
         {
-            if(ext != null && !item.getKey().endsWith(ext))
-                continue;
-
-            File file = new File(directory, item.getKey());
-            if(!file.exists() || file.lastModified() < item.getLastModified().getTime())
+            List<S3ObjectSummary> items = listFiles(bucket);
+            for(S3ObjectSummary item : items)
             {
-                if(getFile(get(file.getName()), file))
+                if(ext != null && !item.getKey().endsWith(ext))
+                    continue;
+
+                File file = new File(directory, item.getKey());
+                if(!file.exists() || file.lastModified() < item.getLastModified().getTime())
                 {
-                    ret.add(item);
-                    logger.info("Downloaded config file: "+file.getName());
+                    if(getFile(get(file.getName()), file))
+                    {
+                        ret.add(item);
+                        logger.info("Downloaded config file: "+file.getName());
+                    }
                 }
             }
+        }
+        else
+        {
+            logger.warning("Bucket does not exist: "+bucket);
         }
 
         return ret;

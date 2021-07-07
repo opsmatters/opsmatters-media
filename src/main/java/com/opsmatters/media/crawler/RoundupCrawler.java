@@ -124,49 +124,58 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
     public RoundupDetails getRoundup(RoundupSummary summary)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        ContentFields fields = getContentFields();
         RoundupDetails content = new RoundupDetails(summary);
+        List<ContentFields> articles = getArticleFields();
 
-        configureImplicitWait(getContentLoading());
-        loadPage(content.getUrl(), getContentLoading());
-        configureExplicitWait(getContentLoading());
+        configureImplicitWait(getArticleLoading());
+        loadPage(content.getUrl(), getArticleLoading());
+        configureExplicitWait(getArticleLoading());
 
         // Trace to see the roundup page
         if(trace(getDriver()))
             logger.info("roundup-page="+getDriver().getPageSource());
 
-        if(!fields.hasRoot())
-            throw new IllegalArgumentException("Root empty for roundup content");
         WebElement root = null;
-        List<WebElement> elements = getDriver().findElements(By.cssSelector(fields.getRoot()));
-        if(elements.size() > 0)
+        for(ContentFields fields : articles)
         {
-            root = elements.get(0);
-            if(debug())
-                logger.info("Root found for roundup content: "+fields.getRoot());
-            populateSummaryFields(root, fields, content, "content");
+            if(!fields.hasRoot())
+                throw new IllegalArgumentException("Root empty for roundup content");
+            List<WebElement> elements = getDriver().findElements(By.cssSelector(fields.getRoot()));
+            if(elements.size() > 0)
+            {
+                root = elements.get(0);
+                if(debug())
+                    logger.info("Root found for roundup content: "+fields.getRoot());
+                populateSummaryFields(root, fields, content, "content");
+            }
+            else
+            {
+                logger.warning("Root not found for roundup content: "+fields.getRoot());
+                continue;
+            }
+
+            // Trace to see the content root node
+            if(trace(root))
+                logger.info("roundup-node="+root.getAttribute("innerHTML"));
+
+            if(root != null && fields.hasBody())
+            {
+                String body = getBodySummary(fields.getBody(), root, "content", config.getSummary(), debug());
+                if(body != null)
+                    content.setSummary(body);
+            }
+
+            // Apply the custom image name if defined
+            String imageFormat = config.getImageFormat();
+            if(imageFormat != null && imageFormat.length() > 0 && content.hasImage())
+                content.setImageFromPath(getFormatSubstitutor().replace(imageFormat));
+
+            if(root != null)
+                break;
         }
-        else
-        {
-            logger.severe("Root not found for roundup content: "+fields.getRoot());
+
+        if(root == null)
             throw new IllegalArgumentException("Root not found for roundup content");
-        }
-
-        // Trace to see the content root node
-        if(trace(root))
-            logger.info("roundup-node="+root.getAttribute("innerHTML"));
-
-        if(root != null && fields.hasBody())
-        {
-            String body = getBodySummary(fields.getBody(), root, "content", config.getSummary(), debug());
-            if(body != null)
-                content.setSummary(body);
-        }
-
-        // Apply the custom image name if defined
-        String imageFormat = config.getImageFormat();
-        if(imageFormat != null && imageFormat.length() > 0 && content.hasImage())
-            content.setImageFromPath(getFormatSubstitutor().replace(imageFormat));
 
         return content;
     }

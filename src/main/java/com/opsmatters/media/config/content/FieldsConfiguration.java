@@ -29,14 +29,14 @@ public abstract class FieldsConfiguration extends YamlConfiguration
 {
     public static final String TEASER_LOADING = "teaser-loading";
     public static final String TEASER_FIELDS = "teaser-fields";
-    public static final String CONTENT_LOADING = "content-loading";
-    public static final String CONTENT_FIELDS = "content-fields";
+    public static final String ARTICLE_LOADING = "article-loading";
+    public static final String ARTICLE_FIELDS = "article-fields";
     public static final String FIELDS = "fields";
 
     private LoadingConfiguration teaserLoading;
     private List<ContentFields> teaserFields = new ArrayList<ContentFields>();
-    private LoadingConfiguration contentLoading; 
-    private ContentFields contentFields;
+    private LoadingConfiguration articleLoading; 
+    private List<ContentFields> articleFields = new ArrayList<ContentFields>();
     private Fields fields;
 
     /**
@@ -66,11 +66,12 @@ public abstract class FieldsConfiguration extends YamlConfiguration
             super.copyAttributes(obj);
             if(obj.getTeaserLoading() != null)
                 setTeaserLoading(new LoadingConfiguration(obj.getTeaserLoading()));
-            if(obj.getContentLoading() != null)
-                setContentLoading(new LoadingConfiguration(obj.getContentLoading()));
+            if(obj.getArticleLoading() != null)
+                setArticleLoading(new LoadingConfiguration(obj.getArticleLoading()));
             for(ContentFields teaserFields : obj.getTeaserFields())
                 addTeaserFields(teaserFields);
-            setContentFields(obj.getContentFields());
+            for(ContentFields articleFields : obj.getArticleFields())
+                addArticleFields(articleFields);
             setFields(new Fields(obj.getFields()));
         }
     }
@@ -100,19 +101,19 @@ public abstract class FieldsConfiguration extends YamlConfiguration
     }
 
     /**
-     * Returns the content page loading configuration.
+     * Returns the article page loading configuration.
      */
-    public LoadingConfiguration getContentLoading()
+    public LoadingConfiguration getArticleLoading()
     {
-        return contentLoading;
+        return articleLoading;
     }
 
     /**
-     * Sets the content page loading configuration.
+     * Sets the article page loading configuration.
      */
-    public void setContentLoading(LoadingConfiguration contentLoading)
+    public void setArticleLoading(LoadingConfiguration articleLoading)
     {
-        this.contentLoading = contentLoading;
+        this.articleLoading = articleLoading;
     }
 
     /**
@@ -148,27 +149,35 @@ public abstract class FieldsConfiguration extends YamlConfiguration
     }
 
     /**
-     * Returns the content fields for this configuration.
+     * Returns the article fields list for this configuration.
      */
-    public ContentFields getContentFields()
+    public List<ContentFields> getArticleFields()
     {
-        return contentFields;
+        return articleFields;
     }
 
     /**
-     * Sets the content fields for this configuration.
+     * Sets the article fields list for this configuration.
      */
-    public void setContentFields(ContentFields contentFields)
+    public void setArticleFields(List<ContentFields> articleFields)
     {
-        this.contentFields = contentFields;
+        this.articleFields = articleFields;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the content fields list has been set for this configuration.
+     * Adds the article fields for this configuration.
      */
-    public boolean hasContentFields()
+    public void addArticleFields(ContentFields articleFields)
     {
-        return contentFields != null && contentFields.hasRoot();
+        this.articleFields.add(articleFields);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the article fields list has been set for this configuration.
+     */
+    public boolean hasArticleFields()
+    {
+        return articleFields != null && articleFields.size() > 0;
     }
 
     /**
@@ -242,15 +251,17 @@ public abstract class FieldsConfiguration extends YamlConfiguration
                 addTeaserFields(new ContentFields(teaser));
         }
 
-        if(map.containsKey(CONTENT_LOADING))
+        if(map.containsKey(ARTICLE_LOADING))
         {
-            contentLoading = new LoadingConfiguration(getName());
-            contentLoading.parseDocument((Map<String,Object>)map.get(CONTENT_LOADING));
+            articleLoading = new LoadingConfiguration(getName());
+            articleLoading.parseDocument((Map<String,Object>)map.get(ARTICLE_LOADING));
         }
 
-        if(map.containsKey(CONTENT_FIELDS))
+        if(map.containsKey(ARTICLE_FIELDS))
         {
-            setContentFields(new ContentFields((Map<String,Object>)map.get(CONTENT_FIELDS)));
+            List<Map<String,Object>> articles = (List<Map<String,Object>>)map.get(ARTICLE_FIELDS);
+            for(Map<String,Object> article : articles)
+                addArticleFields(new ContentFields(article));
         }
 
         if(map.containsKey(FIELDS))

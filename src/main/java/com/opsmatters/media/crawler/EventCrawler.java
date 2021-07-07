@@ -102,115 +102,123 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
     public EventDetails getEvent(EventSummary summary)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        ContentFields fields = getContentFields();
         EventDetails content = new EventDetails(summary);
+        List<ContentFields> articles = getArticleFields();
 
-        configureImplicitWait(getContentLoading());
-        loadPage(content.getUrl(), getContentLoading());
-        configureExplicitWait(getContentLoading());
-
-        if(!fields.hasRoot())
-            throw new IllegalArgumentException("Root empty for event content");
+        configureImplicitWait(getArticleLoading());
+        loadPage(content.getUrl(), getArticleLoading());
+        configureExplicitWait(getArticleLoading());
 
         // Trace to see the event page
         if(trace(getDriver()))
             logger.info("event-page="+getDriver().getPageSource());
 
         WebElement root = null;
-        List<WebElement> elements = getDriver().findElements(By.cssSelector(fields.getRoot()));
-        if(elements.size() > 0)
+        for(ContentFields fields : articles)
         {
-            root = elements.get(0);
-            if(debug())
-                logger.info("Root found for event content: "+fields.getRoot());
-            populateSummaryFields(root, fields, content, "content");
-        }
-        else
-        {
-            logger.severe("Root not found for event content: "+fields.getRoot());
-            throw new IllegalArgumentException("Root not found for event content");
-        }
-
-        // Trace to see the event root node
-        if(trace(root))
-            logger.info("event-node="+root.getAttribute("innerHTML"));
-
-        content.setPublishedDate(TimeUtils.truncateTimeUTC());
-
-        boolean hasTime = false;
-        if(content.getStartDate() != null)
-            hasTime = TimeUtils.hasTime(content.getStartDateMillis());
-
-        long starttm = 0L;
-
-        if(fields.hasStartTime())
-        {
-            ContentField field = fields.getStartTime();
-            String start = getElements(field, root, "content");
-            if(start != null)
+            if(!fields.hasRoot())
+                throw new IllegalArgumentException("Root empty for event content");
+            List<WebElement> elements = getDriver().findElements(By.cssSelector(fields.getRoot()));
+            if(elements.size() > 0)
             {
-                try
+                root = elements.get(0);
+                if(debug())
+                    logger.info("Root found for event content: "+fields.getRoot());
+                populateSummaryFields(root, fields, content, "content");
+            }
+            else
+            {
+                logger.warning("Root not found for event content: "+fields.getRoot());
+                continue;
+            }
+
+            // Trace to see the content root node
+            if(trace(root))
+                logger.info("event-node="+root.getAttribute("innerHTML"));
+
+            content.setPublishedDate(TimeUtils.truncateTimeUTC());
+
+            boolean hasTime = false;
+            if(content.getStartDate() != null)
+                hasTime = TimeUtils.hasTime(content.getStartDateMillis());
+
+            long starttm = 0L;
+
+            if(fields.hasStartTime())
+            {
+                ContentField field = fields.getStartTime();
+                String start = getElements(field, root, "content");
+                if(start != null)
                 {
-                    // Try each date pattern
-                    DateTimeParseException ex = null;
-                    for(String datePattern : field.getDatePatterns())
+                    try
                     {
-                        try
+                        // Try each date pattern
+                        DateTimeParseException ex = null;
+                        for(String datePattern : field.getDatePatterns())
                         {
-                            starttm = TimeUtils.toMillisTime(start, datePattern);
-                            ex = null;
-                            break;
+                            try
+                            {
+                                starttm = TimeUtils.toMillisTime(start, datePattern);
+                                ex = null;
+                                break;
+                            }
+                            catch(DateTimeParseException e)
+                            {
+                                ex = e;
+                            }
                         }
-                        catch(DateTimeParseException e)
-                        {
-                            ex = e;
-                        }
+
+                        if(ex != null)
+                            throw ex;
+
+                        if(debug())
+                            logger.info("Found start time: "+starttm);
                     }
-
-                    if(ex != null)
-                        throw ex;
-
-                    if(debug())
-                        logger.info("Found start time: "+starttm);
-                }
-                catch(DateTimeParseException e)
-                {
-                    logger.severe(StringUtils.serialize(e));
-                    logger.warning("Unparseable start time: "+start);
+                    catch(DateTimeParseException e)
+                    {
+                        logger.severe(StringUtils.serialize(e));
+                        logger.warning("Unparseable start time: "+start);
+                    }
                 }
             }
+
+            // If no start time was found, use the default
+            if(!hasTime && starttm == 0L && config.getFields().containsKey(Fields.START_TIME))
+            {
+                String start = config.getFields().get(Fields.START_TIME);
+                starttm = TimeUtils.toMillisTime(start, Formats.SHORT_TIME_FORMAT);
+                if(debug())
+                    logger.info("Found default start time: "+starttm);
+            }
+
+            if(fields.hasTimeZone())
+            {
+                String timezone = getElements(fields.getTimeZone(), root, "content");
+                if(timezone != null)
+                    content.setTimeZone(timezone);
+            }
+
+            if(root != null && fields.hasBody())
+            {
+                String body = getBody(fields.getBody(), root, "content");
+                if(body != null)
+                    content.setDescription(body);
+            }
+
+            // Add the start time if it is a separate field
+            if(starttm > 0L && content.getStartDateMillis() > 0L)
+            {
+                content.setStartDateMillis(content.getStartDateMillis()+starttm);
+                if(debug())
+                    logger.info("Added start time: "+content.getStartDateAsString());
+            }
+
+            if(root != null)
+                break;
         }
 
-        // If no start time was found, use the default
-        if(!hasTime && starttm == 0L && config.getFields().containsKey(Fields.START_TIME))
-        {
-            String start = config.getFields().get(Fields.START_TIME);
-            starttm = TimeUtils.toMillisTime(start, Formats.SHORT_TIME_FORMAT);
-            if(debug())
-                logger.info("Found default start time: "+starttm);
-        }
-
-        if(fields.hasTimeZone())
-        {
-            String timezone = getElements(fields.getTimeZone(), root, "content");
-            if(timezone != null)
-                content.setTimeZone(timezone);
-        }
-
-        if(root != null && fields.hasBody())
-        {
-            String body = getBody(fields.getBody(), root, "content");
-            if(body != null)
-                content.setDescription(body);
-        }
-
-        // Add the start time if it is a separate field
-        if(starttm > 0L && content.getStartDateMillis() > 0L)
-        {
-            content.setStartDateMillis(content.getStartDateMillis()+starttm);
-            if(debug())
-                logger.info("Added start time: "+content.getStartDateAsString());
-        }
+        if(root == null)
+            throw new IllegalArgumentException("Root not found for event content");
 
         return content;
     }

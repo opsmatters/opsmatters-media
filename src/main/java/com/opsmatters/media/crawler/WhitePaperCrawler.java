@@ -109,53 +109,61 @@ public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
     public PublicationDetails getWhitePaper(PublicationSummary summary)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        ContentFields fields = getContentFields();
         PublicationDetails content = new PublicationDetails(summary);
+        List<ContentFields> articles = getArticleFields();
 
-        configureImplicitWait(getContentLoading());
-        loadPage(content.getUrl(), getContentLoading());
-        configureExplicitWait(getContentLoading());
+        configureImplicitWait(getArticleLoading());
+        loadPage(content.getUrl(), getArticleLoading());
+        configureExplicitWait(getArticleLoading());
 
-        if(!fields.hasRoot())
-            throw new IllegalArgumentException("Root empty for white paper content");
-
-        // Trace to see the white paper page
+        // Trace to see the whitepaper page
         if(trace(getDriver()))
             logger.info("whitepaper-page="+getDriver().getPageSource());
 
         WebElement root = null;
-        List<WebElement> elements = getDriver().findElements(By.cssSelector(fields.getRoot()));
-        if(elements.size() > 0)
+        for(ContentFields fields : articles)
         {
-            root = elements.get(0);
-            if(debug())
-                logger.info("Root found for white paper content: "+fields.getRoot());
-            populateSummaryFields(root, fields, content, "content");
+            if(!fields.hasRoot())
+                throw new IllegalArgumentException("Root empty for white paper content");
+            List<WebElement> elements = getDriver().findElements(By.cssSelector(fields.getRoot()));
+            if(elements.size() > 0)
+            {
+                root = elements.get(0);
+                if(debug())
+                    logger.info("Root found for white paper content: "+fields.getRoot());
+                populateSummaryFields(root, fields, content, "content");
+            }
+            else
+            {
+                logger.warning("Root not found for white paper content: "+fields.getRoot());
+                continue;
+            }
+
+            // Trace to see the content root node
+            if(trace(root))
+                logger.info("whitepaper-node="+root.getAttribute("innerHTML"));
+
+            // Default the published date to today if not found
+            if(!fields.hasPublishedDate() && content.getPublishedDate() == null)
+            {
+                content.setPublishedDate(TimeUtils.truncateTimeUTC());
+                if(debug())
+                    logger.info("Defaulting published date: "+content.getPublishedDateAsString());
+            }
+
+            if(root != null && fields.hasBody())
+            {
+                String body = getBody(fields.getBody(), root, "content");
+                if(body != null)
+                    content.setDescription(body);
+            }
+
+            if(root != null)
+                break;
         }
-        else
-        {
-            logger.severe("Root not found for white paper content: "+fields.getRoot());
+
+        if(root == null)
             throw new IllegalArgumentException("Root not found for white paper content");
-        }
-
-        // Trace to see the whitepaper root node
-        if(trace(root))
-            logger.info("whitepaper-node="+root.getAttribute("innerHTML"));
-
-        // Default the published date to today if not found
-        if(!fields.hasPublishedDate() && content.getPublishedDate() == null)
-        {
-            content.setPublishedDate(TimeUtils.truncateTimeUTC());
-            if(debug())
-                logger.info("Defaulting published date: "+content.getPublishedDateAsString());
-        }
-
-        if(root != null && fields.hasBody())
-        {
-            String body = getBody(fields.getBody(), root, "content");
-            if(body != null)
-                content.setDescription(body);
-        }
 
         return content;
     }

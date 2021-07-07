@@ -134,19 +134,19 @@ public abstract class FieldsCrawler<T extends ContentSummary>
     }
 
     /**
-     * Returns the content page loading configuration.
+     * Returns the article page loading configuration.
      */
-    public LoadingConfiguration getContentLoading()
+    public LoadingConfiguration getArticleLoading()
     {
-        return config.getContentLoading();
+        return config.getArticleLoading();
     }
 
     /**
-     * Returns the content selection of the crawler.
+     * Returns the article selections of the crawler.
      */
-    public ContentFields getContentFields()
+    public List<ContentFields> getArticleFields()
     {
-        return config.getContentFields();
+        return config.getArticleFields();
     }
 
     /**
@@ -194,7 +194,7 @@ public abstract class FieldsCrawler<T extends ContentSummary>
      */
     public boolean removeParameters()
     {
-        return getContentLoading() != null ? getContentLoading().removeParameters() : true;
+        return getArticleLoading() != null ? getArticleLoading().removeParameters() : true;
     }
 
     /**
