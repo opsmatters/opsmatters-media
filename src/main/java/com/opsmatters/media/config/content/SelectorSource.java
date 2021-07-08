@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Gerald Curley
+ * Copyright 2021 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,14 @@
 package com.opsmatters.media.config.content;
 
 /**
- * Represents a content field source.
+ * Represents a selector source.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ContentFieldSource
+public enum SelectorSource
 {
     PAGE("page"),
-    METATAG("metatag"),
+    META("meta"),
     API("api"); 
 
     private String value;
@@ -33,7 +33,7 @@ public enum ContentFieldSource
      * Constructor that takes the source value.
      * @param value The value for the source
      */
-    ContentFieldSource(String value)
+    SelectorSource(String value)
     {
         this.value = value;
     }
@@ -57,12 +57,12 @@ public enum ContentFieldSource
     }
 
     /**
-     * Returns <CODE>true</code> if this is the METATAG source.
-     * @return <CODE>true</code> if this is the METATAG source.
+     * Returns <CODE>true</code> if this is the META source.
+     * @return <CODE>true</code> if this is the META source.
      */
-    public boolean isMetatag()
+    public boolean isMeta()
     {
-        return this == METATAG;
+        return this == META;
     }
 
     /**
@@ -79,10 +79,10 @@ public enum ContentFieldSource
      * @param value The type value
      * @return The type for the given value
      */
-    public static ContentFieldSource fromValue(String value)
+    public static SelectorSource fromValue(String value)
     {
-        ContentFieldSource[] types = values();
-        for(ContentFieldSource type : types)
+        SelectorSource[] types = values();
+        for(SelectorSource type : types)
         {
             if(type.value().equals(value))
                 return type;

@@ -30,7 +30,6 @@ public class ContentField implements java.io.Serializable
 {
     private static final Logger logger = Logger.getLogger(ContentField.class.getName());
 
-    public static final String SOURCE = "source";
     public static final String SELECTOR = "selector";
     public static final String SELECTORS = "selectors";
     public static final String EXTRACTOR = "extractor";
@@ -43,7 +42,6 @@ public class ContentField implements java.io.Serializable
     public static final String GENERATE = "generate";
 
     private String name = "";
-    private ContentFieldSource source = ContentFieldSource.PAGE;
     private List<ContentFieldSelector> selectors;
     private List<ContentFieldExtractor> extractors;
     private ContentFieldCase textCase = ContentFieldCase.NONE;
@@ -66,7 +64,6 @@ public class ContentField implements java.io.Serializable
     public ContentField(String name, String expr)
     {
         setName(name);
-        setSource(ContentFieldSource.PAGE);
         addSelector(new ContentFieldSelector(name, expr));
     }
 
@@ -101,30 +98,6 @@ public class ContentField implements java.io.Serializable
     public void setName(String name)
     {
         this.name = name;
-    }
-
-    /**
-     * Returns the source for this configuration.
-     */
-    public ContentFieldSource getSource()
-    {
-        return source;
-    }
-
-    /**
-     * Sets the source for this configuration.
-     */
-    public void setSource(ContentFieldSource source)
-    {
-        this.source = source;
-    }
-
-    /**
-     * Sets the source for this configuration.
-     */
-    public void setSource(String source)
-    {
-        setSource(ContentFieldSource.fromValue(source));
     }
 
     /**
@@ -323,8 +296,6 @@ public class ContentField implements java.io.Serializable
      */
     public void parse(Map<String, Object> map)
     {
-        if(map.containsKey(SOURCE))
-            setSource((String)map.get(SOURCE));
         if(map.containsKey(TEXT_CASE))
             setTextCase((String)map.get(TEXT_CASE));
         if(map.containsKey(STOP_EXPR))

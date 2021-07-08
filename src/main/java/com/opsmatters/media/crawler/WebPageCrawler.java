@@ -514,13 +514,13 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     {
         String ret = null;
 
-        if(field.getSource().isPage())
-        {
-            if(debug())
-                logger.info("Looking for elements for "+type+" field: "+field.getName());
+        if(debug())
+            logger.info("Looking for elements for "+type+" field: "+field.getName());
 
-            List<WebElement> nodes = null;
-            for(ContentFieldSelector selector : field.getSelectors())
+        List<WebElement> nodes = null;
+        for(ContentFieldSelector selector : field.getSelectors())
+        {
+            if(selector.getSource().isPage())
             {
                 try
                 {
@@ -541,29 +541,22 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                 {
                 }
             }
-
-            if(ret == null)
+            else if(selector.getSource().isMeta())
             {
-                logger.warning("Elements not found for "+type+" field: "+field.getName());
+                String tag = getPropertyMetatag(selector.getExpr());
+                if(tag != null)
+                {
+                    ret = getValue(field, tag);
+                    if(debug())
+                        logger.info("Found element metatag for "+type+" field "+field.getName()+": "+ret);
+                    break;
+                }
             }
         }
-        else if(field.getSource().isMetatag())
+
+        if(ret == null)
         {
-            if(debug())
-                logger.info("Looking for element metatag for "+type+" field: "+field.getName());
-
-            String tag = field.hasSelectors() ? getPropertyMetatag(field.getSelector(0).getExpr()) : null;
-            if(tag != null)
-            {
-                ret = getValue(field, tag);
-
-                if(debug())
-                    logger.info("Found element metatag for "+type+" field "+field.getName()+": "+ret);
-            }
-            else
-            {
-                logger.warning("Element metatag not found for "+type+" field: "+field.getName());
-            }
+            logger.warning("Elements not found for "+type+" field: "+field.getName());
         }
 
         return ret;
@@ -620,12 +613,12 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     {
         String ret = null;
 
-        if(field.getSource().isPage())
-        {
-            if(debug())
-                logger.info("Looking for anchor for "+type+" field: "+field.getName());
+        if(debug())
+            logger.info("Looking for anchor for "+type+" field: "+field.getName());
 
-            for(ContentFieldSelector selector : field.getSelectors())
+        for(ContentFieldSelector selector : field.getSelectors())
+        {
+            if(selector.getSource().isPage())
             {
                 WebElement anchor = null;
                 WebElement div = null;
@@ -680,29 +673,22 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                     break;
                 }
             }
-
-            if(ret == null)
+            else if(selector.getSource().isMeta())
             {
-                logger.warning("Anchor not found for "+type+" field: "+field.getName());
+                String tag = getPropertyMetatag(selector.getExpr());
+                if(tag != null)
+                {
+                    ret = getValue(field, tag);
+                    if(debug())
+                        logger.info("Found anchor metatag for "+type+" field "+field.getName()+": "+ret);
+                    break;
+                }
             }
         }
-        else if(field.getSource().isMetatag())
+
+        if(ret == null)
         {
-            if(debug())
-                logger.info("Looking for anchor metatag for "+type+" field: "+field.getName());
-
-            String tag = field.hasSelectors() ? getPropertyMetatag(field.getSelector(0).getExpr()) : null;
-            if(tag != null)
-            {
-                ret = FormatUtils.getFormattedUrl(getBasePath(), tag, removeParameters);
-
-                if(debug())
-                    logger.info("Found anchor metatag for "+type+" field "+field.getName()+": "+ret);
-            }
-            else
-            {
-                logger.warning("Anchor metatag not found for "+type+" field: "+field.getName());
-            }
+            logger.warning("Anchor not found for "+type+" field: "+field.getName());
         }
 
         return ret;
@@ -861,12 +847,12 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     {
         String ret = null;
 
-        if(field.getSource().isPage())
-        {
-            if(debug())
-                logger.info("Looking for body summary for "+type+" field: "+field.getName());
+        if(debug())
+            logger.info("Looking for body summary for "+type+" field: "+field.getName());
 
-            for(ContentFieldSelector selector : field.getSelectors())
+        for(ContentFieldSelector selector : field.getSelectors())
+        {
+            if(selector.getSource().isPage())
             {
                 String body = getFormattedSummary(selector.getExpr(), selector.isMultiple(), root, summary, debug);
                 if(body.length() > 0)
@@ -883,29 +869,22 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                     break;
                 }
             }
-
-            if(ret == null)
+            else if(selector.getSource().isMeta())
             {
-                logger.warning("Body summary not found for "+type+" field: "+field.getName());
+                String tag = getPropertyMetatag(selector.getExpr());
+                if(tag != null)
+                {
+                    ret = String.format("<p>%s</p>", getValue(field, tag));
+                    if(debug())
+                        logger.info("Found body summary metatag for "+type+" field "+field.getName()+": "+ret);
+                    break;
+                }
             }
         }
-        else if(field.getSource().isMetatag())
+
+        if(ret == null)
         {
-            if(debug())
-                logger.info("Looking for body summary metatag for "+type+" field: "+field.getName());
-
-            String tag = field.hasSelectors() ? getPropertyMetatag(field.getSelector(0).getExpr()) : null;
-            if(tag != null)
-            {
-                ret = String.format("<p>%s</p>", getValue(field, tag));
-
-                if(debug())
-                    logger.info("Found body summary metatag for "+type+" field "+field.getName()+": "+ret);
-            }
-            else
-            {
-                logger.warning("Body summary metatag not found for "+type+" field: "+field.getName());
-            }
+            logger.warning("Body summary not found for "+type+" field: "+field.getName());
         }
 
         return ret;
@@ -968,12 +947,12 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     {
         String ret = null;
 
-        if(field.getSource().isPage())
-        {
-            if(debug())
-                logger.info("Looking for body for "+type+" field: "+field.getName());
+        if(debug())
+            logger.info("Looking for body for "+type+" field: "+field.getName());
 
-            for(ContentFieldSelector selector : field.getSelectors())
+        for(ContentFieldSelector selector : field.getSelectors())
+        {
+            if(selector.getSource().isPage())
             {
                 String body = getFormattedParagraphs(selector.getExpr(), root, field.getStopExprPattern());
                 if(body.length() > 0)
@@ -984,29 +963,22 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                     break;
                 }
             }
-
-            if(ret == null)
+            else if(selector.getSource().isMeta())
             {
-                logger.warning("Body not found for "+type+" field: "+field.getName());
+                String tag = getPropertyMetatag(selector.getExpr());
+                if(tag != null)
+                {
+                    ret = getValue(field, tag);
+                    if(debug())
+                        logger.info("Found body metatag for "+type+" field "+field.getName()+": "+ret);
+                    break;
+                }
             }
         }
-        else if(field.getSource().isMetatag())
+
+        if(ret == null)
         {
-            if(debug())
-                logger.info("Looking for body metatag for "+type+" field: "+field.getName());
-
-            String tag = field.hasSelectors() ? getPropertyMetatag(field.getSelector(0).getExpr()) : null;
-            if(tag != null)
-            {
-                ret = getValue(field, tag);
-
-                if(debug())
-                    logger.info("Found body metatag for "+type+" field "+field.getName()+": "+ret);
-            }
-            else
-            {
-                logger.warning("Body metatag not found for "+type+" field: "+field.getName());
-            }
+            logger.warning("Body not found for "+type+" field: "+field.getName());
         }
 
         return ret;
@@ -1019,12 +991,12 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     {
         String ret = null;
 
-        if(field.getSource().isPage())
-        {
-            if(debug())
-                logger.info("Looking for image for "+type+" field: "+field.getName());
+        if(debug())
+            logger.info("Looking for image for "+type+" field: "+field.getName());
 
-            for(ContentFieldSelector selector : field.getSelectors())
+        for(ContentFieldSelector selector : field.getSelectors())
+        {
+            if(selector.getSource().isPage())
             {
                 WebElement image = null;
                 try
@@ -1053,29 +1025,22 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                     }
                 }
             }
-
-            if(ret == null)
+            else if(selector.getSource().isMeta())
             {
-                logger.warning("Image not found for "+type+" field: "+field.getName());
+                String tag = getPropertyMetatag(selector.getExpr());
+                if(tag != null)
+                {
+                    ret = getValue(field, tag);
+                    if(debug())
+                        logger.info("Found image metatag for "+type+" field "+field.getName()+": "+ret);
+                    break;
+                }
             }
         }
-        else if(field.getSource().isMetatag())
+
+        if(ret == null)
         {
-            if(debug())
-                logger.info("Looking for image metatag for "+type+" field: "+field.getName());
-
-            String tag = field.hasSelectors() ? getPropertyMetatag(field.getSelector(0).getExpr()) : null;
-            if(tag != null)
-            {
-                ret = getValue(field, tag);
-
-                if(debug())
-                    logger.info("Found image metatag for "+type+" field "+field.getName()+": "+ret);
-            }
-            else
-            {
-                logger.warning("Image metatag not found for "+type+" field: "+field.getName());
-            }
+            logger.warning("Image not found for "+type+" field: "+field.getName());
         }
 
         return ret;
@@ -1088,35 +1053,32 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     {
         String ret = null;
 
-        if(field.getSource().isPage())
+        if(debug())
+            logger.info("Looking for style for "+type+" field: "+field.getName());
+
+        for(ContentFieldSelector selector : field.getSelectors())
         {
-            if(debug())
-                logger.info("Looking for style for "+type+" field: "+field.getName());
-
-            for(ContentFieldSelector selector : field.getSelectors())
+            WebElement element = null;
+            try
             {
-                WebElement element = null;
-                try
-                {
-                    element = root.findElement(By.cssSelector(selector.getExpr()));
-                }
-                catch(NoSuchElementException e)
-                {
-                }
-
-                if(element != null)
-                {
-                    ret = getValue(field, element.getAttribute("style"));
-                    if(debug())
-                        logger.info("Found style for "+type+" field "+field.getName()+": "+ret);
-                    break;
-                }
+                element = root.findElement(By.cssSelector(selector.getExpr()));
+            }
+            catch(NoSuchElementException e)
+            {
             }
 
-            if(ret == null)
+            if(element != null)
             {
-                logger.warning("Style not found for "+type+" field: "+field.getName());
+                ret = getValue(field, element.getAttribute("style"));
+                if(debug())
+                    logger.info("Found style for "+type+" field "+field.getName()+": "+ret);
+                break;
             }
+        }
+
+        if(ret == null)
+        {
+            logger.warning("Style not found for "+type+" field: "+field.getName());
         }
 
         return ret;

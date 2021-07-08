@@ -27,11 +27,13 @@ public class ContentFieldSelector implements java.io.Serializable
 {
     private static final Logger logger = Logger.getLogger(ContentFieldSelector.class.getName());
 
+    public static final String SOURCE = "source";
     public static final String EXPR = "expr";
     public static final String ATTRIBUTE = "attribute";
     public static final String MULTIPLE = "multiple";
     public static final String SEPARATOR = "separator";
 
+    private SelectorSource source = SelectorSource.PAGE;
     private String name = "";
     private String expr = "";
     private String attribute = "";
@@ -53,6 +55,7 @@ public class ContentFieldSelector implements java.io.Serializable
         setName(name);
         setExpr(expr);
         setMultiple(getMultipleDefault(name));
+        setSource(SelectorSource.PAGE);
     }
 
     /**
@@ -87,6 +90,30 @@ public class ContentFieldSelector implements java.io.Serializable
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    /**
+     * Returns the source for this configuration.
+     */
+    public SelectorSource getSource()
+    {
+        return source;
+    }
+
+    /**
+     * Sets the source for this configuration.
+     */
+    public void setSource(SelectorSource source)
+    {
+        this.source = source;
+    }
+
+    /**
+     * Sets the source for this configuration.
+     */
+    public void setSource(String source)
+    {
+        setSource(SelectorSource.fromValue(source));
     }
 
     /**
@@ -190,6 +217,8 @@ public class ContentFieldSelector implements java.io.Serializable
      */
     public void parse(Map<String, Object> map)
     {
+        if(map.containsKey(SOURCE))
+            setSource((String)map.get(SOURCE));
         if(map.containsKey(EXPR))
             setExpr((String)map.get(EXPR));
         if(map.containsKey(ATTRIBUTE))
