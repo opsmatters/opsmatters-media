@@ -24,25 +24,25 @@ import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.util.StringUtils;
 
 /**
- * Class representing a saved social media ad-hoc post.
+ * Class representing a saved standard social media post.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SavedAdhocPost extends SavedPost
+public class SavedStandardPost extends SavedPost
 {
     private Map<String,String> properties = new LinkedHashMap<String,String>();
 
     /**
      * Default constructor.
      */
-    public SavedAdhocPost()
+    public SavedStandardPost()
     {
     }
 
     /**
      * Constructor that takes a site and name.
      */
-    public SavedAdhocPost(Site site, String name)
+    public SavedStandardPost(Site site, String name)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
@@ -54,7 +54,7 @@ public class SavedAdhocPost extends SavedPost
     /**
      * Copy constructor.
      */
-    public SavedAdhocPost(SavedAdhocPost obj)
+    public SavedStandardPost(SavedStandardPost obj)
     {
         copyAttributes(obj);
     }
@@ -62,7 +62,7 @@ public class SavedAdhocPost extends SavedPost
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(SavedAdhocPost obj)
+    public void copyAttributes(SavedStandardPost obj)
     {
         if(obj != null)
         {
@@ -77,7 +77,7 @@ public class SavedAdhocPost extends SavedPost
     @Override
     public PostType getType()
     {
-        return PostType.ADHOC;
+        return PostType.STANDARD;
     }
 
     /**

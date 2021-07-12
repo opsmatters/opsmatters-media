@@ -322,7 +322,7 @@ public class FormatUtils
             ret = ret.replaceAll("►", ">");
 
             // Remove special characters that won't save to the db
-            ret = ret.replaceAll("▬|▬|▬|❏|➡️", "");
+            ret = ret.replaceAll("▬|▬|▬|❏|➡️|🏢", "");
 
             // Turn linefeeds into <br> tags
             ret = ret.replaceAll("\r\n?|\n", "<br>");

@@ -24,7 +24,7 @@ package com.opsmatters.media.model.social;
 public enum PostType
 {
     CONTENT("Content"),
-    ADHOC("Ad-hoc"),
+    STANDARD("Standard"),
     EXTERNAL("External"),
     ALL("All");
 

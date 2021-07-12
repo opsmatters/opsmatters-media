@@ -316,6 +316,14 @@ public abstract class ContentItem implements java.io.Serializable
     }
 
     /**
+     * Returns <CODE>true</CODE> if the site id has been set.
+     */
+    public boolean hasSiteId()
+    {
+        return siteId != null && siteId.length() > 0;
+    }
+
+    /**
      * Returns the organisation code.
      */
     public String getCode()

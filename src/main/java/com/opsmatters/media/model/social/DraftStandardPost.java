@@ -21,25 +21,25 @@ import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.util.StringUtils;
 
 /**
- * Class representing a draft social media post with a message and a link.
+ * Class representing a draft standard social media post with a message and a link.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class DraftAdhocPost extends DraftPost
+public class DraftStandardPost extends DraftPost
 {
     private String title = "";
 
     /**
      * Default constructor.
      */
-    public DraftAdhocPost()
+    public DraftStandardPost()
     {
     }
 
     /**
      * Constructor that takes a title.
      */
-    public DraftAdhocPost(Site site, String title)
+    public DraftStandardPost(Site site, String title)
     {
         setId(StringUtils.getUUID(null));
         setSiteId(site.getId());
@@ -51,7 +51,7 @@ public class DraftAdhocPost extends DraftPost
     /**
      * Constructor that takes a saved post.
      */
-    public DraftAdhocPost(SavedAdhocPost post)
+    public DraftStandardPost(SavedStandardPost post)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
@@ -66,7 +66,7 @@ public class DraftAdhocPost extends DraftPost
     /**
      * Copy constructor.
      */
-    public DraftAdhocPost(DraftAdhocPost obj)
+    public DraftStandardPost(DraftStandardPost obj)
     {
         copyAttributes(obj);
     }
@@ -74,7 +74,7 @@ public class DraftAdhocPost extends DraftPost
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(DraftAdhocPost obj)
+    public void copyAttributes(DraftStandardPost obj)
     {
         if(obj != null)
         {
@@ -89,7 +89,7 @@ public class DraftAdhocPost extends DraftPost
     @Override
     public PostType getType()
     {
-        return PostType.ADHOC;
+        return PostType.STANDARD;
     }
 
     /**

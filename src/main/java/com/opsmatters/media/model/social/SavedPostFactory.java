@@ -41,8 +41,8 @@ public class SavedPostFactory
     {
         if(type == PostType.CONTENT)
             return new SavedContentPost();
-        else if(type == PostType.ADHOC)
-            return new SavedAdhocPost();
+        else if(type == PostType.STANDARD)
+            return new SavedStandardPost();
         throw new IllegalArgumentException("Post type not found: "+type);
     }
 }
