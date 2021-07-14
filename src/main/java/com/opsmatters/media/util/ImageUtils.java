@@ -52,12 +52,10 @@ public class ImageUtils
 {
     private static final Logger logger = Logger.getLogger(ImageUtils.class.getName());
 
-    static
-    {
-        // Prevents a ClassCastException from using the wrong XML parser with SVG images
-        System.setProperty("javax.xml.parsers.DocumentBuilderFactory", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
-        System.setProperty("javax.xml.parsers.SAXParserFactory", "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
-    }
+    /**
+     * Number of mm in a pixel.
+     */
+    private static final double MM_TO_PX = 3.7795275591d;
 
     /**
      * The user agent to use with URLConnections to avoid 403 rejection errors
@@ -69,6 +67,13 @@ public class ImageUtils
      */
     private static final int READ_TIMEOUT = 10000;
     private static final int CONNECT_TIMEOUT = 5000;
+
+    static
+    {
+        // Prevents a ClassCastException from using the wrong XML parser with SVG images
+        System.setProperty("javax.xml.parsers.DocumentBuilderFactory", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
+        System.setProperty("javax.xml.parsers.SAXParserFactory", "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
+    }
 
     /**
      * Private constructor as this class shouldn't be instantiated.
@@ -227,8 +232,20 @@ public class ImageUtils
     static private String getNumber(String str)
     {
         String ret = str;
-        if(str != null && str.endsWith("px"))
-            ret = str.substring(0, str.length()-2);
+        if(str != null)
+        {
+            if(str.endsWith("px"))
+            {
+                ret = str.substring(0, str.length()-2);
+            }
+            else if(str.endsWith("mm")) // Convert to px
+            {
+                ret = str.substring(0, str.length()-2);
+                double mm = Double.parseDouble(ret);
+                ret = Integer.toString((int)(mm * MM_TO_PX));
+            }
+        }
+
         return ret;
     }
 
