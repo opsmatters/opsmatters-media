@@ -503,7 +503,8 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
         }
         else
         {
-            logger.warning("Validation failed for "+type+", skipping: "+field.getSelector(0).getExpr());
+            if(debug())
+                logger.warning("Validation failed for "+type+", skipping: "+field.getSelector(0).getExpr());
         }
     }
 
@@ -579,16 +580,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             else
             {
                 // Get the node text
-                if(browser == CrawlerBrowser.CHROME)
-                {
-                    value = node.getAttribute("innerHTML");
-                    if(value.indexOf("<") != -1) // Remove any markup
-                        value = value.replaceAll("<.+?>","").trim();
-                }
-                else // HtmlUnit
-                {
-                    value = node.getText();
-                }
+                value = getText(node);
             }
 
             if(value.length() > 0)
@@ -604,6 +596,27 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
         }
 
         return str.toString().trim();
+    }
+
+    /**
+     * Extract the text from the given element.
+     */
+    protected String getText(WebElement element)
+    {
+        String ret = "";
+
+        if(browser == CrawlerBrowser.CHROME || browser == CrawlerBrowser.FIREFOX)
+        {
+            ret = element.getAttribute("innerHTML");
+            if(ret.indexOf("<") != -1) // Remove any markup
+                ret = ret.replaceAll("<.+?>","").trim();
+        }
+        else // HtmlUnit
+        {
+            ret = element.getText().trim();
+        }
+
+        return ret;
     }
 
     /**
@@ -743,7 +756,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                 break;
             }
 
-            String text = element.getText().trim();
+            String text = getText(element);
 
             // Remove linefeeds
             text = text.replaceAll("[ \t]*(\r\n|\n)+[ \t]*", " ");
@@ -1140,15 +1153,5 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
         }
 
         return ret;
-    }
-
-    /**
-     * Process the given title.
-     */
-    protected String processTitle(String title)
-    {
-        title = title.replaceAll("&amp;", "&"); // Remove &amp;
-        title = title.replaceAll("\\u2005|\\u2009|\\u202F", " "); // Replace "thin" spaces with normal space
-        return title;
     }
 }
