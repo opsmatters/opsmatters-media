@@ -666,6 +666,12 @@ media.built.on=${TODAY}
     <version>3.12.0</version>
   </dependency>
 
+  <dependency>
+    <groupId>org.jsoup</groupId>
+    <artifactId>jsoup</artifactId>
+    <version>1.14.1</version>
+  </dependency>
+
 </dependencies>
 
 <repositories>

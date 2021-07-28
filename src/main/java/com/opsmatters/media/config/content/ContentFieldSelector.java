@@ -16,6 +16,8 @@
 package com.opsmatters.media.config.content;
 
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /**
@@ -32,6 +34,8 @@ public class ContentFieldSelector implements java.io.Serializable
     public static final String ATTRIBUTE = "attribute";
     public static final String MULTIPLE = "multiple";
     public static final String SEPARATOR = "separator";
+    public static final String EXCLUDE = "exclude";
+    public static final String EXCLUDES = "excludes";
 
     private SelectorSource source = SelectorSource.PAGE;
     private String name = "";
@@ -39,6 +43,7 @@ public class ContentFieldSelector implements java.io.Serializable
     private String attribute = "";
     private boolean multiple = false;
     private String separator = "";
+    private List<String> excludes;
 
     /**
      * Default constructor.
@@ -213,6 +218,40 @@ public class ContentFieldSelector implements java.io.Serializable
     }
 
     /**
+     * Returns the classes to exclude for this configuration.
+     */
+    public List<String> getExcludes()
+    {
+        return excludes;
+    }
+
+    /**
+     * Returns the first class to exclude for this configuration.
+     */
+    public String getExclude()
+    {
+        return hasExcludes() ? getExcludes().get(0) : null ;
+    }
+
+    /**
+     * Adds a class to exclude for this configuration.
+     */
+    private void addExclude(String exclude)
+    {
+        if(excludes == null)
+            excludes = new ArrayList<String>(2);
+        excludes.add(exclude);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if there are classes to exclude for this configuration.
+     */
+    public boolean hasExcludes()
+    {
+        return excludes != null && excludes.size() > 0;
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     public void parse(Map<String, Object> map)
@@ -227,5 +266,17 @@ public class ContentFieldSelector implements java.io.Serializable
             setMultiple((Boolean)map.get(MULTIPLE));
         if(map.containsKey(SEPARATOR))
             setSeparator((String)map.get(SEPARATOR));
+
+        if(map.containsKey(EXCLUDE))
+        {
+            addExclude((String)map.get(EXCLUDE));
+        }
+
+        if(map.containsKey(EXCLUDES))
+        {
+            List<String> values = (List<String>)map.get(EXCLUDES);
+            for(String value : values)
+              addExclude(value);
+        }
     }
 }
