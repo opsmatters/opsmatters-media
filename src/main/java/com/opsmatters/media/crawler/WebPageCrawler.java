@@ -747,11 +747,31 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             items.addAll(BodyParser.parseHtml(element.getAttribute("innerHTML"), excludes));
         }
 
+        if(debug)
+        {
+            logger.info(String.format("2: getFormattedSummary: items=%d", items.size()));
+            for(BodyElement item : items)
+            {
+                logger.info(String.format("2a: getFormattedSummary:items: tag=%s type=%s text=%s strong=%b display=%s",
+                    item.getTag(), item.getType(), item.getText(), item.isStrong(), item.getDisplay()));
+            }
+        }
+
         // Traverse the elements
-        int idx = 0;
+        Boolean header = null;
         for(BodyElement item : items)
         {
-            if((idx == 0 && item.getType() == ElementType.TITLE)
+            if(item.getType() == ElementType.TITLE)
+            {
+                if(header == null)
+                    header = true;
+            }
+            else if(item.getType() == ElementType.TEXT)
+            {
+                header = false;
+            }
+
+            if((header != null && header == true && item.getType() == ElementType.TITLE)
                 || item.getType() == ElementType.QUOTE
                 || item.getType() == ElementType.PRE
                 || item.getType() == ElementType.LIST)
@@ -759,15 +779,13 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                 continue;
             }
 
-            ++idx;
-
             String text = item.getText();
 
             // Exit if we've hit a title
             if(item.getType() == ElementType.TITLE)
             {
                 if(debug)
-                    logger.info(String.format("2: getFormattedSummary: break1: ret=%s text.length=%d ret.length=%d",
+                    logger.info(String.format("3: getFormattedSummary: break1: ret=%s text.length=%d ret.length=%d",
                         ret, text.length(), ret.length()));
                 break;
             }
@@ -776,13 +794,13 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             if(ret.length() > 0 && (ret.length()+text.length()) > maxLength)
             {
                 if(debug)
-                    logger.info(String.format("3: getFormattedSummary: break2: ret=%s text.length=%d ret.length=%d",
+                    logger.info(String.format("4: getFormattedSummary: break2: ret=%s text.length=%d ret.length=%d",
                         ret, text.length(), ret.length()));
                 break;
             }
 
             if(debug)
-                logger.info(String.format("4: getFormattedSummary: ret=%s text.length=%d ret.length=%d",
+                logger.info(String.format("5: getFormattedSummary: ret=%s text.length=%d ret.length=%d",
                     ret, text.length(), ret.length()));
 
             if(ret.length() > 0 && text.length() > 0)
@@ -790,14 +808,14 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             ret.append(text);
 
             if(debug)
-                logger.info(String.format("5: getFormattedSummary: ret=%s text.length=%d ret.length=%d",
+                logger.info(String.format("6: getFormattedSummary: ret=%s text.length=%d ret.length=%d",
                     ret, text.length(), ret.length()));
 
             // Exit if the addition has taken us over the minimum
             if(ret.length() > minLength)
             {
                 if(debug)
-                    logger.info(String.format("6: getFormattedSummary: break3: ret=%s text.length=%d ret.length=%d",
+                    logger.info(String.format("7: getFormattedSummary: break3: ret=%s text.length=%d ret.length=%d",
                         ret, text.length(), ret.length()));
                 break;
             }
@@ -812,12 +830,12 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             ret.setCharAt(ret.length()-1, '.');
 
             if(debug)
-                logger.info(String.format("7: getFormattedSummary: fixed ':': ret=%s ret.length=%d",
+                logger.info(String.format("8: getFormattedSummary: fixed ':': ret=%s ret.length=%d",
                     ret, ret.length()));
         }
 
         if(debug)
-            logger.info(String.format("8: getFormattedSummary: ret=%s ret.length=%d",
+            logger.info(String.format("9: getFormattedSummary: ret=%s ret.length=%d",
                 ret, ret.length()));
 
         return ret.toString();

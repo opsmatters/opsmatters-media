@@ -320,6 +320,7 @@ public class FormatUtils
             // Replace special characters
             ret = ret.replaceAll("→", "->");
             ret = ret.replaceAll("►", ">");
+            ret = ret.replaceAll("\\u24d2", "©");
 
             // Remove special characters that won't save to the db
             ret = ret.replaceAll("▬|▬|▬|❏|➡️|🏢", "");

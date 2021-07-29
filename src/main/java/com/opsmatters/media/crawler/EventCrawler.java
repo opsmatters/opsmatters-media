@@ -260,6 +260,9 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
             String startDate = getElements(field, root, type);
             if(startDate != null)
             {
+                // Remove whitespace from date
+                startDate = startDate.trim().replaceAll("\\s+"," ");
+
                 try
                 {
                     // Try each date pattern

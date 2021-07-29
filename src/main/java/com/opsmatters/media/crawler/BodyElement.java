@@ -142,8 +142,12 @@ public class BodyElement
      */
     public void append(BodyElement element)
     {
-        if(text.length() > 0)
-            text.append(" ");
-        text.append(element.getText());
+        String elementText = element.getText();
+        if(elementText.length() > 0)
+        {
+            if(text.length() > 0)
+                text.append(" ");
+            text.append(elementText);
+        }
     }
 }

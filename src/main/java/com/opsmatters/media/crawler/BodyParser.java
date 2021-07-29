@@ -98,7 +98,9 @@ public class BodyParser
 
             for(int i = 0; i < strings.length; i++)
             {
-                String string = strings[i].trim();
+                String string = strings[i];
+                string = string.replaceAll("\u00A0","");  // remove nbsp
+                string = string.trim();                   // remove whitespace
 
                 // Empty string is a linefeed
                 if(string.length() == 0)
@@ -183,15 +185,28 @@ public class BodyParser
             {
                 String tag = exclude;
                 String className = "";
+                String id = "";
                 int pos = exclude.indexOf(".");
+
+                // Look for the class name
                 if(pos != -1)
                 {
                     tag = exclude.substring(0, pos);
                     className = exclude.substring(pos+1);
                 }
+                else // Look for the id
+                {
+                    pos = exclude.indexOf("#");
+                    if(pos != -1)
+                    {
+                        tag = exclude.substring(0, pos);
+                        id = exclude.substring(pos+1);
+                    }
+                }
 
                 ret = (tag.length() == 0 || tag.equals(element.tagName()))
-                    && (className.length() == 0 || element.hasClass(className));
+                    && (className.length() == 0 || element.hasClass(className))
+                    && (id.length() == 0 || element.id().equals(id));
 
                 if(ret)
                     break;
