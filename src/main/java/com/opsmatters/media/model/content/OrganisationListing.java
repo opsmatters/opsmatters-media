@@ -335,7 +335,7 @@ public class OrganisationListing extends ContentItem
     /**
      * Prepare the fields in the organisation listing using the given configuration.
      */
-    public void prepare(OrganisationListingConfiguration config) throws DateTimeParseException
+    public void prepare(OrganisationListingConfiguration config, boolean debug) throws DateTimeParseException
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
     }

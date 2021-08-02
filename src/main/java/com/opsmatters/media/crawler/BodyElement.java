@@ -27,6 +27,7 @@ public class BodyElement
 {
     private String tag = null;
     private ElementType type;
+    private String listType;
     private StringBuilder text = new StringBuilder();
     private boolean strong = true;
     private ElementDisplay display = INLINE;
@@ -52,7 +53,7 @@ public class BodyElement
     {
         return tag.equals("p") || tag.startsWith("h")
             || tag.equals("blockquote") || tag.equals("pre")
-            || tag.equals("ul") || tag.equals("ol")
+            || tag.equals("ul") || tag.equals("ol") || tag.equals("li")
             || tag.equals("aside");
     }
 
@@ -95,6 +96,22 @@ public class BodyElement
     public void setType(ElementType type)
     {
         this.type = type;
+    }
+
+    /**
+     * Returns the list type of the element.
+     */
+    public String getListType()
+    {
+        return listType;
+    }
+
+    /**
+     * Sets the list type of the element.
+     */
+    public void setListType(String listType)
+    {
+        this.listType = listType;
     }
 
     /**
@@ -142,12 +159,19 @@ public class BodyElement
      */
     public void append(BodyElement element)
     {
-        String elementText = element.getText();
-        if(elementText.length() > 0)
+        append(element.getText());
+    }
+
+    /**
+     * Append the given string to the element.
+     */
+    public void append(String str)
+    {
+        if(str != null && str.length() > 0)
         {
-            if(text.length() > 0)
+            if(text.length() > 0 && text.charAt(text.length()-1) != '\n')
                 text.append(" ");
-            text.append(elementText);
+            text.append(str);
         }
     }
 }

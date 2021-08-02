@@ -713,18 +713,16 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     protected String getFormattedSummary(String selector, boolean multiple, List<String> excludes, WebElement root,
         SummaryConfiguration config, boolean debug)
     {
-        return getFormattedSummary(selector, multiple, excludes, root, config.getMinLength(), config.getMaxLength(),
-            config.getMinParagraph(), debug);
+        return getFormattedSummary(selector, multiple, excludes, root,
+            config.getMinLength(), config.getMaxLength(), debug);
     }
 
     /**
      * Coalesces the given paragraphs into a single string by accumulating paragraphs up to a heading or maximum length.
      */
     protected String getFormattedSummary(String selector, boolean multiple, List<String> excludes,
-        WebElement root, int minLength, int maxLength, int minParagraph, boolean debug)
+        WebElement root, int minLength, int maxLength, boolean debug)
     {
-        StringBuilder ret = new StringBuilder();
-
         ElementType lastType = null;
         List<WebElement> elements;
         if(selector.equals(ROOT)) // The parent is the root node itself
@@ -738,107 +736,20 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
         }
 
         if(debug)
-            logger.info(String.format("1: getFormattedSummary: elements=%d minParagraph=%d minLength=%d maxLength=%d",
-                elements.size(), minParagraph, minLength, maxLength));
+            logger.info(String.format("1: getFormattedSummary: elements=%d minLength=%d maxLength=%d",
+                elements.size(), minLength, maxLength));
 
-        List<BodyElement> items = new ArrayList<BodyElement>();
+        BodyParser parser = new BodyParser(excludes);
+        parser.setDebug(debug);
         for(WebElement element : elements)
-        {
-            items.addAll(BodyParser.parseHtml(element.getAttribute("innerHTML"), excludes));
-        }
+            parser.parseHtml(element.getAttribute("innerHTML"));
 
+        String ret = parser.formatSummary(minLength, maxLength, multiple);
         if(debug)
-        {
-            logger.info(String.format("2: getFormattedSummary: items=%d", items.size()));
-            for(BodyElement item : items)
-            {
-                logger.info(String.format("2a: getFormattedSummary:items: tag=%s type=%s text=%s strong=%b display=%s",
-                    item.getTag(), item.getType(), item.getText(), item.isStrong(), item.getDisplay()));
-            }
-        }
-
-        // Traverse the elements
-        Boolean header = null;
-        for(BodyElement item : items)
-        {
-            if(item.getType() == ElementType.TITLE)
-            {
-                if(header == null)
-                    header = true;
-            }
-            else if(item.getType() == ElementType.TEXT)
-            {
-                header = false;
-            }
-
-            if((header != null && header == true && item.getType() == ElementType.TITLE)
-                || item.getType() == ElementType.QUOTE
-                || item.getType() == ElementType.PRE
-                || item.getType() == ElementType.LIST)
-            {
-                continue;
-            }
-
-            String text = item.getText();
-
-            // Exit if we've hit a title
-            if(item.getType() == ElementType.TITLE)
-            {
-                if(debug)
-                    logger.info(String.format("3: getFormattedSummary: break1: ret=%s text.length=%d ret.length=%d",
-                        ret, text.length(), ret.length()));
-                break;
-            }
-
-            // Exit if the addition would take us over the maximum
-            if(ret.length() > 0 && (ret.length()+text.length()) > maxLength)
-            {
-                if(debug)
-                    logger.info(String.format("4: getFormattedSummary: break2: ret=%s text.length=%d ret.length=%d",
-                        ret, text.length(), ret.length()));
-                break;
-            }
-
-            if(debug)
-                logger.info(String.format("5: getFormattedSummary: ret=%s text.length=%d ret.length=%d",
-                    ret, text.length(), ret.length()));
-
-            if(ret.length() > 0 && text.length() > 0)
-                ret.append(" ");
-            ret.append(text);
-
-            if(debug)
-                logger.info(String.format("6: getFormattedSummary: ret=%s text.length=%d ret.length=%d",
-                    ret, text.length(), ret.length()));
-
-            // Exit if the addition has taken us over the minimum
-            if(ret.length() > minLength)
-            {
-                if(debug)
-                    logger.info(String.format("7: getFormattedSummary: break3: ret=%s text.length=%d ret.length=%d",
-                        ret, text.length(), ret.length()));
-                break;
-            }
-
-            if(!multiple && text.length() > 0)
-                break;
-        }
-
-        // Summary should end with full stop if it ends with a semi-colon
-        if(ret.length() > 0 && ret.charAt(ret.length()-1) == ':')
-        {
-            ret.setCharAt(ret.length()-1, '.');
-
-            if(debug)
-                logger.info(String.format("8: getFormattedSummary: fixed ':': ret=%s ret.length=%d",
-                    ret, ret.length()));
-        }
-
-        if(debug)
-            logger.info(String.format("9: getFormattedSummary: ret=%s ret.length=%d",
+            logger.info(String.format("2: getFormattedSummary: ret=%s ret.length=%d",
                 ret, ret.length()));
 
-        return ret.toString();
+        return ret;
     }
 
     /**
@@ -862,10 +773,6 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                 {
                     // Apply any extractors to the selection
                     body = getValue(field, body);
-
-                    // Replace "thin" spaces with normal space
-                    body = body.replaceAll("\\u2005|\\u2009|\\u202F", " ");
-
                     ret = String.format("<p>%s</p>", body.trim());
                     if(debug())
                         logger.info("Found body summary for "+type+" field "+field.getName()+": "+ret);
@@ -896,57 +803,41 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     /**
      * Coalesces the given paragraphs into a single string, keeping any markup.
      */
-    protected String getFormattedParagraphs(String selector, WebElement root, Pattern stopExprPattern)
+    protected String getFormattedBody(String selector, WebElement root, List<String> excludes,
+        Pattern stopExprPattern, boolean debug)
     {
-        StringBuilder ret = new StringBuilder();
-
-        List<WebElement> elements = root.findElements(By.cssSelector(selector));
-
-        for(WebElement element : elements)
+        ElementType lastType = null;
+        List<WebElement> elements;
+        if(selector.equals(ROOT)) // The parent is the root node itself
         {
-            String text = element.getText().trim();
-            String tag = element.getTagName();
-
-            if(text.length() == 0)
-                continue;
-
-            // Stop if the text matches the stop expression
-            if(stopExprPattern != null && stopExprPattern.matcher(text).matches())
-                break;
-
-            if(ret.length() > 0 && text.length() > 0)
-                ret.append("\n\n");
-
-            if(tag.equals("ul") || tag.equals("ol"))
-            {
-                String[] tokens = text.split("\r\n|\n");
-
-                int i = 0;
-                for(String token : tokens)
-                {
-                    if(i > 0)
-                        ret.append("\n");
-                    if(tag.equals("ol"))  // "1." indicates <li> for <ol>
-                        ret.append(Integer.toString(i+1)).append(". ");
-                    else if(tag.equals("ul")) // "* " indicates <li> for <ul>
-                        ret.append("* "); // "*" indicates <li> for <ul>
-                    ret.append(token);
-                    ++i;
-                }
-            }
-            else // p / div
-            {
-                ret.append(text);
-            }
+            elements = new ArrayList<WebElement>();
+            elements.add(root);
+        }
+        else
+        {
+            elements = root.findElements(By.cssSelector(selector));
         }
 
-        return ret.toString();
+        if(debug)
+            logger.info(String.format("1: getFormattedBody: elements=%d", elements.size()));
+
+        BodyParser parser = new BodyParser(excludes);
+        parser.setDebug(debug);
+        for(WebElement element : elements)
+            parser.parseHtml(element.getAttribute("innerHTML"));
+
+        String ret = parser.formatBody(stopExprPattern);
+        if(debug)
+            logger.info(String.format("2: getFormattedBody: ret=%s ret.length=%d",
+                ret, ret.length()));
+
+        return ret;
     }
 
     /**
      * Process the body field.
      */
-    protected String getBody(ContentField field, WebElement root, String type)
+    protected String getBody(ContentField field, WebElement root, String type, boolean debug)
     {
         String ret = null;
 
@@ -957,7 +848,8 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
         {
             if(selector.getSource().isPage())
             {
-                String body = getFormattedParagraphs(selector.getExpr(), root, field.getStopExprPattern());
+                String body = getFormattedBody(selector.getExpr(), root, selector.getExcludes(),
+                    selector.getStopExprPattern(), debug);
                 if(body.length() > 0)
                 {
                     ret = body;

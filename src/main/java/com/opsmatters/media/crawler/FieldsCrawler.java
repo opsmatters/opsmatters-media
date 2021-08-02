@@ -353,6 +353,7 @@ public abstract class FieldsCrawler<T extends ContentSummary>
     protected String processTitle(String title)
     {
         title = title.replaceAll("&amp;", "&"); // Remove &amp;
+        title = title.replaceAll("&nbsp;", " "); // Replace &nbsp; with space
         title = title.replaceAll("\\u2005|\\u2009|\\u202F", " "); // Replace "thin" spaces with normal space
         title = title.replaceAll("\ufeff", ""); // Remove special characters;
         return title;

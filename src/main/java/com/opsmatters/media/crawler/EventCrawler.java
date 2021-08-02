@@ -200,7 +200,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
 
             if(root != null && fields.hasBody())
             {
-                String body = getBody(fields.getBody(), root, "content");
+                String body = getBody(fields.getBody(), root, "content", debug());
                 if(body != null)
                     content.setDescription(body);
             }

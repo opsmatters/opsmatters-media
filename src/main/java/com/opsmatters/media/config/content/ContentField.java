@@ -18,7 +18,6 @@ package com.opsmatters.media.config.content;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 import java.util.logging.Logger;
 
 /**
@@ -37,7 +36,6 @@ public class ContentField implements java.io.Serializable
     public static final String TEXT_CASE = "text-case";
     public static final String DATE_PATTERN = "date-pattern";
     public static final String DATE_PATTERNS = "date-patterns";
-    public static final String STOP_EXPR = "stop-expr";
     public static final String REMOVE_PARAMETERS = "remove-parameters";
     public static final String GENERATE = "generate";
 
@@ -46,8 +44,6 @@ public class ContentField implements java.io.Serializable
     private List<ContentFieldExtractor> extractors;
     private ContentFieldCase textCase = ContentFieldCase.NONE;
     private List<String> datePatterns;
-    private String stopExpr = "";
-    private Pattern stopExprPattern;
     private boolean removeParameters = true;
     private boolean generate = false;
 
@@ -227,39 +223,6 @@ public class ContentField implements java.io.Serializable
     }
 
     /**
-     * Returns the stopping regular expression for this configuration.
-     */
-    public String getStopExpr()
-    {
-        return stopExpr;
-    }
-
-    /**
-     * Returns the stopping regular expression pattern for this configuration.
-     */
-    public Pattern getStopExprPattern()
-    {
-        return stopExprPattern;
-    }
-
-    /**
-     * Sets the stopping regular expression for this configuration.
-     */
-    public void setStopExpr(String stopExpr)
-    {
-        this.stopExpr = stopExpr;
-        this.stopExprPattern = hasStopExpr() ? Pattern.compile(stopExpr, Pattern.DOTALL) : null;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the stopping regular expression has been set.
-     */
-    public boolean hasStopExpr()
-    {
-        return stopExpr != null && stopExpr.length() > 0;
-    }
-
-    /**
      * Returns <CODE>true</CODE> if the URL query parameters should be removed.
      */
     public boolean removeParameters()
@@ -298,8 +261,6 @@ public class ContentField implements java.io.Serializable
     {
         if(map.containsKey(TEXT_CASE))
             setTextCase((String)map.get(TEXT_CASE));
-        if(map.containsKey(STOP_EXPR))
-            setStopExpr((String)map.get(STOP_EXPR));
         if(map.containsKey(REMOVE_PARAMETERS))
             setRemoveParameters((Boolean)map.get(REMOVE_PARAMETERS));
         if(map.containsKey(GENERATE))

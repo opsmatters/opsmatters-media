@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * Class that represents a field selector for a content item.
@@ -36,6 +37,7 @@ public class ContentFieldSelector implements java.io.Serializable
     public static final String SEPARATOR = "separator";
     public static final String EXCLUDE = "exclude";
     public static final String EXCLUDES = "excludes";
+    public static final String STOP_EXPR = "stop-expr";
 
     private SelectorSource source = SelectorSource.PAGE;
     private String name = "";
@@ -44,6 +46,8 @@ public class ContentFieldSelector implements java.io.Serializable
     private boolean multiple = false;
     private String separator = "";
     private List<String> excludes;
+    private String stopExpr = "";
+    private Pattern stopExprPattern;
 
     /**
      * Default constructor.
@@ -252,6 +256,39 @@ public class ContentFieldSelector implements java.io.Serializable
     }
 
     /**
+     * Returns the stopping regular expression for this configuration.
+     */
+    public String getStopExpr()
+    {
+        return stopExpr;
+    }
+
+    /**
+     * Returns the stopping regular expression pattern for this configuration.
+     */
+    public Pattern getStopExprPattern()
+    {
+        return stopExprPattern;
+    }
+
+    /**
+     * Sets the stopping regular expression for this configuration.
+     */
+    public void setStopExpr(String stopExpr)
+    {
+        this.stopExpr = stopExpr;
+        this.stopExprPattern = hasStopExpr() ? Pattern.compile(stopExpr, Pattern.DOTALL) : null;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the stopping regular expression has been set.
+     */
+    public boolean hasStopExpr()
+    {
+        return stopExpr != null && stopExpr.length() > 0;
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     public void parse(Map<String, Object> map)
@@ -266,6 +303,8 @@ public class ContentFieldSelector implements java.io.Serializable
             setMultiple((Boolean)map.get(MULTIPLE));
         if(map.containsKey(SEPARATOR))
             setSeparator((String)map.get(SEPARATOR));
+        if(map.containsKey(STOP_EXPR))
+            setStopExpr((String)map.get(STOP_EXPR));
 
         if(map.containsKey(EXCLUDE))
         {

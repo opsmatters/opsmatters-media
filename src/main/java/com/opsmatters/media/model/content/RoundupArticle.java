@@ -247,7 +247,7 @@ public class RoundupArticle extends Article
     /**
      * Prepare the fields in the content using the given configuration.
      */
-    public void prepare(RoundupConfiguration config, WebPageConfiguration page)
+    public void prepare(RoundupConfiguration config, WebPageConfiguration page, boolean debug)
         throws DateTimeParseException
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));

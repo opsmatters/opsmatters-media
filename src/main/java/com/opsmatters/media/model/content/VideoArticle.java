@@ -18,10 +18,10 @@ package com.opsmatters.media.model.content;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
-
 import com.opsmatters.media.config.content.VideoConfiguration;
 import com.opsmatters.media.config.content.VideoChannelConfiguration;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.crawler.BodyParser;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
@@ -278,11 +278,15 @@ public class VideoArticle extends Article
     /**
      * Prepare the fields in the content using the given configuration.
      */
-    public void prepare(VideoConfiguration config) throws DateTimeParseException
+    public void prepare(VideoConfiguration config, boolean debug) throws DateTimeParseException
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
-        setDescription(FormatUtils.getFormattedDescription(getDescription()));
-        setSummary(FormatUtils.getFormattedSummary(getDescription(), config.getSummary()));
+
+        BodyParser parser = new BodyParser(getDescription(), debug);
+        if(parser.converted())
+            setDescription(parser.formatBody());
+        setSummary(parser.formatSummary(config.getSummary()));
+
         String text = String.format("%s %s", getTitle(), getDescription());
         setVideoType(guessVideoType(text, getVideoType()));
     }

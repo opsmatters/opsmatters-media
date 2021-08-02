@@ -19,6 +19,7 @@ import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.ToolConfiguration;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.crawler.BodyParser;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
@@ -230,11 +231,14 @@ public class ToolResource extends Resource
     /**
      * Prepare the fields in the resource using the given configuration.
      */
-    public void prepare(ToolConfiguration config) throws DateTimeParseException
+    public void prepare(ToolConfiguration config, boolean debug) throws DateTimeParseException
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
-        setDescription(FormatUtils.getFormattedDescription(getDescription()));
-        setSummary(FormatUtils.getFormattedSummary(getDescription(), config.getSummary()));
+
+        BodyParser parser = new BodyParser(getDescription(), debug);
+        if(parser.converted())
+            setDescription(parser.formatBody());
+        setSummary(parser.formatSummary(config.getSummary()));
     }
 
     /**

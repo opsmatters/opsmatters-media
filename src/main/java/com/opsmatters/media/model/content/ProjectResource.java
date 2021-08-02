@@ -20,6 +20,7 @@ import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.ProjectConfiguration;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.crawler.BodyParser;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
@@ -231,12 +232,15 @@ public class ProjectResource extends Resource
     /**
      * Prepare the fields in the resource using the given configuration.
      */
-    public void prepare(ProjectConfiguration config) throws DateTimeParseException
+    public void prepare(ProjectConfiguration config, boolean debug) throws DateTimeParseException
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
-        setDescription(FormatUtils.getFormattedDescription(getDescription()));
+
+        BodyParser parser = new BodyParser(getDescription(), debug);
+        if(parser.converted())
+            setDescription(parser.formatBody());
         if(getSummary().length() == 0)
-            setSummary(FormatUtils.getFormattedSummary(getDescription(), config.getSummary()));
+            setSummary(parser.formatSummary(config.getSummary()));
 
         // Clear the license if it has been set to "-"
         if(getLicense().equals(EMPTY))

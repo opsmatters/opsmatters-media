@@ -293,7 +293,7 @@ public class PostArticle extends Article
     /**
      * Prepare the fields in the content using the given configuration.
      */
-    public void prepare(PostConfiguration config) throws DateTimeParseException
+    public void prepare(PostConfiguration config, boolean debug) throws DateTimeParseException
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
 

@@ -27,11 +27,9 @@ public class SummaryConfiguration extends YamlConfiguration
 {
     public static final String MAX_LENGTH = "max-length";
     public static final String MIN_LENGTH = "min-length";
-    public static final String MIN_PARAGRAPH = "min-paragraph";
 
     private int maxLength = 0;
     private int minLength = 0;
-    private int minParagraph = 0;
 
     /**
      * Default constructor.
@@ -60,7 +58,6 @@ public class SummaryConfiguration extends YamlConfiguration
             super.copyAttributes(obj);
             setMaxLength(obj.getMaxLength());
             setMinLength(obj.getMinLength());
-            setMinParagraph(obj.getMinParagraph());
         }
     }
 
@@ -97,22 +94,6 @@ public class SummaryConfiguration extends YamlConfiguration
     }
 
     /**
-     * Returns the min paragraph length for this configuration.
-     */
-    public int getMinParagraph()
-    {
-        return minParagraph;
-    }
-
-    /**
-     * Sets the min paragraph length for this configuration.
-     */
-    public void setMinParagraph(int minParagraph)
-    {
-        this.minParagraph = minParagraph;
-    }
-
-    /**
      * Reads the configuration from the given YAML Document.
      */
     @Override
@@ -122,7 +103,5 @@ public class SummaryConfiguration extends YamlConfiguration
             setMaxLength((Integer)map.get(MAX_LENGTH));
         if(map.containsKey(MIN_LENGTH))
             setMinLength((Integer)map.get(MIN_LENGTH));
-        if(map.containsKey(MIN_PARAGRAPH))
-            setMinParagraph((Integer)map.get(MIN_PARAGRAPH));
     }
 }
