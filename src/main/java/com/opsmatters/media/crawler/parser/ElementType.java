@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.crawler;
+package com.opsmatters.media.crawler.parser;
 
 /**
- * Class representing the display modes for body elements.
+ * Class representing the types of body elements.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ElementDisplay
+public enum ElementType
 {
-    INLINE,
-    BLOCK,
-    INLINE_BLOCK
+    TITLE,
+    TEXT,
+    QUOTE,
+    PRE,
+    LIST,
+    TABLE,
+    FIGURE
 }

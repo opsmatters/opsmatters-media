@@ -19,16 +19,15 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 /**
  * Class that represents a field selector for a content item.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentFieldSelector implements java.io.Serializable
+public class FieldSelector implements java.io.Serializable
 {
-    private static final Logger logger = Logger.getLogger(ContentFieldSelector.class.getName());
+    private static final Logger logger = Logger.getLogger(FieldSelector.class.getName());
 
     public static final String SOURCE = "source";
     public static final String EXPR = "expr";
@@ -37,7 +36,6 @@ public class ContentFieldSelector implements java.io.Serializable
     public static final String SEPARATOR = "separator";
     public static final String EXCLUDE = "exclude";
     public static final String EXCLUDES = "excludes";
-    public static final String STOP_EXPR = "stop-expr";
 
     private SelectorSource source = SelectorSource.PAGE;
     private String name = "";
@@ -45,21 +43,19 @@ public class ContentFieldSelector implements java.io.Serializable
     private String attribute = "";
     private boolean multiple = false;
     private String separator = "";
-    private List<String> excludes;
-    private String stopExpr = "";
-    private Pattern stopExprPattern;
+    private List<FieldExclude> excludes;
 
     /**
      * Default constructor.
      */
-    public ContentFieldSelector()
+    public FieldSelector()
     {
     }
 
     /**
      * Constructor that takes an expression.
      */
-    public ContentFieldSelector(String name, String expr)
+    public FieldSelector(String name, String expr)
     {
         setName(name);
         setExpr(expr);
@@ -70,7 +66,7 @@ public class ContentFieldSelector implements java.io.Serializable
     /**
      * Constructor that takes a map of attributes.
      */
-    public ContentFieldSelector(String name, Map<String, Object> map)
+    public FieldSelector(String name, Map<String, Object> map)
     {
         setName(name);
         setMultiple(getMultipleDefault(name));
@@ -224,7 +220,7 @@ public class ContentFieldSelector implements java.io.Serializable
     /**
      * Returns the classes to exclude for this configuration.
      */
-    public List<String> getExcludes()
+    public List<FieldExclude> getExcludes()
     {
         return excludes;
     }
@@ -232,7 +228,7 @@ public class ContentFieldSelector implements java.io.Serializable
     /**
      * Returns the first class to exclude for this configuration.
      */
-    public String getExclude()
+    public FieldExclude getExclude()
     {
         return hasExcludes() ? getExcludes().get(0) : null ;
     }
@@ -240,11 +236,19 @@ public class ContentFieldSelector implements java.io.Serializable
     /**
      * Adds a class to exclude for this configuration.
      */
-    private void addExclude(String exclude)
+    private void addExclude(FieldExclude exclude)
     {
         if(excludes == null)
-            excludes = new ArrayList<String>(2);
+            excludes = new ArrayList<FieldExclude>(2);
         excludes.add(exclude);
+    }
+
+    /**
+     * Adds a class to exclude for this configuration.
+     */
+    private void addExclude(String exclude)
+    {
+        addExclude(new FieldExclude(exclude));
     }
 
     /**
@@ -253,39 +257,6 @@ public class ContentFieldSelector implements java.io.Serializable
     public boolean hasExcludes()
     {
         return excludes != null && excludes.size() > 0;
-    }
-
-    /**
-     * Returns the stopping regular expression for this configuration.
-     */
-    public String getStopExpr()
-    {
-        return stopExpr;
-    }
-
-    /**
-     * Returns the stopping regular expression pattern for this configuration.
-     */
-    public Pattern getStopExprPattern()
-    {
-        return stopExprPattern;
-    }
-
-    /**
-     * Sets the stopping regular expression for this configuration.
-     */
-    public void setStopExpr(String stopExpr)
-    {
-        this.stopExpr = stopExpr;
-        this.stopExprPattern = hasStopExpr() ? Pattern.compile(stopExpr, Pattern.DOTALL) : null;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the stopping regular expression has been set.
-     */
-    public boolean hasStopExpr()
-    {
-        return stopExpr != null && stopExpr.length() > 0;
     }
 
     /**
@@ -303,8 +274,6 @@ public class ContentFieldSelector implements java.io.Serializable
             setMultiple((Boolean)map.get(MULTIPLE));
         if(map.containsKey(SEPARATOR))
             setSeparator((String)map.get(SEPARATOR));
-        if(map.containsKey(STOP_EXPR))
-            setStopExpr((String)map.get(STOP_EXPR));
 
         if(map.containsKey(EXCLUDE))
         {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.crawler;
+package com.opsmatters.media.crawler.parser;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -24,11 +24,16 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
+import com.opsmatters.media.config.content.FieldExclude;
+import com.opsmatters.media.config.content.FieldFilter;
+import com.opsmatters.media.config.content.FilterResult;
 import com.opsmatters.media.config.content.SummaryConfiguration;
 import com.opsmatters.media.util.StringUtils;
 
-import static com.opsmatters.media.crawler.ElementType.*;
-import static com.opsmatters.media.crawler.ElementDisplay.*;
+import static com.opsmatters.media.crawler.parser.ElementType.*;
+import static com.opsmatters.media.crawler.parser.ElementDisplay.*;
+import static com.opsmatters.media.config.content.FilterScope.*;
+import static com.opsmatters.media.config.content.FilterResult.*;
 
 /**
  * Class representing a parser for an article body.
@@ -41,24 +46,27 @@ public class BodyParser
 
     private BodyElement previous = null;
     private List<BodyElement> elements = new ArrayList<BodyElement>();
-    private List<String> excludes;
+    private List<FieldExclude> excludes;
+    private List<FieldFilter> filters;
     private boolean converted = false;
     private boolean debug = false;
 
     /**
-     * Constructor that takes a list of excludes.
+     * Constructor that takes a list of excludes, filters and debug flag.
      */
-    public BodyParser(List<String> excludes)
+    public BodyParser(List<FieldExclude> excludes, List<FieldFilter> filters, boolean debug)
     {
         setExcludes(excludes);
+        setFilters(filters);
+        setDebug(debug);
     }
 
     /**
-     * Constructor that takes a text string.
+     * Constructor that takes a text string, filters and debug flag.
      */
-    public BodyParser(String text, boolean debug)
+    public BodyParser(String text, List<FieldFilter> filters, boolean debug)
     {
-        setDebug(debug);
+        this((List<FieldExclude>)null, filters, debug);
         if(text.indexOf("<p") != -1) // Contains markup
             parseHtml(text);
         else
@@ -66,9 +74,17 @@ public class BodyParser
     }
 
     /**
+     * Constructor that takes a text stringand debug flag.
+     */
+    public BodyParser(String text, boolean debug)
+    {
+        this(text, null, debug);
+    }
+
+    /**
      * Returns the list of exclude tags and classes.
      */
-    public List<String> getExcludes()
+    public List<FieldExclude> getExcludes()
     {
         return excludes;
     }
@@ -76,9 +92,25 @@ public class BodyParser
     /**
      * Sets the list of exclude tags and classes.
      */
-    public void setExcludes(List<String> excludes)
+    public void setExcludes(List<FieldExclude> excludes)
     {
         this.excludes = excludes;
+    }
+
+    /**
+     * Returns the list of filters for the parser.
+     */
+    public List<FieldFilter> getFilters()
+    {
+        return filters;
+    }
+
+    /**
+     * Sets the list of filters for the parser.
+     */
+    public void setFilters(List<FieldFilter> filters)
+    {
+        this.filters = filters;
     }
 
     /**
@@ -131,7 +163,16 @@ public class BodyParser
     {
         String tag = node.nodeName();
 
-        if(isExcluded(node))
+        // Preprocess the node as wholeText() removes line breaks
+        if(node instanceof Element)
+        {
+            Element element = (Element)node;
+            if(element.html().indexOf("<br>") != -1)
+                element.html(element.html().replaceAll("<br>","\n"));
+        }
+
+        // Apply the excludes to filter out particular nodes`
+        if(FieldExclude.apply(getExcludes(), node))
             return;
 
         if(node.childNodeSize() == 0
@@ -140,13 +181,18 @@ public class BodyParser
         {
             boolean inline = true;
             String text = getText(node);
-            if(text == null) // eg. a comment
+            if(text != null) // eg. a comment
+                text = text.trim();
+            else // eg. a comment
                 return;
-
+//GERALD
+//System.out.println("parseNode:1: tag="+tag+" text="+text);
             // Add <br> to LF
             if(tag.equals("p"))
                 text = text.replaceAll("\n(.+)","\n<br>$1");
 
+//GERALD
+//System.out.println("parseNode:2: tag="+tag+" text="+text);
             // If it's the first item or coming after a linefeed, it can't be inline
             if(elements.size() == 0 || text.startsWith("\n")
                 || (previous != null && previous.getDisplay() == BLOCK))
@@ -157,9 +203,7 @@ public class BodyParser
             String[] strings = text.split("\n", -1); // Include trailing empty strings
 
             // is this a strong paragraph?
-            boolean strong = false;
-            if(strings.length == 1)
-                strong = isStrong(node);
+            boolean strong = count(strings) == 1 && isStrong(node);
 
             for(int i = 0; i < strings.length; i++)
             {
@@ -168,6 +212,8 @@ public class BodyParser
                 string = string.replaceAll("\\u2005|\\u2009|\\u202F", " "); // Replace "thin" spaces with normal space
                 string = string.trim(); // Remove whitespace
 
+//GERALD
+//System.out.println("parseNode:3: i="+i+" tag="+tag+" i="+i+" string="+string+" strong="+strong);
                 // Empty string is a linefeed
                 if(string.length() == 0)
                 {
@@ -193,7 +239,8 @@ public class BodyParser
                     // Append the visible text to the previous element
                     previous.append(element);
                 }
-                else if(element.getText().startsWith("<br>"))
+                else if(element.getText().startsWith("<br>")  // Treat <br> as a line break
+                    && (i == 0 || strings[i-1].length() > 0)) // Treat \n\n<br> as a paragraph instead
                 {
                     previous.append("\n");
                     previous.append(element);
@@ -209,7 +256,7 @@ public class BodyParser
                         previous.setType(TITLE);
                     }
 
-                    // Add a new element
+                    // Add the new element
                     previous = element;
                     elements.add(element);
                 }
@@ -220,6 +267,24 @@ public class BodyParser
             for(Node child : node.childNodes())
                 parseNode(child);
         }
+    }
+
+    /**
+     * Returns the number of non-empty strings in the given array.
+     */
+    private int count(String[] strings)
+    {
+        int ret = 0;
+        if(strings != null)
+        {
+            for(String string : strings)
+            {
+                if(string != null && string.length() > 0)
+                    ++ret;
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -237,7 +302,7 @@ public class BodyParser
     private boolean isStrong(Node node)
     {
         String str = node.toString();
-        if(str.indexOf("<p>") != -1)
+        if(str.indexOf("<p") != -1)
             str = str.replaceAll("<p(?:.*?)>(.+)</p>", "$1");
         str = str.replaceAll("<br>", "");
         str = str.trim();
@@ -251,7 +316,8 @@ public class BodyParser
     {
         return tag.equals("p") || tag.startsWith("h")
             || tag.equals("blockquote") || tag.equals("pre")
-            || tag.equals("li");
+            || tag.equals("li") || tag.equals("table")
+            || tag.equals("figure");
     }
 
     /**
@@ -275,53 +341,9 @@ public class BodyParser
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given node should be excluded.
-     */
-    private boolean isExcluded(Node node)
-    {
-        boolean ret = false;
-        if(node instanceof Element && excludes != null)
-        {
-            Element element = (Element)node;
-            for(String exclude : excludes)
-            {
-                String tag = exclude;
-                String className = "";
-                String id = "";
-                int pos = exclude.indexOf(".");
-
-                // Look for the class name
-                if(pos != -1)
-                {
-                    tag = exclude.substring(0, pos);
-                    className = exclude.substring(pos+1);
-                }
-                else // Look for the id
-                {
-                    pos = exclude.indexOf("#");
-                    if(pos != -1)
-                    {
-                        tag = exclude.substring(0, pos);
-                        id = exclude.substring(pos+1);
-                    }
-                }
-
-                ret = (tag.length() == 0 || tag.equals(element.tagName()))
-                    && (className.length() == 0 || element.hasClass(className))
-                    && (id.length() == 0 || id.equals(element.id()));
-
-                if(ret)
-                    break;
-            }
-        }
-
-        return ret;
-    }
-
-    /**
      * Returns the list of body elements formatted as an article body.
      */
-    public String formatBody(Pattern stopExpr)
+    public String formatBody()
     {
         StringBuilder ret = new StringBuilder();
 
@@ -332,8 +354,11 @@ public class BodyParser
             String tag = element.getTag();
             String text = element.getText();
 
-            // Stop if the text matches the stop expression
-            if(stopExpr != null && stopExpr.matcher(text).matches())
+            // Apply the filters to skip elements or truncate the text
+            FilterResult result = FieldFilter.apply(getFilters(), text, BODY);
+            if(result == SKIP)
+                continue;
+            else if(result == STOP)
                 break;
 
             if(ret.length() > 0 && text.length() > 0)
@@ -389,14 +414,6 @@ public class BodyParser
     }
 
     /**
-     * Returns the list of body elements formatted as an article body.
-     */
-    public String formatBody()
-    {
-        return formatBody(null);
-    }
-
-    /**
      * Returns the list of body elements formatted as an article summary.
      */
     public String formatSummary(int minLength, int maxLength, boolean multiple)
@@ -420,13 +437,22 @@ public class BodyParser
             if((header != null && header == true && element.getType() == TITLE)
                 || element.getType() == QUOTE
                 || element.getType() == PRE
-                || element.getType() == LIST)
+                || element.getType() == LIST
+                || element.getType() == TABLE
+                || element.getType() == FIGURE)
             {
                 continue;
             }
 
             String text = element.getText();
             text = text.replaceAll("\n|<br>",""); //Remove linefeeds and breaks
+
+            // Apply the filters to skip elements or truncate the text
+            FilterResult result = FieldFilter.apply(getFilters(), text, SUMMARY);
+            if(result == SKIP)
+                continue;
+            else if(result == STOP)
+                break;
 
             // Filter out text containing a URL
             if(StringUtils.extractUrl(text) != null)

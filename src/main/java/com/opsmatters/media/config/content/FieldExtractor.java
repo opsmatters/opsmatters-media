@@ -24,9 +24,9 @@ import java.util.logging.Logger;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentFieldExtractor implements java.io.Serializable
+public class FieldExtractor implements java.io.Serializable
 {
-    private static final Logger logger = Logger.getLogger(ContentFieldExtractor.class.getName());
+    private static final Logger logger = Logger.getLogger(FieldExtractor.class.getName());
 
     public static final String EXPR = "expr";
     public static final String FORMAT = "format";
@@ -36,19 +36,19 @@ public class ContentFieldExtractor implements java.io.Serializable
     private String expr = "";
     private Pattern exprPattern;
     private String format = "";
-    private ContentFieldMatch match = ContentFieldMatch.FIRST;
+    private FieldMatch match = FieldMatch.FIRST;
 
     /**
      * Default constructor.
      */
-    public ContentFieldExtractor()
+    public FieldExtractor()
     {
     }
 
     /**
      * Constructor that takes an expression.
      */
-    public ContentFieldExtractor(String name, String expr)
+    public FieldExtractor(String name, String expr)
     {
         setName(name);
         setExpr(expr);
@@ -58,7 +58,7 @@ public class ContentFieldExtractor implements java.io.Serializable
     /**
      * Constructor that takes a map of attributes.
      */
-    public ContentFieldExtractor(String name, Map<String, Object> map)
+    public FieldExtractor(String name, Map<String, Object> map)
     {
         setName(name);
         parse(map);
@@ -148,7 +148,7 @@ public class ContentFieldExtractor implements java.io.Serializable
     /**
      * Returns the match for this configuration (ALL/FIRST).
      */
-    public ContentFieldMatch getMatch()
+    public FieldMatch getMatch()
     {
         return match;
     }
@@ -156,7 +156,7 @@ public class ContentFieldExtractor implements java.io.Serializable
     /**
      * Sets the match for this configuration (ALL/FIRST).
      */
-    public void setMatch(ContentFieldMatch match)
+    public void setMatch(FieldMatch match)
     {
         this.match = match;
     }
@@ -166,7 +166,7 @@ public class ContentFieldExtractor implements java.io.Serializable
      */
     public void setMatch(String match)
     {
-        setMatch(ContentFieldMatch.fromValue(match));
+        setMatch(FieldMatch.fromValue(match));
     }
 
     /**

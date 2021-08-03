@@ -21,7 +21,7 @@ package com.opsmatters.media.config.content;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ContentFieldMatch
+public enum FieldMatch
 {
     ALL("all"),
     FIRST("first"); 
@@ -32,7 +32,7 @@ public enum ContentFieldMatch
      * Constructor that takes the match value.
      * @param value The value for the match
      */
-    ContentFieldMatch(String value)
+    FieldMatch(String value)
     {
         this.value = value;
     }
@@ -51,10 +51,10 @@ public enum ContentFieldMatch
      * @param value The type value
      * @return The type for the given value
      */
-    public static ContentFieldMatch fromValue(String value)
+    public static FieldMatch fromValue(String value)
     {
-        ContentFieldMatch[] types = values();
-        for(ContentFieldMatch type : types)
+        FieldMatch[] types = values();
+        for(FieldMatch type : types)
         {
             if(type.value().equals(value))
                 return type;

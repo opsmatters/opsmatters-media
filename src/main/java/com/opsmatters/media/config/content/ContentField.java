@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import com.opsmatters.media.config.content.FieldFilter;
 
 /**
  * Class that represents a field in a content item.
@@ -36,14 +37,17 @@ public class ContentField implements java.io.Serializable
     public static final String TEXT_CASE = "text-case";
     public static final String DATE_PATTERN = "date-pattern";
     public static final String DATE_PATTERNS = "date-patterns";
+    public static final String FILTER = "filter";
+    public static final String FILTERS = "filters";
     public static final String REMOVE_PARAMETERS = "remove-parameters";
     public static final String GENERATE = "generate";
 
     private String name = "";
-    private List<ContentFieldSelector> selectors;
-    private List<ContentFieldExtractor> extractors;
-    private ContentFieldCase textCase = ContentFieldCase.NONE;
+    private List<FieldSelector> selectors;
+    private List<FieldExtractor> extractors;
+    private FieldCase textCase = FieldCase.NONE;
     private List<String> datePatterns;
+    private List<FieldFilter> filters;
     private boolean removeParameters = true;
     private boolean generate = false;
 
@@ -60,7 +64,7 @@ public class ContentField implements java.io.Serializable
     public ContentField(String name, String expr)
     {
         setName(name);
-        addSelector(new ContentFieldSelector(name, expr));
+        addSelector(new FieldSelector(name, expr));
     }
 
     /**
@@ -99,7 +103,7 @@ public class ContentField implements java.io.Serializable
     /**
      * Returns the selectors for this configuration.
      */
-    public List<ContentFieldSelector> getSelectors()
+    public List<FieldSelector> getSelectors()
     {
         return selectors;
     }
@@ -107,7 +111,7 @@ public class ContentField implements java.io.Serializable
     /**
      * Returns the given selector for this configuration.
      */
-    public ContentFieldSelector getSelector(int i)
+    public FieldSelector getSelector(int i)
     {
         return selectors.get(i);
     }
@@ -115,10 +119,10 @@ public class ContentField implements java.io.Serializable
     /**
      * Adds a selector object for the given field.
      */
-    private void addSelector(ContentFieldSelector selector)
+    private void addSelector(FieldSelector selector)
     {
         if(selectors == null)
-            selectors = new ArrayList<ContentFieldSelector>(2);
+            selectors = new ArrayList<FieldSelector>(2);
         selectors.add(selector);
     }
 
@@ -133,7 +137,7 @@ public class ContentField implements java.io.Serializable
     /**
      * Returns the extractors for this configuration.
      */
-    public List<ContentFieldExtractor> getExtractors()
+    public List<FieldExtractor> getExtractors()
     {
         return extractors;
     }
@@ -141,10 +145,10 @@ public class ContentField implements java.io.Serializable
     /**
      * Adds an extractor object for the given field.
      */
-    private void addExtractor(ContentFieldExtractor extractor)
+    private void addExtractor(FieldExtractor extractor)
     {
         if(extractors == null)
-            extractors = new ArrayList<ContentFieldExtractor>(2);
+            extractors = new ArrayList<FieldExtractor>(2);
         extractors.add(extractor);
     }
 
@@ -159,7 +163,7 @@ public class ContentField implements java.io.Serializable
     /**
      * Returns the case for the field value.
      */
-    public ContentFieldCase getTextCase()
+    public FieldCase getTextCase()
     {
         return textCase;
     }
@@ -167,7 +171,7 @@ public class ContentField implements java.io.Serializable
     /**
      * Sets the case for the field value.
      */
-    public void setTextCase(ContentFieldCase textCase)
+    public void setTextCase(FieldCase textCase)
     {
         this.textCase = textCase;
     }
@@ -177,7 +181,7 @@ public class ContentField implements java.io.Serializable
      */
     public void setTextCase(String textCase)
     {
-        setTextCase(ContentFieldCase.fromValue(textCase));
+        setTextCase(FieldCase.fromValue(textCase));
     }
 
     /**
@@ -220,6 +224,40 @@ public class ContentField implements java.io.Serializable
     public boolean hasDatePatterns()
     {
         return datePatterns != null && datePatterns.size() > 0;
+    }
+
+    /**
+     * Returns the filters for this configuration.
+     */
+    public List<FieldFilter> getFilters()
+    {
+        return filters;
+    }
+
+    /**
+     * Returns the first filter for this configuration.
+     */
+    public FieldFilter getFilter()
+    {
+        return hasFilters() ? getFilters().get(0) : null ;
+    }
+
+    /**
+     * Adds a filter for this configuration.
+     */
+    private void addFilter(FieldFilter filter)
+    {
+        if(filters == null)
+            filters = new ArrayList<FieldFilter>(2);
+        filters.add(filter);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if there are filters for this configuration.
+     */
+    public boolean hasFilters()
+    {
+        return filters != null && filters.size() > 0;
     }
 
     /**
@@ -266,18 +304,6 @@ public class ContentField implements java.io.Serializable
         if(map.containsKey(GENERATE))
             setGenerate((Boolean)map.get(GENERATE));
 
-        if(map.containsKey(DATE_PATTERN))
-        {
-            addDatePattern((String)map.get(DATE_PATTERN));
-        }
-
-        if(map.containsKey(DATE_PATTERNS))
-        {
-            List<String> values = (List<String>)map.get(DATE_PATTERNS);
-            for(String value : values)
-              addDatePattern(value);
-        }
-
         if(map.containsKey(SELECTOR))
         {
             addSelector(getName(), map.get(SELECTOR));
@@ -301,6 +327,30 @@ public class ContentField implements java.io.Serializable
             for(Object value : values)
                 addExtractor(getName(), value);
         }
+
+        if(map.containsKey(DATE_PATTERN))
+        {
+            addDatePattern((String)map.get(DATE_PATTERN));
+        }
+
+        if(map.containsKey(DATE_PATTERNS))
+        {
+            List<String> values = (List<String>)map.get(DATE_PATTERNS);
+            for(String value : values)
+              addDatePattern(value);
+        }
+
+        if(map.containsKey(FILTER))
+        {
+            addFilter(map.get(FILTER));
+        }
+
+        if(map.containsKey(FILTERS))
+        {
+            List<Object> values = (List<Object>)map.get(FILTERS);
+            for(Object value : values)
+                addFilter(value);
+        }
     }
 
     /**
@@ -308,11 +358,11 @@ public class ContentField implements java.io.Serializable
      */
     private void addSelector(String name, Object value)
     {
-        ContentFieldSelector selector = null;
+        FieldSelector selector = null;
         if(value instanceof String)
-            selector = new ContentFieldSelector(name, (String)value);
+            selector = new FieldSelector(name, (String)value);
         else if(value instanceof Map)
-            selector = new ContentFieldSelector(name, (Map<String,Object>)value);
+            selector = new FieldSelector(name, (Map<String,Object>)value);
         if(selector != null)
           addSelector(selector);
     }
@@ -322,12 +372,26 @@ public class ContentField implements java.io.Serializable
      */
     private void addExtractor(String name, Object value)
     {
-        ContentFieldExtractor extractor = null;
+        FieldExtractor extractor = null;
         if(value instanceof String)
-            extractor = new ContentFieldExtractor(name, (String)value);
+            extractor = new FieldExtractor(name, (String)value);
         else if(value instanceof Map)
-            extractor = new ContentFieldExtractor(name, (Map<String,Object>)value);
+            extractor = new FieldExtractor(name, (Map<String,Object>)value);
         if(extractor != null)
           addExtractor(extractor);
+    }
+
+    /**
+     * Add a filter object for the given selector.
+     */
+    private void addFilter(Object value)
+    {
+        FieldFilter filter = null;
+        if(value instanceof String)
+            filter = new FieldFilter((String)value);
+        else if(value instanceof Map)
+            filter = new FieldFilter((Map<String,Object>)value);
+        if(filter != null)
+          addFilter(filter);
     }
 }

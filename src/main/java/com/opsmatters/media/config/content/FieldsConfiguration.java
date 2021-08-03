@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import com.opsmatters.media.config.YamlConfiguration;
+import com.opsmatters.media.config.content.FieldFilter;
 
 /**
  * Class that represents a YAML configuration for a page with fields.
@@ -178,6 +179,28 @@ public abstract class FieldsConfiguration extends YamlConfiguration
     public boolean hasArticleFields()
     {
         return articleFields != null && articleFields.size() > 0;
+    }
+
+    /**
+     * Returns the filters for this configuration.
+     */
+    public List<FieldFilter> getFilters()
+    {
+        List<FieldFilter> ret = new ArrayList<FieldFilter>();
+        if(getArticleFields() != null)
+        {
+            for(ContentFields fields : getArticleFields())
+            {
+                if(fields.getBody() != null)
+                {
+                    ContentField body = fields.getBody();
+                    if(body.getFilters() != null)
+                        ret.addAll(body.getFilters());
+                }
+            }
+        }
+
+        return ret;
     }
 
     /**

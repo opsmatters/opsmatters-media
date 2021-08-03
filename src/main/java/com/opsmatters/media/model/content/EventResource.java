@@ -22,7 +22,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.config.content.EventConfiguration;
 import com.opsmatters.media.config.content.WebPageConfiguration;
 import com.opsmatters.media.config.content.Fields;
-import com.opsmatters.media.crawler.BodyParser;
+import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.FormatUtils;
@@ -253,11 +253,11 @@ public class EventResource extends Resource
     /**
      * Prepare the fields in the resource using the given configuration.
      */
-    public void prepare(EventConfiguration config, boolean debug)
+    public void prepare(EventConfiguration config, WebPageConfiguration page, boolean debug)
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
 
-        BodyParser parser = new BodyParser(getDescription(), debug);
+        BodyParser parser = new BodyParser(getDescription(), page.getFilters(), debug);
         if(parser.converted())
             setDescription(parser.formatBody());
         setSummary(parser.formatSummary(config.getSummary()));

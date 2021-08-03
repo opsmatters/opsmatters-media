@@ -21,7 +21,7 @@ package com.opsmatters.media.config.content;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ContentFieldCase
+public enum FieldCase
 {
     NONE("none"),
     LOWER("lower"),
@@ -34,7 +34,7 @@ public enum ContentFieldCase
      * Constructor that takes the case value.
      * @param value The value for the case
      */
-    ContentFieldCase(String value)
+    FieldCase(String value)
     {
         this.value = value;
     }
@@ -53,10 +53,10 @@ public enum ContentFieldCase
      * @param value The type value
      * @return The type for the given value
      */
-    public static ContentFieldCase fromValue(String value)
+    public static FieldCase fromValue(String value)
     {
-        ContentFieldCase[] types = values();
-        for(ContentFieldCase type : types)
+        FieldCase[] types = values();
+        for(FieldCase type : types)
         {
             if(type.value().equals(value))
                 return type;

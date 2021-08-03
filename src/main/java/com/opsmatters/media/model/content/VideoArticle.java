@@ -21,7 +21,7 @@ import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.config.content.VideoConfiguration;
 import com.opsmatters.media.config.content.VideoChannelConfiguration;
 import com.opsmatters.media.config.content.Fields;
-import com.opsmatters.media.crawler.BodyParser;
+import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
@@ -278,11 +278,11 @@ public class VideoArticle extends Article
     /**
      * Prepare the fields in the content using the given configuration.
      */
-    public void prepare(VideoConfiguration config, boolean debug) throws DateTimeParseException
+    public void prepare(VideoConfiguration config, VideoChannelConfiguration channel, boolean debug) throws DateTimeParseException
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
 
-        BodyParser parser = new BodyParser(getDescription(), debug);
+        BodyParser parser = new BodyParser(getDescription(), channel.getFilters(), debug);
         if(parser.converted())
             setDescription(parser.formatBody());
         setSummary(parser.formatSummary(config.getSummary()));

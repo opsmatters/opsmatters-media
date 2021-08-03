@@ -32,9 +32,9 @@ import com.opsmatters.media.config.content.FieldsConfiguration;
 import com.opsmatters.media.config.content.LoadingConfiguration;
 import com.opsmatters.media.config.content.ContentField;
 import com.opsmatters.media.config.content.ContentFields;
-import com.opsmatters.media.config.content.ContentFieldMatch;
-import com.opsmatters.media.config.content.ContentFieldCase;
-import com.opsmatters.media.config.content.ContentFieldExtractor;
+import com.opsmatters.media.config.content.FieldMatch;
+import com.opsmatters.media.config.content.FieldCase;
+import com.opsmatters.media.config.content.FieldExtractor;
 import com.opsmatters.media.model.content.ContentSummary;
 
 /**
@@ -273,7 +273,7 @@ public abstract class FieldsCrawler<T extends ContentSummary>
         // Try each extractor in turn
         if(field.hasExtractors())
         {
-            for(ContentFieldExtractor extractor : field.getExtractors())
+            for(FieldExtractor extractor : field.getExtractors())
             {
                 ret = extract(extractor, value);
                 if(ret != null && ret.length() > 0)
@@ -290,17 +290,17 @@ public abstract class FieldsCrawler<T extends ContentSummary>
             }
         }
 
-        if(ret != null && field.getTextCase() != ContentFieldCase.NONE)
+        if(ret != null && field.getTextCase() != FieldCase.NONE)
         {
             if(debug())
                 logger.info(String.format("Changing case for field %s: ret=[%s], case=[%s]", 
                         field.getName(), ret, field.getTextCase()));
 
-            if(field.getTextCase() == ContentFieldCase.LOWER)
+            if(field.getTextCase() == FieldCase.LOWER)
                 ret = ret.toLowerCase();
-            else if(field.getTextCase() == ContentFieldCase.UPPER)
+            else if(field.getTextCase() == FieldCase.UPPER)
                 ret = ret.toUpperCase();
-            else if(field.getTextCase() == ContentFieldCase.CAPITALIZE)
+            else if(field.getTextCase() == FieldCase.CAPITALIZE)
                 ret = WordUtils.capitalizeFully(ret);
 
             if(debug())
@@ -314,7 +314,7 @@ public abstract class FieldsCrawler<T extends ContentSummary>
     /**
      * Extracts the value using the given extractor.
      */
-    private String extract(ContentFieldExtractor extractor, String value)
+    private String extract(FieldExtractor extractor, String value)
     {
         String ret = null;
 
@@ -333,7 +333,7 @@ public abstract class FieldsCrawler<T extends ContentSummary>
                 String format = getFormatSubstitutor().replace(extractor.getFormat());
 
                 // Make the necessary field replacements
-                if(extractor.getMatch() == ContentFieldMatch.ALL)
+                if(extractor.getMatch() == FieldMatch.ALL)
                     ret = m.replaceAll(format);
                 else
                     ret = m.replaceFirst(format);

@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.crawler;
+package com.opsmatters.media.config.content;
 
 /**
- * Class representing the types of body elements.
+ * Class representing the element filter result.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ElementType
+public enum FilterResult
 {
-    TITLE,
-    TEXT,
-    QUOTE,
-    PRE,
-    LIST
+    NONE,
+    SKIP,
+    STOP
 }

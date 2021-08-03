@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.crawler;
+package com.opsmatters.media.crawler.parser;
 
-import static com.opsmatters.media.crawler.ElementType.*;
-import static com.opsmatters.media.crawler.ElementDisplay.*;
+import static com.opsmatters.media.crawler.parser.ElementType.*;
+import static com.opsmatters.media.crawler.parser.ElementDisplay.*;
 
 /**
  * Class representing a body element.
@@ -44,17 +44,6 @@ public class BodyElement
         if(isBlock(tag))
             display = BLOCK;
         text.append(str);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the given tag is a block element.
-     */
-    public boolean isBlock(String tag)
-    {
-        return tag.equals("p") || tag.startsWith("h")
-            || tag.equals("blockquote") || tag.equals("pre")
-            || tag.equals("ul") || tag.equals("ol") || tag.equals("li")
-            || tag.equals("aside");
     }
 
     /**
@@ -86,6 +75,10 @@ public class BodyElement
             type = PRE;
         else if(tag.equals("ul") || tag.equals("ol") || tag.equals("li"))
             type = LIST;
+        else if(tag.equals("table"))
+            type = TABLE;
+        else if(tag.equals("figure"))
+            type = FIGURE;
         else
             type = TEXT;
     }
@@ -147,6 +140,18 @@ public class BodyElement
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given tag is a block element.
+     */
+    public boolean isBlock(String tag)
+    {
+        return tag.equals("p") || tag.startsWith("h")
+            || tag.equals("blockquote") || tag.equals("pre")
+            || tag.equals("ul") || tag.equals("ol") || tag.equals("li")
+            || tag.equals("figure") || tag.equals("table")
+            || tag.equals("aside");
+    }
+
+    /**
      * Sets the display mode of the element.
      */
     public void setDisplay(ElementDisplay display)
@@ -169,9 +174,27 @@ public class BodyElement
     {
         if(str != null && str.length() > 0)
         {
-            if(text.length() > 0 && text.charAt(text.length()-1) != '\n')
+            if(text.length() > 0
+                && needsSpace(str)
+                && text.charAt(text.length()-1) != '\n')
+            {
                 text.append(" ");
+            }
             text.append(str);
         }
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given string needs a space before appending.
+     */
+    private boolean needsSpace(String str)
+    {
+        boolean ret = false;
+        if(str.length() > 0)
+        {
+            char c = str.charAt(0);
+            ret = Character.isLetterOrDigit(c);
+        }
+        return ret;
     }
 }

@@ -30,10 +30,16 @@ import com.opsmatters.media.config.content.VideoChannelConfiguration;
 import com.opsmatters.media.config.content.LoadingConfiguration;
 import com.opsmatters.media.config.content.ContentField;
 import com.opsmatters.media.config.content.ContentFields;
-import com.opsmatters.media.config.content.ContentFieldSelector;
+import com.opsmatters.media.config.content.FieldSelector;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.config.content.FieldFilter;
+import com.opsmatters.media.config.content.FilterScope;
+import com.opsmatters.media.config.content.FilterResult;
 import com.opsmatters.media.client.video.VideoClient;
 import com.opsmatters.media.client.video.VideoClientFactory;
+
+import static com.opsmatters.media.config.content.FilterScope.*;
+import static com.opsmatters.media.config.content.FilterResult.*;
 
 /**
  * Class representing a crawler for videos.
@@ -216,21 +222,23 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
     /**
      * Process the body field.
      */
-    protected String getBody(ContentField field, ContentFieldSelector selector, JSONObject video, String type)
+    protected String getBody(ContentField field, FieldSelector selector, JSONObject video, String type)
     {
         String ret = null;
 
         StringBuilder body = new StringBuilder();
         String value = video.getString(selector.getExpr());
         String lines[] = value.split("\\r?\\n");
-        Pattern stopExprPattern = selector.getStopExprPattern();
 
         for(String line : lines)
         {
             String text = line.trim();
 
-            // Stop if the text matches the stop expression
-            if(stopExprPattern != null && stopExprPattern.matcher(text).matches())
+            // Apply the filters to skip elements or truncate the text
+            FilterResult result = FieldFilter.apply(field.getFilters(), text, BODY);
+            if(result == SKIP)
+                continue;
+            else if(result == STOP)
                 break;
 
             if(body.length() > 0)

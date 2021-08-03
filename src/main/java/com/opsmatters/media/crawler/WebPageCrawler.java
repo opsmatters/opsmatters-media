@@ -47,7 +47,11 @@ import com.opsmatters.media.config.content.MoreLinkConfiguration;
 import com.opsmatters.media.config.content.SummaryConfiguration;
 import com.opsmatters.media.config.content.ContentField;
 import com.opsmatters.media.config.content.ContentFields;
-import com.opsmatters.media.config.content.ContentFieldSelector;
+import com.opsmatters.media.config.content.FieldSelector;
+import com.opsmatters.media.config.content.FieldExclude;
+import com.opsmatters.media.config.content.FieldFilter;
+import com.opsmatters.media.crawler.parser.BodyParser;
+import com.opsmatters.media.crawler.parser.ElementType;
 import com.opsmatters.media.model.admin.TraceObject;
 import com.opsmatters.media.model.content.ContentSummary;
 import com.opsmatters.media.util.FormatUtils;
@@ -468,7 +472,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     {
         boolean valid = false;
 
-        for(ContentFieldSelector selector : field.getSelectors())
+        for(FieldSelector selector : field.getSelectors())
         {
             try
             {
@@ -519,7 +523,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             logger.info("Looking for elements for "+type+" field: "+field.getName());
 
         List<WebElement> nodes = null;
-        for(ContentFieldSelector selector : field.getSelectors())
+        for(FieldSelector selector : field.getSelectors())
         {
             if(selector.getSource().isPage())
             {
@@ -566,7 +570,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     /**
      *  Select the value from the list of elements.
      */
-    private String select(ContentFieldSelector selector, List<WebElement> nodes)
+    private String select(FieldSelector selector, List<WebElement> nodes)
     {
         int i = 0; 
         StringBuilder str = new StringBuilder();
@@ -629,7 +633,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
         if(debug())
             logger.info("Looking for anchor for "+type+" field: "+field.getName());
 
-        for(ContentFieldSelector selector : field.getSelectors())
+        for(FieldSelector selector : field.getSelectors())
         {
             if(selector.getSource().isPage())
             {
@@ -710,18 +714,18 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     /**
      * Coalesces the given paragraphs into a single string by accumulating paragraphs up to a heading or maximum length.
      */
-    protected String getFormattedSummary(String selector, boolean multiple, List<String> excludes, WebElement root,
-        SummaryConfiguration config, boolean debug)
+    protected String getFormattedSummary(String selector, boolean multiple,
+        List<FieldExclude> excludes, List<FieldFilter> filters, WebElement root, SummaryConfiguration config, boolean debug)
     {
-        return getFormattedSummary(selector, multiple, excludes, root,
-            config.getMinLength(), config.getMaxLength(), debug);
+        return getFormattedSummary(selector, multiple, excludes, filters,
+            root, config.getMinLength(), config.getMaxLength(), debug);
     }
 
     /**
      * Coalesces the given paragraphs into a single string by accumulating paragraphs up to a heading or maximum length.
      */
-    protected String getFormattedSummary(String selector, boolean multiple, List<String> excludes,
-        WebElement root, int minLength, int maxLength, boolean debug)
+    protected String getFormattedSummary(String selector, boolean multiple,
+        List<FieldExclude> excludes, List<FieldFilter> filters, WebElement root, int minLength, int maxLength, boolean debug)
     {
         ElementType lastType = null;
         List<WebElement> elements;
@@ -739,8 +743,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             logger.info(String.format("1: getFormattedSummary: elements=%d minLength=%d maxLength=%d",
                 elements.size(), minLength, maxLength));
 
-        BodyParser parser = new BodyParser(excludes);
-        parser.setDebug(debug);
+        BodyParser parser = new BodyParser(excludes, filters, debug);
         for(WebElement element : elements)
             parser.parseHtml(element.getAttribute("innerHTML"));
 
@@ -763,12 +766,12 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
         if(debug())
             logger.info("Looking for body summary for "+type+" field: "+field.getName());
 
-        for(ContentFieldSelector selector : field.getSelectors())
+        for(FieldSelector selector : field.getSelectors())
         {
             if(selector.getSource().isPage())
             {
-                String body = getFormattedSummary(selector.getExpr(), selector.isMultiple(), selector.getExcludes(),
-                    root, summary, debug);
+                String body = getFormattedSummary(selector.getExpr(), selector.isMultiple(),
+                    selector.getExcludes(), field.getFilters(), root, summary, debug);
                 if(body.length() > 0)
                 {
                     // Apply any extractors to the selection
@@ -803,8 +806,8 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     /**
      * Coalesces the given paragraphs into a single string, keeping any markup.
      */
-    protected String getFormattedBody(String selector, WebElement root, List<String> excludes,
-        Pattern stopExprPattern, boolean debug)
+    protected String getFormattedBody(String selector, WebElement root,
+        List<FieldExclude> excludes, List<FieldFilter> filters, boolean debug)
     {
         ElementType lastType = null;
         List<WebElement> elements;
@@ -821,12 +824,11 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
         if(debug)
             logger.info(String.format("1: getFormattedBody: elements=%d", elements.size()));
 
-        BodyParser parser = new BodyParser(excludes);
-        parser.setDebug(debug);
+        BodyParser parser = new BodyParser(excludes, filters, debug);
         for(WebElement element : elements)
             parser.parseHtml(element.getAttribute("innerHTML"));
 
-        String ret = parser.formatBody(stopExprPattern);
+        String ret = parser.formatBody();
         if(debug)
             logger.info(String.format("2: getFormattedBody: ret=%s ret.length=%d",
                 ret, ret.length()));
@@ -844,12 +846,12 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
         if(debug())
             logger.info("Looking for body for "+type+" field: "+field.getName());
 
-        for(ContentFieldSelector selector : field.getSelectors())
+        for(FieldSelector selector : field.getSelectors())
         {
             if(selector.getSource().isPage())
             {
-                String body = getFormattedBody(selector.getExpr(), root, selector.getExcludes(),
-                    selector.getStopExprPattern(), debug);
+                String body = getFormattedBody(selector.getExpr(), root,
+                    selector.getExcludes(), field.getFilters(), debug);
                 if(body.length() > 0)
                 {
                     ret = body;
@@ -889,7 +891,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
         if(debug())
             logger.info("Looking for image for "+type+" field: "+field.getName());
 
-        for(ContentFieldSelector selector : field.getSelectors())
+        for(FieldSelector selector : field.getSelectors())
         {
             if(selector.getSource().isPage())
             {
@@ -951,7 +953,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
         if(debug())
             logger.info("Looking for style for "+type+" field: "+field.getName());
 
-        for(ContentFieldSelector selector : field.getSelectors())
+        for(FieldSelector selector : field.getSelectors())
         {
             WebElement element = null;
             try
