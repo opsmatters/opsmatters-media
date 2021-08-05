@@ -174,10 +174,20 @@ public class BodyElement
     {
         if(str != null && str.length() > 0)
         {
+            // Check if the string starts with a line break
+            boolean hasBR = false;
+            if(str.startsWith("<br>"))
+            {
+                hasBR = true;
+                str = str.substring("<br>".length());
+            }
+
             if(text.length() > 0
                 && needsSpace(str)
-                && text.charAt(text.length()-1) != '\n')
+                && (text.charAt(text.length()-1) != '\n' || hasBR))
             {
+                if(hasBR)
+                    text.append("<br>");
                 text.append(" ");
             }
             text.append(str);

@@ -164,11 +164,16 @@ public class BodyParser
         String tag = node.nodeName();
 
         // Preprocess the node as wholeText() removes line breaks
+        String oldHtml = null;
         if(node instanceof Element)
         {
             Element element = (Element)node;
-            if(element.html().indexOf("<br>") != -1)
-                element.html(element.html().replaceAll("<br>","\n"));
+            String html = element.html();
+            if(html.indexOf("<br>") != -1)
+            {
+                element.html(html.replaceAll("<br>","\n"));
+                oldHtml = html;
+            }
         }
 
         // Apply the excludes to filter out particular nodes`
@@ -211,9 +216,11 @@ public class BodyParser
                 string = string.replaceAll("\u00A0"," "); // Convert nbsp to space
                 string = string.replaceAll("\\u2005|\\u2009|\\u202F", " "); // Replace "thin" spaces with normal space
                 string = string.trim(); // Remove whitespace
+                strings[i] = string;
 
 //GERALD
 //System.out.println("parseNode:3: i="+i+" tag="+tag+" i="+i+" string="+string+" strong="+strong);
+
                 // Empty string is a linefeed
                 if(string.length() == 0)
                 {
@@ -233,6 +240,9 @@ public class BodyParser
                 if(element.getType() == LIST && node.parentNode() != null)
                     element.setListType(node.parentNode().nodeName());
 
+//GERALD
+//System.out.println("parseNode:4: i="+i+" tag="+tag+" i="+i+" text="+element.getText()
+//  +" strong="+strong+" block="+element.isBlock()+" previous="+previous);
                 // If it's the first element or a block element
                 if(previous != null && !element.isBlock())
                 {
@@ -240,7 +250,9 @@ public class BodyParser
                     previous.append(element);
                 }
                 else if(element.getText().startsWith("<br>")  // Treat <br> as a line break
-                    && (i == 0 || strings[i-1].length() > 0)) // Treat \n\n<br> as a paragraph instead
+                    && (i == 0
+                        || (strings[i-1].length() > 0           // Treat \n\n<br> and \n<br>\n<br>
+                            && !strings[i-1].equals("<br>"))))  //   as a paragraph instead
                 {
                     previous.append("\n");
                     previous.append(element);
@@ -264,6 +276,10 @@ public class BodyParser
         }
         else // Recurse through the child nodes
         {
+            // Restore the original html content before recursing
+            if(oldHtml != null)
+                ((Element)node).html(oldHtml);
+
             for(Node child : node.childNodes())
                 parseNode(child);
         }
