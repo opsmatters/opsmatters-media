@@ -190,14 +190,17 @@ public class BodyParser
                 text = text.trim();
             else // eg. a comment
                 return;
-//GERALD
-//System.out.println("parseNode:1: tag="+tag+" text="+text);
+
+            if(debug)
+                logger.info("parseNode:1: tag="+tag+" text="+text);
+
             // Add <br> to LF
             if(tag.equals("p"))
                 text = text.replaceAll("\n(.+)","\n<br>$1");
 
-//GERALD
-//System.out.println("parseNode:2: tag="+tag+" text="+text);
+            if(debug)
+                logger.info("parseNode:2: tag="+tag+" text="+text);
+
             // If it's the first item or coming after a linefeed, it can't be inline
             if(elements.size() == 0 || text.startsWith("\n")
                 || (previous != null && previous.getDisplay() == BLOCK))
@@ -215,11 +218,12 @@ public class BodyParser
                 String string = strings[i];
                 string = string.replaceAll("\u00A0"," "); // Convert nbsp to space
                 string = string.replaceAll("\\u2005|\\u2009|\\u202F", " "); // Replace "thin" spaces with normal space
+                string = string.replaceAll("✔️",""); // Remove emojis that won't save to the db
                 string = string.trim(); // Remove whitespace
                 strings[i] = string;
 
-//GERALD
-//System.out.println("parseNode:3: i="+i+" tag="+tag+" i="+i+" string="+string+" strong="+strong);
+                if(debug)
+                    logger.info("parseNode:3: i="+i+" tag="+tag+" i="+i+" string="+string+" strong="+strong);
 
                 // Empty string is a linefeed
                 if(string.length() == 0)
@@ -240,16 +244,17 @@ public class BodyParser
                 if(element.getType() == LIST && node.parentNode() != null)
                     element.setListType(node.parentNode().nodeName());
 
-//GERALD
-//System.out.println("parseNode:4: i="+i+" tag="+tag+" i="+i+" text="+element.getText()
-//  +" strong="+strong+" block="+element.isBlock()+" previous="+previous);
+                if(debug)
+                    logger.info("parseNode:4: i="+i+" tag="+tag+" text="+element.getText()
+                        +" strong="+strong+" block="+element.isBlock()+" previous="+previous);
+
                 // If it's the first element or a block element
                 if(previous != null && !element.isBlock())
                 {
                     // Append the visible text to the previous element
                     previous.append(element);
                 }
-                else if(element.getText().startsWith("<br>")  // Treat <br> as a line break
+                else if(element.hasBR()                         // Treat <br> as a line break
                     && (i == 0
                         || (strings[i-1].length() > 0           // Treat \n\n<br> and \n<br>\n<br>
                             && !strings[i-1].equals("<br>"))))  //   as a paragraph instead

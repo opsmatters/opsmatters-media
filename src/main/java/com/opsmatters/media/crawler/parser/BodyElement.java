@@ -31,6 +31,7 @@ public class BodyElement
     private StringBuilder text = new StringBuilder();
     private boolean strong = true;
     private ElementDisplay display = INLINE;
+    private boolean hasBR = false;
 
     /**
      * Constructor that takes a tag, value and strong flag.
@@ -43,6 +44,14 @@ public class BodyElement
 
         if(isBlock(tag))
             display = BLOCK;
+
+        // Remove any leading <br>
+        if(str.startsWith("<br>"))
+        {
+            hasBR = true;
+            str = str.substring("<br>".length()).trim();
+        }
+
         text.append(str);
     }
 
@@ -113,6 +122,14 @@ public class BodyElement
     public String getText()
     {
         return text.toString();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the element text starts with <br>.
+     */
+    public boolean hasBR()
+    {
+        return hasBR;
     }
 
     /**

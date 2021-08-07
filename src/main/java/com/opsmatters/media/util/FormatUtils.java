@@ -121,6 +121,10 @@ public class FormatUtils
             ret = ret.replaceAll("[\\u0300-\\u036F]", "");
             ret = ret.replaceAll("%C[CD]%[89ab][0-9a-f]", "");
 
+            // Remove "cyrillic" characters
+            ret = ret.replaceAll("[\\u0400-\\u0467]", "");
+            ret = ret.replaceAll("%D[01]%[89ab][0-9a-f]", "");
+
             // Remove quotes, dashes etc
             ret = ret.replaceAll("'|‘|’|‚|‛|“|”|„|′|″", "");
             ret = ret.replaceAll("‐|‑|‒|–|—|―|‖|‗|‾	", "-");
