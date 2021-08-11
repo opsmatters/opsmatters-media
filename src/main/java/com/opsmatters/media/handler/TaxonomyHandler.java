@@ -25,6 +25,8 @@ import java.util.logging.Logger;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.drupal.TaxonomyTerm;
 
+import static com.opsmatters.media.handler.TaxonomyHandler.TaxonomyStatus.*;
+
 /**
  * Class representing a handler for taxonomy terms.
  * 
@@ -42,6 +44,7 @@ public class TaxonomyHandler
     public static final String VIDEO_TYPES = "video_type";
     public static final String ORGANISATIONS = "organisation";
 
+    private Map<String,TaxonomyStatus> statuses = new HashMap<String,TaxonomyStatus>();
     private Map<String,List<TaxonomyTerm>> terms = new HashMap<String,List<TaxonomyTerm>>();
     private Map<String,Map<String,List<String>>> names = new HashMap<String,Map<String,List<String>>>();
 
@@ -53,6 +56,48 @@ public class TaxonomyHandler
         }
     };
 
+    enum TaxonomyStatus
+    {
+        NEW,
+        VALID,
+        INVALID;
+    }
+
+    /**
+     * Returns the status of the taxonomy terms for the given site.
+     */
+    private TaxonomyStatus getStatus(Site site)
+    {
+        TaxonomyStatus status = statuses.get(site.getId());
+        if(status == null)
+            setStatus(site, status = NEW);
+        return status;
+    }
+
+    /**
+     * Sets the status of the taxonomy terms for the given site.
+     */
+    private void setStatus(Site site, TaxonomyStatus status)
+    {
+        statuses.put(site.getId(), status);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if taxonomy terms have been loaded for the given site.
+     */
+    public boolean isValid(Site site)
+    {
+        return getStatus(site) == VALID;
+    }
+
+    /**
+     * Sets the taxonomy terms for the given site to require reloading.
+     */
+    public void invalidate(Site site)
+    {
+        setStatus(site, INVALID);
+    }
+
     /**
      * Loads the taxonomy terms for the given site.
      */
@@ -62,11 +107,12 @@ public class TaxonomyHandler
         {
             this.terms.put(site.getId(), terms);
             names.remove(site.getId());
+            setStatus(site, VALID);
         }
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given site has taxonomy terms.
+     * Returns <CODE>true</CODE> if taxonomy terms have been loaded for the given site.
      */
     public boolean hasTerms(Site site)
     {
@@ -189,14 +235,5 @@ public class TaxonomyHandler
     public TaxonomyTerm getOrganisation(Site site, String name)
     {
         return getTerm(site, name, ORGANISATIONS);
-    }
-
-    /**
-     * Clear the taxonomy terms.
-     */
-    public void clear()
-    {
-        terms.clear();
-        names.clear();
     }
 }

@@ -246,7 +246,7 @@ public class BodyParser
 
                 if(debug)
                     logger.info("parseNode:4: i="+i+" tag="+tag+" text="+element.getText()
-                        +" strong="+strong+" block="+element.isBlock()+" previous="+previous);
+                        +" strong="+strong+" block="+element.isBlock()+" hasBR="+element.hasBR()+" previous="+previous);
 
                 // If it's the first element or a block element
                 if(previous != null && !element.isBlock())
@@ -260,6 +260,8 @@ public class BodyParser
                             && !strings[i-1].equals("<br>"))))  //   as a paragraph instead
                 {
                     previous.append("\n");
+                    if(element.hasBR())
+                        previous.appendBR();
                     previous.append(element);
                 }
                 else
@@ -467,6 +469,7 @@ public class BodyParser
 
             String text = element.getText();
             text = text.replaceAll("\n|<br>",""); //Remove linefeeds and breaks
+            text = text.replaceAll("\\[.+\\]",""); // Remove references and asides
 
             // Apply the filters to skip elements or truncate the text
             FilterResult result = FieldFilter.apply(getFilters(), text, SUMMARY);

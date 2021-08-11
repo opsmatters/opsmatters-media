@@ -204,9 +204,10 @@ public class BodyElement
                 && (text.charAt(text.length()-1) != '\n' || hasBR))
             {
                 if(hasBR)
-                    text.append("<br>");
+                    appendBR();
                 text.append(" ");
             }
+
             text.append(str);
         }
     }
@@ -223,5 +224,13 @@ public class BodyElement
             ret = Character.isLetterOrDigit(c);
         }
         return ret;
+    }
+
+    /**
+     * Append a &lt;br&gt; to the text.
+     */
+    public void appendBR()
+    {
+        text.append("<br>");
     }
 }

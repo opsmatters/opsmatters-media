@@ -334,38 +334,80 @@ public class YouTubeClient extends Client implements VideoClient
                 }
             }
 
-            if(debug())
-                logger.info("Search for youtube videos for playlistId: "+playlistId);
-
-            YouTube.PlaylistItems.List itemRequest = client.playlistItems().list(LIST_FIELDS);
-            itemRequest.setPlaylistId(playlistId);
-            itemRequest.setMaxResults((long)maxResults);
-
-            PlaylistItemListResponse itemResult = itemRequest.execute();
-            List<PlaylistItem> itemList = itemResult.getItems();
-
-            if(itemList != null)
+            // First look for a playlist for the channel
+            if(playlistId != null)
             {
-                if(debug())
-                    logger.info("Found "+itemList.size()+" youtube videos for playlist: "+playlistId);
-                for(PlaylistItem item : itemList)
-                {
-                    PlaylistItemSnippet snippet = item.getSnippet();
-                    ResourceId resource = snippet.getResourceId();
+                        if(debug())
+                            logger.info("Search for youtube videos for playlistId: "+playlistId);
 
-                    JSONObject video = new JSONObject();
-                    video.put(Fields.VIDEO_ID, resource.getVideoId());
-                    video.put(Fields.TITLE, snippet.getTitle());
-                    video.put(Fields.PUBLISHED_DATE, snippet.getPublishedAt().toString());
-                    video.put(Fields.PROVIDER, VideoProvider.YOUTUBE.code());
+                        YouTube.PlaylistItems.List itemRequest = client.playlistItems().list(LIST_FIELDS);
+                        itemRequest.setPlaylistId(playlistId);
+                        itemRequest.setMaxResults((long)maxResults);
 
-                    list.add(video);
-                }
+                        PlaylistItemListResponse itemResult = itemRequest.execute();
+                        List<PlaylistItem> itemList = itemResult.getItems();
+
+                        if(itemList != null)
+                        {
+                            if(debug())
+                                logger.info("Found "+itemList.size()+" youtube videos for playlist: "+playlistId);
+                            for(PlaylistItem item : itemList)
+                            {
+                                PlaylistItemSnippet snippet = item.getSnippet();
+                                ResourceId resource = snippet.getResourceId();
+
+                                JSONObject video = new JSONObject();
+                                video.put(Fields.VIDEO_ID, resource.getVideoId());
+                                video.put(Fields.TITLE, snippet.getTitle());
+                                video.put(Fields.PUBLISHED_DATE, snippet.getPublishedAt().toString());
+                                video.put(Fields.PROVIDER, VideoProvider.YOUTUBE.code());
+
+                                list.add(video);
+                            }
+                        }
+                        else
+                        {
+                            if(debug())
+                                logger.info("No youtube videos found for channel: "+channelId);
+                        }
             }
-            else
+            else // Search by channel id instead
             {
+                YouTube.Search.List searchRequest = client.search().list(LIST_FIELDS);
+                searchRequest.setChannelId(channelId);
+                searchRequest.setMaxResults((long)maxResults);
+                searchRequest.setType("video");
+                searchRequest.setOrder("date");
+
                 if(debug())
-                    logger.info("No youtube videos found for channel: "+channelId);
+                    logger.info("Search for youtube videos for channel: "+channelId);
+
+                SearchListResponse searchResult = searchRequest.execute();
+                List<SearchResult> searchList = searchResult.getItems();
+
+                if(searchList != null)
+                {
+                    if(debug())
+                        logger.info("Found "+searchList.size()+" youtube videos for channel: "+channelId);
+                    for(SearchResult result : searchList)
+                    {
+                        ResourceId resource = result.getId();
+                        SearchResultSnippet snippet = result.getSnippet();
+
+                        JSONObject video = new JSONObject();
+                        video.put(Fields.VIDEO_ID, resource.getVideoId());
+                        video.put(Fields.TITLE, snippet.getTitle());
+                        video.put(Fields.PUBLISHED_DATE, snippet.getPublishedAt().toString());
+                        video.put(Fields.PROVIDER, VideoProvider.YOUTUBE.code());
+
+                        list.add(video);
+                    }
+                }
+                else
+                {
+                    if(debug())
+                        logger.info("No youtube videos found for channel: "+channelId);
+                }
             }
         }
         catch (GoogleJsonResponseException e)
