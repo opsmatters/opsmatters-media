@@ -255,38 +255,9 @@ public class ImageUtils
     static public Dimension getImageDimension(URL url) throws IOException
     {
         Dimension ret = null;
-        ImageInputStream in = null;
-
-        try
-        {
-            in = ImageIO.createImageInputStream(url.openStream());
-            Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
-            if(readers.hasNext())
-            {
-                ImageReader reader = readers.next();
-                try
-                {
-                    reader.setInput(in);
-                    ret = new Dimension(reader.getWidth(0), reader.getHeight(0));
-                }
-                finally
-                {
-                    reader.dispose();
-                }
-            }
-        }
-        finally
-        {
-            try
-            {
-                if(in != null)
-                    in.close();
-            }
-            catch(IOException e)
-            {
-            }
-        }
-
+        BufferedImage image = getImage(url);
+        if(image != null)
+            ret = new Dimension(image.getWidth(), image.getHeight());
         return ret;
     }
 

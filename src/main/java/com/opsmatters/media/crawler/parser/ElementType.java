@@ -28,5 +28,6 @@ public enum ElementType
     PRE,
     LIST,
     TABLE,
-    FIGURE
+    FIGURE,
+    IFRAME
 }

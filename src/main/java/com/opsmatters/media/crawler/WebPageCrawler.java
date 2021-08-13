@@ -65,6 +65,8 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
 {
     private static final Logger logger = Logger.getLogger(WebPageCrawler.class.getName());
 
+    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36";
+
     public static final String ANCHOR = "a";
     public static final String DIV = "div";
     public static final String SECTION = "section";
@@ -110,7 +112,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                 options.addArguments("--disable-extensions");
                 options.setPageLoadStrategy(PageLoadStrategy.EAGER);
                 options.addArguments("--window-size=1920,1080");
-                options.addArguments("--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36");
+                options.addArguments("--user-agent="+USER_AGENT);
                 options.addArguments("--no-proxy-server");
                 options.addArguments("--proxy-server='direct://'");
                 options.addArguments("--proxy-bypass-list=*");
@@ -124,7 +126,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                 FirefoxOptions options = new FirefoxOptions();
                 options.setPageLoadStrategy(PageLoadStrategy.EAGER);
                 options.addArguments("--window-size=1920,1080");
-                options.addArguments("--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36");
+                options.addArguments("--user-agent="+USER_AGENT);
                 options.addArguments("--no-proxy-server");
                 options.addArguments("--proxy-server='direct://'");
                 options.addArguments("--proxy-bypass-list=*");

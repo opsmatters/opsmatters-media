@@ -340,7 +340,7 @@ public class BodyParser
         return tag.equals("p") || tag.startsWith("h")
             || tag.equals("blockquote") || tag.equals("pre")
             || tag.equals("li") || tag.equals("table")
-            || tag.equals("figure");
+            || tag.equals("figure") || tag.equals("iframe");
     }
 
     /**
@@ -462,7 +462,8 @@ public class BodyParser
                 || element.getType() == PRE
                 || element.getType() == LIST
                 || element.getType() == TABLE
-                || element.getType() == FIGURE)
+                || element.getType() == FIGURE
+                || element.getType() == IFRAME)
             {
                 continue;
             }

@@ -36,6 +36,7 @@ public abstract class ContentSummary implements java.io.Serializable
     private String image = "";
     private String imageSource = "";
     private String imagePrefix = "";
+    private boolean imageAccessible = true;
     private boolean valid = true;
 
     /**
@@ -59,6 +60,7 @@ public abstract class ContentSummary implements java.io.Serializable
             setImage(obj.getImage());
             setImageSource(obj.getImageSource());
             setImagePrefix(obj.getImagePrefix());
+            setImageAccessible(obj.isImageAccessible());
         }
     }
 
@@ -314,5 +316,21 @@ public abstract class ContentSummary implements java.io.Serializable
 
         setImage(path);
         setImage(FormatUtils.getFormattedImageFilename(getImage()));
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the image source is accessible.
+     */
+    public boolean isImageAccessible()
+    {
+        return imageAccessible;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the image source is accessible.
+     */
+    public void setImageAccessible(boolean imageAccessible)
+    {
+        this.imageAccessible = imageAccessible;
     }
 }

@@ -88,6 +88,8 @@ public class BodyElement
             type = TABLE;
         else if(tag.equals("figure"))
             type = FIGURE;
+        else if(tag.equals("iframe"))
+            type = IFRAME;
         else
             type = TEXT;
     }
@@ -163,8 +165,9 @@ public class BodyElement
     {
         return tag.equals("p") || tag.startsWith("h")
             || tag.equals("blockquote") || tag.equals("pre")
-            || tag.equals("ul") || tag.equals("ol") || tag.equals("li")
-            || tag.equals("figure") || tag.equals("table")
+            || tag.equals("ul") || tag.equals("ol")
+            || tag.equals("li") || tag.equals("table")
+            || tag.equals("figure") || tag.equals("iframe")
             || tag.equals("aside");
     }
 

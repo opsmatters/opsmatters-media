@@ -315,6 +315,7 @@ public class RoundupArticle extends Article
         setUrl(new String(obj.getUrl()), false);
         setImageSource(new String(obj.getImageSource() != null ? obj.getImageSource() : ""));
         setImagePrefix(new String(obj.getImagePrefix() != null ? obj.getImagePrefix() : ""));
+        setImageAccessible(obj.isImageAccessible());
         setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
         setAuthor(new String(obj.getAuthor() != null ? obj.getAuthor() : ""));
         setAuthorLink(new String(obj.getAuthorLink() != null ? obj.getAuthorLink() : ""));
@@ -421,6 +422,23 @@ public class RoundupArticle extends Article
     public void setImagePrefix(String imagePrefix)
     {
         details.setImagePrefix(imagePrefix);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the image source is accessible.
+     */
+    @Override
+    public boolean isImageAccessible()
+    {
+        return details.isImageAccessible();
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the image source is accessible.
+     */
+    public void setImageAccessible(boolean imageAccessible)
+    {
+        details.setImageAccessible(imageAccessible);
     }
 
     /**

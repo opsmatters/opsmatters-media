@@ -553,6 +553,14 @@ public abstract class ContentItem implements java.io.Serializable
     }
 
     /**
+     * Returns <CODE>true</CODE> if the image source is accessible.
+     */
+    public boolean isImageAccessible()
+    {
+        return true;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if this content should be published.
      */
     public boolean isPublished()
