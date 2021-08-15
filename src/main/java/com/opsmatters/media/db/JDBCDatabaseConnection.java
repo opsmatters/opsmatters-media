@@ -23,6 +23,8 @@ import com.opsmatters.media.exception.MissingParameterException;
 import com.opsmatters.media.db.dao.DAOFactory;
 import com.opsmatters.media.util.StringUtils;
 
+import static com.opsmatters.media.db.ConnectionStatus.*;
+
 /**
  * Encapsulates the definition of a connection to a database using a JDBC-compliant driver.
  * 
@@ -47,24 +49,9 @@ public class JDBCDatabaseConnection
     private DatabaseMetaData data;
     protected JDBCDatabaseDriver driver;
     private List<DAOFactory> factories = new ArrayList<DAOFactory>();
-    private int lastConnectionStatus = NOT_CONNECTED;
+    private ConnectionStatus status = NOT_CONNECTED;
     private Exception connectException;
     private boolean debug = false;
-
-    /**
-     * The "Error" status code.
-     */
-    public static final int ERROR = -1;
-
-    /**
-     * The "Not Connected" status code.
-     */
-    public static final int NOT_CONNECTED = 0;
-
-    /**
-     * The "Connected" status code.
-     */
-    public static final int CONNECTED = 2;
 
     /**
      * Protected constructor.
@@ -132,7 +119,7 @@ public class JDBCDatabaseConnection
         boolean ret = true;
         conn = null;
 
-        setConnectionStatus(NOT_CONNECTED);
+        setStatus(NOT_CONNECTED);
 
         // Get the driver type
         driverType = p.getType();
@@ -276,7 +263,7 @@ public class JDBCDatabaseConnection
                     String msg = "Unable to connect to database '"
                         +getName()+"': "+e.getClass().getName()+": "+e.getMessage()+sqlsuffix;
                     logger.severe(msg);
-                    setConnectionStatus(ERROR);
+                    setStatus(ERROR);
                 }
                 return false;
             }
@@ -329,9 +316,9 @@ public class JDBCDatabaseConnection
         data = conn.getMetaData();
 
         // Update the connection status
-        setConnectionStatus(isConnectionValid() ? CONNECTED : NOT_CONNECTED);
+        setStatus(isConnected() ? CONNECTED : NOT_CONNECTED);
 
-        if(log && getConnectionStatus() == CONNECTED)
+        if(log && getStatus() == CONNECTED)
         {
             logger.info("Connected to database '"+getName()+"' successfully");
         }
@@ -392,17 +379,17 @@ public class JDBCDatabaseConnection
     /**
      * Sets the connection status.
      */
-    private void setConnectionStatus(int status) 
+    private void setStatus(ConnectionStatus status) 
     {
-        lastConnectionStatus = status;
+        this.status = status;
     }
 
     /**
      * Returns the connection status.
      */
-    private int getConnectionStatus() 
+    public ConnectionStatus getStatus() 
     {
-        return lastConnectionStatus;
+        return status;
     }
 
     /**
@@ -415,8 +402,12 @@ public class JDBCDatabaseConnection
 
     /**
      * Returns <CODE>true</CODE> if the database is currently connected.
+     * <p>
+     * Validates the connection using a ping query.
+     * </p> 
+     * @param validate <CODE>true</CODE> if the connection should be validated using a ping query
      */
-    public boolean isConnected()
+    public boolean isConnected(boolean validate)
     {
         boolean ret = false;
 
@@ -424,16 +415,31 @@ public class JDBCDatabaseConnection
         {
             try
             {
-                ret = isConnectionValid();
-                setConnectionStatus(ret ? CONNECTED : NOT_CONNECTED);
+                if(driver != null)
+                {
+                    if(validate)
+                        ret = conn.isValid(3);
+                    else
+                        ret = !conn.isClosed();
+                }
+
+                setStatus(ret ? CONNECTED : NOT_CONNECTED);
             }
-            catch(Exception e)
+            catch(SQLException e)
             {
-                setConnectionStatus(ERROR);
+                setStatus(ERROR);
             }
         }
 
         return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the database is currently connected.
+     */
+    public boolean isConnected()
+    {
+        return isConnected(false);
     }
 
     /**
@@ -443,15 +449,7 @@ public class JDBCDatabaseConnection
      */
     public void close(boolean verbose) 
     {
-        boolean isConnected = false;
-
-        try
-        {
-            isConnected = isConnected();
-        }
-        catch(Exception e)
-        {
-        }
+        boolean isConnected = isConnected();
 
         try
         {
@@ -472,7 +470,7 @@ public class JDBCDatabaseConnection
                 +e.getClass().getName()+": "+e.getMessage());
         }
 
-        setConnectionStatus(NOT_CONNECTED);
+        setStatus(NOT_CONNECTED);
     }
 
     /**
@@ -549,14 +547,6 @@ public class JDBCDatabaseConnection
             || msg.indexOf("abort") != -1
             || msg.indexOf("Closed") != -1
             || msg.indexOf("closed") != -1;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the connection is valid.
-     */
-    public boolean isConnectionValid() throws Exception
-    {
-        return driver != null ? !conn.isClosed() : false;
     }
 
     /**
