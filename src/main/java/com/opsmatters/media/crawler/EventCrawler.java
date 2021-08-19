@@ -19,8 +19,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 import java.time.format.DateTimeParseException;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.By;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import com.opsmatters.media.model.content.EventSummary;
 import com.opsmatters.media.model.content.EventDetails;
 import com.opsmatters.media.config.content.EventConfiguration;
@@ -61,10 +63,10 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
     }
 
     /**
-     * Create an event summary from a selected node.
+     * Create an event summary from the selected node.
      */
     @Override
-    public EventSummary getContentSummary(WebElement root, ContentFields fields)
+    public EventSummary getContentSummary(Element root, ContentFields fields)
         throws DateTimeParseException
     {
         EventSummary content = new EventSummary();
@@ -108,17 +110,20 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
         configureImplicitWait(getArticleLoading());
         loadPage(content.getUrl(), getArticleLoading());
         configureExplicitWait(getArticleLoading());
+        configureSleep(getArticleLoading());
 
         // Trace to see the event page
         if(trace(getDriver()))
             logger.info("event-page="+getDriver().getPageSource());
 
-        WebElement root = null;
+        Element root = null;
+        Document doc = Jsoup.parse(getDriver().getPageSource());
         for(ContentFields fields : articles)
         {
             if(!fields.hasRoot())
                 throw new IllegalArgumentException("Root empty for event content");
-            List<WebElement> elements = getDriver().findElements(By.cssSelector(fields.getRoot()));
+
+            Elements elements = doc.select(fields.getRoot());
             if(elements.size() > 0)
             {
                 root = elements.get(0);
@@ -134,7 +139,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
 
             // Trace to see the content root node
             if(trace(root))
-                logger.info("event-node="+root.getAttribute("innerHTML"));
+                logger.info("event-node="+root.html());
 
             content.setPublishedDate(TimeUtils.truncateTimeUTC());
 
@@ -226,7 +231,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
     /**
      * Populate the content fields from the given node.
      */
-    private void populateSummaryFields(WebElement root, 
+    private void populateSummaryFields(Element root, 
         ContentFields fields, EventSummary content, String type)
         throws DateTimeParseException
     {

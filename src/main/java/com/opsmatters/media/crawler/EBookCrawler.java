@@ -19,15 +19,16 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 import java.time.format.DateTimeParseException;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.By;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import com.opsmatters.media.model.content.PublicationSummary;
 import com.opsmatters.media.model.content.PublicationDetails;
 import com.opsmatters.media.config.content.EBookConfiguration;
 import com.opsmatters.media.config.content.WebPageConfiguration;
 import com.opsmatters.media.config.content.ContentField;
 import com.opsmatters.media.config.content.ContentFields;
-import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 
@@ -68,10 +69,10 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
     }
 
     /**
-     * Create the ebook summary from a selected node.
+     * Create the ebook summary from the selected node.
      */
     @Override
-    public PublicationSummary getContentSummary(WebElement root, ContentFields fields)
+    public PublicationSummary getContentSummary(Element root, ContentFields fields)
         throws DateTimeParseException
     {
         PublicationSummary content = new PublicationSummary();
@@ -115,17 +116,20 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
         configureImplicitWait(getArticleLoading());
         loadPage(content.getUrl(), getArticleLoading());
         configureExplicitWait(getArticleLoading());
+        configureSleep(getArticleLoading());
 
         // Trace to see the ebook page
         if(trace(getDriver()))
             logger.info("ebook-page="+getDriver().getPageSource());
 
-        WebElement root = null;
+        Element root = null;
+        Document doc = Jsoup.parse(getDriver().getPageSource());
         for(ContentFields fields : articles)
         {
             if(!fields.hasRoot())
                 throw new IllegalArgumentException("Root empty for ebook content");
-            List<WebElement> elements = getDriver().findElements(By.cssSelector(fields.getRoot()));
+
+            Elements elements = doc.select(fields.getRoot());
             if(elements.size() > 0)
             {
                 root = elements.get(0);
@@ -141,7 +145,7 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
 
             // Trace to see the content root node
             if(trace(root))
-                logger.info("ebook-node="+root.getAttribute("innerHTML"));
+                logger.info("ebook-node="+root.html());
 
             // Default the published date to today if not found
             if(!fields.hasPublishedDate() && content.getPublishedDate() == null)
@@ -171,7 +175,7 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
     /**
      * Populate the content fields from the given node.
      */
-    private void populateSummaryFields(WebElement root, 
+    private void populateSummaryFields(Element root, 
         ContentFields fields, PublicationSummary content, String type)
         throws DateTimeParseException
     {

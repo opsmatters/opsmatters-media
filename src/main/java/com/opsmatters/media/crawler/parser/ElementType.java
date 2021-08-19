@@ -29,5 +29,6 @@ public enum ElementType
     LIST,
     TABLE,
     FIGURE,
-    IFRAME
+    IFRAME,
+    TIMESTAMP
 }

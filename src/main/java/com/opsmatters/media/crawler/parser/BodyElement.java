@@ -15,6 +15,8 @@
  */
 package com.opsmatters.media.crawler.parser;
 
+import java.util.regex.Pattern;
+
 import static com.opsmatters.media.crawler.parser.ElementType.*;
 import static com.opsmatters.media.crawler.parser.ElementDisplay.*;
 
@@ -25,6 +27,10 @@ import static com.opsmatters.media.crawler.parser.ElementDisplay.*;
  */
 public class BodyElement
 {
+    // Pattern to detect URLs in strings
+    private static final String TIMESTAMP_REGEX = "^\\s*\\d{1,2}:\\d{2}\\s+.*";
+    private static final Pattern timestampPattern = Pattern.compile(TIMESTAMP_REGEX);
+
     private String tag = null;
     private ElementType type;
     private String listType;
@@ -40,7 +46,6 @@ public class BodyElement
     {
         this.strong = strong;
         this.tag = tag;
-        setType(tag);
 
         if(isBlock(tag))
             display = BLOCK;
@@ -52,6 +57,7 @@ public class BodyElement
             str = str.substring("<br>".length()).trim();
         }
 
+        setType(tag, str);
         text.append(str);
     }
 
@@ -74,7 +80,7 @@ public class BodyElement
     /**
      * Sets the type of the element.
      */
-    public void setType(String tag)
+    public void setType(String tag, String text)
     {
         if(tag.startsWith("h"))
             type = TITLE;
@@ -90,6 +96,8 @@ public class BodyElement
             type = FIGURE;
         else if(tag.equals("iframe"))
             type = IFRAME;
+        else if(timestampPattern.matcher(text).matches()) // looks for nn:nn timestamp
+            type = TIMESTAMP;
         else
             type = TEXT;
     }

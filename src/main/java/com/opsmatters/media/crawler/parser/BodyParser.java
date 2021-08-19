@@ -74,7 +74,7 @@ public class BodyParser
     }
 
     /**
-     * Constructor that takes a text stringand debug flag.
+     * Constructor that takes a text string and debug flag.
      */
     public BodyParser(String text, boolean debug)
     {
@@ -159,6 +159,15 @@ public class BodyParser
     /**
      * Parse the given node and add to the list of body elements.
      */
+    public void parseHtml(Node node)
+    {
+        for(Node child : node.childNodes())
+            parseNode(child);
+    }
+
+    /**
+     * Parse the given node and add to the list of body elements.
+     */
     private void parseNode(Node node)
     {
         String tag = node.nodeName();
@@ -216,10 +225,25 @@ public class BodyParser
             for(int i = 0; i < strings.length; i++)
             {
                 String string = strings[i];
-                string = string.replaceAll("\u00A0"," "); // Convert nbsp to space
-                string = string.replaceAll("\\u2005|\\u2009|\\u202F", " "); // Replace "thin" spaces with normal space
-                string = string.replaceAll("✔️",""); // Remove emojis that won't save to the db
-                string = string.trim(); // Remove whitespace
+
+                // Convert nbsp to space
+                string = string.replaceAll("\u00A0"," ");
+
+                // Replace "thin" spaces with normal space
+                string = string.replaceAll("\\u2005|\\u2009|\\u202F", " ");
+
+                // Remove emojis that won't save to the db
+                string = string.replaceAll("✔️","");
+
+                // Collapse multiple spaces between end of sentence and punctuation
+                string = string.replaceAll("(\\w+)[ ]+([\\.\\?!])","$1$2");
+
+                // Collapse multiple spaces
+                string = string.replaceAll("(\\S+)[ ]+(\\S+)","$1 $2");
+
+                // Remove whitespace
+                string = string.trim();
+
                 strings[i] = string;
 
                 if(debug)
@@ -245,7 +269,7 @@ public class BodyParser
                     element.setListType(node.parentNode().nodeName());
 
                 if(debug)
-                    logger.info("parseNode:4: i="+i+" tag="+tag+" text="+element.getText()
+                    logger.info("parseNode:4: i="+i+" tag="+tag+" text="+element.getText()+" type="+element.getType()
                         +" strong="+strong+" block="+element.isBlock()+" hasBR="+element.hasBR()+" previous="+previous);
 
                 // If it's the first element or a block element
@@ -257,7 +281,8 @@ public class BodyParser
                 else if(element.hasBR()                         // Treat <br> as a line break
                     && (i == 0
                         || (strings[i-1].length() > 0           // Treat \n\n<br> and \n<br>\n<br>
-                            && !strings[i-1].equals("<br>"))))  //   as a paragraph instead
+                            && !strings[i-1].equals("<br>")     //   as a paragraph instead
+                            && element.getType() != TIMESTAMP)))
                 {
                     previous.append("\n");
                     if(element.hasBR())
@@ -463,7 +488,8 @@ public class BodyParser
                 || element.getType() == LIST
                 || element.getType() == TABLE
                 || element.getType() == FIGURE
-                || element.getType() == IFRAME)
+                || element.getType() == IFRAME
+                || element.getType() == TIMESTAMP)
             {
                 continue;
             }
@@ -597,7 +623,7 @@ public class BodyParser
             ret = ret.replaceAll("\\u24d2", "©");
 
             // Remove special characters that won't save to the db
-            ret = ret.replaceAll("▬|▬|▬|❏|➡️|🏢", "");
+            ret = ret.replaceAll("▬|▬|▬|❏|➡️|🏢|⌨️|⏱️", "");
 
             // Turn rows of dashes or stars into paragraphs
             ret = ret.replaceAll("\n(-|\\*)+\n", "\n\n");

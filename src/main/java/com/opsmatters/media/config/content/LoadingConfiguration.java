@@ -28,6 +28,7 @@ import com.opsmatters.media.config.YamlConfiguration;
 public class LoadingConfiguration extends YamlConfiguration
 {
     public static final String WAIT = "wait";
+    public static final String SLEEP = "sleep";
     public static final String SELECTOR = "selector";
     public static final String INTERVAL = "interval";
     public static final String MAX_WAIT = "max-wait";
@@ -37,6 +38,7 @@ public class LoadingConfiguration extends YamlConfiguration
     public static final String KEYWORDS = "keywords";
 
     private long wait = 0L;
+    private long sleep = 0L;
     private String selector = "";
     private long interval = 0L;
     private long maxWait = 0L;
@@ -73,6 +75,7 @@ public class LoadingConfiguration extends YamlConfiguration
             super.copyAttributes(obj);
             setSelector(obj.getSelector());
             setInterval(obj.getInterval());
+            setSleep(obj.getSleep());
             setWait(obj.getWait());
             setMaxWait(obj.getMaxWait());
             setRemoveParameters(obj.removeParameters());
@@ -96,6 +99,22 @@ public class LoadingConfiguration extends YamlConfiguration
     public void setWait(long wait)
     {
         this.wait = wait;
+    }
+
+    /**
+     * Returns the sleep time after page loading (in milliseconds).
+     */
+    public long getSleep()
+    {
+        return sleep;
+    }
+
+    /**
+     * Sets the sleep time after page loading (in milliseconds).
+     */
+    public void setSleep(long sleep)
+    {
+        this.sleep = sleep;
     }
 
     /**
@@ -249,6 +268,8 @@ public class LoadingConfiguration extends YamlConfiguration
     {
         if(map.containsKey(WAIT))
             setWait((Integer)map.get(WAIT));
+        if(map.containsKey(SLEEP))
+            setSleep((Integer)map.get(SLEEP));
         if(map.containsKey(SELECTOR))
             setSelector((String)map.get(SELECTOR));
         if(map.containsKey(INTERVAL))
