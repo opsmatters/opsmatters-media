@@ -28,7 +28,7 @@ import static com.opsmatters.media.crawler.parser.ElementDisplay.*;
 public class BodyElement
 {
     // Pattern to detect URLs in strings
-    private static final String TIMESTAMP_REGEX = "^\\s*\\d{1,2}:\\d{2}\\s+.*";
+    private static final String TIMESTAMP_REGEX = "^\\s*\\d{1,2}:\\d{2}[\\s|-]+.*";
     private static final Pattern timestampPattern = Pattern.compile(TIMESTAMP_REGEX);
 
     private String tag = null;

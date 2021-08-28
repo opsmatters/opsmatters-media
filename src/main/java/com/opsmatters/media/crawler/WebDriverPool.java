@@ -222,6 +222,7 @@ public class WebDriverPool
         closeDrivers(waiting.get(CHROME));
         closeDrivers(waiting.get(FIREFOX));
         closeDrivers(used);
+        waiting.clear();
     }
 
     /**

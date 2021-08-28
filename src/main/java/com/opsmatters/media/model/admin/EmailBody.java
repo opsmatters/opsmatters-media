@@ -46,6 +46,14 @@ public class EmailBody
     }
 
     /**
+     * Constructor that takes a text body.
+     */
+    public EmailBody(String body)
+    {
+        addParagraph(body);
+    }
+
+    /**
      * Returns the subject.
      */
     public String toString()
