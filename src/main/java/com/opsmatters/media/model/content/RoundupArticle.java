@@ -234,6 +234,8 @@ public class RoundupArticle extends Article
 
         String newsletter = config.getField(Fields.NEWSLETTER);
         setNewsletter(newsletter == null || newsletter.equals("0") ? false : true);
+        if(page.hasField(Fields.NEWSLETTER))
+            setNewsletter(page.getField(Fields.NEWSLETTER, "0").equals("0") ? false : true);
 
         String featured = config.getField(Fields.FEATURED);
         setFeatured(featured == null || featured.equals("0") ? false : true);

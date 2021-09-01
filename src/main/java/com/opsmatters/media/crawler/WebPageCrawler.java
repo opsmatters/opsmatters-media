@@ -114,6 +114,22 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     }
 
     /**
+     * Returns the current page source.
+     */
+    protected String getPageSource(String root)
+    {
+        return driver.findElement(By.tagName(root)).getAttribute("outerHTML");
+    }
+
+    /**
+     * Returns the current page source.
+     */
+    protected String getPageSource()
+    {
+        return getPageSource("html");
+    }
+
+    /**
      * Returns <CODE>true</CODE> if trace is enabled for the given object.
      */
     public boolean trace(Object obj)
@@ -247,7 +263,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
 
         // Trace to see the teaser page
         if(trace(getDriver()))
-            logger.info("teaser-page="+getDriver().getPageSource());
+            logger.info("teaser-page="+getPageSource());
 
         if(debug())
             logger.info("Loaded page in: "+(System.currentTimeMillis()-now)+"ms");
@@ -360,9 +376,11 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
         if(!initialised)
             connect();
 
-        // Process selections
         Map<String,String> map = new HashMap<String,String>();
-        Document doc = Jsoup.parse(driver.getPageSource());
+        Document doc = Jsoup.parse(getPageSource("body"));
+        doc.outputSettings().prettyPrint(false);
+
+        // Process the teaser selections
         for(ContentFields fields : getTeaserFields())
         {
             Elements results = doc.select(fields.getRoot());
@@ -407,7 +425,8 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     protected List<Element> getMetatags(String name, String value)
     {
         List<Element> ret = new ArrayList<Element>();
-        Document doc = Jsoup.parse(driver.getPageSource());
+        Document doc = Jsoup.parse(getPageSource());
+        doc.outputSettings().prettyPrint(false);
         List<Element> tags = doc.getElementsByTag("meta");
 
         for(Element tag : tags)

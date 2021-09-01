@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
@@ -143,7 +144,10 @@ public class BodyParser
     public void parseHtml(String html)
     {
         previous = null;
-        parseNode(Jsoup.parse(html).getElementsByTag("body").get(0));
+
+        Document doc = Jsoup.parse(html);
+        doc.outputSettings().prettyPrint(false);
+        parseNode(doc.getElementsByTag("body").get(0));
 
         if(debug)
         {

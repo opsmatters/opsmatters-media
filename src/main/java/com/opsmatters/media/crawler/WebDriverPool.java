@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
 import java.util.logging.Logger;
+import java.time.Instant;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.UnhandledAlertException;
@@ -45,42 +46,43 @@ public class WebDriverPool
 
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36";
 
-    private static final int capacity = 5;
+    private static final int CAPACITY = 5;
 
-    private static WebDriverPool _instance;
+    private static WebDriverPool _pool;
 
-    private Map<CrawlerBrowser, List<WebDriver>> waiting = Collections.synchronizedMap(new HashMap<CrawlerBrowser, List<WebDriver>>(capacity));
-    private List<WebDriver> used = Collections.synchronizedList(new ArrayList<WebDriver>(capacity));
+    private Map<CrawlerBrowser,List<WebDriver>> waiting = Collections.synchronizedMap(new HashMap<CrawlerBrowser,List<WebDriver>>(CAPACITY));
+    private List<WebDriver> used = Collections.synchronizedList(new ArrayList<WebDriver>(CAPACITY));
+    private Map<String,WebDriverInstance> instances = new HashMap<String,WebDriverInstance>(CAPACITY);
     private boolean debug = false;
 
     private static void checkInstance()
     {
-        if(_instance == null)
-            _instance = new WebDriverPool();
+        if(_pool == null)
+            _pool = new WebDriverPool();
     }
 
     public synchronized static WebDriver getDriver(CrawlerBrowser browser)
     {
         checkInstance();
-        return _instance.get(browser);
+        return _pool.get(browser);
     }
 
     public synchronized static void releaseDriver(WebDriver driver)
     {
-        if(_instance != null)
-            _instance.release(driver);
+        if(_pool != null)
+            _pool.release(driver);
     }
 
     public synchronized static void close()
     {
-        if(_instance != null)
-            _instance.closeDrivers();
+        if(_pool != null)
+            _pool.closeDrivers();
     }
 
     public static void setDebug(boolean debug)
     {
         checkInstance();
-        _instance.debug = debug;
+        _pool.debug = debug;
     }
 
     /**
@@ -97,11 +99,13 @@ public class WebDriverPool
             List<WebDriver> drivers = waiting.get(browser);
             if(drivers == null)
             {
-                drivers = new ArrayList<WebDriver>(capacity);
+                drivers = new ArrayList<WebDriver>(CAPACITY);
                 waiting.put(browser, drivers);
             }
 
             WebDriver driver = null;
+            WebDriverInstance instance = null;
+
             if(drivers.size() == 0)
             {
                 if(browser == CHROME)
@@ -110,18 +114,25 @@ public class WebDriverPool
                     driver = newFirefoxDriver();
                 else // Defaults to HtmlUnit
                     driver = newHtmlUnitDriver();
+
                 drivers.add(driver);
+                instance = new WebDriverInstance(driver);
+                instances.put(instance.getHandle(), instance);
             }
             
             driver = drivers.remove(0);
-            if(isAlive(driver))
+            instance = instances.get(driver.getWindowHandle());
+
+            // Check if the driver can be used
+            if(instance.renew() || !isAlive(driver))
+            {
+                closeDriver(driver);
+            }
+            else // use the driver
             {
                 used.add(driver);
+                instance.use();
                 ret = driver;
-            }
-            else
-            {
-                driver.quit();
             }
         }
         while(ret == null);
@@ -233,7 +244,20 @@ public class WebDriverPool
         if(drivers != null)
         {
             for(WebDriver driver : drivers)
-                driver.quit();
+                closeDriver(driver);
+        }
+    }
+
+    /**
+     * Close the given driver.
+     */
+    private void closeDriver(WebDriver driver)
+    {
+        if(driver != null)
+        {
+            String handle = driver.getWindowHandle();
+            driver.quit();
+            instances.remove(handle);
         }
     }
 }

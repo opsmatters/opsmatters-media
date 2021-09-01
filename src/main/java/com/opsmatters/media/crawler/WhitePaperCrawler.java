@@ -120,10 +120,12 @@ public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
 
         // Trace to see the whitepaper page
         if(trace(getDriver()))
-            logger.info("whitepaper-page="+getDriver().getPageSource());
+            logger.info("roundup-page="+getPageSource());
 
         Element root = null;
-        Document doc = Jsoup.parse(getDriver().getPageSource());
+        Document doc = Jsoup.parse(getPageSource("body"));
+        doc.outputSettings().prettyPrint(false);
+
         for(ContentFields fields : articles)
         {
             if(!fields.hasRoot())

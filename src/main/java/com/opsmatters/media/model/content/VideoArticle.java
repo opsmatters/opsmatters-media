@@ -273,6 +273,8 @@ public class VideoArticle extends Article
 
         String newsletter = config.getField(Fields.NEWSLETTER);
         setNewsletter(newsletter == null || newsletter.equals("0") ? false : true);
+        if(channel.hasField(Fields.NEWSLETTER))
+            setNewsletter(channel.getField(Fields.NEWSLETTER, "0").equals("0") ? false : true);
     }
 
     /**

@@ -134,10 +134,12 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
 
         // Trace to see the roundup page
         if(trace(getDriver()))
-            logger.info("roundup-page="+getDriver().getPageSource());
+            logger.info("roundup-page="+getPageSource());
 
         Element root = null;
-        Document doc = Jsoup.parse(getDriver().getPageSource());
+        Document doc = Jsoup.parse(getPageSource("body"));
+        doc.outputSettings().prettyPrint(false);
+
         for(ContentFields fields : articles)
         {
             if(!fields.hasRoot())

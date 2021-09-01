@@ -120,10 +120,12 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
 
         // Trace to see the ebook page
         if(trace(getDriver()))
-            logger.info("ebook-page="+getDriver().getPageSource());
+            logger.info("roundup-page="+getPageSource());
 
         Element root = null;
-        Document doc = Jsoup.parse(getDriver().getPageSource());
+        Document doc = Jsoup.parse(getPageSource("body"));
+        doc.outputSettings().prettyPrint(false);
+
         for(ContentFields fields : articles)
         {
             if(!fields.hasRoot())

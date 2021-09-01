@@ -114,10 +114,12 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
 
         // Trace to see the event page
         if(trace(getDriver()))
-            logger.info("event-page="+getDriver().getPageSource());
+            logger.info("roundup-page="+getPageSource());
 
         Element root = null;
-        Document doc = Jsoup.parse(getDriver().getPageSource());
+        Document doc = Jsoup.parse(getPageSource("body"));
+        doc.outputSettings().prettyPrint(false);
+
         for(ContentFields fields : articles)
         {
             if(!fields.hasRoot())
