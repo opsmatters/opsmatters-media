@@ -358,8 +358,13 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
             // Add the Organisation fields
             if(content instanceof OrganisationListing)
             {
-                // Exclude archived organisations
                 Organisation organisation = handler.getOrganisation(content.getCode());
+
+                // Ignore missing organisations
+                if(organisation == null)
+                    continue;
+
+                // Exclude archived organisations
                 if(organisation.getStatus() == OrganisationStatus.ARCHIVED)
                     continue;
 

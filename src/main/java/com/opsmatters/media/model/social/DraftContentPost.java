@@ -53,7 +53,6 @@ public class DraftContentPost extends DraftPost
         setSiteId(site.getId());
         setCode(organisation.getCode());
         setTitle(organisation.getName());
-        setContentId(organisation.getListingId());
         setContentType(ContentType.ORGANISATION);
         setStatus(DraftStatus.NEW);
 

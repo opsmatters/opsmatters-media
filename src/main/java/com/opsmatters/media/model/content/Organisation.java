@@ -54,7 +54,6 @@ public class Organisation extends OwnedItem implements FieldSource
     private ArchiveReason reason = ArchiveReason.NONE;
     private Map<ContentType, ContentTypeSummary> content = new HashMap<ContentType, ContentTypeSummary>();
     private Instant reviewedDate;
-    private int listingId = -1;
 
     /**
      * Default constructor.
@@ -101,7 +100,6 @@ public class Organisation extends OwnedItem implements FieldSource
             setStatus(obj.getStatus());
             setReason(obj.getReason());
             setReviewedDate(obj.getReviewedDate());
-            setListingId(obj.getListingId());
         }
     }
 
@@ -562,22 +560,6 @@ public class Organisation extends OwnedItem implements FieldSource
     {
         if(reviewedDate != null)
             setReviewedDate(TimeUtils.toInstantUTC(reviewedDate));
-    }
-
-    /**
-     * Returns the id of the organisation listing.
-     */
-    public int getListingId()
-    {
-        return listingId;
-    }
-
-    /**
-     * Sets the id of the organisation listing.
-     */
-    public void setListingId(int listingId)
-    {
-        this.listingId = listingId;
     }
 
     /**
