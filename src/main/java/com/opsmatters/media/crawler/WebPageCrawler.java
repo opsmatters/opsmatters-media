@@ -892,11 +892,18 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                             logger.info("Found image "+selector.getAttribute()+" for "+type+" field "+field.getName()+": "+ret);
                         break;
                     }
-                    else
+                    else if(image.hasAttr("src"))
                     {
                         ret = getValue(field, image.attr("src"));
                         if(debug())
                             logger.info("Found image src for "+type+" field "+field.getName()+": "+ret);
+                        break;
+                    }
+                    else if(image.hasAttr("srcset"))
+                    {
+                        ret = getValue(field, image.attr("srcset"));
+                        if(debug())
+                            logger.info("Found image srcset for "+type+" field "+field.getName()+": "+ret);
                         break;
                     }
                 }

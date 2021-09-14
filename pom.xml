@@ -633,7 +633,7 @@ media.built.on=${TODAY}
   <dependency>
     <groupId>org.kohsuke</groupId>
     <artifactId>github-api</artifactId>
-    <version>1.108</version>
+    <version>1.133</version>
     <exclusions>
       <exclusion>
         <groupId>com.fasterxml.jackson.core</groupId>
