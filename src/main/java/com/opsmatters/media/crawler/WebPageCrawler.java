@@ -118,7 +118,19 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
      */
     protected String getPageSource(String root)
     {
-        return driver.findElement(By.tagName(root)).getAttribute("outerHTML");
+        String ret = "";
+
+        try
+        {
+            ret = driver.findElement(By.tagName(root)).getAttribute("outerHTML");
+        }
+        catch(RuntimeException e)
+        {
+            logger.severe("Unable to get page source for "+root);
+        }
+
+        return ret;
+
     }
 
     /**
