@@ -28,6 +28,7 @@ public enum EnvironmentName
     IMAGE("image", "Image", true),
     DIRECTOR("director", "Director", true),
     PUBLISHER("publisher", "Publisher", true),
+    LOCAL("local", "Local", true),
     STAGE("stage", "Stage", false),
     PROD("prod", "Production", false);
 

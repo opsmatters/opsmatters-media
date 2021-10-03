@@ -27,8 +27,6 @@ import java.util.Iterator;
 import java.util.logging.Logger;
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
 import javax.imageio.ImageIO;
@@ -37,6 +35,8 @@ import javax.imageio.ImageReadParam;
 import javax.imageio.stream.ImageInputStream;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGSVGElement;
+import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.geometry.Positions;
 import org.apache.batik.bridge.ViewBox;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.util.SVGConstants;
@@ -159,19 +159,9 @@ public class ImageUtils
             catch(ArrayIndexOutOfBoundsException e)
             {
                 // Deal with JDK bug that causes some GIF files to throw ArrayIndexOutOfBoundsException
-                ImageIcon icon = new ImageIcon(file.getAbsolutePath());
-                Image image = icon.getImage();
-
-                // Create empty BufferedImage, sized to Image
-                BufferedImage buffImage = new BufferedImage(
-                  image.getWidth(null), 
-                  image.getHeight(null), 
-                  BufferedImage.TYPE_INT_ARGB);
-
-                // Draw Image into BufferedImage
-                Graphics g = buffImage.getGraphics();
-                g.drawImage(image, 0, 0, null);
-                ret = buffImage;
+                ret = Thumbnails.of(file)
+                    .imageType(BufferedImage.TYPE_INT_ARGB)
+                    .asBufferedImage();
             }
             finally
             {
@@ -272,57 +262,77 @@ public class ImageUtils
     }
 
     /**
-     * Returns an image resized to a absolute width and height.
+     * Returns an image scaled by a factor of the original size (proportional).
      * @param file The input image file
-     * @param scaledWidth absolute width in pixels
-     * @param scaledHeight absolute height in pixels
+     * @param factor the proportion of the output image to the input image [0..1].
      * @return the scaled image
      * @throws IOException
      */
-    static public BufferedImage getResizedImage(File file, int scaledWidth, int scaledHeight)
-        throws IOException
-    {
-        return getResizedImage(ImageIO.read(file), scaledWidth, scaledHeight);
-    }
-
-    /**
-     * Returns an image resized by a percentage of the original size (proportional).
-     * @param file The input image file
-     * @param percent the percentage of the output image over the input image.
-     * @return the scaled image
-     * @throws IOException
-     */
-    public static BufferedImage getResizedImage(File file, float percent)
+    public static BufferedImage getScaledFactorImage(File file, double factor)
         throws IOException
     {
         BufferedImage inputImage = ImageIO.read(file);
-        return getResizedImage(inputImage,
-            (int)(inputImage.getWidth()*percent)/100,
-            (int)(inputImage.getHeight()*percent)/100);
+        return Thumbnails.of(inputImage)
+            .scale(factor)
+            .imageType(getImageType(inputImage))
+            .asBufferedImage();
     }
 
     /**
-     * Returns an image resized to a absolute width and height.
-     * @param inputImage The input image
-     * @param scaledWidth absolute width in pixels
-     * @param scaledHeight absolute height in pixels
+     * Returns an image scaled to the given width.
+     * @param file The input image file
+     * @param width the width of the output image
      * @return the scaled image
      * @throws IOException
      */
-    static public BufferedImage getResizedImage(BufferedImage inputImage, int scaledWidth, int scaledHeight)
+    public static BufferedImage getScaledWidthImage(File file, int width)
         throws IOException
     {
-        // Create the output image
-        BufferedImage outputImage = new BufferedImage(scaledWidth,
-            scaledHeight, getImageType(inputImage));
- 
-        // Scale the input image to the output image
-        Graphics2D g2d = outputImage.createGraphics();
-        g2d.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
-        g2d.dispose();
-        inputImage.flush();
- 
-        return outputImage;
+        BufferedImage inputImage = ImageIO.read(file);
+        return Thumbnails.of(inputImage)
+            .width(width)
+            .imageType(getImageType(inputImage))
+            .asBufferedImage();
+    }
+
+    /**
+     * Returns an image cropped using a ratio.
+     * @param file The input image file
+     * @param ratio the ratio of the width to the height
+     * @return the cropped image
+     * @throws IOException
+     */
+    static public BufferedImage getCroppedImage(File file, float ratio)
+        throws IOException
+    {
+        BufferedImage inputImage = ImageIO.read(file);
+
+        int inputWidth = inputImage.getWidth();
+        int inputHeight = inputImage.getHeight();
+        int max = Math.max(inputWidth, inputHeight);
+
+        int width = inputWidth;
+        int height = inputHeight;
+
+        // Portrait image
+        if(inputHeight == max)
+        {
+            height = (int)(inputWidth/ratio);
+        }
+        else // Landscape image
+        {
+            width = (int)(inputHeight*ratio);
+        }
+
+        // Image dimensions unchanged
+        if(width == inputWidth && height == inputHeight)
+            return inputImage;
+
+        return Thumbnails.of(inputImage)
+            .size(width, height)
+            .crop(Positions.CENTER)
+            .imageType(getImageType(inputImage))
+            .asBufferedImage();
     }
 
     /**
@@ -383,20 +393,14 @@ public class ImageUtils
      * @param image The image bytes
      * @throws IOException
      */
-    private static BufferedImage removeImageAlpha(BufferedImage image)
+    private static BufferedImage removeImageAlpha(BufferedImage image) throws IOException
     {
         BufferedImage ret = image;
         if(image != null && image.getColorModel().hasAlpha())
         {
-            BufferedImage convertedImage = new BufferedImage(image.getWidth(),
-                image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-
-            // Rewritee the input image to the output image, changing the type
-            Graphics2D g2d = convertedImage.createGraphics();
-            g2d.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
-            g2d.dispose();
-            image.flush();
-            ret = convertedImage;
+            ret = Thumbnails.of(image)
+                .imageType(BufferedImage.TYPE_3BYTE_BGR)
+                .asBufferedImage();
         }
 
         return ret;
