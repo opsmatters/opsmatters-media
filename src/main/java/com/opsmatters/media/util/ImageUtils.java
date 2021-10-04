@@ -27,6 +27,8 @@ import java.util.Iterator;
 import java.util.logging.Logger;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
 import javax.imageio.ImageIO;
@@ -115,6 +117,23 @@ public class ImageUtils
 
             throw e;
         }
+        catch(ArrayIndexOutOfBoundsException e)
+        {
+            // Deal with JDK bug that causes some GIF files to throw ArrayIndexOutOfBoundsException
+            ImageIcon icon = new ImageIcon(url);
+            Image image = icon.getImage();
+
+            // Create empty BufferedImage, sized to Image
+            BufferedImage buffImage = new BufferedImage(
+              image.getWidth(null), 
+              image.getHeight(null), 
+              BufferedImage.TYPE_INT_ARGB);
+
+            // Draw Image into BufferedImage
+            Graphics g = buffImage.getGraphics();
+            g.drawImage(image, 0, 0, null);
+            ret = buffImage;
+        }
         finally
         {
             if(stream != null)           
@@ -159,9 +178,19 @@ public class ImageUtils
             catch(ArrayIndexOutOfBoundsException e)
             {
                 // Deal with JDK bug that causes some GIF files to throw ArrayIndexOutOfBoundsException
-                ret = Thumbnails.of(file)
-                    .imageType(BufferedImage.TYPE_INT_ARGB)
-                    .asBufferedImage();
+                ImageIcon icon = new ImageIcon(file.getAbsolutePath());
+                Image image = icon.getImage();
+
+                // Create empty BufferedImage, sized to Image
+                BufferedImage buffImage = new BufferedImage(
+                  image.getWidth(null), 
+                  image.getHeight(null), 
+                  BufferedImage.TYPE_INT_ARGB);
+
+                // Draw Image into BufferedImage
+                Graphics g = buffImage.getGraphics();
+                g.drawImage(image, 0, 0, null);
+                ret = buffImage;
             }
             finally
             {
@@ -398,9 +427,15 @@ public class ImageUtils
         BufferedImage ret = image;
         if(image != null && image.getColorModel().hasAlpha())
         {
-            ret = Thumbnails.of(image)
-                .imageType(BufferedImage.TYPE_3BYTE_BGR)
-                .asBufferedImage();
+            BufferedImage convertedImage = new BufferedImage(image.getWidth(),
+                image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+
+            // Rewritee the input image to the output image, changing the type
+            Graphics2D g2d = convertedImage.createGraphics();
+            g2d.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
+            g2d.dispose();
+            image.flush();
+            ret = convertedImage;
         }
 
         return ret;
