@@ -331,7 +331,7 @@ public class ImageUtils
      * @return the cropped image
      * @throws IOException
      */
-    static public BufferedImage getCroppedImage(File file, float ratio)
+    static public BufferedImage getCroppedImage(File file, float ratio, ImageAlignment alignment)
         throws IOException
     {
         BufferedImage inputImage = ImageIO.read(file);
@@ -357,9 +357,16 @@ public class ImageUtils
         if(width == inputWidth && height == inputHeight)
             return inputImage;
 
+        // Crop from the selected position
+        Positions position = Positions.CENTER;
+        if(alignment == ImageAlignment.LEFT)
+            position = Positions.CENTER_LEFT;
+        else if(alignment == ImageAlignment.RIGHT)
+            position = Positions.CENTER_RIGHT;
+
         return Thumbnails.of(inputImage)
             .size(width, height)
-            .crop(Positions.CENTER)
+            .crop(position)
             .imageType(getImageType(inputImage))
             .asBufferedImage();
     }
