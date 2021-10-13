@@ -25,7 +25,6 @@ import org.json.JSONObject;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.content.FieldsConfiguration;
 import com.opsmatters.media.model.BaseItem;
-import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentSummary;
 import com.opsmatters.media.model.admin.Email;
@@ -57,7 +56,6 @@ public class ContentMonitor extends BaseItem
     public static final String RETRY = "retry";
     public static final String SUBSCRIBED_DATE = "subscribed-date";
 
-    private String siteId = "";
     private String code = "";
     private String organisation = "";
     private String name = "";
@@ -88,13 +86,12 @@ public class ContentMonitor extends BaseItem
     }
 
     /**
-     * Constructor that takes a site and, content configuration.
+     * Constructor that takes content and field configurations.
      */
-    public ContentMonitor(Site site, ContentConfiguration content, FieldsConfiguration config)
+    public ContentMonitor(ContentConfiguration content, FieldsConfiguration config)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
-        setSiteId(site.getId());
         setCode(content.getCode());
         setContentType(content.getType());
         setName(config.getName());
@@ -119,7 +116,6 @@ public class ContentMonitor extends BaseItem
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setSiteId(obj.getSiteId());
             setCode(obj.getCode());
             setOrganisation(obj.getOrganisation());
             setName(obj.getName());
@@ -204,22 +200,6 @@ public class ContentMonitor extends BaseItem
     public static String getGuid(ContentType type, String code, String name)
     {
         return String.format("%s-%s-%s", type.code(), code, name);
-    }
-
-    /**
-     * Returns the site id.
-     */
-    public String getSiteId()
-    {
-        return siteId;
-    }
-
-    /**
-     * Sets the site id.
-     */
-    public void setSiteId(String siteId)
-    {
-        this.siteId = siteId;
     }
 
     /**
@@ -911,7 +891,6 @@ public class ContentMonitor extends BaseItem
             .addParagraph("The following monitor has changed:")
             .addTable(new String[][]
             {
-                {"Site", getSiteId()},
                 {"ID", getGuid()},
                 {"Organisation", getOrganisation()},
                 {"Status", getStatus().name()},

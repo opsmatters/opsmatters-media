@@ -47,7 +47,6 @@ public class ContentChange extends ContentEvent
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
-        setSiteId(monitor.getSiteId());
         setCode(monitor.getCode());
         setStatus(ChangeStatus.NEW);
         setSnapshotBefore(monitor.getSnapshot());

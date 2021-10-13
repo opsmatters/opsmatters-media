@@ -24,7 +24,6 @@ import com.opsmatters.media.model.OwnedItem;
  */
 public abstract class ContentEvent extends OwnedItem
 {
-    private String siteId = "";
     private String code = "";
     private String organisation = "";
     private String monitorId = "";
@@ -52,7 +51,6 @@ public abstract class ContentEvent extends OwnedItem
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setSiteId(obj.getSiteId());
             setCode(obj.getCode());
             setOrganisation(obj.getOrganisation());
             setMonitorId(obj.getMonitorId());
@@ -63,22 +61,6 @@ public abstract class ContentEvent extends OwnedItem
      * Returns the type of the event.
      */
     public abstract EventType getType();
-
-    /**
-     * Returns the site id.
-     */
-    public String getSiteId()
-    {
-        return siteId;
-    }
-
-    /**
-     * Sets the site id.
-     */
-    public void setSiteId(String siteId)
-    {
-        this.siteId = siteId;
-    }
 
     /**
      * Returns the monitor organisation.

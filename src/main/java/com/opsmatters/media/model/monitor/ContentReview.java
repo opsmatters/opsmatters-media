@@ -51,7 +51,6 @@ public class ContentReview extends ContentEvent
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setEffectiveDate(monitor.getUpdatedDate());
-        setSiteId(monitor.getSiteId());
         setCode(monitor.getCode());
         setReason(reason);
         setStatus(ReviewStatus.NEW);

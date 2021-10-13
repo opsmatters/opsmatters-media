@@ -306,8 +306,10 @@ public class FacebookClient extends Client implements SocialClient
     public boolean isRecoverable(Exception e)
     {
         int errorCode = getErrorCode(e);
-        return errorCode != 506  // Duplicate Post
-            && errorCode != 200; // Permission Error
+        return errorCode != 1     // Unknown Error
+            && errorCode != 506   // Duplicate Post
+            && errorCode != 200   // Permission Error
+            && errorCode != 1500; // Invalid URL
     }
 
     /**
