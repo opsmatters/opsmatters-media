@@ -355,11 +355,13 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
             ContentStatus status = content.getStatus();
             Fields fields = content.toFields().add(this);
 
+            Organisation organisation = handler.getOrganisation(content.getCode());
+            if(organisation != null && organisation.hasTracking())
+                fields.put(Fields.TRACKING, organisation.getTracking());
+
             // Add the Organisation fields
             if(content instanceof OrganisationListing)
             {
-                Organisation organisation = handler.getOrganisation(content.getCode());
-
                 // Ignore missing organisations
                 if(organisation == null)
                     continue;
@@ -390,8 +392,8 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 }
 
                 // Allow for Miscellaneous posts with no organisation
-                String organisation = fields.get(Fields.ORGANISATION);
-                if(organisation != null && organisation.equals(Organisation.MISCELLANEOUS))
+                String name = fields.get(Fields.ORGANISATION);
+                if(name != null && name.equals(Organisation.MISCELLANEOUS))
                 {
                     fields.put(Fields.ORGANISATION, "");
                     fields.put(Fields.IMAGE_TEXT, "");

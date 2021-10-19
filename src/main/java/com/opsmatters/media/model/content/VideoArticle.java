@@ -242,6 +242,7 @@ public class VideoArticle extends Article
         article.setSiteId(site.getId());
         article.setTitle("New Video");
         article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        article.setVideoType("Demo");
 
         return article;
     }
@@ -257,24 +258,20 @@ public class VideoArticle extends Article
     /**
      * Use the given configuration to set defaults for the content.
      */
-    public void init(VideoConfiguration config, VideoChannelConfiguration channel)
+    public void init(Organisation organisation, VideoConfiguration config, VideoChannelConfiguration channel)
     {
-        super.init(config);
+        super.init(organisation, config);
 
-        setTags(config.getField(Fields.TAGS, ""));
         if(channel.hasField(Fields.TAGS))
             setTags(channel.getField(Fields.TAGS, ""));
+        if(channel.hasField(Fields.NEWSLETTER))
+            setNewsletter(channel.getField(Fields.NEWSLETTER, "0").equals("0") ? false : true);
 
-        setVideoType(config.getField(Fields.VIDEO_TYPE, ""));
+        setVideoType("Demo");
         setLinkText(config.getField(Fields.LINK_TEXT, ""));
 
         String promote = config.getField(Fields.PROMOTE);
         setPromoted(promote == null || promote.equals("0") ? false : true);
-
-        String newsletter = config.getField(Fields.NEWSLETTER);
-        setNewsletter(newsletter == null || newsletter.equals("0") ? false : true);
-        if(channel.hasField(Fields.NEWSLETTER))
-            setNewsletter(channel.getField(Fields.NEWSLETTER, "0").equals("0") ? false : true);
     }
 
     /**

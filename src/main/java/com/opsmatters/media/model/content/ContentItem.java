@@ -47,6 +47,7 @@ public abstract class ContentItem implements java.io.Serializable
     private int id = -1;
     private String code = "";
     private boolean published = false;
+    private String tracking = "";
     private String createdBy = "";
     private boolean social = false;
     private String canonicalUrl = "";
@@ -88,6 +89,7 @@ public abstract class ContentItem implements java.io.Serializable
         setCode(new String(obj.getCode() != null ? obj.getCode() : ""));
         setId(obj.getId());
         setPublished(obj.isPublished());
+        setTracking(new String(obj.getTracking() != null ? obj.getTracking() : ""));
         setCreatedBy(new String(obj.getCreatedBy() != null ? obj.getCreatedBy() : ""));
         setSocial(obj.hasSocial());
         setCanonicalUrl(new String(obj.getCanonicalUrl() != null ? obj.getCanonicalUrl() : ""));
@@ -106,6 +108,7 @@ public abstract class ContentItem implements java.io.Serializable
         setTitle(obj.optString(Fields.TITLE));
         setSummary(EmojiParser.parseToUnicode(obj.optString(Fields.SUMMARY)));
         setPublished(obj.optBoolean(Fields.PUBLISHED, false));
+        setTracking(obj.optString(Fields.TRACKING));
         setCreatedBy(obj.optString(Fields.CREATED_BY));
         setSocial(obj.optBoolean(Fields.SOCIAL, false));
         setStatus(obj.optString(Fields.STATUS));
@@ -126,6 +129,7 @@ public abstract class ContentItem implements java.io.Serializable
         if(getSummary() != null && getSummary().length() > 0)
             ret.putOpt(Fields.SUMMARY, EmojiParser.parseToAliases(getSummary()));
         ret.put(Fields.PUBLISHED, isPublished());
+        ret.put(Fields.TRACKING, getTracking());
         ret.put(Fields.CREATED_BY, getCreatedBy());
         ret.put(Fields.SOCIAL, hasSocial());
         ret.put(Fields.STATUS, getStatus().name());
@@ -146,6 +150,7 @@ public abstract class ContentItem implements java.io.Serializable
         ret.put(Fields.TITLE, getTitle());
         ret.put(Fields.SUMMARY, EmojiParser.parseToHtmlDecimal(getSummary()));
         ret.put(Fields.PUBLISHED, isPublished() ? "1" : "0");
+        ret.put(Fields.TRACKING, getTracking());
         ret.put(Fields.CREATED_BY, getCreatedBy());
 
         return ret;
@@ -163,8 +168,15 @@ public abstract class ContentItem implements java.io.Serializable
     /**
      * Use the given configuration to set defaults for the content item.
      */
-    public void init(ContentConfiguration config)
+    public void init(Organisation organisation, ContentConfiguration config)
     {
+        if(organisation != null)
+        {
+            OrganisationContentType type = organisation.getContentType(getType());
+            if(type != null)
+                setTracking(type.getTracking());
+        }
+
         if(config.hasField(Fields.CODE))
             setCode(config.getField(Fields.CODE));
 
@@ -598,6 +610,30 @@ public abstract class ContentItem implements java.io.Serializable
     public boolean isPromoted()
     {
         return true;
+    }
+
+    /**
+     * Returns the tracking string.
+     */
+    public String getTracking()
+    {
+        return tracking;
+    }
+
+    /**
+     * Sets the tracking string.
+     */
+    public void setTracking(String tracking)
+    {
+        this.tracking = tracking;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the tracking string has been set.
+     */
+    public boolean hasTracking()
+    {
+        return getTracking() != null && getTracking().length() > 0;
     }
 
     /**

@@ -31,8 +31,6 @@ import com.opsmatters.media.util.TimeUtils;
 public class PostArticle extends Article
 {
     private PostDetails details = new PostDetails();
-    private String link = "";
-    private String linkText = "";
     private String urlAlias = "";
     private String basePath = "";
 
@@ -86,8 +84,6 @@ public class PostArticle extends Article
 
         setPostDetails(obj.getPostDetails());
         setBasePath(obj.getBasePath());
-        setLink(new String(obj.getLink() != null ? obj.getLink() : ""));
-        setLinkText(new String(obj.getLinkText() != null ? obj.getLinkText() : ""));
         setUrlAlias(new String(obj.getUrlAlias() != null ? obj.getUrlAlias() : ""));
     }
 
@@ -106,23 +102,23 @@ public class PostArticle extends Article
         String title = values[2];
         String summary = values[3];
         String description = values[4];
-        String link = values[5];
-        String linkText = values[6];
-        String canonicalUrl = values[7];
-        String organisation = values[8];
-        String tags = values[9];
-        String image = values[10];
-        String imageText = values[11];
-        String imageTitle = values[12];
-        String author = values[13];
-        String authorLink = values[14];
-        String creatorEmail = values[15];
-        String createdBy = values[16];
-        String published = values[17];
-        String promote = values[18];
-        String newsletter = values[19];
-        String featured = values.length > 20 ? values[20] : null;
-        String sponsored = values.length > 21 ? values[21] : null;
+//        String link = values[5];
+//        String linkText = values[6];
+        String canonicalUrl = values[5];
+        String organisation = values[6];
+        String tags = values[7];
+        String image = values[8];
+        String imageText = values[9];
+        String imageTitle = values[10];
+        String author = values[11];
+        String authorLink = values[12];
+        String creatorEmail = values[13];
+        String createdBy = values[14];
+        String published = values[15];
+        String promote = values[16];
+        String newsletter = values[17];
+        String featured = values.length > 18 ? values[18] : null;
+        String sponsored = values.length > 19 ? values[19] : null;
 
 
         // Remove feeds path from image
@@ -135,8 +131,6 @@ public class PostArticle extends Article
         setTitle(title);
         setSummary(summary);
         setDescription(description);
-        setLink(link);
-        setLinkText(linkText);
         setCanonicalUrl(canonicalUrl);
         setTags(tags);
         setImage(image);
@@ -168,8 +162,6 @@ public class PostArticle extends Article
         super.fromJson(obj);
 
         setDescription(EmojiParser.parseToUnicode(obj.optString(Fields.DESCRIPTION)));
-        setLink(obj.optString(Fields.LINK));
-        setLinkText(obj.optString(Fields.LINK_TEXT));
         setUrlAlias(obj.optString(Fields.URL));
         setCanonicalUrl(obj.optString(Fields.CANONICAL_URL));
         setImage(obj.optString(Fields.IMAGE));
@@ -186,8 +178,6 @@ public class PostArticle extends Article
         JSONObject ret = super.toJson();
 
         ret.putOpt(Fields.DESCRIPTION, EmojiParser.parseToAliases(getDescription()));
-        ret.putOpt(Fields.LINK, getLink());
-        ret.putOpt(Fields.LINK_TEXT, getLinkText());
         ret.putOpt(Fields.URL, getUrlAlias());
         ret.putOpt(Fields.CANONICAL_URL, getCanonicalUrl());
         ret.putOpt(Fields.IMAGE, getImage());
@@ -209,8 +199,6 @@ public class PostArticle extends Article
         ret.put(Fields.DESCRIPTION, EmojiParser.parseToHtmlDecimal(getDescription()));
         ret.put(Fields.AUTHOR, getAuthor());
         ret.put(Fields.AUTHOR_LINK, getAuthorLink());
-        ret.put(Fields.LINK, getLink());
-        ret.put(Fields.LINK_TEXT, getLinkText());
         ret.put(Fields.URL, getUrlAlias());
         ret.put(Fields.CANONICAL_URL, getCanonicalUrl());
         ret.put(Fields.IMAGE, getImage());
@@ -257,7 +245,6 @@ public class PostArticle extends Article
     {
         if(organisation != null)
         {
-            setLink(organisation.getWebsite());
             setCreatorEmail(organisation.getEmail());
         }
     }
@@ -265,21 +252,12 @@ public class PostArticle extends Article
     /**
      * Use the given configuration to set defaults for the content.
      */
-    public void init(PostConfiguration config)
+    public void init(Organisation organisation, PostConfiguration config)
     {
-        super.init(config);
-
-        if(config.hasField(Fields.LINK))
-            setLink(config.getField(Fields.LINK));
-
-        setTags(config.getField(Fields.TAGS, ""));
-        setLinkText(config.getField(Fields.LINK_TEXT, ""));
+        super.init(organisation, config);
 
         String promote = config.getField(Fields.PROMOTE);
         setPromoted(promote == null || promote.equals("0") ? false : true);
-
-        String newsletter = config.getField(Fields.NEWSLETTER);
-        setNewsletter(newsletter == null || newsletter.equals("0") ? false : true);
 
         String featured = config.getField(Fields.FEATURED);
         setFeatured(featured == null || featured.equals("0") ? false : true);
@@ -308,10 +286,6 @@ public class PostArticle extends Article
         // Use the default image if a content image wasn't found
         if(config.hasField(Fields.IMAGE) && getImage().length() == 0)
             setImage(config.getField(Fields.IMAGE));
-
-        // Clear the link if it has been set to "-"
-        if(getLink().equals(EMPTY))
-            setLink("");
     }
 
     /**
@@ -451,46 +425,6 @@ public class PostArticle extends Article
     public void setImagePrefix(String imagePrefix)
     {
         details.setImagePrefix(imagePrefix);
-    }
-
-    /**
-     * Returns the link.
-     */
-    public String getLink()
-    {
-        return link;
-    }
-
-    /**
-     * Sets the link.
-     */
-    public void setLink(String link)
-    {
-        this.link = link;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the link has been set.
-     */
-    public boolean hasLink()
-    {
-        return link != null && link.length() > 0;
-    }
-
-    /**
-     * Returns the link text.
-     */
-    public String getLinkText()
-    {
-        return linkText;
-    }
-
-    /**
-     * Sets the link text.
-     */
-    public void setLinkText(String linkText)
-    {
-        this.linkText = linkText;
     }
 
     /**

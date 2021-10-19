@@ -27,10 +27,12 @@ public class S3Settings extends AwsSettings
 {
     public static final String CONFIG = "config";
     public static final String CONTENT = "content";
+    public static final String CONTENT_CONFIG = "content-config";
 
     private String id = "";
     private String config = "";
     private String content = "";
+    private String contentConfig = "";
 
     /**
      * Copy constructor.
@@ -50,6 +52,7 @@ public class S3Settings extends AwsSettings
             setId(obj.getId());
             setConfigBucket(obj.getConfigBucket());
             setContentBucket(obj.getContentBucket());
+            setContentConfigBucket(obj.getContentConfigBucket());
         }
     }
 
@@ -64,6 +67,8 @@ public class S3Settings extends AwsSettings
             setConfigBucket((String)map.get(CONFIG));
         if(map.containsKey(CONTENT))
             setContentBucket((String)map.get(CONTENT));
+        if(map.containsKey(CONTENT_CONFIG))
+            setContentConfigBucket((String)map.get(CONTENT_CONFIG));
     }
 
     /**
@@ -96,5 +101,21 @@ public class S3Settings extends AwsSettings
     public void setContentBucket(String content)
     {
         this.content = content;
+    }
+
+    /**
+     * Returns the content config bucket for the S3 settings.
+     */
+    public String getContentConfigBucket()
+    {
+        return contentConfig;
+    }
+
+    /**
+     * Sets the content config bucket for the S3 settings.
+     */
+    public void setContentConfigBucket(String contentConfig)
+    {
+        this.contentConfig = contentConfig;
     }
 }

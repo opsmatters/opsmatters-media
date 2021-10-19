@@ -47,13 +47,16 @@ public class Organisation extends OwnedItem implements FieldSource
     private SocialProvider feedProvider;
     private String feedUsername = "";
     private String hashtag = "";
+    private String hashtags = "";
+    private String tracking = "";
     private boolean sponsor = false;
     private String thumbnail = "";
     private String thumbnailText = "";
     private OrganisationStatus status = OrganisationStatus.NEW;
     private ArchiveReason reason = ArchiveReason.NONE;
-    private Map<ContentType, ContentTypeSummary> content = new HashMap<ContentType, ContentTypeSummary>();
+    private Map<ContentType, OrganisationContentType> contentTypes = new HashMap<ContentType, OrganisationContentType>();
     private Instant reviewedDate;
+
 
     /**
      * Default constructor.
@@ -94,6 +97,8 @@ public class Organisation extends OwnedItem implements FieldSource
             setFeedProvider(obj.getFeedProvider());
             setFeedUsername(new String(obj.getFeedUsername() != null ? obj.getFeedUsername() : ""));
             setHashtag(new String(obj.getHashtag() != null ? obj.getHashtag() : ""));
+            setHashtags(new String(obj.getHashtags() != null ? obj.getHashtags() : ""));
+            setTracking(new String(obj.getTracking() != null ? obj.getTracking() : ""));
             setSponsor(obj.isSponsor());
             setThumbnail(new String(obj.getThumbnail() != null ? obj.getThumbnail() : ""));
             setThumbnailText(new String(obj.getThumbnailText() != null ? obj.getThumbnailText() : ""));
@@ -114,6 +119,8 @@ public class Organisation extends OwnedItem implements FieldSource
         ret.putOpt(Fields.WEBSITE, getWebsite());
         ret.putOpt(Fields.EMAIL, getEmail());
         ret.putOpt(Fields.HASHTAG, getHashtag());
+        ret.putOpt(Fields.HASHTAGS, getHashtags());
+        ret.putOpt(Fields.TRACKING, getTracking());
         ret.putOpt(Fields.FEED_PROVIDER, getFeedProvider().name());
         ret.putOpt(Fields.FEED_USERNAME, getFeedUsername());
         ret.putOpt(Fields.THUMBNAIL, getThumbnail());
@@ -131,6 +138,8 @@ public class Organisation extends OwnedItem implements FieldSource
         setWebsite(obj.optString(Fields.WEBSITE));
         setEmail(obj.optString(Fields.EMAIL));
         setHashtag(obj.optString(Fields.HASHTAG));
+        setHashtags(obj.optString(Fields.HASHTAGS));
+        setTracking(obj.optString(Fields.TRACKING));
         setFeedProvider(obj.optString(Fields.FEED_PROVIDER));
         setFeedUsername(obj.optString(Fields.FEED_USERNAME));
         setThumbnail(obj.optString(Fields.THUMBNAIL));
@@ -150,6 +159,8 @@ public class Organisation extends OwnedItem implements FieldSource
         ret.put(Fields.FEED_PROVIDER, getFeedProvider().name());
         ret.put(Fields.FEED_USERNAME, getFeedUsername());
         ret.put(Fields.HASHTAG, getHashtag());
+        ret.put(Fields.HASHTAGS, getHashtags());
+        ret.put(Fields.TRACKING, getTracking());
         ret.put(Fields.THUMBNAIL, getThumbnail());
         ret.put(Fields.THUMBNAIL_TEXT, getThumbnailText());
         ret.put(Fields.PUBLISHED, isActive() ? "1" : "0");
@@ -377,6 +388,54 @@ public class Organisation extends OwnedItem implements FieldSource
     }
 
     /**
+     * Returns the organisation's social hashtags.
+     */
+    public String getHashtags()
+    {
+        return hashtags;
+    }
+
+    /**
+     * Sets the organisation's social hashtags.
+     */
+    public void setHashtags(String hashtags)
+    {
+        this.hashtags = hashtags;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this organisation has social hashtags.
+     */
+    public boolean hasHashtags()
+    {
+        return hashtags != null && hashtags.length() > 0;
+    }
+
+    /**
+     * Returns the organisation's tracking string.
+     */
+    public String getTracking()
+    {
+        return tracking;
+    }
+
+    /**
+     * Sets the organisation's tracking string.
+     */
+    public void setTracking(String tracking)
+    {
+        this.tracking = tracking;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this organisation has a tracking string.
+     */
+    public boolean hasTracking()
+    {
+        return tracking != null && tracking.length() > 0;
+    }
+
+    /**
      * Returns the organisation's logo thumbnail.
      */
     public String getThumbnail()
@@ -563,69 +622,69 @@ public class Organisation extends OwnedItem implements FieldSource
     }
 
     /**
-     * Returns the content type summaries.
+     * Returns the content types.
      */
-    public Map<ContentType,ContentTypeSummary> getContent()
+    public Map<ContentType,OrganisationContentType> getContentTypes()
     {
-        return content;
+        return contentTypes;
     }
 
     /**
-     * Returns <CODE>true</CODE>if the organisation has content type summaries.
+     * Returns <CODE>true</CODE>if the organisation has content types.
      */
-    public boolean hasContent()
+    public boolean hasContentTypes()
     {
-        return content != null && content.size() > 0;
+        return contentTypes != null && contentTypes.size() > 0;
     }
 
     /**
-     * Returns the number of content type summaries.
+     * Returns the number of content types.
      */
-    public int getContentSize()
+    public int numContentTypes()
     {
-        return content.size();
+        return contentTypes.size();
     }
 
     /**
-     * Returns the summary for the given content type.
+     * Returns the data for the given content type.
      */
-    public ContentTypeSummary getContent(ContentType type)
+    public OrganisationContentType getContentType(ContentType type)
     {
-        return content.get(type);
+        return contentTypes.get(type);
     }
 
     /**
-     * Adds the given content type summary.
+     * Adds the given content type.
      */
-    public void addContent(ContentTypeSummary summary)
+    public void setContentType(OrganisationContentType type)
     {
-        content.put(summary.getType(), summary);
+        contentTypes.put(type.getType(), type);
     }
 
     /**
-     * Removes the given content type summary.
+     * Removes the given content type.
      */
-    public void removeContent(ContentTypeSummary summary)
+    public void removeContentType(OrganisationContentType type)
     {
-        content.remove(summary.getType());
+        contentTypes.remove(type.getType());
     }
 
     /**
-     * Sets the content type summaries.
+     * Sets the content types.
      */
-    public void setContent(Map<ContentType,ContentTypeSummary> summaries)
+    public void setContentTypes(Map<ContentType,OrganisationContentType> types)
     {
-        content.clear();
-        for(ContentTypeSummary summary : summaries.values())
-            addContent(summary);
+        contentTypes.clear();
+        for(OrganisationContentType type : types.values())
+            setContentType(type);
     }
 
     /**
-     * Clears the content type summaries.
+     * Clears the content types.
      */
-    public void clearContent()
+    public void clearContentTypes()
     {
-        content.clear();
+        contentTypes.clear();
     }
 
     /**
@@ -635,10 +694,10 @@ public class Organisation extends OwnedItem implements FieldSource
     {
         boolean ret = false;
 
-        if(content.size() > 0)
+        if(contentTypes.size() > 0)
         {
             ret = true;
-            for(ContentTypeSummary type : content.values())
+            for(OrganisationContentType type : contentTypes.values())
             {
                 if(!type.isDeployed())
                 {

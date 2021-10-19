@@ -220,11 +220,17 @@ public class JobResource extends Resource
     /**
      * Use the given configuration to set defaults for the resource.
      */
-    public void init(JobConfiguration config)
+    public void init(Organisation organisation, JobConfiguration config)
     {
-        super.init(config);
+        super.init(organisation, config);
 
-        setTechnologies(config.getField(Fields.TECHNOLOGIES, ""));
+        if(organisation != null)
+        {
+            OrganisationContentType type = organisation.getContentType(getType());
+            if(type != null)
+                setTechnologies(type.getTechnologies());
+        }
+
         setLinkText(config.getField(Fields.LINK_TEXT, ""));
 
         String promote = config.getField(Fields.PROMOTE);

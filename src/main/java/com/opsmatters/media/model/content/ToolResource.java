@@ -215,11 +215,10 @@ public class ToolResource extends Resource
     /**
      * Use the given configuration to set defaults for the resource.
      */
-    public void init(ToolConfiguration config)
+    public void init(Organisation organisation, ToolConfiguration config)
     {
-        super.init(config);
+        super.init(organisation, config);
 
-        setFeatures(config.getField(Fields.FEATURES, ""));
         setLinkText(config.getField(Fields.LINK_TEXT, ""));
         setDownloadText(config.getField(Fields.DOWNLOAD_TEXT, ""));
         setPricing(config.getField(Fields.PRICING, ""));

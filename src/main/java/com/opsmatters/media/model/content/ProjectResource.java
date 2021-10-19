@@ -220,13 +220,9 @@ public class ProjectResource extends Resource
     /**
      * Use the given configuration to set defaults for the resource.
      */
-    public void init(ProjectConfiguration config)
+    public void init(Organisation organisation, ProjectConfiguration config)
     {
-        super.init(config);
-
-        setFeatures(config.getField(Fields.FEATURES, ""));
-        if(getLicense().length() == 0)
-            setLicense(config.getField(Fields.LICENSE, ""));
+        super.init(organisation, config);
     }
 
     /**
@@ -241,10 +237,6 @@ public class ProjectResource extends Resource
             setDescription(parser.formatBody());
         if(getSummary().length() == 0)
             setSummary(parser.formatSummary(config.getSummary()));
-
-        // Clear the license if it has been set to "-"
-        if(getLicense().equals(EMPTY))
-            setLicense("");
     }
 
     /**

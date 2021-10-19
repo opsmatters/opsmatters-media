@@ -35,7 +35,6 @@ public class GeneratorFields implements java.io.Serializable
     private String code = "";
     private String name = "";
     private String tag = "";
-    private String hashtags = "";
     private String tags = "";
     private String channelId = "";
     private String website = "";
@@ -127,22 +126,6 @@ public class GeneratorFields implements java.io.Serializable
     public void setTag(String tag)
     {
         this.tag = tag;
-    }
-
-    /**
-     * Returns the hashtags.
-     */
-    public String getHashtags()
-    {
-        return hashtags;
-    }
-
-    /**
-     * Sets the hashtags.
-     */
-    public void setHashtags(String hashtags)
-    {
-        this.hashtags = hashtags;
     }
 
     /**

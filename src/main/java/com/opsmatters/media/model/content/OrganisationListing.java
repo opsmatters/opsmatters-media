@@ -316,9 +316,9 @@ public class OrganisationListing extends ContentItem
     /**
      * Use the given configuration to set defaults for the organisation listing.
      */
-    public void init(OrganisationListingConfiguration config)
+    public void init(Organisation organisation, OrganisationListingConfiguration config)
     {
-        super.init(config);
+        super.init(organisation, config);
 
         setTabs(OrganisationTabs.valueOf(config.getField(Fields.TABS, "ALL")));
 

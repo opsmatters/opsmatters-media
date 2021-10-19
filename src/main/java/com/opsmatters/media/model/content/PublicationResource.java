@@ -173,11 +173,17 @@ public abstract class PublicationResource extends Resource
     /**
      * Use the given configuration to set defaults for the resource.
      */
-    public void init(PublicationConfiguration config, WebPageConfiguration page)
+    public void init(Organisation organisation, PublicationConfiguration config, WebPageConfiguration page)
     {
-        super.init(config);
+        super.init(organisation, config);
 
-        setTags(config.getField(Fields.TAGS, ""));
+        if(organisation != null)
+        {
+            OrganisationContentType type = organisation.getContentType(getType());
+            if(type != null)
+                setTags(type.getTags());
+        }
+
         if(page.hasField(Fields.TAGS))
             setTags(page.getField(Fields.TAGS, ""));
 

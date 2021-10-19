@@ -34,7 +34,7 @@ public class ContentDAOFactory extends DAOFactory
         super(driver, conn);
 
         getOrganisationDAO();
-        getContentTypeSummaryDAO();
+        getOrganisationContentTypeDAO();
         getOrganisationListingDAO();
         getVideoArticleDAO();
         getRoundupArticleDAO();
@@ -58,13 +58,13 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the ContentTypeSummary DAO.
+     * Returns the OrganisationContentType DAO.
      */
-    public ContentTypeSummaryDAO getContentTypeSummaryDAO()
+    public OrganisationContentTypeDAO getOrganisationContentTypeDAO()
     {
-        if(contentTypeSummaryDAO == null)
-            contentTypeSummaryDAO = new ContentTypeSummaryDAO(this);
-        return contentTypeSummaryDAO;
+        if(organisationContentTypeDAO == null)
+            organisationContentTypeDAO = new OrganisationContentTypeDAO(this);
+        return organisationContentTypeDAO;
     }
 
     /**
@@ -175,7 +175,7 @@ public class ContentDAOFactory extends DAOFactory
     {
         super.close();
         organisationDAO = null;
-        contentTypeSummaryDAO = null;
+        organisationContentTypeDAO = null;
         organisationListingDAO = null;
         videoArticleDAO = null;
         roundupArticleDAO = null;
@@ -189,7 +189,7 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     private OrganisationDAO organisationDAO;
-    private ContentTypeSummaryDAO contentTypeSummaryDAO;
+    private OrganisationContentTypeDAO organisationContentTypeDAO;
     private OrganisationListingDAO organisationListingDAO;
     private VideoArticleDAO videoArticleDAO;
     private RoundupArticleDAO roundupArticleDAO;

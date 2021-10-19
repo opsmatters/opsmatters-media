@@ -221,21 +221,17 @@ public class RoundupArticle extends Article
     /**
      * Use the given configuration to set defaults for the content.
      */
-    public void init(RoundupConfiguration config, WebPageConfiguration page)
+    public void init(Organisation organisation, RoundupConfiguration config, WebPageConfiguration page)
     {
-        super.init(config);
+        super.init(organisation, config);
 
-        setTags(config.getField(Fields.TAGS, ""));
         if(page.hasField(Fields.TAGS))
             setTags(page.getField(Fields.TAGS, ""));
+        if(page.hasField(Fields.NEWSLETTER))
+            setNewsletter(page.getField(Fields.NEWSLETTER, "0").equals("0") ? false : true);
 
         String promote = config.getField(Fields.PROMOTE);
         setPromoted(promote == null || promote.equals("0") ? false : true);
-
-        String newsletter = config.getField(Fields.NEWSLETTER);
-        setNewsletter(newsletter == null || newsletter.equals("0") ? false : true);
-        if(page.hasField(Fields.NEWSLETTER))
-            setNewsletter(page.getField(Fields.NEWSLETTER, "0").equals("0") ? false : true);
 
         String featured = config.getField(Fields.FEATURED);
         setFeatured(featured == null || featured.equals("0") ? false : true);

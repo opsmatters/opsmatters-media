@@ -207,6 +207,7 @@ public class EventResource extends Resource
         resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
         resource.setStartDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
         resource.addStartTime(config);
+        resource.setActivityType("Webinar");
 
         return resource;
     }
@@ -242,11 +243,11 @@ public class EventResource extends Resource
     /**
      * Use the given configuration to set defaults for the resource.
      */
-    public void init(EventConfiguration config, WebPageConfiguration page)
+    public void init(Organisation organisation, EventConfiguration config, WebPageConfiguration page)
     {
-        super.init(config);
+        super.init(organisation, config);
 
-        setActivityType(config.getField(Fields.ACTIVITY_TYPE, ""));
+        setActivityType("Webinar");
         setLinkText(config.getField(Fields.LINK_TEXT, ""));
     }
 

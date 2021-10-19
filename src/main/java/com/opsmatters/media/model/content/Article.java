@@ -18,6 +18,7 @@ package com.opsmatters.media.model.content;
 import java.util.List;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -110,6 +111,25 @@ public abstract class Article extends ContentItem
         ret.put(Fields.SPONSORED, isSponsored() ? "1" : "0");
 
         return ret;
+    }
+
+    /**
+     * Use the given configuration to set defaults for the content.
+     */
+    @Override
+    public void init(Organisation organisation, ContentConfiguration config)
+    {
+        super.init(organisation, config);
+
+        if(organisation != null)
+        {
+            OrganisationContentType type = organisation.getContentType(getType());
+            if(type != null)
+            {
+                setTags(type.getTags());
+                setNewsletter(type.isNewsletter());
+            }
+        }
     }
 
     /**
