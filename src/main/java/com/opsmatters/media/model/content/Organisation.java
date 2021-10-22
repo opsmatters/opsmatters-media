@@ -37,8 +37,6 @@ import com.opsmatters.media.util.StringUtils;
  */
 public class Organisation extends OwnedItem implements FieldSource
 {
-    public static final String MISCELLANEOUS = "Miscellaneous";
-
     private String siteId = "";
     private String code = "";
     private String name = "";
@@ -50,6 +48,7 @@ public class Organisation extends OwnedItem implements FieldSource
     private String hashtags = "";
     private String tracking = "";
     private boolean sponsor = false;
+    private boolean listing = false;
     private String thumbnail = "";
     private String thumbnailText = "";
     private OrganisationStatus status = OrganisationStatus.NEW;
@@ -100,6 +99,7 @@ public class Organisation extends OwnedItem implements FieldSource
             setHashtags(new String(obj.getHashtags() != null ? obj.getHashtags() : ""));
             setTracking(new String(obj.getTracking() != null ? obj.getTracking() : ""));
             setSponsor(obj.isSponsor());
+            setListing(obj.hasListing());
             setThumbnail(new String(obj.getThumbnail() != null ? obj.getThumbnail() : ""));
             setThumbnailText(new String(obj.getThumbnailText() != null ? obj.getThumbnailText() : ""));
             setStatus(obj.getStatus());
@@ -116,6 +116,7 @@ public class Organisation extends OwnedItem implements FieldSource
         JSONObject ret = new JSONObject();
 
         ret.put(Fields.SPONSOR, isSponsor());
+        ret.put(Fields.LISTING, hasListing());
         ret.putOpt(Fields.WEBSITE, getWebsite());
         ret.putOpt(Fields.EMAIL, getEmail());
         ret.putOpt(Fields.HASHTAG, getHashtag());
@@ -135,6 +136,7 @@ public class Organisation extends OwnedItem implements FieldSource
     public void setAttributes(JSONObject obj)
     {
         setSponsor(obj.optBoolean(Fields.SPONSOR, false));
+        setListing(obj.optBoolean(Fields.LISTING, false));
         setWebsite(obj.optString(Fields.WEBSITE));
         setEmail(obj.optString(Fields.EMAIL));
         setHashtag(obj.optString(Fields.HASHTAG));
@@ -154,6 +156,7 @@ public class Organisation extends OwnedItem implements FieldSource
         Fields ret = new Fields();
 
         ret.put(Fields.SPONSOR, isSponsor() ? "1" : "0");
+        ret.put(Fields.LISTING, hasListing() ? "1" : "0");
         ret.put(Fields.WEBSITE, getWebsite());
         ret.put(Fields.EMAIL, getEmail());
         ret.put(Fields.FEED_PROVIDER, getFeedProvider().name());
@@ -329,6 +332,38 @@ public class Organisation extends OwnedItem implements FieldSource
     public void setSponsorObject(Boolean sponsor)
     {
         setSponsor(sponsor != null && sponsor.booleanValue());
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this organisation has a listing.
+     */
+    public boolean hasListing()
+    {
+        return listing;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this organisation has a listing.
+     */
+    public Boolean getListingObject()
+    {
+        return Boolean.valueOf(hasListing());
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this organisation has a listing.
+     */
+    public void setListing(boolean listing)
+    {
+        this.listing = listing;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this organisation has a listing.
+     */
+    public void setListingObject(Boolean listing)
+    {
+        setListing(listing != null && listing.booleanValue());
     }
 
     /**

@@ -391,9 +391,8 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                         images.getUrl(), System.getProperty("app.path.images"), image));
                 }
 
-                // Allow for Miscellaneous posts with no organisation
-                String name = fields.get(Fields.ORGANISATION);
-                if(name != null && name.equals(Organisation.MISCELLANEOUS))
+                // Allow for posts with no listing
+                if(!organisation.hasListing())
                 {
                     fields.put(Fields.ORGANISATION, "");
                     fields.put(Fields.IMAGE_TEXT, "");

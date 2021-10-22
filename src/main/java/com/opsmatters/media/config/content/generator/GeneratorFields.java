@@ -61,23 +61,30 @@ public class GeneratorFields implements java.io.Serializable
         setTag(getName().toLowerCase().replaceAll(" ","-").replaceAll("\\.|&",""));
         setWebsite(organisation.getWebsite());
 
-        String youtube = listing.getYouTube();
-        if(youtube != null && youtube.length() > 0)
-            setChannelId(youtube.substring(youtube.lastIndexOf("/")+1));
+        if(organisation.hasListing())
+        {
+            String youtube = listing.getYouTube();
+            if(youtube != null && youtube.length() > 0)
+                setChannelId(youtube.substring(youtube.lastIndexOf("/")+1));
 
-        OrganisationTabs tabs = listing.getTabs();
-        setVideos(tabs.contains(ContentType.VIDEO));
-        setRoundups(tabs.contains(ContentType.ROUNDUP));
-        setPosts(tabs.contains(ContentType.POST));
-        setEvents(tabs.contains(ContentType.EVENT));
-        setWhitepapers(tabs.contains(ContentType.WHITE_PAPER));
-        setEbooks(tabs.contains(ContentType.EBOOK));
+            OrganisationTabs tabs = listing.getTabs();
+            setVideos(tabs.contains(ContentType.VIDEO));
+            setRoundups(tabs.contains(ContentType.ROUNDUP));
+            setPosts(tabs.contains(ContentType.POST));
+            setEvents(tabs.contains(ContentType.EVENT));
+            setWhitepapers(tabs.contains(ContentType.WHITE_PAPER));
+            setEbooks(tabs.contains(ContentType.EBOOK));
 
-        setProjects(listing.hasProjects());
-        setTools(listing.hasTools());
-        setJobs(listing.hasJobs());
+            setProjects(listing.hasProjects());
+            setTools(listing.hasTools());
+            setJobs(listing.hasJobs());
 
-        setWebinars(true);
+            setWebinars(getEvents());
+        }
+        else
+        {
+            setPosts(true);
+        }
     }
 
     /**

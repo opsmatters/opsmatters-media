@@ -108,6 +108,7 @@ public class Fields extends LinkedHashMap<String,String>
     public static final String COUNT = "count";
     public static final String TRACKING = "tracking";
     public static final String TEMPLATE = "template";
+    public static final String LISTING = "listing";
 
     /**
      * Default constructor.

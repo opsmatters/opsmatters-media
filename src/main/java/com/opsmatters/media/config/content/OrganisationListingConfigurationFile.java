@@ -40,23 +40,6 @@ public class OrganisationListingConfigurationFile extends ConfigurationFile
     }
 
     /**
-     * Initialise the config file.
-     */
-    @Override
-    protected void init()
-    {
-        String filename = getFilename();
-        if(filename == null)
-            throw new IllegalArgumentException("filename null");
-        int pos = filename.indexOf("-"+getType());
-        if(pos != -1)
-        {
-            String configName = FileUtils.getName(filename);
-            setName(configName.substring(0, pos));
-        }
-    }
-
-    /**
      * Read the config file.
      */
     @Override
