@@ -25,6 +25,7 @@ public enum ReviewReason
 {
     NO_CHANGES("No changes detected"),
     SUSPENDED("Suspended"),
+    MANUAL("Manual"),
     ALL("All"); // Pseudo status
 
     private String value;

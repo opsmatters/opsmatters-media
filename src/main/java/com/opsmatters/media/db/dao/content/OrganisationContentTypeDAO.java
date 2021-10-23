@@ -62,21 +62,21 @@ public class OrganisationContentTypeDAO extends BaseDAO
       + "WHERE ID=?";
 
     /**
-     * The query to use to select the summaries from the ORGANISATION_CONTENT_TYPES table.
+     * The query to use to select the types from the ORGANISATION_CONTENT_TYPES table.
      */
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, ATTRIBUTES, ITEM_COUNT, DEPLOYED "
       + "FROM ORGANISATION_CONTENT_TYPES WHERE SITE_ID=? ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to select the summaries from the ORGANISATION_CONTENT_TYPES table by organisation code.
+     * The query to use to select the types from the ORGANISATION_CONTENT_TYPES table by organisation code.
      */
     private static final String LIST_BY_CODE_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, ATTRIBUTES, ITEM_COUNT, DEPLOYED "
       + "FROM ORGANISATION_CONTENT_TYPES WHERE SITE_ID=? AND CODE=? ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to get the count of summaries from the ORGANISATION_CONTENT_TYPES table.
+     * The query to use to get the count of types from the ORGANISATION_CONTENT_TYPES table.
      */
     private static final String COUNT_SQL =  
       "SELECT COUNT(*) FROM ORGANISATION_CONTENT_TYPES";
@@ -255,7 +255,7 @@ public class OrganisationContentTypeDAO extends BaseDAO
     }
 
     /**
-     * Returns the summaries from the ORGANISATION_CONTENT_TYPES table.
+     * Returns the types from the ORGANISATION_CONTENT_TYPES table.
      */
     public synchronized List<OrganisationContentType> list(Site site) throws SQLException
     {
@@ -310,7 +310,7 @@ public class OrganisationContentTypeDAO extends BaseDAO
     }
 
     /**
-     * Returns the summaries from the ORGANISATION_CONTENT_TYPES table by organisation code.
+     * Returns the types from the ORGANISATION_CONTENT_TYPES table by organisation code.
      */
     public synchronized List<OrganisationContentType> list(Site site, String code) throws SQLException
     {
@@ -366,7 +366,7 @@ public class OrganisationContentTypeDAO extends BaseDAO
     }
 
     /**
-     * Returns the count of summaries from the table.
+     * Returns the count of types from the table.
      */
     public int count() throws SQLException
     {

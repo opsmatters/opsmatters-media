@@ -58,26 +58,7 @@ public class OrganisationContentType extends BaseItem
         setCreatedDate(organisation.getCreatedDate());
         setSiteId(organisation.getSiteId());
         setCode(organisation.getCode());
-
-        // Go through the items to populate the summary
-        int count = 0;
-        boolean deployed = true;
-        for(ContentItem item : content)
-        {
-            setType(item.getType());
-            if(item.getPublishedDate() != null)
-            {
-                if(getUpdatedDate() == null || item.getPublishedDate().isAfter(getUpdatedDate()))
-                    setUpdatedDate(item.getPublishedDate());
-            }
-
-            ++count;
-            if(!item.isDeployed())
-                deployed = false;
-        }
-
-        setItemCount(count);
-        setDeployed(deployed);
+        setContent(content);
     }
 
     /**
@@ -474,5 +455,30 @@ public class OrganisationContentType extends BaseItem
     public void setDeployed(boolean deployed)
     {
         this.deployed = deployed;
+    }
+
+    /**
+     * Go through the items to populate the summary.
+     */
+    public void setContent(List<? extends ContentItem> content)
+    {
+        int count = 0;
+        boolean deployed = true;
+        for(ContentItem item : content)
+        {
+            setType(item.getType());
+            if(item.getPublishedDate() != null)
+            {
+                if(getUpdatedDate() == null || item.getPublishedDate().isAfter(getUpdatedDate()))
+                    setUpdatedDate(item.getPublishedDate());
+            }
+
+            ++count;
+            if(!item.isDeployed())
+                deployed = false;
+        }
+
+        setItemCount(count);
+        setDeployed(deployed);
     }
 }

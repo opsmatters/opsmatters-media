@@ -734,7 +734,7 @@ public class Organisation extends OwnedItem implements FieldSource
             ret = true;
             for(OrganisationContentType type : contentTypes.values())
             {
-                if(!type.isDeployed())
+                if(type.getItemCount() > 0 && !type.isDeployed())
                 {
                     ret = false;
                     break;
