@@ -35,8 +35,6 @@ public class VideoArticle extends Article
 {
     private VideoDetails details = new VideoDetails();
     private String videoType = "";
-    private String link = "";
-    private String linkText = "";
 
     /**
      * Default constructor.
@@ -88,8 +86,6 @@ public class VideoArticle extends Article
 
         setVideoDetails(obj.getVideoDetails());
         setVideoType(new String(obj.getVideoType() != null ? obj.getVideoType() : ""));
-        setLink(new String(obj.getLink() != null ? obj.getLink() : ""));
-        setLinkText(new String(obj.getLinkText() != null ? obj.getLinkText() : ""));
     }
 
     /**
@@ -111,17 +107,15 @@ public class VideoArticle extends Article
         String tags = values[6];
         String videoUrl = values[7];
         String videoType = values[8];
-        String link = values[9];
-        String linkText = values[10];
-        String thumbnail = values[11];
-        String thumbnailText = values[12];
-        String thumbnailTitle = values[13];
-        String channelTitle = values[14];
-        String channelUrl = values[15];
-        String createdBy = values[16];
-        String published = values[17];
-        String promote = values[18];
-        String newsletter = values[19];
+        String thumbnail = values[9];
+        String thumbnailText = values[10];
+        String thumbnailTitle = values[11];
+        String channelTitle = values[12];
+        String channelUrl = values[13];
+        String createdBy = values[14];
+        String published = values[15];
+        String promote = values[16];
+        String newsletter = values[17];
 
         VideoProvider provider = VideoProvider.fromVideoUrl(videoUrl);
 
@@ -136,8 +130,6 @@ public class VideoArticle extends Article
             setVideoId(provider.getVideoId(videoUrl));
         setVideoType(videoType);
         setProvider(provider);
-        setLink(link);
-        setLinkText(linkText);
         setChannelTitle(channelTitle);
         if(provider != null)
             setChannelId(provider.getChannelId(channelUrl));
@@ -168,8 +160,6 @@ public class VideoArticle extends Article
         setVideoType(obj.optString(Fields.VIDEO_TYPE));
         setProvider(VideoProvider.fromCode(obj.optString(Fields.PROVIDER)));
         setDuration(obj.optLong(Fields.DURATION));
-        setLink(obj.optString(Fields.LINK));
-        setLinkText(obj.optString(Fields.LINK_TEXT));
         setChannelTitle(obj.optString(Fields.CHANNEL_TITLE));
         setChannelId(obj.optString(Fields.CHANNEL_ID));
     }
@@ -188,8 +178,6 @@ public class VideoArticle extends Article
         ret.putOpt(Fields.PROVIDER, getProvider().code());
         if(getDuration() > 0L)
             ret.putOpt(Fields.DURATION, getDuration());
-        ret.putOpt(Fields.LINK, getLink());
-        ret.putOpt(Fields.LINK_TEXT, getLinkText());
         ret.putOpt(Fields.CHANNEL_TITLE, getChannelTitle());
         ret.putOpt(Fields.CHANNEL_ID, getChannelId());
 
@@ -211,8 +199,6 @@ public class VideoArticle extends Article
         ret.put(Fields.CHANNEL_URL, getChannelUrl());
         ret.put(Fields.CHANNEL_TITLE, getChannelTitle());
         ret.put(Fields.VIDEO_TYPE, getVideoType());
-        ret.put(Fields.LINK, getLink());
-        ret.put(Fields.LINK_TEXT, getLinkText());
 
         return ret;
     }
@@ -252,7 +238,6 @@ public class VideoArticle extends Article
      */
     public void init(Organisation organisation)
     {
-        setLink(organisation.getWebsite());
     }
 
     /**
@@ -268,7 +253,6 @@ public class VideoArticle extends Article
             setNewsletter(channel.getField(Fields.NEWSLETTER, "0").equals("0") ? false : true);
 
         setVideoType("Demo");
-        setLinkText(config.getField(Fields.LINK_TEXT, ""));
 
         String promote = config.getField(Fields.PROMOTE);
         setPromoted(promote == null || promote.equals("0") ? false : true);
@@ -545,45 +529,5 @@ public class VideoArticle extends Article
     public String getEmbed(int width, int height, boolean autoplay)
     {
         return details.getEmbed(width, height, autoplay);
-    }
-
-    /**
-     * Returns the link.
-     */
-    public String getLink()
-    {
-        return link;
-    }
-
-    /**
-     * Sets the link.
-     */
-    public void setLink(String link)
-    {
-        this.link = link;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the link has been set.
-     */
-    public boolean hasLink()
-    {
-        return link != null && link.length() > 0;
-    }
-
-    /**
-     * Returns the link text.
-     */
-    public String getLinkText()
-    {
-        return linkText;
-    }
-
-    /**
-     * Sets the link text.
-     */
-    public void setLinkText(String linkText)
-    {
-        this.linkText = linkText;
     }
 }
