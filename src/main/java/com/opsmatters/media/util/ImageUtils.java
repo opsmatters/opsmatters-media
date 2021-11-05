@@ -45,6 +45,8 @@ import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
 import com.opsmatters.media.file.CommonFiles;
 
+import static com.opsmatters.media.util.ImageAlignment.*;
+
 /**
  * A set of utility methods to perform miscellaneous tasks related to images.
  * 
@@ -359,10 +361,14 @@ public class ImageUtils
 
         // Crop from the selected position
         Positions position = Positions.CENTER;
-        if(alignment == ImageAlignment.LEFT)
+        if(alignment == LEFT)
             position = Positions.CENTER_LEFT;
-        else if(alignment == ImageAlignment.RIGHT)
+        else if(alignment == RIGHT)
             position = Positions.CENTER_RIGHT;
+        else if(alignment == TOP)
+            position = Positions.TOP_CENTER;
+        else if(alignment == BOTTOM)
+            position = Positions.BOTTOM_CENTER;
 
         return Thumbnails.of(inputImage)
             .size(width, height)

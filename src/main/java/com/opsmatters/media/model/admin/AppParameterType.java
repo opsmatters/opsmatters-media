@@ -31,7 +31,8 @@ public enum AppParameterType
     NOTIFICATION_MANAGER("notification-manager"),
     FEED_MANAGER("feed-manager"),
     TASK_MANAGER("task-manager"),
-    THREAD_MANAGER("thread-manager");
+    THREAD_MANAGER("thread-manager"),
+    SYNC_MANAGER("sync-manager");
 
     private String value;
 

@@ -45,6 +45,8 @@ public enum AppParameterName
     PUBLISHER("publisher"),
     DIRECTOR("director"),
     STATUS("status"),
+    CONFIG_CHANGED("config-changed"),
+    CONFIG_UPDATED("config-updated"),
     ERROR_COUNT_ERROR("error-count-error"),
     CHANGED_COUNT_ERROR("changed-count-error"),
     REVIEW_COUNT_ERROR("review-count-error"),

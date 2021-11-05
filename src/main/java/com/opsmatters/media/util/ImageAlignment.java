@@ -26,9 +26,11 @@ import java.util.ArrayList;
  */
 public enum ImageAlignment
 {
-    LEFT("Left"),
     CENTER("Center"),
-    RIGHT("Right");
+    LEFT("Left"),
+    RIGHT("Right"),
+    TOP("Top"),
+    BOTTOM("Bottom");
 
     private String value;
 
@@ -95,6 +97,8 @@ public enum ImageAlignment
         ret.add(CENTER);
         ret.add(LEFT);
         ret.add(RIGHT);
+        ret.add(TOP);
+        ret.add(BOTTOM);
 
         return ret;
     }

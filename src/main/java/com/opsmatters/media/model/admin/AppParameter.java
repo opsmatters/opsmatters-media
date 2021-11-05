@@ -15,6 +15,7 @@
  */
 package com.opsmatters.media.model.admin;
 
+import java.time.Instant;
 import com.opsmatters.media.model.BaseItem;
 
 /**
@@ -127,6 +128,14 @@ public class AppParameter extends BaseItem
     public boolean getValueAsBoolean()
     {
         return Boolean.parseBoolean(value);
+    }
+
+    /**
+     * Returns the value as an instant.
+     */
+    public Instant getValueAsInstant()
+    {
+        return Instant.ofEpochMilli(Long.parseLong(value));
     }
 
     /**

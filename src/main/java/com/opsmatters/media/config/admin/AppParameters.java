@@ -33,6 +33,8 @@ public class AppParameters extends LinkedHashMap<AppParameterType,Map>
 {
     private static Map<AppParameterType,Map<AppParameterName,AppParameter>> types = new LinkedHashMap<AppParameterType,Map<AppParameterName,AppParameter>>();
 
+    private static boolean initialised = false;
+
     /**
      * Private constructor.
      */
@@ -41,11 +43,32 @@ public class AppParameters extends LinkedHashMap<AppParameterType,Map>
     }
 
     /**
+     * Returns <CODE>true</CODE> if parameters have been initialised.
+     */
+    public static boolean isInitialised()
+    {
+        return initialised;
+    }
+
+    /**
      * Loads the set of parameters.
      */
     public static void load(List<AppParameter> parameters)
     {
+        initialised = false;
+
         types.clear();
+        for(AppParameter parameter : parameters)
+            add(parameter);
+
+        initialised = true;
+    }
+
+    /**
+     * Sets the given parameters.
+     */
+    public static void set(List<AppParameter> parameters)
+    {
         for(AppParameter parameter : parameters)
             add(parameter);
     }
@@ -115,5 +138,13 @@ public class AppParameters extends LinkedHashMap<AppParameterType,Map>
     public static void put(AppParameterType type, AppParameterName name, boolean value)
     {
         put(type, name, Boolean.toString(value));
+    }
+
+    /**
+     * Sets the parameter with the given type and name to the given value.
+     */
+    public static void put(AppParameterType type, AppParameterName name, Instant value)
+    {
+        put(type, name, Long.toString(value.toEpochMilli()));
     }
 }

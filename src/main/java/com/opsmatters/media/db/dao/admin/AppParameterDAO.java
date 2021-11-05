@@ -76,6 +76,13 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
       + "FROM PARAMETERS";
 
     /**
+     * The query to use to select the parameters from the PARAMETERS table by type.
+     */
+    private static final String LIST_BY_TYPE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, NAME, VALUE "
+      + "FROM PARAMETERS WHERE TYPE=?";
+
+    /**
      * The query to use to get the count of parameters from the PARAMETERS table.
      */
     private static final String COUNT_SQL =  
@@ -382,6 +389,58 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     }
 
     /**
+     * Returns the parameters from the PARAMETERS table by type.
+     */
+    public synchronized List<AppParameter> list(AppParameterType type) throws SQLException
+    {
+        List<AppParameter> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByTypeStmt == null)
+            listByTypeStmt = prepareStatement(getConnection(), LIST_BY_TYPE_SQL);
+        clearParameters(listByTypeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByTypeStmt.setString(1, type.value());
+            listByTypeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByTypeStmt.executeQuery();
+            ret = new ArrayList<AppParameter>();
+            while(rs.next())
+            {
+                AppParameter parameter = new AppParameter();
+                parameter.setId(rs.getString(1));
+                parameter.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                parameter.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                parameter.setType(AppParameterType.fromValue(rs.getString(4)));
+                parameter.setName(AppParameterName.fromValue(rs.getString(5)));
+                parameter.setValue(rs.getString(6));
+                ret.add(parameter);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the count of parameters from the table.
      */
     public int count() throws SQLException
@@ -434,6 +493,8 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
+        closeStatement(listByTypeStmt);
+        listByTypeStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -445,6 +506,7 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
+    private PreparedStatement listByTypeStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }

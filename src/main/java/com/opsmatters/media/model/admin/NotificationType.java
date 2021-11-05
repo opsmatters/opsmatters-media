@@ -39,5 +39,6 @@ public enum NotificationType
     TASK_DELETED,
     EMAIL_ERROR_COUNT,
     THREAD_STALLED,
-    CONFIG_ERROR;
+    CONFIG_ERROR,
+    CONFIG_UPDATE;
 }
