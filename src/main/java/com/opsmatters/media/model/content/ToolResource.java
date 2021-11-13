@@ -200,6 +200,7 @@ public class ToolResource extends Resource
         resource.setTitle("New Tool");
         resource.setDescription(StringUtils.EMPTY);
         resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        resource.setSocial(true);
 
         return resource;
     }
@@ -225,6 +226,8 @@ public class ToolResource extends Resource
 
         String promote = config.getField(Fields.PROMOTE);
         setPromoted(promote == null || promote.equals("0") ? false : true);
+
+        setSocial(true);
     }
 
     /**
