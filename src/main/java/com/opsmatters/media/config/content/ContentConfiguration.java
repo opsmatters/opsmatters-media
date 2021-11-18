@@ -335,23 +335,17 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
     }
 
     /**
-     * Returns <CODE>true</CODE> if the deployed rows for this content type should be trimmed for performance.
-     */
-    public boolean trimDeployedContent()
-    {
-        return false;
-    }
-
-    /**
      * Extract the list of content items from the database and deploy using the given handler.
      */
-    public List<C> deployContent(Site site, EnvironmentName env, Environment images,
-        ContentDAO contentDAO, ContentHandler handler, int maxItems)
+    public List<C> deployContent(Site site, EnvironmentName env, Environment images, ContentDAO contentDAO, ContentHandler handler)
         throws IOException, SQLException
     {
+        int idx = 0;
+        int startIdx = -1;
         List<C> items = contentDAO.list(site, getCode());
         for(C content : items)
         {
+            ++idx;
             ContentStatus status = content.getStatus();
             Fields fields = content.toFields().add(this);
 
@@ -411,7 +405,11 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
             }
 
             if(content.getStatus() != status)
+            {
                 contentDAO.update(content);
+                if(startIdx < 0)
+                    startIdx = idx;
+            }
         }
 
         // Process the import file
@@ -422,8 +420,8 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
         // Process the CSV file
         String type = getType().tag();
         handler.setFilename(handler.getCsvFilename());
-        if(maxItems > 0)
-            handler.trimFirstLines(maxItems);
+        if(startIdx > 0)
+            handler.trimLines(startIdx);
         handler.convertLinesToAscii(getHtmlFields());
         handler.writeFile();
 

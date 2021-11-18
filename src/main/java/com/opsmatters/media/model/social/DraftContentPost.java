@@ -238,6 +238,7 @@ public class DraftContentPost extends DraftPost
     {
         return getContentType() == ContentType.POST
             || getContentType() == ContentType.EVENT
+            || getContentType() == ContentType.TOOL
             || getContentType() == ContentType.JOB;
     }
 

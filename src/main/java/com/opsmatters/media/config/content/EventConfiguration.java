@@ -76,15 +76,6 @@ public class EventConfiguration extends ContentConfiguration<EventResource>
     }
 
     /**
-     * Returns <CODE>true</CODE> if the deployed rows for this content type should be trimmed for performance.
-     */
-    @Override
-    public boolean trimDeployedContent()
-    {
-        return true;
-    }
-
-    /**
      * Returns the pages for this configuration.
      */
     public List<WebPageConfiguration> getPages()

@@ -25,7 +25,6 @@ public enum AppParameterName
 {
     DRAFT_POST_INTERVAL("draft-post-interval"),
     PREPARED_POST_INTERVAL("prepared-post-interval"),
-    MAX_ITEMS("max-items"),
     INIT_DELAY("init-delay"),
     BATCH_DELAY("batch-delay"),
     ITEM_DELAY("item-delay"),

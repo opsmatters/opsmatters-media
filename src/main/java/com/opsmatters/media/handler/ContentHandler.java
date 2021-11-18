@@ -350,10 +350,10 @@ public class ContentHandler implements FieldSource
     /**
      * Trims the output lines to the given size by removing the first lines.
      */
-    public void trimFirstLines(int maxLines)
+    public void trimLines(int firstRow)
     {
-        if(getLineCount() > maxLines+1)
-            lines.subList(1, getLineCount()-maxLines).clear();
+        if(firstRow > 2 && getLineCount() > firstRow)
+            lines.subList(1, firstRow).clear();
     }
 
     /**
