@@ -17,6 +17,8 @@ package com.opsmatters.media.model.monitor;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.logging.Logger;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -25,6 +27,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.content.FieldsConfiguration;
 import com.opsmatters.media.model.BaseItem;
+import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentSummary;
 import com.opsmatters.media.model.admin.Email;
@@ -55,6 +58,7 @@ public class ContentMonitor extends BaseItem
     public static final String ERROR_MESSAGE = "error-message";
     public static final String RETRY = "retry";
     public static final String SUBSCRIBED_DATE = "subscribed-date";
+    public static final String SITES = "sites";
 
     private String code = "";
     private String organisation = "";
@@ -75,8 +79,10 @@ public class ContentMonitor extends BaseItem
     private String errorMessage = "";
     private int retry = 0;
     private Instant subscribedDate;
+    private String sites = "";
 
     private List<ContentSummary> subscribed = new ArrayList<ContentSummary>();
+    private Map<String,String> siteMap = new HashMap<String,String>();
 
     /**
      * Default constructor.
@@ -98,6 +104,7 @@ public class ContentMonitor extends BaseItem
         setStatus(MonitorStatus.NEW);
         setSnapshot(new ContentSnapshot(content.getType()));
         setInterval(DEFAULT_INTERVAL);
+        setSites(config.getSites());
     }
 
     /**
@@ -135,6 +142,7 @@ public class ContentMonitor extends BaseItem
             setErrorMessage(obj.getErrorMessage());
             setRetry(obj.getRetry());
             setSubscribedDate(obj.getSubscribedDate());
+            setSites(obj.getSites());
         }
     }
 
@@ -156,6 +164,7 @@ public class ContentMonitor extends BaseItem
         ret.putOpt(ERROR_MESSAGE, getErrorMessage());
         ret.putOpt(RETRY, getRetry());
         ret.putOpt(SUBSCRIBED_DATE, getSubscribedDateMillis());
+        ret.putOpt(SITES, getSites());
 
         return ret;
     }
@@ -176,6 +185,7 @@ public class ContentMonitor extends BaseItem
         setErrorMessage(obj.optString(ERROR_MESSAGE));
         setRetry(obj.optInt(RETRY));
         setSubscribedDateMillis(obj.optLong(SUBSCRIBED_DATE));
+        setSites(obj.optString(SITES));
     }
 
     /**
@@ -879,6 +889,46 @@ public class ContentMonitor extends BaseItem
     public void clearSubscribedContent()
     {
         subscribed.clear();
+    }
+
+    /**
+     * Returns the monitor sites.
+     */
+    public String getSites()
+    {
+        return sites;
+    }
+
+    /**
+     * Sets the monitor sites.
+     */
+    public void setSites(String sites)
+    {
+        this.sites = sites;
+
+        siteMap.clear();
+        if(sites != null && sites.length() > 0)
+        {
+            List<String> siteList = StringUtils.toList(sites);
+            for(String site : siteList)
+                siteMap.put(site, site);
+        }
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this monitor is configured for the given site.
+     */
+    public boolean hasSite(Site site)
+    {
+        return hasSite(site.getId());
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this monitor is configured for the given site.
+     */
+    public boolean hasSite(String siteId)
+    {
+        return siteMap.size() == 0 || siteMap.get(siteId) != null;
     }
 
     /**

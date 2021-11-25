@@ -30,7 +30,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class GeneratorFields implements java.io.Serializable
+public class ConfigurationGeneratorFields implements java.io.Serializable
 {
     private String code = "";
     private String name = "";
@@ -47,7 +47,7 @@ public class GeneratorFields implements java.io.Serializable
     /**
      * Default constructor.
      */
-    public GeneratorFields()
+    public ConfigurationGeneratorFields()
     {
     }
 

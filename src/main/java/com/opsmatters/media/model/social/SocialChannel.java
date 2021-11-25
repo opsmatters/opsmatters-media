@@ -28,13 +28,6 @@ import com.opsmatters.media.util.StringUtils;
  */
 public class SocialChannel implements java.io.Serializable
 {
-    public static final String NAME = "name";
-    public static final String HANDLE = "handle";
-    public static final String ICON = "icon";
-    public static final String PROVIDER = "provider";
-    public static final String SITES = "sites";
-    public static final String ENABLED = "enabled";
-
     private String id = "";
     private String name = "";
     private String handle = "";
@@ -45,7 +38,7 @@ public class SocialChannel implements java.io.Serializable
     private boolean enabled = false;
 
     /**
-     * Default constructor.
+     * Constructor that takes an id.
      */
     public SocialChannel(String id)
     {
@@ -208,24 +201,5 @@ public class SocialChannel implements java.io.Serializable
     public void setEnabled(boolean enabled)
     {
         this.enabled = enabled;
-    }
-
-    /**
-     * Reads the configuration from the given YAML Document.
-     */
-    public void parse(Map<String, Object> map)
-    {
-        if(map.containsKey(NAME))
-            setName((String)map.get(NAME));
-        if(map.containsKey(HANDLE))
-            setHandle((String)map.get(HANDLE));
-        if(map.containsKey(ICON))
-            setIcon((String)map.get(ICON));
-        if(map.containsKey(PROVIDER))
-            setProvider((String)map.get(PROVIDER));
-        if(map.containsKey(SITES))
-            setSites((String)map.get(SITES));
-        if(map.containsKey(ENABLED))
-            setEnabled((Boolean)map.get(ENABLED));
     }
 }

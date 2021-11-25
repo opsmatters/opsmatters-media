@@ -33,12 +33,14 @@ public abstract class FieldsConfiguration extends YamlConfiguration
     public static final String ARTICLE_LOADING = "article-loading";
     public static final String ARTICLE_FIELDS = "article-fields";
     public static final String FIELDS = "fields";
+    public static final String SITES = "sites";
 
     private LoadingConfiguration teaserLoading;
     private List<ContentFields> teaserFields = new ArrayList<ContentFields>();
     private LoadingConfiguration articleLoading; 
     private List<ContentFields> articleFields = new ArrayList<ContentFields>();
     private Fields fields;
+    private String sites = "";
 
     /**
      * Default constructor.
@@ -74,6 +76,7 @@ public abstract class FieldsConfiguration extends YamlConfiguration
             for(ContentFields articleFields : obj.getArticleFields())
                 addArticleFields(articleFields);
             setFields(new Fields(obj.getFields()));
+            setSites(obj.getSites());
         }
     }
 
@@ -256,6 +259,22 @@ public abstract class FieldsConfiguration extends YamlConfiguration
     }
 
     /**
+     * Returns the configuration sites.
+     */
+    public String getSites()
+    {
+        return sites;
+    }
+
+    /**
+     * Sets the configuration sites.
+     */
+    public void setSites(String sites)
+    {
+        this.sites = sites;
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     @Override
@@ -290,6 +309,11 @@ public abstract class FieldsConfiguration extends YamlConfiguration
         if(map.containsKey(FIELDS))
         {
             addFields((Map<String,String>)map.get(FIELDS));
+        }
+
+        if(map.containsKey(SITES))
+        {
+            setSites((String)map.get(SITES));
         }
     }
 }

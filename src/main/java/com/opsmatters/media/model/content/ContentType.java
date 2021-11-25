@@ -106,6 +106,72 @@ public enum ContentType
     }
 
     /**
+     * Returns <CODE>true</CODE> if this content type has social posts.
+     */
+    public boolean hasSocialPosts()
+    {
+        return this == VIDEO
+            || this == ROUNDUP
+            || this == POST
+            || this == EVENT
+            || this == WHITE_PAPER
+            || this == EBOOK
+            || this == TOOL;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this content type has features.
+     */
+    public boolean isFeaturesType()
+    {
+        return this == PROJECT
+            || this == TOOL;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this content type has tags.
+     */
+    public boolean isTagsType()
+    {
+        return this == VIDEO
+            || this == ROUNDUP
+            || this == WHITE_PAPER
+            || this == EBOOK
+            || this == POST;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this content type has technologies.
+     */
+    public boolean isTechnologiesType()
+    {
+        return this == JOB;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this content type has tracking.
+     */
+    public boolean isTrackingType()
+    {
+        return this == VIDEO
+            || this == ROUNDUP
+            || this == EVENT
+            || this == WHITE_PAPER
+            || this == EBOOK
+            || this == TOOL;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this content type is in the newsletter.
+     */
+    public boolean isNewsletterType()
+    {
+        return this == VIDEO
+            || this == ROUNDUP
+            || this == POST;
+    }
+
+    /**
      * Returns the type for the given value.
      * @param value The type value
      * @return The type for the given value
