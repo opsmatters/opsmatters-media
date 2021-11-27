@@ -15,6 +15,8 @@
  */
 package com.opsmatters.media.db.dao.content;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.io.StringReader;
 import java.sql.Types;
 import java.sql.PreparedStatement;
@@ -40,7 +42,7 @@ public class WhitePaperResourceDAO extends ContentDAO<WhitePaperResource>
      * The query to use to select a white paper from the WHITE_PAPERS table by URL.
      */
     private static final String GET_BY_URL_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM WHITE_PAPERS WHERE SITE_ID=? AND CODE=? AND URL=?";
+      "SELECT ATTRIBUTES, SITE_ID FROM WHITE_PAPERS WHERE CODE=? AND URL=?";
 
     /**
      * The query to use to insert a white paper into the WHITE_PAPERS table.
@@ -92,9 +94,9 @@ public class WhitePaperResourceDAO extends ContentDAO<WhitePaperResource>
     /**
      * Returns a white paper from the WHITE_PAPERS table by URL.
      */
-    public synchronized WhitePaperResource getByUrl(String siteId, String code, String url) throws SQLException
+    public synchronized List<WhitePaperResource> getByUrl(String code, String url) throws SQLException
     {
-        WhitePaperResource ret = null;
+        List<WhitePaperResource> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -108,16 +110,17 @@ public class WhitePaperResourceDAO extends ContentDAO<WhitePaperResource>
 
         try
         {
-            getByUrlStmt.setString(1, siteId);
-            getByUrlStmt.setString(2, code);
-            getByUrlStmt.setString(3, url);
+            getByUrlStmt.setString(1, code);
+            getByUrlStmt.setString(2, url);
             getByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByUrlStmt.executeQuery();
+            ret = new ArrayList<WhitePaperResource>();
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = new WhitePaperResource(attributes);
-                ret.setSiteId(rs.getString(2));
+                WhitePaperResource item = new WhitePaperResource(attributes);
+                item.setSiteId(rs.getString(2));
+                ret.add(item);
             }
         }
         finally

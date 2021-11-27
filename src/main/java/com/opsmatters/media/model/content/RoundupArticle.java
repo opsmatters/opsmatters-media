@@ -456,6 +456,14 @@ public class RoundupArticle extends Article
     }
 
     /**
+     * Returns <CODE>true</CODE> if the author has been set.
+     */
+    public boolean hasAuthor()
+    {
+        return getAuthor() != null && getAuthor().length() > 0;
+    }
+
+    /**
      * Returns the author link of the roundup.
      */
     public String getAuthorLink()
@@ -469,5 +477,13 @@ public class RoundupArticle extends Article
     public void setAuthorLink(String authorLink)
     {
         details.setAuthorLink(authorLink);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the author link has been set.
+     */
+    public boolean hasAuthorLink()
+    {
+        return getAuthorLink() != null && getAuthorLink().length() > 0;
     }
 }

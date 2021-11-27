@@ -15,6 +15,8 @@
  */
 package com.opsmatters.media.db.dao.content;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.io.StringReader;
 import java.sql.Types;
 import java.sql.PreparedStatement;
@@ -40,7 +42,7 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
      * The query to use to select a video from the VIDEOS table by videoId.
      */
     private static final String GET_BY_VIDEO_ID_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM VIDEOS WHERE SITE_ID=? AND CODE=? AND VIDEO_ID=?";
+      "SELECT ATTRIBUTES, SITE_ID FROM VIDEOS WHERE CODE=? AND VIDEO_ID=?";
 
     /**
      * The query to use to insert a video into the VIDEOS table.
@@ -94,9 +96,9 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
     /**
      * Returns a video from the VIDEOS table by videoId.
      */
-    public synchronized VideoArticle getByVideoId(String siteId, String code, String videoId) throws SQLException
+    public synchronized List<VideoArticle> getByVideoId(String code, String videoId) throws SQLException
     {
-        VideoArticle ret = null;
+        List<VideoArticle> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -110,16 +112,17 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
 
         try
         {
-            getByVideoIdStmt.setString(1, siteId);
-            getByVideoIdStmt.setString(2, code);
-            getByVideoIdStmt.setString(3, videoId);
+            getByVideoIdStmt.setString(1, code);
+            getByVideoIdStmt.setString(2, videoId);
             getByVideoIdStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByVideoIdStmt.executeQuery();
+            ret = new ArrayList<VideoArticle>();
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = new VideoArticle(attributes);
-                ret.setSiteId(rs.getString(2));
+                VideoArticle item = new VideoArticle(attributes);
+                item.setSiteId(rs.getString(2));
+                ret.add(item);
             }
         }
         finally

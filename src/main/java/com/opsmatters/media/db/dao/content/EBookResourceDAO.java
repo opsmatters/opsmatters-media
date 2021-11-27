@@ -15,6 +15,8 @@
  */
 package com.opsmatters.media.db.dao.content;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.io.StringReader;
 import java.sql.Types;
 import java.sql.PreparedStatement;
@@ -40,7 +42,7 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
      * The query to use to select a ebook from the EBOOKS table by URL.
      */
     private static final String GET_BY_URL_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM EBOOKS WHERE SITE_ID=? AND CODE=? AND URL=?";
+      "SELECT ATTRIBUTES, SITE_ID FROM EBOOKS WHERE CODE=? AND URL=?";
 
     /**
      * The query to use to insert a ebook into the EBOOKS table.
@@ -92,9 +94,9 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
     /**
      * Returns a ebook from the EBOOKS table by URL.
      */
-    public synchronized EBookResource getByUrl(String siteId, String code, String url) throws SQLException
+    public synchronized List<EBookResource> getByUrl(String code, String url) throws SQLException
     {
-        EBookResource ret = null;
+        List<EBookResource> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -108,16 +110,17 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
 
         try
         {
-            getByUrlStmt.setString(1, siteId);
-            getByUrlStmt.setString(2, code);
-            getByUrlStmt.setString(3, url);
+            getByUrlStmt.setString(1, code);
+            getByUrlStmt.setString(2, url);
             getByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByUrlStmt.executeQuery();
+            ret = new ArrayList<EBookResource>();
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = new EBookResource(attributes);
-                ret.setSiteId(rs.getString(2));
+                EBookResource item = new EBookResource(attributes);
+                item.setSiteId(rs.getString(2));
+                ret.add(item);
             }
         }
         finally

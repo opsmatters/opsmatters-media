@@ -15,6 +15,8 @@
  */
 package com.opsmatters.media.db.dao.content;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.io.StringReader;
 import java.sql.Types;
 import java.sql.PreparedStatement;
@@ -40,7 +42,7 @@ public class RoundupArticleDAO extends ContentDAO<RoundupArticle>
      * The query to use to select a roundup from the ROUNDUPS table by URL.
      */
     private static final String GET_BY_URL_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM ROUNDUPS WHERE SITE_ID=? AND CODE=? AND URL=? AND (?=0 OR ABS(TIMESTAMPDIFF(DAY, ?, PUBLISHED_DATE)) <= 7)";
+      "SELECT ATTRIBUTES, SITE_ID FROM ROUNDUPS WHERE CODE=? AND URL=? AND (?=0 OR ABS(TIMESTAMPDIFF(DAY, ?, PUBLISHED_DATE)) <= 7)";
 
     /**
      * The query to use to insert a roundup into the ROUNDUPS table.
@@ -92,9 +94,9 @@ public class RoundupArticleDAO extends ContentDAO<RoundupArticle>
     /**
      * Returns a roundup from the ROUNDUPS table by URL.
      */
-    public synchronized RoundupArticle getByUrl(String siteId, String code, String url, long publishedDate) throws SQLException
+    public synchronized List<RoundupArticle> getByUrl(String code, String url, long publishedDate) throws SQLException
     {
-        RoundupArticle ret = null;
+        List<RoundupArticle> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -108,18 +110,19 @@ public class RoundupArticleDAO extends ContentDAO<RoundupArticle>
 
         try
         {
-            getByUrlStmt.setString(1, siteId);
-            getByUrlStmt.setString(2, code);
-            getByUrlStmt.setString(3, url);
-            getByUrlStmt.setLong(4, publishedDate);
-            getByUrlStmt.setTimestamp(5, new Timestamp(publishedDate), UTC);
+            getByUrlStmt.setString(1, code);
+            getByUrlStmt.setString(2, url);
+            getByUrlStmt.setLong(3, publishedDate);
+            getByUrlStmt.setTimestamp(4, new Timestamp(publishedDate), UTC);
             getByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByUrlStmt.executeQuery();
+            ret = new ArrayList<RoundupArticle>();
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = new RoundupArticle(attributes);
-                ret.setSiteId(rs.getString(2));
+                RoundupArticle item = new RoundupArticle(attributes);
+                item.setSiteId(rs.getString(2));
+                ret.add(item);
             }
         }
         finally

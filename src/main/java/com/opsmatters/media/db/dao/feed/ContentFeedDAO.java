@@ -511,12 +511,16 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     public List<ContentFeed> list(String id, Site site, EnvironmentName environment) throws SQLException
     {
         List<ContentFeed> ret = new ArrayList<ContentFeed>();
-        for(ContentFeed feed : list(site))
+        List<ContentFeed> feeds = list(site);
+        if(feeds != null)
         {
-              if(feed.getEnvironment() == environment
-                && feed.getExternalId().equals(id))
+            for(ContentFeed feed : feeds)
             {
-                ret.add(feed);
+                  if(feed.getEnvironment() == environment
+                    && feed.getExternalId().equals(id))
+                {
+                    ret.add(feed);
+                }
             }
         }
 

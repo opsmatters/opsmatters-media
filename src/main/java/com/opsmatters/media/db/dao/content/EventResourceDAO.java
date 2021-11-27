@@ -15,6 +15,8 @@
  */
 package com.opsmatters.media.db.dao.content;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.io.StringReader;
 import java.sql.Types;
 import java.sql.PreparedStatement;
@@ -40,7 +42,7 @@ public class EventResourceDAO extends ContentDAO<EventResource>
      * The query to use to select a event from the EVENTS table by URL.
      */
     private static final String GET_BY_URL_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM EVENTS WHERE SITE_ID=? AND CODE=? AND URL=? AND (?=0 OR ABS(TIMESTAMPDIFF(DAY, ?, START_DATE)) < 2)";
+      "SELECT ATTRIBUTES, SITE_ID FROM EVENTS WHERE CODE=? AND URL=? AND (?=0 OR ABS(TIMESTAMPDIFF(DAY, ?, START_DATE)) < 2)";
 
     /**
      * The query to use to insert an event into the EVENTS table.
@@ -94,9 +96,9 @@ public class EventResourceDAO extends ContentDAO<EventResource>
     /**
      * Returns a event from the EVENTS table by URL.
      */
-    public synchronized EventResource getByUrl(String siteId, String code, String url, long startDate) throws SQLException
+    public synchronized List<EventResource> getByUrl(String code, String url, long startDate) throws SQLException
     {
-        EventResource ret = null;
+        List<EventResource> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -110,18 +112,19 @@ public class EventResourceDAO extends ContentDAO<EventResource>
 
         try
         {
-            getByUrlStmt.setString(1, siteId);
-            getByUrlStmt.setString(2, code);
-            getByUrlStmt.setString(3, url);
-            getByUrlStmt.setLong(4, startDate);
-            getByUrlStmt.setTimestamp(5, new Timestamp(startDate), UTC);
+            getByUrlStmt.setString(1, code);
+            getByUrlStmt.setString(2, url);
+            getByUrlStmt.setLong(3, startDate);
+            getByUrlStmt.setTimestamp(4, new Timestamp(startDate), UTC);
             getByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByUrlStmt.executeQuery();
+            ret = new ArrayList<EventResource>();
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = new EventResource(attributes);
-                ret.setSiteId(rs.getString(2));
+                EventResource item = new EventResource(attributes);
+                item.setSiteId(rs.getString(2));
+                ret.add(item);
             }
         }
         finally

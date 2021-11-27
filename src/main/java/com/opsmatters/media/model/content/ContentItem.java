@@ -17,6 +17,7 @@ package com.opsmatters.media.model.content;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -52,6 +53,7 @@ public abstract class ContentItem implements java.io.Serializable
     private boolean social = false;
     private String canonicalUrl = "";
     private ContentStatus status = ContentStatus.NEW;
+    private String otherSites = "";
 
     /**
      * Default constructor.
@@ -94,6 +96,7 @@ public abstract class ContentItem implements java.io.Serializable
         setSocial(obj.hasSocial());
         setCanonicalUrl(new String(obj.getCanonicalUrl() != null ? obj.getCanonicalUrl() : ""));
         setStatus(obj.getStatus());
+        setOtherSites(obj.getOtherSites());
     }
 
     /**
@@ -770,5 +773,41 @@ public abstract class ContentItem implements java.io.Serializable
     public boolean isDeployed()
     {
         return getStatus() == ContentStatus.DEPLOYED;
+    }
+
+    /**
+     * Returns the other site ids.
+     */
+    public String getOtherSites()
+    {
+        return otherSites;
+    }
+
+    /**
+     * Sets the other site ids.
+     */
+    public void setOtherSites(String otherSites)
+    {
+        this.otherSites = otherSites;
+    }
+
+    /**
+     * Sets the other site ids.
+     */
+    public void setOtherSites(List<? extends ContentItem> items)
+    {
+        StringBuilder str = new StringBuilder();
+
+        if(items != null)
+        {
+            for(ContentItem item : items)
+            {
+                if(str.length() > 0)
+                    str.append(",");
+                str.append(item.getSiteId());
+            }
+        }
+
+        setOtherSites(str.toString());
     }
 }
