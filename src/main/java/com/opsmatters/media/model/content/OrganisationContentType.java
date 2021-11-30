@@ -466,6 +466,9 @@ public class OrganisationContentType extends BaseItem
         boolean deployed = true;
         for(ContentItem item : content)
         {
+            if(item.isSkipped())
+                continue;
+
             setType(item.getType());
             if(item.getPublishedDate() != null)
             {

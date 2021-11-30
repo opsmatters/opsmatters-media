@@ -412,15 +412,18 @@ public class NotificationDAO extends AdminDAO<Notification>
     {
         List<Notification> ret = new ArrayList<Notification>();
         List<Notification> notifications = list(type);
-        for(Notification notification : notifications)
+        if(notifications != null)
         {
-            if(notification.getStatus() != NotificationStatus.PENDING)
-                continue;
+            for(Notification notification : notifications)
+            {
+                if(notification.getStatus() != NotificationStatus.PENDING)
+                    continue;
 
-            if(code != null && !code.equals(notification.getCode()))
-                continue;
+                if(code != null && !code.equals(notification.getCode()))
+                    continue;
 
-            ret.add(notification);
+                ret.add(notification);
+            }
         }
 
         return ret;

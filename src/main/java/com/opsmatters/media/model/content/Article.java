@@ -190,6 +190,14 @@ public abstract class Article extends ContentItem
     }
 
     /**
+     * Clears the content revised title.
+     */
+    public void clearRevisedTitle()
+    {
+        setRevisedTitle("");
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the revised title has been set.
      */
     public boolean hasRevisedTitle()

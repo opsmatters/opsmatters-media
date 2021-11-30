@@ -15,8 +15,10 @@
  */
 package com.opsmatters.media.model.monitor;
 
+import java.util.List;
 import java.time.Instant;
 import com.opsmatters.media.model.OwnedItem;
+import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.SnapshotDiff;
 
@@ -32,6 +34,7 @@ public class ContentChange extends ContentEvent
     private String snapshotAfter = "";
     private long executionTime = -1L;
     private int difference = 0;
+    private String sites = "";
 
     /**
      * Default constructor.
@@ -77,6 +80,7 @@ public class ContentChange extends ContentEvent
             setSnapshotAfter(obj.getSnapshotAfter());
             setExecutionTime(obj.getExecutionTime());
             setDifference(obj.getDifference());
+            setSites(obj.getSites());
         }
     }
 
@@ -121,6 +125,14 @@ public class ContentChange extends ContentEvent
         setStatus(status);
         setUpdatedDate(Instant.now());
         setCreatedBy(username);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this change has been skipped.
+     */
+    public boolean isSkipped()
+    {
+        return getStatus() == ChangeStatus.SKIPPED;
     }
 
     /**
@@ -193,5 +205,66 @@ public class ContentChange extends ContentEvent
     public void setDifference(int difference)
     {
         this.difference = difference;
+    }
+
+    /**
+     * Returns the site ids.
+     */
+    public String getSites()
+    {
+        return sites;
+    }
+
+    /**
+     * Sets the site ids.
+     */
+    public void setSites(String sites)
+    {
+        this.sites = sites;
+    }
+
+    /**
+     * Clears the site ids.
+     */
+    public void clearSites()
+    {
+        setSites("");
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the site ids have been set.
+     */
+    public boolean hasSites()
+    {
+        return sites != null && sites.length() > 0;
+    }
+
+    /**
+     * Returns the number of site ids.
+     */
+    public int numSites()
+    {
+        return StringUtils.toList(getSites()).size();
+    }
+
+    /**
+     * Adds a site id.
+     */
+    public void addSite(String siteId)
+    {
+        List<String> list = StringUtils.toList(getSites());
+        if(!list.contains(siteId))
+            list.add(siteId);
+        setSites(StringUtils.fromList(list));
+    }
+
+    /**
+     * Sets the site ids.
+     */
+    public void setSites(List<Organisation> organisations)
+    {
+        clearSites();
+        for(Organisation organisation : organisations)
+            addSite(organisation.getSiteId());
     }
 }

@@ -345,6 +345,9 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
         List<C> items = contentDAO.list(site, getCode());
         for(C content : items)
         {
+            if(content.isSkipped())
+                continue;
+
             ++idx;
             ContentStatus status = content.getStatus();
             Fields fields = content.toFields().add(this);
