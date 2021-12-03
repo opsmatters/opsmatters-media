@@ -22,6 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.DeliveryStatus;
@@ -54,16 +55,16 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO PREPARED_POSTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, SITE_ID, DRAFT_ID, CODE, "
+      + "( ID, CREATED_DATE, CREATED_DATE_TRUNC, UPDATED_DATE, UPDATED_DATE_TRUNC, SCHEDULED_DATE, TYPE, SITE_ID, DRAFT_ID, CODE, "
       + "TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a post in the PREPARED_POSTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE PREPARED_POSTS SET UPDATED_DATE=?, SCHEDULED_DATE=?, CODE=?, "
+      "UPDATE PREPARED_POSTS SET UPDATED_DATE=?, UPDATED_DATE_TRUNC=?, SCHEDULED_DATE=?, CODE=?, "
       + "TITLE=?, MESSAGE=?, STATUS=?, EXTERNAL_ID=?, ERROR_CODE=?, ERROR_MESSAGE=? "
       + "WHERE ID=?";
 
@@ -127,7 +128,9 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     {
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
+        table.addColumn("CREATED_DATE_TRUNC", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
+        table.addColumn("UPDATED_DATE_TRUNC", Types.TIMESTAMP, true);
         table.addColumn("SCHEDULED_DATE", Types.TIMESTAMP, false);
         table.addColumn("TYPE", Types.VARCHAR, 15, true);
         table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
@@ -144,6 +147,8 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
         table.setPrimaryKey("PREPARED_POSTS_PK", new String[] {"ID"});
         table.addIndex("PREPARED_POSTS_STATUS_IDX", new String[] {"STATUS"});
         table.addIndex("PREPARED_POSTS_DRAFT_IDX", new String[] {"DRAFT_ID"});
+        table.addIndex("PREPARED_POSTS_CREATED_TRUNC_IDX", new String[] {"CREATED_DATE_TRUNC"});
+        table.addIndex("PREPARED_POSTS_UPDATED_TRUNC_IDX", new String[] {"UPDATED_DATE_TRUNC"});
         table.setInitialised(true);
     }
 
@@ -224,18 +229,20 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
         {
             insertStmt.setString(1, post.getId());
             insertStmt.setTimestamp(2, new Timestamp(post.getCreatedDateMillis()), UTC);
-            insertStmt.setTimestamp(3, new Timestamp(post.getUpdatedDateMillis()), UTC);
-            insertStmt.setTimestamp(4, new Timestamp(post.getScheduledDateMillis()), UTC);
-            insertStmt.setString(5, post.getType().name());
-            insertStmt.setString(6, post.getSiteId());
-            insertStmt.setString(7, post.getDraftId());
-            insertStmt.setString(8, post.getCode());
-            insertStmt.setString(9, post.getTitle());
-            insertStmt.setString(10, post.getMessage(MessageFormat.ENCODED));
-            insertStmt.setString(11, post.getChannel().getId());
-            insertStmt.setString(12, post.getStatus().name());
-            insertStmt.setString(13, post.getExternalId());
-            insertStmt.setString(14, post.getCreatedBy());
+            insertStmt.setTimestamp(3, new Timestamp(post.getCreatedDate().truncatedTo(ChronoUnit.DAYS).toEpochMilli()), UTC);
+            insertStmt.setTimestamp(4, new Timestamp(post.getUpdatedDateMillis()), UTC);
+            insertStmt.setTimestamp(5, new Timestamp(post.getUpdatedDate() != null ? post.getUpdatedDate().truncatedTo(ChronoUnit.DAYS).toEpochMilli() : 0L), UTC);
+            insertStmt.setTimestamp(6, new Timestamp(post.getScheduledDateMillis()), UTC);
+            insertStmt.setString(7, post.getType().name());
+            insertStmt.setString(8, post.getSiteId());
+            insertStmt.setString(9, post.getDraftId());
+            insertStmt.setString(10, post.getCode());
+            insertStmt.setString(11, post.getTitle());
+            insertStmt.setString(12, post.getMessage(MessageFormat.ENCODED));
+            insertStmt.setString(13, post.getChannel().getId());
+            insertStmt.setString(14, post.getStatus().name());
+            insertStmt.setString(15, post.getExternalId());
+            insertStmt.setString(16, post.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created post '"+post.getId()+"' in PREPARED_POSTS");
@@ -272,15 +279,16 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
             errorMessage = post.getErrorMessage().substring(0, MAX_ERROR_MESSAGE-1);
 
         updateStmt.setTimestamp(1, new Timestamp(post.getUpdatedDateMillis()), UTC);
-        updateStmt.setTimestamp(2, new Timestamp(post.getScheduledDateMillis()), UTC);
-        updateStmt.setString(3, post.getCode());
-        updateStmt.setString(4, post.getTitle());
-        updateStmt.setString(5, post.getMessage(MessageFormat.ENCODED));
-        updateStmt.setString(6, post.getStatus().name());
-        updateStmt.setString(7, post.getExternalId());
-        updateStmt.setInt(8, post.getErrorCode());
-        updateStmt.setString(9, errorMessage);
-        updateStmt.setString(10, post.getId());
+        updateStmt.setTimestamp(2, new Timestamp(post.getUpdatedDate() != null ? post.getUpdatedDate().truncatedTo(ChronoUnit.DAYS).toEpochMilli() : 0L), UTC);
+        updateStmt.setTimestamp(3, new Timestamp(post.getScheduledDateMillis()), UTC);
+        updateStmt.setString(4, post.getCode());
+        updateStmt.setString(5, post.getTitle());
+        updateStmt.setString(6, post.getMessage(MessageFormat.ENCODED));
+        updateStmt.setString(7, post.getStatus().name());
+        updateStmt.setString(8, post.getExternalId());
+        updateStmt.setInt(9, post.getErrorCode());
+        updateStmt.setString(10, errorMessage);
+        updateStmt.setString(11, post.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated post '"+post.getId()+"' in PREPARED_POSTS");

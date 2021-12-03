@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
@@ -63,9 +64,9 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO DRAFT_POSTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, MESSAGE, STATUS, CREATED_BY )"
+      + "( ID, CREATED_DATE, CREATED_DATE_TRUNC, UPDATED_DATE, SCHEDULED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, MESSAGE, STATUS, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a post in the DRAFT_POSTS table.
@@ -130,6 +131,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     {
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
+        table.addColumn("CREATED_DATE_TRUNC", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("SCHEDULED_DATE", Types.TIMESTAMP, false);
         table.addColumn("TYPE", Types.VARCHAR, 15, true);
@@ -142,6 +144,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("DRAFT_POSTS_PK", new String[] {"ID"});
         table.addIndex("DRAFT_POSTS_STATUS_IDX", new String[] {"TYPE", "STATUS"});
+        table.addIndex("DRAFT_POSTS_CREATED_TRUNC_IDX", new String[] {"CREATED_DATE_TRUNC"});
         table.setInitialised(true);
     }
 
@@ -341,20 +344,21 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
         {
             insertStmt.setString(1, post.getId());
             insertStmt.setTimestamp(2, new Timestamp(post.getCreatedDateMillis()), UTC);
-            insertStmt.setTimestamp(3, new Timestamp(post.getUpdatedDateMillis()), UTC);
-            insertStmt.setTimestamp(4, new Timestamp(post.getScheduledDateMillis()), UTC);
-            insertStmt.setString(5, post.getType().name());
-            insertStmt.setString(6, post.getSiteId());
-            insertStmt.setString(7, post.getSourceId());
+            insertStmt.setTimestamp(3, new Timestamp(post.getCreatedDate().truncatedTo(ChronoUnit.DAYS).toEpochMilli()), UTC);
+            insertStmt.setTimestamp(4, new Timestamp(post.getUpdatedDateMillis()), UTC);
+            insertStmt.setTimestamp(5, new Timestamp(post.getScheduledDateMillis()), UTC);
+            insertStmt.setString(6, post.getType().name());
+            insertStmt.setString(7, post.getSiteId());
+            insertStmt.setString(8, post.getSourceId());
             String properties = post.getPropertiesAsJson().toString();
             reader = new StringReader(properties);
-            insertStmt.setCharacterStream(8, reader, properties.length());
+            insertStmt.setCharacterStream(9, reader, properties.length());
             String attributes = post.getAttributes().toString();
             reader2 = new StringReader(attributes);
-            insertStmt.setCharacterStream(9, reader2, attributes.length());
-            insertStmt.setString(10, post.getMessage());
-            insertStmt.setString(11, post.getStatus().name());
-            insertStmt.setString(12, post.getCreatedBy());
+            insertStmt.setCharacterStream(10, reader2, attributes.length());
+            insertStmt.setString(11, post.getMessage());
+            insertStmt.setString(12, post.getStatus().name());
+            insertStmt.setString(13, post.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created post '"+post.getId()+"' in DRAFT_POSTS");

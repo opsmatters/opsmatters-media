@@ -236,10 +236,6 @@ public class BodyParser
                 // Replace "thin" spaces with normal space
                 string = string.replaceAll("\\u2005|\\u2009|\\u202F", " ");
 
-                // Remove emojis that won't save to the db
-//GERALD: still needed?
-//                string = string.replaceAll("✔️","");
-
                 // Collapse multiple spaces between end of sentence and punctuation
                 string = string.replaceAll("(\\w+)[ ]+([\\.\\?!])","$1$2");
 
@@ -621,16 +617,6 @@ public class BodyParser
         {
             // Wrap in a <p> tag
             ret = String.format("<p>%s</p>", ret);
-
-            // Replace special characters
-//GERALD: still needed?
-//            ret = ret.replaceAll("→", "->");
-//            ret = ret.replaceAll("►", ">");
-//            ret = ret.replaceAll("\\u24d2", "©");
-
-            // Remove special characters that won't save to the db
-//GERALD: still needed?
-//            ret = ret.replaceAll("▬|▬|▬|❏|➡️|🏢|⌨️|⏱️", "");
 
             // Turn rows of dashes or stars into paragraphs
             ret = ret.replaceAll("\n(-|\\*)+\n", "\n\n");

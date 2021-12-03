@@ -65,7 +65,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
      * The query to use to select the content from the table by published date.
      */
     private static final String LIST_BY_DATE_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM %s WHERE SITE_ID=? AND PUBLISHED=1 AND PUBLISHED_DATE>? ORDER BY ID";
+      "SELECT ATTRIBUTES, SITE_ID FROM %s WHERE SITE_ID=? AND PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
 
     /**
      * The query to use to select the content from the table by status.

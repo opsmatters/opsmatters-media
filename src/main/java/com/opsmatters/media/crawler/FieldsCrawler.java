@@ -150,6 +150,17 @@ public abstract class FieldsCrawler<T extends ContentSummary>
     }
 
     /**
+     * Updates the article selections to set the root.
+     */
+    public void setRoot(String selector)
+    {
+        for(ContentFields fields: getArticleFields())
+        {
+            fields.setRoot(selector);
+        }
+    }
+
+    /**
      * Returns the maximum results of the crawler.
      */
     public int getMaxResults()
@@ -355,8 +366,6 @@ public abstract class FieldsCrawler<T extends ContentSummary>
         title = title.replaceAll("&amp;", "&"); // Remove &amp;
         title = title.replaceAll("&nbsp;", " "); // Replace &nbsp; with space
         title = title.replaceAll("\\u2005|\\u2009|\\u202F", " "); // Replace "thin" spaces with normal space
-//GERALD: still needed?
-//        title = title.replaceAll("\\ufe00-\\ufe0f|\\ufeff", ""); // Remove special characters;
         return title;
     }
 }

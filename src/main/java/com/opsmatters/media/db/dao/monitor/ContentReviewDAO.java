@@ -22,6 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.monitor.ContentReview;
 import com.opsmatters.media.model.monitor.ReviewStatus;
@@ -47,9 +48,9 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTENT_REVIEWS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY )"
+      + "( ID, CREATED_DATE, CREATED_DATE_TRUNC, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a review in the CONTENT_REVIEWS table.
@@ -102,6 +103,7 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
     {
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
+        table.addColumn("CREATED_DATE_TRUNC", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("EFFECTIVE_DATE", Types.TIMESTAMP, false);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
@@ -113,6 +115,7 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("CONTENT_REVIEWS_PK", new String[] {"ID"});
         table.addIndex("CONTENT_REVIEWS_STATUS_IDX", new String[] {"STATUS"});
+        table.addIndex("CONTENT_REVIEWS_CREATED_TRUNC_IDX", new String[] {"CREATED_DATE_TRUNC"});
         table.setInitialised(true);
     }
 
@@ -188,15 +191,16 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
         {
             insertStmt.setString(1, review.getId());
             insertStmt.setTimestamp(2, new Timestamp(review.getCreatedDateMillis()), UTC);
-            insertStmt.setTimestamp(3, new Timestamp(review.getUpdatedDateMillis()), UTC);
-            insertStmt.setTimestamp(4, new Timestamp(review.getEffectiveDateMillis()), UTC);
-            insertStmt.setString(5, review.getCode());
-            insertStmt.setString(6, review.getReason().name());
-            insertStmt.setString(7, review.getStatus().name());
-            insertStmt.setString(8, review.getMonitorId());
-            insertStmt.setString(9, review.getNotes());
-            insertStmt.setBoolean(10, review.hasChange());
-            insertStmt.setString(11, review.getCreatedBy());
+            insertStmt.setTimestamp(3, new Timestamp(review.getCreatedDate().truncatedTo(ChronoUnit.DAYS).toEpochMilli()), UTC);
+            insertStmt.setTimestamp(4, new Timestamp(review.getUpdatedDateMillis()), UTC);
+            insertStmt.setTimestamp(5, new Timestamp(review.getEffectiveDateMillis()), UTC);
+            insertStmt.setString(6, review.getCode());
+            insertStmt.setString(7, review.getReason().name());
+            insertStmt.setString(8, review.getStatus().name());
+            insertStmt.setString(9, review.getMonitorId());
+            insertStmt.setString(10, review.getNotes());
+            insertStmt.setBoolean(11, review.hasChange());
+            insertStmt.setString(12, review.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created review '"+review.getId()+"' in CONTENT_REVIEWS");

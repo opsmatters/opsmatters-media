@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
@@ -49,9 +50,9 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO VIDEOS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, VIDEO_ID, VIDEO_TYPE, PROVIDER, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
+      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED_DATE_TRUNC, UUID, VIDEO_ID, VIDEO_TYPE, PROVIDER, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a video in the VIDEOS table.
@@ -78,6 +79,7 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
+        table.addColumn("PUBLISHED_DATE_TRUNC", Types.TIMESTAMP, true);
         table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("VIDEO_ID", Types.VARCHAR, 30, true);
         table.addColumn("VIDEO_TYPE", Types.VARCHAR, 30, true);
@@ -90,6 +92,7 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
         table.addIndex("VIDEOS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
         table.addIndex("VIDEOS_VIDEO_ID_IDX", new String[] {"SITE_ID","CODE","VIDEO_ID"});
         table.addIndex("VIDEOS_STATUS_IDX", new String[] {"STATUS"});
+        table.addIndex("VIDEOS_PUBLISHED_TRUNC_IDX", new String[] {"PUBLISHED_DATE_TRUNC"});
         table.setInitialised(true);
     }
 
@@ -165,16 +168,17 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
             insertStmt.setString(2, content.getCode());
             insertStmt.setInt(3, content.getId());
             insertStmt.setTimestamp(4, new Timestamp(content.getPublishedDateMillis()), UTC);
-            insertStmt.setString(5, content.getUuid());
-            insertStmt.setString(6, content.getVideoId());
-            insertStmt.setString(7, content.getVideoType());
-            insertStmt.setString(8, content.getProvider().code());
-            insertStmt.setBoolean(9, content.isPublished());
-            insertStmt.setString(10, content.getStatus().name());
-            insertStmt.setString(11, content.getCreatedBy());
+            insertStmt.setTimestamp(5, new Timestamp(content.getPublishedDate().truncatedTo(ChronoUnit.DAYS).toEpochMilli()), UTC);
+            insertStmt.setString(6, content.getUuid());
+            insertStmt.setString(7, content.getVideoId());
+            insertStmt.setString(8, content.getVideoType());
+            insertStmt.setString(9, content.getProvider().code());
+            insertStmt.setBoolean(10, content.isPublished());
+            insertStmt.setString(11, content.getStatus().name());
+            insertStmt.setString(12, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(12, reader, attributes.length());
+            insertStmt.setCharacterStream(13, reader, attributes.length());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 

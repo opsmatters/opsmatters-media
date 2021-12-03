@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.db.dao.BaseDAO;
@@ -57,9 +58,9 @@ public class OrganisationDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO ORGANISATIONS"
-      + "( SITE_ID, ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, REVIEWED_DATE, ATTRIBUTES, LISTING, STATUS, REASON, CREATED_BY )"
+      + "( SITE_ID, ID, CREATED_DATE, CREATED_DATE_TRUNC, UPDATED_DATE, CODE, NAME, REVIEWED_DATE, ATTRIBUTES, LISTING, STATUS, REASON, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update an organisation in the ORGANISATIONS table.
@@ -104,6 +105,7 @@ public class OrganisationDAO extends BaseDAO
         table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
+        table.addColumn("CREATED_DATE_TRUNC", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("NAME", Types.VARCHAR, 60, true);
@@ -115,6 +117,7 @@ public class OrganisationDAO extends BaseDAO
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("ORGANISATIONS_PK", new String[] {"ID"});
         table.addIndex("ORGANISATIONS_CODE_IDX", new String[] {"SITE_ID, CODE"});
+        table.addIndex("ORGANISATIONS_CREATED_TRUNC_IDX", new String[] {"CREATED_DATE_TRUNC"});
         table.setInitialised(true);
     }
 
@@ -251,17 +254,18 @@ public class OrganisationDAO extends BaseDAO
             insertStmt.setString(1, organisation.getSiteId());
             insertStmt.setString(2, organisation.getId());
             insertStmt.setTimestamp(3, new Timestamp(organisation.getCreatedDateMillis()), UTC);
-            insertStmt.setTimestamp(4, new Timestamp(organisation.getUpdatedDateMillis()), UTC);
-            insertStmt.setString(5, organisation.getCode());
-            insertStmt.setString(6, organisation.getName());
-            insertStmt.setTimestamp(7, new Timestamp(organisation.getReviewedDateMillis()), UTC);
+            insertStmt.setTimestamp(4, new Timestamp(organisation.getCreatedDate().truncatedTo(ChronoUnit.DAYS).toEpochMilli()), UTC);
+            insertStmt.setTimestamp(5, new Timestamp(organisation.getUpdatedDateMillis()), UTC);
+            insertStmt.setString(6, organisation.getCode());
+            insertStmt.setString(7, organisation.getName());
+            insertStmt.setTimestamp(8, new Timestamp(organisation.getReviewedDateMillis()), UTC);
             String attributes = organisation.getAttributes().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(8, reader, attributes.length());
-            insertStmt.setBoolean(9, organisation.hasListing());
-            insertStmt.setString(10, organisation.getStatus().name());
-            insertStmt.setString(11, organisation.getReason().name());
-            insertStmt.setString(12, organisation.getCreatedBy());
+            insertStmt.setCharacterStream(9, reader, attributes.length());
+            insertStmt.setBoolean(10, organisation.hasListing());
+            insertStmt.setString(11, organisation.getStatus().name());
+            insertStmt.setString(12, organisation.getReason().name());
+            insertStmt.setString(13, organisation.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created organisation '"+organisation.getId()+"' in ORGANISATIONS");

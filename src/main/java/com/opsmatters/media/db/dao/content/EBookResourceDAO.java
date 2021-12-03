@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
@@ -49,9 +50,9 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO EBOOKS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, URL, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
+      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED_DATE_TRUNC, UUID, URL, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a ebook in the EBOOKS table.
@@ -78,6 +79,7 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
+        table.addColumn("PUBLISHED_DATE_TRUNC", Types.TIMESTAMP, true);
         table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("URL", Types.VARCHAR, 256, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
@@ -88,6 +90,7 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
         table.addIndex("EBOOKS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
         table.addIndex("EBOOKS_URL_IDX", new String[] {"SITE_ID","CODE","URL"});
         table.addIndex("EBOOKS_STATUS_IDX", new String[] {"STATUS"});
+        table.addIndex("EBOOKS_PUBLISHED_TRUNC_IDX", new String[] {"PUBLISHED_DATE_TRUNC"});
         table.setInitialised(true);
     }
 
@@ -163,14 +166,15 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
             insertStmt.setString(2, content.getCode());
             insertStmt.setInt(3, content.getId());
             insertStmt.setTimestamp(4, new Timestamp(content.getPublishedDateMillis()), UTC);
-            insertStmt.setString(5, content.getUuid());
-            insertStmt.setString(6, content.getUrl());
-            insertStmt.setBoolean(7, content.isPublished());
-            insertStmt.setString(8, content.getStatus().name());
-            insertStmt.setString(9, content.getCreatedBy());
+            insertStmt.setTimestamp(5, new Timestamp(content.getPublishedDate().truncatedTo(ChronoUnit.DAYS).toEpochMilli()), UTC);
+            insertStmt.setString(6, content.getUuid());
+            insertStmt.setString(7, content.getUrl());
+            insertStmt.setBoolean(8, content.isPublished());
+            insertStmt.setString(9, content.getStatus().name());
+            insertStmt.setString(10, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(10, reader, attributes.length());
+            insertStmt.setCharacterStream(11, reader, attributes.length());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
