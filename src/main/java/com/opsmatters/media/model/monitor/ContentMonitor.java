@@ -54,6 +54,7 @@ public class ContentMonitor extends BaseItem
     public static final String DIFFERENCE = "difference";
     public static final String SORT = "sort";
     public static final String MAX_RESULTS = "max-results";
+    public static final String SUCCESS_DATE = "success-date";
     public static final String EXECUTION_TIME = "execution-time";
     public static final String ERROR_MESSAGE = "error-message";
     public static final String RETRY = "retry";
@@ -65,6 +66,7 @@ public class ContentMonitor extends BaseItem
     private String name = "";
     private ContentType contentType;
     private Instant executedDate;
+    private Instant successDate;
     private long executionTime = -1L;
     private MonitorStatus status;
     private String url = "";
@@ -129,6 +131,7 @@ public class ContentMonitor extends BaseItem
             setContentType(obj.getContentType());
             setStatus(obj.getStatus());
             setExecutedDate(obj.getExecutedDate());
+            setSuccessDate(obj.getSuccessDate());
             setExecutionTime(obj.getExecutionTime());
             setUrl(obj.getUrl());
             setChannelId(obj.getChannelId());
@@ -160,6 +163,7 @@ public class ContentMonitor extends BaseItem
         ret.putOpt(DIFFERENCE, getMinDifference());
         ret.putOpt(SORT, getSort().name());
         ret.putOpt(MAX_RESULTS, getMaxResults());
+        ret.putOpt(SUCCESS_DATE, getSuccessDateMillis());
         ret.putOpt(EXECUTION_TIME, getExecutionTime());
         ret.putOpt(ERROR_MESSAGE, getErrorMessage());
         ret.putOpt(RETRY, getRetry());
@@ -181,6 +185,7 @@ public class ContentMonitor extends BaseItem
         setMinDifference(obj.optInt(DIFFERENCE));
         setSort(obj.optString(SORT));
         setMaxResults(obj.optInt(MAX_RESULTS));
+        setSuccessDateMillis(obj.optLong(SUCCESS_DATE));
         setExecutionTime(obj.optLong(EXECUTION_TIME));
         setErrorMessage(obj.optString(ERROR_MESSAGE));
         setRetry(obj.optInt(RETRY));
@@ -498,6 +503,96 @@ public class ContentMonitor extends BaseItem
     {
         if(executedDate != null)
             setExecutedDate(TimeUtils.toInstantUTC(executedDate));
+    }
+
+    /**
+     * Returns the date the monitor was last executed successfully.
+     */
+    public Instant getSuccessDate()
+    {
+        return successDate;
+    }
+
+    /**
+     * Returns the date the monitor was last executed successfully.
+     */
+    public long getSuccessDateMillis()
+    {
+        return getSuccessDate() != null ? getSuccessDate().toEpochMilli() : 0L;
+    }
+
+    /**
+     * Returns the date the monitor was last executed successfully.
+     */
+    public LocalDateTime getSuccessDateUTC()
+    {
+        return TimeUtils.toDateTimeUTC(getSuccessDate());
+    }
+
+    /**
+     * Returns the date the monitor was last executed successfully.
+     */
+    public String getSuccessDateAsString(String pattern)
+    {
+        return TimeUtils.toStringUTC(successDate, pattern);
+    }
+
+    /**
+     * Returns the date the monitor was last executed successfully.
+     */
+    public String getSuccessDateAsString(String pattern, String timezone)
+    {
+        return TimeUtils.toString(successDate, pattern, timezone);
+    }
+
+    /**
+     * Returns the date the monitor was last executed successfully.
+     */
+    public String getSuccessDateAsString()
+    {
+        return getSuccessDateAsString(Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Sets the date the monitor was last executed successfully.
+     */
+    public void setSuccessDate(Instant successDate)
+    {
+        this.successDate = successDate;
+    }
+
+    /**
+     * Sets the date the monitor was last executed successfully.
+     */
+    public void setSuccessDateMillis(long millis)
+    {
+        if(millis > 0L)
+            this.successDate = Instant.ofEpochMilli(millis);
+    }
+
+    /**
+     * Sets the date the monitor item was last executed successfully.
+     */
+    public void setSuccessDateAsString(String str, String pattern) throws DateTimeParseException
+    {
+        setSuccessDate(TimeUtils.toInstantUTC(str, pattern));
+    }
+
+    /**
+     * Sets the date the monitor was last executed successfully.
+     */
+    public void setSuccessDateAsString(String str) throws DateTimeParseException
+    {
+        setSuccessDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Sets the date the monitor was last executed successfully.
+     */
+    public void setSuccessDateUTC(LocalDateTime successDate)
+    {
+        if(successDate != null)
+            setSuccessDate(TimeUtils.toInstantUTC(successDate));
     }
 
     /**

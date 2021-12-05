@@ -24,6 +24,15 @@ import com.opsmatters.media.model.BaseItem;
  */
 public class TaxonomyTerm extends BaseItem
 {
+    // The vocabulary types
+    public static final String TAGS = "tags";
+    public static final String FEATURES = "features";
+    public static final String TECHNOLOGIES = "technologies";
+    public static final String PRICINGS = "pricing_model";
+    public static final String ACTIVITY_TYPES = "activity_type";
+    public static final String VIDEO_TYPES = "video_type";
+    public static final String ORGANISATIONS = "organisation";
+
     private String name = "";
     private String type = "";
     private int tid = -1;

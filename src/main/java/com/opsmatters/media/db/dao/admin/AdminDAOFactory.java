@@ -39,6 +39,7 @@ public class AdminDAOFactory extends DAOFactory
         getAppParameterDAO();
         getTableTaskDAO();
         getTaskExecutionDAO();
+        getTaxonomyTermDAO();
     }
 
     /**
@@ -102,6 +103,16 @@ public class AdminDAOFactory extends DAOFactory
     }
 
     /**
+     * Returns the taxonomy term DAO.
+     */
+    public TaxonomyTermDAO getTaxonomyTermDAO()
+    {
+        if(taxonomyTermDAO == null)
+            taxonomyTermDAO = new TaxonomyTermDAO(this);
+        return taxonomyTermDAO;
+    }
+
+    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
@@ -114,6 +125,7 @@ public class AdminDAOFactory extends DAOFactory
         parameterDAO = null;
         tableTaskDAO = null;
         taskExecutionDAO = null;
+        taxonomyTermDAO = null;
     }
 
     private UserDAO userDAO;
@@ -122,4 +134,5 @@ public class AdminDAOFactory extends DAOFactory
     private AppParameterDAO parameterDAO;
     private TableTaskDAO tableTaskDAO;
     private TaskExecutionDAO taskExecutionDAO;
+    private TaxonomyTermDAO taxonomyTermDAO;
 }

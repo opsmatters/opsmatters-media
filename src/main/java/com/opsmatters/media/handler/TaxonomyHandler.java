@@ -36,14 +36,6 @@ public class TaxonomyHandler
 {
     private static final Logger logger = Logger.getLogger(TaxonomyHandler.class.getName());
 
-    public static final String TAGS = "tags";
-    public static final String FEATURES = "features";
-    public static final String TECHNOLOGIES = "technologies";
-    public static final String PRICINGS = "pricing_model";
-    public static final String ACTIVITY_TYPES = "activity_type";
-    public static final String VIDEO_TYPES = "video_type";
-    public static final String ORGANISATIONS = "organisation";
-
     private Map<String,TaxonomyStatus> statuses = new HashMap<String,TaxonomyStatus>();
     private Map<String,List<TaxonomyTerm>> terms = new HashMap<String,List<TaxonomyTerm>>();
     private Map<String,Map<String,List<String>>> names = new HashMap<String,Map<String,List<String>>>();
@@ -101,7 +93,7 @@ public class TaxonomyHandler
     /**
      * Loads the taxonomy terms for the given site.
      */
-    public void loadTerms(List<TaxonomyTerm> terms, Site site)
+    public void loadTerms(Site site, List<TaxonomyTerm> terms)
     {
         if(terms != null && terms.size() > 0)
         {
@@ -166,7 +158,7 @@ public class TaxonomyHandler
      */
     public List<String> getTags(Site site)
     {
-        return getTermNames(site, TAGS);
+        return getTermNames(site, TaxonomyTerm.TAGS);
     }
 
     /**
@@ -174,7 +166,7 @@ public class TaxonomyHandler
      */
     public List<String> getFeatures(Site site)
     {
-        return getTermNames(site, FEATURES);
+        return getTermNames(site, TaxonomyTerm.FEATURES);
     }
 
     /**
@@ -182,7 +174,7 @@ public class TaxonomyHandler
      */
     public List<String> getTechnologies(Site site)
     {
-        return getTermNames(site, TECHNOLOGIES);
+        return getTermNames(site, TaxonomyTerm.TECHNOLOGIES);
     }
 
     /**
@@ -190,7 +182,7 @@ public class TaxonomyHandler
      */
     public List<String> getPricings(Site site)
     {
-        return getTermNames(site, PRICINGS);
+        return getTermNames(site, TaxonomyTerm.PRICINGS);
     }
 
     /**
@@ -198,7 +190,7 @@ public class TaxonomyHandler
      */
     public List<String> getActivityTypes(Site site)
     {
-        return getTermNames(site, ACTIVITY_TYPES);
+        return getTermNames(site, TaxonomyTerm.ACTIVITY_TYPES);
     }
 
     /**
@@ -206,7 +198,7 @@ public class TaxonomyHandler
      */
     public List<String> getVideoTypes(Site site)
     {
-        return getTermNames(site, VIDEO_TYPES);
+        return getTermNames(site, TaxonomyTerm.VIDEO_TYPES);
     }
 
     /**
@@ -234,6 +226,6 @@ public class TaxonomyHandler
      */
     public TaxonomyTerm getOrganisation(Site site, String name)
     {
-        return getTerm(site, name, ORGANISATIONS);
+        return getTerm(site, name, TaxonomyTerm.ORGANISATIONS);
     }
 }

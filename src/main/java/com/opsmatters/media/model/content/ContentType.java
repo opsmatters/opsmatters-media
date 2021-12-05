@@ -61,6 +61,15 @@ public enum ContentType
     }
 
     /**
+     * Returns the value of the type.
+     * @return The value of the type.
+     */
+    public String toString()
+    {
+        return value();
+    }
+
+    /**
      * Returns the code of the type.
      * @return The code of the type.
      */
