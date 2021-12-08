@@ -367,9 +367,6 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 if(organisation.getStatus() == OrganisationStatus.ARCHIVED)
                     continue;
 
-                fields.remove(Fields.PUBLISHED);
-                fields.add(organisation, handler.getConfiguration(content.getTitle()));
-
                 // Set the published flag based on the environment and status
                 boolean published = false;
                 if(env == EnvironmentName.PROD)
@@ -377,6 +374,8 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 else
                     published = organisation.isReview() || organisation.isActive();
                 fields.put(Fields.PUBLISHED, published ? "1" : "0");
+
+                fields.add(organisation, handler.getConfiguration(content.getTitle()));
 
                 // Add the path to the thumbnail and logo
                 String thumbnail = fields.get(Fields.THUMBNAIL);
