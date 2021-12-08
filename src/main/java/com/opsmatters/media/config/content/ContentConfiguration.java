@@ -370,6 +370,14 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 fields.remove(Fields.PUBLISHED);
                 fields.add(organisation, handler.getConfiguration(content.getTitle()));
 
+                // Set the published flag based on the environment and status
+                boolean published = false;
+                if(env == EnvironmentName.PROD)
+                    published = organisation.isActive();
+                else
+                    published = organisation.isReview() || organisation.isActive();
+                fields.put(Fields.PUBLISHED, published ? "1" : "0");
+
                 // Add the path to the thumbnail and logo
                 String thumbnail = fields.get(Fields.THUMBNAIL);
                 fields.put(Fields.THUMBNAIL, String.format("%s%s/%s",

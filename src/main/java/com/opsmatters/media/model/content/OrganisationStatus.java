@@ -27,6 +27,7 @@ import java.util.ArrayList;
 public enum OrganisationStatus
 {
     NEW("New", "glyphicon-unchecked", "", -1),
+    REVIEW("Review", "glyphicon-search", "status-warn", 1),
     ACTIVE("Active", "glyphicon-ok-circle", "status-success", 1),
     DISABLED("Disabled", "glyphicon-ban-circle", "status-error", 0),
     ARCHIVED("Archived", "glyphicon-trash", "status-error", 0),
@@ -140,6 +141,7 @@ public enum OrganisationStatus
         List<OrganisationStatus> ret = new ArrayList<OrganisationStatus>();
 
         ret.add(NEW);
+        ret.add(REVIEW);
         ret.add(ACTIVE);
         ret.add(DISABLED);
         ret.add(ARCHIVED);

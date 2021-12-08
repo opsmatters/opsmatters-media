@@ -166,7 +166,6 @@ public class Organisation extends OwnedItem implements FieldSource
         ret.put(Fields.TRACKING, getTracking());
         ret.put(Fields.THUMBNAIL, getThumbnail());
         ret.put(Fields.THUMBNAIL_TEXT, getThumbnailText());
-        ret.put(Fields.PUBLISHED, isActive() ? "1" : "0");
 
         return ret;
     }
@@ -524,6 +523,14 @@ public class Organisation extends OwnedItem implements FieldSource
     public boolean isActive()
     {
         return status == OrganisationStatus.ACTIVE;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the organisation is REVIEW.
+     */
+    public boolean isReview()
+    {
+        return status == OrganisationStatus.REVIEW;
     }
 
     /**
