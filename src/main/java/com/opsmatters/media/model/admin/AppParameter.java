@@ -123,6 +123,14 @@ public class AppParameter extends BaseItem
     }
 
     /**
+     * Returns the value as a long.
+     */
+    public long getValueAsLong()
+    {
+        return Long.parseLong(value);
+    }
+
+    /**
      * Returns the value as a boolean.
      */
     public boolean getValueAsBoolean()

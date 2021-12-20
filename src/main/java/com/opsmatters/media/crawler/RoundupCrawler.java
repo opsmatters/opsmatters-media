@@ -31,7 +31,6 @@ import com.opsmatters.media.config.content.WebPageConfiguration;
 import com.opsmatters.media.config.content.ContentField;
 import com.opsmatters.media.config.content.ContentFields;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.FileUtils;
 import com.opsmatters.media.util.FormatUtils;
 
 /**
@@ -186,23 +185,6 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
     }
 
     /**
-     * Sets the roundup properties to be used in field formats.
-     * <P>
-     * Properties supported:
-     * <ul>
-     * <li> <strong>url-context</strong>: the last content part of the roundup URL.
-     * <li> <strong>image-name</strong>: the name part of the image filename.
-     * <li> <strong>image-ext</strong>: the extension part of the image filename.
-     * </ul>
-     */
-    private void setFormatProperties(RoundupSummary content)
-    {
-        setFormatProperty(URL_CONTEXT, StringUtils.getUrlContext(content.getUrl()));
-        setFormatProperty(IMAGE_NAME, FileUtils.getName(content.getImage()));
-        setFormatProperty(IMAGE_EXT, FileUtils.getExtension(content.getImage()), getImageExt());
-    }
-
-    /**
      * Populate the content fields from the given node.
      */
     private void populateSummaryFields(Element root, 
@@ -309,8 +291,5 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
                 }
             }
         }
-
-        // Set the format properties from the content
-        setFormatProperties(content);
     }
 }

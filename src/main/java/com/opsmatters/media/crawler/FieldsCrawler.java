@@ -58,7 +58,7 @@ public abstract class FieldsCrawler<T extends ContentSummary>
     private FieldsConfiguration config;
     private List<T> content = new ArrayList<T>();
 
-    protected Map<String, Object> properties = new HashMap<String, Object>();
+    private Map<String, Object> properties = new HashMap<String, Object>();
 
     /**
      * Constructor that takes a name.
@@ -225,16 +225,16 @@ public abstract class FieldsCrawler<T extends ContentSummary>
 
         Calendar calendar = Calendar.getInstance();
         Month month = Month.of(calendar.get(Calendar.MONTH)+1); 
-        properties.put(CURRENT_DAY, calendar.get(Calendar.DAY_OF_MONTH));
-        properties.put(CURRENT_MONTH, calendar.get(Calendar.MONTH));
-        properties.put(CURRENT_MONTH_NAME, month.getDisplayName(TextStyle.FULL, Locale.getDefault()));
-        properties.put(CURRENT_YEAR, calendar.get(Calendar.YEAR));
+        setProperty(CURRENT_DAY, calendar.get(Calendar.DAY_OF_MONTH));
+        setProperty(CURRENT_MONTH, calendar.get(Calendar.MONTH));
+        setProperty(CURRENT_MONTH_NAME, month.getDisplayName(TextStyle.FULL, Locale.getDefault()));
+        setProperty(CURRENT_YEAR, calendar.get(Calendar.YEAR));
     }
 
     /**
-     * Returns the given field format property.
+     * Returns the given field property.
      */
-    protected Object getFormatProperty(String name)
+    protected Object getProperty(String name)
     {
         return properties.get(name);
     }
@@ -242,20 +242,9 @@ public abstract class FieldsCrawler<T extends ContentSummary>
     /**
      * Adds the given property to be used in field formats.
      */
-    protected void setFormatProperty(String name, String value)
+    protected void setProperty(String name, Object value)
     {
         properties.put(name, value);
-    }
-
-    /**
-     * Adds the given property to be used in field formats, using the default if the value is empty.
-     */
-    protected void setFormatProperty(String name, String value, Object dflt)
-    {
-        if(value != null && value.length() > 0)
-            setFormatProperty(name, value);
-        else if(dflt != null)
-            setFormatProperty(name, dflt.toString());
     }
 
     /**

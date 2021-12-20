@@ -22,7 +22,7 @@ import com.opsmatters.media.util.FormatUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupSummary extends ArticleSummary
+public class RoundupSummary extends ArticleSummary implements LinkedContent
 {
     private String url = "";
 
@@ -82,5 +82,13 @@ public class RoundupSummary extends ArticleSummary
     public void setUrl(String basePath, String url, boolean removeParameters)
     {
         this.url = FormatUtils.getFormattedUrl(basePath, url, removeParameters);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the roundup url has been set.
+     */
+    public boolean hasUrl()
+    {
+        return url != null && url.length() > 0;
     }
 }

@@ -26,6 +26,8 @@ import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
 
+import static com.opsmatters.media.model.content.VideoType.*;
+
 /**
  * Class representing a video article.
  * 
@@ -228,7 +230,6 @@ public class VideoArticle extends Article
         article.setSiteId(site.getId());
         article.setTitle("New Video");
         article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
-        article.setVideoType("Demo");
 
         return article;
     }
@@ -252,8 +253,6 @@ public class VideoArticle extends Article
         if(channel.hasField(Fields.NEWSLETTER))
             setNewsletter(channel.getField(Fields.NEWSLETTER, "0").equals("0") ? false : true);
 
-        setVideoType("Demo");
-
         String promote = config.getField(Fields.PROMOTE);
         setPromoted(promote == null || promote.equals("0") ? false : true);
     }
@@ -271,48 +270,7 @@ public class VideoArticle extends Article
         setSummary(parser.formatSummary(config.getSummary()));
 
         String text = String.format("%s %s", getTitle(), getDescription());
-        setVideoType(guessVideoType(text, getVideoType()));
-    }
-
-    /**
-     * Guesses the video type from the given description.
-     */
-    private String guessVideoType(String text, String deflt)
-    {
-        text = text.toLowerCase();
-        String ret = testVideoType(text, "Webinar");
-        if(ret == null)
-            ret = testVideoType(text, "Webcast");
-        if(ret == null)
-            ret = testVideoType(text, "Podcast");
-        if(ret == null)
-            ret = testVideoType(text, "Conference");
-        if(ret == null)
-            ret = testVideoType(text, "Meetup");
-        if(ret == null)
-            ret = testVideoType(text, "Seminar");
-        if(ret == null)
-            ret = testVideoType(text, "User Group");
-        if(ret == null)
-            ret = testVideoType(text, "Panel");
-        if(ret == null)
-            ret = testVideoType(text, "Interview");
-        if(ret == null)
-            ret = testVideoType(text, "How to");
-        if(ret == null)
-            ret = testVideoType(text, "Demo");
-
-        return ret != null ? ret : deflt;
-    }
-
-    /**
-     * Returns the type for the given text.
-     */
-    private String testVideoType(String text, String type)
-    {
-        if(text.indexOf(type.toLowerCase()) != -1)
-            return type;
-        return null;
+        setVideoType(VideoType.guess(text, getDuration()));
     }
 
     /**
@@ -369,6 +327,14 @@ public class VideoArticle extends Article
     public void setVideoType(String videoType)
     {
         this.videoType = videoType;
+    }
+
+    /**
+     * Sets the video type.
+     */
+    public void setVideoType(VideoType videoType)
+    {
+        setVideoType(videoType.value());
     }
 
     /**

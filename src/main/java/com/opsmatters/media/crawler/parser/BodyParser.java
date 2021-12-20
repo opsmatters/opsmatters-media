@@ -498,6 +498,7 @@ public class BodyParser
             String text = element.getText();
             text = text.replaceAll("\n|<br>",""); //Remove linefeeds and breaks
             text = text.replaceAll("\\[.+\\]",""); // Remove references and asides
+            text = text.replaceAll("_{2,}",""); // Remove underscores as separators
 
             // Apply the filters to skip elements or truncate the text
             FilterResult result = FieldFilter.apply(getFilters(), text, SUMMARY);
@@ -523,6 +524,16 @@ public class BodyParser
                 break;
             }
 
+//GERALD
+//System.out.println("formatSummary:1: text="+text+" line="+text.indexOf("_"));
+if(text.startsWith("#")  // hashtags
+    || text.startsWith("~") // tildes
+    || text.startsWith("_") // underscores
+    || text.indexOf("\u25ac") != -1) // "bar" character in title
+{
+//System.out.println("formatSummary:2: text="+text);
+    continue;
+}
             // Exit if the addition would take us over the maximum
             if(ret.length() > 0 && (ret.length()+text.length()) > maxLength)
             {

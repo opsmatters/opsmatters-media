@@ -536,4 +536,12 @@ public class PostArticle extends Article
     {
         details.setAuthorLink(authorLink);
     }
+
+    /**
+     * Returns <CODE>true</CODE> if the author link has been set.
+     */
+    public boolean hasAuthorLink()
+    {
+        return getAuthorLink() != null && getAuthorLink().length() > 0;
+    }
 }

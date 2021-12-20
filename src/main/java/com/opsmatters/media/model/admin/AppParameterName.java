@@ -49,7 +49,8 @@ public enum AppParameterName
     ERROR_COUNT_ERROR("error-count-error"),
     CHANGED_COUNT_ERROR("changed-count-error"),
     REVIEW_COUNT_ERROR("review-count-error"),
-    STALLED_ERROR("stalled-error");
+    STALLED_ERROR("stalled-error"),
+    MIN_WEBINAR_DURATION("min-webinar-duration");
 
     private String value;
 

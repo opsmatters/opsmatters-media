@@ -27,7 +27,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class Resource extends ContentItem
+public abstract class Resource extends ContentItem implements LinkedContent
 {
     private ResourceSummary details;
 

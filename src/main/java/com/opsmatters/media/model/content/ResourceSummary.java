@@ -22,7 +22,7 @@ import com.opsmatters.media.util.FormatUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ResourceSummary extends ContentSummary
+public class ResourceSummary extends ContentSummary implements LinkedContent
 {
     private String description = "";
     private String url = "";
@@ -97,7 +97,7 @@ public class ResourceSummary extends ContentSummary
     }
 
     /**
-     * Returns <CODE>true</CODE> if the tool url has been set.
+     * Returns <CODE>true</CODE> if the resource url has been set.
      */
     public boolean hasUrl()
     {

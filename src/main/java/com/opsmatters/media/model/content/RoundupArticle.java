@@ -29,7 +29,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupArticle extends Article
+public class RoundupArticle extends Article implements LinkedContent
 {
     private RoundupDetails details = new RoundupDetails();
 
@@ -341,6 +341,14 @@ public class RoundupArticle extends Article
     public void setUrl(String url, boolean removeParameters)
     {
         details.setUrl(url, removeParameters);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the URL has been set.
+     */
+    public boolean hasUrl()
+    {
+        return details.hasUrl();
     }
 
     /**
