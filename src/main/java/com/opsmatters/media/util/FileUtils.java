@@ -721,6 +721,30 @@ public class FileUtils
     }
 
     /**
+     * Remove the cached entry for given HTTP URL.
+     */
+    static public void remove(URL url)
+    {
+        responses.remove(url);
+    }
+
+    /**
+     * Remove the cached entry for given HTTP URL.
+     */
+    static public void remove(String url)
+    {
+        try
+        {
+            if(url != null && url.length() > 0)
+                remove(new URL(url));
+        }
+        catch(MalformedURLException e)
+        {
+            logger.severe(StringUtils.serialize(e));
+        }
+    }
+
+    /**
      * Returns the name part of the given filename.
      */
     public static String getName(String filename)
