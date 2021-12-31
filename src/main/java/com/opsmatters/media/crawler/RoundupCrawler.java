@@ -198,10 +198,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
             ContentField field = fields.getTitle();
             String title = getElements(field, root, type);
             if(title != null && title.length() > 0)
-            {
-                title = processTitle(title);
                 content.setTitle(EmojiParser.removeAllEmojis(title.trim()));
-            }
         }
 
         if(fields.hasPublishedDate())

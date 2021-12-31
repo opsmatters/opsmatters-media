@@ -268,6 +268,9 @@ public abstract class FieldsCrawler<T extends ContentSummary>
      */
     public String getValue(ContentField field, String value, String dflt)
     {
+        // Remove special characters before processing
+        value = processValue(value);
+
         String ret = value;
 
         // Try each extractor in turn
@@ -348,13 +351,14 @@ public abstract class FieldsCrawler<T extends ContentSummary>
     }
 
     /**
-     * Process the given title.
+     * Process the given value.
      */
-    protected String processTitle(String title)
+    protected String processValue(String value)
     {
-        title = title.replaceAll("&amp;", "&"); // Remove &amp;
-        title = title.replaceAll("&nbsp;", " "); // Replace &nbsp; with space
-        title = title.replaceAll("\\u2005|\\u2009|\\u202F", " "); // Replace "thin" spaces with normal space
-        return title;
+        String ret = value;
+        ret = ret.replaceAll("&amp;", "&"); // Remove &amp;
+        ret = ret.replaceAll("&nbsp;", " "); // Replace &nbsp; with space
+        ret = ret.replaceAll("\\u2005|\\u2009|\\u202F", " "); // Replace "thin" spaces with normal space
+        return ret;
     }
 }

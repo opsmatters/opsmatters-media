@@ -359,13 +359,12 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
             // Add the Organisation fields
             if(content instanceof OrganisationListing)
             {
-                // Ignore missing organisations
-                if(organisation == null)
+                // Ignore missing and archived organisations
+                if(organisation == null || organisation.getStatus() == OrganisationStatus.ARCHIVED)
+                {
+                    --idx;
                     continue;
-
-                // Exclude archived organisations
-                if(organisation.getStatus() == OrganisationStatus.ARCHIVED)
-                    continue;
+                }
 
                 // Set the published flag based on the environment and status
                 boolean published = false;
