@@ -191,16 +191,16 @@ public class ToolResource extends Resource
     /**
      * Returns a new resource with defaults.
      */
-    public static ToolResource getDefault(Site site, ToolConfiguration config) throws DateTimeParseException
+    public static ToolResource getDefault(Organisation organisation, ToolConfiguration config) throws DateTimeParseException
     {
         ToolResource resource = new ToolResource();
 
         resource.init();
-        resource.setSiteId(site.getId());
+        resource.setSiteId(organisation.getSiteId());
         resource.setTitle("New Tool");
         resource.setDescription(StringUtils.EMPTY);
         resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
-        resource.setSocial(true);
+        resource.setSocial(organisation.hasSocial());
 
         return resource;
     }
@@ -227,7 +227,7 @@ public class ToolResource extends Resource
         String promote = config.getField(Fields.PROMOTE);
         setPromoted(promote == null || promote.equals("0") ? false : true);
 
-        setSocial(true);
+        setSocial(organisation.hasSocial());
     }
 
     /**

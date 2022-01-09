@@ -818,4 +818,12 @@ public abstract class ContentItem implements java.io.Serializable
 
         setOtherSites(str.toString());
     }
+
+    /**
+     * Returns <CODE>true</CODE> if the other site ids have been set.
+     */
+    public boolean hasOtherSites()
+    {
+        return getOtherSites() != null && getOtherSites().length() > 0;
+    }
 }

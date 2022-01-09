@@ -64,11 +64,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     public static final String ANCHOR = "a";
     public static final String DIV = "div";
     public static final String SECTION = "section";
-
     public static final String ROOT = "<root>";
-    public static final String URL_CONTEXT = "url-context";
-    public static final String IMAGE_NAME = "image-name";
-    public static final String IMAGE_EXT = "image-ext";
 
     private CrawlerBrowser browser;
     private WebDriver driver;
@@ -933,7 +929,12 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             }
         }
 
-        if(ret == null)
+        if(ret != null)
+        {
+            // Remove any relative paths
+            ret = ret.replaceAll("\\.\\./", "");
+        }
+        else
         {
             logger.warning("Image not found for "+type+" field: "+field.getName());
         }

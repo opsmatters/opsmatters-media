@@ -52,7 +52,6 @@ public class ContentMonitor extends BaseItem
     public static final String CHANNEL_ID = "channel-id";
     public static final String INTERVAL = "interval";
     public static final String DIFFERENCE = "difference";
-    public static final String SORT = "sort";
     public static final String MAX_RESULTS = "max-results";
     public static final String SUCCESS_DATE = "success-date";
     public static final String EXECUTION_TIME = "execution-time";
@@ -76,7 +75,6 @@ public class ContentMonitor extends BaseItem
     private String eventId = "";
     private int interval = -1;
     private int difference = 0;
-    private ContentSort sort = ContentSort.NONE;
     private int maxResults = 0;
     private String errorMessage = "";
     private int retry = 0;
@@ -140,7 +138,6 @@ public class ContentMonitor extends BaseItem
             setEventId(obj.getEventId());
             setInterval(obj.getInterval());
             setMinDifference(obj.getMinDifference());
-            setSort(obj.getSort());
             setMaxResults(obj.getMaxResults());
             setErrorMessage(obj.getErrorMessage());
             setRetry(obj.getRetry());
@@ -161,7 +158,6 @@ public class ContentMonitor extends BaseItem
         ret.putOpt(CHANNEL_ID, getChannelId());
         ret.putOpt(INTERVAL, getInterval());
         ret.putOpt(DIFFERENCE, getMinDifference());
-        ret.putOpt(SORT, getSort().name());
         ret.putOpt(MAX_RESULTS, getMaxResults());
         ret.putOpt(SUCCESS_DATE, getSuccessDateMillis());
         ret.putOpt(EXECUTION_TIME, getExecutionTime());
@@ -183,7 +179,6 @@ public class ContentMonitor extends BaseItem
         setUrl(obj.optString(URL));
         setInterval(obj.optInt(INTERVAL));
         setMinDifference(obj.optInt(DIFFERENCE));
-        setSort(obj.optString(SORT));
         setMaxResults(obj.optInt(MAX_RESULTS));
         setSuccessDateMillis(obj.optLong(SUCCESS_DATE));
         setExecutionTime(obj.optLong(EXECUTION_TIME));
@@ -807,30 +802,6 @@ public class ContentMonitor extends BaseItem
     public void setMinDifference(int difference)
     {
         this.difference = difference;
-    }
-
-    /**
-     * Returns the monitor content sort.
-     */
-    public ContentSort getSort()
-    {
-        return sort;
-    }
-
-    /**
-     * Sets the monitor content sort.
-     */
-    public void setSort(ContentSort sort)
-    {
-        this.sort = sort;
-    }
-
-    /**
-     * Sets the monitor content sort.
-     */
-    public void setSort(String sort)
-    {
-        setSort(ContentSort.valueOf(sort));
     }
 
     /**

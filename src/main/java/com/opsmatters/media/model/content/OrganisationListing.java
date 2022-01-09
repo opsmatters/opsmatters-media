@@ -39,6 +39,7 @@ public class OrganisationListing extends ContentItem
     private int content = 0;
     private String summary = "";
     private String description = "";
+    private String footer = "";
     private String founded = "";
     private String location = "";
     private String stockSymbol = "";
@@ -84,6 +85,7 @@ public class OrganisationListing extends ContentItem
         setTabs(obj.getTabs());
         setSummary(new String(obj.getSummary() != null ? obj.getSummary() : ""));
         setDescription(new String(obj.getDescription() != null ? obj.getDescription() : ""));
+        setFooter(new String(obj.getFooter() != null ? obj.getFooter() : ""));
         setFounded(new String(obj.getFounded() != null ? obj.getFounded() : ""));
         setLocation(new String(obj.getLocation() != null ? obj.getLocation() : ""));
         setStockSymbol(new String(obj.getStockSymbol() != null ? obj.getStockSymbol() : ""));
@@ -121,34 +123,36 @@ public class OrganisationListing extends ContentItem
         String content = values[6]; // not used
         String summary = values[7];
         String description = values[8];
-        String founded = values[9];
-        String location = values[10];
-        String stockSymbol = values[11];
-        String website = values[12];
-        String email = values[14];
-        String feedProvider = values[15];
-        String feedUsername = values[16];
-        String facebook = values[17];
-        String twitter = values[18];
-        String linkedin = values[19];
-        String instagram = values[20];
-        String youtube = values[21];
-        String vimeo = values[22];
-        String projects = values[23];
-        String github = values[24];
-        String tools = values[25];
-        String jobs = values[26];
-        String alternatives = values[27];
-        String features = values[28];
-        String hashtag = values[29];
-        String image = values[30];
-        String imageText = values[31];
-        String imageTitle = values[32]; // not used
-        String thumbnail = values[33];
-        String thumbnailText = values[34];
-        String thumbnailTitle = values[35]; // not used
-        String createdBy = values[36];
-        String published = values[37];
+        String footer = values[9];
+        String founded = values[10];
+        String location = values[11];
+        String stockSymbol = values[12];
+        String website = values[13];
+        String websiteTracking = values[14]; // not used
+        String email = values[15];
+        String feedProvider = values[16];
+        String feedUsername = values[17];
+        String facebook = values[18];
+        String twitter = values[19];
+        String linkedin = values[20];
+        String instagram = values[21];
+        String youtube = values[22];
+        String vimeo = values[23];
+        String projects = values[24];
+        String github = values[25];
+        String tools = values[26];
+        String jobs = values[27];
+        String alternatives = values[28];
+        String features = values[29];
+        String hashtag = values[30];
+        String image = values[31];
+        String imageText = values[32];
+        String imageTitle = values[33]; // not used
+        String thumbnail = values[34];
+        String thumbnailText = values[35];
+        String thumbnailTitle = values[36]; // not used
+        String createdBy = values[37];
+        String published = values[38];
 
         // Remove feeds path from images
         if(image.indexOf("/") != -1)
@@ -164,6 +168,7 @@ public class OrganisationListing extends ContentItem
         setTabs(OrganisationTabs.valueOf(tabs));
         setSummary(summary);
         setDescription(description);
+        setFooter(footer);
         setFounded(founded);
         setLocation(location);
         setStockSymbol(stockSymbol);
@@ -209,6 +214,7 @@ public class OrganisationListing extends ContentItem
 
         setTabs(OrganisationTabs.valueOf(obj.optString(Fields.TABS)));
         setDescription(obj.optString(Fields.DESCRIPTION));
+        setFooter(obj.optString(Fields.FOOTER));
         setFounded(obj.optString(Fields.FOUNDED));
         setLocation(obj.optString(Fields.LOCATION));
         setStockSymbol(obj.optString(Fields.STOCK_SYMBOL));
@@ -238,6 +244,7 @@ public class OrganisationListing extends ContentItem
         ret.put(Fields.TABS, getTabs().name());
         ret.put(Fields.CONTENT, getContent());
         ret.putOpt(Fields.DESCRIPTION, getDescription());
+        ret.putOpt(Fields.FOOTER, getFooter());
         ret.putOpt(Fields.FOUNDED, getFounded());
         ret.putOpt(Fields.LOCATION, getLocation());
         ret.putOpt(Fields.STOCK_SYMBOL, getStockSymbol());
@@ -271,6 +278,7 @@ public class OrganisationListing extends ContentItem
         ret.put(Fields.TABS, getTabs().name());
         ret.put(Fields.CONTENT, Integer.toString(getTabs().value()));
         ret.put(Fields.DESCRIPTION, getDescription());
+        ret.put(Fields.FOOTER, getFooter());
         ret.put(Fields.FOUNDED, getFounded());
         ret.put(Fields.LOCATION, getLocation());
         ret.put(Fields.STOCK_SYMBOL, getStockSymbol());
@@ -459,6 +467,30 @@ public class OrganisationListing extends ContentItem
     public void setDescription(String description)
     {
         this.description = description;
+    }
+
+    /**
+     * Returns the organisation's footer.
+     */
+    public String getFooter()
+    {
+        return footer;
+    }
+
+    /**
+     * Sets the organisation's footer.
+     */
+    public void setFooter(String footer)
+    {
+        this.footer = footer;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this organisation has a footer.
+     */
+    public boolean hasFooter()
+    {
+        return footer != null && footer.length() > 0;
     }
 
     /**

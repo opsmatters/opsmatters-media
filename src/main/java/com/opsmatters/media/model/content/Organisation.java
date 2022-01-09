@@ -49,6 +49,7 @@ public class Organisation extends OwnedItem implements FieldSource
     private String tracking = "";
     private boolean sponsor = false;
     private boolean listing = false;
+    private boolean social = false;
     private String thumbnail = "";
     private String thumbnailText = "";
     private OrganisationStatus status = OrganisationStatus.NEW;
@@ -100,6 +101,7 @@ public class Organisation extends OwnedItem implements FieldSource
             setTracking(new String(obj.getTracking() != null ? obj.getTracking() : ""));
             setSponsor(obj.isSponsor());
             setListing(obj.hasListing());
+            setSocial(obj.hasSocial());
             setThumbnail(new String(obj.getThumbnail() != null ? obj.getThumbnail() : ""));
             setThumbnailText(new String(obj.getThumbnailText() != null ? obj.getThumbnailText() : ""));
             setStatus(obj.getStatus());
@@ -117,6 +119,7 @@ public class Organisation extends OwnedItem implements FieldSource
 
         ret.put(Fields.SPONSOR, isSponsor());
         ret.put(Fields.LISTING, hasListing());
+        ret.put(Fields.SOCIAL, hasSocial());
         ret.putOpt(Fields.WEBSITE, getWebsite());
         ret.putOpt(Fields.EMAIL, getEmail());
         ret.putOpt(Fields.HASHTAG, getHashtag());
@@ -137,6 +140,7 @@ public class Organisation extends OwnedItem implements FieldSource
     {
         setSponsor(obj.optBoolean(Fields.SPONSOR, false));
         setListing(obj.optBoolean(Fields.LISTING, false));
+        setSocial(obj.optBoolean(Fields.SOCIAL, false));
         setWebsite(obj.optString(Fields.WEBSITE));
         setEmail(obj.optString(Fields.EMAIL));
         setHashtag(obj.optString(Fields.HASHTAG));
@@ -157,6 +161,7 @@ public class Organisation extends OwnedItem implements FieldSource
 
         ret.put(Fields.SPONSOR, isSponsor() ? "1" : "0");
         ret.put(Fields.LISTING, hasListing() ? "1" : "0");
+        ret.put(Fields.SOCIAL, hasSocial() ? "1" : "0");
         ret.put(Fields.WEBSITE, getWebsite());
         ret.put(Fields.EMAIL, getEmail());
         ret.put(Fields.FEED_PROVIDER, getFeedProvider().name());
@@ -185,6 +190,7 @@ public class Organisation extends OwnedItem implements FieldSource
         organisation.setThumbnail("tbd-thumb.png");
         organisation.setThumbnailText("tbd logo");
         organisation.setFeedProvider(SocialProvider.TWITTER);
+        organisation.setSocial(true);
 
         return organisation;
     }
@@ -363,6 +369,38 @@ public class Organisation extends OwnedItem implements FieldSource
     public void setListingObject(Boolean listing)
     {
         setListing(listing != null && listing.booleanValue());
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this organisation has social posts.
+     */
+    public boolean hasSocial()
+    {
+        return social;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this organisation has social posts.
+     */
+    public Boolean getSocialObject()
+    {
+        return Boolean.valueOf(hasSocial());
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this organisation has social posts.
+     */
+    public void setSocial(boolean social)
+    {
+        this.social = social;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this organisation has social posts.
+     */
+    public void setSocialObject(Boolean social)
+    {
+        setSocial(social != null && social.booleanValue());
     }
 
     /**

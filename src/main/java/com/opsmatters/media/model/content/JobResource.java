@@ -195,16 +195,16 @@ public class JobResource extends Resource
     /**
      * Returns a new resource with defaults.
      */
-    public static JobResource getDefault(Site site, JobConfiguration config) throws DateTimeParseException
+    public static JobResource getDefault(Organisation organisation, JobConfiguration config) throws DateTimeParseException
     {
         JobResource resource = new JobResource();
 
         resource.init();
-        resource.setSiteId(site.getId());
+        resource.setSiteId(organisation.getSiteId());
         resource.setTitle("New Job");
         resource.setDescription(StringUtils.EMPTY);
         resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
-        resource.setSocial(true);
+        resource.setSocial(organisation.hasSocial());
 
         return resource;
     }
@@ -236,7 +236,7 @@ public class JobResource extends Resource
         String promote = config.getField(Fields.PROMOTE);
         setPromoted(promote == null || promote.equals("0") ? false : true);
 
-        setSocial(true);
+        setSocial(organisation.hasSocial());
     }
 
     /**

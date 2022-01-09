@@ -195,17 +195,17 @@ public class RoundupArticle extends Article implements LinkedContent
     /**
      * Returns a new article with defaults.
      */
-    public static RoundupArticle getDefault(Site site, RoundupConfiguration config) throws DateTimeParseException
+    public static RoundupArticle getDefault(Organisation organisation, RoundupConfiguration config) throws DateTimeParseException
     {
         RoundupArticle article = new RoundupArticle();
 
         article.init();
-        article.setSiteId(site.getId());
+        article.setSiteId(organisation.getSiteId());
         article.setTitle("New Roundup");
         article.setSummary(StringUtils.EMPTY);
         article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
         article.setImagePrefix(config.getImagePrefix());
-        article.setSocial(true);
+        article.setSocial(organisation.hasSocial());
 
         return article;
     }
@@ -239,7 +239,7 @@ public class RoundupArticle extends Article implements LinkedContent
         String sponsored = config.getField(Fields.SPONSORED);
         setSponsored(sponsored == null || sponsored.equals("0") ? false : true);
 
-        setSocial(true);
+        setSocial(organisation.hasSocial());
     }
 
     /**

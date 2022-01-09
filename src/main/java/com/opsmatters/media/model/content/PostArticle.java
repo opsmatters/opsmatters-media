@@ -224,16 +224,16 @@ public class PostArticle extends Article
     /**
      * Returns a new article with defaults.
      */
-    public static PostArticle getDefault(Site site, PostConfiguration config) throws DateTimeParseException
+    public static PostArticle getDefault(Organisation organisation, PostConfiguration config) throws DateTimeParseException
     {
         PostArticle article = new PostArticle();
 
         article.init();
-        article.setSiteId(site.getId());
+        article.setSiteId(organisation.getSiteId());
         article.setTitle("New Post");
         article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
         article.setImagePrefix(config.getImagePrefix());
-        article.setSocial(true);
+        article.setSocial(organisation.hasSocial());
 
         return article;
     }
@@ -265,7 +265,7 @@ public class PostArticle extends Article
         String sponsored = config.getField(Fields.SPONSORED);
         setSponsored(sponsored == null || sponsored.equals("0") ? false : true);
 
-        setSocial(true);
+        setSocial(organisation.hasSocial());
     }
 
     /**
