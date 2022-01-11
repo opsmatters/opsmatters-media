@@ -265,7 +265,7 @@ public class CommonFiles
      */
     public static boolean isExcelFile(String filename)
     {
-        String lowerFilename = filename.toLowerCase();
+        String lowerFilename = prepareFilename(filename).toLowerCase();
         return lowerFilename.endsWith("."+CommonFiles.XLS_EXT)
            || lowerFilename.endsWith("."+CommonFiles.XLSX_EXT);
     }
@@ -277,7 +277,7 @@ public class CommonFiles
      */
     public static boolean isCsvFile(String filename)
     {
-        String lowerFilename = filename.toLowerCase();
+        String lowerFilename = prepareFilename(filename).toLowerCase();
         return lowerFilename.endsWith("."+CommonFiles.CSV_EXT);
     }
 
@@ -288,7 +288,7 @@ public class CommonFiles
      */
     public static boolean isSupportedImageFile(String filename)
     {
-        String lowerFilename = filename.toLowerCase();
+        String lowerFilename = prepareFilename(filename).toLowerCase();
         return lowerFilename.endsWith("."+CommonFiles.PNG_EXT)
            || lowerFilename.endsWith("."+CommonFiles.JPG_EXT)
            || lowerFilename.endsWith("."+CommonFiles.JPEG_EXT)
@@ -304,9 +304,24 @@ public class CommonFiles
      */
     public static boolean isSupportedWebImageFile(String filename)
     {
-        String lowerFilename = filename.toLowerCase();
+        String lowerFilename = prepareFilename(filename).toLowerCase();
         return lowerFilename.endsWith("."+CommonFiles.PNG_EXT)
            || lowerFilename.endsWith("."+CommonFiles.JPG_EXT)
            || lowerFilename.endsWith("."+CommonFiles.JPEG_EXT);
+    }
+
+    /**
+     * Remove any query string from the given filename
+     * @param filename The filename to be prepared
+     */
+    private static String prepareFilename(String filename)
+    {
+        String ret = filename;
+
+        int pos = ret.indexOf("?");
+        if(pos != -1)
+            ret = ret.substring(0,pos);
+
+        return ret;
     }
 }

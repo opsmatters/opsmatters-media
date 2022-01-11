@@ -768,6 +768,14 @@ public abstract class ContentItem implements java.io.Serializable
     }
 
     /**
+     * Returns <CODE>true</CODE> if this content has been archived.
+     */
+    public boolean isArchived()
+    {
+        return getStatus() == ContentStatus.ARCHIVED;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if this content has been skipped.
      */
     public boolean isSkipped()
