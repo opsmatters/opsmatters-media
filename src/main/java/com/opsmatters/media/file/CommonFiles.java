@@ -300,7 +300,7 @@ public class CommonFiles
     /**
      * Returns <CODE>true</CODE> if the given filename is a supported web image file.
      * @param filename The filename to be checked
-     * @return <CODE>true</CODE> if the given filename is a PNG, JPG, JPEG or GIF file
+     * @return <CODE>true</CODE> if the given filename is a PNG, JPG or JPEG file
      */
     public static boolean isSupportedWebImageFile(String filename)
     {

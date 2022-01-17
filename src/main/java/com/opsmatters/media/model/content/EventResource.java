@@ -36,7 +36,7 @@ import com.opsmatters.media.util.TimeUtils;
 public class EventResource extends Resource
 {
     private EventDetails details = new EventDetails();
-    private String activityType = "";
+    private String eventType = "";
 
     /**
      * Default constructor.
@@ -87,7 +87,7 @@ public class EventResource extends Resource
         super.copyAttributes(obj);
 
         setEventDetails(obj.getEventDetails());
-        setActivityType(new String(obj.getActivityType() != null ? obj.getActivityType() : ""));
+        setEventType(new String(obj.getEventType() != null ? obj.getEventType() : ""));
     }
 
     /**
@@ -109,7 +109,7 @@ public class EventResource extends Resource
         String summary = values[6];
         String description = values[7];
         String organisation = values[8];
-        String activityType = values[9];
+        String eventType = values[9];
         String location = values[10];
         String url = values[11];
         String linkText = values[12];
@@ -128,7 +128,7 @@ public class EventResource extends Resource
         setTitle(title);
         setSummary(summary);
         setDescription(description);
-        setActivityType(activityType);
+        setEventType(eventType);
         setLocation(location);
         setUrl(url, false);
         setLinkText(linkText);
@@ -157,7 +157,7 @@ public class EventResource extends Resource
         if(getPublishedDateMillis() == 0L) // Default to start date
             setPublishedDate(TimeUtils.truncateTimeUTC(getStartDate()));
         setTimeZone(obj.optString(Fields.TIMEZONE));
-        setActivityType(obj.optString(Fields.ACTIVITY_TYPE));
+        setEventType(obj.optString(Fields.EVENT_TYPE));
         setLocation(obj.optString(Fields.LOCATION));
     }
 
@@ -171,7 +171,7 @@ public class EventResource extends Resource
         ret.put(Fields.START_DATE, getStartDateMillis());
         ret.put(Fields.END_DATE, getEndDateMillis());
         ret.putOpt(Fields.TIMEZONE, getTimeZone());
-        ret.putOpt(Fields.ACTIVITY_TYPE, getActivityType());
+        ret.putOpt(Fields.EVENT_TYPE, getEventType());
         ret.putOpt(Fields.LOCATION, getLocation());
 
         return ret;
@@ -189,7 +189,7 @@ public class EventResource extends Resource
         ret.put(Fields.END_DATE, getEndDateAsString());
         ret.put(Fields.TIMEZONE, getTimeZone());
         ret.put(Fields.LOCATION, getLocation());
-        ret.put(Fields.ACTIVITY_TYPE, getActivityType());
+        ret.put(Fields.EVENT_TYPE, getEventType());
 
         return ret;
     }
@@ -207,7 +207,7 @@ public class EventResource extends Resource
         resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
         resource.setStartDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
         resource.addStartTime(config);
-        resource.setActivityType("Webinar");
+        resource.setEventType("Webinar");
 
         return resource;
     }
@@ -247,7 +247,7 @@ public class EventResource extends Resource
     {
         super.init(organisation, config);
 
-        setActivityType("Webinar");
+        setEventType("Webinar");
         setLinkText(config.getField(Fields.LINK_TEXT, ""));
     }
 
@@ -321,19 +321,19 @@ public class EventResource extends Resource
     }
 
     /**
-     * Returns the activity type.
+     * Returns the event type.
      */
-    public String getActivityType()
+    public String getEventType()
     {
-        return activityType;
+        return eventType;
     }
 
     /**
-     * Sets the activity type.
+     * Sets the event type.
      */
-    public void setActivityType(String activityType)
+    public void setEventType(String eventType)
     {
-        this.activityType = activityType;
+        this.eventType = eventType;
     }
 
     /**

@@ -29,7 +29,7 @@ public class TaxonomyTerm extends BaseItem
     public static final String FEATURES = "features";
     public static final String TECHNOLOGIES = "technologies";
     public static final String PRICINGS = "pricing_model";
-    public static final String ACTIVITY_TYPES = "activity_type";
+    public static final String EVENT_TYPES = "activity_type";
     public static final String VIDEO_TYPES = "video_type";
     public static final String ORGANISATIONS = "organisation";
 

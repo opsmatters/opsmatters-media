@@ -50,7 +50,7 @@ public class EventResourceDAO extends ContentDAO<EventResource>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO EVENTS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED_DATE_TRUNC, START_DATE, UUID, URL, ACTIVITY_TYPE, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
+      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED_DATE_TRUNC, START_DATE, UUID, URL, EVENT_TYPE, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
@@ -58,7 +58,7 @@ public class EventResourceDAO extends ContentDAO<EventResource>
      * The query to use to update a event in the EVENTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE EVENTS SET PUBLISHED_DATE=?, START_DATE=?, UUID=?, URL=?, ACTIVITY_TYPE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
+      "UPDATE EVENTS SET PUBLISHED_DATE=?, START_DATE=?, UUID=?, URL=?, EVENT_TYPE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -83,7 +83,7 @@ public class EventResourceDAO extends ContentDAO<EventResource>
         table.addColumn("START_DATE", Types.TIMESTAMP, true);
         table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("URL", Types.VARCHAR, 512, true);
-        table.addColumn("ACTIVITY_TYPE", Types.VARCHAR, 30, true);
+        table.addColumn("EVENT_TYPE", Types.VARCHAR, 30, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
@@ -174,7 +174,7 @@ public class EventResourceDAO extends ContentDAO<EventResource>
             insertStmt.setTimestamp(6, new Timestamp(content.getStartDateMillis()), UTC);
             insertStmt.setString(7, content.getUuid());
             insertStmt.setString(8, content.getUrl());
-            insertStmt.setString(9, content.getActivityType());
+            insertStmt.setString(9, content.getEventType());
             insertStmt.setBoolean(10, content.isPublished());
             insertStmt.setString(11, content.getStatus().name());
             insertStmt.setString(12, content.getCreatedBy());
@@ -229,7 +229,7 @@ public class EventResourceDAO extends ContentDAO<EventResource>
             updateStmt.setTimestamp(2, new Timestamp(content.getStartDateMillis()), UTC);
             updateStmt.setString(3, content.getUuid());
             updateStmt.setString(4, content.getUrl());
-            updateStmt.setString(5, content.getActivityType());
+            updateStmt.setString(5, content.getEventType());
             updateStmt.setBoolean(6, content.isPublished());
             updateStmt.setString(7, content.getStatus().name());
             String attributes = content.toJson().toString();

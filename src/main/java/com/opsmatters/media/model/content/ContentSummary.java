@@ -148,6 +148,14 @@ public abstract class ContentSummary implements java.io.Serializable
     }
 
     /**
+     * Returns <CODE>true</CODE> if the title has been set.
+     */
+    public boolean hasTitle()
+    {
+        return getTitle() != null && getTitle().length() > 0;
+    }
+
+    /**
      * Returns the date the content was published.
      */
     public Instant getPublishedDate()

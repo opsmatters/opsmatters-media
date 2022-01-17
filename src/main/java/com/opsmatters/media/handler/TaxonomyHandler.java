@@ -186,11 +186,11 @@ public class TaxonomyHandler
     }
 
     /**
-     * Returns the activity types for the given site.
+     * Returns the event types for the given site.
      */
-    public List<String> getActivityTypes(Site site)
+    public List<String> getEventTypes(Site site)
     {
-        return getTermNames(site, TaxonomyTerm.ACTIVITY_TYPES);
+        return getTermNames(site, TaxonomyTerm.EVENT_TYPES);
     }
 
     /**

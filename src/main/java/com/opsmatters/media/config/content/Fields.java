@@ -50,7 +50,7 @@ public class Fields extends LinkedHashMap<String,String>
     public static final String CHANNEL_URL = "channel-url";
     public static final String CHANNEL_TITLE = "channel-title";
     public static final String VIDEO_TYPE = "video-type";
-    public static final String ACTIVITY_TYPE = "activity-type";
+    public static final String EVENT_TYPE = "event-type";
     public static final String IMAGE = "image";
     public static final String IMAGE_SOURCE = "image-source";
     public static final String IMAGE_TEXT = "image-text";
