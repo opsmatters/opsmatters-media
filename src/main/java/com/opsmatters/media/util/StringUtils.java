@@ -709,7 +709,7 @@ public class StringUtils
         String ret = hostname;
         int pos = hostname.indexOf(".");
         if(pos != -1)
-            ret = hostname.substring(0,pos);
+            ret = hostname.substring(0, pos);
         return ret;
     }
 
@@ -775,6 +775,11 @@ public class StringUtils
             int pos = ret.lastIndexOf("/");
             if(pos != -1)
                 ret = ret.substring(pos+1);
+
+            // Remove any extension in the context eg ".html"
+            pos = ret.indexOf(".");
+            if(pos != -1)
+                ret = ret.substring(0, pos);
         }
 
         return ret;

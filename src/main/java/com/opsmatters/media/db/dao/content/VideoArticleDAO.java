@@ -43,6 +43,12 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
      * The query to use to select a video from the VIDEOS table by videoId.
      */
     private static final String GET_BY_VIDEO_ID_SQL =  
+      "SELECT ATTRIBUTES, SITE_ID FROM VIDEOS WHERE SITE_ID=? AND CODE=? AND VIDEO_ID=?";
+
+    /**
+     * The query to use to select a list of videos from the VIDEOS table by videoId.
+     */
+    private static final String LIST_BY_VIDEO_ID_SQL =  
       "SELECT ATTRIBUTES, SITE_ID FROM VIDEOS WHERE CODE=? AND VIDEO_ID=?";
 
     /**
@@ -50,15 +56,15 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO VIDEOS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED_DATE_TRUNC, UUID, VIDEO_ID, VIDEO_TYPE, PROVIDER, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
+      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED_DATE_TRUNC, UUID, TITLE, VIDEO_ID, VIDEO_TYPE, PROVIDER, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a video in the VIDEOS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE VIDEOS SET PUBLISHED_DATE=?, UUID=?, VIDEO_ID=?, VIDEO_TYPE=?, PROVIDER=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
+      "UPDATE VIDEOS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, VIDEO_ID=?, VIDEO_TYPE=?, PROVIDER=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -81,6 +87,7 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
         table.addColumn("PUBLISHED_DATE_TRUNC", Types.TIMESTAMP, true);
         table.addColumn("UUID", Types.VARCHAR, 36, true);
+        table.addColumn("TITLE", Types.VARCHAR, 256, true);
         table.addColumn("VIDEO_ID", Types.VARCHAR, 30, true);
         table.addColumn("VIDEO_TYPE", Types.VARCHAR, 30, true);
         table.addColumn("PROVIDER", Types.VARCHAR, 15, true);
@@ -90,6 +97,7 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.setPrimaryKey("VIDEOS_PK", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("VIDEOS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
+        table.addIndex("VIDEOS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
         table.addIndex("VIDEOS_VIDEO_ID_IDX", new String[] {"SITE_ID","CODE","VIDEO_ID"});
         table.addIndex("VIDEOS_STATUS_IDX", new String[] {"STATUS"});
         table.addIndex("VIDEOS_PUBLISHED_TRUNC_IDX", new String[] {"PUBLISHED_DATE_TRUNC"});
@@ -97,11 +105,11 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
     }
 
     /**
-     * Returns a video from the VIDEOS table by videoId.
+     * Returns a video from the VIDEOS table by video id.
      */
-    public synchronized List<VideoArticle> getByVideoId(String code, String videoId) throws SQLException
+    public synchronized VideoArticle getByVideoId(String siteId, String code, String videoId) throws SQLException
     {
-        List<VideoArticle> ret = null;
+        VideoArticle ret = null;
 
         if(!hasConnection())
             return ret;
@@ -115,10 +123,59 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
 
         try
         {
-            getByVideoIdStmt.setString(1, code);
-            getByVideoIdStmt.setString(2, videoId);
+            getByVideoIdStmt.setString(1, siteId);
+            getByVideoIdStmt.setString(2, code);
+            getByVideoIdStmt.setString(3, videoId);
             getByVideoIdStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByVideoIdStmt.executeQuery();
+            while(rs.next())
+            {
+                JSONObject attributes = new JSONObject(getClob(rs, 1));
+                VideoArticle item = new VideoArticle(attributes);
+                item.setSiteId(rs.getString(2));
+                ret = item;
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns a list of videos from the VIDEOS table by videoId.
+     */
+    public synchronized List<VideoArticle> listByVideoId(String code, String videoId) throws SQLException
+    {
+        List<VideoArticle> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByVideoIdStmt == null)
+            listByVideoIdStmt = prepareStatement(getConnection(), LIST_BY_VIDEO_ID_SQL);
+        clearParameters(listByVideoIdStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByVideoIdStmt.setString(1, code);
+            listByVideoIdStmt.setString(2, videoId);
+            listByVideoIdStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByVideoIdStmt.executeQuery();
             ret = new ArrayList<VideoArticle>();
             while(rs.next())
             {
@@ -170,15 +227,16 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
             insertStmt.setTimestamp(4, new Timestamp(content.getPublishedDateMillis()), UTC);
             insertStmt.setTimestamp(5, new Timestamp(content.getPublishedDate().truncatedTo(ChronoUnit.DAYS).toEpochMilli()), UTC);
             insertStmt.setString(6, content.getUuid());
-            insertStmt.setString(7, content.getVideoId());
-            insertStmt.setString(8, content.getVideoType());
-            insertStmt.setString(9, content.getProvider().code());
-            insertStmt.setBoolean(10, content.isPublished());
-            insertStmt.setString(11, content.getStatus().name());
-            insertStmt.setString(12, content.getCreatedBy());
+            insertStmt.setString(7, content.getTitle());
+            insertStmt.setString(8, content.getVideoId());
+            insertStmt.setString(9, content.getVideoType());
+            insertStmt.setString(10, content.getProvider().code());
+            insertStmt.setBoolean(11, content.isPublished());
+            insertStmt.setString(12, content.getStatus().name());
+            insertStmt.setString(13, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(13, reader, attributes.length());
+            insertStmt.setCharacterStream(14, reader, attributes.length());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -225,17 +283,18 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
         {
             updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
             updateStmt.setString(2, content.getUuid());
-            updateStmt.setString(3, content.getVideoId());
-            updateStmt.setString(4, content.getVideoType());
-            updateStmt.setString(5, content.getProvider().code());
-            updateStmt.setBoolean(6, content.isPublished());
-            updateStmt.setString(7, content.getStatus().name());
+            updateStmt.setString(3, content.getTitle());
+            updateStmt.setString(4, content.getVideoId());
+            updateStmt.setString(5, content.getVideoType());
+            updateStmt.setString(6, content.getProvider().code());
+            updateStmt.setBoolean(7, content.isPublished());
+            updateStmt.setString(8, content.getStatus().name());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(8, reader, attributes.length());
-            updateStmt.setString(9, content.getSiteId());
-            updateStmt.setString(10, content.getCode());
-            updateStmt.setInt(11, content.getId());
+            updateStmt.setCharacterStream(9, reader, attributes.length());
+            updateStmt.setString(10, content.getSiteId());
+            updateStmt.setString(11, content.getCode());
+            updateStmt.setInt(12, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 
@@ -256,6 +315,8 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
     {
         closeStatement(getByVideoIdStmt);
         getByVideoIdStmt = null;
+        closeStatement(listByVideoIdStmt);
+        listByVideoIdStmt = null;
         closeStatement(insertStmt);
         insertStmt = null;
         closeStatement(updateStmt);
@@ -263,6 +324,7 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
     }
 
     private PreparedStatement getByVideoIdStmt;
+    private PreparedStatement listByVideoIdStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
 }

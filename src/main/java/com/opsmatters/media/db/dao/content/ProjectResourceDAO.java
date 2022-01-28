@@ -47,15 +47,15 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO PROJECTS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, URL, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
+      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, URL, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a project in the PROJECTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE PROJECTS SET PUBLISHED_DATE=?, UUID=?, URL=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
+      "UPDATE PROJECTS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, URL=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -78,12 +78,14 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("URL", Types.VARCHAR, 256, true);
+        table.addColumn("TITLE", Types.VARCHAR, 128, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.setPrimaryKey("PROJECTS_PK", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("PROJECTS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
+        table.addIndex("PROJECTS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
         table.addIndex("PROJECTS_STATUS_IDX", new String[] {"STATUS"});
         table.setInitialised(true);
     }
@@ -160,13 +162,14 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
             insertStmt.setInt(3, content.getId());
             insertStmt.setTimestamp(4, new Timestamp(content.getPublishedDateMillis()), UTC);
             insertStmt.setString(5, content.getUuid());
-            insertStmt.setString(6, content.getUrl());
-            insertStmt.setBoolean(7, content.isPublished());
-            insertStmt.setString(8, content.getStatus().name());
-            insertStmt.setString(9, content.getCreatedBy());
+            insertStmt.setString(6, content.getTitle());
+            insertStmt.setString(7, content.getUrl());
+            insertStmt.setBoolean(8, content.isPublished());
+            insertStmt.setString(9, content.getStatus().name());
+            insertStmt.setString(10, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(10, reader, attributes.length());
+            insertStmt.setCharacterStream(11, reader, attributes.length());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -213,15 +216,16 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
         {
             updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
             updateStmt.setString(2, content.getUuid());
-            updateStmt.setString(3, content.getUrl());
-            updateStmt.setBoolean(4, content.isPublished());
-            updateStmt.setString(5, content.getStatus().name());
+            updateStmt.setString(3, content.getTitle());
+            updateStmt.setString(4, content.getUrl());
+            updateStmt.setBoolean(5, content.isPublished());
+            updateStmt.setString(6, content.getStatus().name());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(6, reader, attributes.length());
-            updateStmt.setString(7, content.getSiteId());
-            updateStmt.setString(8, content.getCode());
-            updateStmt.setInt(9, content.getId());
+            updateStmt.setCharacterStream(7, reader, attributes.length());
+            updateStmt.setString(8, content.getSiteId());
+            updateStmt.setString(9, content.getCode());
+            updateStmt.setInt(10, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 

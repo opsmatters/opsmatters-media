@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.sql.SQLException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.content.FieldsConfiguration;
@@ -52,13 +53,13 @@ public class ContentMonitor extends BaseItem
     public static final String CHANNEL_ID = "channel-id";
     public static final String INTERVAL = "interval";
     public static final String DIFFERENCE = "difference";
-    public static final String MAX_RESULTS = "max-results";
     public static final String SUCCESS_DATE = "success-date";
     public static final String EXECUTION_TIME = "execution-time";
     public static final String ERROR_MESSAGE = "error-message";
     public static final String RETRY = "retry";
     public static final String SUBSCRIBED_DATE = "subscribed-date";
     public static final String SITES = "sites";
+    public static final String USE_STORED = "use-stored";
 
     private String code = "";
     private String organisation = "";
@@ -75,11 +76,11 @@ public class ContentMonitor extends BaseItem
     private String eventId = "";
     private int interval = -1;
     private int difference = 0;
-    private int maxResults = 0;
     private String errorMessage = "";
     private int retry = 0;
     private Instant subscribedDate;
     private String sites = "";
+    private boolean useStored = false;
 
     private List<ContentSummary> subscribed = new ArrayList<ContentSummary>();
     private Map<String,String> siteMap = new HashMap<String,String>();
@@ -138,11 +139,11 @@ public class ContentMonitor extends BaseItem
             setEventId(obj.getEventId());
             setInterval(obj.getInterval());
             setMinDifference(obj.getMinDifference());
-            setMaxResults(obj.getMaxResults());
             setErrorMessage(obj.getErrorMessage());
             setRetry(obj.getRetry());
             setSubscribedDate(obj.getSubscribedDate());
             setSites(obj.getSites());
+            setUseStored(obj.useStored());
         }
     }
 
@@ -158,13 +159,13 @@ public class ContentMonitor extends BaseItem
         ret.putOpt(CHANNEL_ID, getChannelId());
         ret.putOpt(INTERVAL, getInterval());
         ret.putOpt(DIFFERENCE, getMinDifference());
-        ret.putOpt(MAX_RESULTS, getMaxResults());
         ret.putOpt(SUCCESS_DATE, getSuccessDateMillis());
         ret.putOpt(EXECUTION_TIME, getExecutionTime());
         ret.putOpt(ERROR_MESSAGE, getErrorMessage());
         ret.putOpt(RETRY, getRetry());
         ret.putOpt(SUBSCRIBED_DATE, getSubscribedDateMillis());
         ret.putOpt(SITES, getSites());
+        ret.putOpt(USE_STORED, useStored());
 
         return ret;
     }
@@ -179,13 +180,13 @@ public class ContentMonitor extends BaseItem
         setUrl(obj.optString(URL));
         setInterval(obj.optInt(INTERVAL));
         setMinDifference(obj.optInt(DIFFERENCE));
-        setMaxResults(obj.optInt(MAX_RESULTS));
         setSuccessDateMillis(obj.optLong(SUCCESS_DATE));
         setExecutionTime(obj.optLong(EXECUTION_TIME));
         setErrorMessage(obj.optString(ERROR_MESSAGE));
         setRetry(obj.optInt(RETRY));
         setSubscribedDateMillis(obj.optLong(SUBSCRIBED_DATE));
         setSites(obj.optString(SITES));
+        setUseStored(obj.optBoolean(USE_STORED));
     }
 
     /**
@@ -697,11 +698,12 @@ public class ContentMonitor extends BaseItem
     /**
      * Compare the given snapshot with the current one.
      */
-    public boolean compareSnapshot(ContentSnapshot snapshot)
+    public boolean compareSnapshot(ContentSnapshot snapshot) throws SQLException
     {
-        ContentSnapshot snapshot1 = new ContentSnapshot(getSnapshot());
-        ContentSnapshot snapshot2 = new ContentSnapshot(snapshot);
-        return ContentSnapshot.compare(snapshot1, snapshot2, maxResults,
+        ContentSnapshot current = new ContentSnapshot(getSnapshot());
+        ContentSnapshot latest = new ContentSnapshot(snapshot);
+        current.setLookup(snapshot.getLookup());
+        return ContentSnapshot.compare(getCode(), current, latest, 
             getContentType() != ContentType.VIDEO);
     }
 
@@ -802,22 +804,6 @@ public class ContentMonitor extends BaseItem
     public void setMinDifference(int difference)
     {
         this.difference = difference;
-    }
-
-    /**
-     * Returns the maximum results to be returned by a monitor check.
-     */
-    public int getMaxResults()
-    {
-        return maxResults;
-    }
-
-    /**
-     * Sets the maximum results to be returned by a monitor check.
-     */
-    public void setMaxResults(int maxResults)
-    {
-        this.maxResults = maxResults;
     }
 
     /**
@@ -995,6 +981,38 @@ public class ContentMonitor extends BaseItem
     public boolean hasSite(String siteId)
     {
         return siteMap.size() == 0 || siteMap.get(siteId) != null;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the comparison should use stored content items too.
+     */
+    public boolean useStored()
+    {
+        return useStored;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the comparison should use stored content items too.
+     */
+    public Boolean getUseStoredObject()
+    {
+        return Boolean.valueOf(useStored);
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the comparison should use stored content items too.
+     */
+    public void setUseStored(boolean useStored)
+    {
+        this.useStored = useStored;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the comparison should use stored content items too.
+     */
+    public void setUseStoredObject(Boolean useStored)
+    {
+        this.useStored = useStored != null && useStored.booleanValue();
     }
 
     /**

@@ -40,9 +40,9 @@ public class EventResourceDAO extends ContentDAO<EventResource>
     private static final Logger logger = Logger.getLogger(EventResourceDAO.class.getName());
 
     /**
-     * The query to use to select a event from the EVENTS table by URL.
+     * The query to use to select a list of events from the EVENTS table by URL.
      */
-    private static final String GET_BY_URL_SQL =  
+    private static final String LIST_BY_URL_SQL =  
       "SELECT ATTRIBUTES, SITE_ID FROM EVENTS WHERE CODE=? AND URL=? AND (?=0 OR ABS(TIMESTAMPDIFF(DAY, ?, START_DATE)) < 2)";
 
     /**
@@ -50,15 +50,15 @@ public class EventResourceDAO extends ContentDAO<EventResource>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO EVENTS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED_DATE_TRUNC, START_DATE, UUID, URL, EVENT_TYPE, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
+      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED_DATE_TRUNC, START_DATE, UUID, TITLE, URL, EVENT_TYPE, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a event in the EVENTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE EVENTS SET PUBLISHED_DATE=?, START_DATE=?, UUID=?, URL=?, EVENT_TYPE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
+      "UPDATE EVENTS SET PUBLISHED_DATE=?, START_DATE=?, UUID=?, TITLE=?, URL=?, EVENT_TYPE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -82,6 +82,7 @@ public class EventResourceDAO extends ContentDAO<EventResource>
         table.addColumn("PUBLISHED_DATE_TRUNC", Types.TIMESTAMP, true);
         table.addColumn("START_DATE", Types.TIMESTAMP, true);
         table.addColumn("UUID", Types.VARCHAR, 36, true);
+        table.addColumn("TITLE", Types.VARCHAR, 256, true);
         table.addColumn("URL", Types.VARCHAR, 512, true);
         table.addColumn("EVENT_TYPE", Types.VARCHAR, 30, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
@@ -90,6 +91,7 @@ public class EventResourceDAO extends ContentDAO<EventResource>
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.setPrimaryKey("EVENTS_PK", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("EVENTS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
+        table.addIndex("EVENTS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
         table.addIndex("EVENTS_URL_IDX", new String[] {"SITE_ID","CODE","URL"});
         table.addIndex("EVENTS_STATUS_IDX", new String[] {"STATUS"});
         table.addIndex("EVENTS_PUBLISHED_TRUNC_IDX", new String[] {"PUBLISHED_DATE_TRUNC"});
@@ -97,9 +99,9 @@ public class EventResourceDAO extends ContentDAO<EventResource>
     }
 
     /**
-     * Returns a event from the EVENTS table by URL.
+     * Returns a list of events from the EVENTS table by URL.
      */
-    public synchronized List<EventResource> getByUrl(String code, String url, long startDate) throws SQLException
+    public synchronized List<EventResource> listByUrl(String code, String url, long startDate) throws SQLException
     {
         List<EventResource> ret = null;
 
@@ -107,20 +109,20 @@ public class EventResourceDAO extends ContentDAO<EventResource>
             return ret;
 
         preQuery();
-        if(getByUrlStmt == null)
-            getByUrlStmt = prepareStatement(getConnection(), GET_BY_URL_SQL);
-        clearParameters(getByUrlStmt);
+        if(listByUrlStmt == null)
+            listByUrlStmt = prepareStatement(getConnection(), LIST_BY_URL_SQL);
+        clearParameters(listByUrlStmt);
 
         ResultSet rs = null;
 
         try
         {
-            getByUrlStmt.setString(1, code);
-            getByUrlStmt.setString(2, url);
-            getByUrlStmt.setLong(3, startDate);
-            getByUrlStmt.setTimestamp(4, new Timestamp(startDate), UTC);
-            getByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = getByUrlStmt.executeQuery();
+            listByUrlStmt.setString(1, code);
+            listByUrlStmt.setString(2, url);
+            listByUrlStmt.setLong(3, startDate);
+            listByUrlStmt.setTimestamp(4, new Timestamp(startDate), UTC);
+            listByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByUrlStmt.executeQuery();
             ret = new ArrayList<EventResource>();
             while(rs.next())
             {
@@ -173,14 +175,15 @@ public class EventResourceDAO extends ContentDAO<EventResource>
             insertStmt.setTimestamp(5, new Timestamp(content.getPublishedDate().truncatedTo(ChronoUnit.DAYS).toEpochMilli()), UTC);
             insertStmt.setTimestamp(6, new Timestamp(content.getStartDateMillis()), UTC);
             insertStmt.setString(7, content.getUuid());
-            insertStmt.setString(8, content.getUrl());
-            insertStmt.setString(9, content.getEventType());
-            insertStmt.setBoolean(10, content.isPublished());
-            insertStmt.setString(11, content.getStatus().name());
-            insertStmt.setString(12, content.getCreatedBy());
+            insertStmt.setString(8, content.getTitle());
+            insertStmt.setString(9, content.getUrl());
+            insertStmt.setString(10, content.getEventType());
+            insertStmt.setBoolean(11, content.isPublished());
+            insertStmt.setString(12, content.getStatus().name());
+            insertStmt.setString(13, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(13, reader, attributes.length());
+            insertStmt.setCharacterStream(14, reader, attributes.length());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -228,16 +231,17 @@ public class EventResourceDAO extends ContentDAO<EventResource>
             updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
             updateStmt.setTimestamp(2, new Timestamp(content.getStartDateMillis()), UTC);
             updateStmt.setString(3, content.getUuid());
-            updateStmt.setString(4, content.getUrl());
-            updateStmt.setString(5, content.getEventType());
-            updateStmt.setBoolean(6, content.isPublished());
-            updateStmt.setString(7, content.getStatus().name());
+            updateStmt.setString(4, content.getTitle());
+            updateStmt.setString(5, content.getUrl());
+            updateStmt.setString(6, content.getEventType());
+            updateStmt.setBoolean(7, content.isPublished());
+            updateStmt.setString(8, content.getStatus().name());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(8, reader, attributes.length());
-            updateStmt.setString(9, content.getSiteId());
-            updateStmt.setString(10, content.getCode());
-            updateStmt.setInt(11, content.getId());
+            updateStmt.setCharacterStream(9, reader, attributes.length());
+            updateStmt.setString(10, content.getSiteId());
+            updateStmt.setString(11, content.getCode());
+            updateStmt.setInt(12, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 
@@ -256,15 +260,15 @@ public class EventResourceDAO extends ContentDAO<EventResource>
     @Override
     protected void close()
     {
-        closeStatement(getByUrlStmt);
-        getByUrlStmt = null;
+        closeStatement(listByUrlStmt);
+        listByUrlStmt = null;
         closeStatement(insertStmt);
         insertStmt = null;
         closeStatement(updateStmt);
         updateStmt = null;
     }
 
-    private PreparedStatement getByUrlStmt;
+    private PreparedStatement listByUrlStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
 }

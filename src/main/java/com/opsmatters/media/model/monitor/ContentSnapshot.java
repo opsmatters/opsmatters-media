@@ -16,7 +16,12 @@
 package com.opsmatters.media.model.monitor;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.logging.Logger;
+import java.sql.SQLException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import com.opsmatters.media.config.content.Fields;
@@ -36,6 +41,8 @@ import com.opsmatters.media.util.StringUtils;
 public class ContentSnapshot extends JSONObject
 {
     private static final Logger logger = Logger.getLogger(ContentSnapshot.class.getName());
+
+    private ContentLookup lookup;
 
     /**
      * Constructor that takes a content type and list of items.
@@ -119,6 +126,22 @@ public class ContentSnapshot extends JSONObject
     }
 
     /**
+     * Returns the object used to lookup content items.
+     */
+    public ContentLookup getLookup()
+    {
+        return lookup;
+    }
+
+    /**
+     * Sets the object used to lookup content items.
+     */
+    public void setLookup(ContentLookup lookup)
+    {
+        this.lookup = lookup;
+    }
+
+    /**
      * Create an object for the content item.
      */
     private JSONObject createObject(ContentType type, ContentSummary content)
@@ -192,43 +215,96 @@ public class ContentSnapshot extends JSONObject
     }
 
     /**
-     * Process the given snapshot to prepare it for comparison.
+     * Returns <CODE>true<CODE> if the two snapshots match.
      */
-    private void process(int maxResults)
+    public static boolean compare(String code, ContentSnapshot current,
+        ContentSnapshot latest, boolean checkDecrease)
+        throws SQLException
     {
-        remove(Fields.COUNT); // Checked separately
-        JSONArray array = getJSONArray(getTag());
-        for(int i = array.length()-1; i >= 0; i--)
-        {
-            JSONObject item = array.getJSONObject(i);
-            item.remove(Fields.PUBLISHED_DATE);
-            item.remove(Fields.START_DATE);
-
-            //  Trim array if max results set
-            if(maxResults > 0 && (i+1) > maxResults)
-                array.remove(i);
-        }
-    }
-
-    /**
-     * Returns <CODE>true<CODE> if the two snapshots do not match.
-     */
-    public static boolean compare(ContentSnapshot snapshot1, ContentSnapshot snapshot2, int maxResults, boolean checkDecrease)
-    {
-        int count1 = snapshot1.getCount();
-        int count2 = snapshot2.getCount();
+        int currentCount = current.getCount();
+        int latestCount = latest.getCount();
         float decrease = 0.0f;
-        if(count1 >= 0 && count2 >= 0 && count2 < count1)
+        if(currentCount >= 0 && latestCount >= 0 && latestCount < currentCount)
         {
-            decrease = ((count1 - count2) / (float)count1) * 100.0f;
+            decrease = ((currentCount - latestCount) / (float)currentCount) * 100.0f;
         }
 
         if(checkDecrease && decrease > 50.0f)
             throw new IllegalStateException(String.format("Detected abnormal decrease in items: %.2f%%", decrease));
 
-        snapshot1.process(maxResults);
-        snapshot2.process(maxResults);
-        return snapshot1.toString().equals(snapshot2.toString());
+
+        ContentLookup lookup = current.getLookup();
+        ContentType type = current.getContentType();
+        Map<String,String> titles = new HashMap<String,String>();
+        Map<String,String> ids = new HashMap<String,String>();
+
+        JSONArray latestArray = latest.getJSONArray(latest.getTag());
+        for(int i = 0; i < latestArray.length(); i++)
+        {
+            JSONObject item = latestArray.getJSONObject(i);
+            String title = item.optString(Fields.TITLE);
+            String id = item.optString(Fields.URL);
+            if(type == ContentType.VIDEO)
+            if(type == ContentType.VIDEO)
+                id = item.optString(Fields.VIDEO_ID);
+            titles.put(title, title);
+            ids.put(id, id);
+        }
+
+        if(lookup != null)
+            logger.info(String.format("Before compare snapshot for %s: titles=%d ids=%d",
+                code, titles.size(), ids.size()));
+
+        JSONArray currentArray = current.getJSONArray(current.getTag());
+        for(int i = 0; i < currentArray.length(); i++)
+        {
+            JSONObject item = currentArray.getJSONObject(i);
+            String title = item.optString(Fields.TITLE);
+            String id = item.optString(Fields.URL);
+            if(type == ContentType.VIDEO)
+                id = item.optString(Fields.VIDEO_ID);
+            titles.remove(title);
+            ids.remove(id);
+        }
+
+        if(lookup != null)
+            logger.info(String.format("After compare with current for %s: titles=%d ids=%d",
+                code, titles.size(), ids.size()));
+
+        // If there are still unresolved items, try looking for them
+        //   in the stored content items to see if we've seen them before
+        if(lookup != null && (titles.size() > 0 || ids.size() > 0))
+        {
+            Iterator<Entry<String,String>> iterator = titles.entrySet().iterator();
+            while(iterator.hasNext())
+            {
+                String title = iterator.next().getKey();
+                if(lookup.getByTitle(title) != null)
+                {
+                    iterator.remove();
+                    logger.info(String.format("Found stored title for %s: title='%s' titles=%d",
+                        code, title, titles.size()));
+                }
+            }
+
+            iterator = ids.entrySet().iterator();
+            while(iterator.hasNext())
+            {
+                String id = iterator.next().getKey();
+                if(lookup.getById(id) != null)
+                {
+                    iterator.remove();
+                    logger.info(String.format("Found stored id for %s: id=%s ids=%d",
+                        code, id, ids.size()));
+                }
+            }
+        }
+
+        if(lookup != null)
+            logger.info(String.format("After compare with stored for %s: titles=%d ids=%d",
+                code, titles.size(), ids.size()));
+
+        return titles.size() == 0 && ids.size() == 0;
     }
 
     /**
