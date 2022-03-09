@@ -70,6 +70,14 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
       + "WHERE CREATED_DATE >= (NOW() + INTERVAL -7 DAY) OR STATUS='NEW' ORDER BY CREATED_DATE";
 
     /**
+     * The query to use to select the changes from the CONTENT_CHANGES table by organisation.
+     */
+    private static final String LIST_BY_CODE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, SITES, CREATED_BY "
+      + "FROM CONTENT_CHANGES "
+      + "WHERE CODE=? ORDER BY CREATED_DATE";
+
+    /**
      * The query to use to select the changes from the CONTENT_CHANGES table by status.
      */
     private static final String LIST_BY_STATUS_SQL =  
@@ -319,6 +327,64 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
     }
 
     /**
+     * Returns the changes from the CONTENT_CHANGES table by organisation.
+     */
+    public synchronized List<ContentChange> list(String code) throws SQLException
+    {
+        List<ContentChange> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByCodeStmt == null)
+            listByCodeStmt = prepareStatement(getConnection(), LIST_BY_CODE_SQL);
+        clearParameters(listByCodeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByCodeStmt.setString(1, code);
+            listByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByCodeStmt.executeQuery();
+            ret = new ArrayList<ContentChange>();
+            while(rs.next())
+            {
+                ContentChange change = new ContentChange();
+                change.setId(rs.getString(1));
+                change.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                change.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                change.setCode(rs.getString(4));
+                change.setSnapshotBefore(getClob(rs, 5));
+                change.setSnapshotAfter(getClob(rs, 6));
+                change.setStatus(rs.getString(7));
+                change.setMonitorId(rs.getString(8));
+                change.setExecutionTime(rs.getLong(9));
+                change.setDifference(rs.getInt(10));
+                change.setSites(rs.getString(11));
+                change.setCreatedBy(rs.getString(12));
+                ret.add(change);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the changes from the CONTENT_CHANGES table by status.
      */
     public synchronized List<ContentChange> list(ChangeStatus status) throws SQLException
@@ -426,6 +492,8 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
+        closeStatement(listByCodeStmt);
+        listByCodeStmt = null;
         closeStatement(listByStatusStmt);
         listByStatusStmt = null;
         closeStatement(countStmt);
@@ -438,6 +506,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
+    private PreparedStatement listByCodeStmt;
     private PreparedStatement listByStatusStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;

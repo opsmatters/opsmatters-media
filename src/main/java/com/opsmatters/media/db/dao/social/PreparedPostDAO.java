@@ -93,6 +93,14 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
       + "FROM PREPARED_POSTS WHERE SITE_ID=? AND CREATED_DATE >= (NOW() + INTERVAL -? DAY) ORDER BY CREATED_DATE";
 
     /**
+     * The query to use to select the posts from the PREPARED_POSTS table by organisation.
+     */
+    private static final String LIST_BY_CODE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, SITE_ID, DRAFT_ID, CODE, "
+      + "TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, ERROR_CODE, ERROR_MESSAGE, CREATED_BY "
+      + "FROM PREPARED_POSTS WHERE SITE_ID=? AND CODE=? ORDER BY CREATED_DATE";
+
+    /**
      * The query to use to select the posts from the PREPARED_POSTS table by draft_id.
      */
     private static final String LIST_BY_DRAFT_SQL =  
@@ -483,6 +491,69 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     }
 
     /**
+     * Returns the posts from the PREPARED_POSTS table by organisation.
+     */
+    public synchronized List<PreparedPost> list(Site site, String code) throws SQLException
+    {
+        List<PreparedPost> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByCodeStmt == null)
+            listByCodeStmt = prepareStatement(getConnection(), LIST_BY_CODE_SQL);
+        clearParameters(listByCodeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByCodeStmt.setString(1, site.getId());
+            listByCodeStmt.setString(2, code);
+            listByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByCodeStmt.executeQuery();
+            ret = new ArrayList<PreparedPost>();
+            while(rs.next())
+            {
+                PreparedPost post = new PreparedPost();
+                post.setId(rs.getString(1));
+                post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                post.setScheduledDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                post.setType(rs.getString(5));
+                post.setSiteId(rs.getString(6));
+                post.setDraftId(rs.getString(7));
+                post.setCode(rs.getString(8));
+                post.setTitle(rs.getString(9));
+                post.setMessage(rs.getString(10));
+                post.setChannel(SocialChannels.getChannel(rs.getString(11)));
+                post.setStatus(rs.getString(12));
+                post.setExternalId(rs.getString(13));
+                post.setErrorCode(rs.getInt(14));
+                post.setErrorMessage(rs.getString(15));
+                post.setCreatedBy(rs.getString(16));
+                ret.add(post);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the posts from the PREPARED_POSTS table by draft post id.
      */
     public synchronized List<PreparedPost> list(DraftPost draft) throws SQLException
@@ -598,6 +669,8 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
         listByStatusStmt = null;
         closeStatement(listBySiteStmt);
         listBySiteStmt = null;
+        closeStatement(listByCodeStmt);
+        listByCodeStmt = null;
         closeStatement(listByDraftStmt);
         listByDraftStmt = null;
         closeStatement(countStmt);
@@ -612,6 +685,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     private PreparedStatement listStmt;
     private PreparedStatement listByStatusStmt;
     private PreparedStatement listBySiteStmt;
+    private PreparedStatement listByCodeStmt;
     private PreparedStatement listByDraftStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;

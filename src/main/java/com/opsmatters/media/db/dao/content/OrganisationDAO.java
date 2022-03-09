@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.Organisation;
+import com.opsmatters.media.model.content.ArchiveReason;
 
 /**
  * DAO that provides operations on the ORGANISATIONS table in the database.
@@ -315,7 +316,7 @@ public class OrganisationDAO extends BaseDAO
             updateStmt.setCharacterStream(5, reader, attributes.length());
             updateStmt.setBoolean(6, organisation.hasListing());
             updateStmt.setString(7, organisation.getStatus().name());
-            updateStmt.setString(8, organisation.getReason().name());
+            updateStmt.setString(8, organisation.getReason() != null ? organisation.getReason().name() : ArchiveReason.NONE.name());
             updateStmt.setString(9, organisation.getId());
             updateStmt.executeUpdate();
 

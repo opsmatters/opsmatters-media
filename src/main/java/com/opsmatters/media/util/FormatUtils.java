@@ -102,23 +102,23 @@ public class FormatUtils
         if(ret != null)
         {
             // Replace spaces with dashes
-            ret = ret.replaceAll(" |%20", "-");
+            ret = ret.replaceAll(" |%20|%2[Ff]", "-");
 
             // Remove "thin" spaces
             ret = ret.replaceAll("\\u200a", "");
 
             // Replace escaped plus, ampersand with plus
-            ret = ret.replaceAll("%2B|%26", "+");
+            ret = ret.replaceAll("%2[Bb]|%26", "+");
 
             // Replace some escaped chars with original char
             ret = ret.replaceAll("%24", "\\$");
             ret = ret.replaceAll("%28", "(");
             ret = ret.replaceAll("%29", ")");
-            ret = ret.replaceAll("%5B", "[");
-            ret = ret.replaceAll("%5D", "]");
+            ret = ret.replaceAll("%5[Bb]", "[");
+            ret = ret.replaceAll("%5[Dd]", "]");
 
             // Remove other special characters
-            ret = ret.replaceAll("%22|%23|%25|%27|%2C|%3B|%3F|%7C", "");
+            ret = ret.replaceAll("%22|%23|%25|%27|%2[Cc]|%3[Bb]|%3[Ff]|%7[Cc]", "");
 
             // Remove "combining" accent characters
             ret = ret.replaceAll("[\\u0300-\\u036F]", "");
@@ -137,6 +137,7 @@ public class FormatUtils
             // Remove escape sequences
             ret = ret.replaceAll("%E2%80%[0-9a-fA-F]{2}", ""); // %E2%80%xx
             ret = ret.replaceAll("%F0%9F%[0-9a-fA-F]{2}%[0-9a-fA-F]{2}", ""); // %F0%9F%xx%xx - emojis
+            ret = ret.replaceAll("%C2%AE", ""); //®
 
             // Remove illegal characters
             ret = ret.replaceAll("\\*", "");

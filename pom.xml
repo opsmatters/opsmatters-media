@@ -49,7 +49,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<aws.sdk.version>1.11.987</aws.sdk.version>
-		<twelvemonkeys.imageio.version>3.7.0</twelvemonkeys.imageio.version>
+		<twelvemonkeys.imageio.version>3.8.1</twelvemonkeys.imageio.version>
 		<chartjs.version>2.1.2-SNAPSHOT</chartjs.version>
   </properties>
 
@@ -267,7 +267,7 @@ media.built.on=${TODAY}
           <maxmemory>512m</maxmemory>
           <header><![CDATA[<h1>OpsMatters Media Utilities v${project.version}</h1>]]></header> 
           <bottom>
-            <![CDATA[<i>Copyright &#169; opsmatters 2021. All Rights Reserved.</i>]]>
+            <![CDATA[<i>Copyright &#169; opsmatters 2022. All Rights Reserved.</i>]]>
           </bottom>
           <quiet>true</quiet>
           <additionalJOptions>
@@ -573,7 +573,7 @@ media.built.on=${TODAY}
   <dependency>
     <groupId>org.apache.xmlgraphics</groupId>
     <artifactId>batik-transcoder</artifactId>
-    <version>1.11</version>
+    <version>1.14</version>
   </dependency>
 
   <dependency>
@@ -676,6 +676,12 @@ media.built.on=${TODAY}
     <groupId>net.coobird</groupId>
     <artifactId>thumbnailator</artifactId>
     <version>0.4.14</version>
+  </dependency>
+
+  <dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>1.7.36</version>
   </dependency>
 
 </dependencies>

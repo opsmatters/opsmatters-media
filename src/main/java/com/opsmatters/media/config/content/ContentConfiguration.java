@@ -360,7 +360,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
             if(content instanceof OrganisationListing)
             {
                 // Ignore missing and archived organisations
-                if(organisation == null || organisation.getStatus() == OrganisationStatus.ARCHIVED)
+                if(organisation == null || organisation.isArchived())
                 {
                     --idx;
                     continue;

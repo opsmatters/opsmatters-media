@@ -458,6 +458,15 @@ public class OrganisationContentType extends BaseItem
     }
 
     /**
+     * Set the deployed flag to false.
+     */
+    public void clearDeployed()
+    {
+        setDeployed(false);
+        setUpdatedDate(Instant.now());
+    }
+
+    /**
      * Go through the items to populate the summary.
      */
     public void setContent(List<? extends ContentItem> content)

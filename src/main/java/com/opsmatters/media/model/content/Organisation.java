@@ -572,6 +572,14 @@ public class Organisation extends OwnedItem implements FieldSource
     }
 
     /**
+     * Returns <CODE>true</CODE> if the organisation is ARCHIVED.
+     */
+    public boolean isArchived()
+    {
+        return status == OrganisationStatus.ARCHIVED;
+    }
+
+    /**
      * Sets the organisation status.
      */
     public void setStatus(String status)

@@ -110,6 +110,12 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
       "DELETE FROM %s WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
+     * The query to use to delete a content item from the table by organisation.
+     */
+    private static final String DELETE_BY_CODE_SQL =  
+      "DELETE FROM %s WHERE SITE_ID=? AND CODE=?";
+
+    /**
      * Constructor that takes a DAO factory and a table name.
      */
     public ContentDAO(DAOFactory factory, String tableName)
@@ -554,6 +560,26 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
     }
 
     /**
+     * Removes the content items from the table by organisation.
+     */
+    public synchronized void delete(Site site, String code) throws SQLException
+    {
+        if(!hasConnection())
+            return;
+
+        if(deleteByCodeStmt == null)
+            deleteByCodeStmt = prepareStatement(getConnection(), String.format(DELETE_BY_CODE_SQL, getTableName()));
+        clearParameters(deleteByCodeStmt);
+
+        deleteByCodeStmt.setString(1, site.getId());
+        deleteByCodeStmt.setString(2, code);
+        deleteByCodeStmt.executeUpdate();
+
+        logger.info(String.format("Deleted content for site %s and code %s in %s", 
+            site.getId(), code, getTableName()));
+    }
+
+    /**
      * Returns the maximum ID from the table.
      */
     protected synchronized int getMaxId(String siteId, String code) throws SQLException
@@ -662,6 +688,8 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
         maxIdStmt = null;
         closeStatement(deleteStmt);
         deleteStmt = null;
+        closeStatement(deleteByCodeStmt);
+        deleteByCodeStmt = null;
     }
 
     private PreparedStatement getByUuidStmt;
@@ -675,4 +703,5 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
     private PreparedStatement countByCodeStmt;
     private PreparedStatement maxIdStmt;
     private PreparedStatement deleteStmt;
+    private PreparedStatement deleteByCodeStmt;
 }

@@ -63,17 +63,25 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
      * The query to use to select the reviews from the CONTENT_REVIEWS table.
      */
     private static final String LIST_SQL =  
-      "SELECT CR.ID, CR.CREATED_DATE, CR.UPDATED_DATE, EFFECTIVE_DATE, CR.CODE, REASON, CR.STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY "
-      + "FROM CONTENT_REVIEWS CR, CONTENT_MONITORS CM "
-      + "WHERE CR.MONITOR_ID = CM.ID AND (CR.CREATED_DATE >= (NOW() + INTERVAL -30 DAY) OR CR.STATUS='NEW') ORDER BY CR.CREATED_DATE";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY "
+      + "FROM CONTENT_REVIEWS "
+      + "WHERE CREATED_DATE >= (NOW() + INTERVAL -30 DAY) OR STATUS='NEW' ORDER BY CREATED_DATE";
+
+    /**
+     * The query to use to select the reviews from the CONTENT_REVIEWS table by organisation.
+     */
+    private static final String LIST_BY_CODE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY "
+      + "FROM CONTENT_REVIEWS "
+      + "WHERE CODE=? ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the reviews from the CONTENT_REVIEWS table by status.
      */
     private static final String LIST_BY_STATUS_SQL =  
-      "SELECT CR.ID, CR.CREATED_DATE, CR.UPDATED_DATE, EFFECTIVE_DATE, CR.CODE, REASON, CR.STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY "
-      + "FROM CONTENT_REVIEWS CR, CONTENT_MONITORS CM "
-      + "WHERE CR.MONITOR_ID = CM.ID AND CR.STATUS=? AND (CR.CREATED_DATE >= (NOW() + INTERVAL -30 DAY) OR CR.STATUS='NEW') ORDER BY CR.CREATED_DATE";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY "
+      + "FROM CONTENT_REVIEWS "
+      + "WHERE STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -30 DAY) OR STATUS='NEW') ORDER BY CREATED_DATE";
 
     /**
      * The query to use to get the count of reviews from the CONTENT_REVIEWS table.
@@ -300,6 +308,63 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
     }
 
     /**
+     * Returns the reviews from the CONTENT_REVIEWS table by organisation.
+     */
+    public synchronized List<ContentReview> list(String code) throws SQLException
+    {
+        List<ContentReview> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByCodeStmt == null)
+            listByCodeStmt = prepareStatement(getConnection(), LIST_BY_CODE_SQL);
+        clearParameters(listByCodeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByCodeStmt.setString(1, code);
+            listByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByStatusStmt.executeQuery();
+            ret = new ArrayList<ContentReview>();
+            while(rs.next())
+            {
+                ContentReview review = new ContentReview();
+                review.setId(rs.getString(1));
+                review.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                review.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                review.setEffectiveDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                review.setCode(rs.getString(5));
+                review.setReason(rs.getString(6));
+                review.setStatus(rs.getString(7));
+                review.setMonitorId(rs.getString(8));
+                review.setNotes(rs.getString(9));
+                review.setChange(rs.getBoolean(10));
+                review.setCreatedBy(rs.getString(11));
+                ret.add(review);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the reviews from the CONTENT_REVIEWS table by status.
      */
     public synchronized List<ContentReview> list(ReviewStatus status) throws SQLException
@@ -406,6 +471,8 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
+        closeStatement(listByCodeStmt);
+        listByCodeStmt = null;
         closeStatement(listByStatusStmt);
         listByStatusStmt = null;
         closeStatement(countStmt);
@@ -418,6 +485,7 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
+    private PreparedStatement listByCodeStmt;
     private PreparedStatement listByStatusStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;

@@ -177,6 +177,10 @@ public class ImageUtils
             {
                 exception = e;
             }
+            catch(NullPointerException e)
+            {
+                exception = new IOException(e);
+            }
             catch(ArrayIndexOutOfBoundsException e)
             {
                 // Deal with JDK bug that causes some GIF files to throw ArrayIndexOutOfBoundsException
