@@ -230,7 +230,6 @@ public class PostArticle extends Article
 
         article.init();
         article.setSiteId(organisation.getSiteId());
-        article.setTitle("New Post");
         article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
         article.setImagePrefix(config.getImagePrefix());
         article.setSocial(organisation.hasSocial());

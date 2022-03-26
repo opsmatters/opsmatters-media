@@ -260,7 +260,7 @@ public class SocialPostHandler
                     inWord = false;
                 }
             }
-            else if(str.startsWith("http")) // Start of URL
+            else if(str.startsWith("http:") || str.startsWith("https:")) // Start of URL
             {
                 String url = StringUtils.extractUrl(str);
                 if(!inWord && url != null)
@@ -392,7 +392,9 @@ public class SocialPostHandler
                 tokens.add(new HashtagToken(token.substring(1)));
             else if(token.startsWith("@") && token.length() > 2)
                 tokens.add(new HandleToken(token.substring(1)));
-            else if(token.startsWith("http") && token.length() > 7)
+            else if(token.startsWith("http:") && token.length() > 10)
+                tokens.add(new UrlToken(token));
+            else if(token.startsWith("https:") && token.length() > 11)
                 tokens.add(new UrlToken(token));
             else if(token.startsWith("${") && token.endsWith("}") && token.length() > 3)
                 tokens.add(new PropertyToken(token.substring(2, token.length()-1)));

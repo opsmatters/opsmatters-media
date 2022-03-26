@@ -38,6 +38,7 @@ import com.opsmatters.media.model.chart.ChartSource;
 import com.opsmatters.media.model.chart.ChartParameter;
 import com.opsmatters.media.model.chart.ChartParameters;
 import com.opsmatters.media.model.chart.ChartParameterType;
+import com.opsmatters.media.util.AppSession;
 
 import static com.opsmatters.media.model.chart.ChartParameterType.*;
 import static com.opsmatters.media.model.chart.ChartParameterValue.*;
@@ -107,6 +108,10 @@ public class DatabaseDataSource<E extends Serializable> implements DataSource<E>
                                 // Replace the site default with the current site id
                                 if(str == CURRENT_SITE.name())
                                     str = site != null ? site.getId() : "";
+
+                                // Replace the session default with the current session id
+                                if(str == CURRENT_SESSION.name())
+                                    str = AppSession.id();
 
                                 if(str == null || str.length() == 0)
                                     sql = sql.replaceAll(String.format("=[ ]?:%s", parameter.name()), "LIKE '%'");

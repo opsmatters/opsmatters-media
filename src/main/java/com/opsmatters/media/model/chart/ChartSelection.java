@@ -160,7 +160,7 @@ public abstract class ChartSelection<T extends Serializable> implements Serializ
     }
 
     /**
-     * Returns <CODE>true</CODE> if the selection is list of items.
+     * Returns <CODE>true</CODE> if the selection is a list of items.
      */
     public boolean isMultiple()
     {
@@ -168,7 +168,7 @@ public abstract class ChartSelection<T extends Serializable> implements Serializ
     }
 
     /**
-     * Set to <CODE>true</CODE> if the selection is list of items.
+     * Set to <CODE>true</CODE> if the selection is a list of items.
      */
     public void setMultiple(boolean multiple)
     {

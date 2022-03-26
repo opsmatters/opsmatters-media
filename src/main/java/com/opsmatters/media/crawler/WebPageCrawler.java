@@ -542,9 +542,12 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                 if(tag != null)
                 {
                     ret = getValue(field, tag);
-                    if(debug())
-                        logger.info("Found element metatag for "+type+" field "+field.getName()+": "+ret);
-                    break;
+                    if(ret.length() > 0)
+                    {
+                        if(debug())
+                            logger.info("Found element metatag for "+type+" field "+field.getName()+": "+ret);
+                        break;
+                    }
                 }
             }
         }
@@ -922,9 +925,12 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                 if(tag != null)
                 {
                     ret = getValue(field, tag);
-                    if(debug())
-                        logger.info("Found image metatag for "+type+" field "+field.getName()+": "+ret);
-                    break;
+                    if(ret.length() > 0)
+                    {
+                        if(debug())
+                            logger.info("Found image metatag for "+type+" field "+field.getName()+": "+ret);
+                        break;
+                    }
                 }
             }
         }

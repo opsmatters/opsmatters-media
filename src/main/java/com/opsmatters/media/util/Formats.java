@@ -92,4 +92,9 @@ public class Formats
      * The date format used for content.
      */
     public static final String CONTENT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    /**
+     * The date format used for a session.
+     */
+    public static final String SESSION_FORMAT = "yyyyMMdd";
 }

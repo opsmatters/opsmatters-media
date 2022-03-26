@@ -52,14 +52,12 @@ public class ContentMonitor extends BaseItem
     public static final String URL = "url";
     public static final String CHANNEL_ID = "channel-id";
     public static final String INTERVAL = "interval";
-    public static final String DIFFERENCE = "difference";
     public static final String SUCCESS_DATE = "success-date";
     public static final String EXECUTION_TIME = "execution-time";
     public static final String ERROR_MESSAGE = "error-message";
     public static final String RETRY = "retry";
     public static final String SUBSCRIBED_DATE = "subscribed-date";
     public static final String SITES = "sites";
-    public static final String USE_STORED = "use-stored";
 
     private String code = "";
     private String organisation = "";
@@ -75,12 +73,10 @@ public class ContentMonitor extends BaseItem
     private EventType eventType;
     private String eventId = "";
     private int interval = -1;
-    private int difference = 0;
     private String errorMessage = "";
     private int retry = 0;
     private Instant subscribedDate;
     private String sites = "";
-    private boolean useStored = false;
 
     private List<ContentSummary> subscribed = new ArrayList<ContentSummary>();
     private Map<String,String> siteMap = new HashMap<String,String>();
@@ -138,12 +134,10 @@ public class ContentMonitor extends BaseItem
             setEventType(obj.getEventType());
             setEventId(obj.getEventId());
             setInterval(obj.getInterval());
-            setMinDifference(obj.getMinDifference());
             setErrorMessage(obj.getErrorMessage());
             setRetry(obj.getRetry());
             setSubscribedDate(obj.getSubscribedDate());
             setSites(obj.getSites());
-            setUseStored(obj.useStored());
         }
     }
 
@@ -158,14 +152,12 @@ public class ContentMonitor extends BaseItem
         ret.putOpt(URL, getUrl());
         ret.putOpt(CHANNEL_ID, getChannelId());
         ret.putOpt(INTERVAL, getInterval());
-        ret.putOpt(DIFFERENCE, getMinDifference());
         ret.putOpt(SUCCESS_DATE, getSuccessDateMillis());
         ret.putOpt(EXECUTION_TIME, getExecutionTime());
         ret.putOpt(ERROR_MESSAGE, getErrorMessage());
         ret.putOpt(RETRY, getRetry());
         ret.putOpt(SUBSCRIBED_DATE, getSubscribedDateMillis());
         ret.putOpt(SITES, getSites());
-        ret.putOpt(USE_STORED, useStored());
 
         return ret;
     }
@@ -179,14 +171,12 @@ public class ContentMonitor extends BaseItem
         setChannelId(obj.optString(CHANNEL_ID));
         setUrl(obj.optString(URL));
         setInterval(obj.optInt(INTERVAL));
-        setMinDifference(obj.optInt(DIFFERENCE));
         setSuccessDateMillis(obj.optLong(SUCCESS_DATE));
         setExecutionTime(obj.optLong(EXECUTION_TIME));
         setErrorMessage(obj.optString(ERROR_MESSAGE));
         setRetry(obj.optInt(RETRY));
         setSubscribedDateMillis(obj.optLong(SUBSCRIBED_DATE));
         setSites(obj.optString(SITES));
-        setUseStored(obj.optBoolean(USE_STORED));
     }
 
     /**
@@ -698,7 +688,7 @@ public class ContentMonitor extends BaseItem
     /**
      * Compare the given snapshot with the current one.
      */
-    public boolean compareSnapshot(ContentSnapshot snapshot) throws SQLException
+    public ContentSnapshot compareSnapshot(ContentSnapshot snapshot) throws SQLException
     {
         ContentSnapshot current = new ContentSnapshot(getSnapshot());
         ContentSnapshot latest = new ContentSnapshot(snapshot);
@@ -788,22 +778,6 @@ public class ContentMonitor extends BaseItem
     public void setInterval(int interval)
     {
         this.interval = interval;
-    }
-
-    /**
-     * Returns the minimum % difference between monitor checks.
-     */
-    public int getMinDifference()
-    {
-        return difference;
-    }
-
-    /**
-     * Sets the minimum % difference between monitor checks.
-     */
-    public void setMinDifference(int difference)
-    {
-        this.difference = difference;
     }
 
     /**
@@ -981,38 +955,6 @@ public class ContentMonitor extends BaseItem
     public boolean hasSite(String siteId)
     {
         return siteMap.size() == 0 || siteMap.get(siteId) != null;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the comparison should use stored content items too.
-     */
-    public boolean useStored()
-    {
-        return useStored;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the comparison should use stored content items too.
-     */
-    public Boolean getUseStoredObject()
-    {
-        return Boolean.valueOf(useStored);
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the comparison should use stored content items too.
-     */
-    public void setUseStored(boolean useStored)
-    {
-        this.useStored = useStored;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the comparison should use stored content items too.
-     */
-    public void setUseStoredObject(Boolean useStored)
-    {
-        this.useStored = useStored != null && useStored.booleanValue();
     }
 
     /**

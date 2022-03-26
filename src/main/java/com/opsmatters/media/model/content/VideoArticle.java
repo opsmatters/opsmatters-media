@@ -295,12 +295,15 @@ public class VideoArticle extends Article
      */
     public void setVideoDetails(VideoDetails obj)
     {
-        setContentSummary(obj);
-        setDuration(obj.getDuration());
-        setDescription(new String(obj.getDescription() != null ? obj.getDescription() : ""));
-        setChannelId(new String(obj.getChannelId()));
-        setChannelTitle(new String(obj.getChannelTitle()));
-        setContentDetails(true);
+        if(obj != null)
+        {
+            setContentSummary(obj);
+            setDuration(obj.getDuration());
+            setDescription(new String(obj.getDescription() != null ? obj.getDescription() : ""));
+            setChannelId(new String(obj.getChannelId()));
+            setChannelTitle(new String(obj.getChannelTitle()));
+            setContentDetails(true);
+        }
     }
 
     /**

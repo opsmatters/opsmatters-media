@@ -141,6 +141,9 @@ public class EventConfiguration extends ContentConfiguration<EventResource>
         super.parseDocument(map);
         if(map.containsKey(PAGES))
         {
+            List<WebPageConfiguration> common = new ArrayList<WebPageConfiguration>(getPages());
+            getPages().clear();
+
             List<Map<String,Object>> pages = (List<Map<String,Object>>)map.get(PAGES);
             for(Map<String,Object> page : pages)
             {
@@ -151,6 +154,9 @@ public class EventConfiguration extends ContentConfiguration<EventResource>
                     addPage(config);
                 }
             }
+
+            // Make sure that the common pages come last
+            getPages().addAll(common);
         }
     }
 }

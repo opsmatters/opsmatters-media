@@ -35,6 +35,7 @@ import com.opsmatters.media.model.social.DraftPostFactory;
 import com.opsmatters.media.model.social.DraftStatus;
 import com.opsmatters.media.model.social.PostType;
 import com.opsmatters.media.model.social.DraftContentPost;
+import com.opsmatters.media.util.AppSession;
 
 /**
  * DAO that provides operations on the DRAFT_POSTS table in the database.
@@ -64,15 +65,15 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO DRAFT_POSTS"
-      + "( ID, CREATED_DATE, CREATED_DATE_TRUNC, UPDATED_DATE, SCHEDULED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, MESSAGE, STATUS, CREATED_BY )"
+      + "( ID, CREATED_DATE, CREATED_DATE_TRUNC, UPDATED_DATE, SCHEDULED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, MESSAGE, STATUS, CREATED_BY, SESSION )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a post in the DRAFT_POSTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE DRAFT_POSTS SET UPDATED_DATE=?, SCHEDULED_DATE=?, SITE_ID=?, SOURCE_ID=?, PROPERTIES=?, ATTRIBUTES=?, MESSAGE=?, STATUS=? "
+      "UPDATE DRAFT_POSTS SET UPDATED_DATE=?, SCHEDULED_DATE=?, SITE_ID=?, SOURCE_ID=?, PROPERTIES=?, ATTRIBUTES=?, MESSAGE=?, STATUS=?, SESSION=? "
       + "WHERE ID=?";
 
     /**
@@ -149,6 +150,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
         table.addColumn("MESSAGE", Types.VARCHAR, 512, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
+        table.addColumn("SESSION", Types.VARCHAR, 10, true);
         table.setPrimaryKey("DRAFT_POSTS_PK", new String[] {"ID"});
         table.addIndex("DRAFT_POSTS_STATUS_IDX", new String[] {"TYPE", "STATUS"});
         table.addIndex("DRAFT_POSTS_CREATED_TRUNC_IDX", new String[] {"CREATED_DATE_TRUNC"});
@@ -366,6 +368,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
             insertStmt.setString(11, post.getMessage());
             insertStmt.setString(12, post.getStatus().name());
             insertStmt.setString(13, post.getCreatedBy());
+            insertStmt.setString(14, AppSession.id());
             insertStmt.executeUpdate();
 
             logger.info("Created post '"+post.getId()+"' in DRAFT_POSTS");
@@ -420,7 +423,8 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
             updateStmt.setCharacterStream(6, reader2, attributes.length());
             updateStmt.setString(7, post.getMessage());
             updateStmt.setString(8, post.getStatus().name());
-            updateStmt.setString(9, post.getId());
+            updateStmt.setString(9, AppSession.id());
+            updateStmt.setString(10, post.getId());
             updateStmt.executeUpdate();
 
             logger.info("Updated post '"+post.getId()+"' in DRAFT_POSTS");

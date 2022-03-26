@@ -32,6 +32,7 @@ public class ContentChange extends ContentEvent
     private ChangeStatus status;
     private String snapshotBefore = "";
     private String snapshotAfter = "";
+    private String snapshotDiff = "";
     private long executionTime = -1L;
     private int difference = 0;
     private String sites = "";
@@ -44,9 +45,9 @@ public class ContentChange extends ContentEvent
     }
 
     /**
-     * Constructor that takes a monitor and a snapshot.
+     * Constructor that takes a monitor, a snapshot and the difference.
      */
-    public ContentChange(ContentMonitor monitor, ContentSnapshot snapshot)
+    public ContentChange(ContentMonitor monitor, ContentSnapshot snapshot, ContentSnapshot diff)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
@@ -54,9 +55,19 @@ public class ContentChange extends ContentEvent
         setStatus(ChangeStatus.NEW);
         setSnapshotBefore(monitor.getSnapshot());
         setSnapshotAfter(snapshot);
+        if(diff != null)
+            setSnapshotDiff(diff);
         setMonitorId(monitor.getId());
         setExecutionTime(monitor.getExecutionTime());
         setDifference(SnapshotDiff.getDifferencePercent(getSnapshotBefore(), getSnapshotAfter()));
+    }
+
+    /**
+     * Constructor that takes a monitor and a snapshot.
+     */
+    public ContentChange(ContentMonitor monitor, ContentSnapshot snapshot)
+    {
+        this(monitor, snapshot, null);
     }
 
     /**
@@ -78,6 +89,7 @@ public class ContentChange extends ContentEvent
             setStatus(obj.getStatus());
             setSnapshotBefore(obj.getSnapshotBefore());
             setSnapshotAfter(obj.getSnapshotAfter());
+            setSnapshotDiff(obj.getSnapshotDiff());
             setExecutionTime(obj.getExecutionTime());
             setDifference(obj.getDifference());
             setSites(obj.getSites());
@@ -173,6 +185,30 @@ public class ContentChange extends ContentEvent
     public void setSnapshotAfter(ContentSnapshot snapshotAfter)
     {
         setSnapshotAfter(snapshotAfter.toString());
+    }
+
+    /**
+     * Returns the snapshot difference.
+     */
+    public String getSnapshotDiff()
+    {
+        return snapshotDiff;
+    }
+
+    /**
+     * Sets the snapshot difference.
+     */
+    public void setSnapshotDiff(String snapshotDiff)
+    {
+        this.snapshotDiff = snapshotDiff;
+    }
+
+    /**
+     * Sets the snapshot difference.
+     */
+    public void setSnapshotDiff(ContentSnapshot snapshotDiff)
+    {
+        setSnapshotDiff(snapshotDiff.toString());
     }
 
     /**

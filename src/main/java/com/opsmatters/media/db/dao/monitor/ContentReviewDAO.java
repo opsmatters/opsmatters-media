@@ -26,6 +26,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.monitor.ContentReview;
 import com.opsmatters.media.model.monitor.ReviewStatus;
+import com.opsmatters.media.util.AppSession;
 
 /**
  * DAO that provides operations on the CONTENT_REVIEWS table in the database.
@@ -48,15 +49,15 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTENT_REVIEWS"
-      + "( ID, CREATED_DATE, CREATED_DATE_TRUNC, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY )"
+      + "( ID, CREATED_DATE, CREATED_DATE_TRUNC, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY, SESSION )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a review in the CONTENT_REVIEWS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTENT_REVIEWS SET UPDATED_DATE=?, STATUS=?, NOTES=?, \"CHANGE\"=?, CREATED_BY=? "
+      "UPDATE CONTENT_REVIEWS SET UPDATED_DATE=?, STATUS=?, NOTES=?, \"CHANGE\"=?, CREATED_BY=?, SESSION=? "
       + "WHERE ID=?";
 
     /**
@@ -121,6 +122,7 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
         table.addColumn("NOTES", Types.VARCHAR, 256, false);
         table.addColumn("CHANGE", Types.BOOLEAN, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
+        table.addColumn("SESSION", Types.VARCHAR, 10, true);
         table.setPrimaryKey("CONTENT_REVIEWS_PK", new String[] {"ID"});
         table.addIndex("CONTENT_REVIEWS_STATUS_IDX", new String[] {"STATUS"});
         table.addIndex("CONTENT_REVIEWS_CREATED_TRUNC_IDX", new String[] {"CREATED_DATE_TRUNC"});
@@ -209,6 +211,7 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
             insertStmt.setString(10, review.getNotes());
             insertStmt.setBoolean(11, review.hasChange());
             insertStmt.setString(12, review.getCreatedBy());
+            insertStmt.setString(13, AppSession.id());
             insertStmt.executeUpdate();
 
             logger.info("Created review '"+review.getId()+"' in CONTENT_REVIEWS");
@@ -245,7 +248,8 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
         updateStmt.setString(3, review.getNotes());
         updateStmt.setBoolean(4, review.hasChange());
         updateStmt.setString(5, review.getCreatedBy());
-        updateStmt.setString(6, review.getId());
+        updateStmt.setString(6, AppSession.id());
+        updateStmt.setString(7, review.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated review '"+review.getId()+"' in CONTENT_REVIEWS");

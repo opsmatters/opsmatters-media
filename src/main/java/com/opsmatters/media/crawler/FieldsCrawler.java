@@ -356,9 +356,12 @@ public abstract class FieldsCrawler<T extends ContentSummary>
     protected String processValue(String value)
     {
         String ret = value;
-        ret = ret.replaceAll("&amp;", "&"); // Remove &amp;
+
+        ret = ret.replaceAll("&amp;", "&"); // Replace &amp; with &
         ret = ret.replaceAll("&nbsp;", " "); // Replace &nbsp; with space
         ret = ret.replaceAll("\\u2005|\\u2009|\\u202F", " "); // Replace "thin" spaces with normal space
+        ret = ret.replaceAll("\\ufffc", ""); // Remove object replacement character
+
         return ret;
     }
 }

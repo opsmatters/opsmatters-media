@@ -30,6 +30,7 @@ import com.opsmatters.media.model.social.PreparedPost;
 import com.opsmatters.media.model.social.DraftPost;
 import com.opsmatters.media.model.social.SocialChannels;
 import com.opsmatters.media.model.social.MessageFormat;
+import com.opsmatters.media.util.AppSession;
 
 /**
  * DAO that provides operations on the PREPARED_POSTS table in the database.
@@ -56,16 +57,16 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     private static final String INSERT_SQL =  
       "INSERT INTO PREPARED_POSTS"
       + "( ID, CREATED_DATE, CREATED_DATE_TRUNC, UPDATED_DATE, UPDATED_DATE_TRUNC, SCHEDULED_DATE, TYPE, SITE_ID, DRAFT_ID, CODE, "
-      + "TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, CREATED_BY )"
+      + "TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, CREATED_BY, SESSION )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a post in the PREPARED_POSTS table.
      */
     private static final String UPDATE_SQL =  
       "UPDATE PREPARED_POSTS SET UPDATED_DATE=?, UPDATED_DATE_TRUNC=?, SCHEDULED_DATE=?, CODE=?, "
-      + "TITLE=?, MESSAGE=?, STATUS=?, EXTERNAL_ID=?, ERROR_CODE=?, ERROR_MESSAGE=? "
+      + "TITLE=?, MESSAGE=?, STATUS=?, EXTERNAL_ID=?, ERROR_CODE=?, ERROR_MESSAGE=?, SESSION=? "
       + "WHERE ID=?";
 
     /**
@@ -152,6 +153,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
         table.addColumn("ERROR_CODE", Types.INTEGER, false);
         table.addColumn("ERROR_MESSAGE", Types.VARCHAR, MAX_ERROR_MESSAGE, false);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
+        table.addColumn("SESSION", Types.VARCHAR, 10, true);
         table.setPrimaryKey("PREPARED_POSTS_PK", new String[] {"ID"});
         table.addIndex("PREPARED_POSTS_STATUS_IDX", new String[] {"STATUS"});
         table.addIndex("PREPARED_POSTS_DRAFT_IDX", new String[] {"DRAFT_ID"});
@@ -251,6 +253,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
             insertStmt.setString(14, post.getStatus().name());
             insertStmt.setString(15, post.getExternalId());
             insertStmt.setString(16, post.getCreatedBy());
+            insertStmt.setString(17, AppSession.id());
             insertStmt.executeUpdate();
 
             logger.info("Created post '"+post.getId()+"' in PREPARED_POSTS");
@@ -296,7 +299,8 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
         updateStmt.setString(8, post.getExternalId());
         updateStmt.setInt(9, post.getErrorCode());
         updateStmt.setString(10, errorMessage);
-        updateStmt.setString(11, post.getId());
+        updateStmt.setString(11, AppSession.id());
+        updateStmt.setString(12, post.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated post '"+post.getId()+"' in PREPARED_POSTS");

@@ -118,21 +118,21 @@ public abstract class Feed extends BaseItem
     }
 
     /**
-     * Set the feed status to PENDING.
-     */
-    public void setPending()
-    {
-        setStatus(FeedStatus.PENDING);
-        setUpdatedDate(Instant.now());
-    }
-
-    /**
      * Returns <CODE>true</CODE> if the feed is ready for importing.
      */
     public boolean canImport()
     {
         return getStatus() == FeedStatus.PENDING
             || getStatus() == FeedStatus.ERROR;
+    }
+
+    /**
+     * Set the feed status to PENDING.
+     */
+    public void setPending()
+    {
+        setStatus(FeedStatus.PENDING);
+        setUpdatedDate(Instant.now());
     }
 
     /**

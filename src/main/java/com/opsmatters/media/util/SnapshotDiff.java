@@ -93,20 +93,28 @@ public class SnapshotDiff
                 boolean empty = emptyKeys && emptyProperties;
                 if(empty)
                     textVisitor.append(left); // blank line
-                else
+                else if(emptyKeys)
                     textVisitor.append("<div class=\"comparison\">");
-
 
                 if(!emptyKeys)
                 {
                     StringsComparator comparator = new StringsComparator(left, right);
-                    if(comparator.getScript().getLCSLength() > (Integer.max(left.length(), right.length())*COMMONALITY))
+                    int length = comparator.getScript().getLCSLength();
+                    int max = Integer.max(left.length(), right.length());
+                    if(length > (max*COMMONALITY)) // Strings have at least 40% commonality
                     {
+                        if(length == max)
+                        textVisitor.append("<div class=\"comparison comparison-success\">");
+                        else
+                        textVisitor.append("<div class=\"comparison comparison-fail\">");
+
                         // Merge both lines if they have at least 40% commonality
                         appendLine(textVisitor, rightProperty, rightUrl, comparator);
                     }
                     else
                     {
+                        textVisitor.append("<div class=\"comparison comparison-fail\">");
+
                         // Otherwise show the two lines separately
                         if(leftProperty != null && left.length() > 1)
                         {

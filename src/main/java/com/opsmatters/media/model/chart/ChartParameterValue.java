@@ -35,5 +35,6 @@ public enum ChartParameterValue implements Serializable
     LAST_1_MONTH,
     LAST_2_MONTHS,
     LAST_3_MONTHS,
-    CURRENT_SITE;
+    CURRENT_SITE,
+    CURRENT_SESSION;
 }

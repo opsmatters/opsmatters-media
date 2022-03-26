@@ -79,6 +79,8 @@ public class StringSelection extends ChartSelection<String>
         {
             case CURRENT_SITE:
                 return CURRENT_SITE.name(); // evaluated later
+            case CURRENT_SESSION:
+                return CURRENT_SESSION.name(); // evaluated later
             default:
                 return getValue();
         }

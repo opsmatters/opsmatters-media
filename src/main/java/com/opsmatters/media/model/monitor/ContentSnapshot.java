@@ -16,6 +16,7 @@
 package com.opsmatters.media.model.monitor;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.HashMap;
@@ -27,10 +28,13 @@ import org.json.JSONArray;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentSummary;
+import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.content.RoundupSummary;
 import com.opsmatters.media.model.content.VideoSummary;
+import com.opsmatters.media.model.content.VideoArticle;
 import com.opsmatters.media.model.content.EventSummary;
 import com.opsmatters.media.model.content.PublicationSummary;
+import com.opsmatters.media.model.content.LinkedContent;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -54,6 +58,22 @@ public class ContentSnapshot extends JSONObject
         {
             for(ContentSummary content : items)
                 array.put(createObject(type, content));
+        }
+
+        put(type.tag(), array);
+        put(Fields.COUNT, array.length());
+    }
+
+    /**
+     * Constructor that takes a content type and list of items.
+     */
+    public ContentSnapshot(List<JSONObject> items, ContentType type)
+    {
+        JSONArray array = new JSONArray();
+        if(items != null)
+        {
+            for(JSONObject item : items)
+                array.put(item);
         }
 
         put(type.tag(), array);
@@ -123,6 +143,14 @@ public class ContentSnapshot extends JSONObject
     public int getCount()
     {
         return optInt(Fields.COUNT, -1);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the item count is zero.
+     */
+    public boolean isEmpty()
+    {
+        return getCount() == 0;
     }
 
     /**
@@ -215,9 +243,9 @@ public class ContentSnapshot extends JSONObject
     }
 
     /**
-     * Returns <CODE>true<CODE> if the two snapshots match.
+     * Returns the difference between the two snapshots (or null if they are the same).
      */
-    public static boolean compare(String code, ContentSnapshot current,
+    public static ContentSnapshot compare(String code, ContentSnapshot current,
         ContentSnapshot latest, boolean checkDecrease)
         throws SQLException
     {
@@ -235,8 +263,8 @@ public class ContentSnapshot extends JSONObject
 
         ContentLookup lookup = current.getLookup();
         ContentType type = current.getContentType();
-        Map<String,String> titles = new HashMap<String,String>();
-        Map<String,String> ids = new HashMap<String,String>();
+        Map<String,JSONObject> titles = new HashMap<String,JSONObject>();
+        Map<String,JSONObject> ids = new HashMap<String,JSONObject>();
 
         JSONArray latestArray = latest.getJSONArray(latest.getTag());
         for(int i = 0; i < latestArray.length(); i++)
@@ -245,10 +273,9 @@ public class ContentSnapshot extends JSONObject
             String title = item.optString(Fields.TITLE);
             String id = item.optString(Fields.URL);
             if(type == ContentType.VIDEO)
-            if(type == ContentType.VIDEO)
                 id = item.optString(Fields.VIDEO_ID);
-            titles.put(title, title);
-            ids.put(id, id);
+            titles.put(title, item);
+            ids.put(id, item);
         }
 
         if(lookup != null)
@@ -275,27 +302,146 @@ public class ContentSnapshot extends JSONObject
         //   in the stored content items to see if we've seen them before
         if(lookup != null && (titles.size() > 0 || ids.size() > 0))
         {
-            Iterator<Entry<String,String>> iterator = titles.entrySet().iterator();
+            Iterator<Entry<String,JSONObject>> iterator = titles.entrySet().iterator();
             while(iterator.hasNext())
             {
-                String title = iterator.next().getKey();
-                if(lookup.getByTitle(title) != null)
+                Entry<String,JSONObject> entry = iterator.next();
+                String title = entry.getKey();
+                JSONObject item = entry.getValue();
+                String publishedDate = item.optString(Fields.PUBLISHED_DATE);
+                if(publishedDate.length() > 0)
+                    publishedDate = publishedDate.substring(0, publishedDate.indexOf(" ")); // Remove time part
+                String id = item.optString(Fields.URL);
+                if(type == ContentType.VIDEO)
+                    id = item.optString(Fields.VIDEO_ID);
+
+                ContentItem content = lookup.getByTitle(title);
+                if(content != null)
                 {
+                    // Store the last videoId or URL if it has changed
+                    if(type == ContentType.VIDEO)
+                    {
+                        VideoArticle video = (VideoArticle)content;
+                        if(!id.equals(video.getVideoId()))
+                        {
+                            item.put(Fields.LAST_VIDEO_ID, video.getVideoId());
+                            entry.setValue(item);
+                        }
+                    }
+                    else
+                    {
+                        LinkedContent linked = (LinkedContent)content;
+                        if(!id.equals(linked.getUrl()))
+                        {
+                            item.put(Fields.LAST_URL, linked.getUrl());
+                            entry.setValue(item);
+                        }
+                    }
+
+                    // Store the last published date if it has changed
+                    if(publishedDate.length() > 0
+                        && !content.getPublishedDateAsString().startsWith(publishedDate))
+                    {
+                        item.put(Fields.LAST_PUBLISHED_DATE, content.getPublishedDateAsString());
+                        entry.setValue(item);
+                        continue;
+                    }
+
                     iterator.remove();
                     logger.info(String.format("Found stored title for %s: title='%s' titles=%d",
                         code, title, titles.size()));
+                }
+                else
+                {
+                    content = lookup.getById(id);
+                    if(content != null)
+                    {
+                        // Store the last title if it has changed
+                        if(!title.equals(content.getTitle()))
+                        {
+                            item.put(Fields.LAST_TITLE, content.getTitle());
+                            entry.setValue(item);
+                        }
+
+                        // Store the last published date if it has changed
+                        if(publishedDate.length() > 0
+                            && !content.getPublishedDateAsString().startsWith(publishedDate))
+                        {
+                            item.put(Fields.LAST_PUBLISHED_DATE, content.getPublishedDateAsString());
+                            entry.setValue(item);
+                        }
+                    }
                 }
             }
 
             iterator = ids.entrySet().iterator();
             while(iterator.hasNext())
             {
-                String id = iterator.next().getKey();
-                if(lookup.getById(id) != null)
+                Entry<String,JSONObject> entry = iterator.next();
+                String id = entry.getKey();
+                JSONObject item = entry.getValue();
+                String publishedDate = item.optString(Fields.PUBLISHED_DATE);
+                if(publishedDate.length() > 0)
+                    publishedDate = publishedDate.substring(0, publishedDate.indexOf(" ")); // Remove time part
+                String title = item.optString(Fields.TITLE);
+
+                ContentItem content = lookup.getById(id);
+                if(content != null)
                 {
+
+                    // Store the last title if it has changed
+                    if(!title.equals(content.getTitle()))
+                    {
+                        item.put(Fields.LAST_TITLE, content.getTitle());
+                        entry.setValue(item);
+                    }
+
+                    // Store the last published date if it has changed
+                    if(publishedDate.length() > 0
+                        && !content.getPublishedDateAsString().startsWith(publishedDate))
+                    {
+                        item.put(Fields.LAST_PUBLISHED_DATE, content.getPublishedDateAsString());
+                        entry.setValue(item);
+                        continue;
+                    }
+
                     iterator.remove();
                     logger.info(String.format("Found stored id for %s: id=%s ids=%d",
                         code, id, ids.size()));
+                }
+                else
+                {
+                    content = lookup.getByTitle(title);
+                    if(content != null)
+                    {
+                        // Store the last videoId or URL if it has changed
+                        if(type == ContentType.VIDEO)
+                        {
+                            VideoArticle video = (VideoArticle)content;
+                            if(!id.equals(video.getVideoId()))
+                            {
+                                item.put(Fields.LAST_VIDEO_ID, video.getVideoId());
+                                entry.setValue(item);
+                            }
+                        }
+                        else
+                        {
+                            LinkedContent linked = (LinkedContent)content;
+                            if(!id.equals(linked.getUrl()))
+                            {
+                                item.put(Fields.LAST_URL, linked.getUrl());
+                                entry.setValue(item);
+                            }
+                        }
+
+                        // Store the last published date if it has changed
+                        if(publishedDate.length() > 0
+                            && !content.getPublishedDateAsString().startsWith(publishedDate))
+                        {
+                            item.put(Fields.LAST_PUBLISHED_DATE, content.getPublishedDateAsString());
+                            entry.setValue(item);
+                        }
+                    }
                 }
             }
         }
@@ -304,7 +450,48 @@ public class ContentSnapshot extends JSONObject
             logger.info(String.format("After compare with stored for %s: titles=%d ids=%d",
                 code, titles.size(), ids.size()));
 
-        return titles.size() == 0 && ids.size() == 0;
+        // Create the array of difference items
+        List<JSONObject> items = new ArrayList<JSONObject>();
+ 
+        // Go through the leftover titles and add to the differences
+        if(titles.size() > 0)
+        {
+            Iterator<Entry<String,JSONObject>> iterator = titles.entrySet().iterator();
+            while(iterator.hasNext())
+            {
+                Entry<String,JSONObject> entry = iterator.next();
+                String title = entry.getKey();
+                JSONObject item = entry.getValue();
+                String id = item.optString(Fields.URL);
+                if(type == ContentType.VIDEO)
+                    id = item.optString(Fields.VIDEO_ID);
+                String publishedDate = item.optString(Fields.PUBLISHED_DATE);
+                logger.info(String.format("Unable to find item with title for %s: id=%s, published=%s, title=%s",
+                    code, id, publishedDate, title));
+                if(!items.contains(item))
+                    items.add(item);
+            }
+        }
+
+        // Go through the leftover ids and add to the differences
+        if(ids.size() > 0)
+        {
+            Iterator<Entry<String,JSONObject>> iterator = ids.entrySet().iterator();
+            while(iterator.hasNext())
+            {
+                Entry<String,JSONObject> entry = iterator.next();
+                String id = entry.getKey();
+                JSONObject item = entry.getValue();
+                String title = item.optString(Fields.TITLE);
+                String publishedDate = item.optString(Fields.PUBLISHED_DATE);
+                logger.info(String.format("Unable to find item with id for %s: id=%s, published=%s, title=%s",
+                    code, id, publishedDate, title));
+                if(!items.contains(item))
+                    items.add(item);
+            }
+        }
+
+        return new ContentSnapshot(items, type);
     }
 
     /**

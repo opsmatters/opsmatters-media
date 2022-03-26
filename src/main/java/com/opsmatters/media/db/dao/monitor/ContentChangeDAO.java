@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.monitor.ContentChange;
 import com.opsmatters.media.model.monitor.ChangeStatus;
+import com.opsmatters.media.util.AppSession;
 
 /**
  * DAO that provides operations on the CONTENT_CHANGES table in the database.
@@ -42,7 +43,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
      * The query to use to select a change from the CONTENT_CHANGES table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, SITES, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, SNAPSHOT_DIFF, STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, SITES, CREATED_BY "
       + "FROM CONTENT_CHANGES WHERE ID=?";
 
     /**
@@ -50,22 +51,22 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTENT_CHANGES"
-      + "( ID, CREATED_DATE, CREATED_DATE_TRUNC, UPDATED_DATE, CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, SITES, CREATED_BY )"
+      + "( ID, CREATED_DATE, CREATED_DATE_TRUNC, UPDATED_DATE, CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, SNAPSHOT_DIFF, STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, SITES, CREATED_BY, SESSION )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a change in the CONTENT_CHANGES table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTENT_CHANGES SET UPDATED_DATE=?, STATUS=?, SITES=?, CREATED_BY=? "
+      "UPDATE CONTENT_CHANGES SET UPDATED_DATE=?, STATUS=?, SITES=?, CREATED_BY=?, SESSION=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the changes from the CONTENT_CHANGES table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, SITES, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, SNAPSHOT_DIFF, STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, SITES, CREATED_BY "
       + "FROM CONTENT_CHANGES "
       + "WHERE CREATED_DATE >= (NOW() + INTERVAL -7 DAY) OR STATUS='NEW' ORDER BY CREATED_DATE";
 
@@ -73,7 +74,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
      * The query to use to select the changes from the CONTENT_CHANGES table by organisation.
      */
     private static final String LIST_BY_CODE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, SITES, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, SNAPSHOT_DIFF, STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, SITES, CREATED_BY "
       + "FROM CONTENT_CHANGES "
       + "WHERE CODE=? ORDER BY CREATED_DATE";
 
@@ -81,7 +82,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
      * The query to use to select the changes from the CONTENT_CHANGES table by status.
      */
     private static final String LIST_BY_STATUS_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, SITES, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, SNAPSHOT_DIFF, STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, SITES, CREATED_BY "
       + "FROM CONTENT_CHANGES "
       + "WHERE STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -7 DAY) OR STATUS='NEW') ORDER BY CREATED_DATE";
 
@@ -118,12 +119,14 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("SNAPSHOT_BEFORE", Types.LONGVARCHAR, true);
         table.addColumn("SNAPSHOT_AFTER", Types.LONGVARCHAR, true);
+        table.addColumn("SNAPSHOT_DIFF", Types.LONGVARCHAR, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("MONITOR_ID", Types.VARCHAR, 36, true);
         table.addColumn("EXECUTION_TIME", Types.INTEGER, true);
         table.addColumn("DIFFERENCE", Types.INTEGER, true);
         table.addColumn("SITES", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
+        table.addColumn("SESSION", Types.VARCHAR, 10, true);
         table.setPrimaryKey("CONTENT_CHANGES_PK", new String[] {"ID"});
         table.addIndex("CONTENT_CHANGES_STATUS_IDX", new String[] {"STATUS"});
         table.addIndex("CONTENT_CHANGES_CREATED_TRUNC_IDX", new String[] {"CREATED_DATE_TRUNC"});
@@ -161,12 +164,13 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
                 change.setCode(rs.getString(4));
                 change.setSnapshotBefore(getClob(rs, 5));
                 change.setSnapshotAfter(getClob(rs, 6));
-                change.setStatus(rs.getString(7));
-                change.setMonitorId(rs.getString(8));
-                change.setExecutionTime(rs.getLong(9));
-                change.setDifference(rs.getInt(10));
-                change.setSites(rs.getString(11));
-                change.setCreatedBy(rs.getString(12));
+                change.setSnapshotDiff(getClob(rs, 7));
+                change.setStatus(rs.getString(8));
+                change.setMonitorId(rs.getString(9));
+                change.setExecutionTime(rs.getLong(10));
+                change.setDifference(rs.getInt(11));
+                change.setSites(rs.getString(12));
+                change.setCreatedBy(rs.getString(13));
                 ret = change;
             }
         }
@@ -199,7 +203,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
             insertStmt = prepareStatement(getConnection(), INSERT_SQL);
         clearParameters(insertStmt);
 
-        StringReader reader = null, reader2 = null;
+        StringReader reader = null, reader2 = null, reader3 = null;
 
         try
         {
@@ -214,12 +218,17 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
             String snapshotAfter = change.getSnapshotAfter();
             reader2 = new StringReader(snapshotAfter);
             insertStmt.setCharacterStream(7, reader2, snapshotAfter.length());
-            insertStmt.setString(8, change.getStatus().name());
-            insertStmt.setString(9, change.getMonitorId());
-            insertStmt.setLong(10, change.getExecutionTime());
-            insertStmt.setInt(11, change.getDifference());
-            insertStmt.setString(12, change.getSites());
-            insertStmt.setString(13, change.getCreatedBy());
+            String snapshotDiff = change.getSnapshotDiff();
+            reader3 = new StringReader(snapshotDiff);
+            insertStmt.setCharacterStream(8, reader3, snapshotDiff.length());
+
+            insertStmt.setString(9, change.getStatus().name());
+            insertStmt.setString(10, change.getMonitorId());
+            insertStmt.setLong(11, change.getExecutionTime());
+            insertStmt.setInt(12, change.getDifference());
+            insertStmt.setString(13, change.getSites());
+            insertStmt.setString(14, change.getCreatedBy());
+            insertStmt.setString(15, AppSession.id());
             insertStmt.executeUpdate();
 
             logger.info("Created change '"+change.getId()+"' in CONTENT_CHANGES");
@@ -243,6 +252,8 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
                 reader.close();
             if(reader2 != null)
                 reader2.close();
+            if(reader3 != null)
+                reader3.close();
         }
     }
 
@@ -263,7 +274,8 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
         updateStmt.setString(2, change.getStatus().name());
         updateStmt.setString(3, change.getSites());
         updateStmt.setString(4, change.getCreatedBy());
-        updateStmt.setString(5, change.getId());
+        updateStmt.setString(5, AppSession.id());
+        updateStmt.setString(6, change.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated change '"+change.getId()+"' in CONTENT_CHANGES");
@@ -300,12 +312,13 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
                 change.setCode(rs.getString(4));
                 change.setSnapshotBefore(getClob(rs, 5));
                 change.setSnapshotAfter(getClob(rs, 6));
-                change.setStatus(rs.getString(7));
-                change.setMonitorId(rs.getString(8));
-                change.setExecutionTime(rs.getLong(9));
-                change.setDifference(rs.getInt(10));
-                change.setSites(rs.getString(11));
-                change.setCreatedBy(rs.getString(12));
+                change.setSnapshotDiff(getClob(rs, 7));
+                change.setStatus(rs.getString(8));
+                change.setMonitorId(rs.getString(9));
+                change.setExecutionTime(rs.getLong(10));
+                change.setDifference(rs.getInt(11));
+                change.setSites(rs.getString(12));
+                change.setCreatedBy(rs.getString(13));
                 ret.add(change);
             }
         }
@@ -358,12 +371,13 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
                 change.setCode(rs.getString(4));
                 change.setSnapshotBefore(getClob(rs, 5));
                 change.setSnapshotAfter(getClob(rs, 6));
-                change.setStatus(rs.getString(7));
-                change.setMonitorId(rs.getString(8));
-                change.setExecutionTime(rs.getLong(9));
-                change.setDifference(rs.getInt(10));
-                change.setSites(rs.getString(11));
-                change.setCreatedBy(rs.getString(12));
+                change.setSnapshotDiff(getClob(rs, 7));
+                change.setStatus(rs.getString(8));
+                change.setMonitorId(rs.getString(9));
+                change.setExecutionTime(rs.getLong(10));
+                change.setDifference(rs.getInt(11));
+                change.setSites(rs.getString(12));
+                change.setCreatedBy(rs.getString(13));
                 ret.add(change);
             }
         }
@@ -416,12 +430,13 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
                 change.setCode(rs.getString(4));
                 change.setSnapshotBefore(getClob(rs, 5));
                 change.setSnapshotAfter(getClob(rs, 6));
-                change.setStatus(rs.getString(7));
-                change.setMonitorId(rs.getString(8));
-                change.setExecutionTime(rs.getLong(9));
-                change.setDifference(rs.getInt(10));
-                change.setSites(rs.getString(11));
-                change.setCreatedBy(rs.getString(12));
+                change.setSnapshotDiff(getClob(rs, 7));
+                change.setStatus(rs.getString(8));
+                change.setMonitorId(rs.getString(9));
+                change.setExecutionTime(rs.getLong(10));
+                change.setDifference(rs.getInt(11));
+                change.setSites(rs.getString(12));
+                change.setCreatedBy(rs.getString(13));
                 ret.add(change);
             }
         }
