@@ -33,8 +33,10 @@ public class EventConfiguration extends ContentConfiguration<EventResource>
     private static final Logger logger = Logger.getLogger(EventConfiguration.class.getName());
 
     public static final String PAGES = "pages";
+    public static final String PROVIDERS = "providers";
 
     private List<WebPageConfiguration> pages = new ArrayList<WebPageConfiguration>();
+    private List<WebPageConfiguration> providers = new ArrayList<WebPageConfiguration>();
 
     /**
      * Default constructor.
@@ -63,6 +65,8 @@ public class EventConfiguration extends ContentConfiguration<EventResource>
             super.copyAttributes(obj);
             for(WebPageConfiguration page : obj.getPages())
                 addPage(new WebPageConfiguration(page));
+            for(WebPageConfiguration provider : obj.getProviders())
+                addProvider(new WebPageConfiguration(provider));
         }
     }
 
@@ -133,17 +137,86 @@ public class EventConfiguration extends ContentConfiguration<EventResource>
     }
 
     /**
+     * Returns the providers for this configuration.
+     */
+    public List<WebPageConfiguration> getProviders()
+    {
+        return providers;
+    }
+
+    /**
+     * Sets the providers for this configuration.
+     */
+    public void setProviders(List<WebPageConfiguration> providers)
+    {
+        this.providers = providers;
+    }
+
+    /**
+     * Adds a provider for this configuration.
+     */
+    public void addProvider(WebPageConfiguration provider)
+    {
+        this.providers.add(provider);
+    }
+
+    /**
+     * Returns the number of providers.
+     */
+    public int numProviders()
+    {
+        return providers.size();
+    }
+
+    /**
+     * Returns the provider at the given index.
+     */
+    public WebPageConfiguration getProvider(int i)
+    {
+        return providers.get(i);
+    }
+
+    /**
+     * Returns the provider with the given name.
+     */
+    public WebPageConfiguration getProvider(String name)
+    {
+        WebPageConfiguration ret = null;
+        for(WebPageConfiguration provider : getProviders())
+        {
+            if(provider.getName().equals(name))
+            {
+                ret = provider;
+                break;
+            }
+        }
+        return ret;
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     @Override
     protected void parseDocument(Map<String,Object> map)
     {
         super.parseDocument(map);
+
+        if(map.containsKey(PROVIDERS))
+        {
+            List<Map<String,Object>> providers = (List<Map<String,Object>>)map.get(PROVIDERS);
+            for(Map<String,Object> provider : providers)
+            {
+                for(Map.Entry<String,Object> entry : provider.entrySet())
+                {
+                    WebPageConfiguration config = new WebPageConfiguration(entry.getKey());
+                    config.parseDocument((Map<String,Object>)entry.getValue());
+                    addProvider(config);
+                }
+            }
+        }
+
         if(map.containsKey(PAGES))
         {
-            List<WebPageConfiguration> common = new ArrayList<WebPageConfiguration>(getPages());
-            getPages().clear();
-
             List<Map<String,Object>> pages = (List<Map<String,Object>>)map.get(PAGES);
             for(Map<String,Object> page : pages)
             {
@@ -151,12 +224,20 @@ public class EventConfiguration extends ContentConfiguration<EventResource>
                 {
                     WebPageConfiguration config = new WebPageConfiguration(entry.getKey());
                     config.parseDocument((Map<String,Object>)entry.getValue());
+
+                    WebPageConfiguration provider = getProvider(config.getProvider());
+                    if(provider != null)
+                    {
+                        config.copyAttributes(provider);
+
+                        // Parse again to make sure this config overrides the provider template
+                        config.setName(entry.getKey());
+                        config.parseDocument((Map<String,Object>)entry.getValue());
+                    }
+
                     addPage(config);
                 }
             }
-
-            // Make sure that the common pages come last
-            getPages().addAll(common);
         }
     }
 }

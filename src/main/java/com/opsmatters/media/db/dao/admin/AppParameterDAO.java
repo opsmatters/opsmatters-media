@@ -365,10 +365,16 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
                 parameter.setId(rs.getString(1));
                 parameter.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 parameter.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                parameter.setType(AppParameterType.fromValue(rs.getString(4)));
-                parameter.setName(AppParameterName.fromValue(rs.getString(5)));
+                String parameterType = rs.getString(4);
+                parameter.setType(AppParameterType.fromValue(parameterType));
+                String parameterName = rs.getString(5);
+                parameter.setName(AppParameterName.fromValue(parameterName));
                 parameter.setValue(rs.getString(6));
-                ret.add(parameter);
+                if(parameter.getType() == null || parameter.getName() == null)
+                    logger.warning(String.format("Unable to load parameter: %s/%s",
+                        parameterType, parameterName));
+                else
+                    ret.add(parameter);
             }
         }
         finally
@@ -417,10 +423,16 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
                 parameter.setId(rs.getString(1));
                 parameter.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 parameter.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                parameter.setType(AppParameterType.fromValue(rs.getString(4)));
-                parameter.setName(AppParameterName.fromValue(rs.getString(5)));
+                String parameterType = rs.getString(4);
+                parameter.setType(AppParameterType.fromValue(parameterType));
+                String parameterName = rs.getString(5);
+                parameter.setName(AppParameterName.fromValue(parameterName));
                 parameter.setValue(rs.getString(6));
-                ret.add(parameter);
+                if(parameter.getType() == null || parameter.getName() == null)
+                    logger.warning(String.format("Unable to load parameter: %s/%s",
+                        parameterType, parameterName));
+                else
+                    ret.add(parameter);
             }
         }
         finally

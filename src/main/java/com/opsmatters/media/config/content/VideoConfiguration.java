@@ -34,8 +34,10 @@ public class VideoConfiguration extends ContentConfiguration<VideoArticle>
     private static final Logger logger = Logger.getLogger(VideoConfiguration.class.getName());
 
     public static final String CHANNELS = "channels";
+    public static final String PROVIDERS = "providers";
 
     private List<VideoChannelConfiguration> channels = new ArrayList<VideoChannelConfiguration>();
+    private List<VideoChannelConfiguration> providers = new ArrayList<VideoChannelConfiguration>();
 
     /**
      * Default constructor.
@@ -64,6 +66,8 @@ public class VideoConfiguration extends ContentConfiguration<VideoArticle>
             super.copyAttributes(obj);
             for(VideoChannelConfiguration channel : obj.getChannels())
                 addChannel(new VideoChannelConfiguration(channel));
+            for(VideoChannelConfiguration provider : obj.getProviders())
+                addProvider(new VideoChannelConfiguration(provider));
         }
     }
 
@@ -144,12 +148,84 @@ public class VideoConfiguration extends ContentConfiguration<VideoArticle>
     }
 
     /**
+     * Returns the providers for this configuration.
+     */
+    public List<VideoChannelConfiguration> getProviders()
+    {
+        return providers;
+    }
+
+    /**
+     * Sets the providers for this configuration.
+     */
+    public void setProviders(List<VideoChannelConfiguration> providers)
+    {
+        this.providers = providers;
+    }
+
+    /**
+     * Adds a provider for this configuration.
+     */
+    public void addProvider(VideoChannelConfiguration provider)
+    {
+        this.providers.add(provider);
+    }
+
+    /**
+     * Returns the number of providers.
+     */
+    public int numProviders()
+    {
+        return providers.size();
+    }
+
+    /**
+     * Returns the provider at the given index.
+     */
+    public VideoChannelConfiguration getProvider(int i)
+    {
+        return providers.get(i);
+    }
+
+    /**
+     * Returns the provider with the given name.
+     */
+    public VideoChannelConfiguration getProvider(String name)
+    {
+        VideoChannelConfiguration ret = null;
+        for(VideoChannelConfiguration provider : getProviders())
+        {
+            if(provider.getName().equals(name))
+            {
+                ret = provider;
+                break;
+            }
+        }
+        return ret;
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     @Override
     protected void parseDocument(Map<String,Object> map)
     {
         super.parseDocument(map);
+
+        if(map.containsKey(PROVIDERS))
+        {
+            List<Map<String,Object>> providers = (List<Map<String,Object>>)map.get(PROVIDERS);
+            for(Map<String,Object> provider : providers)
+            {
+                for(Map.Entry<String,Object> entry : provider.entrySet())
+                {
+                    VideoChannelConfiguration config = new VideoChannelConfiguration(entry.getKey());
+                    config.parseDocument((Map<String,Object>)entry.getValue());
+                    addProvider(config);
+                }
+            }
+        }
+
         if(map.containsKey(CHANNELS))
         {
             List<Map<String,Object>> channels = (List<Map<String,Object>>)map.get(CHANNELS);
@@ -159,6 +235,17 @@ public class VideoConfiguration extends ContentConfiguration<VideoArticle>
                 {
                     VideoChannelConfiguration config = new VideoChannelConfiguration(entry.getKey());
                     config.parseDocument((Map<String,Object>)entry.getValue());
+
+                    VideoChannelConfiguration provider = getProvider(config.getProvider());
+                    if(provider != null)
+                    {
+                        config.copyAttributes(provider);
+
+                        // Parse again to make sure this config overrides the provider template
+                        config.setName(entry.getKey());
+                        config.parseDocument((Map<String,Object>)entry.getValue());
+                    }
+
                     addChannel(config);
                 }
             }

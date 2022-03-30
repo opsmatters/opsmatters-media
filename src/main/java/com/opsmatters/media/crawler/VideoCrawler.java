@@ -63,7 +63,7 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
         this.config = config;
         this.channel = channel;
 
-        client = VideoClientFactory.newClient(channel.getProvider());
+        client = VideoClientFactory.newClient(channel.getVideoProvider());
     }
 
     /**

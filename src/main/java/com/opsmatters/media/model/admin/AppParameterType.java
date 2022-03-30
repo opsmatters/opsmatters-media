@@ -24,8 +24,8 @@ package com.opsmatters.media.model.admin;
 public enum AppParameterType
 {
     UI("ui"),
-    FEEDS("feeds"),
     DASHBOARD("dashboard"),
+    SYSTEM("system"),
     MONITOR_MANAGER("monitor-manager"),
     SOCIAL_MANAGER("social-manager"),
     NOTIFICATION_MANAGER("notification-manager"),

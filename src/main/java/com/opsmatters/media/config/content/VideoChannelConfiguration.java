@@ -27,11 +27,9 @@ public class VideoChannelConfiguration extends FieldsConfiguration
 {
     public static final String CHANNEL_ID = "channelId";
     public static final String USER_ID = "userId";
-    public static final String PROVIDER = "provider";
 
     private String channelId = "";
     private String userId = "";
-    private VideoProvider provider;
 
     /**
      * Default constructor.
@@ -60,7 +58,6 @@ public class VideoChannelConfiguration extends FieldsConfiguration
             super.copyAttributes(obj);
             setChannelId(obj.getChannelId());
             setUserId(obj.getUserId());
-            setProvider(obj.getProvider());
         }
     }
 
@@ -113,19 +110,11 @@ public class VideoChannelConfiguration extends FieldsConfiguration
     }
 
     /**
-     * Returns the provider for this configuration.
+     * Returns the video provider for this configuration.
      */
-    public VideoProvider getProvider()
+    public VideoProvider getVideoProvider()
     {
-        return provider;
-    }
-
-    /**
-     * Sets the provider for this configuration.
-     */
-    public void setProvider(VideoProvider provider)
-    {
-        this.provider = provider;
+        return VideoProvider.fromCode(getProvider());
     }
 
     /**
@@ -133,6 +122,7 @@ public class VideoChannelConfiguration extends FieldsConfiguration
      */
     public String getChannelUrl()
     {
+        VideoProvider provider = getVideoProvider();
         return provider != null ? String.format(provider.channelUrl(), channelId) : null;
     }
 
@@ -147,7 +137,5 @@ public class VideoChannelConfiguration extends FieldsConfiguration
             setChannelId((String)map.get(CHANNEL_ID));
         if(map.containsKey(USER_ID))
             setUserId((String)map.get(USER_ID));
-        if(map.containsKey(PROVIDER))
-            setProvider(VideoProvider.fromCode((String)map.get(PROVIDER)));
     }
 }
