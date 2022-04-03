@@ -72,6 +72,53 @@ public class ContentFields implements java.io.Serializable
     }
 
     /**
+     * Copy constructor.
+     */
+    public ContentFields(ContentFields obj)
+    {
+        copyAttributes(obj);
+    }
+
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(ContentFields obj)
+    {
+        if(obj != null)
+        {
+            setRoot(obj.getRoot());
+            if(obj.getValidator() != null)
+                setValidator(new ContentField(obj.getValidator()));
+            if(obj.getTitle() != null)
+                setTitle(new ContentField(obj.getTitle()));
+            if(obj.getAuthor() != null)
+                setAuthor(new ContentField(obj.getAuthor()));
+            if(obj.getAuthorLink() != null)
+                setAuthorLink(new ContentField(obj.getAuthorLink()));
+            if(obj.getPublishedDate() != null)
+                setPublishedDate(new ContentField(obj.getPublishedDate()));
+            if(obj.getStartDate() != null)
+                setStartDate(new ContentField(obj.getStartDate()));
+            if(obj.getStartTime() != null)
+                setStartTime(new ContentField(obj.getStartTime()));
+            if(obj.getEndDate() != null)
+                setEndDate(new ContentField(obj.getEndDate()));
+            if(obj.getEndTime() != null)
+                setEndTime(new ContentField(obj.getEndTime()));
+            if(obj.getTimeZone() != null)
+                setTimeZone(new ContentField(obj.getTimeZone()));
+            if(obj.getBody() != null)
+                setBody(new ContentField(obj.getBody()));
+            if(obj.getUrl() != null)
+                setUrl(new ContentField(obj.getUrl()));
+            if(obj.getImage() != null)
+                setImage(new ContentField(obj.getImage()));
+            if(obj.getBackgroundImage() != null)
+                setBackgroundImage(new ContentField(obj.getBackgroundImage()));
+        }
+    }
+
+    /**
      * Returns the root selector for this configuration.
      */
     public String getRoot()

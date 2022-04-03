@@ -53,6 +53,15 @@ public class FieldSelector implements java.io.Serializable
     }
 
     /**
+     * Copy constructor.
+     */
+    public FieldSelector(FieldSelector obj)
+    {
+        setName(obj.getName());
+        copyAttributes(obj);
+    }
+
+    /**
      * Constructor that takes an expression.
      */
     public FieldSelector(String name, String expr)
@@ -71,6 +80,27 @@ public class FieldSelector implements java.io.Serializable
         setName(name);
         setMultiple(getMultipleDefault(name));
         parse(map);
+    }
+
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(FieldSelector obj)
+    {
+        if(obj != null)
+        {
+            setSource(obj.getSource());
+            setExpr(obj.getExpr());
+            setAttribute(obj.getAttribute());
+            setMultiple(obj.isMultiple());
+            setSeparator(obj.getSeparator());
+
+            if(obj.getExcludes() != null)
+            {
+                for(FieldExclude exclude : obj.getExcludes())
+                    addExclude(new FieldExclude(exclude));
+            }
+        }
     }
 
     /**

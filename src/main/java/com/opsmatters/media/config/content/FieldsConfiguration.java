@@ -69,14 +69,20 @@ public abstract class FieldsConfiguration extends YamlConfiguration
         if(obj != null)
         {
             super.copyAttributes(obj);
+
             if(obj.getTeaserLoading() != null)
                 setTeaserLoading(new LoadingConfiguration(obj.getTeaserLoading()));
             if(obj.getArticleLoading() != null)
                 setArticleLoading(new LoadingConfiguration(obj.getArticleLoading()));
+
+            teaserFields.clear();
             for(ContentFields teaserFields : obj.getTeaserFields())
-                addTeaserFields(teaserFields);
+                addTeaserFields(new ContentFields(teaserFields));
+
+            articleFields.clear();
             for(ContentFields articleFields : obj.getArticleFields())
-                addArticleFields(articleFields);
+                addArticleFields(new ContentFields(articleFields));
+
             setFields(new Fields(obj.getFields()));
             setSites(obj.getSites());
             setProvider(obj.getProvider());

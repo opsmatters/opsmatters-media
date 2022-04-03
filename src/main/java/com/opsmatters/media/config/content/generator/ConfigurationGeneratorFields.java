@@ -23,6 +23,8 @@ import com.opsmatters.media.model.content.Organisation;
 import com.opsmatters.media.model.content.OrganisationListing;
 import com.opsmatters.media.model.content.OrganisationTabs;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.VideoProvider;
+import com.opsmatters.media.model.content.EventProvider;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -37,12 +39,14 @@ public class ConfigurationGeneratorFields implements java.io.Serializable
     private String tag = "";
     private String tags = "";
     private String channelId = "";
+    private String userId = "";
     private String website = "";
     private String blogUrl = "";
     private String features = "";
 
     Map<ContentType,Boolean> types = new HashMap<ContentType,Boolean>();
-    Map<EventPage,Boolean> pages = new HashMap<EventPage,Boolean>();
+    Map<VideoProvider,Boolean> videos = new HashMap<VideoProvider,Boolean>();
+    Map<EventProvider,Boolean> events = new HashMap<EventProvider,Boolean>();
 
     /**
      * Default constructor.
@@ -63,10 +67,6 @@ public class ConfigurationGeneratorFields implements java.io.Serializable
 
         if(organisation.hasListing())
         {
-            String youtube = listing.getYouTube();
-            if(youtube != null && youtube.length() > 0)
-                setChannelId(youtube.substring(youtube.lastIndexOf("/")+1));
-
             OrganisationTabs tabs = listing.getTabs();
             setVideos(tabs.contains(ContentType.VIDEO));
             setRoundups(tabs.contains(ContentType.ROUNDUP));
@@ -78,6 +78,20 @@ public class ConfigurationGeneratorFields implements java.io.Serializable
             setProjects(listing.hasProjects());
             setTools(listing.hasTools());
             setJobs(listing.hasJobs());
+
+            String youtube = listing.getYouTube();
+            if(youtube != null && youtube.length() > 0)
+            {
+                setChannelId(youtube.substring(youtube.lastIndexOf("/")+1));
+                setYoutube(true);
+            }
+
+            String vimeo = listing.getVimeo();
+            if(vimeo != null && vimeo.length() > 0)
+            {
+                setChannelId(vimeo.substring(vimeo.lastIndexOf("/")+1));
+                setVimeo(true);
+            }
 
             setWebinars(getEvents());
         }
@@ -181,6 +195,22 @@ public class ConfigurationGeneratorFields implements java.io.Serializable
     public void setChannelId(String channelId)
     {
         this.channelId = channelId;
+    }
+
+    /**
+     * Returns the user id.
+     */
+    public String getUserId()
+    {
+        return userId;
+    }
+
+    /**
+     * Sets the user id.
+     */
+    public void setUserId(String userId)
+    {
+        this.userId = userId;
     }
 
     /**
@@ -419,30 +449,30 @@ public class ConfigurationGeneratorFields implements java.io.Serializable
     }
 
     /**
-     * Returns the list of event pages.
+     * Returns the list of event providers.
      */
-    public List<EventPage> getEventPages()
+    public List<EventProvider> getEventProviders()
     {
-        return new ArrayList<EventPage>(pages.keySet());
+        return new ArrayList<EventProvider>(events.keySet());
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given page is enabled.
+     * Returns <CODE>true</CODE> if the given event provider is enabled.
      */
-    private Boolean hasPage(EventPage page)
+    private Boolean hasProvider(EventProvider provider)
     {
-        return pages.containsKey(page);
+        return events.containsKey(provider);
     }
 
     /**
-     * Set to <CODE>true</CODE> if the given page is enabled.
+     * Set to <CODE>true</CODE> if the given event provider is enabled.
      */
-    private void setPage(boolean enabled, EventPage page)
+    private void setProvider(boolean enabled, EventProvider provider)
     {
         if(enabled)
-            pages.put(page, Boolean.TRUE);
+            events.put(provider, Boolean.TRUE);
         else
-            pages.remove(page);
+            events.remove(provider);
     }
 
     /**
@@ -450,7 +480,7 @@ public class ConfigurationGeneratorFields implements java.io.Serializable
      */
     public Boolean getWebinars()
     {
-        return hasPage(EventPage.WEBINARS);
+        return hasProvider(EventProvider.WEBINARS);
     }
 
     /**
@@ -458,7 +488,7 @@ public class ConfigurationGeneratorFields implements java.io.Serializable
      */
     public void setWebinars(Boolean webinars)
     {
-        setPage(webinars, EventPage.WEBINARS);
+        setProvider(webinars, EventProvider.WEBINARS);
     }
 
     /**
@@ -466,7 +496,7 @@ public class ConfigurationGeneratorFields implements java.io.Serializable
      */
     public Boolean getZoom()
     {
-        return hasPage(EventPage.ZOOM);
+        return hasProvider(EventProvider.ZOOM);
     }
 
     /**
@@ -474,7 +504,7 @@ public class ConfigurationGeneratorFields implements java.io.Serializable
      */
     public void setZoom(Boolean zoom)
     {
-        setPage(zoom, EventPage.ZOOM);
+        setProvider(zoom, EventProvider.ZOOM);
     }
 
     /**
@@ -482,7 +512,7 @@ public class ConfigurationGeneratorFields implements java.io.Serializable
      */
     public Boolean getBrighttalk()
     {
-        return hasPage(EventPage.BRIGHTTALK);
+        return hasProvider(EventProvider.BRIGHTTALK);
     }
 
     /**
@@ -490,7 +520,7 @@ public class ConfigurationGeneratorFields implements java.io.Serializable
      */
     public void setBrighttalk(Boolean brightTalk)
     {
-        setPage(brightTalk, EventPage.BRIGHTTALK);
+        setProvider(brightTalk, EventProvider.BRIGHTTALK);
     }
 
     /**
@@ -498,7 +528,7 @@ public class ConfigurationGeneratorFields implements java.io.Serializable
      */
     public Boolean getGotowebinar()
     {
-        return hasPage(EventPage.GOTOWEBINAR);
+        return hasProvider(EventProvider.GOTOWEBINAR);
     }
 
     /**
@@ -506,7 +536,7 @@ public class ConfigurationGeneratorFields implements java.io.Serializable
      */
     public void setGotowebinar(Boolean goToWebinar)
     {
-        setPage(goToWebinar, EventPage.GOTOWEBINAR);
+        setProvider(goToWebinar, EventProvider.GOTOWEBINAR);
     }
 
     /**
@@ -514,7 +544,7 @@ public class ConfigurationGeneratorFields implements java.io.Serializable
      */
     public Boolean getOn24()
     {
-        return hasPage(EventPage.ON24);
+        return hasProvider(EventProvider.ON24);
     }
 
     /**
@@ -522,7 +552,7 @@ public class ConfigurationGeneratorFields implements java.io.Serializable
      */
     public void setOn24(Boolean on24)
     {
-        setPage(on24, EventPage.ON24);
+        setProvider(on24, EventProvider.ON24);
     }
 
     /**
@@ -530,7 +560,7 @@ public class ConfigurationGeneratorFields implements java.io.Serializable
      */
     public Boolean getLivestorm()
     {
-        return hasPage(EventPage.LIVESTORM);
+        return hasProvider(EventProvider.LIVESTORM);
     }
 
     /**
@@ -538,6 +568,81 @@ public class ConfigurationGeneratorFields implements java.io.Serializable
      */
     public void setLivestorm(Boolean livestorm)
     {
-        setPage(livestorm, EventPage.LIVESTORM);
+        setProvider(livestorm, EventProvider.LIVESTORM);
+    }
+
+    /**
+     * Returns the list of video providers.
+     */
+    public List<VideoProvider> getVideoProviders()
+    {
+        return new ArrayList<VideoProvider>(videos.keySet());
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given video provider is enabled.
+     */
+    private Boolean hasProvider(VideoProvider provider)
+    {
+        return videos.containsKey(provider);
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the given video provider is enabled.
+     */
+    private void setProvider(boolean enabled, VideoProvider provider)
+    {
+        if(enabled)
+            videos.put(provider, Boolean.TRUE);
+        else
+            videos.remove(provider);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if YouTube videos are enabled.
+     */
+    public Boolean getYoutube()
+    {
+        return hasProvider(VideoProvider.YOUTUBE);
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if YouTube videos are enabled.
+     */
+    public void setYoutube(Boolean youtube)
+    {
+        setProvider(youtube, VideoProvider.YOUTUBE);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if Vimeo videos are enabled.
+     */
+    public Boolean getVimeo()
+    {
+        return hasProvider(VideoProvider.VIMEO);
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if Vimeo videos are enabled.
+     */
+    public void setVimeo(Boolean vimeo)
+    {
+        setProvider(vimeo, VideoProvider.VIMEO);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if Wistia videos are enabled.
+     */
+    public Boolean getWistia()
+    {
+        return hasProvider(VideoProvider.WISTIA);
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if Wistia videos are enabled.
+     */
+    public void setWistia(Boolean wistia)
+    {
+        setProvider(wistia, VideoProvider.WISTIA);
     }
 }

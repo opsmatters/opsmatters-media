@@ -43,6 +43,14 @@ public class FieldExclude
     }
 
     /**
+     * Copy constructor.
+     */
+    public FieldExclude(FieldExclude obj)
+    {
+        copyAttributes(obj);
+    }
+
+    /**
      * Constructor that takes an expression.
      */
     public FieldExclude(String expr)
@@ -56,6 +64,17 @@ public class FieldExclude
     public FieldExclude(Map<String, Object> map)
     {
         parse(map);
+    }
+
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(FieldExclude obj)
+    {
+        if(obj != null)
+        {
+            setExpr(obj.getExpr());
+        }
     }
 
     /**

@@ -16,6 +16,9 @@
 
 package com.opsmatters.media.model.content;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * Represents a video provider.
  * 
@@ -23,20 +26,21 @@ package com.opsmatters.media.model.content;
  */
 public enum VideoProvider
 {
-    YOUTUBE("youtube", 
+    YOUTUBE("youtube", "YouTube",
         "https://www.youtube.com/channel/%s",
         "https://www.youtube.com/watch?v=%s",
         "<iframe src=\"https://www.youtube.com/embed/%s?modestbranding=1&autohide=1&autoplay=%s\" width=\"%d\" height=\"%d\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>"),
-    VIMEO("vimeo", 
+    VIMEO("vimeo", "Vimeo",
         "https://vimeo.com/%s",
         "https://vimeo.com/%s",
         "<iframe src=\"https://player.vimeo.com/video/%s?title=0&byline=0&portrait=0&autoplay=%s\" width=\"%d\" height=\"%d\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe>"),
-    WISTIA("wistia", 
+    WISTIA("wistia", "Wistia",
         "https://fast.wistia.com/projects/%s",
         "https://fast.wistia.com/medias/%s",
         "<iframe src=\"//fast.wistia.net/embed/iframe/%s?autoplay=%s\" allowtransparency=\"true\" frameborder=\"0\" scrolling=\"no\" class=\"wistia_embed\" name=\"wistia_embed\" allowfullscreen mozallowfullscreen webkitallowfullscreen oallowfullscreen msallowfullscreen width=\"%d\" height=\"%d\"></iframe>");
 
     private String code;
+    private String value;
     private String channelUrl;
     private String videoUrl;
     private String embed;
@@ -44,13 +48,15 @@ public enum VideoProvider
     /**
      * Constructor that takes the channel information.
      * @param code The code for the provider
+     * @param value The value for the provider
      * @param channelUrl The channel URL template for the provider
      * @param videoUrl The video URL template for the provider
      * @param embed The embedded player template for the provider
      */
-    VideoProvider(String code, String channelUrl, String videoUrl, String embed)
+    VideoProvider(String code, String value, String channelUrl, String videoUrl, String embed)
     {
         this.code = code;
+        this.value = value;
         this.channelUrl = channelUrl;
         this.videoUrl = videoUrl;
         this.embed = embed;
@@ -63,6 +69,15 @@ public enum VideoProvider
     public String code()
     {
         return code;
+    }
+
+    /**
+     * Returns the value of the provider.
+     * @return The value of the provider.
+     */
+    public String value()
+    {
+        return value;
     }
 
     /**
@@ -137,6 +152,22 @@ public enum VideoProvider
     }
 
     /**
+     * Returns the type for the given value.
+     * @param value The type value
+     * @return The type for the given value
+     */
+    public static VideoProvider fromValue(String value)
+    {
+        VideoProvider[] types = values();
+        for(VideoProvider type : types)
+        {
+            if(type.value().equals(value))
+                return type;
+        }
+        return null;
+    }
+
+    /**
      * Returns the type for the given video url.
      * @param videoUrl The video url
      * @return The type for the given video url
@@ -160,5 +191,19 @@ public enum VideoProvider
     public static boolean contains(String code)
     {
         return fromCode(code) != null;
+    }
+
+    /**
+     * Returns a list of the providers.
+     */
+    public static List<VideoProvider> toList()
+    {
+        List<VideoProvider> ret = new ArrayList<VideoProvider>();
+
+        ret.add(YOUTUBE);
+        ret.add(VIMEO);
+        ret.add(WISTIA);
+
+        return ret;
     }
 }

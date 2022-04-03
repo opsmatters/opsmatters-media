@@ -44,6 +44,14 @@ public class FieldFilter
     }
 
     /**
+     * Copy constructor.
+     */
+    public FieldFilter(FieldFilter obj)
+    {
+        copyAttributes(obj);
+    }
+
+    /**
      * Constructor that takes an expression.
      */
     public FieldFilter(String expr)
@@ -57,6 +65,27 @@ public class FieldFilter
     public FieldFilter(Map<String, Object> map)
     {
         parse(map);
+    }
+
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(FieldFilter obj)
+    {
+        if(obj != null)
+        {
+            setExpr(obj.getExpr());
+            setScope(obj.getScope());
+            setStop(obj.isStop());
+        }
+    }
+
+    /**
+     * Returns the expression for this configuration.
+     */
+    public String toString()
+    {
+        return getExpr();
     }
 
     /**

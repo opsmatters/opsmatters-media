@@ -14,42 +14,51 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.config.content.generator;
+package com.opsmatters.media.model.content;
 
 import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Represents an event page config for the config generator.
+ * Represents an event provider.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum EventPage
+public enum EventProvider
 {
-    WEBINARS("Webinars", "webinars"),
-    ZOOM("Zoom", "zoom"),
-    BRIGHTTALK("BrightTALK", "brighttalk"),
-    GOTOWEBINAR("GoToWebinar", "gotowebinar"),
+    WEBINARS("webinars", "Webinars"),
+    ZOOM("zoom", "Zoom"),
+    BRIGHTTALK("brighttalk", "BrightTALK"),
+    GOTOWEBINAR("gotowebinar", "GoToWebinar"),
     ON24("on24", "on24"),
-    LIVESTORM("Livestorm", "livestorm"); 
+    LIVESTORM("livestorm", "Livestorm"); 
 
+    private String code;
     private String value;
-    private String tag;
 
     /**
-     * Constructor that takes the page value.
-     * @param value The value for the page
-     * @param tag The tag for the page
+     * Constructor that takes the provider value.
+     * @param code The code for the provider
+     * @param value The value for the provider
      */
-    EventPage(String value, String tag)
+    EventProvider(String code, String value)
     {
+        this.code = code;
         this.value = value;
-        this.tag = tag;
     }
 
     /**
-     * Returns the value of the page.
-     * @return The value of the page.
+     * Returns the code of the provider.
+     * @return The code of the provider.
+     */
+    public String code()
+    {
+        return code;
+    }
+
+    /**
+     * Returns the value of the provider.
+     * @return The value of the provider.
      */
     public String value()
     {
@@ -57,12 +66,19 @@ public enum EventPage
     }
 
     /**
-     * Returns the tag of the page.
-     * @return The tag of the page.
+     * Returns the type for the given code.
+     * @param code The type code
+     * @return The type for the given code
      */
-    public String tag()
+    public static EventProvider fromCode(String code)
     {
-        return tag;
+        EventProvider[] types = values();
+        for(EventProvider type : types)
+        {
+            if(type.code().equals(code))
+                return type;
+        }
+        return null;
     }
 
     /**
@@ -70,10 +86,10 @@ public enum EventPage
      * @param value The type value
      * @return The type for the given value
      */
-    public static EventPage fromValue(String value)
+    public static EventProvider fromValue(String value)
     {
-        EventPage[] types = values();
-        for(EventPage type : types)
+        EventProvider[] types = values();
+        for(EventProvider type : types)
         {
             if(type.value().equals(value))
                 return type;
@@ -92,11 +108,11 @@ public enum EventPage
     }
 
     /**
-     * Returns a list of the pages.
+     * Returns a list of the providers.
      */
-    public static List<EventPage> toList()
+    public static List<EventProvider> toList()
     {
-        List<EventPage> ret = new ArrayList<EventPage>();
+        List<EventProvider> ret = new ArrayList<EventProvider>();
 
         ret.add(WEBINARS);
         ret.add(ZOOM);

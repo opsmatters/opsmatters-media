@@ -239,11 +239,17 @@ public class VideoConfiguration extends ContentConfiguration<VideoArticle>
                     VideoChannelConfiguration provider = getProvider(config.getProvider());
                     if(provider != null)
                     {
+                        List<FieldFilter> filters = config.getFilters();
+
                         config.copyAttributes(provider);
 
                         // Parse again to make sure this config overrides the provider template
                         config.setName(entry.getKey());
                         config.parseDocument((Map<String,Object>)entry.getValue());
+
+                        // Add the filters from the original set of fields
+                        for(FieldFilter filter : filters)
+                            config.getArticleFields().get(0).getBody().addFilter(filter);
                     }
 
                     addChannel(config);

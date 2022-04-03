@@ -77,6 +77,52 @@ public class ContentField implements java.io.Serializable
     }
 
     /**
+     * Copy constructor.
+     */
+    public ContentField(ContentField obj)
+    {
+        setName(obj.getName());
+        copyAttributes(obj);
+    }
+
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(ContentField obj)
+    {
+        if(obj != null)
+        {
+            if(obj.getSelectors() != null)
+            {
+                for(FieldSelector selector : obj.getSelectors())
+                    addSelector(new FieldSelector(selector));
+            }
+
+            if(obj.getExtractors() != null)
+            {
+                for(FieldExtractor extractor : obj.getExtractors())
+                    addExtractor(new FieldExtractor(extractor));
+            }
+
+            if(obj.getFilters() != null)
+            {
+                for(FieldFilter filter : obj.getFilters())
+                    addFilter(new FieldFilter(filter));
+            }
+
+            if(obj.getDatePatterns() != null)
+            {
+                for(String datePattern : obj.getDatePatterns())
+                    addDatePattern(datePattern);
+            }
+
+            setTextCase(obj.getTextCase());
+            setRemoveParameters(obj.removeParameters());
+            setGenerate(obj.generate());
+        }
+    }
+
+    /**
      * Returns the name for this configuration.
      */
     public String toString()
@@ -119,7 +165,7 @@ public class ContentField implements java.io.Serializable
     /**
      * Adds a selector object for the given field.
      */
-    private void addSelector(FieldSelector selector)
+    public void addSelector(FieldSelector selector)
     {
         if(selectors == null)
             selectors = new ArrayList<FieldSelector>(2);
@@ -145,7 +191,7 @@ public class ContentField implements java.io.Serializable
     /**
      * Adds an extractor object for the given field.
      */
-    private void addExtractor(FieldExtractor extractor)
+    public void addExtractor(FieldExtractor extractor)
     {
         if(extractors == null)
             extractors = new ArrayList<FieldExtractor>(2);
@@ -211,7 +257,7 @@ public class ContentField implements java.io.Serializable
     /**
      * Adds a date pattern objects for the given field.
      */
-    private void addDatePattern(String datePattern)
+    public void addDatePattern(String datePattern)
     {
         if(datePatterns == null)
             datePatterns = new ArrayList<String>(2);
@@ -245,7 +291,7 @@ public class ContentField implements java.io.Serializable
     /**
      * Adds a filter for this configuration.
      */
-    private void addFilter(FieldFilter filter)
+    public void addFilter(FieldFilter filter)
     {
         if(filters == null)
             filters = new ArrayList<FieldFilter>(2);
@@ -364,7 +410,7 @@ public class ContentField implements java.io.Serializable
         else if(value instanceof Map)
             selector = new FieldSelector(name, (Map<String,Object>)value);
         if(selector != null)
-          addSelector(selector);
+            addSelector(selector);
     }
 
     /**
@@ -378,7 +424,7 @@ public class ContentField implements java.io.Serializable
         else if(value instanceof Map)
             extractor = new FieldExtractor(name, (Map<String,Object>)value);
         if(extractor != null)
-          addExtractor(extractor);
+            addExtractor(extractor);
     }
 
     /**
@@ -392,6 +438,6 @@ public class ContentField implements java.io.Serializable
         else if(value instanceof Map)
             filter = new FieldFilter((Map<String,Object>)value);
         if(filter != null)
-          addFilter(filter);
+            addFilter(filter);
     }
 }

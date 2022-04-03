@@ -46,6 +46,15 @@ public class FieldExtractor implements java.io.Serializable
     }
 
     /**
+     * Copy constructor.
+     */
+    public FieldExtractor(FieldExtractor obj)
+    {
+        setName(obj.getName());
+        copyAttributes(obj);
+    }
+
+    /**
      * Constructor that takes an expression.
      */
     public FieldExtractor(String name, String expr)
@@ -62,6 +71,19 @@ public class FieldExtractor implements java.io.Serializable
     {
         setName(name);
         parse(map);
+    }
+
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(FieldExtractor obj)
+    {
+        if(obj != null)
+        {
+            setExpr(obj.getExpr());
+            setFormat(obj.getFormat());
+            setMatch(obj.getMatch());
+        }
     }
 
     /**
