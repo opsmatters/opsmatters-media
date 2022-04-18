@@ -104,9 +104,9 @@ public class SnapshotDiff
                     if(length > (max*COMMONALITY)) // Strings have at least 40% commonality
                     {
                         if(length == max)
-                        textVisitor.append("<div class=\"comparison comparison-success\">");
+                            textVisitor.append("<div class=\"comparison comparison-success\">");
                         else
-                        textVisitor.append("<div class=\"comparison comparison-fail\">");
+                            textVisitor.append("<div class=\"comparison comparison-fail\">");
 
                         // Merge both lines if they have at least 40% commonality
                         appendLine(textVisitor, rightProperty, rightUrl, comparator);

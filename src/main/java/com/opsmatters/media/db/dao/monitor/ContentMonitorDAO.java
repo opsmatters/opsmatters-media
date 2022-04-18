@@ -23,7 +23,6 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.monitor.ContentMonitor;
@@ -51,9 +50,9 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTENT_MONITORS"
-      + "( ID, CREATED_DATE, CREATED_DATE_TRUNC, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a monitor in the CONTENT_MONITORS table.
@@ -104,11 +103,10 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     {
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
-        table.addColumn("CREATED_DATE_TRUNC", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("EXECUTED_DATE", Types.TIMESTAMP, false);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
-        table.addColumn("NAME", Types.VARCHAR, 25, true);
+        table.addColumn("NAME", Types.VARCHAR, 40, true);
         table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, true);
         table.addColumn("SNAPSHOT", Types.LONGVARCHAR, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
@@ -118,7 +116,6 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
         table.setPrimaryKey("CONTENT_MONITORS_PK", new String[] {"ID"});
         table.addIndex("CONTENT_MONITORS_CODE_IDX", new String[] {"CODE"});
         table.addIndex("CONTENT_MONITORS_STATUS_IDX", new String[] {"STATUS"});
-        table.addIndex("CONTENT_MONITORS_CREATED_TRUNC_IDX", new String[] {"CREATED_DATE_TRUNC"});
         table.setInitialised(true);
     }
 
@@ -197,21 +194,20 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
         {
             insertStmt.setString(1, monitor.getId());
             insertStmt.setTimestamp(2, new Timestamp(monitor.getCreatedDateMillis()), UTC);
-            insertStmt.setTimestamp(3, new Timestamp(monitor.getCreatedDate().truncatedTo(ChronoUnit.DAYS).toEpochMilli()), UTC);
-            insertStmt.setTimestamp(4, new Timestamp(monitor.getUpdatedDateMillis()), UTC);
-            insertStmt.setTimestamp(5, new Timestamp(monitor.getExecutedDateMillis()), UTC);
-            insertStmt.setString(6, monitor.getCode());
-            insertStmt.setString(7, monitor.getName());
-            insertStmt.setString(8, monitor.getContentType().name());
+            insertStmt.setTimestamp(3, new Timestamp(monitor.getUpdatedDateMillis()), UTC);
+            insertStmt.setTimestamp(4, new Timestamp(monitor.getExecutedDateMillis()), UTC);
+            insertStmt.setString(5, monitor.getCode());
+            insertStmt.setString(6, monitor.getName());
+            insertStmt.setString(7, monitor.getContentType().name());
             String snapshot = monitor.getSnapshot();
             reader = new StringReader(snapshot);
-            insertStmt.setCharacterStream(9, reader, snapshot.length());
+            insertStmt.setCharacterStream(8, reader, snapshot.length());
             String attributes = monitor.getAttributes().toString();
             reader2 = new StringReader(attributes);
-            insertStmt.setCharacterStream(10, reader2, attributes.length());
-            insertStmt.setString(11, monitor.getStatus().name());
-            insertStmt.setString(12, monitor.getEventType() != null ? monitor.getEventType().name() : "");
-            insertStmt.setString(13, monitor.getEventId());
+            insertStmt.setCharacterStream(9, reader2, attributes.length());
+            insertStmt.setString(10, monitor.getStatus().name());
+            insertStmt.setString(11, monitor.getEventType() != null ? monitor.getEventType().name() : "");
+            insertStmt.setString(12, monitor.getEventId());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created monitor %s/%s in CONTENT_MONITORS",

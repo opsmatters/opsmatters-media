@@ -23,7 +23,7 @@ package com.opsmatters.media.util;
  */
 public class AppSession
 {
-    private String id;
+    private int id = -1;
 
     private static AppSession _session = new AppSession();
 
@@ -32,13 +32,13 @@ public class AppSession
      */
     private AppSession()
     {
-        setId(TimeUtils.toStringUTC(Formats.SESSION_FORMAT));
+        setId(Integer.parseInt(TimeUtils.toStringUTC(Formats.SESSION_FORMAT)));
     }
 
     /**
      * Returns the current session id.
      */
-    private String getId()
+    private int getId()
     {
         return id;
     }
@@ -46,7 +46,7 @@ public class AppSession
     /**
      * Sets the current session id.
      */
-    private void setId(String id)
+    private void setId(int id)
     {
         this.id = id;
     }
@@ -54,7 +54,7 @@ public class AppSession
     /**
      * Sets the session id.
      */
-    public static void id(String id)
+    public static void id(int id)
     {
         _session.setId(id);
     }
@@ -62,16 +62,8 @@ public class AppSession
     /**
      * Returns the current session id.
      */
-    public static String id()
+    public static int id()
     {
         return _session.getId();
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the given session id matches the current session id.
-     */
-    public static boolean matches(String id)
-    {
-        return id != null && id().equals(id);
     }
 }

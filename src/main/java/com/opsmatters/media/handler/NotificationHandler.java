@@ -37,7 +37,7 @@ public abstract class NotificationHandler
 {
     private static final Logger logger = Logger.getLogger(NotificationHandler.class.getName());
 
-    private static final int DEFAULT_EXPIRY = 1440;
+    private static final int DEFAULT_EXPIRY = 1440; // 1 day
 
     /**
      * Raturns the Notification DAO.

@@ -48,7 +48,7 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO PROJECTS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, URL, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES, SESSION )"
+      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, URL, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
@@ -56,7 +56,7 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
      * The query to use to update a project in the PROJECTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE PROJECTS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, URL=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=?, SESSION=? "
+      "UPDATE PROJECTS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, URL=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=?, SESSION_ID=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -84,7 +84,7 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
-        table.addColumn("SESSION", Types.VARCHAR, 10, true);
+        table.addColumn("SESSION_ID", Types.INTEGER, true);
         table.setPrimaryKey("PROJECTS_PK", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("PROJECTS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
         table.addIndex("PROJECTS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
@@ -172,7 +172,7 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(11, reader, attributes.length());
-            insertStmt.setString(12, AppSession.id());
+            insertStmt.setInt(12, AppSession.id());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -226,7 +226,7 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(7, reader, attributes.length());
-            updateStmt.setString(8, AppSession.id());
+            updateStmt.setInt(8, AppSession.id());
             updateStmt.setString(9, content.getSiteId());
             updateStmt.setString(10, content.getCode());
             updateStmt.setInt(11, content.getId());

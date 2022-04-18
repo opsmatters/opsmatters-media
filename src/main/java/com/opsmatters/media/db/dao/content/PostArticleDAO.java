@@ -21,7 +21,6 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
@@ -43,15 +42,15 @@ public class PostArticleDAO extends ContentDAO<PostArticle>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO POSTS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED_DATE_TRUNC, UUID, TITLE, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES, SESSION )"
+      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a post in the POSTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE POSTS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=?, SESSION=? "
+      "UPDATE POSTS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=?, SESSION_ID=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -72,19 +71,18 @@ public class PostArticleDAO extends ContentDAO<PostArticle>
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
-        table.addColumn("PUBLISHED_DATE_TRUNC", Types.TIMESTAMP, true);
         table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("TITLE", Types.VARCHAR, 256, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
-        table.addColumn("SESSION", Types.VARCHAR, 10, true);
+        table.addColumn("SESSION_ID", Types.INTEGER, true);
         table.setPrimaryKey("POSTS_PK", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("POSTS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
         table.addIndex("POSTS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
         table.addIndex("POSTS_STATUS_IDX", new String[] {"STATUS"});
-        table.addIndex("POSTS_PUBLISHED_TRUNC_IDX", new String[] {"PUBLISHED_DATE_TRUNC"});
+        table.addIndex("POSTS_SESSION_IDX", new String[] {"SESSION_ID"});
         table.setInitialised(true);
     }
 
@@ -111,16 +109,15 @@ public class PostArticleDAO extends ContentDAO<PostArticle>
             insertStmt.setString(2, content.getCode());
             insertStmt.setInt(3, content.getId());
             insertStmt.setTimestamp(4, new Timestamp(content.getPublishedDateMillis()), UTC);
-            insertStmt.setTimestamp(5, new Timestamp(content.getPublishedDate().truncatedTo(ChronoUnit.DAYS).toEpochMilli()), UTC);
-            insertStmt.setString(6, content.getUuid());
-            insertStmt.setString(7, content.getTitle());
-            insertStmt.setBoolean(8, content.isPublished());
-            insertStmt.setString(9, content.getStatus().name());
-            insertStmt.setString(10, content.getCreatedBy());
+            insertStmt.setString(5, content.getUuid());
+            insertStmt.setString(6, content.getTitle());
+            insertStmt.setBoolean(7, content.isPublished());
+            insertStmt.setString(8, content.getStatus().name());
+            insertStmt.setString(9, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(11, reader, attributes.length());
-            insertStmt.setString(12, AppSession.id());
+            insertStmt.setCharacterStream(10, reader, attributes.length());
+            insertStmt.setInt(11, AppSession.id());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -173,7 +170,7 @@ public class PostArticleDAO extends ContentDAO<PostArticle>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(6, reader, attributes.length());
-            updateStmt.setString(7, AppSession.id());
+            updateStmt.setInt(7, AppSession.id());
             updateStmt.setString(8, content.getSiteId());
             updateStmt.setString(9, content.getCode());
             updateStmt.setInt(10, content.getId());

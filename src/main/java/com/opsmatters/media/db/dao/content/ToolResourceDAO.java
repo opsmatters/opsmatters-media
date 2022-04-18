@@ -42,7 +42,7 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO TOOLS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES, SESSION )"
+      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
@@ -50,7 +50,7 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
      * The query to use to update a tool in the TOOLS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE TOOLS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=?, SESSION=? "
+      "UPDATE TOOLS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=?, SESSION_ID=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -77,7 +77,7 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
-        table.addColumn("SESSION", Types.VARCHAR, 10, true);
+        table.addColumn("SESSION_ID", Types.INTEGER, true);
         table.setPrimaryKey("TOOLS_PK", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("TOOLS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
         table.addIndex("TOOLS_STATUS_IDX", new String[] {"STATUS"});
@@ -115,7 +115,7 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(10, reader, attributes.length());
-            insertStmt.setString(11, AppSession.id());
+            insertStmt.setInt(11, AppSession.id());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -168,7 +168,7 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(6, reader, attributes.length());
-            updateStmt.setString(7, AppSession.id());
+            updateStmt.setInt(7, AppSession.id());
             updateStmt.setString(8, content.getSiteId());
             updateStmt.setString(9, content.getCode());
             updateStmt.setInt(10, content.getId());

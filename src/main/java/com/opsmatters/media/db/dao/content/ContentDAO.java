@@ -86,6 +86,12 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
       "SELECT ATTRIBUTES, SITE_ID FROM %s WHERE SITE_ID=? ORDER BY CODE";
 
     /**
+     * The query to use to select the content from the table by title.
+     */
+    private static final String LIST_BY_TITLE_SQL =  
+      "SELECT ATTRIBUTES, SITE_ID FROM %s WHERE CODE=? AND TITLE=? ORDER BY PUBLISHED_DATE DESC";
+
+    /**
      * The query to use to get the count of content items from the table.
      */
     private static final String COUNT_SQL =  
@@ -501,6 +507,59 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
     }
 
     /**
+     * Returns a list of content items from the table by title.
+     */
+    public synchronized List<T> listByTitle(String code, String title) throws SQLException
+    {
+        List<T> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByTitleStmt == null)
+            listByTitleStmt = prepareStatement(getConnection(), String.format(LIST_BY_TITLE_SQL, getTableName()));
+        clearParameters(listByTitleStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByTitleStmt.setString(1, code);
+            listByTitleStmt.setString(2, title);
+            listByTitleStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByTitleStmt.executeQuery();
+            ret = new ArrayList<T>();
+            while(rs.next())
+            {
+                JSONObject attributes = new JSONObject(getClob(rs, 1));
+                T item = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
+                item.setSiteId(rs.getString(2));
+                ret.add(item);
+            }
+        }
+        catch(IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
+        {
+            logger.severe(StringUtils.serialize(e));
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the count of content items from the table.
      */
     public int count() throws SQLException
@@ -680,6 +739,8 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
         listByStatusStmt = null;
         closeStatement(listBySiteStmt);
         listBySiteStmt = null;
+        closeStatement(listByTitleStmt);
+        listByTitleStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(countByCodeStmt);
@@ -699,6 +760,7 @@ public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
     private PreparedStatement listByDateStmt;
     private PreparedStatement listByStatusStmt;
     private PreparedStatement listBySiteStmt;
+    private PreparedStatement listByTitleStmt;
     private PreparedStatement countStmt;
     private PreparedStatement countByCodeStmt;
     private PreparedStatement maxIdStmt;

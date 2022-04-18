@@ -135,7 +135,7 @@ public class FormatUtils
             ret = ret.replaceAll("-+", "-");
 
             // Remove escape sequences
-            ret = ret.replaceAll("%E2%80%[0-9a-fA-F]{2}", ""); // %E2%80%xx
+            ret = ret.replaceAll("%[Ee]2%80%[0-9a-fA-F]{2}", ""); // %E2%80%xx
             ret = ret.replaceAll("%F0%9F%[0-9a-fA-F]{2}%[0-9a-fA-F]{2}", ""); // %F0%9F%xx%xx - emojis
             ret = ret.replaceAll("%C2%AE", ""); //®
 

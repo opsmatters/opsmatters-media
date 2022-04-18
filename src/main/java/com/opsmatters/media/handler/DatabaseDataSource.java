@@ -111,7 +111,7 @@ public class DatabaseDataSource<E extends Serializable> implements DataSource<E>
 
                                 // Replace the session default with the current session id
                                 if(str == CURRENT_SESSION.name())
-                                    str = AppSession.id();
+                                    str = Integer.toString(AppSession.id());
 
                                 if(str == null || str.length() == 0)
                                     sql = sql.replaceAll(String.format("=[ ]?:%s", parameter.name()), "LIKE '%'");

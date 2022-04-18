@@ -57,15 +57,15 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO EBOOKS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED_DATE_TRUNC, UUID, TITLE, URL, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES, SESSION )"
+      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, URL, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a ebook in the EBOOKS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE EBOOKS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, URL=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=?, SESSION=? "
+      "UPDATE EBOOKS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, URL=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=?, SESSION_ID=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -86,7 +86,6 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
-        table.addColumn("PUBLISHED_DATE_TRUNC", Types.TIMESTAMP, true);
         table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("TITLE", Types.VARCHAR, 256, true);
         table.addColumn("URL", Types.VARCHAR, 256, true);
@@ -94,13 +93,13 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
-        table.addColumn("SESSION", Types.VARCHAR, 10, true);
+        table.addColumn("SESSION_ID", Types.INTEGER, true);
         table.setPrimaryKey("EBOOKS_PK", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("EBOOKS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
         table.addIndex("EBOOKS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
         table.addIndex("EBOOKS_URL_IDX", new String[] {"SITE_ID","CODE","URL"});
         table.addIndex("EBOOKS_STATUS_IDX", new String[] {"STATUS"});
-        table.addIndex("EBOOKS_PUBLISHED_TRUNC_IDX", new String[] {"PUBLISHED_DATE_TRUNC"});
+        table.addIndex("EBOOKS_SESSION_IDX", new String[] {"SESSION_ID"});
         table.setInitialised(true);
     }
 
@@ -225,17 +224,16 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
             insertStmt.setString(2, content.getCode());
             insertStmt.setInt(3, content.getId());
             insertStmt.setTimestamp(4, new Timestamp(content.getPublishedDateMillis()), UTC);
-            insertStmt.setTimestamp(5, new Timestamp(content.getPublishedDate().truncatedTo(ChronoUnit.DAYS).toEpochMilli()), UTC);
-            insertStmt.setString(6, content.getUuid());
-            insertStmt.setString(7, content.getTitle());
-            insertStmt.setString(8, content.getUrl());
-            insertStmt.setBoolean(9, content.isPublished());
-            insertStmt.setString(10, content.getStatus().name());
-            insertStmt.setString(11, content.getCreatedBy());
+            insertStmt.setString(5, content.getUuid());
+            insertStmt.setString(6, content.getTitle());
+            insertStmt.setString(7, content.getUrl());
+            insertStmt.setBoolean(8, content.isPublished());
+            insertStmt.setString(9, content.getStatus().name());
+            insertStmt.setString(10, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(12, reader, attributes.length());
-            insertStmt.setString(13, AppSession.id());
+            insertStmt.setCharacterStream(11, reader, attributes.length());
+            insertStmt.setInt(12, AppSession.id());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -289,7 +287,7 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(7, reader, attributes.length());
-            updateStmt.setString(8, AppSession.id());
+            updateStmt.setInt(8, AppSession.id());
             updateStmt.setString(9, content.getSiteId());
             updateStmt.setString(10, content.getCode());
             updateStmt.setInt(11, content.getId());
