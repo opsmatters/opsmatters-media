@@ -40,5 +40,6 @@ public enum NotificationType
     EMAIL_ERROR_COUNT,
     THREAD_STALLED,
     CONFIG_ERROR,
-    CONFIG_UPDATE;
+    CONFIG_UPDATE,
+    ORGANISATION_UPDATE;
 }

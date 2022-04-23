@@ -35,7 +35,6 @@ import com.opsmatters.media.model.content.VideoArticle;
 import com.opsmatters.media.model.content.EventSummary;
 import com.opsmatters.media.model.content.PublicationSummary;
 import com.opsmatters.media.model.content.LinkedContent;
-import com.opsmatters.media.util.StringUtils;
 
 /**
  * Class representing a snapshot of content monitor content.
@@ -196,7 +195,7 @@ public class ContentSnapshot extends JSONObject
     private JSONObject createObject(RoundupSummary content)
     {
         JSONObject ret = new JSONObject();
-        ret.put(Fields.TITLE, StringUtils.convertToAscii(content.getTitle(), false, false));
+        ret.put(Fields.TITLE, content.getTitle());
         if(content.getPublishedDate() != null)
             ret.put(Fields.PUBLISHED_DATE, content.getPublishedDateAsString());
         ret.put(Fields.URL, content.getUrl());
@@ -209,7 +208,7 @@ public class ContentSnapshot extends JSONObject
     private JSONObject createObject(VideoSummary content)
     {
         JSONObject ret = new JSONObject();
-        ret.put(Fields.TITLE, StringUtils.convertToAscii(content.getTitle(), false, false));
+        ret.put(Fields.TITLE, content.getTitle());
         if(content.getPublishedDate() != null)
             ret.put(Fields.PUBLISHED_DATE, content.getPublishedDateAsString());
         ret.put(Fields.VIDEO_ID, content.getVideoId());

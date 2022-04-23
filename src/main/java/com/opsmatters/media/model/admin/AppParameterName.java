@@ -47,6 +47,8 @@ public enum AppParameterName
     SESSION("session"),
     CONFIG_CHANGED("config-changed"),
     CONFIG_UPDATED("config-updated"),
+    ORGANISATION_CHANGED("organisation-changed"),
+    ORGANISATION_UPDATED("organisation-updated"),
     ERROR_COUNT_ERROR("error-count-error"),
     CHANGED_COUNT_ERROR("changed-count-error"),
     REVIEW_COUNT_ERROR("review-count-error"),
