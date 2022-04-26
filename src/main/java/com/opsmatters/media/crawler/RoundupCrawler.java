@@ -129,11 +129,16 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
         configureImplicitWait(getArticleLoading());
         loadPage(content.getUrl(), getArticleLoading());
         configureExplicitWait(getArticleLoading());
+
+        // Scroll the page if configured
+        configureMovement(getArticleLoading());
+
+        // Wait for the page to load
         configureSleep(getArticleLoading());
 
-        // Trace to see the roundup page
+        // Trace to see the page
         if(trace(getDriver()))
-            logger.info("roundup-page="+getPageSource());
+            logger.info("content-page="+getPageSource());
 
         Element root = null;
         Document doc = Jsoup.parse(getPageSource("body"));
@@ -197,7 +202,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
         {
             ContentField field = fields.getTitle();
             String title = getElements(field, root, type);
-            if(title != null && title.length() > 0)
+            if(title != null && title.length() > 0 && !title.equals("Please wait..."))
                 content.setTitle(EmojiParser.removeAllEmojis(title.trim()));
         }
 

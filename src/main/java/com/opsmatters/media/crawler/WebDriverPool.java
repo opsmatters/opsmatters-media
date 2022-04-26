@@ -61,10 +61,10 @@ public class WebDriverPool
             _pool = new WebDriverPool();
     }
 
-    public synchronized static WebDriver getDriver(CrawlerBrowser browser)
+    public synchronized static WebDriver getDriver(CrawlerBrowser browser, boolean headless)
     {
         checkInstance();
-        return _pool.get(browser);
+        return _pool.get(browser, headless);
     }
 
     public synchronized static void releaseDriver(WebDriver driver)
@@ -88,7 +88,7 @@ public class WebDriverPool
     /**
      * Returns the next available driver for the given browser.
      */
-    private WebDriver get(CrawlerBrowser browser)
+    private WebDriver get(CrawlerBrowser browser, boolean headless)
     {
         if(browser == null)
             browser = HTMLUNIT;
@@ -109,30 +109,41 @@ public class WebDriverPool
             if(drivers.size() == 0)
             {
                 if(browser == CHROME)
-                    driver = newChromeDriver();
+                    driver = newChromeDriver(headless);
                 else if(browser == FIREFOX)
-                    driver = newFirefoxDriver();
+                    driver = newFirefoxDriver(headless);
                 else // Defaults to HtmlUnit
                     driver = newHtmlUnitDriver();
 
                 drivers.add(driver);
-                instance = new WebDriverInstance(driver);
+                instance = new WebDriverInstance(driver, headless);
                 instances.put(instance.getHandle(), instance);
             }
-            
-            driver = drivers.remove(0);
-            instance = instances.get(driver.getWindowHandle());
 
-            // Check if the driver can be used
-            if(instance.renew() || !isAlive(driver))
+            try
             {
-                closeDriver(driver);
+                // Get the next driver
+                driver = drivers.remove(0);
+                instance = instances.get(driver.getWindowHandle());
+
+                // Check if the driver can be used
+                if(instance.renew()
+                    || !isAlive(driver)
+                    || instance.isHeadless() != headless)
+                {
+                    closeDriver(driver);
+                }
+                else // use the driver
+                {
+                    used.add(driver);
+                    instance.use();
+                    ret = driver;
+                }
             }
-            else // use the driver
+            catch(WebDriverException e)
             {
-                used.add(driver);
-                instance.use();
-                ret = driver;
+                // Browser has gone away
+                closeDriver(driver);
             }
         }
         while(ret == null);
@@ -180,11 +191,12 @@ public class WebDriverPool
         };
     }
 
-    private WebDriver newChromeDriver()
+    private WebDriver newChromeDriver(boolean headless)
     {
-        ChromeOptions options = new ChromeOptions();
+       ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox");
         options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"}); 
+        options.addArguments("--disable-blink-features=AutomationControlled"); // prevents some 403 errors
         options.addArguments("--disable-extensions");
         options.setPageLoadStrategy(PageLoadStrategy.EAGER);
         options.addArguments("--window-size=1920,1080");
@@ -192,11 +204,11 @@ public class WebDriverPool
         options.addArguments("--no-proxy-server");
         options.addArguments("--proxy-server='direct://'");
         options.addArguments("--proxy-bypass-list=*");
-        options.setHeadless(true);
+        options.setHeadless(headless);
         return new ChromeDriver(options);
     }
 
-    private WebDriver newFirefoxDriver()
+    private WebDriver newFirefoxDriver(boolean headless)
     {
         FirefoxOptions options = new FirefoxOptions();
         options.setPageLoadStrategy(PageLoadStrategy.EAGER);
@@ -205,7 +217,7 @@ public class WebDriverPool
         options.addArguments("--no-proxy-server");
         options.addArguments("--proxy-server='direct://'");
         options.addArguments("--proxy-bypass-list=*");
-        options.setHeadless(true);
+        options.setHeadless(headless);
         return new FirefoxDriver(options);
     }
 
@@ -253,11 +265,17 @@ public class WebDriverPool
      */
     private void closeDriver(WebDriver driver)
     {
-        if(driver != null)
+        try
         {
-            String handle = driver.getWindowHandle();
-            driver.quit();
-            instances.remove(handle);
+            if(driver != null)
+            {
+                String handle = driver.getWindowHandle();
+                driver.quit();
+                instances.remove(handle);
+            }
+        }
+        catch(WebDriverException e)
+        {
         }
     }
 }

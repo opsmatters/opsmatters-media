@@ -116,11 +116,16 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
         configureImplicitWait(getArticleLoading());
         loadPage(content.getUrl(), getArticleLoading());
         configureExplicitWait(getArticleLoading());
+
+        // Scroll the page if configured
+        configureMovement(getArticleLoading());
+
+        // Wait for the page to load
         configureSleep(getArticleLoading());
 
-        // Trace to see the ebook page
+        // Trace to see the page
         if(trace(getDriver()))
-            logger.info("roundup-page="+getPageSource());
+            logger.info("content-page="+getPageSource());
 
         Element root = null;
         Document doc = Jsoup.parse(getPageSource("body"));

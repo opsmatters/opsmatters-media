@@ -27,11 +27,13 @@ public class WebPageConfiguration extends FieldsConfiguration
 {
     public static final String URL = "url";
     public static final String BROWSER = "browser";
+    public static final String HEADLESS = "headless";
     public static final String BASE_PATH = "base-path";
     public static final String MORE_LINK = "more-link";
 
     private String url = "";
     private CrawlerBrowser browser;
+    private boolean headless = true;
     private String basePath = "";
     private MoreLinkConfiguration moreLink;
 
@@ -62,6 +64,7 @@ public class WebPageConfiguration extends FieldsConfiguration
             super.copyAttributes(obj);
             setUrl(obj.getUrl());
             setBrowser(obj.getBrowser());
+            setHeadless(obj.isHeadless());
             setBasePath(obj.getBasePath());
             if(obj.getMoreLink() != null)
                 setMoreLink(new MoreLinkConfiguration(obj.getMoreLink()));
@@ -109,6 +112,22 @@ public class WebPageConfiguration extends FieldsConfiguration
     }
 
     /**
+     * Returns <CODE>true</CODE> if the browser is headless.
+     */
+    public boolean isHeadless()
+    {
+        return headless;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the browser is headless.
+     */
+    public void setHeadless(boolean headless)
+    {
+        this.headless = headless;
+    }
+
+    /**
      * Returns the base path for this configuration.
      */
     public String getBasePath()
@@ -151,6 +170,8 @@ public class WebPageConfiguration extends FieldsConfiguration
             setUrl((String)map.get(URL));
         if(map.containsKey(BROWSER))
             setBrowser((String)map.get(BROWSER));
+        if(map.containsKey(HEADLESS))
+            setHeadless((Boolean)map.get(HEADLESS));
         if(map.containsKey(BASE_PATH))
             setBasePath((String)map.get(BASE_PATH));
         if(map.containsKey(MORE_LINK))

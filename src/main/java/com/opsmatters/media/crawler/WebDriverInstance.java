@@ -29,13 +29,15 @@ public class WebDriverInstance
 
     private WebDriver driver;
     private String handle;
+    private boolean headless = false;
     private Instant started;
     private int uses = 0;
 
-    public WebDriverInstance(WebDriver driver)
+    public WebDriverInstance(WebDriver driver, boolean headless)
     {
         this.driver = driver;
-        handle = driver.getWindowHandle();
+        this.handle = driver.getWindowHandle();
+        this.headless = headless;
         started = Instant.now();
     }
 
@@ -52,6 +54,11 @@ public class WebDriverInstance
     public String getHandle()
     {
         return handle;
+    }
+
+    public boolean isHeadless()
+    {
+        return headless;
     }
 
     public int getUses()

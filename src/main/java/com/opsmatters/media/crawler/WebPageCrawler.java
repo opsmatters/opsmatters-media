@@ -35,6 +35,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import com.opsmatters.media.config.content.WebPageConfiguration;
@@ -88,7 +91,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
         // Create the web driver
         WebDriverPool.setDebug(debug());
         if(driver == null)
-            driver = WebDriverPool.getDriver(config.getBrowser());
+            driver = WebDriverPool.getDriver(config.getBrowser(), config.isHeadless());
         this.browser = config.getBrowser();
     }
 
@@ -237,11 +240,9 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                 url += "/";
         }
 
-        if(debug())
-            logger.info("Loading page: "+url);
+        logger.info("Loading page: "+url);
         driver.get(url);
-        if(debug())
-            logger.info("Loaded page: "+driver.getTitle());
+        logger.info("Loaded page: "+driver.getTitle());
     }
 
     /**
@@ -255,7 +256,6 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
         configureImplicitWait(getTeaserLoading());
         loadPage(getUrl(), getTeaserLoading());
         configureExplicitWait(getTeaserLoading());
-        configureSleep(getTeaserLoading());
 
         // Click a "Load More" button if configured
         if(getMoreLink() != null)
@@ -272,6 +272,12 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
         // Trace to see the teaser page
         if(trace(getDriver()))
             logger.info("teaser-page="+getPageSource());
+
+        // Scroll the page if configured
+        configureMovement(getTeaserLoading());
+
+        // Wait for the page to load
+        configureSleep(getTeaserLoading());
 
         if(debug())
             logger.info("Loaded page in: "+(System.currentTimeMillis()-now)+"ms");
@@ -362,6 +368,48 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                 Thread.sleep(sleep);
             }
             catch(InterruptedException e)
+            {
+            }
+        }
+    }
+
+    protected void configureMovement(LoadingConfiguration loading)
+    {
+        if(loading == null)
+            return;
+
+        long scrollX = loading.getScrollX();
+        long scrollY = loading.getScrollY();
+        if(debug())
+            logger.info(String.format("Set scroll: x=%d, y=%d", scrollX, scrollY));
+        if(scrollX != 0 || scrollY != 0)
+        {
+            JavascriptExecutor js = (JavascriptExecutor)getDriver();
+            js.executeScript(String.format("window.scrollBy(%d,%d)", scrollX, scrollY), "");
+        }
+
+        String moveTo = loading.getMoveTo();
+        if(debug())
+            logger.info(String.format("Set move to: %s", moveTo));
+        if(moveTo != null && moveTo.length() > 0)
+        {
+            try
+            {
+                WebElement element = getDriver().findElement(By.cssSelector(moveTo));
+                if(element != null)
+                {
+                    JavascriptExecutor js = (JavascriptExecutor)getDriver();
+                    js.executeScript(String.format("var $div = document.querySelector('%s'); if ($div) { $div.scrollIntoView(true); }", moveTo), "");
+                    Thread.sleep(500);
+                    Actions actions = new Actions(getDriver());
+                    actions.moveToElement​(element).perform();
+                }
+                else
+                {
+                    logger.severe("Unable to find move to element: "+moveTo);
+                }
+            }
+            catch(WebDriverException | InterruptedException e)
             {
             }
         }

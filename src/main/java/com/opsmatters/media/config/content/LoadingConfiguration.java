@@ -36,6 +36,9 @@ public class LoadingConfiguration extends YamlConfiguration
     public static final String TRAILING_SLASH = "trailing-slash";
     public static final String ANTI_CACHE = "anti-cache";
     public static final String KEYWORDS = "keywords";
+    public static final String SCROLL_X = "scroll-x";
+    public static final String SCROLL_Y = "scroll-y";
+    public static final String MOVE_TO = "move-to";
 
     private long wait = 0L;
     private long sleep = 0L;
@@ -47,6 +50,9 @@ public class LoadingConfiguration extends YamlConfiguration
     private boolean antiCache = false;
     private String keywords = "";
     private List<String> keywordList;
+    private int scrollX = 0;
+    private int scrollY = 0;
+    private String moveTo = "";
 
     /**
      * Default constructor.
@@ -82,6 +88,9 @@ public class LoadingConfiguration extends YamlConfiguration
             setTrailingSlash(obj.hasTrailingSlash());
             setAntiCache(obj.isAntiCache());
             setKeywords(obj.getKeywords());
+            setScrollX(obj.getScrollX());
+            setScrollY(obj.getScrollY());
+            setMoveTo(obj.getMoveTo());
         }
     }
 
@@ -261,6 +270,54 @@ public class LoadingConfiguration extends YamlConfiguration
     }
 
     /**
+     * Returns how much to scroll the page in the x direction after loading (in pixels).
+     */
+    public int getScrollX()
+    {
+        return scrollX;
+    }
+
+    /**
+     * Sets how much to scroll the page in the x direction after loading (in pixels).
+     */
+    public void setScrollX(int scrollX)
+    {
+        this.scrollX = scrollX;
+    }
+
+    /**
+     * Returns how much to scroll the page in the y direction after loading (in pixels).
+     */
+    public int getScrollY()
+    {
+        return scrollY;
+    }
+
+    /**
+     * Sets how much to scroll the page in the y direction after loading (in pixels).
+     */
+    public void setScrollY(int scrollY)
+    {
+        this.scrollY = scrollY;
+    }
+
+    /**
+     * Returns the css selector of an element to scroll and move to.
+     */
+    public String getMoveTo()
+    {
+        return moveTo;
+    }
+
+    /**
+     * Sets the css selector of an element to scroll and move to.
+     */
+    public void setMoveTo(String moveTo)
+    {
+        this.moveTo = moveTo;
+    }
+
+    /**
      * Reads the configuration from the given YAML Document.
      */
     @Override
@@ -284,5 +341,11 @@ public class LoadingConfiguration extends YamlConfiguration
             setAntiCache((Boolean)map.get(ANTI_CACHE));
         if(map.containsKey(KEYWORDS))
             setKeywords((String)map.get(KEYWORDS));
+        if(map.containsKey(SCROLL_X))
+            setScrollX((Integer)map.get(SCROLL_X));
+        if(map.containsKey(SCROLL_Y))
+            setScrollY((Integer)map.get(SCROLL_Y));
+        if(map.containsKey(MOVE_TO))
+            setMoveTo((String)map.get(MOVE_TO));
     }
 }
