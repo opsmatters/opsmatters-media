@@ -23,88 +23,88 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.monitor.ContentReview;
-import com.opsmatters.media.model.monitor.ReviewStatus;
+import com.opsmatters.media.model.monitor.ContentAlert;
+import com.opsmatters.media.model.monitor.AlertStatus;
 import com.opsmatters.media.util.AppSession;
 
 /**
- * DAO that provides operations on the CONTENT_REVIEWS table in the database.
+ * DAO that provides operations on the CONTENT_ALERTS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentReviewDAO extends MonitorDAO<ContentReview>
+public class ContentAlertDAO extends MonitorDAO<ContentAlert>
 {
-    private static final Logger logger = Logger.getLogger(ContentReviewDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(ContentAlertDAO.class.getName());
 
     /**
-     * The query to use to select a review from the CONTENT_REVIEWS table by id.
+     * The query to use to select a alert from the CONTENT_ALERTS table by id.
      */
     private static final String GET_BY_ID_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY "
-      + "FROM CONTENT_REVIEWS WHERE ID=?";
+      + "FROM CONTENT_ALERTS WHERE ID=?";
 
     /**
-     * The query to use to insert a review into the CONTENT_REVIEWS table.
+     * The query to use to insert a alert into the CONTENT_ALERTS table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO CONTENT_REVIEWS"
+      "INSERT INTO CONTENT_ALERTS"
       + "( ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY, SESSION_ID )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update a review in the CONTENT_REVIEWS table.
+     * The query to use to update a alert in the CONTENT_ALERTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTENT_REVIEWS SET UPDATED_DATE=?, STATUS=?, NOTES=?, \"CHANGE\"=?, CREATED_BY=?, SESSION_ID=? "
+      "UPDATE CONTENT_ALERTS SET UPDATED_DATE=?, STATUS=?, NOTES=?, \"CHANGE\"=?, CREATED_BY=?, SESSION_ID=? "
       + "WHERE ID=?";
 
     /**
-     * The query to use to select the reviews from the CONTENT_REVIEWS table.
+     * The query to use to select the alerts from the CONTENT_ALERTS table.
      */
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY "
-      + "FROM CONTENT_REVIEWS "
+      + "FROM CONTENT_ALERTS "
       + "WHERE CREATED_DATE >= (NOW() + INTERVAL -30 DAY) OR STATUS='NEW' ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to select the reviews from the CONTENT_REVIEWS table by organisation.
+     * The query to use to select the alerts from the CONTENT_ALERTS table by organisation.
      */
     private static final String LIST_BY_CODE_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY "
-      + "FROM CONTENT_REVIEWS "
+      + "FROM CONTENT_ALERTS "
       + "WHERE CODE=? ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to select the reviews from the CONTENT_REVIEWS table by status.
+     * The query to use to select the alerts from the CONTENT_ALERTS table by status.
      */
     private static final String LIST_BY_STATUS_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY "
-      + "FROM CONTENT_REVIEWS "
+      + "FROM CONTENT_ALERTS "
       + "WHERE STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -30 DAY) OR STATUS='NEW') ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to get the count of reviews from the CONTENT_REVIEWS table.
+     * The query to use to get the count of alerts from the CONTENT_ALERTS table.
      */
     private static final String COUNT_SQL =  
-      "SELECT COUNT(*) FROM CONTENT_REVIEWS";
+      "SELECT COUNT(*) FROM CONTENT_ALERTS";
 
     /**
-     * The query to use to delete a review from the CONTENT_REVIEWS table.
+     * The query to use to delete a alert from the CONTENT_ALERTS table.
      */
     private static final String DELETE_SQL =  
-      "DELETE FROM CONTENT_REVIEWS WHERE ID=?";
+      "DELETE FROM CONTENT_ALERTS WHERE ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public ContentReviewDAO(MonitorDAOFactory factory)
+    public ContentAlertDAO(MonitorDAOFactory factory)
     {
-        super(factory, "CONTENT_REVIEWS");
+        super(factory, "CONTENT_ALERTS");
     }
 
     /**
-     * Defines the columns and indices for the CONTENT_REVIEWS table.
+     * Defines the columns and indices for the CONTENT_ALERTS table.
      */
     @Override
     protected void defineTable()
@@ -121,18 +121,18 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
         table.addColumn("CHANGE", Types.BOOLEAN, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("SESSION_ID", Types.INTEGER, true);
-        table.setPrimaryKey("CONTENT_REVIEWS_PK", new String[] {"ID"});
-        table.addIndex("CONTENT_REVIEWS_STATUS_IDX", new String[] {"STATUS"});
-        table.addIndex("CONTENT_REVIEWS_SESSION_IDX", new String[] {"SESSION_ID"});
+        table.setPrimaryKey("CONTENT_ALERTS_PK", new String[] {"ID"});
+        table.addIndex("CONTENT_ALERTS_STATUS_IDX", new String[] {"STATUS"});
+        table.addIndex("CONTENT_ALERTS_SESSION_IDX", new String[] {"SESSION_ID"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns a review from the CONTENT_REVIEWS table by id.
+     * Returns an alert from the CONTENT_ALERTS table by id.
      */
-    public synchronized ContentReview getById(String id) throws SQLException
+    public synchronized ContentAlert getById(String id) throws SQLException
     {
-        ContentReview ret = null;
+        ContentAlert ret = null;
 
         if(!hasConnection())
             return ret;
@@ -151,19 +151,19 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
             rs = getByIdStmt.executeQuery();
             while(rs.next())
             {
-                ContentReview review = new ContentReview();
-                review.setId(rs.getString(1));
-                review.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                review.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                review.setEffectiveDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
-                review.setCode(rs.getString(5));
-                review.setReason(rs.getString(6));
-                review.setStatus(rs.getString(7));
-                review.setMonitorId(rs.getString(8));
-                review.setNotes(rs.getString(9));
-                review.setChange(rs.getBoolean(10));
-                review.setCreatedBy(rs.getString(11));
-                ret = review;
+                ContentAlert alert = new ContentAlert();
+                alert.setId(rs.getString(1));
+                alert.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                alert.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                alert.setEffectiveDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                alert.setCode(rs.getString(5));
+                alert.setReason(rs.getString(6));
+                alert.setStatus(rs.getString(7));
+                alert.setMonitorId(rs.getString(8));
+                alert.setNotes(rs.getString(9));
+                alert.setChange(rs.getBoolean(10));
+                alert.setCreatedBy(rs.getString(11));
+                ret = alert;
             }
         }
         finally
@@ -184,11 +184,11 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
     }
 
     /**
-     * Stores the given review in the CONTENT_REVIEWS table.
+     * Stores the given alert in the CONTENT_ALERTS table.
      */
-    public synchronized void add(ContentReview review) throws SQLException
+    public synchronized void add(ContentAlert alert) throws SQLException
     {
-        if(!hasConnection() || review == null)
+        if(!hasConnection() || alert == null)
             return;
 
         if(insertStmt == null)
@@ -197,21 +197,21 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
 
         try
         {
-            insertStmt.setString(1, review.getId());
-            insertStmt.setTimestamp(2, new Timestamp(review.getCreatedDateMillis()), UTC);
-            insertStmt.setTimestamp(3, new Timestamp(review.getUpdatedDateMillis()), UTC);
-            insertStmt.setTimestamp(4, new Timestamp(review.getEffectiveDateMillis()), UTC);
-            insertStmt.setString(5, review.getCode());
-            insertStmt.setString(6, review.getReason().name());
-            insertStmt.setString(7, review.getStatus().name());
-            insertStmt.setString(8, review.getMonitorId());
-            insertStmt.setString(9, review.getNotes());
-            insertStmt.setBoolean(10, review.hasChange());
-            insertStmt.setString(11, review.getCreatedBy());
+            insertStmt.setString(1, alert.getId());
+            insertStmt.setTimestamp(2, new Timestamp(alert.getCreatedDateMillis()), UTC);
+            insertStmt.setTimestamp(3, new Timestamp(alert.getUpdatedDateMillis()), UTC);
+            insertStmt.setTimestamp(4, new Timestamp(alert.getEffectiveDateMillis()), UTC);
+            insertStmt.setString(5, alert.getCode());
+            insertStmt.setString(6, alert.getReason().name());
+            insertStmt.setString(7, alert.getStatus().name());
+            insertStmt.setString(8, alert.getMonitorId());
+            insertStmt.setString(9, alert.getNotes());
+            insertStmt.setBoolean(10, alert.hasChange());
+            insertStmt.setString(11, alert.getCreatedBy());
             insertStmt.setInt(12, AppSession.id());
             insertStmt.executeUpdate();
 
-            logger.info("Created review '"+review.getId()+"' in CONTENT_REVIEWS");
+            logger.info("Created alert '"+alert.getId()+"' in CONTENT_ALERTS");
         }
         catch(SQLException ex)
         {
@@ -222,42 +222,42 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
                 insertStmt = null;
             }
 
-            // Unique constraint violated means that the review already exists
+            // Unique constraint violated means that the alert already exists
             if(!getDriver().isConstraintViolation(ex))
                 throw ex;
         }
     }
 
     /**
-     * Updates the given review in the CONTENT_REVIEWS table.
+     * Updates the given alert in the CONTENT_ALERTS table.
      */
-    public synchronized void update(ContentReview review) throws SQLException
+    public synchronized void update(ContentAlert alert) throws SQLException
     {
-        if(!hasConnection() || review == null)
+        if(!hasConnection() || alert == null)
             return;
 
         if(updateStmt == null)
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
         clearParameters(updateStmt);
 
-        updateStmt.setTimestamp(1, new Timestamp(review.getUpdatedDateMillis()), UTC);
-        updateStmt.setString(2, review.getStatus().name());
-        updateStmt.setString(3, review.getNotes());
-        updateStmt.setBoolean(4, review.hasChange());
-        updateStmt.setString(5, review.getCreatedBy());
+        updateStmt.setTimestamp(1, new Timestamp(alert.getUpdatedDateMillis()), UTC);
+        updateStmt.setString(2, alert.getStatus().name());
+        updateStmt.setString(3, alert.getNotes());
+        updateStmt.setBoolean(4, alert.hasChange());
+        updateStmt.setString(5, alert.getCreatedBy());
         updateStmt.setInt(6, AppSession.id());
-        updateStmt.setString(7, review.getId());
+        updateStmt.setString(7, alert.getId());
         updateStmt.executeUpdate();
 
-        logger.info("Updated review '"+review.getId()+"' in CONTENT_REVIEWS");
+        logger.info("Updated alert '"+alert.getId()+"' in CONTENT_ALERTS");
     }
 
     /**
-     * Returns the reviews from the CONTENT_REVIEWS table.
+     * Returns the alerts from the CONTENT_ALERTS table.
      */
-    public synchronized List<ContentReview> list() throws SQLException
+    public synchronized List<ContentAlert> list() throws SQLException
     {
-        List<ContentReview> ret = null;
+        List<ContentAlert> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -273,22 +273,22 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
         {
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
-            ret = new ArrayList<ContentReview>();
+            ret = new ArrayList<ContentAlert>();
             while(rs.next())
             {
-                ContentReview review = new ContentReview();
-                review.setId(rs.getString(1));
-                review.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                review.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                review.setEffectiveDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
-                review.setCode(rs.getString(5));
-                review.setReason(rs.getString(6));
-                review.setStatus(rs.getString(7));
-                review.setMonitorId(rs.getString(8));
-                review.setNotes(rs.getString(9));
-                review.setChange(rs.getBoolean(10));
-                review.setCreatedBy(rs.getString(11));
-                ret.add(review);
+                ContentAlert alert = new ContentAlert();
+                alert.setId(rs.getString(1));
+                alert.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                alert.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                alert.setEffectiveDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                alert.setCode(rs.getString(5));
+                alert.setReason(rs.getString(6));
+                alert.setStatus(rs.getString(7));
+                alert.setMonitorId(rs.getString(8));
+                alert.setNotes(rs.getString(9));
+                alert.setChange(rs.getBoolean(10));
+                alert.setCreatedBy(rs.getString(11));
+                ret.add(alert);
             }
         }
         finally
@@ -309,11 +309,11 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
     }
 
     /**
-     * Returns the reviews from the CONTENT_REVIEWS table by organisation.
+     * Returns the alerts from the CONTENT_ALERTS table by organisation.
      */
-    public synchronized List<ContentReview> list(String code) throws SQLException
+    public synchronized List<ContentAlert> list(String code) throws SQLException
     {
-        List<ContentReview> ret = null;
+        List<ContentAlert> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -330,22 +330,22 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
             listByCodeStmt.setString(1, code);
             listByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByStatusStmt.executeQuery();
-            ret = new ArrayList<ContentReview>();
+            ret = new ArrayList<ContentAlert>();
             while(rs.next())
             {
-                ContentReview review = new ContentReview();
-                review.setId(rs.getString(1));
-                review.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                review.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                review.setEffectiveDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
-                review.setCode(rs.getString(5));
-                review.setReason(rs.getString(6));
-                review.setStatus(rs.getString(7));
-                review.setMonitorId(rs.getString(8));
-                review.setNotes(rs.getString(9));
-                review.setChange(rs.getBoolean(10));
-                review.setCreatedBy(rs.getString(11));
-                ret.add(review);
+                ContentAlert alert = new ContentAlert();
+                alert.setId(rs.getString(1));
+                alert.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                alert.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                alert.setEffectiveDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                alert.setCode(rs.getString(5));
+                alert.setReason(rs.getString(6));
+                alert.setStatus(rs.getString(7));
+                alert.setMonitorId(rs.getString(8));
+                alert.setNotes(rs.getString(9));
+                alert.setChange(rs.getBoolean(10));
+                alert.setCreatedBy(rs.getString(11));
+                ret.add(alert);
             }
         }
         finally
@@ -366,11 +366,11 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
     }
 
     /**
-     * Returns the reviews from the CONTENT_REVIEWS table by status.
+     * Returns the alerts from the CONTENT_ALERTS table by status.
      */
-    public synchronized List<ContentReview> list(ReviewStatus status) throws SQLException
+    public synchronized List<ContentAlert> list(AlertStatus status) throws SQLException
     {
-        List<ContentReview> ret = null;
+        List<ContentAlert> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -387,22 +387,22 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
             listByStatusStmt.setString(1, status.name());
             listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByStatusStmt.executeQuery();
-            ret = new ArrayList<ContentReview>();
+            ret = new ArrayList<ContentAlert>();
             while(rs.next())
             {
-                ContentReview review = new ContentReview();
-                review.setId(rs.getString(1));
-                review.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                review.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                review.setEffectiveDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
-                review.setCode(rs.getString(5));
-                review.setReason(rs.getString(6));
-                review.setStatus(rs.getString(7));
-                review.setMonitorId(rs.getString(8));
-                review.setNotes(rs.getString(9));
-                review.setChange(rs.getBoolean(10));
-                review.setCreatedBy(rs.getString(11));
-                ret.add(review);
+                ContentAlert alert = new ContentAlert();
+                alert.setId(rs.getString(1));
+                alert.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                alert.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                alert.setEffectiveDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                alert.setCode(rs.getString(5));
+                alert.setReason(rs.getString(6));
+                alert.setStatus(rs.getString(7));
+                alert.setMonitorId(rs.getString(8));
+                alert.setNotes(rs.getString(9));
+                alert.setChange(rs.getBoolean(10));
+                alert.setCreatedBy(rs.getString(11));
+                ret.add(alert);
             }
         }
         finally
@@ -423,7 +423,7 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
     }
 
     /**
-     * Returns the count of reviews from the table.
+     * Returns the count of alerts from the table.
      */
     public int count() throws SQLException
     {
@@ -441,21 +441,21 @@ public class ContentReviewDAO extends MonitorDAO<ContentReview>
     }
 
     /**
-     * Removes the given review from the CONTENT_REVIEWS table.
+     * Removes the given alert from the CONTENT_ALERTS table.
      */
-    public synchronized void delete(ContentReview review) throws SQLException
+    public synchronized void delete(ContentAlert alert) throws SQLException
     {
-        if(!hasConnection() || review == null)
+        if(!hasConnection() || alert == null)
             return;
 
         if(deleteStmt == null)
             deleteStmt = prepareStatement(getConnection(), DELETE_SQL);
         clearParameters(deleteStmt);
 
-        deleteStmt.setString(1, review.getId());
+        deleteStmt.setString(1, alert.getId());
         deleteStmt.executeUpdate();
 
-        logger.info("Deleted review '"+review.getId()+"' in CONTENT_REVIEWS");
+        logger.info("Deleted alert '"+alert.getId()+"' in CONTENT_ALERTS");
     }
 
     /**

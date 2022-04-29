@@ -353,26 +353,26 @@ public class ContentMonitor extends BaseItem
     }
 
     /**
-     * Set the monitor status to REVIEW.
+     * Set the monitor status to ALERT.
      */
-    public void setReview(ContentReview review)
+    public void setAlert(ContentAlert alert)
     {
-        if(getStatus() != MonitorStatus.REVIEW)
+        if(getStatus() != MonitorStatus.ALERT)
         {
-            setStatus(MonitorStatus.REVIEW);
+            setStatus(MonitorStatus.ALERT);
             setUpdatedDate(Instant.now());
-            setEvent(review);
+            setEvent(alert);
         }
     }
 
     /**
-     * Clear the monitor status after REVIEW.
+     * Clear the monitor status after ALERT.
      */
-    public void clearReview(ContentReview review)
+    public void clearAlert(ContentAlert alert)
     {
-        if(review == null || getEventId().equals(review.getId()))
+        if(alert == null || getEventId().equals(alert.getId()))
         {
-            if(getStatus() == MonitorStatus.REVIEW)
+            if(getStatus() == MonitorStatus.ALERT)
             {
                 setStatus(MonitorStatus.RESUMING);
                 setUpdatedDate(Instant.now());

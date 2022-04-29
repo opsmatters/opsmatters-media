@@ -17,31 +17,38 @@
 package com.opsmatters.media.model.monitor;
 
 /**
- * Represents the reason for a content monitor review.
+ * Represents the status of a content monitor alert.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ReviewReason
+public enum AlertStatus
 {
-    NO_CHANGES("No changes detected"),
-    SUSPENDED("Suspended"),
-    MANUAL("Manual"),
-    ALL("All"); // Pseudo status
+    NEW("New", "glyphicon-unchecked", ""),
+    RESOLVED("Resolved", "glyphicon-ok-circle", "status-success"),
+    CLEARED("Cleared", "glyphicon-remove-circle", "status-info"),
+    DEFUNCT("Defunct", "glyphicon-trash", "status-error"),
+    ALL("All", "", ""); // Pseudo status
 
     private String value;
+    private String icon;
+    private String css;
 
     /**
-     * Constructor that takes the reason value.
-     * @param value The value for the reason
+     * Constructor that takes the status value.
+     * @param value The value for the status
+     * @param icon The glyphicon for the status
+     * @param css The css class for the status
      */
-    ReviewReason(String value)
+    AlertStatus(String value, String icon, String css)
     {
         this.value = value;
+        this.icon = icon;
+        this.css = css;
     }
 
     /**
-     * Returns the value of the reason.
-     * @return The value of the reason.
+     * Returns the value of the status.
+     * @return The value of the status.
      */
     public String toString()
     {
@@ -49,8 +56,8 @@ public enum ReviewReason
     }
 
     /**
-     * Returns the value of the reason.
-     * @return The value of the reason.
+     * Returns the value of the status.
+     * @return The value of the status.
      */
     public String value()
     {
@@ -58,14 +65,32 @@ public enum ReviewReason
     }
 
     /**
+     * Returns the glyphicon of the status.
+     * @return The glyphicon of the status.
+     */
+    public String icon()
+    {
+        return icon;
+    }
+
+    /**
+     * Returns the css class of the status.
+     * @return The css class of the status.
+     */
+    public String css()
+    {
+        return css;
+    }
+
+    /**
      * Returns the type for the given value.
      * @param value The type value
      * @return The type for the given value
      */
-    public static ReviewReason fromValue(String value)
+    public static AlertStatus fromValue(String value)
     {
-        ReviewReason[] types = values();
-        for(ReviewReason type : types)
+        AlertStatus[] types = values();
+        for(AlertStatus type : types)
         {
             if(type.value().equals(value))
                 return type;

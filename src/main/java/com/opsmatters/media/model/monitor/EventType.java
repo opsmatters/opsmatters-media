@@ -24,7 +24,7 @@ package com.opsmatters.media.model.monitor;
 public enum EventType
 {
     CHANGE("Change"),
-    REVIEW("Review");
+    ALERT("Alert");
 
     private String value;
 

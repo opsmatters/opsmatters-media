@@ -24,43 +24,43 @@ import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
 
 /**
- * Class representing a content monitor review.
+ * Class representing a content monitor alert.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentReview extends ContentEvent
+public class ContentAlert extends ContentEvent
 {
     private Instant effectiveDate;
-    private ReviewReason reason;
-    private ReviewStatus status;
+    private AlertReason reason;
+    private AlertStatus status;
     private String notes = "";
     private boolean change = false;
 
     /**
      * Default constructor.
      */
-    public ContentReview()
+    public ContentAlert()
     {
     }
 
     /**
      * Constructor that takes a monitor.
      */
-    public ContentReview(ContentMonitor monitor, ReviewReason reason)
+    public ContentAlert(ContentMonitor monitor, AlertReason reason)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setEffectiveDate(monitor.getUpdatedDate());
         setCode(monitor.getCode());
         setReason(reason);
-        setStatus(ReviewStatus.NEW);
+        setStatus(AlertStatus.NEW);
         setMonitorId(monitor.getId());
     }
 
     /**
      * Copy constructor.
      */
-    public ContentReview(ContentReview obj)
+    public ContentAlert(ContentAlert obj)
     {
         copyAttributes(obj);
     }
@@ -68,7 +68,7 @@ public class ContentReview extends ContentEvent
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ContentReview obj)
+    public void copyAttributes(ContentAlert obj)
     {
         if(obj != null)
         {
@@ -87,11 +87,11 @@ public class ContentReview extends ContentEvent
     @Override
     public EventType getType()
     {
-        return EventType.REVIEW;
+        return EventType.ALERT;
     }
 
     /**
-     * Returns the review effective date.
+     * Returns the alert effective date.
      */
     public Instant getEffectiveDate()
     {
@@ -99,7 +99,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Returns the review effective date.
+     * Returns the alert effective date.
      */
     public long getEffectiveDateMillis()
     {
@@ -107,7 +107,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Returns the review effective date.
+     * Returns the alert effective date.
      */
     public LocalDateTime getEffectiveDateUTC()
     {
@@ -115,7 +115,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Returns the review effective date.
+     * Returns the alert effective date.
      */
     public String getEffectiveDateAsString(String pattern)
     {
@@ -123,7 +123,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Returns the review effective date.
+     * Returns the alert effective date.
      */
     public String getEffectiveDateAsString(String pattern, String timezone)
     {
@@ -131,7 +131,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Returns the review effective date.
+     * Returns the alert effective date.
      */
     public String getEffectiveDateAsString()
     {
@@ -139,7 +139,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Sets the review effective date.
+     * Sets the alert effective date.
      */
     public void setEffectiveDate(Instant effectiveDate)
     {
@@ -147,7 +147,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Sets the review effective date.
+     * Sets the alert effective date.
      */
     public void setEffectiveDateMillis(long millis)
     {
@@ -156,7 +156,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Sets the review effective date.
+     * Sets the alert effective date.
      */
     public void setEffectiveDateAsString(String str, String pattern) throws DateTimeParseException
     {
@@ -164,7 +164,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Sets the review effective date.
+     * Sets the alert effective date.
      */
     public void setEffectiveDateAsString(String str) throws DateTimeParseException
     {
@@ -172,7 +172,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Sets the review effective date.
+     * Sets the alert effective date.
      */
     public void setEffectiveDateUTC(LocalDateTime effectiveDate)
     {
@@ -181,57 +181,57 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Returns the review reason.
+     * Returns the alert reason.
      */
-    public ReviewReason getReason()
+    public AlertReason getReason()
     {
         return reason;
     }
 
     /**
-     * Sets the review reason.
+     * Sets the alert reason.
      */
     public void setReason(String reason)
     {
-        setReason(ReviewReason.valueOf(reason));
+        setReason(AlertReason.valueOf(reason));
     }
 
     /**
-     * Sets the review reason.
+     * Sets the alert reason.
      */
-    public void setReason(ReviewReason reason)
+    public void setReason(AlertReason reason)
     {
         this.reason = reason;
     }
 
     /**
-     * Returns the review status.
+     * Returns the alert status.
      */
-    public ReviewStatus getStatus()
+    public AlertStatus getStatus()
     {
         return status;
     }
 
     /**
-     * Sets the review status.
+     * Sets the alert status.
      */
     public void setStatus(String status)
     {
-        setStatus(ReviewStatus.valueOf(status));
+        setStatus(AlertStatus.valueOf(status));
     }
 
     /**
-     * Sets the review status.
+     * Sets the alert status.
      */
-    public void setStatus(ReviewStatus status)
+    public void setStatus(AlertStatus status)
     {
         this.status = status;
     }
 
     /**
-     * Sets the review status by the given user.
+     * Sets the alert status by the given user.
      */
-    public void setStatus(ReviewStatus status, String username)
+    public void setStatus(AlertStatus status, String username)
     {
         setStatus(status);
         setUpdatedDate(Instant.now());
@@ -239,7 +239,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Returns the review notes.
+     * Returns the alert notes.
      */
     public String getNotes()
     {
@@ -247,7 +247,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Sets the review notes.
+     * Sets the alert notes.
      */
     public void setNotes(String notes)
     {
@@ -255,7 +255,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Returns <CODE>true</CODE> if the review notes has been set.
+     * Returns <CODE>true</CODE> if the alert notes has been set.
      */
     public boolean hasNotes()
     {
@@ -263,7 +263,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Returns <CODE>true</CODE> if this review should raise a change.
+     * Returns <CODE>true</CODE> if this alert should raise a change.
      */
     public boolean hasChange()
     {
@@ -271,7 +271,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Returns <CODE>true</CODE> if this review should raise a change.
+     * Returns <CODE>true</CODE> if this alert should raise a change.
      */
     public Boolean getChangeObject()
     {
@@ -279,7 +279,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Set to <CODE>true</CODE> if this review should raise a change.
+     * Set to <CODE>true</CODE> if this alert should raise a change.
      */
     public void setChange(boolean change)
     {
@@ -287,7 +287,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Set to <CODE>true</CODE> if this review should raise a change.
+     * Set to <CODE>true</CODE> if this alert should raise a change.
      */
     public void setChangeObject(Boolean change)
     {

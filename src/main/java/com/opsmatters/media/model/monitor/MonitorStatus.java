@@ -30,10 +30,10 @@ public enum MonitorStatus
     WAITING("Waiting", "glyphicon-hourglass", "", 1),
     EXECUTING("Executing", "glyphicon-cog", "status-warn", 1),
     CHANGED("Changed", "glyphicon-adjust", "status-warn", 0),
-    REVIEW("Review", "glyphicon-eye-open", "status-warn", 0),
+    ALERT("Alert", "glyphicon-exclamation-sign", "status-warn", 0),
     RESUMING("Resuming", "glyphicon-hourglass", "status-warn", 1),
     RETRYING("Retrying", "glyphicon-alert", "status-warn", 1),
-    ERROR("Error", "glyphicon-alert", "status-error", 1),
+    ERROR("Error", "glyphicon-alert", "status-error", -1),
     DISABLED("Disabled", "glyphicon-ban-circle", "status-error", -1),
     PENDING("Pending", "", "", 0), // Pseudo status
     RUNNING("Running", "", "", 1), // Pseudo status
@@ -160,7 +160,7 @@ public enum MonitorStatus
         ret.add(WAITING);
         ret.add(EXECUTING);
         ret.add(CHANGED);
-        ret.add(REVIEW);
+        ret.add(ALERT);
         ret.add(RESUMING);
         ret.add(RETRYING);
         ret.add(ERROR);
