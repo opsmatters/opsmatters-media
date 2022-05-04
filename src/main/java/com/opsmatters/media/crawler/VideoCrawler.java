@@ -53,6 +53,7 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
     private transient VideoClient client;
     private VideoConfiguration config;
     private VideoChannelConfiguration channel;
+    private String channelTitle = "";
 
     /**
      * Constructor that takes a video channel configuration.
@@ -103,6 +104,15 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
     }
 
     /**
+     * Returns the title of the crawled channel.
+     */
+    @Override
+    public String getTitle()
+    {
+        return channelTitle;
+    }
+
+    /**
      * Create the video summary from a selected node.
      */
     public VideoSummary getContentSummary(JSONObject video, ContentFields fields)
@@ -146,6 +156,7 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
 
                     addContent(content);
                     map.put(content.getUniqueId(), content.getUniqueId());
+                    channelTitle = result.getString(Fields.CHANNEL_TITLE);
                 }
 
                 if(numContentItems() >= getMaxResults())

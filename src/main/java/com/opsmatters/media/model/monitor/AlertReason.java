@@ -23,7 +23,7 @@ package com.opsmatters.media.model.monitor;
  */
 public enum AlertReason
 {
-    NO_CHANGES("No changes detected"),
+    INACTIVE("No recent activity"),
     SUSPENDED("Suspended"),
     MANUAL("Manual"),
     ALL("All"); // Pseudo status

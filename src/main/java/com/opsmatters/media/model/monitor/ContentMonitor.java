@@ -58,6 +58,7 @@ public class ContentMonitor extends BaseItem
     public static final String RETRY = "retry";
     public static final String SUBSCRIBED_DATE = "subscribed-date";
     public static final String SITES = "sites";
+    public static final String TITLE = "title";
 
     private String code = "";
     private String organisation = "";
@@ -77,6 +78,7 @@ public class ContentMonitor extends BaseItem
     private int retry = 0;
     private Instant subscribedDate;
     private String sites = "";
+    private String title = "";
 
     private List<ContentSummary> subscribed = new ArrayList<ContentSummary>();
     private Map<String,String> siteMap = new HashMap<String,String>();
@@ -138,6 +140,7 @@ public class ContentMonitor extends BaseItem
             setRetry(obj.getRetry());
             setSubscribedDate(obj.getSubscribedDate());
             setSites(obj.getSites());
+            setTitle(obj.getTitle());
         }
     }
 
@@ -158,6 +161,7 @@ public class ContentMonitor extends BaseItem
         ret.putOpt(RETRY, getRetry());
         ret.putOpt(SUBSCRIBED_DATE, getSubscribedDateMillis());
         ret.putOpt(SITES, getSites());
+        ret.putOpt(TITLE, getTitle());
 
         return ret;
     }
@@ -177,6 +181,7 @@ public class ContentMonitor extends BaseItem
         setRetry(obj.optInt(RETRY));
         setSubscribedDateMillis(obj.optLong(SUBSCRIBED_DATE));
         setSites(obj.optString(SITES));
+        setTitle(obj.optString(TITLE));
     }
 
     /**
@@ -324,26 +329,26 @@ public class ContentMonitor extends BaseItem
     }
 
     /**
-     * Set the monitor status to CHANGED.
+     * Set the monitor status to CHANGE.
      */
     public void setChange(ContentChange change)
     {
-        if(getStatus() != MonitorStatus.CHANGED)
+        if(getStatus() != MonitorStatus.CHANGE)
         {
-            setStatus(MonitorStatus.CHANGED);
+            setStatus(MonitorStatus.CHANGE);
             setUpdatedDate(Instant.now());
             setEvent(change);
         }
     }
 
     /**
-     * Clear the monitor status after CHANGED.
+     * Clear the monitor status after CHANGE.
      */
     public void clearChange(ContentChange change)
     {
         if(change == null || getEventId().equals(change.getId()))
         {
-            if(getStatus() == MonitorStatus.CHANGED)
+            if(getStatus() == MonitorStatus.CHANGE)
             {
                 setStatus(MonitorStatus.RESUMING);
                 setUpdatedDate(Instant.now());
@@ -955,6 +960,22 @@ public class ContentMonitor extends BaseItem
     public boolean hasSite(String siteId)
     {
         return siteMap.size() == 0 || siteMap.get(siteId) != null;
+    }
+
+    /**
+     * Returns the monitor crawled page title.
+     */
+    public String getTitle()
+    {
+        return title;
+    }
+
+    /**
+     * Sets the monitor crawled page title.
+     */
+    public void setTitle(String title)
+    {
+        this.title = title;
     }
 
     /**

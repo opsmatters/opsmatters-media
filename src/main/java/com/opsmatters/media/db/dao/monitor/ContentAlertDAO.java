@@ -15,6 +15,7 @@
  */
 package com.opsmatters.media.db.dao.monitor;
 
+import java.io.StringReader;
 import java.util.List;
 import java.util.ArrayList;
 import java.sql.Types;
@@ -23,6 +24,7 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
+import org.json.JSONObject;
 import com.opsmatters.media.model.monitor.ContentAlert;
 import com.opsmatters.media.model.monitor.AlertStatus;
 import com.opsmatters.media.util.AppSession;
@@ -40,7 +42,7 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
      * The query to use to select a alert from the CONTENT_ALERTS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, START_DATE, CODE, REASON, ATTRIBUTES, STATUS, MONITOR_ID, CREATED_BY "
       + "FROM CONTENT_ALERTS WHERE ID=?";
 
     /**
@@ -48,22 +50,22 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTENT_ALERTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY, SESSION_ID )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, START_DATE, CODE, REASON, ATTRIBUTES, STATUS, MONITOR_ID, CREATED_BY, SESSION_ID )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a alert in the CONTENT_ALERTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTENT_ALERTS SET UPDATED_DATE=?, STATUS=?, NOTES=?, \"CHANGE\"=?, CREATED_BY=?, SESSION_ID=? "
+      "UPDATE CONTENT_ALERTS SET UPDATED_DATE=?, ATTRIBUTES=?, STATUS=?, CREATED_BY=?, SESSION_ID=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the alerts from the CONTENT_ALERTS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, START_DATE, CODE, REASON, ATTRIBUTES, STATUS, MONITOR_ID, CREATED_BY "
       + "FROM CONTENT_ALERTS "
       + "WHERE CREATED_DATE >= (NOW() + INTERVAL -30 DAY) OR STATUS='NEW' ORDER BY CREATED_DATE";
 
@@ -71,7 +73,7 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
      * The query to use to select the alerts from the CONTENT_ALERTS table by organisation.
      */
     private static final String LIST_BY_CODE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, START_DATE, CODE, REASON, ATTRIBUTES, STATUS, MONITOR_ID, CREATED_BY "
       + "FROM CONTENT_ALERTS "
       + "WHERE CODE=? ORDER BY CREATED_DATE";
 
@@ -79,7 +81,7 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
      * The query to use to select the alerts from the CONTENT_ALERTS table by status.
      */
     private static final String LIST_BY_STATUS_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EFFECTIVE_DATE, CODE, REASON, STATUS, MONITOR_ID, NOTES, \"CHANGE\", CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, START_DATE, CODE, REASON, ATTRIBUTES, STATUS, MONITOR_ID, CREATED_BY "
       + "FROM CONTENT_ALERTS "
       + "WHERE STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -30 DAY) OR STATUS='NEW') ORDER BY CREATED_DATE";
 
@@ -112,13 +114,12 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
-        table.addColumn("EFFECTIVE_DATE", Types.TIMESTAMP, false);
+        table.addColumn("START_DATE", Types.TIMESTAMP, false);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("REASON", Types.VARCHAR, 15, true);
+        table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("MONITOR_ID", Types.VARCHAR, 36, true);
-        table.addColumn("NOTES", Types.VARCHAR, 256, false);
-        table.addColumn("CHANGE", Types.BOOLEAN, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("SESSION_ID", Types.INTEGER, true);
         table.setPrimaryKey("CONTENT_ALERTS_PK", new String[] {"ID"});
@@ -155,14 +156,13 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
                 alert.setId(rs.getString(1));
                 alert.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 alert.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                alert.setEffectiveDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                alert.setStartDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 alert.setCode(rs.getString(5));
                 alert.setReason(rs.getString(6));
-                alert.setStatus(rs.getString(7));
-                alert.setMonitorId(rs.getString(8));
-                alert.setNotes(rs.getString(9));
-                alert.setChange(rs.getBoolean(10));
-                alert.setCreatedBy(rs.getString(11));
+                alert.setAttributes(new JSONObject(getClob(rs, 7)));
+                alert.setStatus(rs.getString(8));
+                alert.setMonitorId(rs.getString(9));
+                alert.setCreatedBy(rs.getString(10));
                 ret = alert;
             }
         }
@@ -195,20 +195,23 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
             insertStmt = prepareStatement(getConnection(), INSERT_SQL);
         clearParameters(insertStmt);
 
+        StringReader reader = null;
+
         try
         {
             insertStmt.setString(1, alert.getId());
             insertStmt.setTimestamp(2, new Timestamp(alert.getCreatedDateMillis()), UTC);
             insertStmt.setTimestamp(3, new Timestamp(alert.getUpdatedDateMillis()), UTC);
-            insertStmt.setTimestamp(4, new Timestamp(alert.getEffectiveDateMillis()), UTC);
+            insertStmt.setTimestamp(4, new Timestamp(alert.getStartDateMillis()), UTC);
             insertStmt.setString(5, alert.getCode());
             insertStmt.setString(6, alert.getReason().name());
-            insertStmt.setString(7, alert.getStatus().name());
-            insertStmt.setString(8, alert.getMonitorId());
-            insertStmt.setString(9, alert.getNotes());
-            insertStmt.setBoolean(10, alert.hasChange());
-            insertStmt.setString(11, alert.getCreatedBy());
-            insertStmt.setInt(12, AppSession.id());
+            String attributes = alert.getAttributes().toString();
+            reader = new StringReader(attributes);
+            insertStmt.setCharacterStream(7, reader, attributes.length());
+            insertStmt.setString(8, alert.getStatus().name());
+            insertStmt.setString(9, alert.getMonitorId());
+            insertStmt.setString(10, alert.getCreatedBy());
+            insertStmt.setInt(11, AppSession.id());
             insertStmt.executeUpdate();
 
             logger.info("Created alert '"+alert.getId()+"' in CONTENT_ALERTS");
@@ -226,6 +229,11 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
             if(!getDriver().isConstraintViolation(ex))
                 throw ex;
         }
+        finally
+        {
+            if(reader != null)
+                reader.close();
+        }
     }
 
     /**
@@ -240,16 +248,27 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
         clearParameters(updateStmt);
 
-        updateStmt.setTimestamp(1, new Timestamp(alert.getUpdatedDateMillis()), UTC);
-        updateStmt.setString(2, alert.getStatus().name());
-        updateStmt.setString(3, alert.getNotes());
-        updateStmt.setBoolean(4, alert.hasChange());
-        updateStmt.setString(5, alert.getCreatedBy());
-        updateStmt.setInt(6, AppSession.id());
-        updateStmt.setString(7, alert.getId());
-        updateStmt.executeUpdate();
+        StringReader reader = null;
 
-        logger.info("Updated alert '"+alert.getId()+"' in CONTENT_ALERTS");
+        try
+        {
+            updateStmt.setTimestamp(1, new Timestamp(alert.getUpdatedDateMillis()), UTC);
+            String attributes = alert.getAttributes().toString();
+            reader = new StringReader(attributes);
+            updateStmt.setCharacterStream(2, reader, attributes.length());
+            updateStmt.setString(3, alert.getStatus().name());
+            updateStmt.setString(4, alert.getCreatedBy());
+            updateStmt.setInt(5, AppSession.id());
+            updateStmt.setString(6, alert.getId());
+            updateStmt.executeUpdate();
+
+            logger.info("Updated alert '"+alert.getId()+"' in CONTENT_ALERTS");
+        }
+        finally
+        {
+            if(reader != null)
+                reader.close();
+        }
     }
 
     /**
@@ -280,14 +299,13 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
                 alert.setId(rs.getString(1));
                 alert.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 alert.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                alert.setEffectiveDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                alert.setStartDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 alert.setCode(rs.getString(5));
                 alert.setReason(rs.getString(6));
-                alert.setStatus(rs.getString(7));
-                alert.setMonitorId(rs.getString(8));
-                alert.setNotes(rs.getString(9));
-                alert.setChange(rs.getBoolean(10));
-                alert.setCreatedBy(rs.getString(11));
+                alert.setAttributes(new JSONObject(getClob(rs, 7)));
+                alert.setStatus(rs.getString(8));
+                alert.setMonitorId(rs.getString(9));
+                alert.setCreatedBy(rs.getString(10));
                 ret.add(alert);
             }
         }
@@ -337,14 +355,13 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
                 alert.setId(rs.getString(1));
                 alert.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 alert.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                alert.setEffectiveDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                alert.setStartDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 alert.setCode(rs.getString(5));
                 alert.setReason(rs.getString(6));
-                alert.setStatus(rs.getString(7));
-                alert.setMonitorId(rs.getString(8));
-                alert.setNotes(rs.getString(9));
-                alert.setChange(rs.getBoolean(10));
-                alert.setCreatedBy(rs.getString(11));
+                alert.setAttributes(new JSONObject(getClob(rs, 7)));
+                alert.setStatus(rs.getString(8));
+                alert.setMonitorId(rs.getString(9));
+                alert.setCreatedBy(rs.getString(10));
                 ret.add(alert);
             }
         }
@@ -394,14 +411,13 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
                 alert.setId(rs.getString(1));
                 alert.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 alert.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                alert.setEffectiveDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                alert.setStartDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 alert.setCode(rs.getString(5));
                 alert.setReason(rs.getString(6));
-                alert.setStatus(rs.getString(7));
-                alert.setMonitorId(rs.getString(8));
-                alert.setNotes(rs.getString(9));
-                alert.setChange(rs.getBoolean(10));
-                alert.setCreatedBy(rs.getString(11));
+                alert.setAttributes(new JSONObject(getClob(rs, 7)));
+                alert.setStatus(rs.getString(8));
+                alert.setMonitorId(rs.getString(9));
+                alert.setCreatedBy(rs.getString(10));
                 ret.add(alert);
             }
         }

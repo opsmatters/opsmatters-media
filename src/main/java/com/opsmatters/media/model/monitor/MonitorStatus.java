@@ -29,12 +29,12 @@ public enum MonitorStatus
     NEW("New", "glyphicon-unchecked", "", -1),
     WAITING("Waiting", "glyphicon-hourglass", "", 1),
     EXECUTING("Executing", "glyphicon-cog", "status-warn", 1),
-    CHANGED("Changed", "glyphicon-adjust", "status-warn", 0),
-    ALERT("Alert", "glyphicon-exclamation-sign", "status-warn", 0),
     RESUMING("Resuming", "glyphicon-hourglass", "status-warn", 1),
     RETRYING("Retrying", "glyphicon-alert", "status-warn", 1),
     ERROR("Error", "glyphicon-alert", "status-error", -1),
     DISABLED("Disabled", "glyphicon-ban-circle", "status-error", -1),
+    CHANGE("Change", "glyphicon-adjust", "status-warn", 0),
+    ALERT("Alert", "glyphicon-exclamation-sign", "status-warn", 0),
     PENDING("Pending", "", "", 0), // Pseudo status
     RUNNING("Running", "", "", 1), // Pseudo status
     STOPPED("Stopped", "", "", -1), // Pseudo status
@@ -159,12 +159,12 @@ public enum MonitorStatus
         ret.add(NEW);
         ret.add(WAITING);
         ret.add(EXECUTING);
-        ret.add(CHANGED);
-        ret.add(ALERT);
         ret.add(RESUMING);
         ret.add(RETRYING);
         ret.add(ERROR);
         ret.add(DISABLED);
+        ret.add(CHANGE);
+        ret.add(ALERT);
 
         return ret;
     }

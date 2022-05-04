@@ -86,6 +86,11 @@ public abstract class FieldsCrawler<T extends ContentSummary>
     }
 
     /**
+     * Returns the title of the crawled page.
+     */
+    public abstract String getTitle();
+
+    /**
      * Returns the name of the crawler.
      */
     public String getName()

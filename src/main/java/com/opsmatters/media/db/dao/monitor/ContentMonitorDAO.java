@@ -444,12 +444,12 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     /**
      * Returns the count of monitors from the CONTENT_MONITORS table by organisation code and content type.
      */
-    public int getChangedCount(String code, String name, ContentType type) throws SQLException
+    public int getChangeCount(String code, String name, ContentType type) throws SQLException
     {
         int ret = 0;
         for(ContentMonitor monitor : list(code, name, type))
         {
-            if(monitor.getStatus() == MonitorStatus.CHANGED)
+            if(monitor.getStatus() == MonitorStatus.CHANGE)
                 ++ret;
         }
 

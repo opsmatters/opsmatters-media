@@ -337,39 +337,40 @@ public class YouTubeClient extends Client implements VideoClient
             // First look for a playlist for the channel
             if(playlistId != null)
             {
-                        if(debug())
-                            logger.info("Search for youtube videos for playlistId: "+playlistId);
+                if(debug())
+                    logger.info("Search for youtube videos for playlistId: "+playlistId);
 
-                        YouTube.PlaylistItems.List itemRequest = client.playlistItems().list(LIST_FIELDS);
-                        itemRequest.setPlaylistId(playlistId);
-                        itemRequest.setMaxResults((long)maxResults);
+                YouTube.PlaylistItems.List itemRequest = client.playlistItems().list(LIST_FIELDS);
+                itemRequest.setPlaylistId(playlistId);
+                itemRequest.setMaxResults((long)maxResults);
 
-                        PlaylistItemListResponse itemResult = itemRequest.execute();
-                        List<PlaylistItem> itemList = itemResult.getItems();
+                PlaylistItemListResponse itemResult = itemRequest.execute();
+                List<PlaylistItem> itemList = itemResult.getItems();
 
-                        if(itemList != null)
-                        {
-                            if(debug())
-                                logger.info("Found "+itemList.size()+" youtube videos for playlist: "+playlistId);
-                            for(PlaylistItem item : itemList)
-                            {
-                                PlaylistItemSnippet snippet = item.getSnippet();
-                                ResourceId resource = snippet.getResourceId();
+                if(itemList != null)
+                {
+                    if(debug())
+                        logger.info("Found "+itemList.size()+" youtube videos for playlist: "+playlistId);
+                    for(PlaylistItem item : itemList)
+                    {
+                        PlaylistItemSnippet snippet = item.getSnippet();
+                        ResourceId resource = snippet.getResourceId();
 
-                                JSONObject video = new JSONObject();
-                                video.put(Fields.VIDEO_ID, resource.getVideoId());
-                                video.put(Fields.TITLE, snippet.getTitle());
-                                video.put(Fields.PUBLISHED_DATE, snippet.getPublishedAt().toString());
-                                video.put(Fields.PROVIDER, VideoProvider.YOUTUBE.code());
+                        JSONObject video = new JSONObject();
+                        video.put(Fields.VIDEO_ID, resource.getVideoId());
+                        video.put(Fields.TITLE, snippet.getTitle());
+                        video.put(Fields.PUBLISHED_DATE, snippet.getPublishedAt().toString());
+                        video.put(Fields.CHANNEL_TITLE, snippet.getChannelTitle());
+                        video.put(Fields.PROVIDER, VideoProvider.YOUTUBE.code());
 
-                                list.add(video);
-                            }
-                        }
-                        else
-                        {
-                            if(debug())
-                                logger.info("No youtube videos found for channel: "+channelId);
-                        }
+                        list.add(video);
+                    }
+                }
+                else
+                {
+                    if(debug())
+                        logger.info("No youtube videos found for channel: "+channelId);
+                }
             }
             else // Search by channel id instead
             {
@@ -398,6 +399,7 @@ public class YouTubeClient extends Client implements VideoClient
                         video.put(Fields.VIDEO_ID, resource.getVideoId());
                         video.put(Fields.TITLE, snippet.getTitle());
                         video.put(Fields.PUBLISHED_DATE, snippet.getPublishedAt().toString());
+                        video.put(Fields.CHANNEL_TITLE, snippet.getChannelTitle());
                         video.put(Fields.PROVIDER, VideoProvider.YOUTUBE.code());
 
                         list.add(video);

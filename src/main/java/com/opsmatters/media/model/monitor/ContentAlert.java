@@ -18,6 +18,7 @@ package com.opsmatters.media.model.monitor;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import org.json.JSONObject;
 import com.opsmatters.media.model.OwnedItem;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
@@ -30,11 +31,14 @@ import com.opsmatters.media.util.StringUtils;
  */
 public class ContentAlert extends ContentEvent
 {
-    private Instant effectiveDate;
+    public static final String TITLE = "title";
+    public static final String ERROR_MESSAGE = "error-message";
+
+    private Instant startDate;
     private AlertReason reason;
     private AlertStatus status;
-    private String notes = "";
-    private boolean change = false;
+    private String title = "";
+    private String errorMessage = "";
 
     /**
      * Default constructor.
@@ -50,11 +54,12 @@ public class ContentAlert extends ContentEvent
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
-        setEffectiveDate(monitor.getUpdatedDate());
+        setStartDate(monitor.getUpdatedDate());
         setCode(monitor.getCode());
         setReason(reason);
         setStatus(AlertStatus.NEW);
         setMonitorId(monitor.getId());
+        setTitle(monitor.getTitle());
     }
 
     /**
@@ -73,12 +78,34 @@ public class ContentAlert extends ContentEvent
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setEffectiveDate(obj.getEffectiveDate());
+            setStartDate(obj.getStartDate());
             setReason(obj.getReason());
             setStatus(obj.getStatus());
-            setNotes(obj.getNotes());
-            setChange(obj.hasChange());
+            setTitle(obj.getTitle());
+            setErrorMessage(obj.getErrorMessage());
         }
+    }
+
+    /**
+     * Returns the attributes as a JSON object.
+     */
+    public JSONObject getAttributes()
+    {
+        JSONObject ret = new JSONObject();
+
+        ret.putOpt(TITLE, getTitle());
+        ret.putOpt(ERROR_MESSAGE, getErrorMessage());
+
+        return ret;
+    }
+
+    /**
+     * Initialise the attributes using a JSON object.
+     */
+    public void setAttributes(JSONObject obj)
+    {
+        setTitle(obj.optString(TITLE));
+        setErrorMessage(obj.optString(ERROR_MESSAGE));
     }
 
     /**
@@ -91,93 +118,93 @@ public class ContentAlert extends ContentEvent
     }
 
     /**
-     * Returns the alert effective date.
+     * Returns the alert start date.
      */
-    public Instant getEffectiveDate()
+    public Instant getStartDate()
     {
-        return effectiveDate;
+        return startDate;
     }
 
     /**
-     * Returns the alert effective date.
+     * Returns the alert start date.
      */
-    public long getEffectiveDateMillis()
+    public long getStartDateMillis()
     {
-        return getEffectiveDate() != null ? getEffectiveDate().toEpochMilli() : 0L;
+        return getStartDate() != null ? getStartDate().toEpochMilli() : 0L;
     }
 
     /**
-     * Returns the alert effective date.
+     * Returns the alert start date.
      */
-    public LocalDateTime getEffectiveDateUTC()
+    public LocalDateTime getStartDateUTC()
     {
-        return TimeUtils.toDateTimeUTC(getEffectiveDate());
+        return TimeUtils.toDateTimeUTC(getStartDate());
     }
 
     /**
-     * Returns the alert effective date.
+     * Returns the alert start date.
      */
-    public String getEffectiveDateAsString(String pattern)
+    public String getStartDateAsString(String pattern)
     {
-        return TimeUtils.toStringUTC(effectiveDate, pattern);
+        return TimeUtils.toStringUTC(startDate, pattern);
     }
 
     /**
-     * Returns the alert effective date.
+     * Returns the alert start date.
      */
-    public String getEffectiveDateAsString(String pattern, String timezone)
+    public String getStartDateAsString(String pattern, String timezone)
     {
-        return TimeUtils.toString(effectiveDate, pattern, timezone);
+        return TimeUtils.toString(startDate, pattern, timezone);
     }
 
     /**
-     * Returns the alert effective date.
+     * Returns the alert start date.
      */
-    public String getEffectiveDateAsString()
+    public String getStartDateAsString()
     {
-        return getEffectiveDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getStartDateAsString(Formats.CONTENT_DATE_FORMAT);
     }
 
     /**
-     * Sets the alert effective date.
+     * Sets the alert start date.
      */
-    public void setEffectiveDate(Instant effectiveDate)
+    public void setStartDate(Instant startDate)
     {
-        this.effectiveDate = effectiveDate;
+        this.startDate = startDate;
     }
 
     /**
-     * Sets the alert effective date.
+     * Sets the alert start date.
      */
-    public void setEffectiveDateMillis(long millis)
+    public void setStartDateMillis(long millis)
     {
         if(millis > 0L)
-            this.effectiveDate = Instant.ofEpochMilli(millis);
+            this.startDate = Instant.ofEpochMilli(millis);
     }
 
     /**
-     * Sets the alert effective date.
+     * Sets the alert start date.
      */
-    public void setEffectiveDateAsString(String str, String pattern) throws DateTimeParseException
+    public void setStartDateAsString(String str, String pattern) throws DateTimeParseException
     {
-        setEffectiveDate(TimeUtils.toInstantUTC(str, pattern));
+        setStartDate(TimeUtils.toInstantUTC(str, pattern));
     }
 
     /**
-     * Sets the alert effective date.
+     * Sets the alert start date.
      */
-    public void setEffectiveDateAsString(String str) throws DateTimeParseException
+    public void setStartDateAsString(String str) throws DateTimeParseException
     {
-        setEffectiveDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setStartDateAsString(str, Formats.CONTENT_DATE_FORMAT);
     }
 
     /**
-     * Sets the alert effective date.
+     * Sets the alert start date.
      */
-    public void setEffectiveDateUTC(LocalDateTime effectiveDate)
+    public void setStartDateUTC(LocalDateTime startDate)
     {
-        if(effectiveDate != null)
-            setEffectiveDate(TimeUtils.toInstantUTC(effectiveDate));
+        if(startDate != null)
+            setStartDate(TimeUtils.toInstantUTC(startDate));
     }
 
     /**
@@ -239,58 +266,42 @@ public class ContentAlert extends ContentEvent
     }
 
     /**
-     * Returns the alert notes.
+     * Returns the alert crawled page title.
      */
-    public String getNotes()
+    public String getTitle()
     {
-        return notes;
+        return title;
     }
 
     /**
-     * Sets the alert notes.
+     * Sets the alert crawled page title.
      */
-    public void setNotes(String notes)
+    public void setTitle(String title)
     {
-        this.notes = notes;
+        this.title = title;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the alert notes has been set.
+     * Returns the monitor error message.
      */
-    public boolean hasNotes()
+    public String getErrorMessage()
     {
-        return notes != null && notes.length() > 0;
+        return errorMessage;
     }
 
     /**
-     * Returns <CODE>true</CODE> if this alert should raise a change.
+     * Sets the monitor error message.
      */
-    public boolean hasChange()
+    public void setErrorMessage(String errorMessage)
     {
-        return change;
+        this.errorMessage = errorMessage;
     }
 
     /**
-     * Returns <CODE>true</CODE> if this alert should raise a change.
+     * Returns <CODE>true</CODE> if the monitor error message has been set.
      */
-    public Boolean getChangeObject()
+    public boolean hasErrorMessage()
     {
-        return Boolean.valueOf(hasChange());
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if this alert should raise a change.
-     */
-    public void setChange(boolean change)
-    {
-        this.change = change;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if this alert should raise a change.
-     */
-    public void setChangeObject(Boolean change)
-    {
-        setChange(change != null && change.booleanValue());
+        return errorMessage != null && errorMessage.length() > 0;
     }
 }

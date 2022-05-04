@@ -228,6 +228,15 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     }
 
     /**
+     * Returns the title of the crawled page.
+     */
+    @Override
+    public String getTitle()
+    {
+        return driver.getTitle();
+    }
+
+    /**
      * Loads the given page.
      */
     protected void loadPage(String url, LoadingConfiguration loading) throws IOException
