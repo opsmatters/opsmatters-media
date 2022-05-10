@@ -114,6 +114,14 @@ public abstract class FieldsConfiguration extends YamlConfiguration
     }
 
     /**
+     * Returns <CODE>true</CODE> if teaser page loading configuration has been set.
+     */
+    public boolean hasTeaserLoading()
+    {
+        return teaserLoading != null;
+    }
+
+    /**
      * Returns the article page loading configuration.
      */
     public LoadingConfiguration getArticleLoading()
@@ -127,6 +135,14 @@ public abstract class FieldsConfiguration extends YamlConfiguration
     public void setArticleLoading(LoadingConfiguration articleLoading)
     {
         this.articleLoading = articleLoading;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if article page loading configuration has been set.
+     */
+    public boolean hasArticleLoading()
+    {
+        return articleLoading != null;
     }
 
     /**

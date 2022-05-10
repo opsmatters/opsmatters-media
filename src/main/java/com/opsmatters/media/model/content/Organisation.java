@@ -55,7 +55,6 @@ public class Organisation extends OwnedItem implements FieldSource
     private OrganisationStatus status = OrganisationStatus.NEW;
     private ArchiveReason reason = ArchiveReason.NONE;
     private Map<ContentType, OrganisationContentType> contentTypes = new HashMap<ContentType, OrganisationContentType>();
-    private Instant reviewedDate;
 
 
     /**
@@ -106,7 +105,6 @@ public class Organisation extends OwnedItem implements FieldSource
             setThumbnailText(new String(obj.getThumbnailText() != null ? obj.getThumbnailText() : ""));
             setStatus(obj.getStatus());
             setReason(obj.getReason());
-            setReviewedDate(obj.getReviewedDate());
         }
     }
 
@@ -617,96 +615,6 @@ public class Organisation extends OwnedItem implements FieldSource
     public void setReason(ArchiveReason reason)
     {
         this.reason = reason;
-    }
-
-    /**
-     * Returns the date the item was last reviewed.
-     */
-    public Instant getReviewedDate()
-    {
-        return reviewedDate;
-    }
-
-    /**
-     * Returns the date the item was last reviewed.
-     */
-    public long getReviewedDateMillis()
-    {
-        return getReviewedDate() != null ? getReviewedDate().toEpochMilli() : 0L;
-    }
-
-    /**
-     * Returns the date the item was last reviewed.
-     */
-    public LocalDateTime getReviewedDateUTC()
-    {
-        return TimeUtils.toDateTimeUTC(getReviewedDate());
-    }
-
-    /**
-     * Returns the date the item was last reviewed.
-     */
-    public String getReviewedDateAsString(String pattern)
-    {
-        return TimeUtils.toStringUTC(reviewedDate, pattern);
-    }
-
-    /**
-     * Returns the date the item was last reviewed.
-     */
-    public String getReviewedDateAsString(String pattern, String timezone)
-    {
-        return TimeUtils.toString(reviewedDate, pattern, timezone);
-    }
-
-    /**
-     * Returns the date the item was last reviewed.
-     */
-    public String getReviewedDateAsString()
-    {
-        return getReviewedDateAsString(Formats.CONTENT_DATE_FORMAT);
-    }
-
-    /**
-     * Sets the date the item was last reviewed.
-     */
-    public void setReviewedDate(Instant reviewedDate)
-    {
-        this.reviewedDate = reviewedDate;
-    }
-
-    /**
-     * Sets the date the item was last reviewed.
-     */
-    public void setReviewedDateMillis(long millis)
-    {
-        if(millis > 0L)
-            this.reviewedDate = Instant.ofEpochMilli(millis);
-    }
-
-    /**
-     * Sets the date the item was last reviewed.
-     */
-    public void setReviewedDateAsString(String str, String pattern) throws DateTimeParseException
-    {
-        setReviewedDate(TimeUtils.toInstantUTC(str, pattern));
-    }
-
-    /**
-     * Sets the date the item was last reviewed.
-     */
-    public void setReviewedDateAsString(String str) throws DateTimeParseException
-    {
-        setReviewedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
-    }
-
-    /**
-     * Sets the date the item was last reviewed.
-     */
-    public void setReviewedDateUTC(LocalDateTime reviewedDate)
-    {
-        if(reviewedDate != null)
-            setReviewedDate(TimeUtils.toInstantUTC(reviewedDate));
     }
 
     /**

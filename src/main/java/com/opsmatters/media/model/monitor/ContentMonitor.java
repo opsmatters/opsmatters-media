@@ -59,6 +59,7 @@ public class ContentMonitor extends BaseItem
     public static final String SUBSCRIBED_DATE = "subscribed-date";
     public static final String SITES = "sites";
     public static final String TITLE = "title";
+    public static final String KEYWORDS = "keywords";
 
     private String code = "";
     private String organisation = "";
@@ -79,6 +80,7 @@ public class ContentMonitor extends BaseItem
     private Instant subscribedDate;
     private String sites = "";
     private String title = "";
+    private String keywords = "";
 
     private List<ContentSummary> subscribed = new ArrayList<ContentSummary>();
     private Map<String,String> siteMap = new HashMap<String,String>();
@@ -141,6 +143,7 @@ public class ContentMonitor extends BaseItem
             setSubscribedDate(obj.getSubscribedDate());
             setSites(obj.getSites());
             setTitle(obj.getTitle());
+            setKeywords(obj.getKeywords());
         }
     }
 
@@ -976,6 +979,30 @@ public class ContentMonitor extends BaseItem
     public void setTitle(String title)
     {
         this.title = title;
+    }
+
+    /**
+     * Returns the keywords to filter on when page loading.
+     */
+    public String getKeywords()
+    {
+        return keywords;
+    }
+
+    /**
+     * Sets the keywords to filter on when page loading.
+     */
+    public void setKeywords(String keywords)
+    {
+        this.keywords = keywords;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if there are keywords to filter on when page loading.
+     */
+    public boolean hasKeywords()
+    {
+        return keywords != null && keywords.length() > 0;
     }
 
     /**

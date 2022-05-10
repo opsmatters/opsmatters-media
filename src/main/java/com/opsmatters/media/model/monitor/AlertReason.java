@@ -23,7 +23,7 @@ package com.opsmatters.media.model.monitor;
  */
 public enum AlertReason
 {
-    INACTIVE("No recent activity"),
+    INACTIVITY("No recent activity"),
     SUSPENDED("Suspended"),
     MANUAL("Manual"),
     ALL("All"); // Pseudo status

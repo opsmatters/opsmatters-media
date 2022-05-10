@@ -28,7 +28,7 @@ public enum DraftStatus
     SUBMITTED("Submitted", "glyphicon-log-in", "status-warn"),
     PROCESSED("Processed", "glyphicon-ok-circle", "status-success"),
     ERROR("Error", "glyphicon-alert", "status-error"),
-    SKIPPED("Skipped", "glyphicon-remove-circle", "status-info"),
+    SKIPPED("Skipped", "glyphicon-thumbs-down", "status-info"),
     ALL("All", "", ""); // Pseudo status
 
     private String value;

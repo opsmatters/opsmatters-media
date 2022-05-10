@@ -25,8 +25,7 @@ public enum AlertStatus
 {
     NEW("New", "glyphicon-unchecked", ""),
     RESOLVED("Resolved", "glyphicon-ok-circle", "status-success"),
-    CLEARED("Cleared", "glyphicon-remove-circle", "status-info"),
-    DEFUNCT("Defunct", "glyphicon-trash", "status-error"),
+    CANCELLED("Cancelled", "glyphicon-ban-circle", "status-info"),
     ALL("All", "", ""); // Pseudo status
 
     private String value;
