@@ -115,7 +115,7 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
         table.addColumn("NAME", Types.VARCHAR, 30, true);
         table.addColumn("VALUE", Types.VARCHAR, 10, true);
         table.setPrimaryKey("PARAMETERS_PK", new String[] {"ID"});
-        table.addIndex("PARAMETERS_USERNAME_IDX", new String[] {"TYPE", "NAME"});
+        table.addIndex("PARAMETERS_NAME_IDX", new String[] {"TYPE", "NAME"});
         table.setInitialised(true);
     }
 

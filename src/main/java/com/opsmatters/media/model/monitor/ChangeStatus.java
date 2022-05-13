@@ -25,7 +25,7 @@ public enum ChangeStatus
 {
     NEW("New", "glyphicon-unchecked", ""),
     RESOLVED("Resolved", "glyphicon-ok-circle", "status-success"),
-    SKIPPED("Skipped", "glyphicon-thumbs-down", "status-info"),
+    SKIPPED("Skipped", "glyphicon-remove-circle", "status-info"),
     ALL("All", "", ""); // Pseudo status
 
     private String value;

@@ -40,6 +40,7 @@ public class AdminDAOFactory extends DAOFactory
         getTableTaskDAO();
         getTaskExecutionDAO();
         getTaxonomyTermDAO();
+        getNoteDAO();
     }
 
     /**
@@ -113,6 +114,16 @@ public class AdminDAOFactory extends DAOFactory
     }
 
     /**
+     * Returns the note DAO.
+     */
+    public NoteDAO getNoteDAO()
+    {
+        if(noteDAO == null)
+            noteDAO = new NoteDAO(this);
+        return noteDAO;
+    }
+
+    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
@@ -126,6 +137,7 @@ public class AdminDAOFactory extends DAOFactory
         tableTaskDAO = null;
         taskExecutionDAO = null;
         taxonomyTermDAO = null;
+        noteDAO = null;
     }
 
     private UserDAO userDAO;
@@ -135,4 +147,5 @@ public class AdminDAOFactory extends DAOFactory
     private TableTaskDAO tableTaskDAO;
     private TaskExecutionDAO taskExecutionDAO;
     private TaxonomyTermDAO taxonomyTermDAO;
+    private NoteDAO noteDAO;
 }

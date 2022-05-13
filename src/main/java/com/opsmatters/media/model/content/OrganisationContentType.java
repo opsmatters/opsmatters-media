@@ -41,7 +41,6 @@ public class OrganisationContentType extends BaseItem
     private boolean newsletter = false;
     private int count = -1;
     private boolean deployed = false;
-    private String notes = "";
 
     /**
      * Default constructor.
@@ -108,7 +107,6 @@ public class OrganisationContentType extends BaseItem
             setNewsletter(obj.isNewsletter());
             setItemCount(obj.getItemCount());
             setDeployed(obj.isDeployed());
-            setNotes(obj.getNotes());
         }
     }
 
@@ -125,7 +123,6 @@ public class OrganisationContentType extends BaseItem
         ret.putOpt(Fields.TAGS, getTags());
         ret.putOpt(Fields.TECHNOLOGIES, getTechnologies());
         ret.put(Fields.NEWSLETTER, isNewsletter());
-        ret.putOpt(Fields.NOTES, getNotes());
 
         return ret;
     }
@@ -141,7 +138,6 @@ public class OrganisationContentType extends BaseItem
         setTags(obj.optString(Fields.TAGS));
         setTechnologies(obj.optString(Fields.TECHNOLOGIES));
         setNewsletter(obj.optBoolean(Fields.NEWSLETTER, false));
-        setNotes(obj.optString(Fields.NOTES));
     }
 
     /**
@@ -254,30 +250,6 @@ public class OrganisationContentType extends BaseItem
     public boolean hasTracking()
     {
         return tracking != null && tracking.length() > 0;
-    }
-
-    /**
-     * Returns the notes.
-     */
-    public String getNotes()
-    {
-        return notes;
-    }
-
-    /**
-     * Sets the notes.
-     */
-    public void setNotes(String notes)
-    {
-        this.notes = notes;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the notes has been set.
-     */
-    public boolean hasNotes()
-    {
-        return notes != null && notes.length() > 0;
     }
 
     /**

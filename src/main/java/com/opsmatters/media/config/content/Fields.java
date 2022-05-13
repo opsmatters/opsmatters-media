@@ -114,7 +114,6 @@ public class Fields extends LinkedHashMap<String,String>
     public static final String TEMPLATE = "template";
     public static final String LISTING = "listing";
     public static final String FOOTER = "footer";
-    public static final String NOTES = "notes";
 
     /**
      * Default constructor.
