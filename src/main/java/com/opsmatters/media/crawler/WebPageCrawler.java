@@ -249,6 +249,8 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                 url += "/";
         }
 
+        driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+
         logger.info("Loading page: "+url);
         driver.get(url);
         logger.info("Loaded page: "+driver.getTitle());
