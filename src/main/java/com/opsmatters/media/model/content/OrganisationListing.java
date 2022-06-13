@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.config.content.OrganisationListingConfiguration;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 
@@ -43,6 +44,7 @@ public class OrganisationListing extends ContentItem
     private String founded = "";
     private String location = "";
     private String stockSymbol = "";
+    private SocialProvider feedProvider;
     private String facebook = "";
     private String twitter = "";
     private String linkedin = "";
@@ -55,8 +57,6 @@ public class OrganisationListing extends ContentItem
     private boolean jobs = false;
     private String alternatives = "";
     private String features = "";
-    private String image = "";
-    private String imageText = "";
 
     /**
      * Default constructor.
@@ -89,6 +89,7 @@ public class OrganisationListing extends ContentItem
         setFounded(new String(obj.getFounded() != null ? obj.getFounded() : ""));
         setLocation(new String(obj.getLocation() != null ? obj.getLocation() : ""));
         setStockSymbol(new String(obj.getStockSymbol() != null ? obj.getStockSymbol() : ""));
+        setFeedProvider(obj.getFeedProvider());
         setFacebook(new String(obj.getFacebook() != null ? obj.getFacebook() : ""));
         setTwitter(new String(obj.getTwitter() != null ? obj.getTwitter() : ""));
         setLinkedIn(new String(obj.getLinkedIn() != null ? obj.getLinkedIn() : ""));
@@ -101,100 +102,6 @@ public class OrganisationListing extends ContentItem
         setJobs(obj.hasJobs());
         setAlternatives(new String(obj.getAlternatives() != null ? obj.getAlternatives() : ""));
         setFeatures(new String(obj.getFeatures() != null ? obj.getFeatures() : ""));
-        setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
-        setImageText(new String(obj.getImageText() != null ? obj.getImageText() : ""));
-    }
-
-    /**
-     * Constructor that takes a spreadsheet row.
-     */
-    public OrganisationListing(Site site, String[] values) throws DateTimeParseException
-    {
-        init();
-
-        setSiteId(site.getId());
-
-        String id = values[0];
-        String pubdate = values[1];
-        String code = values[2];
-        String title = values[3];
-        String sponsor = values[4];
-        String tabs = values[5];
-        String content = values[6]; // not used
-        String summary = values[7];
-        String description = values[8];
-        String footer = values[9];
-        String founded = values[10];
-        String location = values[11];
-        String stockSymbol = values[12];
-        String website = values[13];
-        String websiteTracking = values[14]; // not used
-        String email = values[15];
-        String feedProvider = values[16];
-        String feedUsername = values[17];
-        String facebook = values[18];
-        String twitter = values[19];
-        String linkedin = values[20];
-        String instagram = values[21];
-        String youtube = values[22];
-        String vimeo = values[23];
-        String projects = values[24];
-        String github = values[25];
-        String tools = values[26];
-        String jobs = values[27];
-        String alternatives = values[28];
-        String features = values[29];
-        String hashtag = values[30];
-        String image = values[31];
-        String imageText = values[32];
-        String imageTitle = values[33]; // not used
-        String thumbnail = values[34];
-        String thumbnailText = values[35];
-        String thumbnailTitle = values[36]; // not used
-        String createdBy = values[37];
-        String published = values[38];
-
-        // Remove feeds path from images
-        if(image.indexOf("/") != -1)
-            image = image.substring(image.lastIndexOf("/")+1);
-        if(thumbnail.indexOf("/") != -1)
-            thumbnail = thumbnail.substring(thumbnail.lastIndexOf("/")+1);
-
-        setId(Integer.parseInt(id.substring(id.indexOf("-")+1)));
-        setPublishedDateAsString(pubdate);
-        setCode(code);
-        setTitle(title);
-        //setSponsor(sponsor != null && sponsor.equals("1"));
-        setTabs(OrganisationTabs.valueOf(tabs));
-        setSummary(summary);
-        setDescription(description);
-        setFooter(footer);
-        setFounded(founded);
-        setLocation(location);
-        setStockSymbol(stockSymbol);
-        //setWebsite(website);
-        //setEmail(email);
-        setFacebook(facebook);
-        //setFacebookUsername(facebookUsername);
-        setTwitter(twitter);
-        //setTwitterUsername(twitterUsername);
-        setLinkedIn(linkedin);
-        setInstagram(instagram);
-        setYouTube(youtube);
-        setVimeo(vimeo);
-        setProjects(projects != null && projects.equals("1"));
-        setGitHub(github);
-        setTools(tools != null && tools.equals("1"));
-        setJobs(jobs != null && jobs.equals("1"));
-        setAlternatives(alternatives);
-        setFeatures(features);
-        //setHashtag(hashtag);
-        setImage(image);
-        setImageText(imageText);
-        //setThumbnail(thumbnail);
-        //setThumbnailText(thumbnailText);
-        setCreatedBy(createdBy);
-        //setPublished(published != null && published.equals("1"));
     }
 
     /**
@@ -218,6 +125,7 @@ public class OrganisationListing extends ContentItem
         setFounded(obj.optString(Fields.FOUNDED));
         setLocation(obj.optString(Fields.LOCATION));
         setStockSymbol(obj.optString(Fields.STOCK_SYMBOL));
+        setFeedProvider(SocialProvider.valueOf(obj.optString(Fields.FEED_PROVIDER)));
         setFacebook(obj.optString(Fields.FACEBOOK));
         setTwitter(obj.optString(Fields.TWITTER));
         setLinkedIn(obj.optString(Fields.LINKEDIN));
@@ -230,8 +138,6 @@ public class OrganisationListing extends ContentItem
         setJobs(obj.optBoolean(Fields.JOBS, false));
         setAlternatives(obj.optString(Fields.ALTERNATIVES));
         setFeatures(obj.optString(Fields.FEATURES));
-        setImage(obj.optString(Fields.IMAGE));
-        setImageText(obj.optString(Fields.IMAGE_TEXT));
     }
 
     /**
@@ -248,6 +154,7 @@ public class OrganisationListing extends ContentItem
         ret.putOpt(Fields.FOUNDED, getFounded());
         ret.putOpt(Fields.LOCATION, getLocation());
         ret.putOpt(Fields.STOCK_SYMBOL, getStockSymbol());
+        ret.putOpt(Fields.FEED_PROVIDER, getFeedProvider().name());
         ret.putOpt(Fields.FACEBOOK, getFacebook());
         ret.putOpt(Fields.TWITTER, getTwitter());
         ret.putOpt(Fields.LINKEDIN, getLinkedIn());
@@ -260,8 +167,6 @@ public class OrganisationListing extends ContentItem
         ret.put(Fields.JOBS, hasJobs());
         ret.putOpt(Fields.ALTERNATIVES, getAlternatives());
         ret.putOpt(Fields.FEATURES, getFeatures());
-        ret.putOpt(Fields.IMAGE, getImage());
-        ret.putOpt(Fields.IMAGE_TEXT, getImageText());
 
         return ret;
     }
@@ -282,6 +187,7 @@ public class OrganisationListing extends ContentItem
         ret.put(Fields.FOUNDED, getFounded());
         ret.put(Fields.LOCATION, getLocation());
         ret.put(Fields.STOCK_SYMBOL, getStockSymbol());
+        ret.put(Fields.FEED_PROVIDER, getFeedProvider().name());
         ret.put(Fields.FACEBOOK, getFacebook());
         ret.put(Fields.TWITTER, getTwitter());
         ret.put(Fields.LINKEDIN, getLinkedIn());
@@ -294,8 +200,6 @@ public class OrganisationListing extends ContentItem
         ret.put(Fields.JOBS, hasJobs() ? "1" : "0");
         ret.put(Fields.ALTERNATIVES, getAlternatives());
         ret.put(Fields.FEATURES, getFeatures());
-        ret.put(Fields.IMAGE, getImage());
-        ret.put(Fields.IMAGE_TEXT, getImageText());
 
         return ret;
     }
@@ -314,9 +218,7 @@ public class OrganisationListing extends ContentItem
         listing.setTitle(organisation.getName());
         listing.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
         listing.setFounded(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
-        String lower = listing.getTitle().toLowerCase();
-        listing.setImage(String.format("%s-logo.png", lower));
-        listing.setImageText(String.format("%s logo", lower.replaceAll("-", " ")));
+        listing.setFeedProvider(SocialProvider.TWITTER);
 
         return listing;
     }
@@ -539,6 +441,30 @@ public class OrganisationListing extends ContentItem
     public void setStockSymbol(String stockSymbol)
     {
         this.stockSymbol = stockSymbol;
+    }
+
+    /**
+     * Returns the organisation's feed provider.
+     */
+    public SocialProvider getFeedProvider()
+    {
+        return feedProvider;
+    }
+
+    /**
+     * Sets the organisation's feed provider.
+     */
+    public void setFeedProvider(String feedProvider)
+    {
+        setFeedProvider(SocialProvider.valueOf(feedProvider));
+    }
+
+    /**
+     * Sets the organisation's feed provider.
+     */
+    public void setFeedProvider(SocialProvider feedProvider)
+    {
+        this.feedProvider = feedProvider;
     }
 
     /**
@@ -859,45 +785,5 @@ public class OrganisationListing extends ContentItem
     public void setFeaturesList(List<String> features)
     {
         setFeatures(StringUtils.fromList(features));
-    }
-
-    /**
-     * Returns the organisation's logo image.
-     */
-    public String getImage()
-    {
-        return image;
-    }
-
-    /**
-     * Sets the organisation's logo image.
-     */
-    public void setImage(String image)
-    {
-        this.image = image;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if this organisation has a logo image.
-     */
-    public boolean hasImage()
-    {
-        return image != null && image.length() > 0;
-    }
-
-    /**
-     * Returns the organisation's logo image text.
-     */
-    public String getImageText()
-    {
-        return imageText;
-    }
-
-    /**
-     * Sets the organisation's logo image text.
-     */
-    public void setImageText(String imageText)
-    {
-        this.imageText = imageText;
     }
 }

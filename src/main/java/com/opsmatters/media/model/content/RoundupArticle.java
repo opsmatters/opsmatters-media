@@ -20,7 +20,10 @@ import org.json.JSONObject;
 import com.opsmatters.media.config.content.RoundupConfiguration;
 import com.opsmatters.media.config.content.WebPageConfiguration;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.config.content.util.ContentImages;
 import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.content.util.ContentImage;
+import com.opsmatters.media.model.content.util.ImageType;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
 
@@ -204,7 +207,6 @@ public class RoundupArticle extends Article implements LinkedContent
         article.setTitle("New Roundup");
         article.setSummary(StringUtils.EMPTY);
         article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
-        article.setImagePrefix(config.getImagePrefix());
         article.setSocial(organisation.hasSocial());
 
         return article;
@@ -269,13 +271,9 @@ public class RoundupArticle extends Article implements LinkedContent
         }
 
         // Use the default image if a content image wasn't found
-        if(getImage().length() == 0)
-        {
-            if(config.hasField(Fields.IMAGE))
-                setImage(config.getField(Fields.IMAGE));
-            else if(page.hasField(Fields.IMAGE))
-                setImage(page.getField(Fields.IMAGE, ""));
-        }
+        ContentImage image = ContentImages.get(ImageType.BANNER, config.getCode());
+        if(image != null && getImage().length() == 0)
+            setImage(image.getFilename());
     }
 
     /**
@@ -312,8 +310,6 @@ public class RoundupArticle extends Article implements LinkedContent
         super.setContentSummary(obj);
         setUrl(new String(obj.getUrl()), false);
         setImageSource(new String(obj.getImageSource() != null ? obj.getImageSource() : ""));
-        setImagePrefix(new String(obj.getImagePrefix() != null ? obj.getImagePrefix() : ""));
-        setImageAccessible(obj.isImageAccessible());
         setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
         setAuthor(new String(obj.getAuthor() != null ? obj.getAuthor() : ""));
         setAuthorLink(new String(obj.getAuthorLink() != null ? obj.getAuthorLink() : ""));
@@ -399,9 +395,9 @@ public class RoundupArticle extends Article implements LinkedContent
      * Sets the image name.
      */
     @Override
-    public void setImageFromPath(String path)
+    public void setImageFromPath(String prefix, String path)
     {
-        details.setImageFromPath(path);
+        details.setImageFromPath(prefix, path);
     }
 
     /**
@@ -411,40 +407,6 @@ public class RoundupArticle extends Article implements LinkedContent
     public boolean hasImage()
     {
         return details.hasImage();
-    }
-
-    /**
-     * Returns the image prefix.
-     */
-    @Override
-    public String getImagePrefix()
-    {
-        return details.getImagePrefix();
-    }
-
-    /**
-     * Sets the image prefix.
-     */
-    public void setImagePrefix(String imagePrefix)
-    {
-        details.setImagePrefix(imagePrefix);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the image source is accessible.
-     */
-    @Override
-    public boolean isImageAccessible()
-    {
-        return details.isImageAccessible();
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the image source is accessible.
-     */
-    public void setImageAccessible(boolean imageAccessible)
-    {
-        details.setImageAccessible(imageAccessible);
     }
 
     /**

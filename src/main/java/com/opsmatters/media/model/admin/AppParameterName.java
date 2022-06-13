@@ -49,6 +49,8 @@ public enum AppParameterName
     CONFIG_UPDATED("config-updated"),
     ORGANISATION_CHANGED("organisation-changed"),
     ORGANISATION_UPDATED("organisation-updated"),
+    IMAGE_CHANGED("image-changed"),
+    IMAGE_UPDATED("image-updated"),
     ERROR_COUNT_ERROR("error-count-error"),
     CHANGE_COUNT_ERROR("change-count-error"),
     ALERT_COUNT_ERROR("alert-count-error"),

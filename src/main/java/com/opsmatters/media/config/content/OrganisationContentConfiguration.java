@@ -296,9 +296,6 @@ public class OrganisationContentConfiguration extends ContentConfiguration<Conte
         if(map.containsKey(Fields.ORGANISATION))
             setOrganisation((String)map.get(Fields.ORGANISATION));
 
-        if(map.containsKey(IMAGE_PREFIX))
-            setImagePrefix((String)map.get(IMAGE_PREFIX));
-
         if(map.containsKey(FIELDS))
             addFields((Map<String,String>)map.get(FIELDS));
 
@@ -380,9 +377,6 @@ public class OrganisationContentConfiguration extends ContentConfiguration<Conte
      */
     private void setContentDefaults(ContentConfiguration config, Map<String,Object> map)
     {
-        if(hasImagePrefix())
-            config.setImagePrefix(getImagePrefix());
-
         for(Map.Entry<String, Object> entry : map.entrySet())
         {
             String key = entry.getKey().toString();

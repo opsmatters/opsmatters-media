@@ -13,61 +13,66 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.admin;
+package com.opsmatters.media.model.content.util;
 
 import java.time.Instant;
 import com.opsmatters.media.model.BaseItem;
 import com.opsmatters.media.util.StringUtils;
 
 /**
- * Class representing a note.
+ * Class representing a content image.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Note extends BaseItem
+public class ContentImage extends BaseItem
 {
-    private NoteType type;
     private String code = "";
-    private String value = "";
+    private String filename = "";
+    private String text = "";
+    private ImageType type;
+    private ImageStatus status = ImageStatus.DISABLED;
 
     /**
      * Default constructor.
      */
-    public Note()
+    public ContentImage()
     {
     }
 
     /**
      * Constructor that takes an organisation code and type.
      */
-    public Note(String code, NoteType type)
+    public ContentImage(String code, ImageType type)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setCode(code);
         setType(type);
+        setStatus(ImageStatus.ACTIVE);
     }
 
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(Note obj)
+    public void copyAttributes(ContentImage obj)
     {
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setType(obj.getType());
             setCode(obj.getCode());
-            setValue(obj.getValue());
+            setType(obj.getType());
+            setFilename(obj.getFilename());
+            setText(obj.getText());
+            setStatus(obj.getStatus());
         }
     }
 
     /**
-     * Returns the name.
+     * Returns the filename.
      */
     public String toString()
     {
-        return getType().value();
+        return getFilename();
     }
 
     /**
@@ -89,7 +94,7 @@ public class Note extends BaseItem
     /**
      * Returns the type.
      */
-    public NoteType getType()
+    public ImageType getType()
     {
         return type;
     }
@@ -97,7 +102,7 @@ public class Note extends BaseItem
     /**
      * Sets the type.
      */
-    public void setType(NoteType type)
+    public void setType(ImageType type)
     {
         this.type = type;
     }
@@ -111,58 +116,90 @@ public class Note extends BaseItem
     }
 
     /**
-     * Returns the value.
+     * Returns the filename.
      */
-    public String getValue()
+    public String getFilename()
     {
-        return value;
+        return filename;
     }
 
     /**
-     * Returns the value as an integer.
+     * Returns the file URI.
      */
-    public int getValueAsInt()
+    public String getFileUri()
     {
-        return Integer.parseInt(value);
+        return String.format("%s/%s", type.path(), filename);
     }
 
     /**
-     * Returns the value as a long.
+     * Sets the filename.
      */
-    public long getValueAsLong()
+    public void setFilename(String filename)
     {
-        return Long.parseLong(value);
+        this.filename = filename;
     }
 
     /**
-     * Returns the value as a boolean.
+     * Returns <CODE>true</CODE> if the filename has been set.
      */
-    public boolean getValueAsBoolean()
+    public boolean hasFilename()
     {
-        return Boolean.parseBoolean(value);
+        return filename != null && filename.length() > 0;
     }
 
     /**
-     * Returns the value as an instant.
+     * Returns the image text.
      */
-    public Instant getValueAsInstant()
+    public String getText()
     {
-        return Instant.ofEpochMilli(Long.parseLong(value));
+        return text;
     }
 
     /**
-     * Sets the value.
+     * Sets the text.
      */
-    public void setValue(String value)
+    public void setText(String text)
     {
-        this.value = value;
+        this.text = text;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the value has been set.
+     * Returns <CODE>true</CODE> if the text has been set.
      */
-    public boolean hasValue()
+    public boolean hasText()
     {
-        return value != null && value.length() > 0;
+        return text != null && text.length() > 0;
+    }
+
+    /**
+     * Returns the image's status.
+     */
+    public ImageStatus getStatus()
+    {
+        return status;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the image is active.
+     */
+    public boolean isActive()
+    {
+        return status == ImageStatus.ACTIVE;
+    }
+
+    /**
+     * Sets the image's status.
+     */
+    public void setStatus(ImageStatus status)
+    {
+        this.status = status;
+    }
+
+    /**
+     * Sets the image's status.
+     */
+    public void setStatus(String status)
+    {
+        setStatus(ImageStatus.valueOf(status));
     }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.db.dao.admin;
+package com.opsmatters.media.db.dao.content.util;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -24,8 +24,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.admin.Note;
-import com.opsmatters.media.model.admin.NoteType;
+import com.opsmatters.media.model.content.util.Note;
+import com.opsmatters.media.model.content.util.NoteType;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -33,7 +33,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class NoteDAO extends AdminDAO<Note>
+public class NoteDAO extends ContentUtilDAO<Note>
 {
     private static final Logger logger = Logger.getLogger(NoteDAO.class.getName());
 
@@ -84,12 +84,12 @@ public class NoteDAO extends AdminDAO<Note>
      * The query to use to delete a note from the NOTES table.
      */
     private static final String DELETE_SQL =  
-      "DELETE FROM NOTES WHERE CODE=? AND TYPE=?";
+      "DELETE FROM NOTES WHERE ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public NoteDAO(AdminDAOFactory factory)
+    public NoteDAO(ContentUtilDAOFactory factory)
     {
         super(factory, "NOTES");
     }

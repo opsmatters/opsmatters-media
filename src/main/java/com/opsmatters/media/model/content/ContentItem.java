@@ -556,26 +556,10 @@ public abstract class ContentItem implements java.io.Serializable
     }
 
     /**
-     * Returns the image prefix.
-     */
-    public String getImagePrefix()
-    {
-        return null;
-    }
-
-    /**
      * Sets the image name.
      */
-    public void setImageFromPath(String path)
+    public void setImageFromPath(String prefix, String path)
     {
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the image source is accessible.
-     */
-    public boolean isImageAccessible()
-    {
-        return true;
     }
 
     /**

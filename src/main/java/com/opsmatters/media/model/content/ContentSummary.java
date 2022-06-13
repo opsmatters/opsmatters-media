@@ -35,8 +35,6 @@ public abstract class ContentSummary implements java.io.Serializable
     private String summary = "";
     private String image = "";
     private String imageSource = "";
-    private String imagePrefix = "";
-    private boolean imageAccessible = true;
     private boolean valid = true;
 
     /**
@@ -59,8 +57,6 @@ public abstract class ContentSummary implements java.io.Serializable
             setSummary(obj.getSummary());
             setImage(obj.getImage());
             setImageSource(obj.getImageSource());
-            setImagePrefix(obj.getImagePrefix());
-            setImageAccessible(obj.isImageAccessible());
         }
     }
 
@@ -293,52 +289,18 @@ public abstract class ContentSummary implements java.io.Serializable
     }
 
     /**
-     * Returns the image prefix.
-     */
-    public String getImagePrefix()
-    {
-        return imagePrefix;
-    }
-
-    /**
-     * Sets the image prefix.
-     */
-    public void setImagePrefix(String imagePrefix)
-    {
-        this.imagePrefix = imagePrefix;
-    }
-
-    /**
      * Sets the content image name.
      */
-    public void setImageFromPath(String path)
+    public void setImageFromPath(String prefix, String path)
     {
         if(path != null && path.length() > 0)
         {
             path = path.substring(path.lastIndexOf("/")+1);
-
-            String prefix = getImagePrefix()+"-";
-            if(!path.startsWith(prefix))
-                path = prefix+path;
+            if(!path.startsWith(prefix+"-"))
+                path = String.format("%s-%s", prefix, path);
         }
 
         setImage(path);
         setImage(FormatUtils.getFormattedImageFilename(getImage()));
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the image source is accessible.
-     */
-    public boolean isImageAccessible()
-    {
-        return imageAccessible;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the image source is accessible.
-     */
-    public void setImageAccessible(boolean imageAccessible)
-    {
-        this.imageAccessible = imageAccessible;
     }
 }

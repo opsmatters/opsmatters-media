@@ -61,14 +61,6 @@ public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
     }
 
     /**
-     * Returns the image prefix for this configuration.
-     */
-    public String getImagePrefix()
-    {
-        return config.getImagePrefix();
-    }
-
-    /**
      * Create the white paper summary from the selected node.
      */
     @Override
@@ -186,8 +178,6 @@ public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
         ContentFields fields, PublicationSummary content, String type)
         throws DateTimeParseException
     {
-        content.setImagePrefix(getImagePrefix());
-
         if(fields.hasTitle())
         {
             ContentField field = fields.getTitle();
@@ -237,7 +227,7 @@ public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
             String src = getImageSrc(field, root, type);
             if(src != null && src.length() > 0)
             {
-                content.setImageFromPath(src);
+                content.setImageFromPath(getImagePrefix(), src);
                 content.setImageSource(getBasePath(), encodeUrl(src), field.removeParameters());
 
                 if(debug())

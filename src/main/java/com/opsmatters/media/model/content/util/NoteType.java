@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.admin;
+package com.opsmatters.media.model.content.util;
 
 /**
  * Represents the type of a note.
@@ -46,8 +46,8 @@ public enum NoteType
     }
 
     /**
-     * Returns the value of the status.
-     * @return The value of the status.
+     * Returns the value of the type.
+     * @return The value of the type.
      */
     public String value()
     {

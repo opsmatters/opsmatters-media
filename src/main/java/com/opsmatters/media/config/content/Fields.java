@@ -57,6 +57,7 @@ public class Fields extends LinkedHashMap<String,String>
     public static final String EVENT_TYPE = "event-type";
     public static final String IMAGE = "image";
     public static final String IMAGE_SOURCE = "image-source";
+    public static final String IMAGE_PREFIX = "image-prefix";
     public static final String IMAGE_TEXT = "image-text";
     public static final String THUMBNAIL = "thumbnail";
     public static final String THUMBNAIL_TEXT = "thumbnail-text";
@@ -81,7 +82,6 @@ public class Fields extends LinkedHashMap<String,String>
     public static final String FOUNDED = "founded";
     public static final String STOCK_SYMBOL = "stock-symbol";
     public static final String FEED_PROVIDER = "feed-provider";
-    public static final String FEED_USERNAME = "feed-username";
     public static final String FACEBOOK = "facebook";
     public static final String TWITTER = "twitter";
     public static final String LINKEDIN = "linkedin";
@@ -94,6 +94,7 @@ public class Fields extends LinkedHashMap<String,String>
     public static final String ALTERNATIVES = "alternatives";
     public static final String FEATURES = "features";
     public static final String SOCIAL = "social";
+    public static final String HANDLE = "handle";
     public static final String HASHTAG = "hashtag";
     public static final String HASHTAGS = "hashtags";
     public static final String DOWNLOAD = "download";

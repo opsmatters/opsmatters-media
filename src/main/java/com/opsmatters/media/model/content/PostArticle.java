@@ -20,7 +20,10 @@ import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.config.content.PostConfiguration;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.config.content.util.ContentImages;
 import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.content.util.ContentImage;
+import com.opsmatters.media.model.content.util.ImageType;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
@@ -231,7 +234,6 @@ public class PostArticle extends Article
         article.init();
         article.setSiteId(organisation.getSiteId());
         article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
-        article.setImagePrefix(config.getImagePrefix());
         article.setSocial(organisation.hasSocial());
 
         return article;
@@ -283,8 +285,9 @@ public class PostArticle extends Article
             setAuthorLink(config.getField(Fields.AUTHOR_LINK));
 
         // Use the default image if a content image wasn't found
-        if(config.hasField(Fields.IMAGE) && getImage().length() == 0)
-            setImage(config.getField(Fields.IMAGE));
+        ContentImage image = ContentImages.get(ImageType.BANNER, config.getCode());
+        if(image != null && getImage().length() == 0)
+            setImage(image.getFilename());
     }
 
     /**
@@ -321,7 +324,6 @@ public class PostArticle extends Article
     {
         super.setContentSummary(obj);
         setImageSource(new String(obj.getImageSource() != null ? obj.getImageSource() : ""));
-        setImagePrefix(new String(obj.getImagePrefix() != null ? obj.getImagePrefix() : ""));
         setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
         setAuthor(new String(obj.getAuthor() != null ? obj.getAuthor() : ""));
         setAuthorLink(new String(obj.getAuthorLink() != null ? obj.getAuthorLink() : ""));
@@ -365,9 +367,9 @@ public class PostArticle extends Article
      * Sets the image name.
      */
     @Override
-    public void setImageFromPath(String path)
+    public void setImageFromPath(String prefix, String path)
     {
-        details.setImageFromPath(path);
+        details.setImageFromPath(prefix, path);
     }
 
     /**
@@ -407,23 +409,6 @@ public class PostArticle extends Article
     public boolean hasImageSource()
     {
         return details.hasImageSource();
-    }
-
-    /**
-     * Returns the image prefix.
-     */
-    @Override
-    public String getImagePrefix()
-    {
-        return details.getImagePrefix();
-    }
-
-    /**
-     * Sets the image prefix.
-     */
-    public void setImagePrefix(String imagePrefix)
-    {
-        details.setImagePrefix(imagePrefix);
     }
 
     /**

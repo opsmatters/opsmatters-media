@@ -529,6 +529,7 @@ public class BodyParser
 if(text.startsWith("#")  // hashtags
     || text.startsWith("~") // tildes
     || text.startsWith("_") // underscores
+    || text.startsWith("=") // equals
     || text.indexOf("\u25ac") != -1) // "bar" character in title
 {
 //System.out.println("formatSummary:2: text="+text);

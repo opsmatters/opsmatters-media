@@ -73,6 +73,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     private WebDriver driver;
     private TraceObject traceObject = TraceObject.NONE;
     private WebPageConfiguration config;
+    private String imagePrefix = "";
 
     static
     {
@@ -195,6 +196,22 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     public String getUrl()
     {
         return config.getUrl();
+    }
+
+    /**
+     * Returns the image prefix for the crawler.
+     */
+    public String getImagePrefix()
+    {
+        return imagePrefix;
+    }
+
+    /**
+     * Sets the image prefix for the crawler.
+     */
+    public void setImagePrefix(String imagePrefix)
+    {
+        this.imagePrefix = imagePrefix;
     }
 
     /**

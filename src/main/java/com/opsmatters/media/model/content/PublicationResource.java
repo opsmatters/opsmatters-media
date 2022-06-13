@@ -231,7 +231,6 @@ public abstract class PublicationResource extends Resource
         super.setContentSummary(obj);
         setUrl(new String(obj.getUrl()), false);
         setImageSource(new String(obj.getImageSource() != null ? obj.getImageSource() : ""));
-        setImagePrefix(new String(obj.getImagePrefix() != null ? obj.getImagePrefix() : ""));
         setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
     }
 
@@ -305,9 +304,9 @@ public abstract class PublicationResource extends Resource
      * Sets the image name.
      */
     @Override
-    public void setImageFromPath(String path)
+    public void setImageFromPath(String prefix, String path)
     {
-        details.setImageFromPath(path);
+        details.setImageFromPath(prefix, path);
     }
 
     /**
@@ -343,23 +342,6 @@ public abstract class PublicationResource extends Resource
     public boolean hasImageSource()
     {
         return details.hasImageSource();
-    }
-
-    /**
-     * Returns the image prefix.
-     */
-    @Override
-    public String getImagePrefix()
-    {
-        return details.getImagePrefix();
-    }
-
-    /**
-     * Sets the image prefix.
-     */
-    public void setImagePrefix(String imagePrefix)
-    {
-        details.setImagePrefix(imagePrefix);
     }
 
     /**

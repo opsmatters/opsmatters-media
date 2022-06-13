@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.db.dao.admin;
+package com.opsmatters.media.db.dao.content.util;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ import com.opsmatters.media.model.drupal.TaxonomyTerm;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class TaxonomyTermDAO extends AdminDAO<TaxonomyTerm>
+public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
 {
     private static final Logger logger = Logger.getLogger(TaxonomyTermDAO.class.getName());
 
@@ -66,7 +66,7 @@ public class TaxonomyTermDAO extends AdminDAO<TaxonomyTerm>
     /**
      * Constructor that takes a DAO factory.
      */
-    public TaxonomyTermDAO(AdminDAOFactory factory)
+    public TaxonomyTermDAO(ContentUtilDAOFactory factory)
     {
         super(factory, "TAXONOMY_TERMS");
     }

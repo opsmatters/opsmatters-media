@@ -93,7 +93,6 @@ public class WhitePaperResource extends PublicationResource
         resource.setSiteId(site.getId());
         resource.setTitle("New White Paper");
         resource.setDescription(StringUtils.EMPTY);
-        resource.setImagePrefix(config.getImagePrefix());
         resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
 
         return resource;

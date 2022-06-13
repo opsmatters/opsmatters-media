@@ -62,23 +62,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
     }
 
     /**
-     * Returns the image extension for this configuration.
-     */
-    public String getImageExt()
-    {
-        return config.getImageExt();
-    }
-
-    /**
-     * Returns the image prefix for this configuration.
-     */
-    public String getImagePrefix()
-    {
-        return config.getImagePrefix();
-    }
-
-    /**
-     * Create an roundup summary from the selected node.
+     * Create a roundup summary from the selected node.
      */
     @Override
     public RoundupSummary getContentSummary(Element root, ContentFields fields)
@@ -174,11 +158,6 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
                     content.setSummary(body);
             }
 
-            // Apply the custom image name if defined
-            String imageFormat = config.getImageFormat();
-            if(imageFormat != null && imageFormat.length() > 0 && content.hasImage())
-                content.setImageFromPath(getFormatSubstitutor().replace(imageFormat));
-
             if(root != null)
                 break;
         }
@@ -196,8 +175,6 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
         ContentFields fields, RoundupSummary content, String type)
         throws DateTimeParseException
     {
-        content.setImagePrefix(getImagePrefix());
-
         if(fields.hasTitle())
         {
             ContentField field = fields.getTitle();
@@ -263,7 +240,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
             String src = getImageSrc(field, root, type);
             if(src != null && src.length() > 0)
             {
-                content.setImageFromPath(src);
+                content.setImageFromPath(getImagePrefix(), src);
                 content.setImageSource(getBasePath(), encodeUrl(src), field.removeParameters());
 
                 if(debug())
@@ -282,7 +259,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
             if(style != null && style.length() > 0)
             {
                 String src = getBackgroundImage(style);
-                content.setImageFromPath(src);
+                content.setImageFromPath(getImagePrefix(), src);
                 content.setImageSource(getBasePath(), encodeUrl(src), field.removeParameters());
 
                 if(debug())

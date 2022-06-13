@@ -18,16 +18,11 @@ package com.opsmatters.media.model.content;
 import java.util.Map;
 import java.util.HashMap;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.config.content.FieldSource;
 import com.opsmatters.media.model.OwnedItem;
 import com.opsmatters.media.model.platform.Site;
-import com.opsmatters.media.model.social.SocialProvider;
-import com.opsmatters.media.util.Formats;
-import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -42,16 +37,15 @@ public class Organisation extends OwnedItem implements FieldSource
     private String name = "";
     private String website = "";
     private String email = "";
-    private SocialProvider feedProvider;
-    private String feedUsername = "";
+    private String handle = "";
     private String hashtag = "";
     private String hashtags = "";
     private String tracking = "";
     private boolean sponsor = false;
     private boolean listing = false;
     private boolean social = false;
-    private String thumbnail = "";
-    private String thumbnailText = "";
+    private String imagePrefix = "";
+    private String imageText = "";
     private OrganisationStatus status = OrganisationStatus.NEW;
     private ArchiveReason reason = ArchiveReason.NONE;
     private Map<ContentType, OrganisationContentType> contentTypes = new HashMap<ContentType, OrganisationContentType>();
@@ -93,16 +87,15 @@ public class Organisation extends OwnedItem implements FieldSource
             setName(obj.getName());
             setWebsite(new String(obj.getWebsite() != null ? obj.getWebsite() : ""));
             setEmail(new String(obj.getEmail() != null ? obj.getEmail() : ""));
-            setFeedProvider(obj.getFeedProvider());
-            setFeedUsername(new String(obj.getFeedUsername() != null ? obj.getFeedUsername() : ""));
+            setHandle(new String(obj.getHandle() != null ? obj.getHandle() : ""));
             setHashtag(new String(obj.getHashtag() != null ? obj.getHashtag() : ""));
             setHashtags(new String(obj.getHashtags() != null ? obj.getHashtags() : ""));
             setTracking(new String(obj.getTracking() != null ? obj.getTracking() : ""));
             setSponsor(obj.isSponsor());
             setListing(obj.hasListing());
             setSocial(obj.hasSocial());
-            setThumbnail(new String(obj.getThumbnail() != null ? obj.getThumbnail() : ""));
-            setThumbnailText(new String(obj.getThumbnailText() != null ? obj.getThumbnailText() : ""));
+            setImagePrefix(new String(obj.getImagePrefix() != null ? obj.getImagePrefix() : ""));
+            setImageText(new String(obj.getImageText() != null ? obj.getImageText() : ""));
             setStatus(obj.getStatus());
             setReason(obj.getReason());
         }
@@ -123,10 +116,9 @@ public class Organisation extends OwnedItem implements FieldSource
         ret.putOpt(Fields.HASHTAG, getHashtag());
         ret.putOpt(Fields.HASHTAGS, getHashtags());
         ret.putOpt(Fields.TRACKING, getTracking());
-        ret.putOpt(Fields.FEED_PROVIDER, getFeedProvider().name());
-        ret.putOpt(Fields.FEED_USERNAME, getFeedUsername());
-        ret.putOpt(Fields.THUMBNAIL, getThumbnail());
-        ret.putOpt(Fields.THUMBNAIL_TEXT, getThumbnailText());
+        ret.putOpt(Fields.HANDLE, getHandle());
+        ret.putOpt(Fields.IMAGE_PREFIX, getImagePrefix());
+        ret.putOpt(Fields.IMAGE_TEXT, getImageText());
 
         return ret;
     }
@@ -144,10 +136,9 @@ public class Organisation extends OwnedItem implements FieldSource
         setHashtag(obj.optString(Fields.HASHTAG));
         setHashtags(obj.optString(Fields.HASHTAGS));
         setTracking(obj.optString(Fields.TRACKING));
-        setFeedProvider(obj.optString(Fields.FEED_PROVIDER));
-        setFeedUsername(obj.optString(Fields.FEED_USERNAME));
-        setThumbnail(obj.optString(Fields.THUMBNAIL));
-        setThumbnailText(obj.optString(Fields.THUMBNAIL_TEXT));
+        setHandle(obj.optString(Fields.HANDLE));
+        setImagePrefix(obj.optString(Fields.IMAGE_PREFIX));
+        setImageText(obj.optString(Fields.IMAGE_TEXT));
     }
 
     /**
@@ -162,13 +153,11 @@ public class Organisation extends OwnedItem implements FieldSource
         ret.put(Fields.SOCIAL, hasSocial() ? "1" : "0");
         ret.put(Fields.WEBSITE, getWebsite());
         ret.put(Fields.EMAIL, getEmail());
-        ret.put(Fields.FEED_PROVIDER, getFeedProvider().name());
-        ret.put(Fields.FEED_USERNAME, getFeedUsername());
+        ret.put(Fields.HANDLE, getHandle());
         ret.put(Fields.HASHTAG, getHashtag());
         ret.put(Fields.HASHTAGS, getHashtags());
         ret.put(Fields.TRACKING, getTracking());
-        ret.put(Fields.THUMBNAIL, getThumbnail());
-        ret.put(Fields.THUMBNAIL_TEXT, getThumbnailText());
+        ret.put(Fields.IMAGE_TEXT, getImageText());
 
         return ret;
     }
@@ -185,9 +174,6 @@ public class Organisation extends OwnedItem implements FieldSource
         organisation.setCode("TBD");
         organisation.setName("New Organisation");
         organisation.setCreatedDate(Instant.now());
-        organisation.setThumbnail("tbd-thumb.png");
-        organisation.setThumbnailText("tbd logo");
-        organisation.setFeedProvider(SocialProvider.TWITTER);
         organisation.setSocial(true);
 
         return organisation;
@@ -402,43 +388,19 @@ public class Organisation extends OwnedItem implements FieldSource
     }
 
     /**
-     * Returns the organisation's feed provider.
+     * Returns the organisation's social handle.
      */
-    public SocialProvider getFeedProvider()
+    public String getHandle()
     {
-        return feedProvider;
+        return handle;
     }
 
     /**
-     * Sets the organisation's feed provider.
+     * Sets the organisation's social handle.
      */
-    public void setFeedProvider(String feedProvider)
+    public void setHandle(String handle)
     {
-        setFeedProvider(SocialProvider.valueOf(feedProvider));
-    }
-
-    /**
-     * Sets the organisation's feed provider.
-     */
-    public void setFeedProvider(SocialProvider feedProvider)
-    {
-        this.feedProvider = feedProvider;
-    }
-
-    /**
-     * Returns the organisation's feed username.
-     */
-    public String getFeedUsername()
-    {
-        return feedUsername;
-    }
-
-    /**
-     * Sets the organisation's feed username.
-     */
-    public void setFeedUsername(String feedUsername)
-    {
-        this.feedUsername = feedUsername;
+        this.handle = handle;
     }
 
     /**
@@ -503,46 +465,6 @@ public class Organisation extends OwnedItem implements FieldSource
     public boolean hasTracking()
     {
         return tracking != null && tracking.length() > 0;
-    }
-
-    /**
-     * Returns the organisation's logo thumbnail.
-     */
-    public String getThumbnail()
-    {
-        return thumbnail;
-    }
-
-    /**
-     * Sets the organisation's logo thumbnail.
-     */
-    public void setThumbnail(String thumbnail)
-    {
-        this.thumbnail = thumbnail;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if this organisation has a thumbnail image.
-     */
-    public boolean hasThumbnail()
-    {
-        return thumbnail != null && thumbnail.length() > 0;
-    }
-
-    /**
-     * Returns the organisation's logo thumbnail text.
-     */
-    public String getThumbnailText()
-    {
-        return thumbnailText;
-    }
-
-    /**
-     * Sets the organisation's logo thumbnail text.
-     */
-    public void setThumbnailText(String thumbnailText)
-    {
-        this.thumbnailText = thumbnailText;
     }
 
     /**
@@ -615,6 +537,46 @@ public class Organisation extends OwnedItem implements FieldSource
     public void setReason(ArchiveReason reason)
     {
         this.reason = reason;
+    }
+
+    /**
+     * Returns the image prefix.
+     */
+    public String getImagePrefix()
+    {
+        return imagePrefix;
+    }
+
+    /**
+     * Sets the image prefix.
+     */
+    public void setImagePrefix(String imagePrefix)
+    {
+        this.imagePrefix = imagePrefix;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this organisation has an image prefix.
+     */
+    public boolean hasImagePrefix()
+    {
+        return imagePrefix != null && imagePrefix.length() > 0;
+    }
+
+    /**
+     * Returns the organisation's image text.
+     */
+    public String getImageText()
+    {
+        return imageText;
+    }
+
+    /**
+     * Sets the organisation's image text.
+     */
+    public void setImageText(String imageText)
+    {
+        this.imageText = imageText;
     }
 
     /**
