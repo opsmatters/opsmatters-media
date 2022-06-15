@@ -22,6 +22,7 @@ import com.opsmatters.media.config.content.PostConfiguration;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.config.content.util.ContentImages;
 import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
 import com.opsmatters.media.util.TimeUtils;

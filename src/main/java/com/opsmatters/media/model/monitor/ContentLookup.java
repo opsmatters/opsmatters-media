@@ -18,7 +18,7 @@ package com.opsmatters.media.model.monitor;
 import java.util.List;
 import java.util.logging.Logger;
 import java.sql.SQLException;
-import com.opsmatters.media.model.content.Organisation;
+import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.content.ContentItem;
 
 /**

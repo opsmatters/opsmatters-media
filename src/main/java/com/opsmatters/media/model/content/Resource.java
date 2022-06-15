@@ -20,6 +20,8 @@ import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.config.content.ContentConfiguration;
+import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.organisation.OrganisationContentType;
 import com.opsmatters.media.util.StringUtils;
 
 /**

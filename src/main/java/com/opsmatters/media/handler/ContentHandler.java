@@ -38,7 +38,7 @@ import com.opsmatters.media.config.content.OrganisationContentConfiguration;
 import com.opsmatters.media.model.platform.Environment;
 import com.opsmatters.media.model.platform.aws.S3Settings;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.Organisation;
+import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.client.SshClient;
 import com.opsmatters.media.client.aws.S3Client;
 import com.opsmatters.media.file.InputFileReader;

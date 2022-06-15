@@ -18,7 +18,7 @@ package com.opsmatters.media.model.monitor;
 import java.util.List;
 import java.time.Instant;
 import com.opsmatters.media.model.OwnedItem;
-import com.opsmatters.media.model.content.Organisation;
+import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.SnapshotDiff;
 

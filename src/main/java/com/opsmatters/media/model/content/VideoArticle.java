@@ -23,6 +23,7 @@ import com.opsmatters.media.config.content.VideoChannelConfiguration;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
 

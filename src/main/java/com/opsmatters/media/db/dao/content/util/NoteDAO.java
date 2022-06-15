@@ -75,6 +75,13 @@ public class NoteDAO extends ContentUtilDAO<Note>
       + "FROM NOTES";
 
     /**
+     * The query to use to select the notes from the NOTES table by code.
+     */
+    private static final String LIST_BY_CODE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, VALUE "
+      + "FROM NOTES WHERE CODE=?";
+
+    /**
      * The query to use to get the count of notes from the NOTES table.
      */
     private static final String COUNT_SQL =  
@@ -346,6 +353,58 @@ public class NoteDAO extends ContentUtilDAO<Note>
     }
 
     /**
+     * Returns the notes from the NOTES table by code.
+     */
+    public synchronized List<Note> list(String code) throws SQLException
+    {
+        List<Note> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByCodeStmt == null)
+            listByCodeStmt = prepareStatement(getConnection(), LIST_BY_CODE_SQL);
+        clearParameters(listByCodeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByCodeStmt.setString(1, code);
+            listByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByCodeStmt.executeQuery();
+            ret = new ArrayList<Note>();
+            while(rs.next())
+            {
+                Note note = new Note();
+                note.setId(rs.getString(1));
+                note.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                note.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                note.setCode(rs.getString(4));
+                note.setType(NoteType.valueOf(rs.getString(5)));
+                note.setValue(rs.getString(6));
+                ret.add(note);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the count of notes from the table.
      */
     public int count() throws SQLException
@@ -397,6 +456,8 @@ public class NoteDAO extends ContentUtilDAO<Note>
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
+        closeStatement(listByCodeStmt);
+        listByCodeStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -408,6 +469,7 @@ public class NoteDAO extends ContentUtilDAO<Note>
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
+    private PreparedStatement listByCodeStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }

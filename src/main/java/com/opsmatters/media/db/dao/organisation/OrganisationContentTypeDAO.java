@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.db.dao.content;
+package com.opsmatters.media.db.dao.organisation;
 
 import java.io.StringReader;
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.model.platform.Site;
-import com.opsmatters.media.model.content.OrganisationContentType;
+import com.opsmatters.media.model.organisation.OrganisationContentType;
 
 /**
  * DAO that provides operations on the ORGANISATION_CONTENT_TYPES table in the database.
@@ -90,7 +90,7 @@ public class OrganisationContentTypeDAO extends BaseDAO
     /**
      * Constructor that takes a DAO factory.
      */
-    public OrganisationContentTypeDAO(ContentDAOFactory factory)
+    public OrganisationContentTypeDAO(OrganisationDAOFactory factory)
     {
         super(factory, "ORGANISATION_CONTENT_TYPES");
     }

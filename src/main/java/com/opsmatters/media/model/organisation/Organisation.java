@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.content;
+package com.opsmatters.media.model.organisation;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -23,6 +23,7 @@ import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.config.content.FieldSource;
 import com.opsmatters.media.model.OwnedItem;
 import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.StringUtils;
 
 /**

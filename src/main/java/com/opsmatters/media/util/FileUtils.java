@@ -62,7 +62,9 @@ public class FileUtils
     /**
      * The user agent to use with URLConnections to avoid 403 rejection errors
      */
-    private static final String USER_AGENT = "Mozilla/5.0";
+//GERALD: test
+//    private static final String USER_AGENT = "Mozilla/5.0";
+    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36";
 
     /**
      * The timeout for a HTTP connection

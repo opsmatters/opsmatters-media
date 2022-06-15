@@ -28,7 +28,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
-import com.opsmatters.media.model.content.Organisation;
+import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.social.DraftPost;
 import com.opsmatters.media.model.social.DraftPostFactory;
 import com.opsmatters.media.model.social.DraftStatus;

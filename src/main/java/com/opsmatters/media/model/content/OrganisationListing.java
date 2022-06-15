@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.config.content.OrganisationListingConfiguration;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;

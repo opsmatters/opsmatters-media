@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
-import com.opsmatters.media.model.content.Organisation;
+import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.content.OrganisationListing;
 import com.opsmatters.media.model.content.OrganisationTabs;
 import com.opsmatters.media.model.content.ContentType;
