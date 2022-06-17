@@ -28,7 +28,7 @@ import com.opsmatters.media.model.content.util.ImageType;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentImages extends LinkedHashMap<ImageType,Map>
+public class ContentImages
 {
     private static Map<ImageType,Map<String,ContentImage>> types = new LinkedHashMap<ImageType,Map<String,ContentImage>>();
 

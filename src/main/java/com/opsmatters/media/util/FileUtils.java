@@ -62,9 +62,7 @@ public class FileUtils
     /**
      * The user agent to use with URLConnections to avoid 403 rejection errors
      */
-//GERALD: test
-//    private static final String USER_AGENT = "Mozilla/5.0";
-    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36";
+    private static final String USER_AGENT = "Mozilla/5.0";
 
     /**
      * The timeout for a HTTP connection
@@ -160,18 +158,21 @@ public class FileUtils
     /**
      * Downloads the given file from the given URL.
      */
-    public static void downloadFile(URL url, File file) 
+    public static void downloadFile(URL url, File file, String userAgent) 
         throws IOException
     {
-        downloadFile(url, file, null, -1); 
+        downloadFile(url, file, userAgent, null, -1); 
     }
 
     /**
      * Downloads the given file from the given URL.
      */
-    public static void downloadFile(URL url, File file, String md5, int size) 
+    public static void downloadFile(URL url, File file, String userAgent, String md5, int size) 
         throws IOException
     {
+        if(userAgent == null || userAgent.length() == 0)
+            userAgent = USER_AGENT;
+
         boolean addingFile = false;
         int fileSize = -1;
         String fileMd5 = null;
@@ -220,7 +221,7 @@ public class FileUtils
             try
             {
                 conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestProperty("User-Agent", USER_AGENT);
+                conn.setRequestProperty("User-Agent", userAgent);
                 conn.setReadTimeout(READ_TIMEOUT);
                 conn.setConnectTimeout(CONNECT_TIMEOUT);
                 TrustAnyTrustManager.setTrustManager(conn);
@@ -245,7 +246,7 @@ public class FileUtils
     /**
      * Uploads the given file to the given URL.
      */
-    static public void uploadFile(URL url, File file) throws IOException
+    public static void uploadFile(URL url, File file) throws IOException
     {
         URLConnection conn = (URLConnection)url.openConnection(); 
         conn.setDoOutput(true);
@@ -361,7 +362,7 @@ public class FileUtils
      * Compresses the input data.
      * @return null if compression results in larger output.
      */
-    static public byte[] compress(byte[] input, int compressionLevel)
+    public static byte[] compress(byte[] input, int compressionLevel)
     {
         Deflater deflater = new Deflater(compressionLevel);
         deflater.setInput(input, 0, input.length);
@@ -389,7 +390,7 @@ public class FileUtils
      * Un-compresses the input data.
      * @throws IOException if the input is not valid.
      */
-    static public byte[] uncompress(byte[] input) throws IOException
+    public static byte[] uncompress(byte[] input) throws IOException
     {
         try 
         {
@@ -516,7 +517,7 @@ public class FileUtils
     /**
      * Returns <CODE>true</CODE> if the given URL is a relative path.
      */
-    static public boolean isRelativePath(String url)
+    public static boolean isRelativePath(String url)
     {
         return url != null && url.length() > 0 && !url.startsWith("http") && !url.startsWith("//");
     }
@@ -524,10 +525,21 @@ public class FileUtils
     /**
      * Returns the size of the file using the given URL.
      */
-    static public long getFileSize(URL url) throws IOException
+    public static long getFileSize(URL url) throws IOException
+    {
+        return getFileSize(url, null);
+    }
+
+    /**
+     * Returns the size of the file using the given URL.
+     */
+    public static long getFileSize(URL url, String userAgent) throws IOException
     {
         HttpURLConnection httpConn = null;
         long ret = -1L;
+
+        if(userAgent == null || userAgent.length() == 0)
+            userAgent = USER_AGENT;
 
         try
         {
@@ -536,7 +548,7 @@ public class FileUtils
             if(conn instanceof HttpURLConnection)
             {
                 httpConn = (HttpURLConnection)conn;
-                httpConn.setRequestProperty("User-Agent", USER_AGENT);
+                httpConn.setRequestProperty("User-Agent", userAgent);
                 httpConn.setRequestMethod("HEAD");
                 httpConn.setReadTimeout(READ_TIMEOUT);
                 httpConn.setConnectTimeout(CONNECT_TIMEOUT);
@@ -567,14 +579,22 @@ public class FileUtils
     /**
      * Returns the size of the file using the given URL.
      */
-    static public long getFileSize(String url)
+    public static long getFileSize(String url)
+    {
+        return getFileSize(url, null);
+    }
+
+    /**
+     * Returns the size of the file using the given URL.
+     */
+    public static long getFileSize(String url, String userAgent)
     {
         long ret = -1L;
 
         try
         {
             if(url != null)
-                ret = getFileSize(new URL(url));
+                ret = getFileSize(new URL(url), userAgent);
         }
         catch(IOException e)
         {
@@ -587,16 +607,19 @@ public class FileUtils
     /**
      * Returns the response to a request to the given HTTP URL.
      */
-    static public String getResponse(URL url, String method, String message) throws IOException
+    public static String getResponse(URL url, String method, String message, String userAgent) throws IOException
     {
         HttpURLConnection conn = null;
         String ret = null;
+
+        if(userAgent == null || userAgent.length() == 0)
+            userAgent = USER_AGENT;
 
         try
         {
             conn = (HttpURLConnection)url.openConnection();
             conn.setRequestMethod(method);
-            conn.setRequestProperty("User-Agent", USER_AGENT);
+            conn.setRequestProperty("User-Agent", userAgent);
             conn.setReadTimeout(READ_TIMEOUT);
             conn.setConnectTimeout(CONNECT_TIMEOUT);
 
@@ -635,9 +658,9 @@ public class FileUtils
     /**
      * Returns the response to a request to the given HTTP URL.
      */
-    static public String getResponse(URL url, String method) throws IOException
+    public static String getResponse(URL url, String method, String userAgent) throws IOException
     {
-        return getResponse(url, method, null);
+        return getResponse(url, method, null, userAgent);
     }
 
     /**
@@ -665,7 +688,7 @@ public class FileUtils
     /**
      * Returns <CODE>true</CODE> if the file at the given HTTP URL exists.
      */
-    static public boolean exists(URL url)
+    public static boolean exists(URL url)
     {
         boolean ret = false;
 
@@ -705,7 +728,7 @@ public class FileUtils
     /**
      * Returns <CODE>true</CODE> if the file at the given HTTP URL exists.
      */
-    static public boolean exists(String url)
+    public static boolean exists(String url)
     {
         boolean ret = false;
 
@@ -725,7 +748,7 @@ public class FileUtils
     /**
      * Remove the cached entry for given HTTP URL.
      */
-    static public void remove(URL url)
+    public static void remove(URL url)
     {
         responses.remove(url);
     }
@@ -733,7 +756,7 @@ public class FileUtils
     /**
      * Remove the cached entry for given HTTP URL.
      */
-    static public void remove(String url)
+    public static void remove(String url)
     {
         try
         {

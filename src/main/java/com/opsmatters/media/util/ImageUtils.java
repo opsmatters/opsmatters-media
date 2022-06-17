@@ -289,27 +289,38 @@ public class ImageUtils
     /**
      * Returns the image type for the given image, correcting for image type = 0.
      * @param image The image bytes
+     * @param removeAlpha <CODE>true</CODE> if the transparency should be removed
      * @throws IOException
      */
-    private static int getImageType(BufferedImage image)
+    private static int getImageType(BufferedImage image, boolean removeAlpha)
     {
-        return image.getType() == 0 ? BufferedImage.TYPE_3BYTE_BGR : image.getType();
+        int ret = image.getType();
+        if(ret == 0 || ret == BufferedImage.TYPE_BYTE_INDEXED)
+        {
+            if(removeAlpha)
+                ret = BufferedImage.TYPE_3BYTE_BGR;
+            else
+                ret = BufferedImage.TYPE_4BYTE_ABGR;
+        }
+
+        return ret;
     }
 
     /**
      * Returns an image scaled by a factor of the original size (proportional).
      * @param file The input image file
      * @param factor the proportion of the output image to the input image [0..1].
+     * @param removeAlpha <CODE>true</CODE> if the transparency should be removed
      * @return the scaled image
      * @throws IOException
      */
-    public static BufferedImage getScaledFactorImage(File file, double factor)
+    public static BufferedImage getScaledFactorImage(File file, double factor, boolean removeAlpha)
         throws IOException
     {
         BufferedImage inputImage = ImageIO.read(file);
         return Thumbnails.of(inputImage)
             .scale(factor)
-            .imageType(getImageType(inputImage))
+            .imageType(getImageType(inputImage, removeAlpha))
             .asBufferedImage();
     }
 
@@ -317,16 +328,17 @@ public class ImageUtils
      * Returns an image scaled to the given width.
      * @param file The input image file
      * @param width the width of the output image
+     * @param removeAlpha <CODE>true</CODE> if the transparency should be removed
      * @return the scaled image
      * @throws IOException
      */
-    public static BufferedImage getScaledWidthImage(File file, int width)
+    public static BufferedImage getScaledWidthImage(File file, int width, boolean removeAlpha)
         throws IOException
     {
         BufferedImage inputImage = ImageIO.read(file);
         return Thumbnails.of(inputImage)
             .width(width)
-            .imageType(getImageType(inputImage))
+            .imageType(getImageType(inputImage, removeAlpha))
             .asBufferedImage();
     }
 
@@ -334,10 +346,11 @@ public class ImageUtils
      * Returns an image cropped using a ratio.
      * @param file The input image file
      * @param ratio the ratio of the width to the height
+     * @param removeAlpha <CODE>true</CODE> if the transparency should be removed
      * @return the cropped image
      * @throws IOException
      */
-    static public BufferedImage getCroppedImage(File file, float ratio, ImageAlignment alignment)
+    static public BufferedImage getCroppedImage(File file, float ratio, ImageAlignment alignment, boolean removeAlpha)
         throws IOException
     {
         BufferedImage inputImage = ImageIO.read(file);
@@ -377,7 +390,7 @@ public class ImageUtils
         return Thumbnails.of(inputImage)
             .size(width, height)
             .crop(position)
-            .imageType(getImageType(inputImage))
+            .imageType(getImageType(inputImage, removeAlpha))
             .asBufferedImage();
     }
 
@@ -397,12 +410,13 @@ public class ImageUtils
      * Write the given image file to a file in the current suffix.
      * @param image The image bytes
      * @param file The output image file
+     * @param removeAlpha <CODE>true</CODE> if the transparency should be removed
      * @throws IOException
      */
-    public static void writeImage(BufferedImage image, File file)
+    public static void writeImage(BufferedImage image, File file, boolean removeAlpha)
         throws IOException
     {
-        writeImage(image, file, FileUtils.getExtension(file.getName()));
+        writeImage(image, file, FileUtils.getExtension(file.getName()), removeAlpha);
     }
 
     /**
@@ -410,9 +424,10 @@ public class ImageUtils
      * @param image The image bytes
      * @param file The output image file
      * @param suffix The suffix of the image file (JPG, PNG, GIF)
+     * @param removeAlpha <CODE>true</CODE> if the transparency should be removed
      * @throws IOException
      */
-    public static void writeImage(BufferedImage image, File file, String suffix)
+    public static void writeImage(BufferedImage image, File file, String suffix, boolean removeAlpha)
         throws IOException
     {
         // Remove the alpha channel when converting JPEGs otherwise
@@ -427,7 +442,7 @@ public class ImageUtils
         {
             logger.info(String.format("Fixing image with zero type: file=%s", 
                 file.getName()));
-            image = fixImageType(image);
+            image = fixImageType(image, removeAlpha);
         }
 
         ImageIO.write(image, suffix, file);
@@ -461,15 +476,16 @@ public class ImageUtils
     /**
      * Fix the given PNG image file with image type zero by setting the correct type.
      * @param image The image bytes
+     * @param removeAlpha <CODE>true</CODE> if the transparency should be removed
      * @throws IOException
      */
-    private static BufferedImage fixImageType(BufferedImage image)
+    private static BufferedImage fixImageType(BufferedImage image, boolean removeAlpha)
     {
         BufferedImage ret = image;
         if(image != null)
         {
             ret = new BufferedImage(image.getWidth(),
-                image.getHeight(), getImageType(image));
+                image.getHeight(), getImageType(image, removeAlpha));
             image.flush();
         }
 

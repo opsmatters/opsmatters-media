@@ -29,12 +29,14 @@ public class WebPageConfiguration extends FieldsConfiguration
     public static final String BROWSER = "browser";
     public static final String HEADLESS = "headless";
     public static final String BASE_PATH = "base-path";
+    public static final String USER_AGENT = "user-agent";
     public static final String MORE_LINK = "more-link";
 
     private String url = "";
     private CrawlerBrowser browser;
     private boolean headless = true;
     private String basePath = "";
+    private String userAgent = "";
     private MoreLinkConfiguration moreLink;
 
     /**
@@ -144,6 +146,22 @@ public class WebPageConfiguration extends FieldsConfiguration
     }
 
     /**
+     * Returns the user agent for this configuration.
+     */
+    public String getUserAgent()
+    {
+        return userAgent;
+    }
+
+    /**
+     * Sets the user agent for this configuration.
+     */
+    public void setUserAgent(String userAgent)
+    {
+        this.userAgent = userAgent;
+    }
+
+    /**
      * Returns the link to get more items.
      */
     public MoreLinkConfiguration getMoreLink()
@@ -174,6 +192,8 @@ public class WebPageConfiguration extends FieldsConfiguration
             setHeadless((Boolean)map.get(HEADLESS));
         if(map.containsKey(BASE_PATH))
             setBasePath((String)map.get(BASE_PATH));
+        if(map.containsKey(USER_AGENT))
+            setUserAgent((String)map.get(USER_AGENT));
         if(map.containsKey(MORE_LINK))
             setMoreLink(createMoreLink(MORE_LINK, map.get(MORE_LINK)));
     }
