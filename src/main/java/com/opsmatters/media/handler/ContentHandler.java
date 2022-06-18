@@ -33,12 +33,10 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.content.Fields;
-import com.opsmatters.media.config.content.FieldSource;
 import com.opsmatters.media.config.content.OrganisationContentConfiguration;
 import com.opsmatters.media.model.platform.Environment;
 import com.opsmatters.media.model.platform.aws.S3Settings;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.client.SshClient;
 import com.opsmatters.media.client.aws.S3Client;
 import com.opsmatters.media.file.InputFileReader;
@@ -53,7 +51,7 @@ import com.opsmatters.media.util.FileUtils;
  *
  * @author Gerald Curley (opsmatters)
  */
-public class ContentHandler implements FieldSource
+public class ContentHandler
 {
     private static final Logger logger = Logger.getLogger(ContentHandler.class.getName());
 
@@ -70,9 +68,7 @@ public class ContentHandler implements FieldSource
     private String workingDir = "";
     private String dateFormat = Formats.CONTENT_DATE_FORMAT;
     private File file;
-    private Fields fields;
     private Map<String,OrganisationContentConfiguration> configurationMap;
-    private Map<String,Organisation> organisationMap;
     private S3Settings s3Settings;
 
     /**
@@ -147,33 +143,6 @@ public class ContentHandler implements FieldSource
     }
 
     /**
-     * Returns the fields for this handler.
-     */
-    @Override
-    public Fields getFields()
-    {
-        return fields;
-    }
-
-    /**
-     * Sets the fields for this handler.
-     */
-    public void setFields(Fields fields)
-    {
-        this.fields = fields;
-    }
-
-    /**
-     * Adds the fields for this handler.
-     */
-    public void addFields(Map<String,String> fields)
-    {
-        if(this.fields == null)
-            this.fields = new Fields();
-        this.fields.putAll(fields);
-    }
-
-    /**
      * Returns the configuration map for the handler.
      */
     public Map<String,OrganisationContentConfiguration> getConfigurationMap()
@@ -195,30 +164,6 @@ public class ContentHandler implements FieldSource
     public OrganisationContentConfiguration getConfiguration(String name)
     {
         return configurationMap.get(name);
-    }
-
-    /**
-     * Returns the organisation map for the handler.
-     */
-    public Map<String,Organisation> getOrganisationMap()
-    {
-        return organisationMap;
-    }
-
-    /**
-     * Sets the organisation map for the handler.
-     */
-    public void setOrganisationMap(Map<String,Organisation> organisationMap)
-    {
-        this.organisationMap = organisationMap;
-    }
-
-    /**
-     * Returns the organisation for the given code.
-     */
-    public Organisation getOrganisation(String code)
-    {
-        return organisationMap.get(code);
     }
 
     /**
@@ -964,18 +909,6 @@ public class ContentHandler implements FieldSource
         }
 
         /**
-         * Adds a field source to the handler.
-         * @param source The field source to add to the handler
-         * @return This object
-         */
-        public Builder withFieldSource(FieldSource source)
-        {
-            if(source != null)
-                handler.addFields(source.getFields());
-            return this;
-        }
-
-        /**
          * Adds a configuration map to the handler.
          * @param configurationMap The configuration map to add to the handler
          * @return This object
@@ -983,17 +916,6 @@ public class ContentHandler implements FieldSource
         public Builder withConfigurations(Map<String,OrganisationContentConfiguration> configurationMap)
         {
             handler.setConfigurationMap(configurationMap);
-            return this;
-        }
-
-        /**
-         * Adds an organisation map to the handler.
-         * @param organisationMap The organisation map to add to the handler
-         * @return This object
-         */
-        public Builder withOrganisations(Map<String,Organisation> organisationMap)
-        {
-            handler.setOrganisationMap(organisationMap);
             return this;
         }
 

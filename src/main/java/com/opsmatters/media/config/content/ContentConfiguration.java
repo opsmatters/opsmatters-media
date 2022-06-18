@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 import java.sql.SQLException;
 import com.opsmatters.media.config.YamlConfiguration;
+import com.opsmatters.media.config.organisation.Organisations;
 import com.opsmatters.media.config.content.util.ContentImages;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.platform.FeedsSettings;
@@ -349,7 +350,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
             ContentStatus status = content.getStatus();
             Fields fields = content.toFields().add(this);
 
-            Organisation organisation = handler.getOrganisation(content.getCode());
+            Organisation organisation = Organisations.get(content.getCode());
             if(organisation != null && organisation.hasTracking())
                 fields.put(Fields.TRACKING, organisation.getTracking());
 
@@ -415,7 +416,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 }
             }
 
-            fields.add(handler);
+            fields.add(Organisations.get(site, content.getCode()));
             handler.appendLine(handler.getValues(fields));
 
             if(content.getStatus() != ContentStatus.DEPLOYED)

@@ -17,6 +17,7 @@ package com.opsmatters.media.model.content;
 
 import java.util.List;
 import org.json.JSONObject;
+import com.opsmatters.media.config.organisation.Organisations;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.model.organisation.Organisation;
@@ -173,6 +174,18 @@ public abstract class Article extends ContentItem
     public boolean hasOrganisation()
     {
         return organisation != null && organisation.length() > 0;
+    }
+
+    /**
+     * Sets the monitor organisation.
+     */
+    @Override
+    public void setCode(String code)
+    {
+        super.setCode(code);
+
+        Organisation organisation = Organisations.get(code);
+        setOrganisation(organisation != null ? organisation.getName() : "");
     }
 
     /**

@@ -23,10 +23,12 @@ import facebook4j.Post;
 import com.echobox.api.linkedin.types.ugc.UGCShare;
 import com.opsmatters.media.client.social.SocialClient;
 import com.opsmatters.media.client.social.SocialClientFactory;
+import com.opsmatters.media.config.organisation.Organisations;
 import com.opsmatters.media.model.DeliveryStatus;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailBody;
+import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
@@ -222,6 +224,9 @@ public class PreparedPost extends SocialPost
     public void setCode(String code)
     {
         this.code = code;
+
+        Organisation organisation = Organisations.get(code);
+        setOrganisation(organisation != null ? organisation.getName() : "");
     }
 
     /**

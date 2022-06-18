@@ -18,6 +18,7 @@ package com.opsmatters.media.model.social;
 import java.time.Instant;
 import org.json.JSONObject;
 import com.opsmatters.media.util.StringUtils;
+import com.opsmatters.media.config.organisation.Organisations;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.platform.EnvironmentName;
 import com.opsmatters.media.model.organisation.Organisation;
@@ -173,6 +174,9 @@ public class DraftContentPost extends DraftPost
     public void setCode(String code)
     {
         this.code = code;
+
+        Organisation organisation = Organisations.get(code);
+        setOrganisation(organisation != null ? organisation.getName() : "");
     }
 
     /**

@@ -40,6 +40,7 @@ public class OrganisationContentConfiguration extends ContentConfiguration<Conte
     private static OrganisationContentConfiguration defaults;
 
     private String code = "";
+//GERALD: remove
     private String organisation = "";
     private VideoConfiguration videos;
     private RoundupConfiguration roundups;
@@ -102,6 +103,7 @@ public class OrganisationContentConfiguration extends ContentConfiguration<Conte
     /**
      * Returns the organisation name for this configuration.
      */
+//GERALD: remove
     public String getOrganisation()
     {
         return organisation;
@@ -110,6 +112,7 @@ public class OrganisationContentConfiguration extends ContentConfiguration<Conte
     /**
      * Sets the organisation name for this configuration.
      */
+//GERALD: remove
     public void setOrganisation(String organisation)
     {
         this.organisation = organisation;
@@ -293,6 +296,7 @@ public class OrganisationContentConfiguration extends ContentConfiguration<Conte
         if(map.containsKey(Fields.CODE))
             setCode((String)map.get(Fields.CODE));
 
+//GERALD: remove
         if(map.containsKey(Fields.ORGANISATION))
             setOrganisation((String)map.get(Fields.ORGANISATION));
 

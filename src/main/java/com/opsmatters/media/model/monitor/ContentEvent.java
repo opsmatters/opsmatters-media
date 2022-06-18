@@ -15,7 +15,9 @@
  */
 package com.opsmatters.media.model.monitor;
 
+import com.opsmatters.media.config.organisation.Organisations;
 import com.opsmatters.media.model.OwnedItem;
+import com.opsmatters.media.model.organisation.Organisation;
 
 /**
  * Class representing a content monitor event.
@@ -76,6 +78,9 @@ public abstract class ContentEvent extends OwnedItem
     public void setCode(String code)
     {
         this.code = code;
+
+        Organisation organisation = Organisations.get(code);
+        setOrganisation(organisation != null ? organisation.getName() : "");
     }
 
     /**
