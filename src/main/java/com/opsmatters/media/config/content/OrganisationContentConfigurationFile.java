@@ -76,7 +76,7 @@ public class OrganisationContentConfigurationFile extends ConfigurationFile
      */
     public String toString()
     {
-        return getOrganisation();
+        return config != null ? config.getName() : null;
     }
 
     /**
@@ -86,14 +86,6 @@ public class OrganisationContentConfigurationFile extends ConfigurationFile
     public String getType()
     {
         return "content";
-    }
-
-    /**
-     * Returns the name of the organisation for the content.
-     */
-    public String getOrganisation()
-    {
-        return config != null ? config.getOrganisation() : null;
     }
 
     /**

@@ -31,12 +31,11 @@ import org.apache.commons.text.StringSubstitutor;
 import com.google.common.io.Files;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
+import com.opsmatters.media.config.platform.Platform;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.content.Fields;
-import com.opsmatters.media.config.content.OrganisationContentConfiguration;
 import com.opsmatters.media.model.platform.Environment;
 import com.opsmatters.media.model.platform.aws.S3Settings;
-import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.client.SshClient;
 import com.opsmatters.media.client.aws.S3Client;
 import com.opsmatters.media.file.InputFileReader;
@@ -68,7 +67,6 @@ public class ContentHandler
     private String workingDir = "";
     private String dateFormat = Formats.CONTENT_DATE_FORMAT;
     private File file;
-    private Map<String,OrganisationContentConfiguration> configurationMap;
     private S3Settings s3Settings;
 
     /**
@@ -107,6 +105,8 @@ public class ContentHandler
         // Use the default sheet name if none was given
         if(sheet == null || sheet.length() == 0)
             sheet = DEFAULT_SHEET;
+
+        s3Settings = Platform.getS3Settings();
     }
 
     /**
@@ -140,46 +140,6 @@ public class ContentHandler
     public void setFilename(String filename)
     {
         this.filename = filename;
-    }
-
-    /**
-     * Returns the configuration map for the handler.
-     */
-    public Map<String,OrganisationContentConfiguration> getConfigurationMap()
-    {
-        return configurationMap;
-    }
-
-    /**
-     * Sets the configuration map for the handler.
-     */
-    public void setConfigurationMap(Map<String,OrganisationContentConfiguration> configurationMap)
-    {
-        this.configurationMap = configurationMap;
-    }
-
-    /**
-     * Returns the configuration for the given code.
-     */
-    public OrganisationContentConfiguration getConfiguration(String name)
-    {
-        return configurationMap.get(name);
-    }
-
-    /**
-     * Returns the S3 settings for the handler.
-     */
-    public S3Settings getS3Settings()
-    {
-        return s3Settings;
-    }
-
-    /**
-     * Sets the S3 settings for the handler.
-     */
-    public void setS3Settings(S3Settings s3Settings)
-    {
-        this.s3Settings = s3Settings;
     }
 
     /**
@@ -905,28 +865,6 @@ public class ContentHandler
         public Builder withWorkingDirectory(String workingDir)
         {
             handler.setWorkingDirectory(workingDir);
-            return this;
-        }
-
-        /**
-         * Adds a configuration map to the handler.
-         * @param configurationMap The configuration map to add to the handler
-         * @return This object
-         */
-        public Builder withConfigurations(Map<String,OrganisationContentConfiguration> configurationMap)
-        {
-            handler.setConfigurationMap(configurationMap);
-            return this;
-        }
-
-        /**
-         * Adds S3 settings to the handler.
-         * @param setting The S3 settings to add to the handler
-         * @return This object
-         */
-        public Builder withS3Settings(S3Settings settings)
-        {
-            handler.setS3Settings(settings);
             return this;
         }
 

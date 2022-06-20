@@ -204,7 +204,7 @@ public class EventResource extends Resource
 
         resource.init();
         resource.setSiteId(site.getId());
-        resource.setTitle(config.getOrganisation()+": New Event");
+        resource.setTitle(config.getName()+": New Event");
         resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
         resource.setStartDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
         resource.addStartTime(config);

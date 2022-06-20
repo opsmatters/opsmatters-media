@@ -249,11 +249,11 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
             if(title != null && title.length() > 0)
             {
                 // Event title should always start with the organisation name
-                if(!title.startsWith(config.getOrganisation()))
+                if(!title.startsWith(config.getName()))
                 {
                     if(debug())
-                        logger.info("Adding organisation to event title: "+config.getOrganisation());
-                    content.setTitle(String.format("%s: %s", config.getOrganisation(), title));
+                        logger.info("Adding organisation to event title: "+config.getName());
+                    content.setTitle(String.format("%s: %s", config.getName(), title));
                     if(debug())
                         logger.info("Added organisation to event title: "+content.getTitle());
                 }

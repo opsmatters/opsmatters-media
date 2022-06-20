@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import java.sql.SQLException;
 import com.opsmatters.media.config.YamlConfiguration;
 import com.opsmatters.media.config.organisation.Organisations;
+import com.opsmatters.media.config.content.ContentConfigurations;
 import com.opsmatters.media.config.content.util.ContentImages;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.platform.FeedsSettings;
@@ -113,14 +114,6 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
     }
 
     /**
-     * Returns the organisation for this configuration.
-     */
-    public String getOrganisation()
-    {
-        return fields.get(Fields.ORGANISATION);
-    }
-
-    /**
      * Returns the import filename for this configuration.
      */
     public String getFilename()
@@ -134,7 +127,6 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
     public void setFilename(String filename)
     {
         this.filename = filename;
-        setName(FileUtils.getName(filename));
     }
 
     /**
@@ -372,7 +364,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                     published = organisation.isReview() || organisation.isActive();
                 fields.put(Fields.PUBLISHED, published ? "1" : "0");
 
-                fields.add(organisation, handler.getConfiguration(content.getTitle()));
+                fields.add(organisation, ContentConfigurations.get(organisation.getCode()));
 
                 // Add the path to the organisation thumbnail and logo
                 ContentImage thumbnail = ContentImages.get(ImageType.THUMBNAIL, content.getCode());

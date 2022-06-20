@@ -22,6 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import com.opsmatters.media.config.organisation.Organisations;
+import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
 
@@ -34,14 +36,14 @@ public class OrganisationContentConfiguration extends ContentConfiguration<Conte
 {
     private static final Logger logger = Logger.getLogger(OrganisationContentConfiguration.class.getName());
 
+    public static final String CODE = "code";
+
     public static final String SUFFIX = "-content.yml";
     private static final String DEFAULTS = "content.yml";
 
     private static OrganisationContentConfiguration defaults;
 
     private String code = "";
-//GERALD: remove
-    private String organisation = "";
     private VideoConfiguration videos;
     private RoundupConfiguration roundups;
     private PostConfiguration posts;
@@ -98,24 +100,10 @@ public class OrganisationContentConfiguration extends ContentConfiguration<Conte
     public void setCode(String code)
     {
         this.code = code;
-    }
 
-    /**
-     * Returns the organisation name for this configuration.
-     */
-//GERALD: remove
-    public String getOrganisation()
-    {
-        return organisation;
-    }
-
-    /**
-     * Sets the organisation name for this configuration.
-     */
-//GERALD: remove
-    public void setOrganisation(String organisation)
-    {
-        this.organisation = organisation;
+        Organisation organisation = Organisations.get(code);
+        if(organisation != null)
+            setName(organisation.getName());
     }
 
     /**
@@ -293,12 +281,8 @@ public class OrganisationContentConfiguration extends ContentConfiguration<Conte
     @Override
     protected void parseDocument(Map<String,Object> map)
     {
-        if(map.containsKey(Fields.CODE))
-            setCode((String)map.get(Fields.CODE));
-
-//GERALD: remove
-        if(map.containsKey(Fields.ORGANISATION))
-            setOrganisation((String)map.get(Fields.ORGANISATION));
+        if(map.containsKey(CODE))
+            setCode((String)map.get(CODE));
 
         if(map.containsKey(FIELDS))
             addFields((Map<String,String>)map.get(FIELDS));
@@ -381,6 +365,8 @@ public class OrganisationContentConfiguration extends ContentConfiguration<Conte
      */
     private void setContentDefaults(ContentConfiguration config, Map<String,Object> map)
     {
+        config.setName(getName());
+
         for(Map.Entry<String, Object> entry : map.entrySet())
         {
             String key = entry.getKey().toString();
