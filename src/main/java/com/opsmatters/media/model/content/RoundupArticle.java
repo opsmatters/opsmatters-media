@@ -23,6 +23,7 @@ import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.config.content.util.ContentImages;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
 import com.opsmatters.media.util.TimeUtils;
@@ -199,16 +200,17 @@ public class RoundupArticle extends Article implements LinkedContent
     /**
      * Returns a new article with defaults.
      */
-    public static RoundupArticle getDefault(Organisation organisation, RoundupConfiguration config) throws DateTimeParseException
+    public static RoundupArticle getDefault(Organisation organisation, OrganisationSite organisationSite,
+        RoundupConfiguration config) throws DateTimeParseException
     {
         RoundupArticle article = new RoundupArticle();
 
         article.init();
-        article.setSiteId(organisation.getSiteId());
+        article.setSiteId(organisationSite.getSiteId());
         article.setTitle("New Roundup");
         article.setSummary(StringUtils.EMPTY);
         article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
-        article.setSocial(organisation.hasSocial());
+        article.setSocial(organisationSite.hasSocial());
 
         return article;
     }
@@ -224,9 +226,10 @@ public class RoundupArticle extends Article implements LinkedContent
     /**
      * Use the given configuration to set defaults for the content.
      */
-    public void init(Organisation organisation, RoundupConfiguration config, WebPageConfiguration page)
+    public void init(Organisation organisation, OrganisationSite organisationSite,
+        RoundupConfiguration config, WebPageConfiguration page)
     {
-        super.init(organisation, config);
+        super.init(organisation, organisationSite, config);
 
         if(page.hasField(Fields.TAGS))
             setTags(page.getField(Fields.TAGS, ""));
@@ -242,7 +245,7 @@ public class RoundupArticle extends Article implements LinkedContent
         String sponsored = config.getField(Fields.SPONSORED);
         setSponsored(sponsored == null || sponsored.equals("0") ? false : true);
 
-        setSocial(organisation.hasSocial());
+        setSocial(organisationSite.hasSocial());
     }
 
     /**

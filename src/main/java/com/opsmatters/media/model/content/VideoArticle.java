@@ -24,6 +24,7 @@ import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
 
@@ -245,9 +246,10 @@ public class VideoArticle extends Article
     /**
      * Use the given configuration to set defaults for the content.
      */
-    public void init(Organisation organisation, VideoConfiguration config, VideoChannelConfiguration channel)
+    public void init(Organisation organisation, OrganisationSite organisationSite,
+        VideoConfiguration config, VideoChannelConfiguration channel)
     {
-        super.init(organisation, config);
+        super.init(organisation, organisationSite, config);
 
         if(channel.hasField(Fields.TAGS))
             setTags(channel.getField(Fields.TAGS, ""));

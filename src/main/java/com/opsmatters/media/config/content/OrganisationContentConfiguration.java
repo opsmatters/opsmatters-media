@@ -366,6 +366,8 @@ public class OrganisationContentConfiguration extends ContentConfiguration<Conte
     private void setContentDefaults(ContentConfiguration config, Map<String,Object> map)
     {
         config.setName(getName());
+        if(config.getFields() != null)
+            config.getFields().put(Fields.ORGANISATION, getName());
 
         for(Map.Entry<String, Object> entry : map.entrySet())
         {

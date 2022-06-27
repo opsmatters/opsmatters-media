@@ -22,6 +22,7 @@ import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
@@ -192,16 +193,17 @@ public class ToolResource extends Resource
     /**
      * Returns a new resource with defaults.
      */
-    public static ToolResource getDefault(Organisation organisation, ToolConfiguration config) throws DateTimeParseException
+    public static ToolResource getDefault(Organisation organisation, OrganisationSite organisationSite, ToolConfiguration config)
+        throws DateTimeParseException
     {
         ToolResource resource = new ToolResource();
 
         resource.init();
-        resource.setSiteId(organisation.getSiteId());
+        resource.setSiteId(organisationSite.getSiteId());
         resource.setTitle("New Tool");
         resource.setDescription(StringUtils.EMPTY);
         resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
-        resource.setSocial(organisation.hasSocial());
+        resource.setSocial(organisationSite.hasSocial());
 
         return resource;
     }
@@ -217,9 +219,9 @@ public class ToolResource extends Resource
     /**
      * Use the given configuration to set defaults for the resource.
      */
-    public void init(Organisation organisation, ToolConfiguration config)
+    public void init(Organisation organisation, OrganisationSite organisationSite, ToolConfiguration config)
     {
-        super.init(organisation, config);
+        super.init(organisation, organisationSite, config);
 
         setLinkText(config.getField(Fields.LINK_TEXT, ""));
         setDownloadText(config.getField(Fields.DOWNLOAD_TEXT, ""));
@@ -228,7 +230,7 @@ public class ToolResource extends Resource
         String promote = config.getField(Fields.PROMOTE);
         setPromoted(promote == null || promote.equals("0") ? false : true);
 
-        setSocial(organisation.hasSocial());
+        setSocial(organisationSite.hasSocial());
     }
 
     /**

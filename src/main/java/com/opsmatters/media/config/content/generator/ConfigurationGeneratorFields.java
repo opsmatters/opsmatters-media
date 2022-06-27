@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.OrganisationListing;
 import com.opsmatters.media.model.content.OrganisationTabs;
 import com.opsmatters.media.model.content.ContentType;
@@ -56,16 +57,16 @@ public class ConfigurationGeneratorFields implements java.io.Serializable
     }
 
     /**
-     * Sets the fields from an organisation and listing.
+     * Sets the fields from an organisation, site and listing.
      */
-    public void set(Organisation organisation, OrganisationListing listing)
+    public void set(Organisation organisation, OrganisationSite organisationSite, OrganisationListing listing)
     {
         setCode(organisation.getCode());
         setName(organisation.getName());
         setTag(getName().toLowerCase().replaceAll(" ","-").replaceAll("\\.|&",""));
         setWebsite(organisation.getWebsite());
 
-        if(organisation.hasListing())
+        if(organisationSite.hasListing())
         {
             OrganisationTabs tabs = listing.getTabs();
             setVideos(tabs.contains(ContentType.VIDEO));

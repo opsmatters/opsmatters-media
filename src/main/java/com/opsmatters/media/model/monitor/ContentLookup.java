@@ -18,7 +18,7 @@ package com.opsmatters.media.model.monitor;
 import java.util.List;
 import java.util.logging.Logger;
 import java.sql.SQLException;
-import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.ContentItem;
 
 /**
@@ -30,12 +30,12 @@ public abstract class ContentLookup<T extends ContentItem>
 {
     private static final Logger logger = Logger.getLogger(ContentLookup.class.getName());
 
-    private List<Organisation> organisations;
+    private List<OrganisationSite> organisations;
 
     /**
      * Constructor that takes a list of organisations.
      */
-    public ContentLookup(List<Organisation> organisations)
+    public ContentLookup(List<OrganisationSite> organisations)
     {
         this.organisations = organisations;
     }
@@ -43,7 +43,7 @@ public abstract class ContentLookup<T extends ContentItem>
     /**
      * Returns the lookup organisations.
      */
-    public List<Organisation> getOrganisations()
+    public List<OrganisationSite> getOrganisations()
     {
         return organisations;
     }
@@ -54,7 +54,7 @@ public abstract class ContentLookup<T extends ContentItem>
     public T getByTitle(String title) throws SQLException
     {
         T ret = null;
-        for(Organisation organisation : organisations)
+        for(OrganisationSite organisation : organisations)
         {
             ret = getByTitle(organisation.getSiteId(), organisation.getCode(), title);
             if(ret != null)
@@ -75,7 +75,7 @@ public abstract class ContentLookup<T extends ContentItem>
     public T getById(String id) throws SQLException
     {
         T ret = null;
-        for(Organisation organisation : organisations)
+        for(OrganisationSite organisation : organisations)
         {
             ret = getById(organisation.getSiteId(), organisation.getCode(), id);
             if(ret != null)

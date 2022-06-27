@@ -21,6 +21,7 @@ import com.opsmatters.media.config.organisation.Organisations;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.organisation.OrganisationContentType;
 import com.opsmatters.media.util.StringUtils;
 
@@ -120,13 +121,13 @@ public abstract class Article extends ContentItem
      * Use the given configuration to set defaults for the content.
      */
     @Override
-    public void init(Organisation organisation, ContentConfiguration config)
+    public void init(Organisation organisation, OrganisationSite organisationSite, ContentConfiguration config)
     {
-        super.init(organisation, config);
+        super.init(organisation, organisationSite, config);
 
-        if(organisation != null)
+        if(organisationSite != null)
         {
-            OrganisationContentType type = organisation.getContentType(getType());
+            OrganisationContentType type = organisationSite.getContentType(getType());
             if(type != null)
             {
                 setTags(type.getTags());

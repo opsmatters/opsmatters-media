@@ -25,6 +25,7 @@ import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
@@ -244,9 +245,10 @@ public class EventResource extends Resource
     /**
      * Use the given configuration to set defaults for the resource.
      */
-    public void init(Organisation organisation, EventConfiguration config, WebPageConfiguration page)
+    public void init(Organisation organisation, OrganisationSite organisationSite,
+        EventConfiguration config, WebPageConfiguration page)
     {
-        super.init(organisation, config);
+        super.init(organisation, organisationSite, config);
 
         setEventType("Webinar");
         setLinkText(config.getField(Fields.LINK_TEXT, ""));

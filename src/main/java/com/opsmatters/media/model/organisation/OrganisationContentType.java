@@ -54,7 +54,7 @@ public class OrganisationContentType extends BaseItem
     /**
      * Constructor that takes an organisation and content type.
      */
-    public OrganisationContentType(Organisation organisation, List<? extends ContentItem> content)
+    public OrganisationContentType(OrganisationSite organisation, List<? extends ContentItem> content)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(organisation.getCreatedDate());
@@ -80,7 +80,7 @@ public class OrganisationContentType extends BaseItem
     /**
      * Constructor that takes an organisation and content type.
      */
-    public OrganisationContentType(Organisation organisation, ContentType type)
+    public OrganisationContentType(OrganisationSite organisation, ContentType type)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(organisation.getCreatedDate());

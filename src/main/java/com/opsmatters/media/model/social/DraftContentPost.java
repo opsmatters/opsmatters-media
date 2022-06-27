@@ -85,12 +85,12 @@ public class DraftContentPost extends DraftPost
     /**
      * Constructor that takes a saved post.
      */
-    public DraftContentPost(Organisation organisation, SavedContentPost post)
+    public DraftContentPost(Site site, Organisation organisation, SavedContentPost post)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setSourceId(post.getId());
-        setSiteId(organisation.getSiteId());
+        setSiteId(site.getId());
         setCode(organisation.getCode());
         setContentType(post.getContentType());
         setStatus(DraftStatus.NEW);

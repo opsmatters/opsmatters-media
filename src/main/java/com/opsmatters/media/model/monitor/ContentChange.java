@@ -19,6 +19,7 @@ import java.util.List;
 import java.time.Instant;
 import com.opsmatters.media.model.OwnedItem;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.SnapshotDiff;
 
@@ -297,10 +298,10 @@ public class ContentChange extends ContentEvent
     /**
      * Sets the site ids.
      */
-    public void setSites(List<Organisation> organisations)
+    public void setSites(List<OrganisationSite> organisations)
     {
         clearSites();
-        for(Organisation organisation : organisations)
+        for(OrganisationSite organisation : organisations)
             addSite(organisation.getSiteId());
     }
 }

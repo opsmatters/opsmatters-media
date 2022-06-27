@@ -29,6 +29,7 @@ import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.social.DraftPost;
 import com.opsmatters.media.model.social.DraftPostFactory;
 import com.opsmatters.media.model.social.DraftStatus;
@@ -306,7 +307,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns the pending posts for the given organisation in the DRAFT_POSTS table.
      */
-    public List<DraftPost> getPending(Organisation organisation) throws SQLException
+    public List<DraftPost> getPending(OrganisationSite organisation) throws SQLException
     {
         List<DraftPost> ret = new ArrayList<DraftPost>();
 
@@ -328,7 +329,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns <CODE>true</CODE> if the given organisation has a pending post in the DRAFT_POSTS table.
      */
-    public boolean hasPending(Organisation organisation) throws SQLException
+    public boolean hasPending(OrganisationSite organisation) throws SQLException
     {
         return getPending(organisation).size() > 0;
     }

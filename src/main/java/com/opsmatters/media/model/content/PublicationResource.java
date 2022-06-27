@@ -24,6 +24,7 @@ import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.organisation.OrganisationContentType;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.StringUtils;
@@ -175,13 +176,14 @@ public abstract class PublicationResource extends Resource
     /**
      * Use the given configuration to set defaults for the resource.
      */
-    public void init(Organisation organisation, PublicationConfiguration config, WebPageConfiguration page)
+    public void init(Organisation organisation, OrganisationSite organisationSite,
+        PublicationConfiguration config, WebPageConfiguration page)
     {
-        super.init(organisation, config);
+        super.init(organisation, organisationSite, config);
 
-        if(organisation != null)
+        if(organisationSite != null)
         {
-            OrganisationContentType type = organisation.getContentType(getType());
+            OrganisationContentType type = organisationSite.getContentType(getType());
             if(type != null)
                 setTags(type.getTags());
         }

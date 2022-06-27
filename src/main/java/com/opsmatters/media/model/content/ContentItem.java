@@ -27,6 +27,7 @@ import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.organisation.OrganisationContentType;
 import com.opsmatters.media.file.CommonFiles;
 import com.opsmatters.media.util.Formats;
@@ -173,11 +174,11 @@ public abstract class ContentItem implements java.io.Serializable
     /**
      * Use the given configuration to set defaults for the content item.
      */
-    public void init(Organisation organisation, ContentConfiguration config)
+    public void init(Organisation organisation, OrganisationSite organisationSite, ContentConfiguration config)
     {
-        if(organisation != null)
+        if(organisationSite != null)
         {
-            OrganisationContentType type = organisation.getContentType(getType());
+            OrganisationContentType type = organisationSite.getContentType(getType());
             if(type != null)
                 setTracking(type.getTracking());
         }

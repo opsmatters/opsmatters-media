@@ -24,6 +24,7 @@ import com.opsmatters.media.config.content.OrganisationListingConfiguration;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
@@ -208,13 +209,14 @@ public class OrganisationListing extends ContentItem
     /**
      * Returns a new organisation listing with defaults.
      */
-    public static OrganisationListing getDefault(Organisation organisation, OrganisationListingConfiguration config)
+    public static OrganisationListing getDefault(Organisation organisation,
+        OrganisationSite organisationSite, OrganisationListingConfiguration config)
         throws DateTimeParseException
     {
         OrganisationListing listing = new OrganisationListing();
 
         listing.init();
-        listing.setSiteId(organisation.getSiteId());
+        listing.setSiteId(organisationSite.getSiteId());
         listing.setCode(organisation.getCode());
         listing.setTitle(organisation.getName());
         listing.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
@@ -227,9 +229,9 @@ public class OrganisationListing extends ContentItem
     /**
      * Use the given configuration to set defaults for the organisation listing.
      */
-    public void init(Organisation organisation, OrganisationListingConfiguration config)
+    public void init(Organisation organisation, OrganisationSite organisationSite, OrganisationListingConfiguration config)
     {
-        super.init(organisation, config);
+        super.init(organisation, organisationSite, config);
 
         setTabs(OrganisationTabs.valueOf(config.getField(Fields.TABS, "ALL")));
 

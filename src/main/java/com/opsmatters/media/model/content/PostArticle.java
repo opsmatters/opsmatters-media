@@ -23,6 +23,7 @@ import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.config.content.util.ContentImages;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
 import com.opsmatters.media.util.TimeUtils;
@@ -228,14 +229,15 @@ public class PostArticle extends Article
     /**
      * Returns a new article with defaults.
      */
-    public static PostArticle getDefault(Organisation organisation, PostConfiguration config) throws DateTimeParseException
+    public static PostArticle getDefault(Organisation organisation, OrganisationSite organisationSite, PostConfiguration config)
+        throws DateTimeParseException
     {
         PostArticle article = new PostArticle();
 
         article.init();
-        article.setSiteId(organisation.getSiteId());
+        article.setSiteId(organisationSite.getSiteId());
         article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
-        article.setSocial(organisation.hasSocial());
+        article.setSocial(organisationSite.hasSocial());
 
         return article;
     }
@@ -254,9 +256,9 @@ public class PostArticle extends Article
     /**
      * Use the given configuration to set defaults for the content.
      */
-    public void init(Organisation organisation, PostConfiguration config)
+    public void init(Organisation organisation, OrganisationSite organisationSite, PostConfiguration config)
     {
-        super.init(organisation, config);
+        super.init(organisation, organisationSite, config);
 
         String promote = config.getField(Fields.PROMOTE);
         setPromoted(promote == null || promote.equals("0") ? false : true);
@@ -267,7 +269,7 @@ public class PostArticle extends Article
         String sponsored = config.getField(Fields.SPONSORED);
         setSponsored(sponsored == null || sponsored.equals("0") ? false : true);
 
-        setSocial(organisation.hasSocial());
+        setSocial(organisationSite.hasSocial());
     }
 
     /**

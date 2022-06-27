@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import java.sql.SQLException;
 import com.opsmatters.media.config.YamlConfiguration;
 import com.opsmatters.media.config.organisation.Organisations;
+import com.opsmatters.media.config.organisation.OrganisationSites;
 import com.opsmatters.media.config.content.ContentConfigurations;
 import com.opsmatters.media.config.content.util.ContentImages;
 import com.opsmatters.media.model.platform.Site;
@@ -31,6 +32,7 @@ import com.opsmatters.media.model.platform.FeedsSettings;
 import com.opsmatters.media.model.platform.Environment;
 import com.opsmatters.media.model.platform.EnvironmentName;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.organisation.OrganisationStatus;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;
@@ -343,6 +345,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
             Fields fields = content.toFields().add(this);
 
             Organisation organisation = Organisations.get(content.getCode());
+            OrganisationSite organisationSite = OrganisationSites.get(site, content.getCode());
             if(organisation != null && organisation.hasTracking())
                 fields.put(Fields.TRACKING, organisation.getTracking());
 
@@ -350,7 +353,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
             if(content instanceof OrganisationListing)
             {
                 // Ignore missing and archived organisations
-                if(organisation == null || organisation.isArchived())
+                if(organisation == null || organisationSite.isArchived())
                 {
                     --idx;
                     continue;
@@ -359,12 +362,11 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 // Set the published flag based on the environment and status
                 boolean published = false;
                 if(env == EnvironmentName.PROD)
-                    published = organisation.isActive();
+                    published = organisationSite.isActive();
                 else
-                    published = organisation.isReview() || organisation.isActive();
+                    published = organisationSite.isReview() || organisationSite.isActive();
                 fields.put(Fields.PUBLISHED, published ? "1" : "0");
-
-                fields.add(organisation, ContentConfigurations.get(organisation.getCode()));
+                fields.add(ContentConfigurations.get(organisation.getCode()));
 
                 // Add the path to the organisation thumbnail and logo
                 ContentImage thumbnail = ContentImages.get(ImageType.THUMBNAIL, content.getCode());
@@ -393,7 +395,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 }
 
                 // Allow for posts with no listing
-                if(!organisation.hasListing())
+                if(!organisationSite.hasListing())
                 {
                     fields.put(Fields.ORGANISATION, "");
                     fields.put(Fields.IMAGE_TEXT, "");
@@ -408,7 +410,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 }
             }
 
-            fields.add(Organisations.get(site, content.getCode()));
+            fields.add(organisation, organisationSite);
             handler.appendLine(handler.getValues(fields));
 
             if(content.getStatus() != ContentStatus.DEPLOYED)

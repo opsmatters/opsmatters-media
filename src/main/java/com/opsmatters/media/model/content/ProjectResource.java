@@ -23,6 +23,7 @@ import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
@@ -195,12 +196,12 @@ public class ProjectResource extends Resource
     /**
      * Returns a new resource with defaults.
      */
-    public static ProjectResource getDefault(Site site, ProjectConfiguration config) throws DateTimeParseException
+    public static ProjectResource getDefault(Organisation organisation, OrganisationSite organisationSite, ProjectConfiguration config) throws DateTimeParseException
     {
         ProjectResource resource = new ProjectResource();
 
         resource.init();
-        resource.setSiteId(site.getId());
+        resource.setSiteId(organisationSite.getSiteId());
         resource.setTitle("New Project");
         resource.setDescription(StringUtils.EMPTY);
         resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
@@ -221,9 +222,9 @@ public class ProjectResource extends Resource
     /**
      * Use the given configuration to set defaults for the resource.
      */
-    public void init(Organisation organisation, ProjectConfiguration config)
+    public void init(Organisation organisation, OrganisationSite organisationSite, ProjectConfiguration config)
     {
-        super.init(organisation, config);
+        super.init(organisation, organisationSite, config);
     }
 
     /**

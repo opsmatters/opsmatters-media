@@ -34,6 +34,7 @@ public class OrganisationDAOFactory extends DAOFactory
         super(driver, conn);
 
         getOrganisationDAO();
+        getOrganisationSiteDAO();
         getOrganisationContentTypeDAO();
     }
 
@@ -45,6 +46,16 @@ public class OrganisationDAOFactory extends DAOFactory
         if(organisationDAO == null)
             organisationDAO = new OrganisationDAO(this);
         return organisationDAO;
+    }
+
+    /**
+     * Returns the OrganisationSite DAO.
+     */
+    public OrganisationSiteDAO getOrganisationSiteDAO()
+    {
+        if(organisationSiteDAO == null)
+            organisationSiteDAO = new OrganisationSiteDAO(this);
+        return organisationSiteDAO;
     }
 
     /**
@@ -65,9 +76,11 @@ public class OrganisationDAOFactory extends DAOFactory
     {
         super.close();
         organisationDAO = null;
+        organisationSiteDAO = null;
         organisationContentTypeDAO = null;
     }
 
     private OrganisationDAO organisationDAO;
+    private OrganisationSiteDAO organisationSiteDAO;
     private OrganisationContentTypeDAO organisationContentTypeDAO;
 }

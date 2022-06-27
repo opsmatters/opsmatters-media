@@ -23,6 +23,7 @@ import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.organisation.OrganisationContentType;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
@@ -197,16 +198,17 @@ public class JobResource extends Resource
     /**
      * Returns a new resource with defaults.
      */
-    public static JobResource getDefault(Organisation organisation, JobConfiguration config) throws DateTimeParseException
+    public static JobResource getDefault(Organisation organisation, OrganisationSite organisationSite, JobConfiguration config)
+        throws DateTimeParseException
     {
         JobResource resource = new JobResource();
 
         resource.init();
-        resource.setSiteId(organisation.getSiteId());
+        resource.setSiteId(organisationSite.getSiteId());
         resource.setTitle("New Job");
         resource.setDescription(StringUtils.EMPTY);
         resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
-        resource.setSocial(organisation.hasSocial());
+        resource.setSocial(organisationSite.hasSocial());
 
         return resource;
     }
@@ -222,13 +224,13 @@ public class JobResource extends Resource
     /**
      * Use the given configuration to set defaults for the resource.
      */
-    public void init(Organisation organisation, JobConfiguration config)
+    public void init(Organisation organisation, OrganisationSite organisationSite, JobConfiguration config)
     {
-        super.init(organisation, config);
+        super.init(organisation, organisationSite, config);
 
-        if(organisation != null)
+        if(organisationSite != null)
         {
-            OrganisationContentType type = organisation.getContentType(getType());
+            OrganisationContentType type = organisationSite.getContentType(getType());
             if(type != null)
                 setTechnologies(type.getTechnologies());
         }
@@ -238,7 +240,7 @@ public class JobResource extends Resource
         String promote = config.getField(Fields.PROMOTE);
         setPromoted(promote == null || promote.equals("0") ? false : true);
 
-        setSocial(organisation.hasSocial());
+        setSocial(organisationSite.hasSocial());
     }
 
     /**

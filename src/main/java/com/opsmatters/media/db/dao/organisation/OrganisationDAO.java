@@ -26,9 +26,7 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.db.dao.BaseDAO;
-import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
-import com.opsmatters.media.model.organisation.ArchiveReason;
 
 /**
  * DAO that provides operations on the ORGANISATIONS table in the database.
@@ -43,14 +41,14 @@ public class OrganisationDAO extends BaseDAO
      * The query to use to select an organisation from the ORGANISATIONS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT SITE_ID, ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, ATTRIBUTES, LISTING, STATUS, REASON, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, ATTRIBUTES, CREATED_BY "
       + "FROM ORGANISATIONS WHERE ID=?";
 
     /**
      * The query to use to select an organisation from the ORGANISATIONS table by code.
      */
     private static final String GET_BY_CODE_SQL =  
-      "SELECT SITE_ID, ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, ATTRIBUTES, LISTING, STATUS, REASON, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, ATTRIBUTES, CREATED_BY "
       + "FROM ORGANISATIONS WHERE CODE=?";
 
     /**
@@ -58,30 +56,23 @@ public class OrganisationDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO ORGANISATIONS"
-      + "( SITE_ID, ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, ATTRIBUTES, LISTING, STATUS, REASON, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, ATTRIBUTES, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update an organisation in the ORGANISATIONS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE ORGANISATIONS SET CODE=?, NAME=?, UPDATED_DATE=?, ATTRIBUTES=?, LISTING=?, STATUS=?, REASON=? "
+      "UPDATE ORGANISATIONS SET CODE=?, NAME=?, UPDATED_DATE=?, ATTRIBUTES=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the organisations from the ORGANISATIONS table.
      */
     private static final String LIST_SQL =  
-      "SELECT SITE_ID, ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, ATTRIBUTES, LISTING, STATUS, REASON, CREATED_BY "
-      + "FROM ORGANISATIONS ORDER BY SITE_ID";
-
-    /**
-     * The query to use to select the organisations from the ORGANISATIONS table by site.
-     */
-    private static final String LIST_BY_SITE_SQL =  
-      "SELECT SITE_ID, ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, ATTRIBUTES, LISTING, STATUS, REASON, CREATED_BY "
-      + "FROM ORGANISATIONS WHERE SITE_ID=? ORDER BY CREATED_DATE";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, ATTRIBUTES, CREATED_BY "
+      + "FROM ORGANISATIONS ORDER BY CODE";
 
     /**
      * The query to use to get the count of organisations from the ORGANISATIONS table.
@@ -109,19 +100,15 @@ public class OrganisationDAO extends BaseDAO
     @Override
     protected void defineTable()
     {
-        table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("NAME", Types.VARCHAR, 60, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
-        table.addColumn("LISTING", Types.BOOLEAN, true);
-        table.addColumn("STATUS", Types.VARCHAR, 15, true);
-        table.addColumn("REASON", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("ORGANISATIONS_PK", new String[] {"ID"});
-        table.addIndex("ORGANISATIONS_CODE_IDX", new String[] {"SITE_ID, CODE"});
+        table.addIndex("ORGANISATIONS_CODE_IDX", new String[] {"CODE"});
         table.setInitialised(true);
     }
 
@@ -150,17 +137,13 @@ public class OrganisationDAO extends BaseDAO
             while(rs.next())
             {
                 Organisation organisation = new Organisation();
-                organisation.setSiteId(rs.getString(1));
-                organisation.setId(rs.getString(2));
-                organisation.setCreatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                organisation.setUpdatedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
-                organisation.setCode(rs.getString(5));
-                organisation.setName(rs.getString(6));
-                organisation.setAttributes(new JSONObject(getClob(rs, 7)));
-                organisation.setListing(rs.getBoolean(8));
-                organisation.setStatus(rs.getString(9));
-                organisation.setReason(rs.getString(10));
-                organisation.setCreatedBy(rs.getString(11));
+                organisation.setId(rs.getString(1));
+                organisation.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                organisation.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                organisation.setCode(rs.getString(4));
+                organisation.setName(rs.getString(5));
+                organisation.setAttributes(new JSONObject(getClob(rs, 6)));
+                organisation.setCreatedBy(rs.getString(7));
                 ret = organisation;
             }
         }
@@ -184,9 +167,9 @@ public class OrganisationDAO extends BaseDAO
     /**
      * Returns an organisation from the ORGANISATIONS table by code.
      */
-    public synchronized List<Organisation> getByCode(String code) throws SQLException
+    public synchronized Organisation getByCode(String code) throws SQLException
     {
-        List<Organisation> ret = new ArrayList<Organisation>();
+        Organisation ret = null;
 
         if(!hasConnection())
             return ret;
@@ -206,18 +189,14 @@ public class OrganisationDAO extends BaseDAO
             while(rs.next())
             {
                 Organisation organisation = new Organisation();
-                organisation.setSiteId(rs.getString(1));
-                organisation.setId(rs.getString(2));
-                organisation.setCreatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                organisation.setUpdatedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
-                organisation.setCode(rs.getString(5));
-                organisation.setName(rs.getString(6));
-                organisation.setAttributes(new JSONObject(getClob(rs, 7)));
-                organisation.setListing(rs.getBoolean(8));
-                organisation.setStatus(rs.getString(9));
-                organisation.setReason(rs.getString(10));
-                organisation.setCreatedBy(rs.getString(11));
-                ret.add(organisation);
+                organisation.setId(rs.getString(1));
+                organisation.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                organisation.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                organisation.setCode(rs.getString(4));
+                organisation.setName(rs.getString(5));
+                organisation.setAttributes(new JSONObject(getClob(rs, 6)));
+                organisation.setCreatedBy(rs.getString(7));
+                ret = organisation;
             }
         }
         finally
@@ -253,19 +232,15 @@ public class OrganisationDAO extends BaseDAO
 
         try
         {
-            insertStmt.setString(1, organisation.getSiteId());
-            insertStmt.setString(2, organisation.getId());
-            insertStmt.setTimestamp(3, new Timestamp(organisation.getCreatedDateMillis()), UTC);
-            insertStmt.setTimestamp(4, new Timestamp(organisation.getUpdatedDateMillis()), UTC);
-            insertStmt.setString(5, organisation.getCode());
-            insertStmt.setString(6, organisation.getName());
+            insertStmt.setString(1, organisation.getId());
+            insertStmt.setTimestamp(2, new Timestamp(organisation.getCreatedDateMillis()), UTC);
+            insertStmt.setTimestamp(3, new Timestamp(organisation.getUpdatedDateMillis()), UTC);
+            insertStmt.setString(4, organisation.getCode());
+            insertStmt.setString(5, organisation.getName());
             String attributes = organisation.getAttributes().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(7, reader, attributes.length());
-            insertStmt.setBoolean(8, organisation.hasListing());
-            insertStmt.setString(9, organisation.getStatus().name());
-            insertStmt.setString(10, organisation.getReason().name());
-            insertStmt.setString(11, organisation.getCreatedBy());
+            insertStmt.setCharacterStream(6, reader, attributes.length());
+            insertStmt.setString(7, organisation.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created organisation '"+organisation.getId()+"' in ORGANISATIONS");
@@ -312,10 +287,7 @@ public class OrganisationDAO extends BaseDAO
             String attributes = organisation.getAttributes().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(4, reader, attributes.length());
-            updateStmt.setBoolean(5, organisation.hasListing());
-            updateStmt.setString(6, organisation.getStatus().name());
-            updateStmt.setString(7, organisation.getReason() != null ? organisation.getReason().name() : ArchiveReason.NONE.name());
-            updateStmt.setString(8, organisation.getId());
+            updateStmt.setString(5, organisation.getId());
             updateStmt.executeUpdate();
 
             logger.info("Updated organisation '"+organisation.getId()+"' in ORGANISATIONS");
@@ -373,74 +345,13 @@ public class OrganisationDAO extends BaseDAO
             while(rs.next())
             {
                 Organisation organisation = new Organisation();
-                organisation.setSiteId(rs.getString(1));
-                organisation.setId(rs.getString(2));
-                organisation.setCreatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                organisation.setUpdatedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
-                organisation.setCode(rs.getString(5));
-                organisation.setName(rs.getString(6));
-                organisation.setAttributes(new JSONObject(getClob(rs, 7)));
-                organisation.setListing(rs.getBoolean(8));
-                organisation.setStatus(rs.getString(9));
-                organisation.setReason(rs.getString(10));
-                organisation.setCreatedBy(rs.getString(11));
-                ret.add(organisation);
-            }
-        }
-        finally
-        {
-            try
-            {
-                if(rs != null)
-                    rs.close();
-            }
-            catch (SQLException ex) 
-            {
-            } 
-        }
-
-        postQuery();
-
-        return ret;
-    }
-
-    /**
-     * Returns the organisations from the ORGANISATIONS table by site.
-     */
-    public synchronized List<Organisation> list(Site site) throws SQLException
-    {
-        List<Organisation> ret = null;
-
-        if(!hasConnection())
-            return ret;
-
-        preQuery();
-        if(listBySiteStmt == null)
-            listBySiteStmt = prepareStatement(getConnection(), LIST_BY_SITE_SQL);
-        clearParameters(listBySiteStmt);
-
-        ResultSet rs = null;
-
-        try
-        {
-            listBySiteStmt.setString(1, site.getId());
-            listBySiteStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = listBySiteStmt.executeQuery();
-            ret = new ArrayList<Organisation>();
-            while(rs.next())
-            {
-                Organisation organisation = new Organisation();
-                organisation.setSiteId(rs.getString(1));
-                organisation.setId(rs.getString(2));
-                organisation.setCreatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                organisation.setUpdatedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
-                organisation.setCode(rs.getString(5));
-                organisation.setName(rs.getString(6));
-                organisation.setAttributes(new JSONObject(getClob(rs, 7)));
-                organisation.setListing(rs.getBoolean(8));
-                organisation.setStatus(rs.getString(9));
-                organisation.setReason(rs.getString(10));
-                organisation.setCreatedBy(rs.getString(11));
+                organisation.setId(rs.getString(1));
+                organisation.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                organisation.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                organisation.setCode(rs.getString(4));
+                organisation.setName(rs.getString(5));
+                organisation.setAttributes(new JSONObject(getClob(rs, 6)));
+                organisation.setCreatedBy(rs.getString(7));
                 ret.add(organisation);
             }
         }
@@ -513,8 +424,6 @@ public class OrganisationDAO extends BaseDAO
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
-        closeStatement(listBySiteStmt);
-        listBySiteStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -526,7 +435,6 @@ public class OrganisationDAO extends BaseDAO
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
-    private PreparedStatement listBySiteStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }
