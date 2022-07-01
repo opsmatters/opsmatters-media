@@ -500,6 +500,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
 
         if(debug())
             logger.info("Found "+numContentItems()+" items");
+
         return ret;
     }
 

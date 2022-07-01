@@ -369,22 +369,48 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 fields.add(ContentConfigurations.get(organisation.getCode()));
 
                 // Add the path to the organisation thumbnail and logo
+                boolean missing = false;
                 ContentImage thumbnail = ContentImages.get(ImageType.THUMBNAIL, content.getCode());
-                fields.put(Fields.THUMBNAIL, String.format("%s%s/%s",
-                    images.getUrl(), thumbnail.getType().path(), thumbnail.getFilename()));
-                fields.put(Fields.THUMBNAIL_TEXT, thumbnail.getText());
+                if(thumbnail.isActive())
+                {
+                    fields.put(Fields.THUMBNAIL, String.format("%s%s/%s",
+                        images.getUrl(), thumbnail.getType().path(), thumbnail.getFilename()));
+                    fields.put(Fields.THUMBNAIL_TEXT, thumbnail.getText());
+                }
+                else
+                {
+                    thumbnail = null;
+                    missing = true;
+                }
 
                 ContentImage logo = ContentImages.get(ImageType.LOGO, content.getCode());
-                fields.put(Fields.IMAGE, String.format("%s%s/%s",
-                    images.getUrl(), logo.getType().path(), logo.getFilename()));
-                fields.put(Fields.IMAGE_TEXT, logo.getText());
+                if(logo.isActive())
+                {
+                    fields.put(Fields.IMAGE, String.format("%s%s/%s",
+                        images.getUrl(), logo.getType().path(), logo.getFilename()));
+                    fields.put(Fields.IMAGE_TEXT, logo.getText());
+                }
+                else
+                {
+                    logo = null;
+                    missing = true;
+                }
+
+                if(missing)
+                {
+                    logger.severe(String.format("Organisation %s has missing images: thumbnail=%s, logo=%s",
+                        content.getCode(), thumbnail, logo));
+                }
             }
             else
             {
                 // Add the path to the organisation thumbnail
                 ContentImage thumbnail = ContentImages.get(ImageType.THUMBNAIL, content.getCode());
-                fields.put(Fields.THUMBNAIL, thumbnail.getFilename());
-                fields.put(Fields.THUMBNAIL_TEXT, thumbnail.getText());
+                if(thumbnail.isActive())
+                {
+                    fields.put(Fields.THUMBNAIL, thumbnail.getFilename());
+                    fields.put(Fields.THUMBNAIL_TEXT, thumbnail.getText());
+                }
 
                 // Add the path to the image if present
                 String image = fields.get(Fields.IMAGE);

@@ -387,7 +387,6 @@ public class ContentSnapshot extends JSONObject
                 ContentItem content = lookup.getById(id);
                 if(content != null)
                 {
-
                     // Store the last title if it has changed
                     if(!title.equals(content.getTitle()))
                     {
