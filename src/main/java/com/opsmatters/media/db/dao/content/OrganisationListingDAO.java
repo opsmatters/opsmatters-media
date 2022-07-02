@@ -80,9 +80,9 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO ORGANISATION_LISTINGS"
-      + "( SITE_ID, ID, PUBLISHED_DATE, PUBLISHED_DATE_TRUNC, UUID, CODE, TITLE, STATUS, ATTRIBUTES, CREATED_BY )"
+      + "( SITE_ID, ID, PUBLISHED_DATE, UUID, CODE, TITLE, STATUS, ATTRIBUTES, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update an organisation listing in the ORGANISATION_LISTINGS table.
@@ -120,7 +120,6 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
         table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
-        table.addColumn("PUBLISHED_DATE_TRUNC", Types.TIMESTAMP, true);
         table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("TITLE", Types.VARCHAR, 60, true);
@@ -131,7 +130,6 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
         table.addIndex("ORGANISATION_LISTINGS_UUID_IDX", new String[] {"SITE_ID","UUID"});
         table.addIndex("ORGANISATION_LISTINGS_TITLE_IDX", new String[] {"SITE_ID","TITLE"});
         table.addIndex("ORGANISATION_LISTINGS_STATUS_IDX", new String[] {"STATUS"});
-        table.addIndex("ORGANISATION_LISTINGS_TRUNC_IDX", new String[] {"PUBLISHED_DATE_TRUNC"});
         table.setInitialised(true);
     }
 
@@ -452,15 +450,14 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
             insertStmt.setString(1, listing.getSiteId());
             insertStmt.setInt(2, listing.getId());
             insertStmt.setTimestamp(3, new Timestamp(listing.getPublishedDateMillis()), UTC);
-            insertStmt.setTimestamp(4, new Timestamp(listing.getPublishedDate().truncatedTo(ChronoUnit.DAYS).toEpochMilli()), UTC);
-            insertStmt.setString(5, listing.getUuid());
-            insertStmt.setString(6, listing.getCode());
-            insertStmt.setString(7, listing.getTitle());
-            insertStmt.setString(8, listing.getStatus().name());
+            insertStmt.setString(4, listing.getUuid());
+            insertStmt.setString(5, listing.getCode());
+            insertStmt.setString(6, listing.getTitle());
+            insertStmt.setString(7, listing.getStatus().name());
             String attributes = listing.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(9, reader, attributes.length());
-            insertStmt.setString(10, listing.getCreatedBy());
+            insertStmt.setCharacterStream(8, reader, attributes.length());
+            insertStmt.setString(9, listing.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s, code=%s)", 
