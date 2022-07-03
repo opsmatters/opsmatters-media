@@ -237,13 +237,6 @@ public class VideoArticle extends Article
     }
 
     /**
-     * Use the given organisation to set defaults for the content.
-     */
-    public void init(Organisation organisation)
-    {
-    }
-
-    /**
      * Use the given configuration to set defaults for the content.
      */
     public void init(Organisation organisation, OrganisationSite organisationSite,
@@ -402,9 +395,17 @@ public class VideoArticle extends Article
     /**
      * Returns the video duration in hh:MM:ss format.
      */
+    public String getFormattedDuration(String dflt)
+    {
+        return details.getFormattedDuration(dflt);
+    }
+
+    /**
+     * Returns the video duration in hh:MM:ss format.
+     */
     public String getFormattedDuration()
     {
-        return details.getFormattedDuration();
+        return getFormattedDuration(null);
     }
 
     /**

@@ -216,20 +216,14 @@ public class RoundupArticle extends Article implements LinkedContent
     }
 
     /**
-     * Use the given organisation to set defaults for the content.
-     */
-    public void init(Organisation organisation)
-    {
-        setCreatorEmail(organisation.getEmail());
-    }
-
-    /**
      * Use the given configuration to set defaults for the content.
      */
     public void init(Organisation organisation, OrganisationSite organisationSite,
         RoundupConfiguration config, WebPageConfiguration page)
     {
         super.init(organisation, organisationSite, config);
+
+        setCreatorEmail(organisation.getEmail());
 
         if(page.hasField(Fields.TAGS))
             setTags(page.getField(Fields.TAGS, ""));

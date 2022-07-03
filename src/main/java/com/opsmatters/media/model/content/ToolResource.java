@@ -209,19 +209,13 @@ public class ToolResource extends Resource
     }
 
     /**
-     * Use the given organisation to set defaults for the resource.
-     */
-    public void init(Organisation organisation)
-    {
-        setWebsite(organisation.getWebsite());
-    }
-
-    /**
      * Use the given configuration to set defaults for the resource.
      */
     public void init(Organisation organisation, OrganisationSite organisationSite, ToolConfiguration config)
     {
         super.init(organisation, organisationSite, config);
+
+        setWebsite(organisation.getWebsite());
 
         setLinkText(config.getField(Fields.LINK_TEXT, ""));
         setDownloadText(config.getField(Fields.DOWNLOAD_TEXT, ""));

@@ -166,20 +166,14 @@ public abstract class PublicationResource extends Resource
     }
 
     /**
-     * Use the given organisation to set defaults for the resource.
-     */
-    public void init(Organisation organisation)
-    {
-        setCreatorEmail(organisation.getEmail());
-    }
-
-    /**
      * Use the given configuration to set defaults for the resource.
      */
     public void init(Organisation organisation, OrganisationSite organisationSite,
         PublicationConfiguration config, WebPageConfiguration page)
     {
         super.init(organisation, organisationSite, config);
+
+        setCreatorEmail(organisation.getEmail());
 
         if(organisationSite != null)
         {

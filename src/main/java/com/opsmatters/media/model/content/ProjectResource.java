@@ -211,20 +211,14 @@ public class ProjectResource extends Resource
     }
 
     /**
-     * Use the given organisation to set defaults for the resource.
-     */
-    public void init(Organisation organisation)
-    {
-        if(!hasWebsite())
-            setWebsite(organisation.getWebsite());
-    }
-
-    /**
      * Use the given configuration to set defaults for the resource.
      */
     public void init(Organisation organisation, OrganisationSite organisationSite, ProjectConfiguration config)
     {
         super.init(organisation, organisationSite, config);
+
+        if(!hasWebsite())
+            setWebsite(organisation.getWebsite());
     }
 
     /**

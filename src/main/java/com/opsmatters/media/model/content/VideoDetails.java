@@ -26,7 +26,7 @@ import com.opsmatters.media.util.TimeUtils;
 public class VideoDetails extends VideoSummary
 {
     private String description = "";
-    private long duration = 0L;
+    private long duration = -1L;
     private String channelId = "";
     private String channelTitle = "";
 
@@ -80,9 +80,20 @@ public class VideoDetails extends VideoSummary
     /**
      * Returns the video duration in hh:MM:ss format.
      */
+    public String getFormattedDuration(String dflt)
+    {
+        String ret = TimeUtils.toStringUTC(duration*1000L, Formats.TIME_FORMAT);
+        if(duration == 0 && dflt != null && dflt.length() > 0)
+            ret = dflt;
+        return ret;
+    }
+
+    /**
+     * Returns the video duration in hh:MM:ss format.
+     */
     public String getFormattedDuration()
     {
-        return TimeUtils.toStringUTC(duration*1000L, Formats.TIME_FORMAT);
+        return getFormattedDuration(null);
     }
 
     /**

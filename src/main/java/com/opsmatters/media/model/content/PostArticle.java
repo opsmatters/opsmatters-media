@@ -243,22 +243,13 @@ public class PostArticle extends Article
     }
 
     /**
-     * Use the given organisation to set defaults for the content.
-     */
-    public void init(Organisation organisation)
-    {
-        if(organisation != null)
-        {
-            setCreatorEmail(organisation.getEmail());
-        }
-    }
-
-    /**
      * Use the given configuration to set defaults for the content.
      */
     public void init(Organisation organisation, OrganisationSite organisationSite, PostConfiguration config)
     {
         super.init(organisation, organisationSite, config);
+
+        setCreatorEmail(organisation.getEmail());
 
         String promote = config.getField(Fields.PROMOTE);
         setPromoted(promote == null || promote.equals("0") ? false : true);

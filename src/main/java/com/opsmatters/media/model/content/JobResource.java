@@ -214,19 +214,13 @@ public class JobResource extends Resource
     }
 
     /**
-     * Use the given organisation to set defaults for the resource.
-     */
-    public void init(Organisation organisation)
-    {
-        setWebsite(organisation.getWebsite());
-    }
-
-    /**
      * Use the given configuration to set defaults for the resource.
      */
     public void init(Organisation organisation, OrganisationSite organisationSite, JobConfiguration config)
     {
         super.init(organisation, organisationSite, config);
+
+        setWebsite(organisation.getWebsite());
 
         if(organisationSite != null)
         {

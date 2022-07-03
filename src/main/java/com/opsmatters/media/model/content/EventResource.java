@@ -236,13 +236,6 @@ public class EventResource extends Resource
     }
 
     /**
-     * Use the given organisation to set defaults for the resource.
-     */
-    public void init(Organisation organisation)
-    {
-    }
-
-    /**
      * Use the given configuration to set defaults for the resource.
      */
     public void init(Organisation organisation, OrganisationSite organisationSite,
