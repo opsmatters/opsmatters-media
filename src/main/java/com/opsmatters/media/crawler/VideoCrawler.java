@@ -54,6 +54,7 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
     private VideoConfiguration config;
     private VideoChannelConfiguration channel;
     private String channelTitle = "";
+    private boolean initialised = false;
 
     /**
      * Constructor that takes a video channel configuration.

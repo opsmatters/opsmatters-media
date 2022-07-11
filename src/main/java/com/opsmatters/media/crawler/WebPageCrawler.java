@@ -74,6 +74,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     private TraceObject traceObject = TraceObject.NONE;
     private WebPageConfiguration config;
     private String imagePrefix = "";
+    private String lastUrl;
 
     static
     {
@@ -191,14 +192,6 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     }
 
     /**
-     * Returns the url of the crawler.
-     */
-    public String getUrl()
-    {
-        return config.getUrl();
-    }
-
-    /**
      * Returns the image prefix for the crawler.
      */
     public String getImagePrefix()
@@ -222,7 +215,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
         String ret = config.getBasePath();
         if(ret == null || ret.length() == 0)
         {
-            ret = getUrl();
+            ret = config.getUrl(0);
             int pos = ret.indexOf("//");
             if(pos != -1)
             {
@@ -274,15 +267,15 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     }
 
     /**
-     * Connect the client to the page indicated by the url.
+     * Load the page indicated by the url.
      * <p>
      * Also optionally clicks a Load More button and waits for the loading delay if configured.
      */
-    protected void connect() throws IOException
+    private void loadTeaserPage(String url) throws IOException
     {
         long now = System.currentTimeMillis();
         configureImplicitWait(getTeaserLoading());
-        loadPage(getUrl(), getTeaserLoading());
+        loadPage(url, getTeaserLoading());
         configureExplicitWait(getTeaserLoading());
 
         // Click a "Load More" button if configured
@@ -309,7 +302,8 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
 
         if(debug())
             logger.info("Loaded page in: "+(System.currentTimeMillis()-now)+"ms");
-        initialised = true;
+
+        lastUrl = url;
     }
 
     /**
@@ -454,52 +448,58 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     public int processTeaserFields(LoadingConfiguration loading) throws IOException, DateTimeParseException
     {
         int ret = 0;
-        if(getUrl().length() == 0)
-            throw new IllegalArgumentException("Root empty for teasers");
-
-        if(!initialised)
-            connect();
 
         Map<String,String> map = new HashMap<String,String>();
-        Document doc = Jsoup.parse(getPageSource("body"));
-        doc.outputSettings().prettyPrint(false);
-
-        // Process the teaser selections
-        for(ContentFields fields : getTeaserFields())
+        for(String url : config.getUrls())
         {
-            Elements results = doc.select(fields.getRoot());
-            if(debug())
-                logger.info("Found "+results.size()+" teasers for selector: "+fields.getRoot());
-            ret += results.size();
+            if(url.length() == 0)
+                throw new IllegalArgumentException("Root empty for teasers");
 
-            for(Element result : results)
+            if(lastUrl == null || !lastUrl.equals(url))
+                loadTeaserPage(url);
+
+            Document doc = Jsoup.parse(getPageSource("body"));
+            doc.outputSettings().prettyPrint(false);
+
+            // Process the teaser selections
+            int items = 0;
+            for(ContentFields fields : getTeaserFields())
             {
-                // Trace to see the teaser root node
-                if(trace(result))
-                    logger.info("teaser-node="+result.html());
+                Elements results = doc.select(fields.getRoot());
+                if(debug())
+                    logger.info("Found "+results.size()+" teasers for selector: "+fields.getRoot());
+                ret += results.size();
 
-                T content = getContentSummary(result, fields);
-                if(content.isValid() && !map.containsKey(content.getUniqueId()))
+                for(Element result : results)
                 {
-                    // Check that the teaser matches the configured keywords
-                    if(loading != null && loading.hasKeywords() && !content.matches(loading.getKeywordList()))
+                    // Trace to see the teaser root node
+                    if(trace(result))
+                        logger.info("teaser-node="+result.html());
+
+                    T content = getContentSummary(result, fields);
+                    if(content.isValid() && !map.containsKey(content.getUniqueId()))
                     {
-                        logger.info(String.format("Skipping article as it does not match keywords: %s (%s)",
-                            content.getTitle(), loading.getKeywords()));
-                        continue;
+                        // Check that the teaser matches the configured keywords
+                        if(loading != null && loading.hasKeywords() && !content.matches(loading.getKeywordList()))
+                        {
+                            logger.info(String.format("Skipping article as it does not match keywords: %s (%s)",
+                                content.getTitle(), loading.getKeywords()));
+                            continue;
+                        }
+
+                        addContent(content);
+                        map.put(content.getUniqueId(), content.getUniqueId());
+                        ++items;
                     }
 
-                    addContent(content);
-                    map.put(content.getUniqueId(), content.getUniqueId());
+                    if(items >= getMaxResults())
+                        break;
                 }
-
-                if(numContentItems() >= getMaxResults())
-                    break;
             }
-        }
 
-        if(debug())
-            logger.info("Found "+numContentItems()+" items");
+            if(debug())
+                logger.info("Found "+numContentItems()+" items");
+        }
 
         return ret;
     }

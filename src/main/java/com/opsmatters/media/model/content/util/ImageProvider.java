@@ -28,24 +28,33 @@ import com.opsmatters.media.util.FileUtils;
  */
 public enum ImageProvider
 {
-    UNSPLASH("unsplash", "Unsplash"),
-    PEXELS("pexels", "Pexels"),
-    PIXABAY("pixabay", "Pixabay"),
-    PXHERE("pxhere", "Pxhere"),
-    FREEPIK("freepik", "Freepik");
+    UNSPLASH("unsplash", "Unsplash", true),
+    PEXELS("pexels", "Pexels", true),
+    PIXABAY("pixabay", "Pixabay", true),
+    PXHERE("pxhere", "Pxhere", true),
+    FREEPIK("freepik", "Freepik", true),
+    ISTOCK("istock", "iStock", false),
+    GETTY("getty", "Getty", false),
+    SHUTTERSTOCK("shutterstock", "Shutterstock", false),
+    ADOBE("adobe", "Adobe", false),
+    DREAMSTIME("dreamstime", "Dreamstime", false),
+    FREEPIK_PREMIUM("freepik-premium", "Freepik Premium", false);
 
     private String code;
     private String value;
+    private boolean free = false;
 
     /**
      * Constructor that takes the provider information.
      * @param code The code for the provider
      * @param value The value for the provider
+     * @param free <CODE>true</CODE> if the provider is a copyright-free source
      */
-    ImageProvider(String code, String value)
+    ImageProvider(String code, String value, boolean free)
     {
         this.code = code;
         this.value = value;
+        this.free = free;
     }
 
     /**
@@ -64,6 +73,15 @@ public enum ImageProvider
     public String value()
     {
         return value;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the provider is a copyright-free source.
+     * @return <CODE>true</CODE> if the provider is a copyright-free source
+     */
+    public boolean free()
+    {
+        return free;
     }
 
     /**
@@ -86,41 +104,41 @@ public enum ImageProvider
     }
 
     /**
-     * Returns the type for the given filename.
+     * Returns the provider for the given filename.
      * @param filename The filename
-     * @return The type for the given filename
+     * @return The provider for the given filename
      */
     public static ImageProvider fromFilename(String filename)
     {
-        ImageProvider[] types = values();
-        for(ImageProvider type : types)
+        ImageProvider[] providers = values();
+        for(ImageProvider provider : providers)
         {
-            if(filename.indexOf(type.code()) != -1)
-                return type;
+            if(filename.indexOf(provider.code()) != -1)
+                return provider;
         }
         return null;
     }
 
     /**
-     * Returns the type for the given code.
-     * @param code The type code
-     * @return The type for the given code
+     * Returns the provider for the given code.
+     * @param code The provider code
+     * @return The provider for the given code
      */
     public static ImageProvider fromCode(String code)
     {
-        ImageProvider[] types = values();
-        for(ImageProvider type : types)
+        ImageProvider[] providers = values();
+        for(ImageProvider provider : providers)
         {
-            if(type.code().equals(code))
-                return type;
+            if(provider.code().equals(code))
+                return provider;
         }
         return null;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given code is contained in the list of types.
-     * @param code The type code
-     * @return <CODE>true</CODE> if the given code is contained in the list of types
+     * Returns <CODE>true</CODE> if the given code is contained in the list of providers.
+     * @param code The provider code
+     * @return <CODE>true</CODE> if the given code is contained in the list of providers
      */
     public static boolean contains(String code)
     {
@@ -130,15 +148,16 @@ public enum ImageProvider
     /**
      * Returns a list of the providers.
      */
-    public static List<ImageProvider> toList()
+    public static List<ImageProvider> toList(boolean free)
     {
         List<ImageProvider> ret = new ArrayList<ImageProvider>();
 
-        ret.add(UNSPLASH);
-        ret.add(PEXELS);
-        ret.add(PIXABAY);
-        ret.add(PXHERE);
-        ret.add(FREEPIK);
+        ImageProvider[] providers = values();
+        for(ImageProvider provider : providers)
+        {
+            if(provider.free() == free)
+                ret.add(provider);
+        }
 
         return ret;
     }

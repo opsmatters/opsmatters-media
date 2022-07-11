@@ -16,6 +16,8 @@
 package com.opsmatters.media.config.content;
 
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 import com.opsmatters.media.crawler.CrawlerBrowser;
 
 /**
@@ -26,13 +28,14 @@ import com.opsmatters.media.crawler.CrawlerBrowser;
 public class WebPageConfiguration extends FieldsConfiguration
 {
     public static final String URL = "url";
+    public static final String URLS = "urls";
     public static final String BROWSER = "browser";
     public static final String HEADLESS = "headless";
     public static final String BASE_PATH = "base-path";
     public static final String USER_AGENT = "user-agent";
     public static final String MORE_LINK = "more-link";
 
-    private String url = "";
+    private List<String> urls = new ArrayList<String>();
     private CrawlerBrowser browser;
     private boolean headless = true;
     private String basePath = "";
@@ -64,7 +67,7 @@ public class WebPageConfiguration extends FieldsConfiguration
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setUrl(obj.getUrl());
+            setUrls(obj.getUrls());
             setBrowser(obj.getBrowser());
             setHeadless(obj.isHeadless());
             setBasePath(obj.getBasePath());
@@ -74,19 +77,44 @@ public class WebPageConfiguration extends FieldsConfiguration
     }
 
     /**
-     * Returns the url for this configuration.
+     * Returns the url at the given index for this configuration.
      */
-    public String getUrl()
+    public String getUrl(int idx)
     {
-        return url;
+        return urls.size() > idx ? urls.get(idx) : "";
     }
 
     /**
-     * Sets the url for this configuration.
+     * Adds the url for this configuration.
      */
-    public void setUrl(String url)
+    public void addUrl(String url)
     {
-        this.url = url;
+        this.urls.add(url);
+    }
+
+    /**
+     * Returns the urls for this configuration.
+     */
+    public List<String> getUrls()
+    {
+        return urls;
+    }
+
+    /**
+     * Sets the urls for this configuration.
+     */
+    public void setUrls(List<String> urls)
+    {
+        for(String url : urls)
+            this.urls.add(url);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the urls for this configuration have been set.
+     */
+    public boolean hasUrls()
+    {
+        return urls.size() > 0;
     }
 
     /**
@@ -185,7 +213,9 @@ public class WebPageConfiguration extends FieldsConfiguration
     {
         super.parseDocument(map);
         if(map.containsKey(URL))
-            setUrl((String)map.get(URL));
+            addUrl((String)map.get(URL));
+        if(map.containsKey(URLS))
+            setUrls((List<String>)map.get(URLS));
         if(map.containsKey(BROWSER))
             setBrowser((String)map.get(BROWSER));
         if(map.containsKey(HEADLESS))

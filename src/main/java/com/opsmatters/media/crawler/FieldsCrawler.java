@@ -52,7 +52,6 @@ public abstract class FieldsCrawler<T extends ContentSummary>
     public static final String CURRENT_YEAR = "current-year";
 
     private String name = "";
-    protected boolean initialised = false;
     private boolean debug = false;
     private int maxResults = 0;
     private FieldsConfiguration config;
