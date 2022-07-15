@@ -808,9 +808,12 @@ public abstract class ContentItem implements java.io.Serializable
         {
             for(ContentItem item : items)
             {
-                if(str.length() > 0)
-                    str.append(",");
-                str.append(item.getSiteId());
+                if(str.indexOf(item.getSiteId()) == -1)
+                {
+                    if(str.length() > 0)
+                        str.append(",");
+                    str.append(item.getSiteId());
+                }
             }
         }
 

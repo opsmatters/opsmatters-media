@@ -56,6 +56,7 @@ public abstract class FieldsCrawler<T extends ContentSummary>
     private int maxResults = 0;
     private FieldsConfiguration config;
     private List<T> content = new ArrayList<T>();
+    private boolean rootError = false;
 
     private Map<String, Object> properties = new HashMap<String, Object>();
 
@@ -150,18 +151,32 @@ public abstract class FieldsCrawler<T extends ContentSummary>
      */
     public List<ContentFields> getArticleFields()
     {
-        return config.getArticleFields();
+        List<ContentFields> ret = new ArrayList<ContentFields>();
+        for(ContentFields f : config.getArticleFields())
+        {
+            ContentFields fields = new ContentFields(f);
+            if(hasRootError())
+                fields.setRoot("body");
+            ret.add(fields);
+        }
+
+        return ret;
     }
 
     /**
-     * Updates the article selections to set the root.
+     * Returns <CODE>true</CODE> if the root needs to be replaced following an error.
      */
-    public void setRoot(String selector)
+    public boolean hasRootError()
     {
-        for(ContentFields fields: getArticleFields())
-        {
-            fields.setRoot(selector);
-        }
+        return rootError;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the root needs to be replaced following an error.
+     */
+    public void setRootError(boolean rootError)
+    {
+        this.rootError = rootError;
     }
 
     /**
