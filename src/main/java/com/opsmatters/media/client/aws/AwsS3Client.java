@@ -26,46 +26,54 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.Protocol;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.ListObjectsRequest;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.amazonaws.services.s3.model.PutObjectResult;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3ClientBuilder;
+import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
+import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.CreateBucketResponse;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.GetObjectAttributesRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectAttributesResponse;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Object;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.platform.aws.S3Settings;
 
 /**
- * Class that represents a connection to S3 buckets.
+ * Class that represents a connection to AWS S3 buckets.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class S3Client extends Client
+public class AwsS3Client extends Client
 {
-    private static final Logger logger = Logger.getLogger(S3Client.class.getName());
+    private static final Logger logger = Logger.getLogger(AwsS3Client.class.getName());
 
     public static final String SUFFIX = ".s3";
 
-    private AmazonS3 client = null;
+    private S3Client client = null;
     private String region;
     private String accessKeyId = "";
     private String secretAccessKey = "";
     private String bucket = "";
 
     /**
-     * Returns a new S3 client using the S3 settings.
+     * Returns a new AWS S3 client using the S3 settings.
      */
-    static public S3Client newClient(S3Settings settings) throws IOException
+    static public AwsS3Client newClient(S3Settings settings) throws IOException
     {
-        S3Client ret = S3Client.builder()
+        AwsS3Client ret = AwsS3Client.builder()
             .region(settings.getRegion())
             .build();
 
@@ -115,26 +123,26 @@ public class S3Client extends Client
             logger.info("Creating S3 client: "+getRegion());
 
         // Get the client configuration
-        ClientConfiguration config = new ClientConfiguration();
-        config.setProtocol(Protocol.HTTPS);
+        ClientOverrideConfiguration config = ClientOverrideConfiguration.builder()
+            .build();
 
         // Get the credentials object
-        AWSCredentials credentials = null;
+        AwsBasicCredentials credentials = null;
         if(accessKeyId != null && accessKeyId.length() > 0)
-            credentials = new BasicAWSCredentials(accessKeyId, secretAccessKey);
+            credentials = AwsBasicCredentials.create(accessKeyId, secretAccessKey);
 
         // Create the client
-        AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard();
+        S3ClientBuilder builder = S3Client.builder();
         if(credentials != null)
-            builder = builder.withCredentials(new AWSStaticCredentialsProvider(credentials));
-        AmazonS3 s3client = builder.withClientConfiguration(config)
-            .withRegion(region)
+            builder = builder.credentialsProvider(StaticCredentialsProvider.create(credentials));
+        S3Client client = builder.overrideConfiguration(config)
+            .region(Region.of(region))
             .build();
 
         // Issue command to test connectivity
-        s3client.getS3AccountOwner();
+        client.listBuckets();
 
-        client = s3client;
+        this.client = client;
 
         if(debug())
             logger.info("Created S3 client successfully: "+getRegion());
@@ -205,7 +213,22 @@ public class S3Client extends Client
     {
         boolean ret = false;
         if(isConnected() && bucket.length() > 0)
-            ret = client.doesBucketExist(bucket);
+        {
+            try
+            {
+                HeadBucketRequest request = HeadBucketRequest.builder()
+                    .bucket(bucket)
+                    .build();
+                client.headBucket(request);
+                ret = true;
+            }
+            catch(S3Exception e)
+            {
+                if(e.statusCode() != 404) // Not Found
+                    throw e;
+            }
+        }
+
         return ret;
     }
 
@@ -237,15 +260,16 @@ public class S3Client extends Client
 
         if(isConnected() && bucket.length() > 0)
         {
-            client.createBucket(bucket);
-            ret = true;
+            CreateBucketRequest request = CreateBucketRequest.builder().bucket(bucket).build();
+            CreateBucketResponse response = client.createBucket(request);
+            ret = response.location().length() > 0;
         }
 
         return ret;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given file exists in the current directory.
+     * Returns <CODE>true</CODE> if the given file exists in the current bucket.
      */
     public boolean exists(String filename)
     {
@@ -253,13 +277,16 @@ public class S3Client extends Client
 
         try
         {
-            ret = client.getObjectMetadata(bucket, filename) != null;
+            HeadObjectRequest request = HeadObjectRequest.builder()
+                .bucket(bucket)
+                .key(filename)
+                .build();
+            client.headObject(request);
+            ret = true;
         }
-        catch(AmazonS3Exception e)
+        catch(S3Exception e)
         {
-            if(e.getStatusCode() == 404) // Not Found
-                ret = false;
-            else
+            if(e.statusCode() != 404) // Not Found
                 throw e;
         }
 
@@ -275,9 +302,11 @@ public class S3Client extends Client
 
         if(isConnected())
         {
-            S3Object object = client.getObject(bucket, filename);
-            if(object != null)
-                ret = object.getObjectContent();
+            GetObjectRequest request = GetObjectRequest.builder()
+                .bucket(bucket)
+                .key(filename)
+                .build();
+            ret = client.getObject(request);
         }
 
         return ret;
@@ -300,11 +329,12 @@ public class S3Client extends Client
 
         if(isConnected())
         {
-            ObjectMetadata metadata = new ObjectMetadata();
-            if(size > 0L)
-                metadata.setContentLength(size);
-            PutObjectResult result = client.putObject(bucket, filename, stream, metadata);
-            ret = result != null;
+            PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(filename)
+                .build();
+            PutObjectResponse response = client.putObject(request, RequestBody.fromInputStream(stream, size));
+            ret = response != null;
         }
 
         return ret;
@@ -325,7 +355,11 @@ public class S3Client extends Client
      */
     public void delete(String filename)
     {
-        client.deleteObject(bucket, filename);
+        DeleteObjectRequest request = DeleteObjectRequest.builder()
+            .bucket(bucket)
+            .key(filename)
+            .build();
+        client.deleteObject(request);
     }
 
     /**
@@ -337,9 +371,12 @@ public class S3Client extends Client
 
         if(isConnected())
         {
-            ObjectMetadata object = client.getObjectMetadata(bucket, filename);
-            if(object != null)
-                ret = object.getInstanceLength();
+            GetObjectAttributesRequest request = GetObjectAttributesRequest.builder()
+                .bucket(bucket)
+                .key(filename)
+                .build();
+            GetObjectAttributesResponse response = client.getObjectAttributes(request);
+            ret = response.objectSize();
         }
 
         return ret;
@@ -432,24 +469,32 @@ public class S3Client extends Client
     /**
      * Return a list of files from the given bucket.
      */
-    public List<S3ObjectSummary> listFiles(String bucket)
+    public List<S3Object> listFiles(String bucket)
     {
-        List<S3ObjectSummary> ret = new ArrayList<S3ObjectSummary>();
+        List<S3Object> ret = new ArrayList<S3Object>();
 
         if(bucket == null || bucket.length() == 0 || bucket.equals("."))
             bucket = this.bucket;
 
-        ListObjectsRequest request = new ListObjectsRequest().withBucketName(bucket);
-        ObjectListing listing;            
+        ListObjectsRequest request = ListObjectsRequest.builder()
+            .bucket(bucket)
+            .build();
+
+        ListObjectsResponse response;
+
         do 
         {
-            listing = client.listObjects(request);
-            for(S3ObjectSummary summary : listing.getObjectSummaries()) 
+            response = client.listObjects(request);
+            for(S3Object object : response.contents()) 
             {
-                ret.add(summary);
+                ret.add(object);
             }
-            request.setMarker(listing.getNextMarker());
-        } while(listing.isTruncated());
+
+            request = ListObjectsRequest.builder()
+                .bucket(bucket)
+                .marker(response.nextMarker())
+                .build();
+        } while(response.isTruncated());
 
         return ret;
     }
@@ -457,7 +502,7 @@ public class S3Client extends Client
     /**
      * Return a list of files from the current bucket.
      */
-    public List<S3ObjectSummary> listFiles()
+    public List<S3Object> listFiles()
     {
         return listFiles(this.bucket);
     }
@@ -465,19 +510,20 @@ public class S3Client extends Client
     /**
      * Download the files from the given S3 bucket into the given directory.
      */
-    public List<S3ObjectSummary> downloadFiles(String bucket, String directory, String ext) throws IOException
+    public List<S3Object> downloadFiles(String bucket, String directory, String ext) throws IOException
     {
-        List<S3ObjectSummary> ret = new ArrayList<S3ObjectSummary>();
+        List<S3Object> ret = new ArrayList<S3Object>();
+
         if(changeBucket(bucket)) 
         {
-            List<S3ObjectSummary> items = listFiles(bucket);
-            for(S3ObjectSummary item : items)
+            List<S3Object> items = listFiles(bucket);
+            for(S3Object item : items)
             {
-                if(ext != null && !item.getKey().endsWith(ext))
+                if(ext != null && !item.key().endsWith(ext))
                     continue;
 
-                File file = new File(directory, item.getKey());
-                if(!file.exists() || file.lastModified() < item.getLastModified().getTime())
+                File file = new File(directory, item.key());
+                if(!file.exists() || file.lastModified() < item.lastModified().toEpochMilli())
                 {
                     if(getFile(get(file.getName()), file))
                     {
@@ -501,7 +547,7 @@ public class S3Client extends Client
     @Override
     public void close() 
     {
-        client.shutdown();
+        client.close();
         client = null;
     }
 
@@ -519,7 +565,7 @@ public class S3Client extends Client
      */
     public static class Builder
     {
-        private S3Client client = new S3Client();
+        private AwsS3Client client = new AwsS3Client();
 
         /**
          * Sets the region for the client.
@@ -558,7 +604,7 @@ public class S3Client extends Client
          * Returns the configured client instance
          * @return The client instance
          */
-        public S3Client build()
+        public AwsS3Client build()
         {
             return client;
         }

@@ -112,7 +112,7 @@ public class NoteDAO extends ContentUtilDAO<Note>
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("TYPE", Types.VARCHAR, 20, true);
-        table.addColumn("VALUE", Types.VARCHAR, 128, true);
+        table.addColumn("VALUE", Types.VARCHAR, 192, true);
         table.setPrimaryKey("NOTES_PK", new String[] {"ID"});
         table.addIndex("NOTES_CODE_IDX", new String[] {"CODE", "TYPE"});
         table.setInitialised(true);

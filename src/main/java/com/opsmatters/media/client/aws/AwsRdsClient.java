@@ -26,55 +26,53 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.Protocol;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.services.ec2.AmazonEC2;
-import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
-import com.amazonaws.services.ec2.model.AmazonEC2Exception;
-import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
-import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.StartInstancesRequest;
-import com.amazonaws.services.ec2.model.StartInstancesResult;
-import com.amazonaws.services.ec2.model.StopInstancesRequest;
-import com.amazonaws.services.ec2.model.StopInstancesResult;
-import com.amazonaws.services.ec2.model.Reservation;
-import com.amazonaws.services.ec2.model.Instance;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.services.rds.RdsClient;
+import software.amazon.awssdk.services.rds.RdsClientBuilder;
+import software.amazon.awssdk.services.rds.model.RdsException;
+import software.amazon.awssdk.services.rds.model.DescribeDbClustersRequest;
+import software.amazon.awssdk.services.rds.model.DescribeDbClustersResponse;
+import software.amazon.awssdk.services.rds.model.StartDbClusterRequest;
+import software.amazon.awssdk.services.rds.model.StartDbClusterResponse;
+import software.amazon.awssdk.services.rds.model.StopDbClusterRequest;
+import software.amazon.awssdk.services.rds.model.StopDbClusterResponse;
+import software.amazon.awssdk.services.rds.model.DBCluster;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.platform.EnvironmentStatus;
-import com.opsmatters.media.model.platform.aws.EC2Settings;
+import com.opsmatters.media.model.platform.aws.RDSSettings;
 
 /**
- * Class that represents a connection to EC2 servers.
+ * Class that represents a connection to AWS RDS databases.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EC2Client extends Client
+public class AwsRdsClient extends Client
 {
-    private static final Logger logger = Logger.getLogger(EC2Client.class.getName());
+    private static final Logger logger = Logger.getLogger(AwsRdsClient.class.getName());
 
-    public static final String SUFFIX = ".ec2";
+    public static final String SUFFIX = ".rds";
 
-    private AmazonEC2 client = null;
+    private RdsClient client = null;
     private String region;
     private String accessKeyId = "";
     private String secretAccessKey = "";
 
     /**
-     * Returns a new EC2 client using the EC2 settings.
+     * Returns a new AWS RDS client using the RDS settings.
      */
-    static public EC2Client newClient(EC2Settings settings) throws IOException
+    static public AwsRdsClient newClient(RDSSettings settings) throws IOException
     {
-        EC2Client ret = EC2Client.builder()
+        AwsRdsClient ret = AwsRdsClient.builder()
             .region(settings.getRegion())
             .build();
 
-        // Configure and create the EC2 client
+        // Configure and create the RDS client
         ret.configure();
         if(!ret.create())
-            logger.severe("Unable to create EC2 client: "+ret.getRegion());
+            logger.severe("Unable to create RDS client: "+ret.getRegion());
 
         return ret;
     }
@@ -86,7 +84,7 @@ public class EC2Client extends Client
     public void configure() throws IOException
     {
         if(debug())
-            logger.info("Configuring EC2 client: "+getRegion());
+            logger.info("Configuring RDS client: "+getRegion());
 
         String directory = System.getProperty("app.auth", ".");
 
@@ -100,11 +98,11 @@ public class EC2Client extends Client
         }
         catch(IOException e)
         {
-            logger.severe("Unable to read EC2 auth file: "+e.getClass().getName()+": "+e.getMessage());
+            logger.severe("Unable to read RDS auth file: "+e.getClass().getName()+": "+e.getMessage());
         }
 
         if(debug())
-            logger.info("Configured EC2 client successfully: "+getRegion());
+            logger.info("Configured RDS client successfully: "+getRegion());
     }
 
     /**
@@ -114,32 +112,32 @@ public class EC2Client extends Client
     public boolean create() 
     {
         if(debug())
-            logger.info("Creating EC2 client: "+getRegion());
+            logger.info("Creating RDS client: "+getRegion());
 
         // Get the client configuration
-        ClientConfiguration config = new ClientConfiguration();
-        config.setProtocol(Protocol.HTTPS);
+        ClientOverrideConfiguration config = ClientOverrideConfiguration.builder()
+            .build();
 
         // Get the credentials object
-        AWSCredentials credentials = null;
+        AwsBasicCredentials credentials = null;
         if(accessKeyId != null && accessKeyId.length() > 0)
-            credentials = new BasicAWSCredentials(accessKeyId, secretAccessKey);
+            credentials = AwsBasicCredentials.create(accessKeyId, secretAccessKey);
 
         // Create the client
-        AmazonEC2ClientBuilder builder = AmazonEC2ClientBuilder.standard();
+        RdsClientBuilder builder = RdsClient.builder();
         if(credentials != null)
-            builder = builder.withCredentials(new AWSStaticCredentialsProvider(credentials));
-        AmazonEC2 ec2client = builder.withClientConfiguration(config)
-            .withRegion(region)
+            builder = builder.credentialsProvider(StaticCredentialsProvider.create(credentials));
+        RdsClient client = builder.overrideConfiguration(config)
+            .region(Region.of(region))
             .build();
 
         // Issue command to test connectivity
-        ec2client.describeHosts();
+        client.describeDBClusters();
 
-        client = ec2client;
+        this.client = client;
 
         if(debug())
-            logger.info("Created EC2 client successfully: "+getRegion());
+            logger.info("Created RDS client successfully: "+getRegion());
 
         return isConnected();
     }
@@ -201,36 +199,25 @@ public class EC2Client extends Client
     }
 
     /**
-     * Returns a list containing the given instance id.
+     * Returns the details of the given RDS cluster.
      */
-    public List<String> toList(String instanceId)
+    public DBCluster describeCluster(String clusterId)
     {
-        List<String> instances = new ArrayList<String>();
-        instances.add(instanceId);
-        return instances;
-    }
-
-    /**
-     * Returns the details of the given EC2 instances.
-     */
-    public List<Instance> describeInstances(List<String> instanceIds)
-    {
-        List<Instance> ret = new ArrayList<Instance>();
+        DBCluster ret = null;
 
         try
         {
-            DescribeInstancesRequest request = new DescribeInstancesRequest();
-            request.setInstanceIds(instanceIds);
-            DescribeInstancesResult result = client.describeInstances(request);
-            for(Reservation reservation : result.getReservations())
-            {
-                for(Instance instance : reservation.getInstances())
-                    ret.add(instance);
-            }
+            DescribeDbClustersRequest request = DescribeDbClustersRequest.builder()
+                .dbClusterIdentifier(clusterId)
+                .build();
+            DescribeDbClustersResponse response = client.describeDBClusters(request);
+            List<DBCluster> clusters = response.dbClusters();
+            if(clusters.size() > 0)
+                ret = clusters.get(0);
         }
-        catch(AmazonEC2Exception e)
+        catch(RdsException e)
         {
-            if(e.getStatusCode() != 404) // Not Found
+            if(e.statusCode() != 404) // Not Found
                 throw e;
         }
 
@@ -238,29 +225,20 @@ public class EC2Client extends Client
     }
 
     /**
-     * Returns the details of the given EC2 instance.
+     * Returns the status of the given RDS cluster.
      */
-    public Instance describeInstance(String instanceId)
-    {
-        List<Instance> instances = describeInstances(toList(instanceId));
-        return instances.size() > 0 ? instances.get(0) : null;
-    }
-
-    /**
-     * Returns the status of the given EC2 instance.
-     */
-    public EnvironmentStatus getStatus(String instanceId)
+    public EnvironmentStatus getStatus(String clusterId)
     {
         EnvironmentStatus ret = EnvironmentStatus.UNKNOWN;
-        Instance instance = describeInstance(instanceId);
-        if(instance != null)
+        DBCluster cluster = describeCluster(clusterId);
+        if(cluster != null)
         {
-            int state = instance.getState().getCode();
-            if(state == 0)
+            String status = cluster.status();
+            if(status.equals("starting"))
                 ret = EnvironmentStatus.STARTING;
-            else if(state == 16)
+            else if(status.equals("available"))
                 ret = EnvironmentStatus.RUNNING;
-            else if(state == 64)
+            else if(status.equals("stopping"))
                 ret = EnvironmentStatus.STOPPING;
             else
                 ret = EnvironmentStatus.STOPPED;
@@ -270,21 +248,24 @@ public class EC2Client extends Client
     }
 
     /**
-     * Starts the given EC2 instances.
+     * Starts the given RDS cluster.
      */
-    public boolean startInstances(List<String> instanceIds)
+    public boolean startCluster(String clusterId)
     {
         boolean ret = false;
 
         try
         {
-            StartInstancesResult result = client.startInstances(new StartInstancesRequest(instanceIds));
-            logger.info("Starting instances "+result.getStartingInstances());
+            StartDbClusterRequest request = StartDbClusterRequest.builder()
+                .dbClusterIdentifier(clusterId)
+                .build();
+            StartDbClusterResponse response = client.startDBCluster(request);
+            logger.info("Starting cluster "+response.dbCluster().dbClusterIdentifier());
             ret = true;
         }
-        catch(AmazonEC2Exception e)
+        catch(RdsException e)
         {
-            if(e.getStatusCode() == 404) // Not Found
+            if(e.statusCode() == 404) // Not Found
                 ret = false;
             else
                 throw e;
@@ -294,43 +275,30 @@ public class EC2Client extends Client
     }
 
     /**
-     * Starts the given EC2 instance.
+     * Stops the given RDS cluster.
      */
-    public boolean startInstance(String instanceId)
-    {
-        return startInstances(toList(instanceId));
-    }
-
-    /**
-     * Stops the given EC2 instances.
-     */
-    public boolean stopInstances(List<String> instanceIds)
+    public boolean stopCluster(String clusterId)
     {
         boolean ret = false;
 
         try
         {
-            StopInstancesResult result = client.stopInstances(new StopInstancesRequest(instanceIds));
-            logger.info("Stopping instances "+result.getStoppingInstances());
+            StopDbClusterRequest request = StopDbClusterRequest.builder()
+                .dbClusterIdentifier(clusterId)
+                .build();
+            StopDbClusterResponse response = client.stopDBCluster(request);
+            logger.info("Stopping cluster "+response.dbCluster().dbClusterIdentifier());
             ret = true;
         }
-        catch(AmazonEC2Exception e)
+        catch(RdsException e)
         {
-            if(e.getStatusCode() == 404) // Not Found
+            if(e.statusCode() == 404) // Not Found
                 ret = false;
             else
                 throw e;
         }
 
         return ret;
-    }
-
-    /**
-     * Stops the given EC2 instance.
-     */
-    public boolean stopInstance(String instanceId)
-    {
-        return stopInstances(toList(instanceId));
     }
 
     /**
@@ -339,7 +307,7 @@ public class EC2Client extends Client
     @Override
     public void close() 
     {
-        client.shutdown();
+        client.close();
         client = null;
     }
 
@@ -357,7 +325,7 @@ public class EC2Client extends Client
      */
     public static class Builder
     {
-        private EC2Client client = new EC2Client();
+        private AwsRdsClient client = new AwsRdsClient();
 
         /**
          * Sets the region for the client.
@@ -396,7 +364,7 @@ public class EC2Client extends Client
          * Returns the configured client instance
          * @return The client instance
          */
-        public EC2Client build()
+        public AwsRdsClient build()
         {
             return client;
         }

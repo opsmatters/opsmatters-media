@@ -37,7 +37,7 @@ import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.model.platform.Environment;
 import com.opsmatters.media.model.platform.aws.S3Settings;
 import com.opsmatters.media.client.SshClient;
-import com.opsmatters.media.client.aws.S3Client;
+import com.opsmatters.media.client.aws.AwsS3Client;
 import com.opsmatters.media.file.InputFileReader;
 import com.opsmatters.media.file.OutputFileWriter;
 import com.opsmatters.media.file.FileFormat;
@@ -57,7 +57,7 @@ public class ContentHandler
     public static final String DEFAULT_SHEET = "Sheet1";
 
     private static Map<String,SshClient> sshClients = new HashMap<String,SshClient>();
-    private static S3Client s3client;
+    private static AwsS3Client s3client;
 
     private String name = "";
     private String filename = "";
@@ -410,7 +410,7 @@ public class ContentHandler
      */
     public boolean readFileFromBucket(String filename, String sheet, String bucket) throws IOException
     {
-        S3Client client = null;
+        AwsS3Client client = null;
         InputStream is = null;
         boolean ret = false;
 
@@ -423,7 +423,7 @@ public class ContentHandler
             client = s3client;
             if(client == null)
             {
-                client = S3Client.newClient(s3Settings);
+                client = AwsS3Client.newClient(s3Settings);
                 s3client = client;
             }
 
@@ -762,7 +762,7 @@ public class ContentHandler
         if(bucket == null || bucket.length() == 0)
             throw new IllegalArgumentException("target bucket null");
 
-        S3Client client = null;
+        AwsS3Client client = null;
         InputStream is = null;
         boolean ret = false;
 
@@ -772,7 +772,7 @@ public class ContentHandler
             client = s3client;
             if(client == null)
             {
-                client = S3Client.newClient(s3Settings);
+                client = AwsS3Client.newClient(s3Settings);
                 s3client = client;
             }
 

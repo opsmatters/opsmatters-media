@@ -33,11 +33,13 @@ public enum ImageProvider
     PIXABAY("pixabay", "Pixabay", true),
     PXHERE("pxhere", "Pxhere", true),
     FREEPIK("freepik", "Freepik", true),
+    STOCKVAULT("stockvault", "Stockvault", true),
     ISTOCK("istock", "iStock", false),
     GETTY("getty", "Getty", false),
     SHUTTERSTOCK("shutterstock", "Shutterstock", false),
     ADOBE("adobe", "Adobe", false),
     DREAMSTIME("dreamstime", "Dreamstime", false),
+    ALAMY("alamy", "Alamy", false),
     FREEPIK_PREMIUM("freepik-premium", "Freepik Premium", false);
 
     private String code;

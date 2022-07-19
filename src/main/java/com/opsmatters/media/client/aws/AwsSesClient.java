@@ -20,16 +20,19 @@ import java.io.IOException;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
-import com.amazonaws.services.simpleemail.model.SendEmailRequest;
-import com.amazonaws.services.simpleemail.model.Destination;
-import com.amazonaws.services.simpleemail.model.Message;
-import com.amazonaws.services.simpleemail.model.Content;
-import com.amazonaws.services.simpleemail.model.Body;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.services.ses.SesClient;
+import software.amazon.awssdk.services.ses.SesClientBuilder;
+import software.amazon.awssdk.services.ses.model.SesException;
+import software.amazon.awssdk.services.ses.model.SendEmailRequest;
+import software.amazon.awssdk.services.ses.model.SendEmailResponse;
+import software.amazon.awssdk.services.ses.model.Destination;
+import software.amazon.awssdk.services.ses.model.Message;
+import software.amazon.awssdk.services.ses.model.Content;
+import software.amazon.awssdk.services.ses.model.Body;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.client.email.EmailClient;
 import com.opsmatters.media.model.admin.EmailProvider;
@@ -38,27 +41,27 @@ import com.opsmatters.media.model.admin.EmailFormat;
 import com.opsmatters.media.model.platform.aws.SesSettings;
 
 /**
- * Class that represents a connection to SES for emails.
+ * Class that represents a connection to AWS SES for emails.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SesClient extends Client implements EmailClient
+public class AwsSesClient extends Client implements EmailClient
 {
-    private static final Logger logger = Logger.getLogger(SesClient.class.getName());
+    private static final Logger logger = Logger.getLogger(AwsSesClient.class.getName());
 
     public static final String SUFFIX = ".ses";
 
-    private AmazonSimpleEmailService client;
+    private SesClient client = null;
     private String region;
     private String accessKeyId = "";
     private String secretAccessKey = "";
 
     /**
-     * Returns a new SES client using SES settings.
+     * Returns a new AWS SES client using SES settings.
      */
-    static public SesClient newClient(SesSettings settings) throws IOException
+    static public AwsSesClient newClient(SesSettings settings) throws IOException
     {
-        SesClient ret = SesClient.builder()
+        AwsSesClient ret = AwsSesClient.builder()
             .region(settings.getRegion())
             .build();
 
@@ -115,21 +118,27 @@ public class SesClient extends Client implements EmailClient
         if(debug())
             logger.info("Creating SES client");
 
+        // Get the client configuration
+        ClientOverrideConfiguration config = ClientOverrideConfiguration.builder()
+            .build();
+
         // Get the credentials object
-        AWSCredentials credentials = null;
+        AwsBasicCredentials credentials = null;
         if(accessKeyId != null && accessKeyId.length() > 0)
-            credentials = new BasicAWSCredentials(accessKeyId, secretAccessKey);
+            credentials = AwsBasicCredentials.create(accessKeyId, secretAccessKey);
 
         // Create the client
-        AmazonSimpleEmailService sesClient = AmazonSimpleEmailServiceClientBuilder.standard()
-            .withRegion(getRegion())
-            .withCredentials(new AWSStaticCredentialsProvider(credentials))
+        SesClientBuilder builder = SesClient.builder();
+        if(credentials != null)
+            builder = builder.credentialsProvider(StaticCredentialsProvider.create(credentials));
+        SesClient client = builder.overrideConfiguration(config)
+            .region(Region.of(region))
             .build();
 
         // Issue command to test connectivity
-        sesClient.listIdentities();
+        client.listIdentities();
 
-        client = sesClient;
+        this.client = client;
 
         if(debug())
             logger.info("Created SES client successfully");
@@ -200,18 +209,48 @@ public class SesClient extends Client implements EmailClient
     {
         String ret = null;
 
-        // Set the email body using the correct format
-        Body body = new Body();
-        Content content = new Content().withCharset("UTF-8").withData(email.getBody());
-        body = email.getFormat() == EmailFormat.HTML ? body.withHtml(content) : body.withText(content);
+        // Get the subject
+        Content subject = Content.builder()
+            .charset("UTF-8")
+            .data(email.getSubject())
+            .build();
 
-        SendEmailRequest request = new SendEmailRequest()
-          .withSource(email.getFrom())
-          .withDestination(new Destination().withToAddresses(email.getRecipients()))
-          .withMessage(new Message()
-              .withSubject(new Content().withCharset("UTF-8").withData(email.getSubject()))
-              .withBody(body));
-        return client.sendEmail(request).getMessageId();
+        // Get the recipients
+        Destination recipients = Destination.builder()
+            .toAddresses(email.getRecipients())
+            .build();
+
+        // Set the email body using the correct format
+        Content content = Content.builder()
+            .charset("UTF-8")
+            .data(email.getBody())
+            .build();
+
+        Body body = null;
+        if(email.getFormat() == EmailFormat.HTML)
+        {
+            body = Body.builder()
+                .html(content)
+                .build();
+        }
+        else
+        {
+            body = Body.builder()
+                .text(content)
+                .build();
+        }
+
+        SendEmailRequest request = SendEmailRequest.builder()
+          .source(email.getFrom())
+          .destination(recipients)
+          .message(Message.builder()
+              .subject(subject)
+              .body(body)
+              .build())
+          .build();
+
+        SendEmailResponse response = client.sendEmail(request);
+        return response.messageId();
     }
 
     /**
@@ -220,7 +259,7 @@ public class SesClient extends Client implements EmailClient
     @Override
     public void close() 
     {
-        client.shutdown();
+        client.close();
         client = null;
     }
 
@@ -238,7 +277,7 @@ public class SesClient extends Client implements EmailClient
      */
     public static class Builder
     {
-        private SesClient client = new SesClient();
+        private AwsSesClient client = new AwsSesClient();
 
         /**
          * Sets the region for the client.
@@ -277,7 +316,7 @@ public class SesClient extends Client implements EmailClient
          * Returns the configured client instance
          * @return The client instance
          */
-        public SesClient build()
+        public AwsSesClient build()
         {
             return client;
         }
