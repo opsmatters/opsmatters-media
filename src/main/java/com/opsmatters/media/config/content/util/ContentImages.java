@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.Instant;
+import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
 
@@ -118,6 +119,22 @@ public class ContentImages
         Map<String,ContentImage> map = types.get(type);
         if(map != null)
             ret = map.get(code);
+        return ret;
+    }
+
+    /**
+     * Returns the banner image for the given content item (if one exists).
+     */
+    public static ContentImage get(ContentItem content)
+    {
+        ContentImage ret = null;
+
+        ContentImage banner = ContentImages.get(ImageType.BANNER, content.getCode());
+        if(banner != null && content.getImage().equals(banner.getFilename()))
+        {
+            ret = banner;
+        }
+
         return ret;
     }
 

@@ -295,7 +295,25 @@ public abstract class ContentSummary implements java.io.Serializable
     {
         if(path != null && path.length() > 0)
         {
+            // Look for the url in the parameters
+            boolean fromParameters = false;
+            if(path.indexOf("image_url=") != -1)
+            {
+                path = path.replaceAll(".+image_url=(.+?)&.+", "$1");
+                fromParameters = true;
+            }
+            else if(path.indexOf("url=") != -1)
+            {
+                path = path.replaceAll(".+url=(.+?)&.+", "$1");
+                fromParameters = true;
+            }
+
+            if(fromParameters)
+                path = path.replaceAll("%2F", "/");
+
             path = path.substring(path.lastIndexOf("/")+1);
+            path = path.toLowerCase();
+
             if(!path.startsWith(prefix+"-"))
                 path = String.format("%s-%s", prefix, path);
         }

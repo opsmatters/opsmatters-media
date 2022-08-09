@@ -196,6 +196,53 @@ public class ArticleWrapper extends Article
     }
 
     /**
+     * Returns the content image.
+     */
+    public String getImage()
+    {
+        String ret = null;
+
+        if(article instanceof RoundupArticle)
+        {
+            RoundupArticle roundup = (RoundupArticle)article;
+            ret = roundup.getImage();
+        }
+        else if(article instanceof PostArticle)
+        {
+            PostArticle post = (PostArticle)article;
+            ret = post.getImage();
+        }
+
+        return ret;
+    }
+
+    /**
+     * Sets the content image.
+     */
+    public void setImage(String image)
+    {
+        if(article instanceof RoundupArticle)
+        {
+            RoundupArticle roundup = (RoundupArticle)article;
+            roundup.setImage(image);
+        }
+        else if(article instanceof PostArticle)
+        {
+            PostArticle post = (PostArticle)article;
+            post.setImage(image);
+        }
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content has an image.
+     */
+    public boolean hasImage()
+    {
+        String image = getImage();
+        return image != null && image.length() > 0;
+    }
+
+    /**
      * Returns the video ID.
      */
     public String getVideoId()
@@ -207,13 +254,25 @@ public class ArticleWrapper extends Article
     }
 
     /**
+     * Returns <CODE>true</CODE> if the content has a video ID.
+     */
+    public boolean hasVideoId()
+    {
+        boolean ret = false;
+        if(article instanceof VideoArticle)
+            ret = ((VideoArticle)article).hasVideoId();
+        return ret;
+    }
+
+    /**
      * Returns the video duration in hh:MM:ss format.
      */
-    public String getFormattedDuration()
+    public String getFormattedDuration(String dflt)
     {
         String ret = null;
         if(article instanceof VideoArticle)
-            ret = ((VideoArticle)article).getFormattedDuration();
+//            ret = ((VideoArticle)article).getFormattedDuration();
+            ret = ((VideoArticle)article).getFormattedDuration(dflt);
         return ret;
     }
 }

@@ -24,7 +24,7 @@ package com.opsmatters.media.model.admin;
 public enum NotificationType
 {
     NONE,
-    MONITOR_SUSPENDED,
+    MONITOR_ALERT,
     MONITOR_ERROR_COUNT,
     MONITOR_CHANGE_COUNT,
     MONITOR_ALERT_COUNT,

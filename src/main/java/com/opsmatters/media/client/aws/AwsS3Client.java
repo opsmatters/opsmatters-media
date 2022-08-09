@@ -374,6 +374,7 @@ public class AwsS3Client extends Client
             GetObjectAttributesRequest request = GetObjectAttributesRequest.builder()
                 .bucket(bucket)
                 .key(filename)
+                .objectAttributesWithStrings("ObjectSize")
                 .build();
             GetObjectAttributesResponse response = client.getObjectAttributes(request);
             ret = response.objectSize();
@@ -484,17 +485,23 @@ public class AwsS3Client extends Client
 
         do 
         {
+            String key = null;
             response = client.listObjects(request);
             for(S3Object object : response.contents()) 
             {
+                key = object.key();
                 ret.add(object);
             }
 
-            request = ListObjectsRequest.builder()
-                .bucket(bucket)
-                .marker(response.nextMarker())
-                .build();
-        } while(response.isTruncated());
+            request = null;
+            if(response.isTruncated() && key != null)
+            {
+                request = ListObjectsRequest.builder()
+                    .bucket(bucket)
+                    .marker(key)
+                    .build();
+            }
+        } while(request != null);
 
         return ret;
     }

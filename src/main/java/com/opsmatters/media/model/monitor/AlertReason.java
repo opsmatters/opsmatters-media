@@ -23,20 +23,24 @@ package com.opsmatters.media.model.monitor;
  */
 public enum AlertReason
 {
-    INACTIVITY("No recent activity"),
-    SUSPENDED("Suspended"),
-    MANUAL("Manual"),
-    ALL("All"); // Pseudo status
+    INACTIVITY("No recent activity", false),
+    SUSPENDED("Suspended", true),
+    UNREACHABLE("Unreachable", true),
+    MANUAL("Manual", false),
+    ALL("All", false); // Pseudo status
 
     private String value;
+    private boolean notification = false;
 
     /**
      * Constructor that takes the reason value.
      * @param value The value for the reason
+     * @param notify <CODE>true</CODE> if this reason requires a notification
      */
-    AlertReason(String value)
+    AlertReason(String value, boolean notification)
     {
         this.value = value;
+        this.notification = notification;
     }
 
     /**
@@ -55,6 +59,15 @@ public enum AlertReason
     public String value()
     {
         return value;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this reason requires a notification.
+     * @return <CODE>true</CODE> if this reason requires a notification.
+     */
+    public boolean notification()
+    {
+        return notification;
     }
 
     /**

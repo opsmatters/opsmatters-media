@@ -1011,11 +1011,11 @@ public class ContentMonitor extends BaseItem
     }
 
     /**
-     * Returns the email for a suspended monitor.
+     * Returns the email for a monitor with an alert.
      */
-    public Email getSuspendEmail()
+    public Email getAlertEmail(AlertReason reason)
     {
-        String subject = String.format("Monitor SUSPENDED: %s", getGuid());
+        String subject = String.format("Monitor %s: %s", reason.name(), getGuid());
         EmailBody body = new EmailBody()
             .addParagraph("The following monitor has changed:")
             .addTable(new String[][]
@@ -1023,6 +1023,7 @@ public class ContentMonitor extends BaseItem
                 {"ID", getGuid()},
                 {"Organisation", getOrganisation()},
                 {"Status", getStatus().name()},
+                {"Reason", reason.value()},
                 {"Updated", getUpdatedDateAsString(Formats.CONTENT_DATE_FORMAT)},
             });
         return new Email(subject, body);
