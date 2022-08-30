@@ -408,7 +408,8 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
                 ContentImage thumbnail = ContentImages.get(ImageType.THUMBNAIL, content.getCode());
                 if(thumbnail.isActive())
                 {
-                    fields.put(Fields.THUMBNAIL, thumbnail.getFilename());
+                    fields.put(Fields.THUMBNAIL, String.format("%s%s/%s",
+                        images.getUrl(), thumbnail.getType().path(), thumbnail.getFilename()));
                     fields.put(Fields.THUMBNAIL_TEXT, thumbnail.getText());
                 }
 
