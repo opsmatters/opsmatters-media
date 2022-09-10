@@ -34,6 +34,7 @@ public enum ImageProvider
     PXHERE("pxhere", "Pxhere", true),
     FREEPIK("freepik", "Freepik", true),
     STOCKVAULT("stockvault", "Stockvault", true),
+    STOCKSNAP("stocksnap", "StockSnap", true),
     ISTOCK("istock", "iStock", false),
     GETTY("getty", "Getty", false),
     SHUTTERSTOCK("shutterstock", "Shutterstock", false),

@@ -380,7 +380,7 @@ public class JDBCDatabaseDriver extends DatabaseDriver
         MYSQL.setClustered(true);
         MYSQL.setProvider(new MySQLProvider());
         MYSQL.setAllowEmptyPassword(true);
-        MYSQL.setConnectionParameters("?useSSL=false&sessionVariables=sql_mode='ANSI'&characterEncoding=utf8");
+        MYSQL.setConnectionParameters("?useSSL=false&sessionVariables=sql_mode='ANSI'&characterEncoding=utf8&allowPublicKeyRetrieval=true");
 
         // IBM DB2 driver definition
         DB2 = new JDBCDatabaseDriver("db2", "IBM DB2", 

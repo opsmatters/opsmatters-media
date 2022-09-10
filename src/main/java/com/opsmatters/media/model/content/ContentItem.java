@@ -34,6 +34,8 @@ import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 
+import static com.opsmatters.media.model.content.ContentStatus.*;
+
 /**
  * Class representing a content item.
  * 
@@ -55,7 +57,7 @@ public abstract class ContentItem implements java.io.Serializable
     private String createdBy = "";
     private boolean social = false;
     private String canonicalUrl = "";
-    private ContentStatus status = ContentStatus.NEW;
+    private ContentStatus status = NEW;
     private String otherSites = "";
 
     /**
@@ -762,7 +764,7 @@ public abstract class ContentItem implements java.io.Serializable
      */
     public boolean isArchived()
     {
-        return getStatus() == ContentStatus.ARCHIVED;
+        return getStatus() == ARCHIVED;
     }
 
     /**
@@ -770,7 +772,15 @@ public abstract class ContentItem implements java.io.Serializable
      */
     public boolean isSkipped()
     {
-        return getStatus() == ContentStatus.SKIPPED;
+        return getStatus() == SKIPPED;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this content can be skipped.
+     */
+    public boolean canSkip()
+    {
+        return getStatus() == NEW || getStatus() == PENDING;
     }
 
     /**
@@ -778,7 +788,7 @@ public abstract class ContentItem implements java.io.Serializable
      */
     public boolean isDeployed()
     {
-        return getStatus() == ContentStatus.DEPLOYED;
+        return getStatus() == DEPLOYED;
     }
 
     /**

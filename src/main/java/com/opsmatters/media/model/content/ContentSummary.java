@@ -311,8 +311,12 @@ public abstract class ContentSummary implements java.io.Serializable
             if(fromParameters)
                 path = path.replaceAll("%2F", "/");
 
+            // Remove path and convert to lower case
             path = path.substring(path.lastIndexOf("/")+1);
             path = path.toLowerCase();
+
+            // Remove domain
+            path = path.replaceAll("^www\\..+?\\.com-(.+)", "$1");
 
             if(!path.startsWith(prefix+"-"))
                 path = String.format("%s-%s", prefix, path);

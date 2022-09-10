@@ -503,4 +503,13 @@ public class VideoArticle extends Article
     {
         return details.getEmbed(width, height, autoplay);
     }
+
+    /**
+     * Returns <CODE>true</CODE> if this content can be skipped.
+     */
+    @Override
+    public boolean canSkip()
+    {
+        return super.canSkip() && getDuration() > 0L;
+    }
 }

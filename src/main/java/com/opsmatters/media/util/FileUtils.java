@@ -523,6 +523,16 @@ public class FileUtils
     }
 
     /**
+     * Returns the URL with spaces replaced by %20.
+     */
+    private static String encodeUrl(String url)
+    {
+        if(url != null)
+            url = url.replaceAll(" ", "%20");
+        return url;
+    }
+
+    /**
      * Returns the size of the file using the given URL.
      */
     public static long getFileSize(URL url) throws IOException
@@ -594,7 +604,7 @@ public class FileUtils
         try
         {
             if(url != null)
-                ret = getFileSize(new URL(url), userAgent);
+                ret = getFileSize(new URL(encodeUrl(url)), userAgent);
         }
         catch(IOException e)
         {
@@ -735,7 +745,7 @@ public class FileUtils
         try
         {
             if(url != null && url.length() > 0)
-                ret = exists(new URL(url));
+                ret = exists(new URL(encodeUrl(url)));
         }
         catch(MalformedURLException e)
         {
