@@ -318,6 +318,10 @@ public class ImageUtils
         throws IOException
     {
         BufferedImage inputImage = ImageIO.read(file);
+
+        if(inputImage == null)
+            return inputImage;
+
         return Thumbnails.of(inputImage)
             .scale(factor)
             .imageType(getImageType(inputImage, removeAlpha))
@@ -336,6 +340,10 @@ public class ImageUtils
         throws IOException
     {
         BufferedImage inputImage = ImageIO.read(file);
+
+        if(inputImage == null)
+            return inputImage;
+
         return Thumbnails.of(inputImage)
             .width(width)
             .imageType(getImageType(inputImage, removeAlpha))
@@ -354,6 +362,9 @@ public class ImageUtils
         throws IOException
     {
         BufferedImage inputImage = ImageIO.read(file);
+
+        if(inputImage == null)
+            return inputImage;
 
         int inputWidth = inputImage.getWidth();
         int inputHeight = inputImage.getHeight();

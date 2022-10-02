@@ -776,11 +776,16 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
         {
             DraftContentPost post = (DraftContentPost)draft;
             if(post.getContentType() == content.getType()
-                && post.getCode().equals(content.getCode())
-                && post.getContentId() == content.getId())
+                && post.getSiteId().equals(content.getSiteId())
+                && post.getCode().equals(content.getCode()))
             {
-                logger.info("Found post for content '"+post.getId()+"' in DRAFT_POSTS");
-                delete(post);
+                // Roundups don't have a content id
+                if(content.getType() == ContentType.ROUNDUP 
+                    || post.getContentId() == content.getId())
+                {
+                    logger.info("Found post for content '"+post.getId()+"' in DRAFT_POSTS");
+                    delete(post);
+                }
             }
         }
     }
