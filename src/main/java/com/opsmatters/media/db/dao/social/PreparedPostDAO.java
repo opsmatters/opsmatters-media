@@ -74,7 +74,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, SITE_ID, DRAFT_ID, CODE, "
       + "TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, ERROR_CODE, ERROR_MESSAGE, CREATED_BY "
-      + "FROM PREPARED_POSTS WHERE CREATED_DATE >= (NOW() + INTERVAL -? DAY) ORDER BY CREATED_DATE";
+      + "FROM PREPARED_POSTS WHERE (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS='ERROR') ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the PREPARED_POSTS table by status.
@@ -82,7 +82,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     private static final String LIST_BY_STATUS_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, SITE_ID, DRAFT_ID, CODE, "
       + "TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, ERROR_CODE, ERROR_MESSAGE, CREATED_BY "
-      + "FROM PREPARED_POSTS WHERE STATUS=? AND CREATED_DATE >= (NOW() + INTERVAL -? DAY) ORDER BY CREATED_DATE";
+      + "FROM PREPARED_POSTS WHERE STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS='ERROR') ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the PREPARED_POSTS table by site.

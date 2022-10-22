@@ -87,6 +87,14 @@ public class OrganisationContentConfiguration extends ContentConfiguration<Conte
     }
 
     /**
+     * Clears the default content configuration.
+     */
+    public static void clearGlobalDefaults()
+    {
+        defaults = null;
+    }
+
+    /**
      * Returns the organisation code for this configuration.
      */
     public String getCode()

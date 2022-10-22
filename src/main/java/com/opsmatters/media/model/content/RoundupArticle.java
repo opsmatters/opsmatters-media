@@ -198,6 +198,20 @@ public class RoundupArticle extends Article implements LinkedContent
     }
 
     /**
+     * Copies any external attributes of the given object.
+     */
+    @Override
+    public void copyExternalAttributes(ContentItem obj)
+    {
+        if(obj instanceof RoundupArticle)
+        {
+            RoundupArticle article = (RoundupArticle)obj;
+            if(article.hasImageSource())
+                setImageSource(article.getImageSource());
+        }
+    }
+
+    /**
      * Returns a new article with defaults.
      */
     public static RoundupArticle getDefault(Organisation organisation, OrganisationSite organisationSite,

@@ -105,7 +105,7 @@ public class FormatUtils
             ret = ret.replaceAll(" |%20|%2[Ff]", "-");
 
             // Remove "thin" spaces
-            ret = ret.replaceAll("[\\u2000-\\u200b]", "");
+            ret = ret.replaceAll("[\\u2000-\\u200b\\u202F]", "");
 
             // Replace escaped plus, ampersand with plus
             ret = ret.replaceAll("%2[Bb]|%26", "+");
@@ -122,7 +122,7 @@ public class FormatUtils
 
             // Remove "combining" accent characters
             ret = ret.replaceAll("[\\u0300-\\u036F]", "");
-            ret = ret.replaceAll("%C[CD3]%[89ab][0-9a-f]", "");
+            ret = ret.replaceAll("%C[CD23]%[89ab][0-9a-f]", "");
 
             // Remove "cyrillic" characters
             ret = ret.replaceAll("[\\u0400-\\u0467]", "");

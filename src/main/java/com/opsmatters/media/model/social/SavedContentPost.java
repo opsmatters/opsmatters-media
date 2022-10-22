@@ -20,7 +20,9 @@ import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.time.Instant;
 import org.json.JSONObject;
+import com.opsmatters.media.config.organisation.Organisations;
 import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.StringUtils;
 
@@ -135,6 +137,9 @@ public class SavedContentPost extends SavedPost
     public void setCode(String code)
     {
         this.code = code;
+
+        Organisation organisation = Organisations.get(code);
+        setOrganisation(organisation != null ? organisation.getName() : "");
     }
 
     /**

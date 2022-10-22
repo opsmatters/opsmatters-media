@@ -145,14 +145,6 @@ public class EventConfiguration extends ContentConfiguration<EventResource>
     }
 
     /**
-     * Sets the providers for this configuration.
-     */
-    public void setProviders(List<WebPageConfiguration> providers)
-    {
-        this.providers = providers;
-    }
-
-    /**
      * Adds a provider for this configuration.
      */
     public void addProvider(WebPageConfiguration provider)
