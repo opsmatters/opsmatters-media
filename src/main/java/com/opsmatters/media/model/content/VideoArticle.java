@@ -163,7 +163,8 @@ public class VideoArticle extends Article
         setVideoId(obj.optString(Fields.VIDEO_ID));
         setVideoType(obj.optString(Fields.VIDEO_TYPE));
         setProvider(VideoProvider.fromCode(obj.optString(Fields.PROVIDER)));
-        setDuration(obj.optLong(Fields.DURATION));
+        if(obj.has(Fields.DURATION))
+            setDuration(obj.optLong(Fields.DURATION));
         setChannelTitle(obj.optString(Fields.CHANNEL_TITLE));
         setChannelId(obj.optString(Fields.CHANNEL_ID));
     }
@@ -395,9 +396,9 @@ public class VideoArticle extends Article
     /**
      * Returns the video duration in hh:MM:ss format.
      */
-    public String getFormattedDuration(String dflt)
+    public String getFormattedDuration(boolean replaceZero)
     {
-        return details.getFormattedDuration(dflt);
+        return details.getFormattedDuration(replaceZero);
     }
 
     /**
@@ -405,7 +406,7 @@ public class VideoArticle extends Article
      */
     public String getFormattedDuration()
     {
-        return getFormattedDuration(null);
+        return getFormattedDuration(false);
     }
 
     /**

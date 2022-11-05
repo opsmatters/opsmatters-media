@@ -551,7 +551,8 @@ public class StringUtils
         for(int i = 0; i < s.length(); i++)
         {
             int c = (int)s.charAt(i);
-            if(c >= 32 && c < 127)
+            if((c >= 32 && c < 127) // basic ASCII
+                || c == 10)         // LF
             {
                 buff.append((char)c);
             }

@@ -29,11 +29,6 @@ public class Formats
     public static final String UNKNOWN = "Unknown";
 
     /**
-     * The string when the result is not applicable.
-     */
-    public static final String N_A = "N/A";
-
-    /**
      * The default date time format.
      */
     public static final String DATETIME_FORMAT = "dd-MM-yyyy HH:mm:ss";

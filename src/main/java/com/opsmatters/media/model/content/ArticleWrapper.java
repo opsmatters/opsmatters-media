@@ -267,12 +267,11 @@ public class ArticleWrapper extends Article
     /**
      * Returns the video duration in hh:MM:ss format.
      */
-    public String getFormattedDuration(String dflt)
+    public String getFormattedDuration(boolean replaceZero)
     {
         String ret = null;
         if(article instanceof VideoArticle)
-//            ret = ((VideoArticle)article).getFormattedDuration();
-            ret = ((VideoArticle)article).getFormattedDuration(dflt);
+            ret = ((VideoArticle)article).getFormattedDuration(replaceZero);
         return ret;
     }
 }

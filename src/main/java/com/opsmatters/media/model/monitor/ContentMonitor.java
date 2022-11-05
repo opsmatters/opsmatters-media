@@ -931,6 +931,14 @@ public class ContentMonitor extends BaseItem
     }
 
     /**
+     * Returns the number of subscribed content items for the monitor.
+     */
+    public int getSubscribedContentCount()
+    {
+        return subscribed.size();
+    }
+
+    /**
      * Returns the monitor sites.
      */
     public String getSites()

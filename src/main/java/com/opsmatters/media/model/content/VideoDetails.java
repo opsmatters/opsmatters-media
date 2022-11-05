@@ -80,11 +80,17 @@ public class VideoDetails extends VideoSummary
     /**
      * Returns the video duration in hh:MM:ss format.
      */
-    public String getFormattedDuration(String dflt)
+    public String getFormattedDuration(boolean replaceZero)
     {
         String ret = TimeUtils.toStringUTC(duration*1000L, Formats.TIME_FORMAT);
-        if(duration == 0 && dflt != null && dflt.length() > 0)
-            ret = dflt;
+        if(replaceZero)
+        {
+            if(duration == 0L)
+                ret = "N/A";
+            else if (duration < 0L)
+                ret = "-";
+        }
+
         return ret;
     }
 
@@ -93,7 +99,7 @@ public class VideoDetails extends VideoSummary
      */
     public String getFormattedDuration()
     {
-        return getFormattedDuration(null);
+        return getFormattedDuration(false);
     }
 
     /**
