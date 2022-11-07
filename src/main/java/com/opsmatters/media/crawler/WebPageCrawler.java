@@ -989,9 +989,41 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                     }
                     else if(image.hasAttr("srcset"))
                     {
-                        ret = getValue(field, image.attr("srcset"));
+                        String srcset = getValue(field, image.attr("srcset"));
+                        String[] items = srcset.split(",");
+
+                        // Process each srcset item to extract the url and size
+                        Map<String,String> map = new HashMap<String,String>();
+                        List<String> list = new ArrayList<String>();
+                        for(String item : items)
+                        {
+                            item = item.trim();
+                            String size = null;
+                            String url = item;
+
+                            int pos = item.indexOf(" "); // separator
+                            if(pos != -1)
+                            {
+                                size = item.substring(pos+1).trim();
+                                url = item.substring(0, pos);
+                            }
+
+                            list.add(url);
+                            if(size != null)
+                                map.put(size, url);
+                        }
+
+                        // Try to look up the item by its size
+                        if(selector.hasSize())
+                            ret = map.get(selector.getSize());
+
+                        // Default to first url if size not found
+                        if(ret == null)
+                            ret = list.get(0);
+
                         if(debug())
-                            logger.info("Found image srcset for "+type+" field "+field.getName()+": "+ret);
+                            logger.info("Found image srcset for "+type+" field "+field.getName()
+                                +" size="+selector.getSize()+": "+ret);
                         break;
                     }
                 }

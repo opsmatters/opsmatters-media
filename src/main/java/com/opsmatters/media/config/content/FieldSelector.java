@@ -36,6 +36,7 @@ public class FieldSelector implements java.io.Serializable
     public static final String SEPARATOR = "separator";
     public static final String EXCLUDE = "exclude";
     public static final String EXCLUDES = "excludes";
+    public static final String SIZE = "size";
 
     private SelectorSource source = SelectorSource.PAGE;
     private String name = "";
@@ -44,6 +45,7 @@ public class FieldSelector implements java.io.Serializable
     private boolean multiple = false;
     private String separator = "";
     private List<FieldExclude> excludes;
+    private String size = "";
 
     /**
      * Default constructor.
@@ -94,6 +96,7 @@ public class FieldSelector implements java.io.Serializable
             setAttribute(obj.getAttribute());
             setMultiple(obj.isMultiple());
             setSeparator(obj.getSeparator());
+            setSize(obj.getSize());
 
             if(obj.getExcludes() != null)
             {
@@ -248,6 +251,29 @@ public class FieldSelector implements java.io.Serializable
     }
 
     /**
+     * Returns the image size for this configuration.
+     */
+    public String getSize()
+    {
+        return size;
+    }
+
+    /**
+     * Sets the image size for this configuration.
+     */
+    public void setSize(String size)
+    {
+        this.size = size;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the image size has been set.
+     */
+    public boolean hasSize()
+    {
+        return size != null && size.length() > 0;
+    }
+    /**
      * Returns the classes to exclude for this configuration.
      */
     public List<FieldExclude> getExcludes()
@@ -304,6 +330,8 @@ public class FieldSelector implements java.io.Serializable
             setMultiple((Boolean)map.get(MULTIPLE));
         if(map.containsKey(SEPARATOR))
             setSeparator((String)map.get(SEPARATOR));
+        if(map.containsKey(SIZE))
+            setSize((String)map.get(SIZE));
 
         if(map.containsKey(EXCLUDE))
         {

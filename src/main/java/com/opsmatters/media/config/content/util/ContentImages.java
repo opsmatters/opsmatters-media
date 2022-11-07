@@ -154,4 +154,22 @@ public class ContentImages
         for(ContentImage image : images)
             put(image);
     }
+
+    /**
+     * Removes the given image.
+     */
+    public static void remove(ContentImage image)
+    {
+        delete(image);
+    }
+
+    /**
+     * Deletes the given image.
+     */
+    private static void delete(ContentImage image)
+    {
+        Map<String,ContentImage> map = types.get(image.getType());
+        if(map != null)
+            map.remove(image.getCode());
+    }
 }
