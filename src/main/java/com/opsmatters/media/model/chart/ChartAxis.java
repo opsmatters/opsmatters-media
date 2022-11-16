@@ -29,29 +29,22 @@ import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsScaleLabelConfigBui
 import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsTimeConfigBuilder;
 import nl.crashdata.chartjs.data.simple.builder.AbstractSimpleChartJsTickConfigBuilder;
 import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsScalesConfigBuilder;
+import com.opsmatters.media.model.ConfigElement;
+import com.opsmatters.media.model.ConfigParser;
 
 /**
  * Represents an axis of a chart.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ChartAxis<T extends Serializable>
+public abstract class ChartAxis<E extends Serializable> implements ConfigElement
 {
-    public static final String DISPLAY = "display";
-    public static final String TYPE = "type";
-    public static final String LABEL = "label";
-    public static final String TIME_UNIT = "time-unit";
-    public static final String STEP_SIZE = "step-size";
-    public static final String MIN = "min";
-    public static final String MAX = "max";
-    public static final String STACKED = "stacked";
-
     private boolean display;
     private AxisType type;
     private String label;
     private ChartJsTimeUnit timeUnit;
     private Number stepSize;
-    private T min, max;
+    private E min, max;
     private boolean stacked;
 
     /**
@@ -72,7 +65,7 @@ public abstract class ChartAxis<T extends Serializable>
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ChartAxis<T> obj)
+    public void copyAttributes(ChartAxis<E> obj)
     {
         if(obj != null)
         {
@@ -85,29 +78,6 @@ public abstract class ChartAxis<T extends Serializable>
             setMax(obj.getMax());
             setStacked(obj.getStacked());
         }
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    public ChartAxis(Map<String, Object> map)
-    {
-        if(map.containsKey(DISPLAY))
-            setDisplay((Boolean)map.get(DISPLAY));
-        if(map.containsKey(TYPE))
-            setType((String)map.get(TYPE));
-        if(map.containsKey(LABEL))
-            setLabel((String)map.get(LABEL));
-        if(map.containsKey(TIME_UNIT))
-            setTimeUnit((String)map.get(TIME_UNIT));
-        if(map.containsKey(STEP_SIZE))
-            setStepSize((Number)map.get(STEP_SIZE));
-        if(map.containsKey(MIN))
-            setMin((T)map.get(MIN));
-        if(map.containsKey(MAX))
-            setMax((T)map.get(MAX));
-        if(map.containsKey(STACKED))
-            setStacked((Boolean)map.get(STACKED));
     }
 
     /**
@@ -209,7 +179,7 @@ public abstract class ChartAxis<T extends Serializable>
     /**
      * Returns the min value for the axis.
      */
-    public T getMin()
+    public E getMin()
     {
         return min;
     }
@@ -217,7 +187,7 @@ public abstract class ChartAxis<T extends Serializable>
     /**
      * Sets the min value for the axis.
      */
-    public void setMin(T min)
+    public void setMin(E min)
     {
         this.min = min;
     }
@@ -225,7 +195,7 @@ public abstract class ChartAxis<T extends Serializable>
     /**
      * Returns the max value for the axis.
      */
-    public T getMax()
+    public E getMax()
     {
         return max;
     }
@@ -233,7 +203,7 @@ public abstract class ChartAxis<T extends Serializable>
     /**
      * Sets the max value for the axis.
      */
-    public void setMax(T max)
+    public void setMax(E max)
     {
         this.max = max;
     }
@@ -334,5 +304,73 @@ public abstract class ChartAxis<T extends Serializable>
             tickConfig = tickConfig.withForcedMaximum(getMax());
 
         axisConfig.withStacked(getStacked());
+    }
+
+    /**
+     * Builder to make configuration construction easier.
+     */
+    public abstract static class Builder<E extends Serializable, T extends ChartAxis<E>, B extends Builder<E,T,B>>
+        implements ConfigParser<ChartAxis<E>>
+    {
+        // The config attribute names
+        private static final String DISPLAY = "display";
+        private static final String TYPE = "type";
+        private static final String LABEL = "label";
+        private static final String TIME_UNIT = "time-unit";
+        private static final String STEP_SIZE = "step-size";
+        private static final String MIN = "min";
+        private static final String MAX = "max";
+        private static final String STACKED = "stacked";
+
+        private ChartAxis<E> ret = null;
+
+        /**
+         * Sets the axis.
+         * @param axis The axis
+         */
+        public void set(ChartAxis<E> axis)
+        {
+            ret = axis;
+        }
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            if(map.containsKey(DISPLAY))
+                ret.setDisplay((Boolean)map.get(DISPLAY));
+            if(map.containsKey(TYPE))
+                ret.setType((String)map.get(TYPE));
+            if(map.containsKey(LABEL))
+                ret.setLabel((String)map.get(LABEL));
+            if(map.containsKey(TIME_UNIT))
+                ret.setTimeUnit((String)map.get(TIME_UNIT));
+            if(map.containsKey(STEP_SIZE))
+                ret.setStepSize((Number)map.get(STEP_SIZE));
+            if(map.containsKey(MIN))
+                ret.setMin((E)map.get(MIN));
+            if(map.containsKey(MAX))
+                ret.setMax((E)map.get(MAX));
+            if(map.containsKey(STACKED))
+                ret.setStacked((Boolean)map.get(STACKED));
+
+            return self();
+        }
+
+        /**
+         * Returns this object.
+         * @return This object
+         */
+        protected abstract B self();
+
+        /**
+         * Returns the configured configuration instance
+         * @return The configuration instance
+         */
+        public abstract T build();
     }
 }

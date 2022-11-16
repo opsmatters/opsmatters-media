@@ -15,7 +15,7 @@
  */
 package com.opsmatters.media.model.monitor;
 
-import com.opsmatters.media.config.organisation.Organisations;
+import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.model.OwnedItem;
 import com.opsmatters.media.model.organisation.Organisation;
 

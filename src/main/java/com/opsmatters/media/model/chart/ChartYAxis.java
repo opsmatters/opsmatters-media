@@ -19,13 +19,14 @@ package com.opsmatters.media.model.chart;
 import java.util.Map;
 import java.io.Serializable;
 import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsScalesConfigBuilder;
+import com.opsmatters.media.model.ConfigParser;
 
 /**
  * Represents an y-axis of a chart.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ChartYAxis<T extends Serializable> extends ChartAxis<T>
+public class ChartYAxis<E extends Serializable> extends ChartAxis<E>
 {
     /**
      * Default constructor.
@@ -40,14 +41,6 @@ public class ChartYAxis<T extends Serializable> extends ChartAxis<T>
     public ChartYAxis(ChartYAxis obj)
     {
         copyAttributes(obj);
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    public ChartYAxis(Map<String, Object> map)
-    {
-        super(map);
     }
 
     /**
@@ -66,5 +59,63 @@ public class ChartYAxis<T extends Serializable> extends ChartAxis<T>
             configureLinearAxis(scalesConfig.withLinearYAxisConfig());
         else if(getType() == AxisType.LOGARITHMIC)
             configureLogarithmicAxis(scalesConfig.withLogarithmicYAxisConfig());
+    }
+
+    /**
+     * Returns a builder for the configuration.
+     * @return The builder instance.
+     */
+    public static Builder builder()
+    {
+        return new Builder();
+    }
+
+    /**
+     * Builder to make configuration construction easier.
+     */
+    public static class Builder<E extends Serializable>
+        extends ChartAxis.Builder<E, ChartYAxis<E>, Builder<E>>
+    {
+        private ChartYAxis<E> ret = new ChartYAxis<E>();
+
+        /**
+         * Default constructor.
+         */
+        public Builder()
+        {
+            super.set(ret);
+        }
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            super.parse(map);
+            return this;
+        }
+
+        /**
+         * Returns this object.
+         * @return This object
+         */
+        @Override
+        protected Builder self()
+        {
+            return this;
+        }
+
+        /**
+         * Returns the configured configuration instance
+         * @return The configuration instance
+         */
+        @Override
+        public ChartYAxis<E> build()
+        {
+            return ret;
+        }
     }
 }

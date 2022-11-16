@@ -38,7 +38,7 @@ import com.opsmatters.media.client.email.EmailClient;
 import com.opsmatters.media.model.admin.EmailProvider;
 import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailFormat;
-import com.opsmatters.media.model.platform.aws.SesSettings;
+import com.opsmatters.media.model.platform.aws.SesConfig;
 
 /**
  * Class that represents a connection to AWS SES for emails.
@@ -57,12 +57,12 @@ public class AwsSesClient extends Client implements EmailClient
     private String secretAccessKey = "";
 
     /**
-     * Returns a new AWS SES client using SES settings.
+     * Returns a new AWS SES client using SES configuration.
      */
-    static public AwsSesClient newClient(SesSettings settings) throws IOException
+    static public AwsSesClient newClient(SesConfig config) throws IOException
     {
         AwsSesClient ret = AwsSesClient.builder()
-            .region(settings.getRegion())
+            .region(config.getRegion())
             .build();
 
         // Configure and create the SES client

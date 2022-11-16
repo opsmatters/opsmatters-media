@@ -17,19 +17,16 @@
 package com.opsmatters.media.model.chart;
 
 import java.util.Map;
+import com.opsmatters.media.model.ConfigElement;
+import com.opsmatters.media.model.ConfigParser;
 
 /**
  * Represents the config for a  label on a chart.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ChartLabel
+public class ChartLabel implements ConfigElement
 {
-    public static final String TEXT = "text";
-    public static final String POSITION = "position";
-    public static final String CSS_CLASS = "css-class";
-    public static final String CSS_STYLE = "css-style";
-
     private String text;
     private LabelPosition position = LabelPosition.BELOW;
     private String cssClass;
@@ -62,21 +59,6 @@ public class ChartLabel
             setCssClass(obj.getCssClass());
             setCssStyle(obj.getCssStyle());
         }
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    public ChartLabel(Map<String, Object> map)
-    {
-        if(map.containsKey(TEXT))
-            setText((String)map.get(TEXT));
-        if(map.containsKey(POSITION))
-            setPosition((String)map.get(POSITION));
-        if(map.containsKey(CSS_CLASS))
-            setCssClass((String)map.get(CSS_CLASS));
-        if(map.containsKey(CSS_STYLE))
-            setCssStyle((String)map.get(CSS_STYLE));
     }
 
     /**
@@ -149,5 +131,57 @@ public class ChartLabel
     public void setCssStyle(String cssStyle)
     {
         this.cssStyle = cssStyle;
+    }
+
+    /**
+     * Returns a builder for the configuration.
+     * @return The builder instance.
+     */
+    public static Builder builder()
+    {
+        return new Builder();
+    }
+
+    /**
+     * Builder to make configuration construction easier.
+     */
+    public static class Builder implements ConfigParser<ChartLabel>
+    {
+        // The config attribute names
+        private static final String TEXT = "text";
+        private static final String POSITION = "position";
+        private static final String CSS_CLASS = "css-class";
+        private static final String CSS_STYLE = "css-style";
+
+        private ChartLabel ret = new ChartLabel();
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            if(map.containsKey(TEXT))
+                ret.setText((String)map.get(TEXT));
+            if(map.containsKey(POSITION))
+                ret.setPosition((String)map.get(POSITION));
+            if(map.containsKey(CSS_CLASS))
+                ret.setCssClass((String)map.get(CSS_CLASS));
+            if(map.containsKey(CSS_STYLE))
+                ret.setCssStyle((String)map.get(CSS_STYLE));
+
+            return this;
+        }
+
+        /**
+         * Returns the configured configuration instance
+         * @return The configuration instance
+         */
+        public ChartLabel build()
+        {
+            return ret;
+        }
     }
 }

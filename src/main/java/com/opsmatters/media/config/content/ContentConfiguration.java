@@ -22,13 +22,13 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 import java.sql.SQLException;
+import com.opsmatters.media.cache.organisation.Organisations;
+import com.opsmatters.media.cache.organisation.OrganisationSites;
+import com.opsmatters.media.cache.content.ContentConfigurations;
+import com.opsmatters.media.cache.content.util.ContentImages;
 import com.opsmatters.media.config.YamlConfiguration;
-import com.opsmatters.media.config.organisation.Organisations;
-import com.opsmatters.media.config.organisation.OrganisationSites;
-import com.opsmatters.media.config.content.ContentConfigurations;
-import com.opsmatters.media.config.content.util.ContentImages;
 import com.opsmatters.media.model.platform.Site;
-import com.opsmatters.media.model.platform.FeedsSettings;
+import com.opsmatters.media.model.platform.FeedsConfig;
 import com.opsmatters.media.model.platform.Environment;
 import com.opsmatters.media.model.platform.EnvironmentName;
 import com.opsmatters.media.model.organisation.Organisation;
@@ -458,7 +458,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
 
         // Process the import file
         handler.writeFile();
-        handler.copyFileToBucket(site.getS3Settings().getContentBucket());
+        handler.copyFileToBucket(site.getS3Config().getContentBucket());
         handler.deleteFile();
 
         // Process the CSV file
@@ -471,7 +471,7 @@ public abstract class ContentConfiguration<C extends ContentItem> extends YamlCo
 
         // Upload the csv file to the environment
         Environment environment = site.getEnvironment(env);
-        String path = environment.getFeedsSettings().getPath()
+        String path = environment.getFeedsConfig().getPath()
             +System.getProperty("app.files.feeds."+type);
         handler.copyFileToHost(path, environment);
 

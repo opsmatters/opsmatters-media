@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.sql.SQLException;
 import org.json.JSONObject;
-import com.opsmatters.media.config.organisation.Organisations;
+import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.content.FieldsConfiguration;
 import com.opsmatters.media.model.BaseItem;

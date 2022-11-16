@@ -20,26 +20,17 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.LinkedHashMap;
-import com.opsmatters.media.model.platform.aws.S3Settings;
+import com.opsmatters.media.model.ConfigElement;
+import com.opsmatters.media.model.ConfigParser;
+import com.opsmatters.media.model.platform.aws.S3Config;
 
 /**
  * Represents a site containing environments.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Site implements java.io.Serializable
+public class Site implements ConfigElement
 {
-    public static final String ID = "id";
-    public static final String NAME = "name";
-    public static final String TITLE = "title";
-    public static final String FAVICON = "favicon";
-    public static final String THUMBNAIL = "thumbnail";
-    public static final String SHORT_DOMAIN = "short-domain";
-    public static final String ENABLED = "enabled";
-    public static final String S3 = "s3";
-    public static final String NEWSLETTER = "newsletter";
-    public static final String ENVIRONMENTS = "environments";
-
     private String id = "";
     private String name = "";
     private String title = "";
@@ -47,8 +38,8 @@ public class Site implements java.io.Serializable
     private String thumbnail = "";
     private String shortDomain = "";
     private boolean enabled = false;
-    private S3Settings s3;
-    private NewsletterSettings newsletter;
+    private S3Config s3;
+    private NewsletterConfig newsletter;
     private Map<EnvironmentName,Environment> environments = new LinkedHashMap<EnvironmentName,Environment>();
 
     /**
@@ -81,45 +72,10 @@ public class Site implements java.io.Serializable
             setThumbnail(obj.getThumbnail());
             setShortDomain(obj.getShortDomain());
             setEnabled(obj.isEnabled());
-            setNewsletterSettings(new NewsletterSettings(obj.getNewsletterSettings()));
-            setS3Settings(new S3Settings(obj.getS3Settings()));
+            setNewsletterConfig(new NewsletterConfig(obj.getNewsletterConfig()));
+            setS3Config(new S3Config(obj.getS3Config()));
             for(Environment environment : obj.getEnvironments().values())
                 addEnvironment(new Environment(environment));
-        }
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    public Site(String id, Map<String, Object> map)
-    {
-        this(id);
-
-        if(map.containsKey(NAME))
-            setName((String)map.get(NAME));
-        if(map.containsKey(TITLE))
-            setTitle((String)map.get(TITLE));
-        if(map.containsKey(FAVICON))
-            setFavicon((String)map.get(FAVICON));
-        if(map.containsKey(THUMBNAIL))
-            setThumbnail((String)map.get(THUMBNAIL));
-        if(map.containsKey(SHORT_DOMAIN))
-            setShortDomain((String)map.get(SHORT_DOMAIN));
-        if(map.containsKey(ENABLED))
-            setEnabled((Boolean)map.get(ENABLED));
-        if(map.containsKey(NEWSLETTER))
-            setNewsletterSettings(new NewsletterSettings(id, (Map<String,Object>)map.get(NEWSLETTER)));
-        if(map.containsKey(S3))
-            setS3Settings(new S3Settings(id, (Map<String,Object>)map.get(S3)));
-
-        if(map.containsKey(ENVIRONMENTS))
-        {
-            List<Map<String,Object>> environments = (List<Map<String,Object>>)map.get(ENVIRONMENTS);
-            for(Map<String,Object> config : environments)
-            {
-                for(Map.Entry<String,Object> entry : config.entrySet())
-                    addEnvironment(new Environment(entry.getKey(), (Map<String,Object>)entry.getValue()));
-            }
         }
     }
 
@@ -244,33 +200,33 @@ public class Site implements java.io.Serializable
     }
 
     /**
-     * Returns the newsletter settings for the site.
+     * Returns the newsletter configuration for the site.
      */
-    public NewsletterSettings getNewsletterSettings()
+    public NewsletterConfig getNewsletterConfig()
     {
         return newsletter;
     }
 
     /**
-     * Sets the newsletter settings for the site.
+     * Sets the newsletter configuration for the site.
      */
-    public void setNewsletterSettings(NewsletterSettings newsletter)
+    public void setNewsletterConfig(NewsletterConfig newsletter)
     {
         this.newsletter = newsletter;
     }
 
     /**
-     * Returns the S3 settings for the site.
+     * Returns the S3 configuration for the site.
      */
-    public S3Settings getS3Settings()
+    public S3Config getS3Config()
     {
         return s3;
     }
 
     /**
-     * Sets the S3 settings for the site.
+     * Sets the S3 configuration for the site.
      */
-    public void setS3Settings(S3Settings s3)
+    public void setS3Config(S3Config s3)
     {
         this.s3 = s3;
     }
@@ -305,5 +261,100 @@ public class Site implements java.io.Serializable
     public Environment getEnvironment(EnvironmentName name)
     {
         return environments.get(name);
+    }
+
+    /**
+     * Returns a builder for the site.
+     * @param name The name of the site
+     * @return The builder instance.
+     */
+    public static Builder builder(String id)
+    {
+        return new Builder(id);
+    }
+
+    /**
+     * Builder to make site construction easier.
+     */
+    public static class Builder implements ConfigParser<Site>
+    {
+        // The config attribute names
+        private static final String ID = "id";
+        private static final String NAME = "name";
+        private static final String TITLE = "title";
+        private static final String FAVICON = "favicon";
+        private static final String THUMBNAIL = "thumbnail";
+        private static final String SHORT_DOMAIN = "short-domain";
+        private static final String ENABLED = "enabled";
+        private static final String S3 = "s3";
+        private static final String NEWSLETTER = "newsletter";
+        private static final String ENVIRONMENTS = "environments";
+
+        private Site ret = null;
+
+        /**
+         * Constructor that takes an id.
+         * @param id The id for the site
+         */
+        public Builder(String id)
+        {
+            ret = new Site(id);
+        }
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            if(map.containsKey(NAME))
+                ret.setName((String)map.get(NAME));
+            if(map.containsKey(TITLE))
+                ret.setTitle((String)map.get(TITLE));
+            if(map.containsKey(FAVICON))
+                ret.setFavicon((String)map.get(FAVICON));
+            if(map.containsKey(THUMBNAIL))
+                ret.setThumbnail((String)map.get(THUMBNAIL));
+            if(map.containsKey(SHORT_DOMAIN))
+                ret.setShortDomain((String)map.get(SHORT_DOMAIN));
+            if(map.containsKey(ENABLED))
+                ret.setEnabled((Boolean)map.get(ENABLED));
+
+            String id = ret.getId();
+
+            if(map.containsKey(NEWSLETTER))
+                ret.setNewsletterConfig(NewsletterConfig.builder(id)
+                    .parse((Map<String,Object>)map.get(NEWSLETTER)).build());
+
+            if(map.containsKey(S3))
+                ret.setS3Config(S3Config.builder(id)
+                    .parse((Map<String,Object>)map.get(S3)).build());
+
+            if(map.containsKey(ENVIRONMENTS))
+            {
+                List<Map<String,Object>> environments = (List<Map<String,Object>>)map.get(ENVIRONMENTS);
+                for(Map<String,Object> config : environments)
+                {
+                    for(Map.Entry<String,Object> entry : config.entrySet())
+                    {
+                        ret.addEnvironment(Environment.builder(entry.getKey())
+                            .parse((Map<String,Object>)entry.getValue()).build());
+                    }
+                }
+            }
+
+            return this;
+        }
+
+        /**
+         * Returns the configured site instance
+         * @return The site instance
+         */
+        public Site build()
+        {
+            return ret;
+        }
     }
 }

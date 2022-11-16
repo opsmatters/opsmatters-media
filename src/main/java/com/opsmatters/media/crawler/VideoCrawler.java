@@ -46,7 +46,7 @@ import static com.opsmatters.media.config.content.FilterResult.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class VideoCrawler extends FieldsCrawler<VideoSummary>
+public class VideoCrawler extends ContentCrawler<VideoSummary>
 {
     private static final Logger logger = Logger.getLogger(VideoCrawler.class.getName());
 
@@ -135,6 +135,7 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
 
         // Process selections
         Map<String,String> map = new HashMap<String,String>();
+//GERALD: fix
         for(ContentFields fields : getTeaserFields())
         {
             List<JSONObject> results = client.listVideos(channel.getChannelId(),
@@ -181,6 +182,7 @@ public class VideoCrawler extends FieldsCrawler<VideoSummary>
             return null;
 
         VideoDetails content = new VideoDetails(videoId);
+//GERALD: fix
         List<ContentFields> articles = getArticleFields();
         for(ContentFields fields : articles)
         {

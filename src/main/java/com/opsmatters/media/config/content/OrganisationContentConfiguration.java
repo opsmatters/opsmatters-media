@@ -22,7 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import com.opsmatters.media.config.organisation.Organisations;
+import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentItem;

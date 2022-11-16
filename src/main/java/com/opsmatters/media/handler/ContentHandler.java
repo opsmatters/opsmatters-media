@@ -31,11 +31,11 @@ import org.apache.commons.text.StringSubstitutor;
 import com.google.common.io.Files;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
-import com.opsmatters.media.config.platform.Platform;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.model.platform.PlatformSetup;
 import com.opsmatters.media.model.platform.Environment;
-import com.opsmatters.media.model.platform.aws.S3Settings;
+import com.opsmatters.media.model.platform.aws.S3Config;
 import com.opsmatters.media.client.SshClient;
 import com.opsmatters.media.client.aws.AwsS3Client;
 import com.opsmatters.media.file.InputFileReader;
@@ -67,7 +67,7 @@ public class ContentHandler
     private String workingDir = "";
     private String dateFormat = Formats.CONTENT_DATE_FORMAT;
     private File file;
-    private S3Settings s3Settings;
+    private S3Config s3Config;
 
     /**
      * Default constructor.
@@ -106,7 +106,7 @@ public class ContentHandler
         if(sheet == null || sheet.length() == 0)
             sheet = DEFAULT_SHEET;
 
-        s3Settings = Platform.getS3Settings();
+        s3Config = PlatformSetup.getS3Config();
     }
 
     /**
@@ -423,7 +423,7 @@ public class ContentHandler
             client = s3client;
             if(client == null)
             {
-                client = AwsS3Client.newClient(s3Settings);
+                client = AwsS3Client.newClient(s3Config);
                 s3client = client;
             }
 
@@ -662,7 +662,7 @@ public class ContentHandler
             {
                 if(client != null)
                     client.close();
-                client = SshClient.newClient(environment.getKey(), environment.getSshSettings());
+                client = SshClient.newClient(environment.getKey(), environment.getSshConfig());
                 sshClients.put(environment.getKey(), client);
             }
 
@@ -713,7 +713,7 @@ public class ContentHandler
             {
                 if(client != null)
                     client.close();
-                client = SshClient.newClient(environment.getKey(), environment.getSshSettings());
+                client = SshClient.newClient(environment.getKey(), environment.getSshConfig());
                 sshClients.put(environment.getKey(), client);
             }
 
@@ -772,7 +772,7 @@ public class ContentHandler
             client = s3client;
             if(client == null)
             {
-                client = AwsS3Client.newClient(s3Settings);
+                client = AwsS3Client.newClient(s3Config);
                 s3client = client;
             }
 

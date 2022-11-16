@@ -1,0 +1,119 @@
+/*
+ * Copyright 2019 Gerald Curley
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.opsmatters.media.cache.social;
+
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.logging.Logger;
+import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.social.SocialChannel;
+
+/**
+ * Class representing the list of social media channels.
+ * 
+ * @author Gerald Curley (opsmatters)
+ */
+public class SocialChannels implements java.io.Serializable
+{
+    private static final Logger logger = Logger.getLogger(SocialChannels.class.getName());
+
+    private static Map<String,SocialChannel> channelMap = new LinkedHashMap<String,SocialChannel>();
+
+    private static boolean initialised = false;
+
+    /**
+     * Private constructor.
+     */
+    private SocialChannels()
+    {
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if channels have been initialised.
+     */
+    public static boolean isInitialised()
+    {
+        return initialised;
+    }
+
+    /**
+     * Loads the set of channels.
+     */
+    public static void load(List<SocialChannel> channels)
+    {
+        initialised = false;
+
+        clear();
+        for(SocialChannel channel : channels)
+        {
+            add(channel);
+        }
+
+        logger.info("Loaded "+size()+" social channels");
+
+        initialised = true;
+    }
+
+    /**
+     * Clears the social channels.
+     */
+    public static void clear()
+    {
+        channelMap.clear();
+    }
+
+    /**
+     * Returns the social channel with the given id.
+     */
+    public static SocialChannel getChannel(String id)
+    {
+        return channelMap.get(id);
+    }
+
+    /**
+     * Adds the social channel with the given name.
+     */
+    public static void add(SocialChannel channel)
+    {
+        channelMap.put(channel.getId(), channel);
+    }
+
+    /**
+     * Returns the count of social channels.
+     */
+    public static int size()
+    {
+        return channelMap.size();
+    }
+
+    /**
+     * Returns the list of social channels.
+     */
+    public static List<SocialChannel> getChannels(Site site)
+    {
+        List<SocialChannel> ret = new ArrayList<SocialChannel>();
+        for(SocialChannel channel : channelMap.values())
+        {
+            if(channel.hasSite(site))
+                ret.add(channel);
+        }
+
+        return ret;
+    }
+}

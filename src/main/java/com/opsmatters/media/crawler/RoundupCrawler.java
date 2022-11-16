@@ -108,16 +108,22 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
         RoundupDetails content = new RoundupDetails(summary);
+//GERALD: fix
         List<ContentFields> articles = getArticleFields();
 
+//GERALD: fix
         configureImplicitWait(getArticleLoading());
+//GERALD: fix
         loadPage(content.getUrl(), getArticleLoading());
+//GERALD: fix
         configureExplicitWait(getArticleLoading());
 
         // Scroll the page if configured
+//GERALD: fix
         configureMovement(getArticleLoading());
 
         // Wait for the page to load
+//GERALD: fix
         configureSleep(getArticleLoading());
 
         // Trace to see the page

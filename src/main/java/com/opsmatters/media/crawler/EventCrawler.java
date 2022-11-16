@@ -105,16 +105,22 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
         EventDetails content = new EventDetails(summary);
+//GERALD: fix
         List<ContentFields> articles = getArticleFields();
 
+//GERALD: fix
         configureImplicitWait(getArticleLoading());
+//GERALD: fix
         loadPage(content.getUrl(), getArticleLoading());
+//GERALD: fix
         configureExplicitWait(getArticleLoading());
 
         // Scroll the page if configured
+//GERALD: fix
         configureMovement(getArticleLoading());
 
         // Wait for the page to load
+//GERALD: fix
         configureSleep(getArticleLoading());
 
         // Trace to see the page

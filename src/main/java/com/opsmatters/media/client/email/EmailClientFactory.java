@@ -19,7 +19,7 @@ package com.opsmatters.media.client.email;
 import java.io.IOException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.admin.EmailProvider;
-import com.opsmatters.media.model.platform.aws.SesSettings;
+import com.opsmatters.media.model.platform.aws.SesConfig;
 import com.opsmatters.media.client.aws.AwsSesClient;
 
 /**
@@ -41,10 +41,10 @@ public class EmailClientFactory
     /**
      * Returns a client for the given provider.
      */
-    public static EmailClient newClient(EmailProvider provider, SesSettings settings) throws IOException
+    public static EmailClient newClient(EmailProvider provider, SesConfig config) throws IOException
     {
         if(provider == EmailProvider.SES)
-            return AwsSesClient.newClient(settings);
+            return AwsSesClient.newClient(config);
         throw new IllegalArgumentException("Email provider not found: "+provider);
     }
 }

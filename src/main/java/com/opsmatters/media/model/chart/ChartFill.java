@@ -20,6 +20,8 @@ import java.util.Map;
 import nl.crashdata.chartjs.data.ChartJsFill;
 import nl.crashdata.chartjs.data.ChartJsFillMode;
 import nl.crashdata.chartjs.data.ChartJsBoundaryType;
+import com.opsmatters.media.model.ConfigElement;
+import com.opsmatters.media.model.ConfigParser;
 
 import static nl.crashdata.chartjs.data.ChartJsFillMode.*;
 
@@ -28,12 +30,8 @@ import static nl.crashdata.chartjs.data.ChartJsFillMode.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ChartFill
+public class ChartFill implements ConfigElement
 {
-    public static final String MODE = "mode";
-    public static final String BOUNDARY_TYPE = "boundary-type";
-    public static final String DATASET_INDEX = "dataset-index";
-
     private ChartJsFillMode mode;
     private ChartJsBoundaryType boundaryType;
     private int datasetIndex;
@@ -64,19 +62,6 @@ public class ChartFill
             setBoundaryType(obj.getBoundaryType());
             setDatasetIndex(obj.getDatasetIndex());
         }
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    public ChartFill(Map<String, Object> map)
-    {
-        if(map.containsKey(MODE))
-            setMode((String)map.get(MODE));
-        if(map.containsKey(BOUNDARY_TYPE))
-            setBoundaryType((String)map.get(BOUNDARY_TYPE));
-        if(map.containsKey(DATASET_INDEX))
-            setDatasetIndex((Integer)map.get(DATASET_INDEX));
     }
 
     /**
@@ -168,5 +153,54 @@ public class ChartFill
         }
  
         return ret;
+    }
+
+    /**
+     * Returns a builder for the configuration.
+     * @return The builder instance.
+     */
+    public static Builder builder()
+    {
+        return new Builder();
+    }
+
+    /**
+     * Builder to make configuration construction easier.
+     */
+    public static class Builder implements ConfigParser<ChartFill>
+    {
+        // The config attribute names
+        private static final String MODE = "mode";
+        private static final String BOUNDARY_TYPE = "boundary-type";
+        private static final String DATASET_INDEX = "dataset-index";
+
+        private ChartFill ret = new ChartFill();
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            if(map.containsKey(MODE))
+                ret.setMode((String)map.get(MODE));
+            if(map.containsKey(BOUNDARY_TYPE))
+                ret.setBoundaryType((String)map.get(BOUNDARY_TYPE));
+            if(map.containsKey(DATASET_INDEX))
+                ret.setDatasetIndex((Integer)map.get(DATASET_INDEX));
+
+            return this;
+        }
+
+        /**
+         * Returns the configured configuration instance
+         * @return The configuration instance
+         */
+        public ChartFill build()
+        {
+            return ret;
+        }
     }
 }

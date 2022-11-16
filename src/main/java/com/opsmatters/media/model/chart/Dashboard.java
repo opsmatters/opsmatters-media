@@ -19,19 +19,16 @@ package com.opsmatters.media.model.chart;
 import java.util.List;
 import java.util.Map;
 import java.util.LinkedHashMap;
-import java.io.Serializable;
+import com.opsmatters.media.model.ConfigElement;
+import com.opsmatters.media.model.ConfigParser;
 
 /**
  * Represents a dashboard containing widgets.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Dashboard implements Serializable
+public class Dashboard implements ConfigElement
 {
-    public static final String TITLE = "title";
-    public static final String WIDGETS = "widgets";
-    public static final String SELECTIONS = "selections";
-
     private String id = "";
     private String title = "";
     private Map<String,Widget> widgets = new LinkedHashMap<String,Widget>();
@@ -66,47 +63,6 @@ public class Dashboard implements Serializable
                 addWidget(new Widget(widget));
             for(ChartSelection<?> selection : obj.getSelections().values())
                 addSelection(ChartSelectionFactory.newInstance(selection));
-        }
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    public Dashboard(String id, Map<String, Object> map)
-    {
-        this(id);
-
-        if(map.containsKey(TITLE))
-            setTitle((String)map.get(TITLE));
-
-        if(map.containsKey(WIDGETS))
-        {
-            List<Map<String,Object>> widgets = (List<Map<String,Object>>)map.get(WIDGETS);
-            for(Map<String,Object> config : widgets)
-            {
-                for(Map.Entry<String,Object> entry : config.entrySet())
-                    addWidget(new Widget(entry.getKey(), (Map<String,Object>)entry.getValue()));
-            }
-        }
-
-        if(map.containsKey(SELECTIONS))
-        {
-            Map<String,Map<String,Object>> selections = (Map<String,Map<String,Object>>)map.get(SELECTIONS);
-            for(Map.Entry<String,Map<String,Object>> entry : selections.entrySet())
-                addSelection(ChartSelectionFactory.newInstance(entry.getKey(), (Map<String,Object>)entry.getValue()));
-        }
-
-        // Use the dashboard selections as default selections for the widgets
-        if(getWidgets() != null)
-        {
-            for(Widget widget : getWidgets().values())
-            {
-                if(widget.getSelections().size() == 0) // Widget has no selections
-                {
-                    for(ChartSelection<?> selection : getSelections().values())
-                        widget.addSelection(selection);
-                }
-            }
         }
     }
 
@@ -236,5 +192,91 @@ public class Dashboard implements Serializable
     public boolean hasSelection(ChartParameter parameter)
     {
         return selections.get(parameter) != null;
+    }
+
+    /**
+     * Returns a builder for the dashboard.
+     * @param id The id of the dashboard
+     * @return The builder instance.
+     */
+    public static Builder builder(String id)
+    {
+        return new Builder(id);
+    }
+
+    /**
+     * Builder to make dashboard construction easier.
+     */
+    public static class Builder implements ConfigParser<Dashboard>
+    {
+        // The config attribute names
+        private static final String TITLE = "title";
+        private static final String WIDGETS = "widgets";
+        private static final String SELECTIONS = "selections";
+
+        private Dashboard ret = null;
+
+        /**
+         * Constructor that takes an id.
+         * @param id The id for the configuration
+         */
+        public Builder(String id)
+        {
+            ret = new Dashboard(id);
+        }
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            if(map.containsKey(TITLE))
+                ret.setTitle((String)map.get(TITLE));
+
+            if(map.containsKey(WIDGETS))
+            {
+                List<Map<String,Object>> widgets = (List<Map<String,Object>>)map.get(WIDGETS);
+                for(Map<String,Object> config : widgets)
+                {
+                    for(Map.Entry<String,Object> entry : config.entrySet())
+                        ret.addWidget(Widget.builder(entry.getKey())
+                            .parse((Map<String,Object>)entry.getValue()).build());
+                }
+            }
+
+            if(map.containsKey(SELECTIONS))
+            {
+                Map<String,Map<String,Object>> selections = (Map<String,Map<String,Object>>)map.get(SELECTIONS);
+                for(Map.Entry<String,Map<String,Object>> entry : selections.entrySet())
+                    ret.addSelection(ChartSelectionFactory.newInstance(entry.getKey(), (Map<String,Object>)entry.getValue()));
+            }
+
+            // Use the dashboard selections as default selections for the widgets
+            if(ret.getWidgets() != null)
+            {
+                for(Widget widget : ret.getWidgets().values())
+                {
+                    if(widget.getSelections().size() == 0) // Widget has no selections
+                    {
+                        for(ChartSelection<?> selection : ret.getSelections().values())
+                            widget.addSelection(selection);
+                    }
+                }
+            }
+
+            return this;
+        }
+
+        /**
+         * Returns the configured dashboard instance
+         * @return The dashboard instance
+         */
+        public Dashboard build()
+        {
+            return ret;
+        }
     }
 }

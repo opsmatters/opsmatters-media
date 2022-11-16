@@ -30,7 +30,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.apache.commons.io.FileUtils;
-import com.opsmatters.media.model.platform.FeedsSettings;
+import com.opsmatters.media.model.platform.FeedsConfig;
 
 /**
  * Executes API calls using a http client.
@@ -49,16 +49,16 @@ public class ApiClient extends Client
     private StatusLine status;
 
     /**
-     * Returns a new client using credentials from the given feeds settings.
+     * Returns a new client using credentials from the given feeds construction.
      */
-    static public ApiClient newClient(String key, String url, FeedsSettings settings) 
+    static public ApiClient newClient(String key, String url, FeedsConfig config) 
         throws IOException
     {
         ApiClient ret = ApiClient.builder()
             .env(key)
             .url(url)
             .suffix(".feeds")
-            .username(settings.getUsername())
+            .username(config.getUsername())
             .build();
 
         // Configure and create the API client

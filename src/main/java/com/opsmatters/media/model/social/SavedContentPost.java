@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.time.Instant;
 import org.json.JSONObject;
-import com.opsmatters.media.config.organisation.Organisations;
+import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.content.ContentType;

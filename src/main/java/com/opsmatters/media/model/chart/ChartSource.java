@@ -19,19 +19,16 @@ package com.opsmatters.media.model.chart;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import com.opsmatters.media.model.ConfigElement;
+import com.opsmatters.media.model.ConfigParser;
 
 /**
  * Represents a data source for a chart.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ChartSource
+public class ChartSource implements ConfigElement
 {
-    public static final String TYPE = "type";
-    public static final String QUERY = "query";
-    public static final String PARAMETERS = "parameters";
-    public static final String RESULT_TYPES = "result-types";
-
     private SourceType type;
     private String query;
     private List<ChartParameter> parameters;
@@ -64,21 +61,6 @@ public class ChartSource
             setParameters(new ArrayList<ChartParameter>(obj.getParameters()));
             setResultTypes(new ArrayList<ChartParameterType>(obj.getResultTypes()));
         }
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    public ChartSource(Map<String, Object> map)
-    {
-        if(map.containsKey(TYPE))
-            setType((String)map.get(TYPE));
-        if(map.containsKey(QUERY))
-            setQuery((String)map.get(QUERY));
-        if(map.containsKey(PARAMETERS))
-            setStringParameters((List<String>)map.get(PARAMETERS));
-        if(map.containsKey(RESULT_TYPES))
-            setStringResultTypes((List<String>)map.get(RESULT_TYPES));
     }
 
     /**
@@ -175,5 +157,57 @@ public class ChartSource
         this.resultTypes.clear();
         for(String resultType : resultTypes)
             this.resultTypes.add(ChartParameterType.valueOf(resultType));
+    }
+
+    /**
+     * Returns a builder for the configuration.
+     * @return The builder instance.
+     */
+    public static Builder builder()
+    {
+        return new Builder();
+    }
+
+    /**
+     * Builder to make configuration construction easier.
+     */
+    public static class Builder implements ConfigParser<ChartSource>
+    {
+        // The config attribute names
+        private static final String TYPE = "type";
+        private static final String QUERY = "query";
+        private static final String PARAMETERS = "parameters";
+        private static final String RESULT_TYPES = "result-types";
+
+        private ChartSource ret = new ChartSource();
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            if(map.containsKey(TYPE))
+                ret.setType((String)map.get(TYPE));
+            if(map.containsKey(QUERY))
+                ret.setQuery((String)map.get(QUERY));
+            if(map.containsKey(PARAMETERS))
+                ret.setStringParameters((List<String>)map.get(PARAMETERS));
+            if(map.containsKey(RESULT_TYPES))
+                ret.setStringResultTypes((List<String>)map.get(RESULT_TYPES));
+
+            return this;
+        }
+
+        /**
+         * Returns the configured configuration instance
+         * @return The configuration instance
+         */
+        public ChartSource build()
+        {
+            return ret;
+        }
     }
 }

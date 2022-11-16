@@ -34,21 +34,21 @@ public class ChartSelectionFactory
     }
 
     /**
-     * Create a new selection.
+     * Create a new selection builder.
      */
-    public static ChartSelection newInstance(String parameter)
+    public static ChartSelection.Builder builder(String parameter)
     {
-        return newInstance(ChartParameter.valueOf(parameter));
+        return builder(ChartParameter.valueOf(parameter));
     }
 
     /**
-     * Create a new selection.
+     * Create a new selection builder.
      */
-    public static ChartSelection newInstance(ChartParameter parameter)
+    public static ChartSelection.Builder builder(ChartParameter parameter)
     {
         if(parameter == FROM_DATE || parameter == TO_DATE)
-            return new LocalDateTimeSelection(parameter);
-        return new StringSelection(parameter, parameter.multiple());
+            return LocalDateTimeSelection.builder(parameter);
+        return StringSelection.builder(parameter, parameter.multiple());
     }
 
     /**
@@ -56,7 +56,7 @@ public class ChartSelectionFactory
      */
     public static ChartSelection newInstance(ChartSelection<?> selection)
     {
-        ChartSelection ret = newInstance(selection.getParameter());
+        ChartSelection ret = builder(selection.getParameter()).build();
         ret.copyAttributes(selection);
         return ret;
     }
@@ -66,8 +66,8 @@ public class ChartSelectionFactory
      */
     public static ChartSelection newInstance(String parameter, Map<String,Object> map)
     {
-        ChartSelection ret = newInstance(parameter);
-        ret.parse(map);
-        return ret;
+        return builder(parameter)
+            .parse(map)
+            .build();
     }
 }

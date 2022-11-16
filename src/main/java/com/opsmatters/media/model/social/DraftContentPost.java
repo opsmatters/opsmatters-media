@@ -17,7 +17,7 @@ package com.opsmatters.media.model.social;
 
 import java.time.Instant;
 import org.json.JSONObject;
-import com.opsmatters.media.config.organisation.Organisations;
+import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.platform.EnvironmentName;
 import com.opsmatters.media.model.organisation.Organisation;

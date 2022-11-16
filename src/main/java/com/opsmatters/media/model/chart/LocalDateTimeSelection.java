@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.DayOfWeek;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
+import com.opsmatters.media.model.ConfigParser;
 
 import static com.opsmatters.media.model.chart.ChartParameterValue.*;
 
@@ -45,15 +46,6 @@ public class LocalDateTimeSelection extends ChartSelection<LocalDateTime>
     public LocalDateTimeSelection(LocalDateTimeSelection obj)
     {
         copyAttributes(obj);
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    public LocalDateTimeSelection(ChartParameter parameter, Map<String, Object> map)
-    {
-        super(map);
-        setParameter(parameter);
     }
 
     /**
@@ -94,6 +86,65 @@ public class LocalDateTimeSelection extends ChartSelection<LocalDateTime>
                 return LocalDateTime.now().minus(3, ChronoUnit.MONTHS).truncatedTo(ChronoUnit.DAYS);
             default:
                 return getValue();
+        }
+    }
+
+    /**
+     * Returns a builder for the configuration.
+     * @param parameter The chart parameter
+     * @return The builder instance.
+     */
+    public static Builder builder(ChartParameter parameter)
+    {
+        return new Builder(parameter);
+    }
+
+    /**
+     * Builder to make configuration construction easier.
+     */
+    public static class Builder extends ChartSelection.Builder<LocalDateTime, LocalDateTimeSelection, Builder>
+    {
+        private LocalDateTimeSelection ret = null;
+
+        /**
+         * Constructor that take a parameter.
+         */
+        public Builder(ChartParameter parameter)
+        {
+            ret = new LocalDateTimeSelection(parameter);
+            super.set(ret);
+        }
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            super.parse(map);
+            return this;
+        }
+
+        /**
+         * Returns this object.
+         * @return This object
+         */
+        @Override
+        protected Builder self()
+        {
+            return this;
+        }
+
+        /**
+         * Returns the configured configuration instance
+         * @return The configuration instance
+         */
+        @Override
+        public LocalDateTimeSelection build()
+        {
+            return ret;
         }
     }
 }

@@ -226,12 +226,20 @@ public class ImageUtils
             SVGSVGElement root = doc.getRootElement();
             if(root != null)
             {
-                if(root.hasAttribute("width") && root.hasAttribute("height"))
+                try
                 {
-                    ret = new Rectangle(Integer.parseInt(getNumber(root.getAttribute("width"))), 
-                        Integer.parseInt(getNumber(root.getAttribute("height"))));
+                    if(root.hasAttribute("width") && root.hasAttribute("height"))
+                    {
+                        ret = new Rectangle(Integer.parseInt(getNumber(root.getAttribute("width"))), 
+                            Integer.parseInt(getNumber(root.getAttribute("height"))));
+                    }
                 }
-                else // Otherwise use the viewbox
+                catch(NumberFormatException e)
+                {
+                    // How to handle width/height with units too? eg. "5.33in"
+                }
+
+                if(ret == null) // Otherwise try to use the viewbox
                 {
                     String viewBoxStr = root.getAttributeNS(null, SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
                     if(viewBoxStr.length() != 0)

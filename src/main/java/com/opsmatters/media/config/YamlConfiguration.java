@@ -26,6 +26,8 @@ import java.util.logging.Logger;
 import org.yaml.snakeyaml.Yaml;
 import com.opsmatters.media.util.StringUtils;
 
+//GERALD: remove this class?
+
 /**
  * Class that represents a YAML configuration file.
  * 

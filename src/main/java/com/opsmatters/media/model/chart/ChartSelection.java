@@ -18,20 +18,18 @@ package com.opsmatters.media.model.chart;
 
 import java.util.Map;
 import java.io.Serializable;
+import com.opsmatters.media.model.ConfigElement;
+import com.opsmatters.media.model.ConfigParser;
 
 /**
  * Represents a selection for a chart.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ChartSelection<T extends Serializable> implements Serializable
+public abstract class ChartSelection<E extends Serializable> implements ConfigElement
 {
-    public static final String VALUE = "value";
-    public static final String DEFAULT = "default";
-    public static final String MULTIPLE = "multiple";
-
     private ChartParameter parameter;
-    private T value;
+    private E value;
     private ChartParameterValue defaultValue;
     private boolean multiple = false;
 
@@ -53,7 +51,7 @@ public abstract class ChartSelection<T extends Serializable> implements Serializ
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ChartSelection<T> obj)
+    public void copyAttributes(ChartSelection<E> obj)
     {
         if(obj != null)
         {
@@ -65,27 +63,6 @@ public abstract class ChartSelection<T extends Serializable> implements Serializ
     }
 
     /**
-     * Reads the object from the given YAML Document.
-     */
-    public ChartSelection(Map<String, Object> map)
-    {
-        parse(map);
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    public void parse(Map<String, Object> map)
-    {
-        if(map.containsKey(VALUE))
-            setValue((T)map.get(VALUE));
-        if(map.containsKey(DEFAULT))
-            setDefaultValue((String)map.get(DEFAULT));
-        if(map.containsKey(MULTIPLE))
-            setMultiple((Boolean)map.get(MULTIPLE));
-    }
-
-    /**
      * Returns the parameter type for the selection.
      */
     public abstract ChartParameterType getType();
@@ -93,7 +70,7 @@ public abstract class ChartSelection<T extends Serializable> implements Serializ
     /**
      * Returns the parameter value for the selection.
      */
-    public abstract T value();
+    public abstract E value();
 
     /**
      * Returns the parameter for the selection.
@@ -122,7 +99,7 @@ public abstract class ChartSelection<T extends Serializable> implements Serializ
     /**
      * Returns the parameter value for the selection.
      */
-    public T getValue()
+    public E getValue()
     {
         return value;
     }
@@ -130,7 +107,7 @@ public abstract class ChartSelection<T extends Serializable> implements Serializ
     /**
      * Sets the parameter value for the selection.
      */
-    public void setValue(T value)
+    public void setValue(E value)
     {
         this.value = value;
     }
@@ -173,5 +150,58 @@ public abstract class ChartSelection<T extends Serializable> implements Serializ
     public void setMultiple(boolean multiple)
     {
         this.multiple = multiple;
+    }
+
+    /**
+     * Builder to make configuration construction easier.
+     */
+    public abstract static class Builder<E extends Serializable, T extends ChartSelection<E>, B extends Builder<E,T,B>>
+        implements ConfigParser<ChartSelection<E>>
+    {
+        // The config attribute names
+        private static final String VALUE = "value";
+        private static final String DEFAULT = "default";
+        private static final String MULTIPLE = "multiple";
+
+        private ChartSelection<E> ret = null;
+
+        /**
+         * Sets the selection.
+         * @param selection The selection
+         */
+        public void set(ChartSelection<E> selection)
+        {
+            ret = selection;
+        }
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            if(map.containsKey(VALUE))
+                ret.setValue((E)map.get(VALUE));
+            if(map.containsKey(DEFAULT))
+                ret.setDefaultValue((String)map.get(DEFAULT));
+            if(map.containsKey(MULTIPLE))
+                ret.setMultiple((Boolean)map.get(MULTIPLE));
+
+            return self();
+        }
+
+        /**
+         * Returns this object.
+         * @return This object
+         */
+        protected abstract B self();
+
+        /**
+         * Returns the configured configuration instance
+         * @return The configuration instance
+         */
+        public abstract T build();
     }
 }

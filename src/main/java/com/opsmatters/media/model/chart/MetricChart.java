@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.io.Serializable;
+import com.opsmatters.media.model.ConfigParser;
 
 /**
  * Represents a chart containing metrics.
@@ -28,7 +29,6 @@ import java.io.Serializable;
  */
 public class MetricChart<E extends Serializable> extends Chart<E>
 {
-    public static final String METRICS = "metrics";
     public static final String TYPE = "METRIC";
 
     private List<ChartMetric<E>> metrics = new ArrayList<ChartMetric<E>>();
@@ -52,20 +52,6 @@ public class MetricChart<E extends Serializable> extends Chart<E>
             super.copyAttributes(obj);
             for(ChartMetric<E> metric : obj.getMetrics())
                 addMetric(new ChartMetric<E>(metric));
-        }
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    protected void parse(Map<String, Object> map)
-    {
-        super.parse(map);
-        if(map.containsKey(METRICS))
-        {
-            List<Map<String,Object>> metrics = (List<Map<String,Object>>)map.get(METRICS);
-            for(Map<String,Object> config : metrics)
-                addMetric(new ChartMetric<E>((Map<String,Object>)config));
         }
     }
 
@@ -107,5 +93,78 @@ public class MetricChart<E extends Serializable> extends Chart<E>
     public MetricsConfig.Builder configure()
     {
         return MetricsConfig.builder();
+    }
+
+    /**
+     * Returns a builder for the chart.
+     * @param id The id of the chart
+     * @return The builder instance.
+     */
+    public static Builder builder(String id)
+    {
+        return new Builder(id);
+    }
+
+    /**
+     * Builder to make chart construction easier.
+     */
+    public static class Builder<E extends Serializable>
+        extends Chart.Builder<E, MetricChart<E>, Builder<E>>
+    {
+        // The config attribute names
+        private static final String METRICS = "metrics";
+
+        private MetricChart ret = null;
+
+        /**
+         * Constructor that takes an id.
+         * @param id The id for the chart
+         */
+        public Builder(String id)
+        {
+            ret = new MetricChart(id);
+            super.set(ret);
+        }
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            super.parse(map);
+
+            if(map.containsKey(METRICS))
+            {
+                List<Map<String,Object>> metrics = (List<Map<String,Object>>)map.get(METRICS);
+                for(Map<String,Object> config : metrics)
+                    ret.addMetric(ChartMetric.builder()
+                        .parse((Map<String,Object>)config).build());
+            }
+
+            return this;
+        }
+
+        /**
+         * Returns this object.
+         * @return This object
+         */
+        @Override
+        protected Builder self()
+        {
+            return this;
+        }
+
+        /**
+         * Returns the configured chart instance
+         * @return The chart instance
+         */
+        @Override
+        public MetricChart build()
+        {
+            return ret;
+        }
     }
 }

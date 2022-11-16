@@ -17,17 +17,16 @@
 package com.opsmatters.media.model.chart;
 
 import java.util.Map;
+import com.opsmatters.media.model.ConfigElement;
+import com.opsmatters.media.model.ConfigParser;
 
 /**
  * Represents the config for a metric threshold.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class MetricThreshold<N extends Number>
+public class MetricThreshold<N extends Number> implements ConfigElement
 {
-    public static final String VALUE = "value";
-    public static final String CSS_CLASS = "css-class";
-
     private N value;
     private String cssClass;
 
@@ -56,17 +55,6 @@ public class MetricThreshold<N extends Number>
             setValue(obj.getValue());
             setCssClass(obj.getCssClass());
         }
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    public MetricThreshold(Map<String, Object> map)
-    {
-        if(map.containsKey(VALUE))
-            setValue((N)map.get(VALUE));
-        if(map.containsKey(CSS_CLASS))
-            setCssClass((String)map.get(CSS_CLASS));
     }
 
     /**
@@ -107,5 +95,52 @@ public class MetricThreshold<N extends Number>
     public void setCssClass(String cssClass)
     {
         this.cssClass = cssClass;
+    }
+
+    /**
+     * Returns a builder for the configuration.
+     * @return The builder instance.
+     */
+    public static Builder builder()
+    {
+        return new Builder();
+    }
+
+    /**
+     * Builder to make configuration construction easier.
+     */
+    public static class Builder<N extends Number>
+        implements ConfigParser<MetricThreshold<N>>
+    {
+        // The config attribute names
+        private static final String VALUE = "value";
+        private static final String CSS_CLASS = "css-class";
+
+        private MetricThreshold<N> ret = new MetricThreshold<N>();
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            if(map.containsKey(VALUE))
+                ret.setValue((N)map.get(VALUE));
+            if(map.containsKey(CSS_CLASS))
+                ret.setCssClass((String)map.get(CSS_CLASS));
+
+            return this;
+        }
+
+        /**
+         * Returns the configured configuration instance
+         * @return The configuration instance
+         */
+        public MetricThreshold<N> build()
+        {
+            return ret;
+        }
     }
 }

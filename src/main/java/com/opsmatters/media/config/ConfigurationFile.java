@@ -18,6 +18,8 @@ package com.opsmatters.media.config;
 import java.io.File;
 import com.opsmatters.media.util.FileUtils;
 
+//GERALD: remove this class?
+
 /**
  * Class representing a configuration file.
  * 

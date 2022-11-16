@@ -28,8 +28,6 @@ import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsConfigBuilder;
  */
 public class RadialChart<N extends Number> extends ChartJsChart<N>
 {
-    public static final String LABELS = "labels";
-
     private List<String> labels;
 
     /**
@@ -57,21 +55,8 @@ public class RadialChart<N extends Number> extends ChartJsChart<N>
         if(obj != null)
         {
             super.copyAttributes(obj);
-
             setLabels(obj.getLabels());
         }
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    @Override
-    protected void parse(Map<String, Object> map)
-    {
-        super.parse(map);
-
-        if(map.containsKey(LABELS))
-            setLabels((List<String>)map.get(LABELS));
     }
 
     /**
@@ -114,5 +99,73 @@ public class RadialChart<N extends Number> extends ChartJsChart<N>
         }
 
         return ret;
+    }
+
+    /**
+     * Returns a builder for the chart.
+     * @param id The id of the chart
+     * @return The builder instance.
+     */
+    public static Builder builder(String id)
+    {
+        return new Builder(id);
+    }
+
+    /**
+     * Builder to make chart construction easier.
+     */
+    public static class Builder<N extends Number>
+        extends ChartJsChart.Builder<N, RadialChart<N>, Builder<N>>
+    {
+        // The config attribute names
+        private static final String LABELS = "labels";
+
+        private RadialChart ret = null;
+
+        /**
+         * Constructor that takes an id.
+         * @param id The id for the chart
+         */
+        public Builder(String id)
+        {
+            ret = new RadialChart(id);
+            super.set(ret);
+        }
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            super.parse(map);
+
+            if(map.containsKey(LABELS))
+                ret.setLabels((List<String>)map.get(LABELS));
+
+            return this;
+        }
+
+        /**
+         * Returns this object.
+         * @return This object
+         */
+        @Override
+        protected Builder self()
+        {
+            return this;
+        }
+
+        /**
+         * Returns the configured chart instance
+         * @return The chart instance
+         */
+        @Override
+        public RadialChart build()
+        {
+            return ret;
+        }
     }
 }

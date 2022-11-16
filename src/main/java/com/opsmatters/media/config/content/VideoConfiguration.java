@@ -248,8 +248,17 @@ public class VideoConfiguration extends ContentConfiguration<VideoArticle>
                         config.parseDocument((Map<String,Object>)entry.getValue());
 
                         // Add the filters from the original set of fields
+//GERALD: fix
+if(config.hasArticles())
+{
+                        for(FieldFilter filter : filters)
+                            config.getArticles().getFields().get(0).getBody().addFilter(filter);
+}
+else
+{
                         for(FieldFilter filter : filters)
                             config.getArticleFields().get(0).getBody().addFilter(filter);
+}
                     }
 
                     addChannel(config);

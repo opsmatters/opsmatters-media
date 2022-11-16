@@ -26,7 +26,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
-import com.opsmatters.media.model.platform.SshSettings;
+import com.opsmatters.media.model.platform.SshConfig;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -58,16 +58,16 @@ public class SshClient extends Client
     private ChannelSftp channel;
 
     /**
-     * Returns a new SSH connection using credentials from the given settings.
+     * Returns a new SSH connection using the given configuration.
      */
-    static public SshClient newClient(String key, SshSettings settings) 
+    static public SshClient newClient(String key, SshConfig config) 
         throws JSchException, SftpException
     {
         SshClient ret = SshClient.builder()
             .env(key)
-            .hostname(settings.getHostname())
-            .port(settings.getPort())
-            .username(settings.getUsername())
+            .hostname(config.getHostname())
+            .port(config.getPort())
+            .username(config.getUsername())
             .keyfile(key+KEY)
             .build();
 

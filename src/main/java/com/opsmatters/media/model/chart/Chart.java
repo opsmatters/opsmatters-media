@@ -19,19 +19,16 @@ package com.opsmatters.media.model.chart;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.io.Serializable;
+import com.opsmatters.media.model.ConfigElement;
+import com.opsmatters.media.model.ConfigParser;
 
 /**
  * Represents a chart.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class Chart<E extends Serializable>
+public abstract class Chart<E extends Serializable> implements ConfigElement
 {
-    public static final String ID = "id";
-    public static final String TITLE = "title";
-    public static final String TYPE = "type";
-    public static final String SELECTIONS = "selections";
-
     private String id = "";
     private String title = "";
     private String type;
@@ -57,23 +54,6 @@ public abstract class Chart<E extends Serializable>
             setType(obj.getType());
             for(ChartSelection<?> selection : obj.getSelections().values())
                 addSelection(ChartSelectionFactory.newInstance(selection));
-        }
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    protected void parse(Map<String, Object> map)
-    {
-        if(map.containsKey(TITLE))
-            setTitle((String)map.get(TITLE));
-        if(map.containsKey(TYPE))
-            setType((String)map.get(TYPE));
-        if(map.containsKey(SELECTIONS))
-        {
-            Map<String,Map<String,Object>> selections = (Map<String,Map<String,Object>>)map.get(SELECTIONS);
-            for(Map.Entry<String,Map<String,Object>> entry : selections.entrySet())
-                addSelection(ChartSelectionFactory.newInstance(entry.getKey(), (Map<String,Object>)entry.getValue()));
         }
     }
 
@@ -187,5 +167,63 @@ public abstract class Chart<E extends Serializable>
     public boolean hasSelection(ChartParameter parameter)
     {
         return selections.get(parameter) != null;
+    }
+
+    /**
+     * Builder to make chart construction easier.
+     */
+    protected abstract static class Builder<E extends Serializable, T extends Chart<E>, B extends Builder<E,T,B>>
+        implements ConfigParser<Chart<E>>
+    {
+        // The config attribute names
+        public static final String TYPE = "type";
+        private static final String ID = "id";
+        private static final String TITLE = "title";
+        private static final String SELECTIONS = "selections";
+
+        private Chart ret = null;
+
+        /**
+         * Sets the chart.
+         * @param chart The chart
+         */
+        public void set(Chart chart)
+        {
+            ret = chart;
+        }
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            if(map.containsKey(TITLE))
+                ret.setTitle((String)map.get(TITLE));
+            if(map.containsKey(TYPE))
+                ret.setType((String)map.get(TYPE));
+            if(map.containsKey(SELECTIONS))
+            {
+                Map<String,Map<String,Object>> selections = (Map<String,Map<String,Object>>)map.get(SELECTIONS);
+                for(Map.Entry<String,Map<String,Object>> entry : selections.entrySet())
+                    ret.addSelection(ChartSelectionFactory.newInstance(entry.getKey(), (Map<String,Object>)entry.getValue()));
+            }
+
+            return self();
+        }
+
+        /**
+         * Returns this object.
+         * @return This object
+         */
+        protected abstract B self();
+
+        /**
+         * Returns the configured chart instance
+         * @return The chart instance
+         */
+        public abstract T build();
     }
 }

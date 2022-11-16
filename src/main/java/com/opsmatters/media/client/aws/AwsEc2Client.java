@@ -43,7 +43,7 @@ import software.amazon.awssdk.services.ec2.model.Reservation;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.platform.EnvironmentStatus;
-import com.opsmatters.media.model.platform.aws.EC2Settings;
+import com.opsmatters.media.model.platform.aws.Ec2Config;
 
 /**
  * Class that represents a connection to AWS EC2 servers.
@@ -62,12 +62,12 @@ public class AwsEc2Client extends Client
     private String secretAccessKey = "";
 
     /**
-     * Returns a new AWS EC2 client using the EC2 settings.
+     * Returns a new AWS EC2 client using the EC2 configuration.
      */
-    static public AwsEc2Client newClient(EC2Settings settings) throws IOException
+    static public AwsEc2Client newClient(Ec2Config config) throws IOException
     {
         AwsEc2Client ret = AwsEc2Client.builder()
-            .region(settings.getRegion())
+            .region(config.getRegion())
             .build();
 
         // Configure and create the EC2 client

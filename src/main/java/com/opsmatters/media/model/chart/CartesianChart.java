@@ -30,10 +30,6 @@ import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsOptionsBuilder;
  */
 public class CartesianChart<X extends Serializable,Y extends Serializable> extends ChartJsChart<SimpleChartJsXYDataPoint<X,Y>>
 {
-    public static final String X_AXIS = "x-axis";
-    public static final String Y_AXIS = "y-axis";
-    public static final String STACKED = "stacked";
-
     private ChartXAxis<X> xAxis;
     private ChartYAxis<Y> yAxis;
     private boolean stacked;
@@ -67,22 +63,6 @@ public class CartesianChart<X extends Serializable,Y extends Serializable> exten
             setYAxis(new ChartYAxis<Y>(obj.getYAxis()));
             setStacked(obj.getStacked());
         }
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    @Override
-    protected void parse(Map<String, Object> map)
-    {
-        super.parse(map);
-
-        if(map.containsKey(X_AXIS))
-            setXAxis(new ChartXAxis<X>((Map<String,Object>)map.get(X_AXIS)));
-        if(map.containsKey(Y_AXIS))
-            setYAxis(new ChartYAxis<Y>((Map<String,Object>)map.get(Y_AXIS)));
-        if(map.containsKey(STACKED))
-            setStacked((Boolean)map.get(STACKED));
     }
 
     /**
@@ -169,5 +149,81 @@ public class CartesianChart<X extends Serializable,Y extends Serializable> exten
     protected void configure(SimpleChartJsOptionsBuilder options)
     {
         super.configure(options);
+    }
+
+    /**
+     * Returns a builder for the chart.
+     * @param id The id of the chart
+     * @return The builder instance.
+     */
+    public static Builder builder(String id)
+    {
+        return new Builder(id);
+    }
+
+    /**
+     * Builder to make chart construction easier.
+     */
+    public static class Builder<X extends Serializable,Y extends Serializable>
+        extends ChartJsChart.Builder<SimpleChartJsXYDataPoint<X,Y>, CartesianChart<X,Y>, Builder<X,Y>>
+    {
+        // The config attribute names
+        private static final String X_AXIS = "x-axis";
+        private static final String Y_AXIS = "y-axis";
+        private static final String STACKED = "stacked";
+
+        private CartesianChart ret = null;
+
+        /**
+         * Constructor that takes an id.
+         * @param id The id for the chart
+         */
+        public Builder(String id)
+        {
+            ret = new CartesianChart(id);
+            super.set(ret);
+        }
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            super.parse(map);
+
+            if(map.containsKey(X_AXIS))
+                ret.setXAxis(ChartXAxis.builder()
+                    .parse((Map<String,Object>)map.get(X_AXIS)).build());
+            if(map.containsKey(Y_AXIS))
+                ret.setYAxis(ChartYAxis.builder()
+                    .parse((Map<String,Object>)map.get(Y_AXIS)).build());
+            if(map.containsKey(STACKED))
+                ret.setStacked((Boolean)map.get(STACKED));
+
+            return this;
+        }
+
+        /**
+         * Returns this object.
+         * @return This object
+         */
+        @Override
+        protected Builder self()
+        {
+            return this;
+        }
+
+        /**
+         * Returns the configured chart instance
+         * @return The chart instance
+         */
+        @Override
+        public CartesianChart build()
+        {
+            return ret;
+        }
     }
 }

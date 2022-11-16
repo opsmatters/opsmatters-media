@@ -17,10 +17,10 @@ package com.opsmatters.media.model.content;
 
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
+import com.opsmatters.media.cache.content.util.ContentImages;
 import com.opsmatters.media.config.content.RoundupConfiguration;
 import com.opsmatters.media.config.content.WebPageConfiguration;
 import com.opsmatters.media.config.content.Fields;
-import com.opsmatters.media.config.content.util.ContentImages;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;

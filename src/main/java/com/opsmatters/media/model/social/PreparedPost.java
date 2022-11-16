@@ -23,7 +23,7 @@ import facebook4j.Post;
 import com.echobox.api.linkedin.types.ugc.UGCShare;
 import com.opsmatters.media.client.social.SocialClient;
 import com.opsmatters.media.client.social.SocialClientFactory;
-import com.opsmatters.media.config.organisation.Organisations;
+import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.model.DeliveryStatus;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.admin.Email;

@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.time.Instant;
 import org.json.JSONObject;
-import com.opsmatters.media.config.organisation.Organisations;
+import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.config.content.FieldSource;
 import com.opsmatters.media.model.OwnedItem;

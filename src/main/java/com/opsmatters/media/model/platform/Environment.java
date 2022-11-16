@@ -17,37 +17,28 @@
 package com.opsmatters.media.model.platform;
 
 import java.util.Map;
-import com.opsmatters.media.model.platform.aws.EC2Settings;
-import com.opsmatters.media.model.platform.aws.RDSSettings;
+import com.opsmatters.media.model.ConfigElement;
+import com.opsmatters.media.model.ConfigParser;
+import com.opsmatters.media.model.platform.aws.Ec2Config;
+import com.opsmatters.media.model.platform.aws.RdsConfig;
 
 /**
- * Represents a site environment.
+ * Represents the configuration of a site environment.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Environment implements java.io.Serializable
+public class Environment implements ConfigElement
 {
-    public static final String NAME = "name";
-    public static final String KEY = "key";
-    public static final String URL = "url";
-    public static final String PING = "ping";
-    public static final String PATH = "path";
-    public static final String FEEDS = "feeds";
-    public static final String DATABASE = "database";
-    public static final String EC2 = "ec2";
-    public static final String RDS = "rds";
-    public static final String SSH = "ssh";
-
     private EnvironmentName name;
     private String key = "";
     private String url = "";
     private String ping = "";
     private String path = "";
-    private FeedsSettings feeds;
-    private DatabaseSettings database;
-    private EC2Settings ec2;
-    private RDSSettings rds;
-    private SshSettings ssh;
+    private FeedsConfig feeds;
+    private DatabaseConfig database;
+    private Ec2Config ec2;
+    private RdsConfig rds;
+    private SshConfig ssh;
 
     /**
      * Constructor that takes a name.
@@ -77,39 +68,12 @@ public class Environment implements java.io.Serializable
             setUrl(obj.getUrl());
             setPing(obj.getPing());
             setPath(obj.getPath());
-            setFeedsSettings(new FeedsSettings(obj.getFeedsSettings()));
-            setDatabaseSettings(new DatabaseSettings(obj.getDatabaseSettings()));
-            setEC2Settings(new EC2Settings(obj.getEC2Settings()));
-            setRDSSettings(new RDSSettings(obj.getRDSSettings()));
-            setSshSettings(new SshSettings(obj.getSshSettings()));
+            setFeedsConfig(new FeedsConfig(obj.getFeedsConfig()));
+            setDatabaseConfig(new DatabaseConfig(obj.getDatabaseConfig()));
+            setEc2Config(new Ec2Config(obj.getEc2Config()));
+            setRdsConfig(new RdsConfig(obj.getRdsConfig()));
+            setSshConfig(new SshConfig(obj.getSshConfig()));
         }
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    public Environment(String name, Map<String, Object> map)
-    {
-        this(name);
-
-        if(map.containsKey(KEY))
-            setKey((String)map.get(KEY));
-        if(map.containsKey(URL))
-            setUrl((String)map.get(URL));
-        if(map.containsKey(PING))
-            setPing((String)map.get(PING));
-        if(map.containsKey(PATH))
-            setPath((String)map.get(PATH));
-        if(map.containsKey(FEEDS))
-            setFeedsSettings(new FeedsSettings(name, (Map<String,Object>)map.get(FEEDS)));
-        if(map.containsKey(DATABASE))
-            setDatabaseSettings(new DatabaseSettings(name, (Map<String,Object>)map.get(DATABASE)));
-        if(map.containsKey(EC2))
-            setEC2Settings(new EC2Settings(name, (Map<String,Object>)map.get(EC2)));
-        if(map.containsKey(RDS))
-            setRDSSettings(new RDSSettings(name, (Map<String,Object>)map.get(RDS)));
-        if(map.containsKey(SSH))
-            setSshSettings(new SshSettings(name, (Map<String,Object>)map.get(SSH)));
     }
 
     /**
@@ -209,82 +173,172 @@ public class Environment implements java.io.Serializable
     }
 
     /**
-     * Returns the feeds settings for the environment.
+     * Returns the feeds configuration for the environment.
      */
-    public FeedsSettings getFeedsSettings()
+    public FeedsConfig getFeedsConfig()
     {
         return feeds;
     }
 
     /**
-     * Sets the feeds settings for the environment.
+     * Sets the feeds configuration for the environment.
      */
-    public void setFeedsSettings(FeedsSettings feeds)
+    public void setFeedsConfig(FeedsConfig feeds)
     {
         this.feeds = feeds;
     }
 
     /**
-     * Returns the database settings for the environment.
+     * Returns the database configuration for the environment.
      */
-    public DatabaseSettings getDatabaseSettings()
+    public DatabaseConfig getDatabaseConfig()
     {
         return database;
     }
 
     /**
-     * Sets the database settings for the environment.
+     * Sets the database configuration for the environment.
      */
-    public void setDatabaseSettings(DatabaseSettings database)
+    public void setDatabaseConfig(DatabaseConfig database)
     {
         this.database = database;
     }
 
     /**
-     * Returns the EC2 settings for the environment.
+     * Returns the EC2 configuration for the environment.
      */
-    public EC2Settings getEC2Settings()
+    public Ec2Config getEc2Config()
     {
         return ec2;
     }
 
     /**
-     * Sets the EC2 settings for the environment.
+     * Sets the EC2 configuration for the environment.
      */
-    public void setEC2Settings(EC2Settings ec2)
+    public void setEc2Config(Ec2Config ec2)
     {
         this.ec2 = ec2;
     }
 
     /**
-     * Returns the RDS settings for the environment.
+     * Returns the RDS configuration for the environment.
      */
-    public RDSSettings getRDSSettings()
+    public RdsConfig getRdsConfig()
     {
         return rds;
     }
 
     /**
-     * Sets the RDS settings for the environment.
+     * Sets the RDS configuration for the environment.
      */
-    public void setRDSSettings(RDSSettings rds)
+    public void setRdsConfig(RdsConfig rds)
     {
         this.rds = rds;
     }
 
     /**
-     * Returns the ssh settings for the environment.
+     * Returns the ssh configuration for the environment.
      */
-    public SshSettings getSshSettings()
+    public SshConfig getSshConfig()
     {
         return ssh;
     }
 
     /**
-     * Sets the ssh settings for the environment.
+     * Sets the ssh configuration for the environment.
      */
-    public void setSshSettings(SshSettings ssh)
+    public void setSshConfig(SshConfig ssh)
     {
         this.ssh = ssh;
+    }
+
+    /**
+     * Returns a builder for the environment.
+     * @param name The name of the environment
+     * @return The builder instance.
+     */
+    public static Builder builder(String name)
+    {
+        return new Builder(name);
+    }
+
+    /**
+     * Builder to make environment construction easier.
+     */
+    public static class Builder implements ConfigParser<Environment>
+    {
+        // The config attribute names
+        private static final String NAME = "name";
+        private static final String KEY = "key";
+        private static final String URL = "url";
+        private static final String PING = "ping";
+        private static final String PATH = "path";
+        private static final String FEEDS = "feeds";
+        private static final String DATABASE = "database";
+        private static final String EC2 = "ec2";
+        private static final String RDS = "rds";
+        private static final String SSH = "ssh";
+
+        private Environment ret = null;
+
+        /**
+         * Constructor that takes a name.
+         * @param name The name for the environment
+         */
+        public Builder(String name)
+        {
+            ret = new Environment(name);
+        }
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            if(map.containsKey(KEY))
+                ret.setKey((String)map.get(KEY));
+            if(map.containsKey(URL))
+                ret.setUrl((String)map.get(URL));
+            if(map.containsKey(PING))
+                ret.setPing((String)map.get(PING));
+            if(map.containsKey(PATH))
+                ret.setPath((String)map.get(PATH));
+
+            String name = ret.getName().name();
+
+            if(map.containsKey(FEEDS))
+                ret.setFeedsConfig(FeedsConfig.builder(name)
+                    .parse((Map<String,Object>)map.get(FEEDS)).build());
+
+            if(map.containsKey(DATABASE))
+                ret.setDatabaseConfig(DatabaseConfig.builder(name)
+                    .parse((Map<String,Object>)map.get(DATABASE)).build());
+
+            if(map.containsKey(EC2))
+                ret.setEc2Config(Ec2Config.builder(name)
+                    .parse((Map<String,Object>)map.get(EC2)).build());
+
+            if(map.containsKey(RDS))
+                ret.setRdsConfig(RdsConfig.builder(name)
+                    .parse((Map<String,Object>)map.get(RDS)).build());
+
+            if(map.containsKey(SSH))
+                ret.setSshConfig(SshConfig.builder(name)
+                    .parse((Map<String,Object>)map.get(SSH)).build());
+
+            return this;
+        }
+
+        /**
+         * Returns the configured environment instance
+         * @return The environment instance
+         */
+        public Environment build()
+        {
+            return ret;
+        }
     }
 }

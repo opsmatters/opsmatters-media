@@ -18,7 +18,8 @@ package com.opsmatters.media.model.chart;
 
 import java.util.Map;
 import java.util.LinkedHashMap;
-import java.io.Serializable;
+import com.opsmatters.media.model.ConfigElement;
+import com.opsmatters.media.model.ConfigParser;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -26,15 +27,8 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Widget implements Serializable
+public class Widget implements ConfigElement
 {
-    public static final String ID = "id";
-    public static final String CHART_ID = "chart-id";
-    public static final String SHOW_TITLE = "show-title";
-    public static final String CSS_CLASS = "css-class";
-    public static final String CSS_STYLE = "css-style";
-    public static final String SELECTIONS = "selections";
-
     private String id = "";
     private boolean showTitle = false;
     private String chartId = "";
@@ -72,30 +66,6 @@ public class Widget implements Serializable
             setCssStyle(obj.getCssStyle());
             for(ChartSelection<?> selection : obj.getSelections().values())
                 addSelection(ChartSelectionFactory.newInstance(selection));
-        }
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    public Widget(String id, Map<String, Object> map)
-    {
-        this(id);
-
-        if(map.containsKey(CHART_ID))
-            setChartId((String)map.get(CHART_ID));
-        if(map.containsKey(SHOW_TITLE))
-            setShowTitle((Boolean)map.get(SHOW_TITLE));
-        if(map.containsKey(CSS_CLASS))
-            setCssClass((String)map.get(CSS_CLASS));
-        if(map.containsKey(CSS_STYLE))
-            setCssStyle((String)map.get(CSS_STYLE));
-
-        if(map.containsKey(SELECTIONS))
-        {
-            Map<String,Map<String,Object>> selections = (Map<String,Map<String,Object>>)map.get(SELECTIONS);
-            for(Map.Entry<String,Map<String,Object>> entry : selections.entrySet())
-                addSelection(ChartSelectionFactory.newInstance(entry.getKey(), (Map<String,Object>)entry.getValue()));
         }
     }
 
@@ -267,5 +237,76 @@ public class Widget implements Serializable
         }
 
         return parameters;
+    }
+
+    /**
+     * Returns a builder for the configuration.
+     * @param id The id of the configuration
+     * @return The builder instance.
+     */
+    public static Builder builder(String id)
+    {
+        return new Builder(id);
+    }
+
+    /**
+     * Builder to make configuration construction easier.
+     */
+    public static class Builder implements ConfigParser<Widget>
+    {
+        // The config attribute names
+        private static final String ID = "id";
+        private static final String CHART_ID = "chart-id";
+        private static final String SHOW_TITLE = "show-title";
+        private static final String CSS_CLASS = "css-class";
+        private static final String CSS_STYLE = "css-style";
+        private static final String SELECTIONS = "selections";
+
+        private Widget ret = null;
+
+        /**
+         * Constructor that takes an id.
+         * @param id The id for the configuration
+         */
+        public Builder(String id)
+        {
+            ret = new Widget(id);
+        }
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            if(map.containsKey(CHART_ID))
+                ret.setChartId((String)map.get(CHART_ID));
+            if(map.containsKey(SHOW_TITLE))
+                ret.setShowTitle((Boolean)map.get(SHOW_TITLE));
+            if(map.containsKey(CSS_CLASS))
+                ret.setCssClass((String)map.get(CSS_CLASS));
+            if(map.containsKey(CSS_STYLE))
+                ret.setCssStyle((String)map.get(CSS_STYLE));
+
+            if(map.containsKey(SELECTIONS))
+            {
+                Map<String,Map<String,Object>> selections = (Map<String,Map<String,Object>>)map.get(SELECTIONS);
+                for(Map.Entry<String,Map<String,Object>> entry : selections.entrySet())
+                    ret.addSelection(ChartSelectionFactory.newInstance(entry.getKey(), (Map<String,Object>)entry.getValue()));
+            }
+
+            return this;
+        }
+
+        /**
+         * Returns the configured configuration instance
+         * @return The configuration instance
+         */
+        public Widget build()
+        {
+            return ret;
+        }
     }
 }

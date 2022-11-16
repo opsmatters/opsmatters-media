@@ -60,7 +60,7 @@ import com.opsmatters.media.util.FormatUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCrawler<T>
+public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCrawler<T>
 {
     private static final Logger logger = Logger.getLogger(WebPageCrawler.class.getName());
 
@@ -274,8 +274,11 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
     private void loadTeaserPage(String url) throws IOException
     {
         long now = System.currentTimeMillis();
+//GERALD: fix
         configureImplicitWait(getTeaserLoading());
+//GERALD: fix
         loadPage(url, getTeaserLoading());
+//GERALD: fix
         configureExplicitWait(getTeaserLoading());
 
         // Click a "Load More" button if configured
@@ -295,9 +298,11 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
             logger.info("teaser-page="+getPageSource());
 
         // Scroll the page if configured
+//GERALD: fix
         configureMovement(getTeaserLoading());
 
         // Wait for the page to load
+//GERALD: fix
         configureSleep(getTeaserLoading());
 
         if(debug())
@@ -463,6 +468,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
 
             // Process the teaser selections
             int items = 0;
+//GERALD: fix
             for(ContentFields fields : getTeaserFields())
             {
                 Elements results = doc.select(fields.getRoot());
@@ -980,6 +986,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                             logger.info("Found image "+selector.getAttribute()+" for "+type+" field "+field.getName()+": "+ret);
                         break;
                     }
+/* GERALD
                     else if(image.hasAttr("src"))
                     {
                         ret = getValue(field, image.attr("src"));
@@ -987,10 +994,11 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                             logger.info("Found image src for "+type+" field "+field.getName()+": "+ret);
                         break;
                     }
+*/
                     else if(image.hasAttr("srcset"))
                     {
                         String srcset = getValue(field, image.attr("srcset"));
-                        String[] items = srcset.split(",");
+                        String[] items = srcset.split(", ");
 
                         // Process each srcset item to extract the url and size
                         Map<String,String> map = new HashMap<String,String>();
@@ -1024,6 +1032,14 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends FieldsCra
                         if(debug())
                             logger.info("Found image srcset for "+type+" field "+field.getName()
                                 +" size="+selector.getSize()+": "+ret);
+                        break;
+                    }
+//GERALD: moved
+                    else if(image.hasAttr("src"))
+                    {
+                        ret = getValue(field, image.attr("src"));
+                        if(debug())
+                            logger.info("Found image src for "+type+" field "+field.getName()+": "+ret);
                         break;
                     }
                 }

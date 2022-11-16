@@ -18,6 +18,8 @@ package com.opsmatters.media.model.social;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import com.opsmatters.media.model.ConfigElement;
+import com.opsmatters.media.model.ConfigParser;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.util.StringUtils;
 
@@ -26,7 +28,8 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialChannel implements java.io.Serializable
+//public class SocialChannel implements java.io.Serializable
+public class SocialChannel implements ConfigElement
 {
     private String id = "";
     private String name = "";
@@ -201,5 +204,73 @@ public class SocialChannel implements java.io.Serializable
     public void setEnabled(boolean enabled)
     {
         this.enabled = enabled;
+    }
+
+    /**
+     * Returns a builder for the social channel.
+     * @param id The id of the social channel
+     * @return The builder instance.
+     */
+    public static Builder builder(String id)
+    {
+        return new Builder(id);
+    }
+
+    /**
+     * Builder to make social channel construction easier.
+     */
+    public static class Builder implements ConfigParser<SocialChannel>
+    {
+        // The config attribute names
+        private static final String NAME = "name";
+        private static final String HANDLE = "handle";
+        private static final String ICON = "icon";
+        private static final String PROVIDER = "provider";
+        private static final String SITES = "sites";
+        private static final String ENABLED = "enabled";
+
+        private SocialChannel ret = null;
+
+        /**
+         * Constructor that takes an id.
+         * @param id The id for the configuration
+         */
+        public Builder(String id)
+        {
+            ret = new SocialChannel(id);
+        }
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            if(map.containsKey(NAME))
+                ret.setName((String)map.get(NAME));
+            if(map.containsKey(HANDLE))
+                ret.setHandle((String)map.get(HANDLE));
+            if(map.containsKey(ICON))
+                ret.setIcon((String)map.get(ICON));
+            if(map.containsKey(PROVIDER))
+                ret.setProvider((String)map.get(PROVIDER));
+            if(map.containsKey(SITES))
+                ret.setSites((String)map.get(SITES));
+            if(map.containsKey(ENABLED))
+                ret.setEnabled((Boolean)map.get(ENABLED));
+
+            return this;
+        }
+
+        /**
+         * Returns the configured social channel instance
+         * @return The social channel instance
+         */
+        public SocialChannel build()
+        {
+            return ret;
+        }
     }
 }

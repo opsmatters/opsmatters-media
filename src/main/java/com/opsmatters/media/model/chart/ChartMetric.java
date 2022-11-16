@@ -20,21 +20,16 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.Serializable;
+import com.opsmatters.media.model.ConfigElement;
+import com.opsmatters.media.model.ConfigParser;
 
 /**
  * Represents a single metric on a chart.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ChartMetric<E extends Serializable>
+public class ChartMetric<E extends Serializable> implements ConfigElement
 {
-    public static final String NAME = "name";
-    public static final String CSS_CLASS = "css-class";
-    public static final String CSS_STYLE = "css-style";
-    public static final String LABEL = "label";
-    public static final String SOURCE = "source";
-    public static final String THRESHOLDS = "thresholds";
-
     private String name;
     private String cssClass;
     private String cssStyle;
@@ -71,29 +66,6 @@ public class ChartMetric<E extends Serializable>
             setSource(new ChartSource(obj.getSource()));
             for(MetricThreshold threshold : obj.getThresholds())
                 addThreshold(new MetricThreshold(threshold));
-        }
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    public ChartMetric(Map<String, Object> map)
-    {
-        if(map.containsKey(NAME))
-            setName((String)map.get(NAME));
-        if(map.containsKey(CSS_CLASS))
-            setCssClass((String)map.get(CSS_CLASS));
-        if(map.containsKey(CSS_STYLE))
-            setCssStyle((String)map.get(CSS_STYLE));
-        if(map.containsKey(LABEL))
-            setLabel(new ChartLabel((Map<String,Object>)map.get(LABEL)));
-        if(map.containsKey(SOURCE))
-            setSource(new ChartSource((Map<String,Object>)map.get(SOURCE)));
-        if(map.containsKey(THRESHOLDS))
-        {
-            List<Map<String,Object>> thresholds = (List<Map<String,Object>>)map.get(THRESHOLDS);
-            for(Map<String,Object> config : thresholds)
-                addThreshold(new MetricThreshold((Map<String,Object>)config));
         }
     }
 
@@ -225,6 +197,72 @@ public class ChartMetric<E extends Serializable>
                 .withData(items.get(0))
                 .build();
             config.addMetric(metric);
+        }
+    }
+
+    /**
+     * Returns a builder for the configuration.
+     * @return The builder instance.
+     */
+    public static Builder builder()
+    {
+        return new Builder();
+    }
+
+    /**
+     * Builder to make configuration construction easier.
+     */
+    public static class Builder<E extends Serializable>
+        implements ConfigParser<ChartMetric<E>>
+    {
+        // The config attribute names
+        private static final String NAME = "name";
+        private static final String CSS_CLASS = "css-class";
+        private static final String CSS_STYLE = "css-style";
+        private static final String LABEL = "label";
+        private static final String SOURCE = "source";
+        private static final String THRESHOLDS = "thresholds";
+
+        private ChartMetric<E> ret = new ChartMetric<E>();
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            if(map.containsKey(NAME))
+                ret.setName((String)map.get(NAME));
+            if(map.containsKey(CSS_CLASS))
+                ret.setCssClass((String)map.get(CSS_CLASS));
+            if(map.containsKey(CSS_STYLE))
+                ret.setCssStyle((String)map.get(CSS_STYLE));
+            if(map.containsKey(LABEL))
+                ret.setLabel(ChartLabel.builder()
+                    .parse((Map<String,Object>)map.get(LABEL)).build());
+            if(map.containsKey(SOURCE))
+                ret.setSource(ChartSource.builder()
+                    .parse((Map<String,Object>)map.get(SOURCE)).build());
+            if(map.containsKey(THRESHOLDS))
+            {
+                List<Map<String,Object>> thresholds = (List<Map<String,Object>>)map.get(THRESHOLDS);
+                for(Map<String,Object> config : thresholds)
+                    ret.addThreshold(MetricThreshold.builder()
+                        .parse((Map<String,Object>)config).build());
+            }
+
+            return this;
+        }
+
+        /**
+         * Returns the configured configuration instance
+         * @return The configuration instance
+         */
+        public ChartMetric<E> build()
+        {
+            return ret;
         }
     }
 }

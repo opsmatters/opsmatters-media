@@ -25,35 +25,16 @@ import nl.crashdata.chartjs.data.ChartJsChartType;
 import nl.crashdata.chartjs.data.colors.ChartJsRGBAColor;
 import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsConfigBuilder;
 import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsDatasetBuilder;
+import com.opsmatters.media.model.ConfigElement;
+import com.opsmatters.media.model.ConfigParser;
 
 /**
  * Represents a single dataset on a chart.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ChartDataset<E extends Serializable>
+public class ChartDataset<E extends Serializable> implements ConfigElement
 {
-    public static final String LABEL = "label";
-    public static final String TYPE = "type";
-    public static final String BACKGROUND_COLOR = "background-color";
-    public static final String BACKGROUND_COLORS = "background-colors";
-    public static final String BORDER_COLOR = "border-color";
-    public static final String BORDER_COLORS = "border-colors";
-    public static final String BORDER_WIDTH = "border-width";
-    public static final String BORDER_WIDTHS = "border-widths";
-    public static final String POINT_BACKGROUND_COLOR = "point-background-color";
-    public static final String POINT_BACKGROUND_COLORS = "point-background-colors";
-    public static final String POINT_BORDER_COLOR = "point-border-color";
-    public static final String POINT_BORDER_COLORS = "point-border-colors";
-    public static final String POINT_BORDER_WIDTH = "point-border-width";
-    public static final String POINT_BORDER_WIDTHS = "point-border-widths";
-    public static final String POINT_RADIUS = "point-radius";
-    public static final String POINT_RADIUSES = "point-radiuses";
-    public static final String FILL = "fill";
-    public static final String SOURCE = "source";
-    public static final String STACK = "stack";
-    public static final String ORDER = "order";
-
     private String label;
     private ChartJsChartType type;
     private ChartColor backgroundColor;
@@ -76,7 +57,7 @@ public class ChartDataset<E extends Serializable>
     private Integer order;
 
     /**
-     * Default constructor.
+     * Constructor that takes a type.
      */
     public ChartDataset(ChartJsChartType type)
     {
@@ -119,54 +100,6 @@ public class ChartDataset<E extends Serializable>
             setStack(obj.getStack());
             setOrder(obj.getOrder());
         }
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    public ChartDataset(ChartJsChartType type, Map<String, Object> map)
-    {
-        setType(type);
-        if(map.containsKey(LABEL))
-            setLabel((String)map.get(LABEL));
-        if(map.containsKey(TYPE))
-            setType((String)map.get(TYPE));
-        if(map.containsKey(BACKGROUND_COLOR))
-            setBackgroundColor((String)map.get(BACKGROUND_COLOR));
-        if(map.containsKey(BACKGROUND_COLORS))
-            setStringBackgroundColors((List<String>)map.get(BACKGROUND_COLORS));
-        if(map.containsKey(BORDER_COLOR))
-            setBorderColor((String)map.get(BORDER_COLOR));
-        if(map.containsKey(BORDER_COLORS))
-            setStringBorderColors((List<String>)map.get(BORDER_COLORS));
-        if(map.containsKey(BORDER_WIDTH))
-            setBorderWidth((Integer)map.get(BORDER_WIDTH));
-        if(map.containsKey(BORDER_WIDTHS))
-            setBorderWidths((List<Integer>)map.get(BORDER_WIDTHS));
-        if(map.containsKey(POINT_BACKGROUND_COLOR))
-            setPointBackgroundColor((String)map.get(POINT_BACKGROUND_COLOR));
-        if(map.containsKey(POINT_BACKGROUND_COLORS))
-            setStringPointBackgroundColors((List<String>)map.get(POINT_BACKGROUND_COLORS));
-        if(map.containsKey(POINT_BORDER_COLOR))
-            setPointBorderColor((String)map.get(POINT_BORDER_COLOR));
-        if(map.containsKey(POINT_BORDER_COLORS))
-            setStringPointBorderColors((List<String>)map.get(POINT_BORDER_COLORS));
-        if(map.containsKey(POINT_BORDER_WIDTH))
-            setPointBorderWidth((Integer)map.get(POINT_BORDER_WIDTH));
-        if(map.containsKey(POINT_BORDER_WIDTHS))
-            setPointBorderWidths((List<Integer>)map.get(POINT_BORDER_WIDTHS));
-        if(map.containsKey(POINT_RADIUS))
-            setPointRadius((Integer)map.get(POINT_RADIUS));
-        if(map.containsKey(POINT_RADIUSES))
-            setPointRadiuses((List<Integer>)map.get(POINT_RADIUSES));
-        if(map.containsKey(FILL))
-            setFill(new ChartFill((Map<String,Object>)map.get(FILL)));
-        if(map.containsKey(SOURCE))
-            setSource(new ChartSource((Map<String,Object>)map.get(SOURCE)));
-        if(map.containsKey(STACK))
-            setStack((String)map.get(STACK));
-        if(map.containsKey(ORDER))
-            setOrder((Integer)map.get(ORDER));
     }
 
     /**
@@ -681,5 +614,118 @@ public class ChartDataset<E extends Serializable>
 
         if(getOrder() != null)
             dataset = dataset.withOrder(getOrder());
+    }
+
+    /**
+     * Returns a builder for the configuration.
+     * @param type The type of the configuration
+     * @return The builder instance.
+     */
+    public static Builder builder(ChartJsChartType type)
+    {
+        return new Builder(type);
+    }
+
+    /**
+     * Builder to make configuration construction easier.
+     */
+    public static class Builder<E extends Serializable>
+        implements ConfigParser<ChartDataset<E>>
+    {
+        // The config attribute names
+        private static final String LABEL = "label";
+        private static final String TYPE = "type";
+        private static final String BACKGROUND_COLOR = "background-color";
+        private static final String BACKGROUND_COLORS = "background-colors";
+        private static final String BORDER_COLOR = "border-color";
+        private static final String BORDER_COLORS = "border-colors";
+        private static final String BORDER_WIDTH = "border-width";
+        private static final String BORDER_WIDTHS = "border-widths";
+        private static final String POINT_BACKGROUND_COLOR = "point-background-color";
+        private static final String POINT_BACKGROUND_COLORS = "point-background-colors";
+        private static final String POINT_BORDER_COLOR = "point-border-color";
+        private static final String POINT_BORDER_COLORS = "point-border-colors";
+        private static final String POINT_BORDER_WIDTH = "point-border-width";
+        private static final String POINT_BORDER_WIDTHS = "point-border-widths";
+        private static final String POINT_RADIUS = "point-radius";
+        private static final String POINT_RADIUSES = "point-radiuses";
+        private static final String FILL = "fill";
+        private static final String SOURCE = "source";
+        private static final String STACK = "stack";
+        private static final String ORDER = "order";
+
+        private ChartDataset<E> ret = null;
+
+        /**
+         * Constructor that takes a type.
+         * @param type The type for the configuration
+         */
+        public Builder(ChartJsChartType type)
+        {
+            ret = new ChartDataset<E>(type);
+        }
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            if(map.containsKey(LABEL))
+                ret.setLabel((String)map.get(LABEL));
+            if(map.containsKey(TYPE))
+                ret.setType((String)map.get(TYPE));
+            if(map.containsKey(BACKGROUND_COLOR))
+                ret.setBackgroundColor((String)map.get(BACKGROUND_COLOR));
+            if(map.containsKey(BACKGROUND_COLORS))
+                ret.setStringBackgroundColors((List<String>)map.get(BACKGROUND_COLORS));
+            if(map.containsKey(BORDER_COLOR))
+                ret.setBorderColor((String)map.get(BORDER_COLOR));
+            if(map.containsKey(BORDER_COLORS))
+                ret.setStringBorderColors((List<String>)map.get(BORDER_COLORS));
+            if(map.containsKey(BORDER_WIDTH))
+                ret.setBorderWidth((Integer)map.get(BORDER_WIDTH));
+            if(map.containsKey(BORDER_WIDTHS))
+                ret.setBorderWidths((List<Integer>)map.get(BORDER_WIDTHS));
+            if(map.containsKey(POINT_BACKGROUND_COLOR))
+                ret.setPointBackgroundColor((String)map.get(POINT_BACKGROUND_COLOR));
+            if(map.containsKey(POINT_BACKGROUND_COLORS))
+                ret.setStringPointBackgroundColors((List<String>)map.get(POINT_BACKGROUND_COLORS));
+            if(map.containsKey(POINT_BORDER_COLOR))
+                ret.setPointBorderColor((String)map.get(POINT_BORDER_COLOR));
+            if(map.containsKey(POINT_BORDER_COLORS))
+                ret.setStringPointBorderColors((List<String>)map.get(POINT_BORDER_COLORS));
+            if(map.containsKey(POINT_BORDER_WIDTH))
+                ret.setPointBorderWidth((Integer)map.get(POINT_BORDER_WIDTH));
+            if(map.containsKey(POINT_BORDER_WIDTHS))
+                ret.setPointBorderWidths((List<Integer>)map.get(POINT_BORDER_WIDTHS));
+            if(map.containsKey(POINT_RADIUS))
+                ret.setPointRadius((Integer)map.get(POINT_RADIUS));
+            if(map.containsKey(POINT_RADIUSES))
+                ret.setPointRadiuses((List<Integer>)map.get(POINT_RADIUSES));
+            if(map.containsKey(FILL))
+                ret.setFill(ChartFill.builder()
+                    .parse((Map<String,Object>)map.get(FILL)).build());
+            if(map.containsKey(SOURCE))
+                ret.setSource(ChartSource.builder()
+                    .parse((Map<String,Object>)map.get(SOURCE)).build());
+            if(map.containsKey(STACK))
+                ret.setStack((String)map.get(STACK));
+            if(map.containsKey(ORDER))
+                ret.setOrder((Integer)map.get(ORDER));
+
+            return this;
+        }
+
+        /**
+         * Returns the configured configuration instance
+         * @return The configuration instance
+         */
+        public ChartDataset<E> build()
+        {
+            return ret;
+        }
     }
 }

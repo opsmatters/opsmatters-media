@@ -42,7 +42,7 @@ import software.amazon.awssdk.services.rds.model.StopDbClusterResponse;
 import software.amazon.awssdk.services.rds.model.DBCluster;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.platform.EnvironmentStatus;
-import com.opsmatters.media.model.platform.aws.RDSSettings;
+import com.opsmatters.media.model.platform.aws.RdsConfig;
 
 /**
  * Class that represents a connection to AWS RDS databases.
@@ -61,12 +61,12 @@ public class AwsRdsClient extends Client
     private String secretAccessKey = "";
 
     /**
-     * Returns a new AWS RDS client using the RDS settings.
+     * Returns a new AWS RDS client using the RDS configuration.
      */
-    static public AwsRdsClient newClient(RDSSettings settings) throws IOException
+    static public AwsRdsClient newClient(RdsConfig config) throws IOException
     {
         AwsRdsClient ret = AwsRdsClient.builder()
-            .region(settings.getRegion())
+            .region(config.getRegion())
             .build();
 
         // Configure and create the RDS client

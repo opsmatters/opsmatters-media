@@ -17,6 +17,7 @@
 package com.opsmatters.media.model.chart;
 
 import java.util.Map;
+import com.opsmatters.media.model.ConfigParser;
 
 import static com.opsmatters.media.model.chart.ChartParameterValue.*;
 
@@ -53,15 +54,6 @@ public class StringSelection extends ChartSelection<String>
     }
 
     /**
-     * Reads the object from the given YAML Document.
-     */
-    public StringSelection(ChartParameter parameter, Map<String, Object> map)
-    {
-        super(map);
-        setParameter(parameter);
-    }
-
-    /**
      * Returns the parameter type for the selection.
      */
     public ChartParameterType getType()
@@ -83,6 +75,66 @@ public class StringSelection extends ChartSelection<String>
                 return CURRENT_SESSION.name(); // evaluated later
             default:
                 return getValue();
+        }
+    }
+
+    /**
+     * Returns a builder for the configuration.
+     * @param parameter The chart parameter
+     * @param multiple <CODE>true</CODE> if multiple values are permitted
+     * @return The builder instance.
+     */
+    public static Builder builder(ChartParameter parameter, boolean multiple)
+    {
+        return new Builder(parameter, multiple);
+    }
+
+    /**
+     * Builder to make configuration construction easier.
+     */
+    public static class Builder extends ChartSelection.Builder<String, StringSelection, Builder>
+    {
+        private StringSelection ret = null;
+
+        /**
+         * Constructor that take a parameter and multiple flag.
+         */
+        public Builder(ChartParameter parameter, boolean multiple)
+        {
+            ret = new StringSelection(parameter, multiple);
+            super.set(ret);
+        }
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            super.parse(map);
+            return this;
+        }
+
+        /**
+         * Returns this object.
+         * @return This object
+         */
+        @Override
+        protected Builder self()
+        {
+            return this;
+        }
+
+        /**
+         * Returns the configured configuration instance
+         * @return The configuration instance
+         */
+        @Override
+        public StringSelection build()
+        {
+            return ret;
         }
     }
 }

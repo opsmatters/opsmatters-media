@@ -35,21 +35,21 @@ public class ChartFactory
     }
 
     /**
-     * Creates a new chart.
+     * Creates a new chart builder.
      */
-    public static Chart newInstance(String type, String id)
+    public static Chart.Builder builder(String type, String id)
     {
         if(type.equals(MetricChart.TYPE))
         {
-            return new MetricChart(id);
+            return MetricChart.builder(id);
         }
         else if(type.equals(PIE.name()) || type.equals(DOUGHNUT.name())
             || type.equals(RADAR.name()) || type.equals(POLAR_AREA.name()))
         {
-            return new RadialChart(id);
+            return RadialChart.builder(id);
         }
 
-        return new CartesianChart(id);
+        return CartesianChart.builder(id);
     }
 
     /**
@@ -57,7 +57,7 @@ public class ChartFactory
      */
     public static Chart newInstance(Chart chart)
     {
-        Chart ret = newInstance(chart.getType(), chart.getId());
+        Chart ret = builder(chart.getType(), chart.getId()).build();
         ret.copyAttributes(chart);
         return ret;
     }
@@ -67,8 +67,8 @@ public class ChartFactory
      */
     public static Chart newInstance(String id, Map<String,Object> map)
     {
-        Chart ret = newInstance((String)map.get(Chart.TYPE), id);
-        ret.parse(map);
-        return ret;
+        return builder((String)map.get(Chart.Builder.TYPE), id)
+            .parse(map)
+            .build();
     }
 }

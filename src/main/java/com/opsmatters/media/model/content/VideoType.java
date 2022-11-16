@@ -16,7 +16,7 @@
 
 package com.opsmatters.media.model.content;
 
-import com.opsmatters.media.config.admin.AppParameters;
+import com.opsmatters.media.cache.admin.AppParameters;
 
 import static com.opsmatters.media.model.admin.AppParameterType.*;
 import static com.opsmatters.media.model.admin.AppParameterName.*;

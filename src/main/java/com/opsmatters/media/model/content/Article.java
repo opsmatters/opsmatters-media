@@ -17,7 +17,7 @@ package com.opsmatters.media.model.content;
 
 import java.util.List;
 import org.json.JSONObject;
-import com.opsmatters.media.config.organisation.Organisations;
+import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.model.organisation.Organisation;

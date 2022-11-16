@@ -32,8 +32,6 @@ import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsOptionsBuilder;
  */
 public abstract class ChartJsChart<E extends Serializable> extends Chart<E>
 {
-    public static final String DATASETS = "datasets";
-
     private List<ChartDataset<E>> datasets = new ArrayList<ChartDataset<E>>();
 
     /**
@@ -54,21 +52,6 @@ public abstract class ChartJsChart<E extends Serializable> extends Chart<E>
             super.copyAttributes(obj);
             for(ChartDataset<E> dataset : obj.getDatasets())
                 addDataset(new ChartDataset<E>(dataset));
-        }
-    }
-
-    /**
-     * Reads the object from the given YAML Document.
-     */
-    protected void parse(Map<String, Object> map)
-    {
-        super.parse(map);
-
-        if(map.containsKey(DATASETS))
-        {
-            List<Map<String,Object>> datasets = (List<Map<String,Object>>)map.get(DATASETS);
-            for(Map<String,Object> config : datasets)
-                addDataset(new ChartDataset<E>(getChartJsChartType(), (Map<String,Object>)config));
         }
     }
 
@@ -125,5 +108,48 @@ public abstract class ChartJsChart<E extends Serializable> extends Chart<E>
         options.withResponsive(true);
         options.hoverConfig().withIntersect(true).withMode(ChartJsInteractionMode.NEAREST);
         options.tooltipConfig().withIntersect(false).withMode(ChartJsInteractionMode.INDEX);
+    }
+
+    /**
+     * Builder to make chart construction easier.
+     */
+    protected abstract static class Builder<E extends Serializable, T extends ChartJsChart<E>, B extends Builder<E,T,B>>
+        extends Chart.Builder<E, ChartJsChart<E>, Builder<E,T,B>>
+    {
+        // The config attribute names
+        private static final String DATASETS = "datasets";
+
+        private ChartJsChart ret = null;
+
+        /**
+         * Sets the chart.
+         * @param chart The chart
+         */
+        public void set(ChartJsChart chart)
+        {
+            ret = chart;
+            super.set(ret);
+        }
+
+        /**
+         * Parse the configuration using the given attribute map.
+         * @param map The map of attributes
+         * @return This object
+         */
+        @Override
+        public Builder parse(Map<String, Object> map)
+        {
+            super.parse(map);
+
+            if(map.containsKey(DATASETS))
+            {
+                List<Map<String,Object>> datasets = (List<Map<String,Object>>)map.get(DATASETS);
+                for(Map<String,Object> config : datasets)
+                    ret.addDataset(ChartDataset.builder(ret.getChartJsChartType())
+                        .parse((Map<String,Object>)config).build());
+            }
+
+            return self();
+        }
     }
 }
