@@ -69,7 +69,8 @@ public abstract class CrawlerTarget implements ConfigElement
     {
         if(obj != null)
         {
-            setName(obj.getName());
+//GERALD: removed
+//            setName(obj.getName());
 
 //GERALD: remove later
             if(obj.getTeaserLoading() != null)

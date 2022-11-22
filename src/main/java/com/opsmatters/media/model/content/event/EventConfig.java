@@ -250,9 +250,9 @@ public class EventConfig extends ContentConfig<EventResource>
                         CrawlerWebPage provider = ret.getProvider(config.getProvider());
                         if(provider != null)
                         {
-                            config.copyAttributes(provider);
-                            config.copyAttributes(CrawlerWebPage.builder(entry.getKey())
-                                .parse((Map<String,Object>)entry.getValue()).build());
+                            config.setBrowser(provider.getBrowser());
+                            config.setTeasers(provider.getTeasers());
+                            config.setArticles(provider.getArticles());
                         }
 
                         ret.addPage(config);

@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.organisation.OrganisationContentConfig;
-import com.opsmatters.media.model.content.organisation.OrganisationListingConfig;
 
 /**
  * Class representing the set of content configurations.
@@ -38,7 +37,6 @@ public class ContentConfigs
     private static Map<String,OrganisationContentConfig> configMap = new HashMap<String,OrganisationContentConfig>();
     private static Map<String,OrganisationContentConfig> nameMap = new HashMap<String,OrganisationContentConfig>();
     private static Map<ContentType,Map<String,OrganisationContentConfig>> typeMap = new HashMap<ContentType,Map<String,OrganisationContentConfig>>();
-    private static OrganisationListingConfig listing;
 
     private static boolean initialised = false;
 
@@ -196,22 +194,6 @@ public class ContentConfigs
     public static Map<String,OrganisationContentConfig> mapByType(ContentType type)
     {
         return typeMap.get(type);
-    }
-
-    /**
-     * Returns the organisation listing configuration.
-     */
-    public static OrganisationListingConfig listing()
-    {
-        return listing;
-    }
-
-    /**
-     * Sets the organisation listing configuration.
-     */
-    public static void set(OrganisationListingConfig listing)
-    {
-        ContentConfigs.listing = listing;
     }
 
     /**

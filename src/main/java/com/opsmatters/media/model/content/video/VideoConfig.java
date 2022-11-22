@@ -271,9 +271,8 @@ public class VideoConfig extends ContentConfig<VideoArticle>
                         {
                             List<FieldFilter> filters = config.getFilters();
 
-                            config.copyAttributes(provider);
-                            config.copyAttributes(CrawlerVideoChannel.builder(entry.getKey())
-                                .parse((Map<String,Object>)entry.getValue()).build());
+                            config.setTeasers(provider.getTeasers());
+                            config.setArticles(provider.getArticles());
 
                             // Add the filters from the original set of fields
 //GERALD: fix

@@ -56,11 +56,11 @@ public class OrganisationContentConfig extends ConfigSetup implements FieldSourc
     public static final String SUFFIX = "-content.yml";
 
     private static OrganisationContentConfig defaults;
+    private static OrganisationListingConfig listing;
 
     private String code = "";
     private String name = "";
     private String filename = "";
-    private OrganisationListingConfig listing;
     private VideoConfig videos;
     private RoundupConfig roundups;
     private PostConfig posts;
@@ -197,7 +197,7 @@ public class OrganisationContentConfig extends ConfigSetup implements FieldSourc
     /**
      * Returns the organisation listing configuration.
      */
-    public OrganisationListingConfig getOrganisationListing()
+    public static OrganisationListingConfig getOrganisationListing()
     {
         return listing;
     }
@@ -205,9 +205,9 @@ public class OrganisationContentConfig extends ConfigSetup implements FieldSourc
     /**
      * Sets the organisation listing configuration.
      */
-    public void setOrganisationListing(OrganisationListingConfig listing)
+    public static void setOrganisationListing(OrganisationListingConfig listing)
     {
-        this.listing = listing;
+        OrganisationContentConfig.listing = listing;
     }
 
     /**
