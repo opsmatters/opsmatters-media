@@ -28,14 +28,14 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.WordUtils;
-import com.opsmatters.media.config.content.FieldsConfiguration;
-import com.opsmatters.media.config.content.LoadingConfiguration;
-import com.opsmatters.media.config.content.ContentField;
-import com.opsmatters.media.config.content.ContentFields;
-import com.opsmatters.media.config.content.FieldMatch;
-import com.opsmatters.media.config.content.FieldCase;
-import com.opsmatters.media.config.content.FieldExtractor;
 import com.opsmatters.media.model.content.ContentSummary;
+import com.opsmatters.media.model.content.crawler.ContentLoading;
+import com.opsmatters.media.model.content.crawler.CrawlerTarget;
+import com.opsmatters.media.model.content.crawler.field.Field;
+import com.opsmatters.media.model.content.crawler.field.Fields;
+import com.opsmatters.media.model.content.crawler.field.FieldMatch;
+import com.opsmatters.media.model.content.crawler.field.FieldCase;
+import com.opsmatters.media.model.content.crawler.field.FieldExtractor;
 
 /**
  * Class representing a crawler for content items with fields.
@@ -54,7 +54,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
     private String name = "";
     private boolean debug = false;
     private int maxResults = 0;
-    private FieldsConfiguration config;
+    private CrawlerTarget config;
     private List<T> content = new ArrayList<T>();
     private boolean rootError = false;
 
@@ -63,7 +63,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Constructor that takes a name.
      */
-    public ContentCrawler(FieldsConfiguration config)
+    public ContentCrawler(CrawlerTarget config)
     {
         setName(config.getName());
         this.config = config;
@@ -125,7 +125,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Returns the teaser page loading configuration.
      */
-    public LoadingConfiguration getTeaserLoading()
+    public ContentLoading getTeaserLoading()
     {
 //GERALD: fix
 if(config.hasTeasers())
@@ -136,7 +136,7 @@ if(config.hasTeasers())
     /**
      * Returns the teaser selections of the crawler.
      */
-    public List<ContentFields> getTeaserFields()
+    public List<Fields> getTeaserFields()
     {
 //GERALD: fix
 if(config.hasTeasers())
@@ -147,7 +147,7 @@ if(config.hasTeasers())
     /**
      * Returns the article page loading configuration.
      */
-    public LoadingConfiguration getArticleLoading()
+    public ContentLoading getArticleLoading()
     {
 //GERALD: fix
 if(config.hasArticles())
@@ -158,15 +158,15 @@ if(config.hasArticles())
     /**
      * Returns the article selections of the crawler.
      */
-    public List<ContentFields> getArticleFields()
+    public List<Fields> getArticleFields()
     {
-        List<ContentFields> ret = new ArrayList<ContentFields>();
+        List<Fields> ret = new ArrayList<Fields>();
 //GERALD: remove later
 if(config.getArticleFields() != null)
 {
-        for(ContentFields f : config.getArticleFields())
+        for(Fields f : config.getArticleFields())
         {
-            ContentFields fields = new ContentFields(f);
+            Fields fields = new Fields(f);
             if(hasRootError())
                 fields.setRoot("body");
             ret.add(fields);
@@ -175,9 +175,9 @@ if(config.getArticleFields() != null)
 //GERALD
 if(config.hasArticles())
 {
-        for(ContentFields f : config.getArticles().getFields())
+        for(Fields f : config.getArticles().getFields())
         {
-            ContentFields fields = new ContentFields(f);
+            Fields fields = new Fields(f);
             if(hasRootError())
                 fields.setRoot("body");
             ret.add(fields);
@@ -301,7 +301,7 @@ if(config.hasArticles())
     /**
      * Apply the configured regular expression to the given field value.
      */
-    public String getValue(ContentField field, String value)
+    public String getValue(Field field, String value)
     {
         return getValue(field, value, value);
     }
@@ -309,7 +309,7 @@ if(config.hasArticles())
     /**
      * Apply the configured regular expression to the given field value.
      */
-    public String getValue(ContentField field, String value, String dflt)
+    public String getValue(Field field, String value, String dflt)
     {
         // Remove special characters before processing
         value = processValue(value);

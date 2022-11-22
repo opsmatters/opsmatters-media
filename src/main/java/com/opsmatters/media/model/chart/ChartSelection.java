@@ -180,7 +180,7 @@ public abstract class ChartSelection<E extends Serializable> implements ConfigEl
          * @return This object
          */
         @Override
-        public Builder parse(Map<String, Object> map)
+        public B parse(Map<String, Object> map)
         {
             if(map.containsKey(VALUE))
                 ret.setValue((E)map.get(VALUE));

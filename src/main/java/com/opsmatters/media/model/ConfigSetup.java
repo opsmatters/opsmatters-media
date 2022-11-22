@@ -33,8 +33,9 @@ public abstract class ConfigSetup implements ConfigElement
 
     protected abstract static class Builder<T extends ConfigSetup, B extends Builder<T,B>>
     {
-        private String directory = "";
-        private String filename = "";
+        protected String directory = "";
+        protected String filename = "";
+        protected File file;
 
         /**
          * Sets the configuration file directory.
@@ -59,12 +60,26 @@ public abstract class ConfigSetup implements ConfigElement
         }
 
         /**
+         * Sets the configuration file.
+         * @param key The configuration file
+         * @return This object
+         */
+        public B file(File file)
+        {
+            this.file = file;
+            filename(file.getName());
+            return self();
+        }
+
+        /**
          * Read the configuration setup file
          * @return The social setup instance
          */
         protected void read(ConfigParser parser) throws IOException
         {
-            YamlFileReader reader = new YamlFileReader(new File(directory, filename));
+            if(file == null)
+                file(new File(directory, filename));
+            YamlFileReader reader = new YamlFileReader(file);
             parser.parse(reader.read());
             reader.close();
         }

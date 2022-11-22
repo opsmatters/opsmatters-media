@@ -18,7 +18,7 @@ package com.opsmatters.media.client.video;
 
 import java.io.IOException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.content.VideoProvider;
+import com.opsmatters.media.model.content.video.VideoProvider;
 
 /**
  * Factory class to create a client for a video provider.

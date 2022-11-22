@@ -26,8 +26,6 @@ import java.time.format.DateTimeParseException;
 import java.sql.SQLException;
 import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.Organisations;
-import com.opsmatters.media.config.content.ContentConfiguration;
-import com.opsmatters.media.config.content.FieldsConfiguration;
 import com.opsmatters.media.model.BaseItem;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.admin.Email;
@@ -35,6 +33,8 @@ import com.opsmatters.media.model.admin.EmailBody;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentSummary;
+import com.opsmatters.media.model.content.ContentConfig;
+import com.opsmatters.media.model.content.crawler.CrawlerTarget;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
@@ -97,7 +97,7 @@ public class ContentMonitor extends BaseItem
     /**
      * Constructor that takes content and field configurations.
      */
-    public ContentMonitor(ContentConfiguration content, FieldsConfiguration config)
+    public ContentMonitor(ContentConfig content, CrawlerTarget config)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());

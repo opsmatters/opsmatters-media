@@ -24,12 +24,13 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import com.opsmatters.media.model.content.RoundupSummary;
-import com.opsmatters.media.model.content.RoundupDetails;
-import com.opsmatters.media.config.content.RoundupConfiguration;
-import com.opsmatters.media.config.content.WebPageConfiguration;
-import com.opsmatters.media.config.content.ContentField;
-import com.opsmatters.media.config.content.ContentFields;
+import com.opsmatters.media.model.content.roundup.RoundupSummary;
+import com.opsmatters.media.model.content.roundup.RoundupDetails;
+import com.opsmatters.media.model.content.roundup.RoundupConfig;
+import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
+import com.opsmatters.media.model.content.crawler.field.Field;
+import com.opsmatters.media.model.content.crawler.field.Fields;
+
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.FormatUtils;
 
@@ -42,12 +43,12 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
 {
     private static final Logger logger = Logger.getLogger(RoundupCrawler.class.getName());
 
-    private RoundupConfiguration config;
+    private RoundupConfig config;
 
     /**
      * Constructor that takes a web page configuration.
      */
-    public RoundupCrawler(RoundupConfiguration config, WebPageConfiguration page)
+    public RoundupCrawler(RoundupConfig config,  CrawlerWebPage page)
     {
         super(page);
         this.config = config;
@@ -56,7 +57,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
     /**
      * Returns the roundup configuration of the crawler.
      */
-    public RoundupConfiguration getConfig()
+    public RoundupConfig getConfig()
     {
         return config;
     }
@@ -65,7 +66,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
      * Create a roundup summary from the selected node.
      */
     @Override
-    public RoundupSummary getContentSummary(Element root, ContentFields fields)
+    public RoundupSummary getContentSummary(Element root, Fields fields)
         throws DateTimeParseException
     {
         RoundupSummary content = new RoundupSummary();
@@ -79,7 +80,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
             if(fields.hasUrl())
             {
                 String url = null;
-                ContentField field = fields.getUrl();
+                Field field = fields.getUrl();
                 if(field.generate())
                     url = FormatUtils.generateUrl(getBasePath(), getElements(field, root, "teaser"));
                 else
@@ -109,7 +110,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
     {
         RoundupDetails content = new RoundupDetails(summary);
 //GERALD: fix
-        List<ContentFields> articles = getArticleFields();
+        List<Fields> articles = getArticleFields();
 
 //GERALD: fix
         configureImplicitWait(getArticleLoading());
@@ -134,7 +135,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
         Document doc = Jsoup.parse(getPageSource("body"));
         doc.outputSettings().prettyPrint(false);
 
-        for(ContentFields fields : articles)
+        for(Fields fields : articles)
         {
             if(!fields.hasRoot())
                 throw new IllegalArgumentException("Root empty for roundup content");
@@ -178,12 +179,12 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
      * Populate the content fields from the given node.
      */
     private void populateSummaryFields(Element root, 
-        ContentFields fields, RoundupSummary content, String type)
+        Fields fields, RoundupSummary content, String type)
         throws DateTimeParseException
     {
         if(fields.hasTitle())
         {
-            ContentField field = fields.getTitle();
+            Field field = fields.getTitle();
             String title = getElements(field, root, type);
             if(title != null && title.length() > 0 && !title.equals("Please wait..."))
                 content.setTitle(EmojiParser.removeAllEmojis(title.trim()));
@@ -191,7 +192,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
 
         if(fields.hasPublishedDate())
         {
-            ContentField field = fields.getPublishedDate();
+            Field field = fields.getPublishedDate();
             String publishedDate = getElements(field, root, type);
             if(publishedDate != null)
             {
@@ -226,7 +227,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
 
         if(fields.hasAuthor())
         {
-            ContentField field = fields.getAuthor();
+            Field field = fields.getAuthor();
             String author = getElements(field, root, type);
             if(author != null && author.length() > 0)
                 content.setAuthor(author);
@@ -234,7 +235,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
 
         if(fields.hasAuthorLink())
         {
-            ContentField field = fields.getAuthorLink();
+            Field field = fields.getAuthorLink();
             String authorLink = getAnchor(field, root, type, field.removeParameters());
             if(authorLink != null && authorLink.length() > 0)
                 content.setAuthorLink(authorLink);
@@ -242,7 +243,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
 
         if(fields.hasImage())
         {
-            ContentField field = fields.getImage();
+            Field field = fields.getImage();
             String src = getImageSrc(field, root, type);
             if(src != null && src.length() > 0)
             {
@@ -260,7 +261,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
 
         if(fields.hasBackgroundImage())
         {
-            ContentField field = fields.getBackgroundImage();
+            Field field = fields.getBackgroundImage();
             String style = getStyle(field, root, type);
             if(style != null && style.length() > 0)
             {

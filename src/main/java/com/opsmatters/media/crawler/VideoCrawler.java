@@ -23,23 +23,24 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
-import com.opsmatters.media.model.content.VideoSummary;
-import com.opsmatters.media.model.content.VideoDetails;
-import com.opsmatters.media.config.content.VideoConfiguration;
-import com.opsmatters.media.config.content.VideoChannelConfiguration;
-import com.opsmatters.media.config.content.LoadingConfiguration;
-import com.opsmatters.media.config.content.ContentField;
-import com.opsmatters.media.config.content.ContentFields;
-import com.opsmatters.media.config.content.FieldSelector;
-import com.opsmatters.media.config.content.Fields;
-import com.opsmatters.media.config.content.FieldFilter;
-import com.opsmatters.media.config.content.FilterScope;
-import com.opsmatters.media.config.content.FilterResult;
+import com.opsmatters.media.model.content.video.VideoSummary;
+import com.opsmatters.media.model.content.video.VideoDetails;
+import com.opsmatters.media.model.content.video.VideoConfig;
+import com.opsmatters.media.model.content.crawler.ContentLoading;
+import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
+import com.opsmatters.media.model.content.crawler.field.Field;
+import com.opsmatters.media.model.content.crawler.field.Fields;
+import com.opsmatters.media.model.content.crawler.field.FieldSelector;
+import com.opsmatters.media.model.content.crawler.field.FieldFilter;
+import com.opsmatters.media.model.content.crawler.field.FilterScope;
+import com.opsmatters.media.model.content.crawler.field.FilterResult;
+import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
 import com.opsmatters.media.client.video.VideoClient;
 import com.opsmatters.media.client.video.VideoClientFactory;
 
-import static com.opsmatters.media.config.content.FilterScope.*;
-import static com.opsmatters.media.config.content.FilterResult.*;
+import static com.opsmatters.media.model.content.crawler.field.FilterScope.*;
+import static com.opsmatters.media.model.content.crawler.field.FilterResult.*;
+import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
  * Class representing a crawler for videos.
@@ -51,15 +52,15 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
     private static final Logger logger = Logger.getLogger(VideoCrawler.class.getName());
 
     private transient VideoClient client;
-    private VideoConfiguration config;
-    private VideoChannelConfiguration channel;
+    private VideoConfig config;
+    private CrawlerVideoChannel channel;
     private String channelTitle = "";
     private boolean initialised = false;
 
     /**
      * Constructor that takes a video channel configuration.
      */
-    public VideoCrawler(VideoConfiguration config, VideoChannelConfiguration channel) throws IOException
+    public VideoCrawler(VideoConfig config, CrawlerVideoChannel channel) throws IOException
     {
         super(channel);
         this.config = config;
@@ -91,7 +92,7 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
     /**
      * Returns the video configuration of the crawler.
      */
-    public VideoConfiguration getConfig()
+    public VideoConfig getConfig()
     {
         return config;
     }
@@ -99,7 +100,7 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
     /**
      * Returns the video channel configuration of the crawler.
      */
-    public VideoChannelConfiguration getChannel()
+    public CrawlerVideoChannel getChannel()
     {
         return channel;
     }
@@ -116,7 +117,7 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
     /**
      * Create the video summary from a selected node.
      */
-    public VideoSummary getContentSummary(JSONObject video, ContentFields fields)
+    public VideoSummary getContentSummary(JSONObject video, Fields fields)
     {
         VideoSummary content = new VideoSummary();
 
@@ -128,7 +129,7 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
     /**
      * Process all the configured teaser fields.
      */
-    public int processTeaserFields(LoadingConfiguration loading) throws IOException
+    public int processTeaserFields(ContentLoading loading) throws IOException
     {
         int ret = 0;
         initialised = true;
@@ -136,7 +137,7 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
         // Process selections
         Map<String,String> map = new HashMap<String,String>();
 //GERALD: fix
-        for(ContentFields fields : getTeaserFields())
+        for(Fields fields : getTeaserFields())
         {
             List<JSONObject> results = client.listVideos(channel.getChannelId(),
                 channel.getUserId(), getMaxResults());
@@ -158,7 +159,7 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
 
                     addContent(content);
                     map.put(content.getUniqueId(), content.getUniqueId());
-                    channelTitle = result.getString(Fields.CHANNEL_TITLE);
+                    channelTitle = result.getString(CHANNEL_TITLE.value());
                 }
 
                 if(numContentItems() >= getMaxResults())
@@ -183,18 +184,18 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
 
         VideoDetails content = new VideoDetails(videoId);
 //GERALD: fix
-        List<ContentFields> articles = getArticleFields();
-        for(ContentFields fields : articles)
+        List<Fields> articles = getArticleFields();
+        for(Fields fields : articles)
         {
             populateSummaryFields(video, fields, content, "content");
 
-            content.setDuration(video.getInt(Fields.DURATION));
-            content.setChannelTitle(video.getString(Fields.CHANNEL_TITLE));
-            content.setChannelId(video.getString(Fields.CHANNEL_ID));
+            content.setDuration(video.getInt(DURATION.value()));
+            content.setChannelTitle(video.getString(CHANNEL_TITLE.value()));
+            content.setChannelId(video.getString(CHANNEL_ID.value()));
 
             if(fields.hasBody())
             {
-                ContentField field = fields.getBody();
+                Field field = fields.getBody();
                 String body = getBody(field, field.getSelector(0), video, "content");
                 if(body != null)
                     content.setDescription(body);
@@ -208,14 +209,14 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
      * Populate the content fields from the given node.
      */
     private void populateSummaryFields(JSONObject video, 
-        ContentFields fields, VideoSummary content, String type)
+        Fields fields, VideoSummary content, String type)
     {
-        content.setVideoId(video.getString(Fields.VIDEO_ID));
-        content.setProvider(video.getString(Fields.PROVIDER));
+        content.setVideoId(video.getString(VIDEO_ID.value()));
+        content.setProvider(video.getString(PROVIDER.value()));
 
         if(fields.hasTitle())
         {
-            ContentField field = fields.getTitle();
+            Field field = fields.getTitle();
             String title = getValue(field, video.getString(field.getSelector(0).getExpr()));
             if(title != null && title.length() > 0)
                 content.setTitle(EmojiParser.removeAllEmojis(title));
@@ -223,7 +224,7 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
 
         if(fields.hasPublishedDate())
         {
-            ContentField field = fields.getPublishedDate();
+            Field field = fields.getPublishedDate();
             String publishedDate = getValue(field, video.getString(field.getSelector(0).getExpr()));
             if(publishedDate != null)
                 content.setPublishedDateAsString(publishedDate, field.getDatePattern());
@@ -233,7 +234,7 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
     /**
      * Process the body field.
      */
-    protected String getBody(ContentField field, FieldSelector selector, JSONObject video, String type)
+    protected String getBody(Field field, FieldSelector selector, JSONObject video, String type)
     {
         String ret = null;
 

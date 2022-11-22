@@ -20,8 +20,9 @@ import java.util.HashMap;
 import java.io.StringReader;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.text.diff.StringsComparator;
-import com.opsmatters.media.config.content.Fields;
-import com.opsmatters.media.model.content.VideoProvider;
+import com.opsmatters.media.model.content.video.VideoProvider;
+
+import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
  * Compares two snapshot items to produce a HTML document that hightlights all differences.
@@ -37,11 +38,11 @@ public class SnapshotDiff
     static
     {
         // The display names for the keys
-        NAMES.put(Fields.TITLE, "Title");
-        NAMES.put(Fields.PUBLISHED_DATE, "Date");
-        NAMES.put(Fields.START_DATE, "Date");
-        NAMES.put(Fields.URL, "URL");
-        NAMES.put(Fields.VIDEO_ID, "Video ID");
+        NAMES.put(TITLE.value(), "Title");
+        NAMES.put(PUBLISHED_DATE.value(), "Date");
+        NAMES.put(START_DATE.value(), "Date");
+        NAMES.put(URL.value(), "URL");
+        NAMES.put(VIDEO_ID.value(), "Video ID");
     }
 
     public static String compare(String text1, String text2)
@@ -67,9 +68,9 @@ public class SnapshotDiff
                 if(leftProperty != null)
                 {
                     left = left.substring(leftProperty.length()+1);
-                    if(leftProperty.equals(Fields.URL))
+                    if(leftProperty.equals(URL.value()))
                         leftUrl = left;
-                    else if(leftProperty.equals(Fields.VIDEO_ID))
+                    else if(leftProperty.equals(VIDEO_ID.value()))
                         leftUrl = String.format(VideoProvider.YOUTUBE.videoUrl(), left);
                     leftProperty = NAMES.get(leftProperty);
                 }
@@ -80,9 +81,9 @@ public class SnapshotDiff
                 if(rightProperty != null)
                 {
                     right = right.substring(rightProperty.length()+1);
-                    if(rightProperty.equals(Fields.URL))
+                    if(rightProperty.equals(URL.value()))
                         rightUrl = right;
-                    else if(rightProperty.equals(Fields.VIDEO_ID))
+                    else if(rightProperty.equals(VIDEO_ID.value()))
                         rightUrl = String.format(VideoProvider.YOUTUBE.videoUrl(), right);
                     rightProperty = NAMES.get(rightProperty);
                 }

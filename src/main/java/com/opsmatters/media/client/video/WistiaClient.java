@@ -26,11 +26,12 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.model.content.VideoProvider;
-import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.model.content.video.VideoProvider;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.wistia.Wistia;
 import com.opsmatters.wistia.WistiaResponse;
+
+import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
  * Print a list of videos uploaded to the user's Wistia channel.
@@ -149,14 +150,14 @@ public class WistiaClient extends Client implements VideoClient
                 JSONObject project = item.getJSONObject("project");
 
                 ret = new JSONObject();
-                ret.put(Fields.VIDEO_ID, videoId);
-                ret.put(Fields.TITLE, item.optString("name"));
-                ret.put(Fields.PUBLISHED_DATE, item.optString("created"));
-                ret.putOpt(Fields.DESCRIPTION, item.optString("description"));
-                ret.put(Fields.DURATION, item.optLong("duration"));
-                ret.put(Fields.CHANNEL_ID, project.optString("hashed_id"));
-                ret.put(Fields.CHANNEL_TITLE, project.optString("name"));
-                ret.put(Fields.PROVIDER, VideoProvider.WISTIA.code());
+                ret.put(VIDEO_ID.value(), videoId);
+                ret.put(TITLE.value(), item.optString("name"));
+                ret.put(PUBLISHED_DATE.value(), item.optString("created"));
+                ret.putOpt(DESCRIPTION.value(), item.optString("description"));
+                ret.put(DURATION.value(), item.optLong("duration"));
+                ret.put(CHANNEL_ID.value(), project.optString("hashed_id"));
+                ret.put(CHANNEL_TITLE.value(), project.optString("name"));
+                ret.put(PROVIDER.value(), VideoProvider.WISTIA.code());
             }
             else
             {
@@ -207,10 +208,10 @@ public class WistiaClient extends Client implements VideoClient
                     JSONObject item = data.getJSONObject(i);
 
                     JSONObject video = new JSONObject();
-                    video.put(Fields.VIDEO_ID, item.optString("hashed_id"));
-                    video.put(Fields.TITLE, item.optString("name"));
-                    video.put(Fields.PUBLISHED_DATE, item.optString("created"));
-                    video.put(Fields.PROVIDER, VideoProvider.WISTIA.code());
+                    video.put(VIDEO_ID.value(), item.optString("hashed_id"));
+                    video.put(TITLE.value(), item.optString("name"));
+                    video.put(PUBLISHED_DATE.value(), item.optString("created"));
+                    video.put(PROVIDER.value(), VideoProvider.WISTIA.code());
 
                     list.add(video);
                 }

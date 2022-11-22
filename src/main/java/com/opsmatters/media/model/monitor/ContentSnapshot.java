@@ -25,16 +25,17 @@ import java.util.logging.Logger;
 import java.sql.SQLException;
 import org.json.JSONObject;
 import org.json.JSONArray;
-import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentSummary;
 import com.opsmatters.media.model.content.ContentItem;
-import com.opsmatters.media.model.content.RoundupSummary;
-import com.opsmatters.media.model.content.VideoSummary;
-import com.opsmatters.media.model.content.VideoArticle;
-import com.opsmatters.media.model.content.EventSummary;
-import com.opsmatters.media.model.content.PublicationSummary;
+import com.opsmatters.media.model.content.roundup.RoundupSummary;
+import com.opsmatters.media.model.content.video.VideoSummary;
+import com.opsmatters.media.model.content.video.VideoArticle;
+import com.opsmatters.media.model.content.event.EventSummary;
+import com.opsmatters.media.model.content.publication.PublicationSummary;
 import com.opsmatters.media.model.content.LinkedContent;
+
+import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
  * Class representing a snapshot of content monitor content.
@@ -60,7 +61,7 @@ public class ContentSnapshot extends JSONObject
         }
 
         put(type.tag(), array);
-        put(Fields.COUNT, array.length());
+        put(COUNT.value(), array.length());
     }
 
     /**
@@ -76,7 +77,7 @@ public class ContentSnapshot extends JSONObject
         }
 
         put(type.tag(), array);
-        put(Fields.COUNT, array.length());
+        put(COUNT.value(), array.length());
     }
 
     /**
@@ -141,7 +142,7 @@ public class ContentSnapshot extends JSONObject
      */
     public int getCount()
     {
-        return optInt(Fields.COUNT, -1);
+        return optInt(COUNT.value(), -1);
     }
 
     /**
@@ -195,10 +196,10 @@ public class ContentSnapshot extends JSONObject
     private JSONObject createObject(RoundupSummary content)
     {
         JSONObject ret = new JSONObject();
-        ret.put(Fields.TITLE, content.getTitle());
+        ret.put(TITLE.value(), content.getTitle());
         if(content.getPublishedDate() != null)
-            ret.put(Fields.PUBLISHED_DATE, content.getPublishedDateAsString());
-        ret.put(Fields.URL, content.getUrl());
+            ret.put(PUBLISHED_DATE.value(), content.getPublishedDateAsString());
+        ret.put(URL.value(), content.getUrl());
         return ret;
     }
 
@@ -208,10 +209,10 @@ public class ContentSnapshot extends JSONObject
     private JSONObject createObject(VideoSummary content)
     {
         JSONObject ret = new JSONObject();
-        ret.put(Fields.TITLE, content.getTitle());
+        ret.put(TITLE.value(), content.getTitle());
         if(content.getPublishedDate() != null)
-            ret.put(Fields.PUBLISHED_DATE, content.getPublishedDateAsString());
-        ret.put(Fields.VIDEO_ID, content.getVideoId());
+            ret.put(PUBLISHED_DATE.value(), content.getPublishedDateAsString());
+        ret.put(VIDEO_ID.value(), content.getVideoId());
         return ret;
     }
 
@@ -221,10 +222,10 @@ public class ContentSnapshot extends JSONObject
     private JSONObject createObject(EventSummary content)
     {
         JSONObject ret = new JSONObject();
-        ret.put(Fields.TITLE, content.getTitle());
+        ret.put(TITLE.value(), content.getTitle());
         if(content.getStartDate() != null)
-            ret.put(Fields.START_DATE, content.getStartDateAsString());
-        ret.put(Fields.URL, content.getUrl());
+            ret.put(START_DATE.value(), content.getStartDateAsString());
+        ret.put(URL.value(), content.getUrl());
         return ret;
     }
 
@@ -234,10 +235,10 @@ public class ContentSnapshot extends JSONObject
     private JSONObject createObject(PublicationSummary content)
     {
         JSONObject ret = new JSONObject();
-        ret.put(Fields.TITLE, content.getTitle());
+        ret.put(TITLE.value(), content.getTitle());
         if(content.getPublishedDate() != null)
-            ret.put(Fields.PUBLISHED_DATE, content.getPublishedDateAsString());
-        ret.put(Fields.URL, content.getUrl());
+            ret.put(PUBLISHED_DATE.value(), content.getPublishedDateAsString());
+        ret.put(URL.value(), content.getUrl());
         return ret;
     }
 
@@ -269,10 +270,10 @@ public class ContentSnapshot extends JSONObject
         for(int i = 0; i < latestArray.length(); i++)
         {
             JSONObject item = latestArray.getJSONObject(i);
-            String title = item.optString(Fields.TITLE);
-            String id = item.optString(Fields.URL);
+            String title = item.optString(TITLE.value());
+            String id = item.optString(URL.value());
             if(type == ContentType.VIDEO)
-                id = item.optString(Fields.VIDEO_ID);
+                id = item.optString(VIDEO_ID.value());
             titles.put(title, item);
             ids.put(id, item);
         }
@@ -285,10 +286,10 @@ public class ContentSnapshot extends JSONObject
         for(int i = 0; i < currentArray.length(); i++)
         {
             JSONObject item = currentArray.getJSONObject(i);
-            String title = item.optString(Fields.TITLE);
-            String id = item.optString(Fields.URL);
+            String title = item.optString(TITLE.value());
+            String id = item.optString(URL.value());
             if(type == ContentType.VIDEO)
-                id = item.optString(Fields.VIDEO_ID);
+                id = item.optString(VIDEO_ID.value());
             titles.remove(title);
             ids.remove(id);
         }
@@ -307,12 +308,12 @@ public class ContentSnapshot extends JSONObject
                 Entry<String,JSONObject> entry = iterator.next();
                 String title = entry.getKey();
                 JSONObject item = entry.getValue();
-                String publishedDate = item.optString(Fields.PUBLISHED_DATE);
+                String publishedDate = item.optString(PUBLISHED_DATE.value());
                 if(publishedDate.length() > 0)
                     publishedDate = publishedDate.substring(0, publishedDate.indexOf(" ")); // Remove time part
-                String id = item.optString(Fields.URL);
+                String id = item.optString(URL.value());
                 if(type == ContentType.VIDEO)
-                    id = item.optString(Fields.VIDEO_ID);
+                    id = item.optString(VIDEO_ID.value());
 
                 ContentItem content = lookup.getByTitle(title);
                 if(content != null)
@@ -323,7 +324,7 @@ public class ContentSnapshot extends JSONObject
                         VideoArticle video = (VideoArticle)content;
                         if(!id.equals(video.getVideoId()))
                         {
-                            item.put(Fields.LAST_VIDEO_ID, video.getVideoId());
+                            item.put(LAST_VIDEO_ID.value(), video.getVideoId());
                             entry.setValue(item);
                         }
                     }
@@ -332,7 +333,7 @@ public class ContentSnapshot extends JSONObject
                         LinkedContent linked = (LinkedContent)content;
                         if(!id.equals(linked.getUrl()))
                         {
-                            item.put(Fields.LAST_URL, linked.getUrl());
+                            item.put(LAST_URL.value(), linked.getUrl());
                             entry.setValue(item);
                         }
                     }
@@ -341,7 +342,7 @@ public class ContentSnapshot extends JSONObject
                     if(publishedDate.length() > 0
                         && !content.getPublishedDateAsString().startsWith(publishedDate))
                     {
-                        item.put(Fields.LAST_PUBLISHED_DATE, content.getPublishedDateAsString());
+                        item.put(LAST_PUBLISHED_DATE.value(), content.getPublishedDateAsString());
                         entry.setValue(item);
                         continue;
                     }
@@ -358,7 +359,7 @@ public class ContentSnapshot extends JSONObject
                         // Store the last title if it has changed
                         if(!title.equals(content.getTitle()))
                         {
-                            item.put(Fields.LAST_TITLE, content.getTitle());
+                            item.put(LAST_TITLE.value(), content.getTitle());
                             entry.setValue(item);
                         }
 
@@ -366,7 +367,7 @@ public class ContentSnapshot extends JSONObject
                         if(publishedDate.length() > 0
                             && !content.getPublishedDateAsString().startsWith(publishedDate))
                         {
-                            item.put(Fields.LAST_PUBLISHED_DATE, content.getPublishedDateAsString());
+                            item.put(LAST_PUBLISHED_DATE.value(), content.getPublishedDateAsString());
                             entry.setValue(item);
                         }
                     }
@@ -379,10 +380,10 @@ public class ContentSnapshot extends JSONObject
                 Entry<String,JSONObject> entry = iterator.next();
                 String id = entry.getKey();
                 JSONObject item = entry.getValue();
-                String publishedDate = item.optString(Fields.PUBLISHED_DATE);
+                String publishedDate = item.optString(PUBLISHED_DATE.value());
                 if(publishedDate.length() > 0)
                     publishedDate = publishedDate.substring(0, publishedDate.indexOf(" ")); // Remove time part
-                String title = item.optString(Fields.TITLE);
+                String title = item.optString(TITLE.value());
 
                 ContentItem content = lookup.getById(id);
                 if(content != null)
@@ -390,7 +391,7 @@ public class ContentSnapshot extends JSONObject
                     // Store the last title if it has changed
                     if(!title.equals(content.getTitle()))
                     {
-                        item.put(Fields.LAST_TITLE, content.getTitle());
+                        item.put(LAST_TITLE.value(), content.getTitle());
                         entry.setValue(item);
                     }
 
@@ -398,7 +399,7 @@ public class ContentSnapshot extends JSONObject
                     if(publishedDate.length() > 0
                         && !content.getPublishedDateAsString().startsWith(publishedDate))
                     {
-                        item.put(Fields.LAST_PUBLISHED_DATE, content.getPublishedDateAsString());
+                        item.put(LAST_PUBLISHED_DATE.value(), content.getPublishedDateAsString());
                         entry.setValue(item);
                         continue;
                     }
@@ -418,7 +419,7 @@ public class ContentSnapshot extends JSONObject
                             VideoArticle video = (VideoArticle)content;
                             if(!id.equals(video.getVideoId()))
                             {
-                                item.put(Fields.LAST_VIDEO_ID, video.getVideoId());
+                                item.put(LAST_VIDEO_ID.value(), video.getVideoId());
                                 entry.setValue(item);
                             }
                         }
@@ -427,7 +428,7 @@ public class ContentSnapshot extends JSONObject
                             LinkedContent linked = (LinkedContent)content;
                             if(!id.equals(linked.getUrl()))
                             {
-                                item.put(Fields.LAST_URL, linked.getUrl());
+                                item.put(LAST_URL.value(), linked.getUrl());
                                 entry.setValue(item);
                             }
                         }
@@ -436,7 +437,7 @@ public class ContentSnapshot extends JSONObject
                         if(publishedDate.length() > 0
                             && !content.getPublishedDateAsString().startsWith(publishedDate))
                         {
-                            item.put(Fields.LAST_PUBLISHED_DATE, content.getPublishedDateAsString());
+                            item.put(LAST_PUBLISHED_DATE.value(), content.getPublishedDateAsString());
                             entry.setValue(item);
                         }
                     }
@@ -460,10 +461,10 @@ public class ContentSnapshot extends JSONObject
                 Entry<String,JSONObject> entry = iterator.next();
                 String title = entry.getKey();
                 JSONObject item = entry.getValue();
-                String id = item.optString(Fields.URL);
+                String id = item.optString(URL.value());
                 if(type == ContentType.VIDEO)
-                    id = item.optString(Fields.VIDEO_ID);
-                String publishedDate = item.optString(Fields.PUBLISHED_DATE);
+                    id = item.optString(VIDEO_ID.value());
+                String publishedDate = item.optString(PUBLISHED_DATE.value());
                 logger.info(String.format("Unable to find item with title for %s: id=%s, published=%s, title=%s",
                     code, id, publishedDate, title));
                 if(!items.contains(item))
@@ -480,8 +481,8 @@ public class ContentSnapshot extends JSONObject
                 Entry<String,JSONObject> entry = iterator.next();
                 String id = entry.getKey();
                 JSONObject item = entry.getValue();
-                String title = item.optString(Fields.TITLE);
-                String publishedDate = item.optString(Fields.PUBLISHED_DATE);
+                String title = item.optString(TITLE.value());
+                String publishedDate = item.optString(PUBLISHED_DATE.value());
                 logger.info(String.format("Unable to find item with id for %s: id=%s, published=%s, title=%s",
                     code, id, publishedDate, title));
                 if(!items.contains(item))
@@ -497,7 +498,7 @@ public class ContentSnapshot extends JSONObject
      */
     public boolean containsItems()
     {
-        return toString().indexOf(String.format("\"%s\"", Fields.COUNT)) != -1;
+        return toString().indexOf(String.format("\"%s\"", COUNT.value())) != -1;
     }
 
     /**
@@ -519,9 +520,9 @@ public class ContentSnapshot extends JSONObject
 
                 // Add an empty Date field if one wasn't provided
                 //   Otherwise the fields could be out of sync and mess up the comparison.
-                String fieldname = Fields.PUBLISHED_DATE;
+                String fieldname = PUBLISHED_DATE.value();
                 if(type.equals(ContentType.EVENT.tag()))
-                    fieldname = Fields.START_DATE;
+                    fieldname = START_DATE.value();
                 if(!item.has(fieldname))
                     item.put(fieldname, "");
 

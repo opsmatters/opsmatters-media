@@ -31,11 +31,10 @@ import org.apache.commons.text.StringSubstitutor;
 import com.google.common.io.Files;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
-import com.opsmatters.media.config.content.ContentConfiguration;
-import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.model.platform.PlatformSetup;
 import com.opsmatters.media.model.platform.Environment;
 import com.opsmatters.media.model.platform.aws.S3Config;
+import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.client.SshClient;
 import com.opsmatters.media.client.aws.AwsS3Client;
 import com.opsmatters.media.file.InputFileReader;
@@ -44,6 +43,8 @@ import com.opsmatters.media.file.FileFormat;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.FileUtils;
+
+import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
  * Creates and writes a formatted set of fields representing content.
@@ -95,7 +96,7 @@ public class ContentHandler
     /**
      * Sets the content configuration for the handler.
      */
-    public void setConfiguration(ContentConfiguration config)
+    public void setConfig(ContentConfig config)
     {
         setName(config.getName());
         setFilename(config.getFilename());
@@ -267,19 +268,19 @@ public class ContentHandler
     private void processInputs(Map<String,String> input)
     {
         // Derive the formatted ID
-        int id = Integer.parseInt(input.get(Fields.ID));
-        input.put(Fields.ID, String.format("%05d", id));
+        int id = Integer.parseInt(input.get(ID.value()));
+        input.put(ID.value(), String.format("%05d", id));
 
         // Derive the dates
-        String publishedDate = input.get(Fields.PUBLISHED_DATE);
+        String publishedDate = input.get(PUBLISHED_DATE.value());
         if(publishedDate != null)
-            input.put(Fields.PUBDATE, publishedDate);
-        String startDate = input.get(Fields.START_DATE);
+            input.put(PUBDATE.value(), publishedDate);
+        String startDate = input.get(START_DATE.value());
         if(startDate != null)
-            input.put(Fields.START_DATE, startDate);
-        String endDate = input.get(Fields.END_DATE);
+            input.put(START_DATE.value(), startDate);
+        String endDate = input.get(END_DATE.value());
         if(endDate != null)
-            input.put(Fields.END_DATE, endDate);
+            input.put(END_DATE.value(), endDate);
     }
 
     /**
@@ -851,9 +852,9 @@ public class ContentHandler
          * @param config The config file
          * @return This object
          */
-        public Builder useConfiguration(ContentConfiguration config)
+        public Builder useConfig(ContentConfig config)
         {
-            handler.setConfiguration(config);
+            handler.setConfig(config);
             return this;
         }
 

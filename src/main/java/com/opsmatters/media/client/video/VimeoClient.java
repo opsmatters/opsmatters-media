@@ -28,9 +28,10 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.model.content.VideoProvider;
-import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.model.content.video.VideoProvider;
 import com.opsmatters.media.util.FormatUtils;
+
+import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
  * Print a list of videos uploaded to the user's Vimeo channel.
@@ -153,14 +154,14 @@ public class VimeoClient extends Client implements VideoClient
                 String link = user.optString("link");
 
                 ret = new JSONObject();
-                ret.put(Fields.VIDEO_ID, videoId);
-                ret.put(Fields.TITLE, item.optString("name"));
-                ret.put(Fields.PUBLISHED_DATE, item.optString("created_time"));
-                ret.putOpt(Fields.DESCRIPTION, item.optString("description"));
-                ret.put(Fields.DURATION, item.optLong("duration"));
-                ret.put(Fields.CHANNEL_ID, link.substring(link.lastIndexOf("/")+1));
-                ret.put(Fields.CHANNEL_TITLE, user.optString("name"));
-                ret.put(Fields.PROVIDER, VideoProvider.VIMEO.code());
+                ret.put(VIDEO_ID.value(), videoId);
+                ret.put(TITLE.value(), item.optString("name"));
+                ret.put(PUBLISHED_DATE.value(), item.optString("created_time"));
+                ret.putOpt(DESCRIPTION.value(), item.optString("description"));
+                ret.put(DURATION.value(), item.optLong("duration"));
+                ret.put(CHANNEL_ID.value(), link.substring(link.lastIndexOf("/")+1));
+                ret.put(CHANNEL_TITLE.value(), user.optString("name"));
+                ret.put(PROVIDER.value(), VideoProvider.VIMEO.code());
             }
             else
             {
@@ -212,10 +213,10 @@ public class VimeoClient extends Client implements VideoClient
                     String uri = item.optString("uri");
 
                     JSONObject video = new JSONObject();
-                    video.put(Fields.VIDEO_ID, uri.substring(uri.lastIndexOf("/")+1));
-                    video.put(Fields.TITLE, item.optString("name"));
-                    video.put(Fields.PUBLISHED_DATE, item.optString("created_time"));
-                    video.put(Fields.PROVIDER, VideoProvider.VIMEO.code());
+                    video.put(VIDEO_ID.value(), uri.substring(uri.lastIndexOf("/")+1));
+                    video.put(TITLE.value(), item.optString("name"));
+                    video.put(PUBLISHED_DATE.value(), item.optString("created_time"));
+                    video.put(PROVIDER.value(), VideoProvider.VIMEO.code());
 
                     list.add(video);
                 }

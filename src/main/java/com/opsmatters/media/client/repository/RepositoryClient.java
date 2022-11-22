@@ -17,8 +17,8 @@
 package com.opsmatters.media.client.repository;
 
 import java.io.IOException;
-import com.opsmatters.media.model.content.RepositoryProvider;
-import com.opsmatters.media.model.content.ProjectDetails;
+import com.opsmatters.media.model.content.project.ProjectDetails;
+import com.opsmatters.media.model.content.project.RepositoryProvider;
 
 /**
  * Methods to interact with a repository provider.

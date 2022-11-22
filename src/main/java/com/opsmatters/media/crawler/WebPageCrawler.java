@@ -40,15 +40,15 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import com.opsmatters.media.config.content.WebPageConfiguration;
-import com.opsmatters.media.config.content.LoadingConfiguration;
-import com.opsmatters.media.config.content.MoreLinkConfiguration;
-import com.opsmatters.media.config.content.SummaryConfiguration;
-import com.opsmatters.media.config.content.ContentField;
-import com.opsmatters.media.config.content.ContentFields;
-import com.opsmatters.media.config.content.FieldSelector;
-import com.opsmatters.media.config.content.FieldExclude;
-import com.opsmatters.media.config.content.FieldFilter;
+import com.opsmatters.media.model.content.SummaryConfig;
+import com.opsmatters.media.model.content.crawler.ContentLoading;
+import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
+import com.opsmatters.media.model.content.crawler.MoreLink;
+import com.opsmatters.media.model.content.crawler.field.Field;
+import com.opsmatters.media.model.content.crawler.field.Fields;
+import com.opsmatters.media.model.content.crawler.field.FieldSelector;
+import com.opsmatters.media.model.content.crawler.field.FieldExclude;
+import com.opsmatters.media.model.content.crawler.field.FieldFilter;
 import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.crawler.parser.ElementType;
 import com.opsmatters.media.model.admin.TraceObject;
@@ -72,7 +72,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     private CrawlerBrowser browser;
     private WebDriver driver;
     private TraceObject traceObject = TraceObject.NONE;
-    private WebPageConfiguration config;
+    private CrawlerWebPage config;
     private String imagePrefix = "";
     private String lastUrl;
 
@@ -85,7 +85,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     /**
      * Constructor that takes a name.
      */
-    public WebPageCrawler(WebPageConfiguration config)
+    public WebPageCrawler(CrawlerWebPage config)
     {
         super(config);
         this.config = config;
@@ -186,7 +186,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     /**
      * Returns the web page configuration of the crawler.
      */
-    public WebPageConfiguration getPageConfig()
+    public CrawlerWebPage getPage()
     {
         return config;
     }
@@ -232,7 +232,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     /**
      * Returns the link to get more items.
      */
-    public MoreLinkConfiguration getMoreLink()
+    public MoreLink getMoreLink()
     {
         return config.getMoreLink();
     }
@@ -249,7 +249,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     /**
      * Loads the given page.
      */
-    protected void loadPage(String url, LoadingConfiguration loading) throws IOException
+    protected void loadPage(String url, ContentLoading loading) throws IOException
     {
         if(loading != null)
         {
@@ -314,7 +314,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     /**
      * Click a Load More button after the initial page load.
      */
-    protected void clickMoreLink(MoreLinkConfiguration moreLink) throws IOException
+    protected void clickMoreLink(MoreLink moreLink) throws IOException
     {
         String selector = moreLink.getSelector();
         if(selector.length() > 0)
@@ -350,7 +350,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
         }
     }
 
-    protected void configureImplicitWait(LoadingConfiguration loading)
+    protected void configureImplicitWait(ContentLoading loading)
     {
         if(loading == null)
             return;
@@ -361,7 +361,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
         driver.manage().timeouts().implicitlyWait(wait, TimeUnit.MILLISECONDS);
     }
 
-    protected void configureExplicitWait(LoadingConfiguration loading)
+    protected void configureExplicitWait(ContentLoading loading)
     {
         if(loading == null || browser == CrawlerBrowser.HTMLUNIT) // Don't use JS with HtmlUnit
             return;
@@ -379,7 +379,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
         }
     }
 
-    protected void configureSleep(LoadingConfiguration loading)
+    protected void configureSleep(ContentLoading loading)
     {
         if(loading == null)
             return;
@@ -400,7 +400,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
         }
     }
 
-    protected void configureMovement(LoadingConfiguration loading)
+    protected void configureMovement(ContentLoading loading)
     {
         if(loading == null)
             return;
@@ -445,12 +445,12 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     /**
      * Create a content summary from the selected node.
      */
-    public abstract T getContentSummary(Element result, ContentFields fields) throws DateTimeParseException;
+    public abstract T getContentSummary(Element result, Fields fields) throws DateTimeParseException;
 
     /**
      * Process all the configured teaser fields.
      */
-    public int processTeaserFields(LoadingConfiguration loading) throws IOException, DateTimeParseException
+    public int processTeaserFields(ContentLoading loading) throws IOException, DateTimeParseException
     {
         int ret = 0;
 
@@ -469,7 +469,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
             // Process the teaser selections
             int items = 0;
 //GERALD: fix
-            for(ContentFields fields : getTeaserFields())
+            for(Fields fields : getTeaserFields())
             {
                 Elements results = doc.select(fields.getRoot());
                 if(debug())
@@ -547,7 +547,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     /**
      * Returns <CODE>true</CODE> if the content validator is found.
      */
-    protected void validateContent(T content, ContentField field, Element root, String type)
+    protected void validateContent(T content, Field field, Element root, String type)
     {
         boolean valid = false;
 
@@ -594,7 +594,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     /**
      * Process an element field returning multiple results.
      */
-    protected String getElements(ContentField field, Element root, String type)
+    protected String getElements(Field field, Element root, String type)
     {
         String ret = null;
 
@@ -702,7 +702,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     /**
      * Process an anchor field.
      */
-    protected String getAnchor(ContentField field, Element root, String type, boolean removeParameters)
+    protected String getAnchor(Field field, Element root, String type, boolean removeParameters)
     {
         String ret = null;
 
@@ -796,7 +796,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
      * Coalesces the given paragraphs into a single string by accumulating paragraphs up to a heading or maximum length.
      */
     protected String getFormattedSummary(String selector, boolean multiple,
-        List<FieldExclude> excludes, List<FieldFilter> filters, Element root, SummaryConfiguration config, boolean debug)
+        List<FieldExclude> excludes, List<FieldFilter> filters, Element root, SummaryConfig config, boolean debug)
     {
         return getFormattedSummary(selector, multiple, excludes, filters,
             root, config.getMinLength(), config.getMaxLength(), debug);
@@ -839,8 +839,8 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     /**
      * Process the body field to produce a summary.
      */
-    protected String getBodySummary(ContentField field, Element root, String type,
-        SummaryConfiguration summary, boolean debug)
+    protected String getBodySummary(Field field, Element root, String type,
+        SummaryConfig summary, boolean debug)
     {
         String ret = null;
 
@@ -920,7 +920,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     /**
      * Process the body field.
      */
-    protected String getBody(ContentField field, Element root, String type, boolean debug)
+    protected String getBody(Field field, Element root, String type, boolean debug)
     {
         String ret = null;
 
@@ -965,7 +965,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     /**
      * Process an image field.
      */
-    protected String getImageSrc(ContentField field, Element root, String type)
+    protected String getImageSrc(Field field, Element root, String type)
     {
         String ret = null;
 
@@ -986,15 +986,6 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
                             logger.info("Found image "+selector.getAttribute()+" for "+type+" field "+field.getName()+": "+ret);
                         break;
                     }
-/* GERALD
-                    else if(image.hasAttr("src"))
-                    {
-                        ret = getValue(field, image.attr("src"));
-                        if(debug())
-                            logger.info("Found image src for "+type+" field "+field.getName()+": "+ret);
-                        break;
-                    }
-*/
                     else if(image.hasAttr("srcset"))
                     {
                         String srcset = getValue(field, image.attr("srcset"));
@@ -1034,7 +1025,6 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
                                 +" size="+selector.getSize()+": "+ret);
                         break;
                     }
-//GERALD: moved
                     else if(image.hasAttr("src"))
                     {
                         ret = getValue(field, image.attr("src"));
@@ -1076,7 +1066,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     /**
      * Returns the style attribute of an element.
      */
-    protected String getStyle(ContentField field, Element root, String type)
+    protected String getStyle(Field field, Element root, String type)
     {
         String ret = null;
 

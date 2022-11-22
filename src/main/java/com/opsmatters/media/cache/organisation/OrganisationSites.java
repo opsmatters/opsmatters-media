@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.cache.platform.Sites;
-import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.organisation.OrganisationContentType;
@@ -208,7 +208,7 @@ public class OrganisationSites
     /**
      * Returns the content type for the given configuration.
      */
-    public static OrganisationContentType getContentType(Site site, ContentConfiguration config)
+    public static OrganisationContentType getContentType(Site site, ContentConfig config)
     {
         return getContentType(site.getId(), config.getCode(), config.getType());
     }

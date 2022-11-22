@@ -45,7 +45,7 @@ public class Environment implements ConfigElement
      */
     protected Environment(String name)
     {
-        setName(name);
+        setEnvironmentName(name);
     }
 
     /**
@@ -63,7 +63,7 @@ public class Environment implements ConfigElement
     {
         if(obj != null)
         {
-            setName(obj.getName());
+            setEnvironmentName(obj.getEnvironmentName());
             setKey(obj.getKey());
             setUrl(obj.getUrl());
             setPing(obj.getPing());
@@ -81,13 +81,21 @@ public class Environment implements ConfigElement
      */
     public String toString()
     {
-        return getName().name();
+        return getName();
     }
 
     /**
      * Returns the name of the environment.
      */
-    public EnvironmentName getName()
+    public String getName()
+    {
+        return getEnvironmentName().name();
+    }
+
+    /**
+     * Returns the name of the environment.
+     */
+    public EnvironmentName getEnvironmentName()
     {
         return name;
     }
@@ -95,7 +103,7 @@ public class Environment implements ConfigElement
     /**
      * Sets the name for the environment.
      */
-    public void setName(EnvironmentName name)
+    public void setEnvironmentName(EnvironmentName name)
     {
         this.name = name;
     }
@@ -103,9 +111,9 @@ public class Environment implements ConfigElement
     /**
      * Sets the name for the environment.
      */
-    public void setName(String name)
+    public void setEnvironmentName(String name)
     {
-        setName(EnvironmentName.valueOf(name));
+        setEnvironmentName(EnvironmentName.valueOf(name));
     }
 
     /**
@@ -307,7 +315,7 @@ public class Environment implements ConfigElement
             if(map.containsKey(PATH))
                 ret.setPath((String)map.get(PATH));
 
-            String name = ret.getName().name();
+            String name = ret.getName();
 
             if(map.containsKey(FEEDS))
                 ret.setFeedsConfig(FeedsConfig.builder(name)

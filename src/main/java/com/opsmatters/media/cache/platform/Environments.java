@@ -83,7 +83,7 @@ public class Environments
      */
     private static void add(Environment environment)
     {
-        environmentMap.put(environment.getName(), environment);
+        environmentMap.put(environment.getEnvironmentName(), environment);
     }
 
     /**

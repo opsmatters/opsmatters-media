@@ -57,9 +57,10 @@ import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import com.google.common.collect.Lists;
 import org.json.JSONObject;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.model.content.VideoProvider;
-import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.model.content.video.VideoProvider;
 import com.opsmatters.media.util.StringUtils;
+
+import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
  * Print a list of videos uploaded to the user's YouTube channel.
@@ -203,14 +204,14 @@ public class YouTubeClient extends Client implements VideoClient
                         logger.info("Found youtube video: "+snippet.getTitle());
 
                     ret = new JSONObject();
-                    ret.put(Fields.VIDEO_ID, videoId);
-                    ret.put(Fields.TITLE, snippet.getTitle());
-                    ret.put(Fields.PUBLISHED_DATE, snippet.getPublishedAt().toString());
-                    ret.putOpt(Fields.DESCRIPTION, snippet.getDescription());
-                    ret.put(Fields.DURATION, Duration.parse(details.getDuration()).getSeconds());
-                    ret.put(Fields.CHANNEL_ID, snippet.getChannelId());
-                    ret.put(Fields.CHANNEL_TITLE, snippet.getChannelTitle());
-                    ret.put(Fields.PROVIDER, VideoProvider.YOUTUBE.code());
+                    ret.put(VIDEO_ID.value(), videoId);
+                    ret.put(TITLE.value(), snippet.getTitle());
+                    ret.put(PUBLISHED_DATE.value(), snippet.getPublishedAt().toString());
+                    ret.putOpt(DESCRIPTION.value(), snippet.getDescription());
+                    ret.put(DURATION.value(), Duration.parse(details.getDuration()).getSeconds());
+                    ret.put(CHANNEL_ID.value(), snippet.getChannelId());
+                    ret.put(CHANNEL_TITLE.value(), snippet.getChannelTitle());
+                    ret.put(PROVIDER.value(), VideoProvider.YOUTUBE.code());
                 }
             }
         }
@@ -263,10 +264,10 @@ public class YouTubeClient extends Client implements VideoClient
                     SearchResultSnippet snippet = result.getSnippet();
 
                     JSONObject video = new JSONObject();
-                    video.put(Fields.VIDEO_ID, resource.getVideoId());
-                    video.put(Fields.TITLE, snippet.getTitle());
-                    video.put(Fields.PUBLISHED_DATE, snippet.getPublishedAt().toString());
-                    video.put(Fields.PROVIDER, VideoProvider.YOUTUBE.code());
+                    video.put(VIDEO_ID.value(), resource.getVideoId());
+                    video.put(TITLE.value(), snippet.getTitle());
+                    video.put(PUBLISHED_DATE.value(), snippet.getPublishedAt().toString());
+                    video.put(PROVIDER.value(), VideoProvider.YOUTUBE.code());
 
                     list.add(video);
                 }
@@ -357,11 +358,11 @@ public class YouTubeClient extends Client implements VideoClient
                         ResourceId resource = snippet.getResourceId();
 
                         JSONObject video = new JSONObject();
-                        video.put(Fields.VIDEO_ID, resource.getVideoId());
-                        video.put(Fields.TITLE, snippet.getTitle());
-                        video.put(Fields.PUBLISHED_DATE, snippet.getPublishedAt().toString());
-                        video.put(Fields.CHANNEL_TITLE, snippet.getChannelTitle());
-                        video.put(Fields.PROVIDER, VideoProvider.YOUTUBE.code());
+                        video.put(VIDEO_ID.value(), resource.getVideoId());
+                        video.put(TITLE.value(), snippet.getTitle());
+                        video.put(PUBLISHED_DATE.value(), snippet.getPublishedAt().toString());
+                        video.put(CHANNEL_TITLE.value(), snippet.getChannelTitle());
+                        video.put(PROVIDER.value(), VideoProvider.YOUTUBE.code());
 
                         list.add(video);
                     }
@@ -396,11 +397,11 @@ public class YouTubeClient extends Client implements VideoClient
                         SearchResultSnippet snippet = result.getSnippet();
 
                         JSONObject video = new JSONObject();
-                        video.put(Fields.VIDEO_ID, resource.getVideoId());
-                        video.put(Fields.TITLE, snippet.getTitle());
-                        video.put(Fields.PUBLISHED_DATE, snippet.getPublishedAt().toString());
-                        video.put(Fields.CHANNEL_TITLE, snippet.getChannelTitle());
-                        video.put(Fields.PROVIDER, VideoProvider.YOUTUBE.code());
+                        video.put(VIDEO_ID.value(), resource.getVideoId());
+                        video.put(TITLE.value(), snippet.getTitle());
+                        video.put(PUBLISHED_DATE.value(), snippet.getPublishedAt().toString());
+                        video.put(CHANNEL_TITLE.value(), snippet.getChannelTitle());
+                        video.put(PROVIDER.value(), VideoProvider.YOUTUBE.code());
 
                         list.add(video);
                     }

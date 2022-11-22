@@ -106,18 +106,6 @@ public class StringSelection extends ChartSelection<String>
         }
 
         /**
-         * Parse the configuration using the given attribute map.
-         * @param map The map of attributes
-         * @return This object
-         */
-        @Override
-        public Builder parse(Map<String, Object> map)
-        {
-            super.parse(map);
-            return this;
-        }
-
-        /**
          * Returns this object.
          * @return This object
          */

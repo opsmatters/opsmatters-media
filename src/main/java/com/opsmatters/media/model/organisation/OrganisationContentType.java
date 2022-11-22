@@ -18,12 +18,13 @@ package com.opsmatters.media.model.organisation;
 import java.time.Instant;
 import java.util.List;
 import org.json.JSONObject;
-import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.model.BaseItem;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.StringUtils;
+
+import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
  * Class representing a the data for an organisation's content type.
@@ -119,12 +120,12 @@ public class OrganisationContentType extends BaseItem
     {
         JSONObject ret = new JSONObject();
 
-        ret.putOpt(Fields.TEMPLATE, getTemplateId());
-        ret.putOpt(Fields.TRACKING, getTracking());
-        ret.putOpt(Fields.FEATURES, getFeatures());
-        ret.putOpt(Fields.TAGS, getTags());
-        ret.putOpt(Fields.TECHNOLOGIES, getTechnologies());
-        ret.put(Fields.NEWSLETTER, isNewsletter());
+        ret.putOpt(TEMPLATE.value(), getTemplateId());
+        ret.putOpt(TRACKING.value(), getTracking());
+        ret.putOpt(FEATURES.value(), getFeatures());
+        ret.putOpt(TAGS.value(), getTags());
+        ret.putOpt(TECHNOLOGIES.value(), getTechnologies());
+        ret.put(NEWSLETTER.value(), isNewsletter());
 
         return ret;
     }
@@ -134,12 +135,12 @@ public class OrganisationContentType extends BaseItem
      */
     public void setAttributes(JSONObject obj)
     {
-        setTemplateId(obj.optString(Fields.TEMPLATE));
-        setTracking(obj.optString(Fields.TRACKING));
-        setFeatures(obj.optString(Fields.FEATURES));
-        setTags(obj.optString(Fields.TAGS));
-        setTechnologies(obj.optString(Fields.TECHNOLOGIES));
-        setNewsletter(obj.optBoolean(Fields.NEWSLETTER, false));
+        setTemplateId(obj.optString(TEMPLATE.value()));
+        setTracking(obj.optString(TRACKING.value()));
+        setFeatures(obj.optString(FEATURES.value()));
+        setTags(obj.optString(TAGS.value()));
+        setTechnologies(obj.optString(TECHNOLOGIES.value()));
+        setNewsletter(obj.optBoolean(NEWSLETTER.value(), false));
     }
 
     /**

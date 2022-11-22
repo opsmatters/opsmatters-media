@@ -244,7 +244,7 @@ public class Site implements ConfigElement
      */
     public void addEnvironment(Environment environment)
     {
-        this.environments.put(environment.getName(), environment);
+        this.environments.put(environment.getEnvironmentName(), environment);
     }
 
     /**

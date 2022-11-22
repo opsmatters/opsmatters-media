@@ -23,16 +23,17 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import com.opsmatters.media.model.content.EventSummary;
-import com.opsmatters.media.model.content.EventDetails;
-import com.opsmatters.media.config.content.EventConfiguration;
-import com.opsmatters.media.config.content.WebPageConfiguration;
-import com.opsmatters.media.config.content.ContentField;
-import com.opsmatters.media.config.content.ContentFields;
-import com.opsmatters.media.config.content.Fields;
+import com.opsmatters.media.model.content.event.EventSummary;
+import com.opsmatters.media.model.content.event.EventDetails;
+import com.opsmatters.media.model.content.event.EventConfig;
+import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
+import com.opsmatters.media.model.content.crawler.field.Field;
+import com.opsmatters.media.model.content.crawler.field.Fields;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
+
+import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
  * Class representing a crawler for events.
@@ -43,12 +44,12 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
 {
     private static final Logger logger = Logger.getLogger(EventCrawler.class.getName());
 
-    private EventConfiguration config;
+    private EventConfig config;
 
     /**
      * Constructor that takes a web page configuration.
      */
-    public EventCrawler(EventConfiguration config, WebPageConfiguration page)
+    public EventCrawler(EventConfig config,CrawlerWebPage page)
     {
         super(page);
         this.config = config;
@@ -57,7 +58,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
     /**
      * Returns the event configuration of the crawler.
      */
-    public EventConfiguration getConfig()
+    public EventConfig getConfig()
     {
         return config;
     }
@@ -66,7 +67,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
      * Create an event summary from the selected node.
      */
     @Override
-    public EventSummary getContentSummary(Element root, ContentFields fields)
+    public EventSummary getContentSummary(Element root, Fields fields)
         throws DateTimeParseException
     {
         EventSummary content = new EventSummary();
@@ -79,7 +80,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
             populateSummaryFields(root, fields, content, "teaser");
             if(fields.hasUrl())
             {
-                ContentField field = fields.getUrl();
+                Field field = fields.getUrl();
                 String url = getAnchor(field, root, "teaser", field.removeParameters());
                 if(url != null)
                     content.setUrl(url, field.removeParameters());
@@ -106,7 +107,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
     {
         EventDetails content = new EventDetails(summary);
 //GERALD: fix
-        List<ContentFields> articles = getArticleFields();
+        List<Fields> articles = getArticleFields();
 
 //GERALD: fix
         configureImplicitWait(getArticleLoading());
@@ -131,7 +132,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
         Document doc = Jsoup.parse(getPageSource("body"));
         doc.outputSettings().prettyPrint(false);
 
-        for(ContentFields fields : articles)
+        for(Fields fields : articles)
         {
             if(!fields.hasRoot())
                 throw new IllegalArgumentException("Root empty for event content");
@@ -164,7 +165,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
 
             if(fields.hasStartTime())
             {
-                ContentField field = fields.getStartTime();
+                Field field = fields.getStartTime();
                 String start = getElements(field, root, "content");
                 if(start != null)
                 {
@@ -201,9 +202,9 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
             }
 
             // If no start time was found, use the default
-            if(!hasTime && starttm == 0L && config.getFields().containsKey(Fields.START_TIME))
+            if(!hasTime && starttm == 0L && config.getFields().containsKey(START_TIME))
             {
-                String start = config.getFields().get(Fields.START_TIME);
+                String start = config.getFields().get(START_TIME);
                 starttm = TimeUtils.toMillisTime(start, Formats.SHORT_TIME_FORMAT);
                 if(debug())
                     logger.info("Found default start time: "+starttm);
@@ -245,12 +246,12 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
      * Populate the content fields from the given node.
      */
     private void populateSummaryFields(Element root, 
-        ContentFields fields, EventSummary content, String type)
+        Fields fields, EventSummary content, String type)
         throws DateTimeParseException
     {
         if(fields.hasTitle())
         {
-            ContentField field = fields.getTitle();
+            Field field = fields.getTitle();
             String title = getElements(field, root, type);
             if(title != null && title.length() > 0)
             {
@@ -272,7 +273,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
 
         if(fields.hasStartDate())
         {
-            ContentField field = fields.getStartDate();
+            Field field = fields.getStartDate();
             String startDate = getElements(field, root, type);
             if(startDate != null)
             {

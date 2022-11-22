@@ -19,12 +19,15 @@ import java.util.Map;
 import java.util.HashMap;
 import java.time.Instant;
 import org.json.JSONObject;
-import com.opsmatters.media.config.content.Fields;
-import com.opsmatters.media.config.content.FieldSource;
 import com.opsmatters.media.model.OwnedItem;
 import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.content.FieldMap;
+import com.opsmatters.media.model.content.FieldName;
+import com.opsmatters.media.model.content.FieldSource;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.StringUtils;
+
+import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
  * Class representing an organisation.
@@ -93,13 +96,13 @@ public class Organisation extends OwnedItem implements FieldSource
     {
         JSONObject ret = new JSONObject();
 
-        ret.putOpt(Fields.WEBSITE, getWebsite());
-        ret.putOpt(Fields.EMAIL, getEmail());
-        ret.putOpt(Fields.HASHTAG, getHashtag());
-        ret.putOpt(Fields.TRACKING, getTracking());
-        ret.putOpt(Fields.HANDLE, getHandle());
-        ret.putOpt(Fields.IMAGE_PREFIX, getImagePrefix());
-        ret.putOpt(Fields.IMAGE_TEXT, getImageText());
+        ret.putOpt(WEBSITE.value(), getWebsite());
+        ret.putOpt(EMAIL.value(), getEmail());
+        ret.putOpt(HASHTAG.value(), getHashtag());
+        ret.putOpt(TRACKING.value(), getTracking());
+        ret.putOpt(HANDLE.value(), getHandle());
+        ret.putOpt(IMAGE_PREFIX.value(), getImagePrefix());
+        ret.putOpt(IMAGE_TEXT.value(), getImageText());
 
         return ret;
     }
@@ -109,28 +112,28 @@ public class Organisation extends OwnedItem implements FieldSource
      */
     public void setAttributes(JSONObject obj)
     {
-        setWebsite(obj.optString(Fields.WEBSITE));
-        setEmail(obj.optString(Fields.EMAIL));
-        setHashtag(obj.optString(Fields.HASHTAG));
-        setTracking(obj.optString(Fields.TRACKING));
-        setHandle(obj.optString(Fields.HANDLE));
-        setImagePrefix(obj.optString(Fields.IMAGE_PREFIX));
-        setImageText(obj.optString(Fields.IMAGE_TEXT));
+        setWebsite(obj.optString(WEBSITE.value()));
+        setEmail(obj.optString(EMAIL.value()));
+        setHashtag(obj.optString(HASHTAG.value()));
+        setTracking(obj.optString(TRACKING.value()));
+        setHandle(obj.optString(HANDLE.value()));
+        setImagePrefix(obj.optString(IMAGE_PREFIX.value()));
+        setImageText(obj.optString(IMAGE_TEXT.value()));
     }
 
     /**
      * Returns the fields required by other objects.
      */
-    public Fields getFields()
+    public FieldMap getFields()
     {
-        Fields ret = new Fields();
+        FieldMap ret = new FieldMap();
 
-        ret.put(Fields.WEBSITE, getWebsite());
-        ret.put(Fields.EMAIL, getEmail());
-        ret.put(Fields.HANDLE, getHandle());
-        ret.put(Fields.HASHTAG, getHashtag());
-        ret.put(Fields.TRACKING, getTracking());
-        ret.put(Fields.IMAGE_TEXT, getImageText());
+        ret.put(WEBSITE, getWebsite());
+        ret.put(EMAIL, getEmail());
+        ret.put(HANDLE, getHandle());
+        ret.put(HASHTAG, getHashtag());
+        ret.put(TRACKING, getTracking());
+        ret.put(IMAGE_TEXT, getImageText());
 
         return ret;
     }

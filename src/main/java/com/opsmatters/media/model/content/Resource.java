@@ -18,12 +18,12 @@ package com.opsmatters.media.model.content;
 import java.util.List;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
-import com.opsmatters.media.config.content.Fields;
-import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.organisation.OrganisationContentType;
 import com.opsmatters.media.util.StringUtils;
+
+import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
  * Class representing a content resource.
@@ -64,11 +64,11 @@ public abstract class Resource extends ContentItem implements LinkedContent
     {
         super.fromJson(obj);
 
-        setDescription(EmojiParser.parseToUnicode(obj.optString(Fields.DESCRIPTION)));
-        setUrl(obj.optString(Fields.URL));
-        setFeatures(obj.optString(Fields.FEATURES));
-        setLinkText(obj.optString(Fields.LINK_TEXT));
-        setPromoted(obj.optBoolean(Fields.PROMOTE, false));
+        setDescription(EmojiParser.parseToUnicode(obj.optString(DESCRIPTION.value())));
+        setUrl(obj.optString(URL.value()));
+        setFeatures(obj.optString(FEATURES.value()));
+        setLinkText(obj.optString(LINK_TEXT.value()));
+        setPromoted(obj.optBoolean(PROMOTE.value(), false));
     }
 
     /**
@@ -78,11 +78,11 @@ public abstract class Resource extends ContentItem implements LinkedContent
     {
         JSONObject ret = super.toJson();
 
-        ret.putOpt(Fields.DESCRIPTION, EmojiParser.parseToAliases(getDescription()));
-        ret.putOpt(Fields.URL, getUrl());
-        ret.putOpt(Fields.FEATURES, getFeatures());
-        ret.putOpt(Fields.LINK_TEXT, getLinkText());
-        ret.put(Fields.PROMOTE, isPromoted());
+        ret.putOpt(DESCRIPTION.value(), EmojiParser.parseToAliases(getDescription()));
+        ret.putOpt(URL.value(), getUrl());
+        ret.putOpt(FEATURES.value(), getFeatures());
+        ret.putOpt(LINK_TEXT.value(), getLinkText());
+        ret.put(PROMOTE.value(), isPromoted());
 
         return ret;
     }
@@ -91,15 +91,15 @@ public abstract class Resource extends ContentItem implements LinkedContent
      * Returns the set of output fields from the resource.
      */
     @Override
-    public Fields toFields()
+    public FieldMap toFields()
     {
-        Fields ret = super.toFields();
+        FieldMap ret = super.toFields();
 
-        ret.put(Fields.DESCRIPTION, EmojiParser.parseToHtmlDecimal(getDescription()));
-        ret.put(Fields.URL, getUrl());
-        ret.put(Fields.FEATURES, getFeatures());
-        ret.put(Fields.LINK_TEXT, getLinkText());
-        ret.put(Fields.PROMOTE, isPromoted() ? "1" : "0");
+        ret.put(DESCRIPTION, EmojiParser.parseToHtmlDecimal(getDescription()));
+        ret.put(URL, getUrl());
+        ret.put(FEATURES, getFeatures());
+        ret.put(LINK_TEXT, getLinkText());
+        ret.put(PROMOTE, isPromoted() ? "1" : "0");
 
         return ret;
     }
@@ -108,7 +108,7 @@ public abstract class Resource extends ContentItem implements LinkedContent
      * Use the given configuration to set defaults for the content.
      */
     @Override
-    public void init(Organisation organisation, OrganisationSite organisationSite, ContentConfiguration config)
+    public void init(Organisation organisation, OrganisationSite organisationSite, ContentConfig config)
     {
         super.init(organisation, organisationSite, config);
 

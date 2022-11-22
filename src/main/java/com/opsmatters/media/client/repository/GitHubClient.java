@@ -33,9 +33,9 @@ import org.kohsuke.github.GHContent;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHLicense;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.model.content.RepositoryProvider;
-import com.opsmatters.media.model.content.OpenSourceLicense;
-import com.opsmatters.media.model.content.ProjectDetails;
+import com.opsmatters.media.model.content.project.ProjectDetails;
+import com.opsmatters.media.model.content.project.RepositoryProvider;
+import com.opsmatters.media.model.content.project.OpenSourceLicense;
 import com.opsmatters.media.util.StringUtils;
 
 /**

@@ -114,7 +114,7 @@ public abstract class ChartJsChart<E extends Serializable> extends Chart<E>
      * Builder to make chart construction easier.
      */
     protected abstract static class Builder<E extends Serializable, T extends ChartJsChart<E>, B extends Builder<E,T,B>>
-        extends Chart.Builder<E, ChartJsChart<E>, Builder<E,T,B>>
+        extends Chart.Builder<E,T,B>
     {
         // The config attribute names
         private static final String DATASETS = "datasets";
@@ -137,7 +137,7 @@ public abstract class ChartJsChart<E extends Serializable> extends Chart<E>
          * @return This object
          */
         @Override
-        public Builder parse(Map<String, Object> map)
+        public B parse(Map<String, Object> map)
         {
             super.parse(map);
 

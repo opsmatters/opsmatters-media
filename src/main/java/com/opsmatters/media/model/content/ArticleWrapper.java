@@ -17,6 +17,10 @@ package com.opsmatters.media.model.content;
 
 import java.time.Instant;
 
+import com.opsmatters.media.model.content.video.VideoArticle;
+import com.opsmatters.media.model.content.roundup.RoundupArticle;
+import com.opsmatters.media.model.content.post.PostArticle;
+
 /**
  * Class representing a wrapped content article.
  * 

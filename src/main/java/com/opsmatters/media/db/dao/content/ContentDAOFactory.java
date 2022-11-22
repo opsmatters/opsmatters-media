@@ -18,6 +18,17 @@ package com.opsmatters.media.db.dao.content;
 import com.opsmatters.media.db.JDBCDatabaseDriver;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.db.dao.DAOFactory;
+import com.opsmatters.media.db.dao.content.organisation.OrganisationListingDAO;
+import com.opsmatters.media.db.dao.content.video.VideoArticleDAO;
+import com.opsmatters.media.db.dao.content.roundup.RoundupArticleDAO;
+import com.opsmatters.media.db.dao.content.event.EventResourceDAO;
+import com.opsmatters.media.db.dao.content.publication.WhitePaperResourceDAO;
+import com.opsmatters.media.db.dao.content.publication.EBookResourceDAO;
+import com.opsmatters.media.db.dao.content.post.PostArticleDAO;
+import com.opsmatters.media.db.dao.content.project.ProjectResourceDAO;
+import com.opsmatters.media.db.dao.content.tool.ToolResourceDAO;
+import com.opsmatters.media.db.dao.content.job.JobResourceDAO;
+
 
 /**
  * The class for all content data access object factories.

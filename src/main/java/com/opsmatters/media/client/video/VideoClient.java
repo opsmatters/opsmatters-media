@@ -19,7 +19,7 @@ package com.opsmatters.media.client.video;
 import java.io.IOException;
 import java.util.List;
 import org.json.JSONObject;
-import com.opsmatters.media.model.content.VideoProvider;
+import com.opsmatters.media.model.content.video.VideoProvider;
 
 /**
  * Methods to interact with a user's video channel.

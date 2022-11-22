@@ -18,12 +18,12 @@ package com.opsmatters.media.model.content;
 import java.util.List;
 import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.Organisations;
-import com.opsmatters.media.config.content.Fields;
-import com.opsmatters.media.config.content.ContentConfiguration;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.organisation.OrganisationContentType;
 import com.opsmatters.media.util.StringUtils;
+
+import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
  * Class representing a content article.
@@ -74,12 +74,12 @@ public abstract class Article extends ContentItem
     {
         super.fromJson(obj);
 
-        setTags(obj.optString(Fields.TAGS));
-        setCreatorEmail(obj.optString(Fields.EMAIL));
-        setPromoted(obj.optBoolean(Fields.PROMOTE, false));
-        setNewsletter(obj.optBoolean(Fields.NEWSLETTER, false));
-        setFeatured(obj.optBoolean(Fields.FEATURED, false));
-        setSponsored(obj.optBoolean(Fields.SPONSORED, false));
+        setTags(obj.optString(TAGS.value()));
+        setCreatorEmail(obj.optString(EMAIL.value()));
+        setPromoted(obj.optBoolean(PROMOTE.value(), false));
+        setNewsletter(obj.optBoolean(NEWSLETTER.value(), false));
+        setFeatured(obj.optBoolean(FEATURED.value(), false));
+        setSponsored(obj.optBoolean(SPONSORED.value(), false));
     }
 
     /**
@@ -89,12 +89,12 @@ public abstract class Article extends ContentItem
     {
         JSONObject ret = super.toJson();
 
-        ret.putOpt(Fields.TAGS, getTags());
-        ret.putOpt(Fields.EMAIL, getCreatorEmail());
-        ret.put(Fields.PROMOTE, isPromoted());
-        ret.put(Fields.NEWSLETTER, isNewsletter());
-        ret.put(Fields.FEATURED, isFeatured());
-        ret.put(Fields.SPONSORED, isSponsored());
+        ret.putOpt(TAGS.value(), getTags());
+        ret.putOpt(EMAIL.value(), getCreatorEmail());
+        ret.put(PROMOTE.value(), isPromoted());
+        ret.put(NEWSLETTER.value(), isNewsletter());
+        ret.put(FEATURED.value(), isFeatured());
+        ret.put(SPONSORED.value(), isSponsored());
 
         return ret;
     }
@@ -103,16 +103,16 @@ public abstract class Article extends ContentItem
      * Returns the set of output fields for the content.
      */
     @Override
-    public Fields toFields()
+    public FieldMap toFields()
     {
-        Fields ret = super.toFields();
+        FieldMap ret = super.toFields();
 
-        ret.put(Fields.TAGS, getTags());
-        ret.put(Fields.EMAIL, getCreatorEmail());
-        ret.put(Fields.PROMOTE, isPromoted() ? "1" : "0");
-        ret.put(Fields.NEWSLETTER, isNewsletter() ? "1" : "0");
-        ret.put(Fields.FEATURED, isFeatured() ? "1" : "0");
-        ret.put(Fields.SPONSORED, isSponsored() ? "1" : "0");
+        ret.put(TAGS, getTags());
+        ret.put(EMAIL, getCreatorEmail());
+        ret.put(PROMOTE, isPromoted() ? "1" : "0");
+        ret.put(NEWSLETTER, isNewsletter() ? "1" : "0");
+        ret.put(FEATURED, isFeatured() ? "1" : "0");
+        ret.put(SPONSORED, isSponsored() ? "1" : "0");
 
         return ret;
     }
@@ -121,7 +121,7 @@ public abstract class Article extends ContentItem
      * Use the given configuration to set defaults for the content.
      */
     @Override
-    public void init(Organisation organisation, OrganisationSite organisationSite, ContentConfiguration config)
+    public void init(Organisation organisation, OrganisationSite organisationSite, ContentConfig config)
     {
         super.init(organisation, organisationSite, config);
 

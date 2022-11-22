@@ -25,16 +25,24 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
-import com.opsmatters.media.config.content.FieldExclude;
-import com.opsmatters.media.config.content.FieldFilter;
-import com.opsmatters.media.config.content.FilterResult;
-import com.opsmatters.media.config.content.SummaryConfiguration;
+//GERALD
+//import com.opsmatters.media.config.content.FieldExclude;
+//GERALD
+import com.opsmatters.media.model.content.crawler.field.FieldExclude;
+//import com.opsmatters.media.config.content.FieldFilter;
+import com.opsmatters.media.model.content.crawler.field.FieldFilter;
+//import com.opsmatters.media.config.content.FilterResult;
+import com.opsmatters.media.model.content.crawler.field.FilterResult;
+import com.opsmatters.media.model.content.SummaryConfig;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.crawler.parser.ElementType.*;
 import static com.opsmatters.media.crawler.parser.ElementDisplay.*;
-import static com.opsmatters.media.config.content.FilterScope.*;
-import static com.opsmatters.media.config.content.FilterResult.*;
+//GERALD
+//import static com.opsmatters.media.config.content.FilterScope.*;
+import static com.opsmatters.media.model.content.crawler.field.FilterScope.*;
+//import static com.opsmatters.media.config.content.FilterResult.*;
+import static com.opsmatters.media.model.content.crawler.field.FilterResult.*;
 
 /**
  * Class representing a parser for an article body.
@@ -611,7 +619,7 @@ if(text.startsWith("#")  // hashtags
     /**
      * Returns the list of body elements formatted as an article summary.
      */
-    public String formatSummary(SummaryConfiguration config)
+    public String formatSummary(SummaryConfig config)
     {
         return formatSummary(config.getMinLength(), config.getMaxLength(), true);
     }

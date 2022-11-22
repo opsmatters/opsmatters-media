@@ -23,8 +23,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
-import com.opsmatters.media.config.content.ContentConfiguration;
-import com.opsmatters.media.config.content.Fields;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
@@ -109,17 +107,17 @@ public abstract class ContentItem implements java.io.Serializable
      */
     public void fromJson(JSONObject obj)
     {
-        setCode(obj.optString(Fields.CODE));
-        setId(obj.optInt(Fields.ID));
-        setUuid(obj.optString(Fields.UUID));
-        setPublishedDateMillis(obj.optLong(Fields.PUBLISHED_DATE));
-        setTitle(obj.optString(Fields.TITLE));
-        setSummary(EmojiParser.parseToUnicode(obj.optString(Fields.SUMMARY)));
-        setPublished(obj.optBoolean(Fields.PUBLISHED, false));
-        setTracking(obj.optString(Fields.TRACKING));
-        setCreatedBy(obj.optString(Fields.CREATED_BY));
-        setSocial(obj.optBoolean(Fields.SOCIAL, false));
-        setStatus(obj.optString(Fields.STATUS));
+        setCode(obj.optString(FieldName.CODE.value()));
+        setId(obj.optInt(FieldName.ID.value()));
+        setUuid(obj.optString(FieldName.UUID.value()));
+        setPublishedDateMillis(obj.optLong(FieldName.PUBLISHED_DATE.value()));
+        setTitle(obj.optString(FieldName.TITLE.value()));
+        setSummary(EmojiParser.parseToUnicode(obj.optString(FieldName.SUMMARY.value())));
+        setPublished(obj.optBoolean(FieldName.PUBLISHED.value(), false));
+        setTracking(obj.optString(FieldName.TRACKING.value()));
+        setCreatedBy(obj.optString(FieldName.CREATED_BY.value()));
+        setSocial(obj.optBoolean(FieldName.SOCIAL.value(), false));
+        setStatus(obj.optString(FieldName.STATUS.value()));
     }
 
     /**
@@ -129,18 +127,18 @@ public abstract class ContentItem implements java.io.Serializable
     {
         JSONObject ret = new JSONObject();
 
-        ret.putOpt(Fields.CODE, getCode());
-        ret.put(Fields.ID, getId());
-        ret.put(Fields.UUID, getUuid());
-        ret.put(Fields.PUBLISHED_DATE, getPublishedDateMillis());
-        ret.putOpt(Fields.TITLE, getTitle());
+        ret.putOpt(FieldName.CODE.value(), getCode());
+        ret.put(FieldName.ID.value(), getId());
+        ret.put(FieldName.UUID.value(), getUuid());
+        ret.put(FieldName.PUBLISHED_DATE.value(), getPublishedDateMillis());
+        ret.putOpt(FieldName.TITLE.value(), getTitle());
         if(getSummary() != null && getSummary().length() > 0)
-            ret.putOpt(Fields.SUMMARY, EmojiParser.parseToAliases(getSummary()));
-        ret.put(Fields.PUBLISHED, isPublished());
-        ret.put(Fields.TRACKING, getTracking());
-        ret.put(Fields.CREATED_BY, getCreatedBy());
-        ret.put(Fields.SOCIAL, hasSocial());
-        ret.put(Fields.STATUS, getStatus().name());
+            ret.putOpt(FieldName.SUMMARY.value(), EmojiParser.parseToAliases(getSummary()));
+        ret.put(FieldName.PUBLISHED.value(), isPublished());
+        ret.put(FieldName.TRACKING.value(), getTracking());
+        ret.put(FieldName.CREATED_BY.value(), getCreatedBy());
+        ret.put(FieldName.SOCIAL.value(), hasSocial());
+        ret.put(FieldName.STATUS.value(), getStatus().name());
 
         return ret;
     }
@@ -148,18 +146,18 @@ public abstract class ContentItem implements java.io.Serializable
     /**
      * Returns the set of output fields from the content item.
      */
-    public Fields toFields()
+    public FieldMap toFields()
     {
-        Fields ret = new Fields();
+        FieldMap ret = new FieldMap();
 
-        ret.put(Fields.ID, Integer.toString(getId()));
-        ret.put(Fields.UUID, getUuid());
-        ret.put(Fields.PUBLISHED_DATE, getPublishedDateAsString());
-        ret.put(Fields.TITLE, getTitle());
-        ret.put(Fields.SUMMARY, EmojiParser.parseToHtmlDecimal(getSummary()));
-        ret.put(Fields.PUBLISHED, isPublished() ? "1" : "0");
-        ret.put(Fields.TRACKING, getTracking());
-        ret.put(Fields.CREATED_BY, getCreatedBy());
+        ret.put(FieldName.ID, Integer.toString(getId()));
+        ret.put(FieldName.UUID, getUuid());
+        ret.put(FieldName.PUBLISHED_DATE, getPublishedDateAsString());
+        ret.put(FieldName.TITLE, getTitle());
+        ret.put(FieldName.SUMMARY, EmojiParser.parseToHtmlDecimal(getSummary()));
+        ret.put(FieldName.PUBLISHED, isPublished() ? "1" : "0");
+        ret.put(FieldName.TRACKING, getTracking());
+        ret.put(FieldName.CREATED_BY, getCreatedBy());
 
         return ret;
     }
@@ -176,7 +174,7 @@ public abstract class ContentItem implements java.io.Serializable
     /**
      * Use the given configuration to set defaults for the content item.
      */
-    public void init(Organisation organisation, OrganisationSite organisationSite, ContentConfiguration config)
+    public void init(Organisation organisation, OrganisationSite organisationSite, ContentConfig config)
     {
         if(organisationSite != null)
         {
@@ -185,10 +183,10 @@ public abstract class ContentItem implements java.io.Serializable
                 setTracking(type.getTracking());
         }
 
-        if(config.hasField(Fields.CODE))
-            setCode(config.getField(Fields.CODE));
+        if(config.hasField(FieldName.CODE))
+            setCode(config.getField(FieldName.CODE));
 
-        String published = config.getField(Fields.PUBLISHED);
+        String published = config.getField(FieldName.PUBLISHED);
         setPublished(published == null || published.equals("0") ? false : true);
     }
 

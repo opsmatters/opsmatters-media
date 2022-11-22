@@ -23,12 +23,12 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import com.opsmatters.media.model.content.PublicationSummary;
-import com.opsmatters.media.model.content.PublicationDetails;
-import com.opsmatters.media.config.content.EBookConfiguration;
-import com.opsmatters.media.config.content.WebPageConfiguration;
-import com.opsmatters.media.config.content.ContentField;
-import com.opsmatters.media.config.content.ContentFields;
+import com.opsmatters.media.model.content.publication.PublicationSummary;
+import com.opsmatters.media.model.content.publication.PublicationDetails;
+import com.opsmatters.media.model.content.publication.EBookConfig;
+import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
+import com.opsmatters.media.model.content.crawler.field.Field;
+import com.opsmatters.media.model.content.crawler.field.Fields;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 
@@ -41,12 +41,12 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
 {
     private static final Logger logger = Logger.getLogger(EBookCrawler.class.getName());
 
-    private EBookConfiguration config;
+    private EBookConfig config;
 
     /**
      * Constructor that takes a web page configuration.
      */
-    public EBookCrawler(EBookConfiguration config, WebPageConfiguration page)
+    public EBookCrawler(EBookConfig config, CrawlerWebPage page)
     {
         super(page);
         this.config = config;
@@ -55,7 +55,7 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
     /**
      * Returns the ebook configuration of the crawler.
      */
-    public EBookConfiguration getConfig()
+    public EBookConfig getConfig()
     {
         return config;
     }
@@ -64,7 +64,7 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
      * Create the ebook summary from the selected node.
      */
     @Override
-    public PublicationSummary getContentSummary(Element root, ContentFields fields)
+    public PublicationSummary getContentSummary(Element root, Fields fields)
         throws DateTimeParseException
     {
         PublicationSummary content = new PublicationSummary();
@@ -77,7 +77,7 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
             populateSummaryFields(root, fields, content, "teaser");
             if(fields.hasUrl())
             {
-                ContentField field = fields.getUrl();
+                Field field = fields.getUrl();
                 String url = getAnchor(field, root, "teaser", field.removeParameters());
                 if(url != null)
                     content.setUrl(url, field.removeParameters());
@@ -104,7 +104,7 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
     {
         PublicationDetails content = new PublicationDetails(summary);
 //GERALD: fix
-        List<ContentFields> articles = getArticleFields();
+        List<Fields> articles = getArticleFields();
 
 //GERALD: fix
         configureImplicitWait(getArticleLoading());
@@ -129,7 +129,7 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
         Document doc = Jsoup.parse(getPageSource("body"));
         doc.outputSettings().prettyPrint(false);
 
-        for(ContentFields fields : articles)
+        for(Fields fields : articles)
         {
             if(!fields.hasRoot())
                 throw new IllegalArgumentException("Root empty for ebook content");
@@ -181,12 +181,12 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
      * Populate the content fields from the given node.
      */
     private void populateSummaryFields(Element root, 
-        ContentFields fields, PublicationSummary content, String type)
+        Fields fields, PublicationSummary content, String type)
         throws DateTimeParseException
     {
         if(fields.hasTitle())
         {
-            ContentField field = fields.getTitle();
+            Field field = fields.getTitle();
             String title = getElements(field, root, type);
             if(title != null && title.length() > 0)
                 content.setTitle(title);
@@ -194,7 +194,7 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
 
         if(fields.hasPublishedDate())
         {
-            ContentField field = fields.getPublishedDate();
+            Field field = fields.getPublishedDate();
             String publishedDate = getElements(field, root, type);
             if(publishedDate != null)
             {
@@ -229,7 +229,7 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
 
         if(fields.hasImage())
         {
-            ContentField field = fields.getImage();
+            Field field = fields.getImage();
             String src = getImageSrc(field, root, type);
             if(src != null && src.length() > 0)
             {

@@ -22,4 +22,11 @@ package com.opsmatters.media.model;
  */
 public interface ConfigElement extends java.io.Serializable
 {
+    /**
+     * Returns the name of the config element.
+     */
+    default public String getName()
+    {
+        return null;
+    }
 }

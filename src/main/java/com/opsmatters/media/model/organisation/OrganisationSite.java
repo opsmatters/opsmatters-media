@@ -20,12 +20,15 @@ import java.util.HashMap;
 import java.time.Instant;
 import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.Organisations;
-import com.opsmatters.media.config.content.Fields;
-import com.opsmatters.media.config.content.FieldSource;
 import com.opsmatters.media.model.OwnedItem;
 import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.content.FieldMap;
+import com.opsmatters.media.model.content.FieldName;
+import com.opsmatters.media.model.content.FieldSource;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.StringUtils;
+
+import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
  * Class representing an organisation site.
@@ -96,8 +99,8 @@ public class OrganisationSite extends OwnedItem implements FieldSource
     {
         JSONObject ret = new JSONObject();
 
-        ret.put(Fields.SOCIAL, hasSocial());
-        ret.putOpt(Fields.HASHTAGS, getHashtags());
+        ret.put(SOCIAL.value(), hasSocial());
+        ret.putOpt(HASHTAGS.value(), getHashtags());
 
         return ret;
     }
@@ -107,21 +110,21 @@ public class OrganisationSite extends OwnedItem implements FieldSource
      */
     public void setAttributes(JSONObject obj)
     {
-        setSocial(obj.optBoolean(Fields.SOCIAL, false));
-        setHashtags(obj.optString(Fields.HASHTAGS));
+        setSocial(obj.optBoolean(SOCIAL.value(), false));
+        setHashtags(obj.optString(HASHTAGS.value()));
     }
 
     /**
      * Returns the fields required by other objects.
      */
-    public Fields getFields()
+    public FieldMap getFields()
     {
-        Fields ret = new Fields();
+        FieldMap ret = new FieldMap();
 
-        ret.put(Fields.SPONSOR, isSponsor() ? "1" : "0");
-        ret.put(Fields.LISTING, hasListing() ? "1" : "0");
-        ret.put(Fields.SOCIAL, hasSocial() ? "1" : "0");
-        ret.put(Fields.HASHTAGS, getHashtags());
+        ret.put(SPONSOR, isSponsor() ? "1" : "0");
+        ret.put(LISTING, hasListing() ? "1" : "0");
+        ret.put(SOCIAL, hasSocial() ? "1" : "0");
+        ret.put(HASHTAGS, getHashtags());
 
         return ret;
     }

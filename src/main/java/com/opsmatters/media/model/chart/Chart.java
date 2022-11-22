@@ -198,7 +198,7 @@ public abstract class Chart<E extends Serializable> implements ConfigElement
          * @return This object
          */
         @Override
-        public Builder parse(Map<String, Object> map)
+        public B parse(Map<String, Object> map)
         {
             if(map.containsKey(TITLE))
                 ret.setTitle((String)map.get(TITLE));

@@ -18,7 +18,7 @@ package com.opsmatters.media.client.repository;
 
 import java.io.IOException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.content.RepositoryProvider;
+import com.opsmatters.media.model.content.project.RepositoryProvider;
 
 /**
  * Factory class to create a client for a repository provider.
