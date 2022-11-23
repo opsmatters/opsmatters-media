@@ -17,6 +17,7 @@
 package com.opsmatters.media.model.content.organisation;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,7 +41,6 @@ import com.opsmatters.media.model.content.project.ProjectConfig;
 import com.opsmatters.media.model.content.tool.ToolConfig;
 import com.opsmatters.media.model.content.job.JobConfig;
 import com.opsmatters.media.util.FileUtils;
-import java.io.IOException;
 
 import static com.opsmatters.media.model.content.ContentType.*;
 
@@ -49,13 +49,14 @@ import static com.opsmatters.media.model.content.ContentType.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrganisationContentConfig extends ConfigSetup implements FieldSource
+public class OrganisationContentSetup extends ConfigSetup implements FieldSource
 {
-    private static final Logger logger = Logger.getLogger(OrganisationContentConfig.class.getName());
+    private static final Logger logger = Logger.getLogger(OrganisationContentSetup.class.getName());
 
+    public static final String DEFAULTS = "content.yml";
     public static final String SUFFIX = "-content.yml";
 
-    private static OrganisationContentConfig defaults;
+    private static OrganisationContentSetup defaults;
     private static OrganisationListingConfig listing;
 
     private String code = "";
@@ -77,7 +78,7 @@ public class OrganisationContentConfig extends ConfigSetup implements FieldSourc
     /**
      * Constructor that takes a name.
      */
-    public OrganisationContentConfig(String name)
+    public OrganisationContentSetup(String name)
     {
         setName(name);
     }
@@ -157,7 +158,7 @@ public class OrganisationContentConfig extends ConfigSetup implements FieldSourc
     /**
      * Returns the default content configuration.
      */
-    public static OrganisationContentConfig getGlobalDefaults()
+    public static OrganisationContentSetup getGlobalDefaults()
     {
         return defaults;
     }
@@ -165,9 +166,9 @@ public class OrganisationContentConfig extends ConfigSetup implements FieldSourc
     /**
      * Sets the default content configuration.
      */
-    public static void setGlobalDefaults(OrganisationContentConfig defaults)
+    public static void setGlobalDefaults(OrganisationContentSetup defaults)
     {
-        OrganisationContentConfig.defaults = defaults;
+        OrganisationContentSetup.defaults = defaults;
     }
 
     /**
@@ -207,7 +208,7 @@ public class OrganisationContentConfig extends ConfigSetup implements FieldSourc
      */
     public static void setOrganisationListing(OrganisationListingConfig listing)
     {
-        OrganisationContentConfig.listing = listing;
+        OrganisationContentSetup.listing = listing;
     }
 
     /**
@@ -377,14 +378,14 @@ public class OrganisationContentConfig extends ConfigSetup implements FieldSourc
      * Builder to make configuration construction easier.
      */
     public static class Builder
-        extends ConfigSetup.Builder<OrganisationContentConfig,Builder>
-        implements ConfigParser<OrganisationContentConfig>
+        extends ConfigSetup.Builder<OrganisationContentSetup,Builder>
+        implements ConfigParser<OrganisationContentSetup>
     {
         // The config attribute names
         private static final String CODE = "code";
         private static final String FIELDS = "fields";
 
-        private OrganisationContentConfig ret = null;
+        private OrganisationContentSetup ret = null;
 
         /**
          * Constructor that takes a name.
@@ -393,7 +394,7 @@ public class OrganisationContentConfig extends ConfigSetup implements FieldSourc
         public Builder(String name)
         {
             name = FileUtils.getName(name);
-            ret = new OrganisationContentConfig(name);
+            ret = new OrganisationContentSetup(name);
         }
 
         /**
@@ -404,7 +405,7 @@ public class OrganisationContentConfig extends ConfigSetup implements FieldSourc
         @Override
         public Builder parse(Map<String, Object> map)
         {
-            OrganisationContentConfig defaults = OrganisationContentConfig.getGlobalDefaults();
+            OrganisationContentSetup defaults = OrganisationContentSetup.getGlobalDefaults();
 
             if(map.containsKey(CODE))
                 ret.setCode((String)map.get(CODE));
@@ -522,7 +523,7 @@ public class OrganisationContentConfig extends ConfigSetup implements FieldSourc
          * @return The configuration instance
          */
         @Override
-        public OrganisationContentConfig build() throws IOException
+        public OrganisationContentSetup build() throws IOException
         {
             read(this);
             ret.setFilename(filename);

@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 import java.sql.SQLException;
 import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.cache.organisation.OrganisationSites;
-import com.opsmatters.media.cache.content.ContentConfigs;
+import com.opsmatters.media.cache.content.organisation.OrganisationContentSetups;
 import com.opsmatters.media.cache.content.util.ContentImages;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.platform.FeedsConfig;
@@ -52,8 +52,6 @@ import static com.opsmatters.media.model.content.FieldName.*;
 public abstract class ContentConfig<C extends ContentItem> implements FieldSource, ConfigElement
 {
     private static final Logger logger = Logger.getLogger(ContentConfig.class.getName());
-
-    public static final String FILENAME = "content.yml";
 
     private String name = "";
     private String filename = "";
@@ -355,7 +353,7 @@ public abstract class ContentConfig<C extends ContentItem> implements FieldSourc
                 else
                     published = organisationSite.isReview() || organisationSite.isActive();
                 fields.put(PUBLISHED, published ? "1" : "0");
-                fields.add(ContentConfigs.get(organisation.getCode()));
+                fields.add(OrganisationContentSetups.get(organisation.getCode()));
 
                 // Add the path to the organisation thumbnail and logo
                 boolean missing = false;

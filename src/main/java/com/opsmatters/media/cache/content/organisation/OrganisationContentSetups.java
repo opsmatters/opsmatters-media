@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.cache.content;
+package com.opsmatters.media.cache.content.organisation;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -22,28 +22,28 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.organisation.OrganisationContentConfig;
+import com.opsmatters.media.model.content.organisation.OrganisationContentSetup;
 
 /**
- * Class representing the set of content configurations.
+ * Class representing the set of content configuration setups.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentConfigs
+public class OrganisationContentSetups
 {
-    private static final Logger logger = Logger.getLogger(ContentConfigs.class.getName());
+    private static final Logger logger = Logger.getLogger(OrganisationContentSetups.class.getName());
 
-    private static List<OrganisationContentConfig> configList = new ArrayList<OrganisationContentConfig>();
-    private static Map<String,OrganisationContentConfig> configMap = new HashMap<String,OrganisationContentConfig>();
-    private static Map<String,OrganisationContentConfig> nameMap = new HashMap<String,OrganisationContentConfig>();
-    private static Map<ContentType,Map<String,OrganisationContentConfig>> typeMap = new HashMap<ContentType,Map<String,OrganisationContentConfig>>();
+    private static List<OrganisationContentSetup> configList = new ArrayList<OrganisationContentSetup>();
+    private static Map<String,OrganisationContentSetup> configMap = new HashMap<String,OrganisationContentSetup>();
+    private static Map<String,OrganisationContentSetup> nameMap = new HashMap<String,OrganisationContentSetup>();
+    private static Map<ContentType,Map<String,OrganisationContentSetup>> typeMap = new HashMap<ContentType,Map<String,OrganisationContentSetup>>();
 
     private static boolean initialised = false;
 
     /**
      * Private constructor.
      */
-    private ContentConfigs()
+    private OrganisationContentSetups()
     {
     }
 
@@ -58,15 +58,15 @@ public class ContentConfigs
     /**
      * Loads the set of configurations.
      */
-    public static void load(List<OrganisationContentConfig> configs)
+    public static void load(List<OrganisationContentSetup> configs)
     {
         initialised = false;
 
         clear();
-        for(OrganisationContentConfig config : configs)
+        for(OrganisationContentSetup config : configs)
             add(config);
 
-        logger.info("Loaded "+size()+" content configurations");
+        logger.info("Loaded "+size()+" organisation content setups");
 
         initialised = true;
     }
@@ -74,12 +74,12 @@ public class ContentConfigs
     /**
      * Loads the set of archived configurations.
      */
-    public static void loadArchived(List<OrganisationContentConfig> configs)
+    public static void loadArchived(List<OrganisationContentSetup> configs)
     {
-        for(OrganisationContentConfig config : configs)
+        for(OrganisationContentSetup config : configs)
             add(config);
 
-        logger.info("Loaded "+size()+" archived content configurations");
+        logger.info("Loaded "+size()+" archived organisation content setups");
     }
 
     /**
@@ -96,7 +96,7 @@ public class ContentConfigs
     /**
      * Adds the given configuration.
      */
-    private static void add(OrganisationContentConfig config)
+    private static void add(OrganisationContentSetup config)
     {
         configList.add(config);
         configMap.put(config.getCode(), config);
@@ -120,11 +120,11 @@ public class ContentConfigs
      */
     private static void populateContentType(ContentType type)
     {
-        Map<String,OrganisationContentConfig> map = new TreeMap<String,OrganisationContentConfig>();
+        Map<String,OrganisationContentSetup> map = new TreeMap<String,OrganisationContentSetup>();
         typeMap.put(type, map);
 
         // Get the config files for the given content type
-        for(OrganisationContentConfig config : configList)
+        for(OrganisationContentSetup config : configList)
         {
             if(config.hasConfig(type))
                 map.put(config.getName(), config);
@@ -137,7 +137,7 @@ public class ContentConfigs
     /**
      * Returns the configuration for the given code.
      */
-    public static OrganisationContentConfig get(String code)
+    public static OrganisationContentSetup get(String code)
     {
         return configMap.get(code);
     }
@@ -145,7 +145,7 @@ public class ContentConfigs
     /**
      * Returns the configuration for the given name.
      */
-    public static OrganisationContentConfig getByName(String name)
+    public static OrganisationContentSetup getByName(String name)
     {
         return nameMap.get(name);
     }
@@ -153,9 +153,9 @@ public class ContentConfigs
     /**
      * Sets the given configuration.
      */
-    public static void set(OrganisationContentConfig config)
+    public static void set(OrganisationContentSetup config)
     {
-        OrganisationContentConfig existing = configMap.get(config.getCode());
+        OrganisationContentSetup existing = configMap.get(config.getCode());
 
         if(existing != null)
         {
@@ -170,7 +170,7 @@ public class ContentConfigs
         {
             if(type != ContentType.ORGANISATION)
             {
-                Map<String,OrganisationContentConfig> map = typeMap.get(type);
+                Map<String,OrganisationContentSetup> map = typeMap.get(type);
                 if(config.hasConfig(type))
                     map.put(config.getName(), config);
             }
@@ -183,7 +183,7 @@ public class ContentConfigs
     /**
      * Returns the list of configurations.
      */
-    public static List<OrganisationContentConfig> list()
+    public static List<OrganisationContentSetup> list()
     {
         return configList;
     }
@@ -191,7 +191,7 @@ public class ContentConfigs
     /**
      * Returns the map of configurations for the given type.
      */
-    public static Map<String,OrganisationContentConfig> mapByType(ContentType type)
+    public static Map<String,OrganisationContentSetup> mapByType(ContentType type)
     {
         return typeMap.get(type);
     }
