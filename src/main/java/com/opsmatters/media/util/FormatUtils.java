@@ -101,6 +101,11 @@ public class FormatUtils
 
         if(ret != null)
         {
+            // Remove extra parameters added by iStock images
+            int pos = ret.indexOf("_s=");
+            if(pos != -1)
+                ret = ret.substring(0, pos);
+
             // Replace spaces with dashes
             ret = ret.replaceAll(" |%20|%2[Ff]", "-");
 

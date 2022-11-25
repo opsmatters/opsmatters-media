@@ -846,6 +846,21 @@ public class StringUtils
     }
 
     /**
+     * Returns <CODE>true</CODE> if any of the values from the array are contained in the list.
+     */
+    public static boolean intersects(List<String> list, String[] values)
+    {
+        boolean ret = false;
+        for(String value : values)
+        {
+            if(ret = list.contains(value))
+                break;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the prefix for the given property, substituting the current environment.
      */
     public static String getEnvProperty(String name, String env, String deflt)
