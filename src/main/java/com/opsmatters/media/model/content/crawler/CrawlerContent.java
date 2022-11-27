@@ -20,7 +20,9 @@ import java.util.List;
 import java.util.ArrayList;
 import com.opsmatters.media.model.ConfigElement;
 import com.opsmatters.media.model.ConfigParser;
+import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.model.content.crawler.field.Fields;
+import com.opsmatters.media.model.content.crawler.field.FieldFilter;
 
 /**
  * Class that represents a YAML configuration for crawler content.
@@ -29,7 +31,7 @@ import com.opsmatters.media.model.content.crawler.field.Fields;
  */
 public class CrawlerContent implements ConfigElement
 {
-    private ContentLoading loading;
+    private ContentLoading loading = new ContentLoading();
     private List<Fields> fields = new ArrayList<Fields>();
 
     /**
@@ -112,6 +114,42 @@ public class CrawlerContent implements ConfigElement
     public boolean hasFields()
     {
         return fields != null && fields.size() > 0;
+    }
+
+    /**
+     * Returns the fields, adjusting the root if there was an error.
+     */
+    public List<Fields> getFields(boolean error)
+    {
+        List<Fields> ret = new ArrayList<Fields>();
+        for(Fields f : getFields())
+        {
+            Fields fields = new Fields(f);
+            if(error)
+                fields.setRoot("body");
+            ret.add(fields);
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the filters for this configuration.
+     */
+    public List<FieldFilter> getFilters()
+    {
+        List<FieldFilter> ret = new ArrayList<FieldFilter>();
+        for(Fields fields : getFields())
+        {
+            if(fields.getBody() != null)
+            {
+                Field body = fields.getBody();
+                if(body.getFilters() != null)
+                    ret.addAll(body.getFilters());
+            }
+        }
+
+        return ret;
     }
 
     /**

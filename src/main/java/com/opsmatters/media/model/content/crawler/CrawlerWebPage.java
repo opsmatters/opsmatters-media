@@ -198,6 +198,14 @@ public class CrawlerWebPage extends CrawlerTarget
     }
 
     /**
+     * Returns <CODE>true</CODE> if the link to get more items has been set for this configuration.
+     */
+    public boolean hasMoreLink()
+    {
+        return getMoreLink() != null;
+    }
+
+    /**
      * Returns a builder for the configuration.
      * @param name The name of the configuration
      * @return The builder instance.

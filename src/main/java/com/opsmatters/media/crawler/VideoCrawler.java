@@ -115,9 +115,9 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
     }
 
     /**
-     * Create the video summary from a selected node.
+     * Create the video teaser from a selected node.
      */
-    public VideoSummary getContentSummary(JSONObject video, Fields fields)
+    protected VideoSummary getTeaser(JSONObject video, Fields fields)
     {
         VideoSummary content = new VideoSummary();
 
@@ -127,17 +127,18 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
     }
 
     /**
-     * Process all the configured teaser fields.
+     * Process the configured teasers.
      */
-    public int processTeaserFields(ContentLoading loading) throws IOException
+    @Override
+    public int processTeasers() throws IOException
     {
         int ret = 0;
         initialised = true;
 
         // Process selections
         Map<String,String> map = new HashMap<String,String>();
-//GERALD: fix
-        for(Fields fields : getTeaserFields())
+        ContentLoading loading = channel.getTeasers().getLoading();
+        for(Fields fields : channel.getTeasers().getFields())
         {
             List<JSONObject> results = client.listVideos(channel.getChannelId(),
                 channel.getUserId(), getMaxResults());
@@ -146,7 +147,7 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
             ret += results.size();
             for(JSONObject result : results)
             {
-                VideoSummary content = getContentSummary(result, fields);
+                VideoSummary content = getTeaser(result, fields);
                 if(content.isValid() && !map.containsKey(content.getUniqueId()))
                 {
                     // Check that the teaser matches the configured keywords
@@ -159,7 +160,7 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
 
                     addContent(content);
                     map.put(content.getUniqueId(), content.getUniqueId());
-                    channelTitle = result.getString(CHANNEL_TITLE.value());
+                    channelTitle = result.optString(CHANNEL_TITLE.value()); // Only for YouTube
                 }
 
                 if(numContentItems() >= getMaxResults())
@@ -169,13 +170,15 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
 
         if(debug())
             logger.info("Found "+numContentItems()+" items");
+
         return ret;
     }
 
     /**
      * Populate the given video content.
      */
-    public VideoDetails getVideo(String videoId) throws IOException
+    @Override
+    public VideoDetails getContent(String videoId) throws IOException
     {
         JSONObject video = client.getVideo(videoId);
 
@@ -183,8 +186,7 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
             return null;
 
         VideoDetails content = new VideoDetails(videoId);
-//GERALD: fix
-        List<Fields> articles = getArticleFields();
+        List<Fields> articles = channel.getArticles().getFields(hasRootError());
         for(Fields fields : articles)
         {
             populateSummaryFields(video, fields, content, "content");

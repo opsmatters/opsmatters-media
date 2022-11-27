@@ -26,6 +26,7 @@ import org.jsoup.select.Elements;
 import com.opsmatters.media.model.content.publication.PublicationSummary;
 import com.opsmatters.media.model.content.publication.PublicationDetails;
 import com.opsmatters.media.model.content.publication.EBookConfig;
+import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.model.content.crawler.field.Fields;
@@ -61,10 +62,10 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
     }
 
     /**
-     * Create the ebook summary from the selected node.
+     * Create the ebook teaser from the selected node.
      */
     @Override
-    public PublicationSummary getContentSummary(Element root, Fields fields)
+    protected PublicationSummary getTeaser(Element root, Fields fields)
         throws DateTimeParseException
     {
         PublicationSummary content = new PublicationSummary();
@@ -90,36 +91,24 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
     /**
      * Create an ebook content item from the given url.
      */
-    public PublicationDetails getEBook(String url)
+    @Override
+    public PublicationDetails getContent(String url)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        return getEBook(new PublicationSummary(url, removeParameters()));
+        return getContent(new PublicationSummary(url, removeParameters()));
     }
 
     /**
      * Populate the given ebook content.
      */
-    public PublicationDetails getEBook(PublicationSummary summary)
+    @Override
+    public PublicationDetails getContent(PublicationSummary summary)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
         PublicationDetails content = new PublicationDetails(summary);
-//GERALD: fix
-        List<Fields> articles = getArticleFields();
+        List<Fields> articles = getPage().getArticles().getFields(hasRootError());
 
-//GERALD: fix
-        configureImplicitWait(getArticleLoading());
-//GERALD: fix
-        loadPage(content.getUrl(), getArticleLoading());
-//GERALD: fix
-        configureExplicitWait(getArticleLoading());
-
-        // Scroll the page if configured
-//GERALD: fix
-        configureMovement(getArticleLoading());
-
-        // Wait for the page to load
-//GERALD: fix
-        configureSleep(getArticleLoading());
+        loadArticlePage(content.getUrl());
 
         // Trace to see the page
         if(trace(getDriver()))

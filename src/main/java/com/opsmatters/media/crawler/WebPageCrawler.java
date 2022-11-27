@@ -72,7 +72,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     private CrawlerBrowser browser;
     private WebDriver driver;
     private TraceObject traceObject = TraceObject.NONE;
-    private CrawlerWebPage config;
+    private CrawlerWebPage page;
     private String imagePrefix = "";
     private String lastUrl;
 
@@ -85,16 +85,16 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     /**
      * Constructor that takes a name.
      */
-    public WebPageCrawler(CrawlerWebPage config)
+    public WebPageCrawler(CrawlerWebPage page)
     {
-        super(config);
-        this.config = config;
+        super(page);
+        this.page = page;
 
         // Create the web driver
         WebDriverPool.setDebug(debug());
         if(driver == null)
-            driver = WebDriverPool.getDriver(config.getBrowser(), config.isHeadless());
-        this.browser = config.getBrowser();
+            driver = WebDriverPool.getDriver(page.getBrowser(), page.isHeadless());
+        this.browser = page.getBrowser();
     }
 
     /**
@@ -188,7 +188,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
      */
     public CrawlerWebPage getPage()
     {
-        return config;
+        return page;
     }
 
     /**
@@ -212,10 +212,10 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
      */
     public String getBasePath()
     {
-        String ret = config.getBasePath();
+        String ret = page.getBasePath();
         if(ret == null || ret.length() == 0)
         {
-            ret = config.getUrl(0);
+            ret = page.getUrl(0);
             int pos = ret.indexOf("//");
             if(pos != -1)
             {
@@ -227,14 +227,6 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
             }
         }
         return ret;
-    }
-
-    /**
-     * Returns the link to get more items.
-     */
-    public MoreLink getMoreLink()
-    {
-        return config.getMoreLink();
     }
 
     /**
@@ -267,29 +259,28 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     }
 
     /**
-     * Load the page indicated by the url.
+     * Load the teaser page indicated by the url.
      * <p>
      * Also optionally clicks a Load More button and waits for the loading delay if configured.
      */
     private void loadTeaserPage(String url) throws IOException
     {
         long now = System.currentTimeMillis();
-//GERALD: fix
-        configureImplicitWait(getTeaserLoading());
-//GERALD: fix
-        loadPage(url, getTeaserLoading());
-//GERALD: fix
-        configureExplicitWait(getTeaserLoading());
+        ContentLoading loading = page.getTeasers().getLoading();
+
+        configureImplicitWait(loading);
+        loadPage(url, loading);
+        configureExplicitWait(loading);
 
         // Click a "Load More" button if configured
-        if(getMoreLink() != null)
+        if(page.hasMoreLink())
         {
-            int count = getMoreLink().getCount();
+            int count = page.getMoreLink().getCount();
             for(int i = 0; i < count; i++)
             {
                 if(debug())
                     logger.info("More link click "+(i+1)+" of "+count);
-                clickMoreLink(getMoreLink());
+                clickMoreLink(page.getMoreLink());
             }
         }
 
@@ -298,17 +289,34 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
             logger.info("teaser-page="+getPageSource());
 
         // Scroll the page if configured
-//GERALD: fix
-        configureMovement(getTeaserLoading());
+        configureMovement(loading);
 
         // Wait for the page to load
-//GERALD: fix
-        configureSleep(getTeaserLoading());
+        configureSleep(loading);
 
         if(debug())
             logger.info("Loaded page in: "+(System.currentTimeMillis()-now)+"ms");
 
         lastUrl = url;
+    }
+
+    /**
+     * Load the article page indicated by the url.
+     */
+    protected void loadArticlePage(String url) throws IOException
+    {
+        long now = System.currentTimeMillis();
+        ContentLoading loading = getPage().getArticles().getLoading();
+
+        configureImplicitWait(loading);
+        loadPage(url, loading);
+        configureExplicitWait(loading);
+
+        // Scroll the page if configured
+        configureMovement(loading);
+
+        // Wait for the page to load
+        configureSleep(loading);
     }
 
     /**
@@ -443,19 +451,26 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     }
 
     /**
-     * Create a content summary from the selected node.
+     * Create a teaser from the selected node.
      */
-    public abstract T getContentSummary(Element result, Fields fields) throws DateTimeParseException;
+    protected abstract T getTeaser(Element result, Fields fields) throws DateTimeParseException;
 
     /**
-     * Process all the configured teaser fields.
+     * Returns the processed content item derived from the given teaser.
      */
-    public int processTeaserFields(ContentLoading loading) throws IOException, DateTimeParseException
+    public abstract T getContent(T summary) throws IOException;
+
+    /**
+     * Process the configured teasers.
+     */
+    @Override
+    public int processTeasers() throws IOException, DateTimeParseException
     {
         int ret = 0;
+        ContentLoading loading = page.getTeasers().getLoading();
 
         Map<String,String> map = new HashMap<String,String>();
-        for(String url : config.getUrls())
+        for(String url : page.getUrls())
         {
             if(url.length() == 0)
                 throw new IllegalArgumentException("Root empty for teasers");
@@ -468,8 +483,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
 
             // Process the teaser selections
             int items = 0;
-//GERALD: fix
-            for(Fields fields : getTeaserFields())
+            for(Fields fields : page.getTeasers().getFields())
             {
                 Elements results = doc.select(fields.getRoot());
                 if(debug())
@@ -482,7 +496,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
                     if(trace(result))
                         logger.info("teaser-node="+result.html());
 
-                    T content = getContentSummary(result, fields);
+                    T content = getTeaser(result, fields);
                     if(content.isValid() && !map.containsKey(content.getUniqueId()))
                     {
                         // Check that the teaser matches the configured keywords

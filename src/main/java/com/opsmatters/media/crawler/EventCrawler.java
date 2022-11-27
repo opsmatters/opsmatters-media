@@ -26,6 +26,7 @@ import org.jsoup.select.Elements;
 import com.opsmatters.media.model.content.event.EventSummary;
 import com.opsmatters.media.model.content.event.EventDetails;
 import com.opsmatters.media.model.content.event.EventConfig;
+import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.model.content.crawler.field.Fields;
@@ -64,10 +65,10 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
     }
 
     /**
-     * Create an event summary from the selected node.
+     * Create an event teaser from the selected node.
      */
     @Override
-    public EventSummary getContentSummary(Element root, Fields fields)
+    protected EventSummary getTeaser(Element root, Fields fields)
         throws DateTimeParseException
     {
         EventSummary content = new EventSummary();
@@ -93,36 +94,24 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
     /**
      * Create an event content item from the given url.
      */
-    public EventDetails getEvent(String url)
+    @Override
+    public EventDetails getContent(String url)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        return getEvent(new EventSummary(url, removeParameters()));
+        return getContent(new EventSummary(url, removeParameters()));
     }
 
     /**
      * Populate the given event content.
      */
-    public EventDetails getEvent(EventSummary summary)
+    @Override
+    public EventDetails getContent(EventSummary summary)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
         EventDetails content = new EventDetails(summary);
-//GERALD: fix
-        List<Fields> articles = getArticleFields();
+        List<Fields> articles = getPage().getArticles().getFields(hasRootError());
 
-//GERALD: fix
-        configureImplicitWait(getArticleLoading());
-//GERALD: fix
-        loadPage(content.getUrl(), getArticleLoading());
-//GERALD: fix
-        configureExplicitWait(getArticleLoading());
-
-        // Scroll the page if configured
-//GERALD: fix
-        configureMovement(getArticleLoading());
-
-        // Wait for the page to load
-//GERALD: fix
-        configureSleep(getArticleLoading());
+        loadArticlePage(content.getUrl());
 
         // Trace to see the page
         if(trace(getDriver()))

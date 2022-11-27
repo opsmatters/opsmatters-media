@@ -15,6 +15,7 @@
  */
 package com.opsmatters.media.crawler;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -54,7 +55,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
     private String name = "";
     private boolean debug = false;
     private int maxResults = 0;
-    private CrawlerTarget config;
+    private CrawlerTarget target;
     private List<T> content = new ArrayList<T>();
     private boolean rootError = false;
 
@@ -63,10 +64,10 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Constructor that takes a name.
      */
-    public ContentCrawler(CrawlerTarget config)
+    public ContentCrawler(CrawlerTarget target)
     {
-        setName(config.getName());
-        this.config = config;
+        setName(target.getName());
+        this.target = target;
 
         // Initialise the format properties
         initFormatProperties();
@@ -123,69 +124,14 @@ public abstract class ContentCrawler<T extends ContentSummary>
     }
 
     /**
-     * Returns the teaser page loading configuration.
+     * Process the configured teasers.
      */
-    public ContentLoading getTeaserLoading()
-    {
-//GERALD: fix
-if(config.hasTeasers())
-    return config.getTeasers().getLoading();
-        return config.getTeaserLoading();
-    }
+    public abstract int processTeasers() throws IOException;
 
     /**
-     * Returns the teaser selections of the crawler.
+     * Returns the processed content item.
      */
-    public List<Fields> getTeaserFields()
-    {
-//GERALD: fix
-if(config.hasTeasers())
-    return config.getTeasers().getFields();
-        return config.getTeaserFields();
-    }
-
-    /**
-     * Returns the article page loading configuration.
-     */
-    public ContentLoading getArticleLoading()
-    {
-//GERALD: fix
-if(config.hasArticles())
-    return config.getArticles().getLoading();
-        return config.getArticleLoading();
-    }
-
-    /**
-     * Returns the article selections of the crawler.
-     */
-    public List<Fields> getArticleFields()
-    {
-        List<Fields> ret = new ArrayList<Fields>();
-//GERALD: remove later
-if(config.getArticleFields() != null)
-{
-        for(Fields f : config.getArticleFields())
-        {
-            Fields fields = new Fields(f);
-            if(hasRootError())
-                fields.setRoot("body");
-            ret.add(fields);
-        }
-}
-//GERALD
-if(config.hasArticles())
-{
-        for(Fields f : config.getArticles().getFields())
-        {
-            Fields fields = new Fields(f);
-            if(hasRootError())
-                fields.setRoot("body");
-            ret.add(fields);
-        }
-}
-
-        return ret;
-    }
+    public abstract T getContent(String id) throws IOException;
 
     /**
      * Returns <CODE>true</CODE> if the root needs to be replaced following an error.
@@ -248,7 +194,7 @@ if(config.hasArticles())
      */
     public boolean removeParameters()
     {
-        return getArticleLoading() != null ? getArticleLoading().removeParameters() : true;
+        return target.getArticles().getLoading().removeParameters();
     }
 
     /**

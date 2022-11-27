@@ -269,23 +269,16 @@ public class VideoConfig extends ContentConfig<VideoArticle>
                         CrawlerVideoChannel provider = ret.getProvider(config.getProvider());
                         if(provider != null)
                         {
-                            List<FieldFilter> filters = config.getFilters();
+                            String keywords = config.getTeasers().getLoading().getKeywords();
+                            List<FieldFilter> filters = config.getArticles().getFilters();
 
                             config.setTeasers(provider.getTeasers());
                             config.setArticles(provider.getArticles());
 
-                            // Add the filters from the original set of fields
-//GERALD: fix
-if(config.hasArticles())
-{
+                            // Add the keywords and filters from the original channel
+                            config.getTeasers().getLoading().setKeywords(keywords);
                             for(FieldFilter filter : filters)
                                 config.getArticles().getFields().get(0).getBody().addFilter(filter);
-}
-else
-{
-                            for(FieldFilter filter : filters)
-                                config.getArticleFields().get(0).getBody().addFilter(filter);
-}
                         }
 
                         ret.addChannel(config);

@@ -265,7 +265,7 @@ public class VideoArticle extends Article
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
 
-        BodyParser parser = new BodyParser(getDescription(), channel.getFilters(), debug);
+        BodyParser parser = new BodyParser(getDescription(), channel.getArticles().getFilters(), debug);
         if(parser.converted())
             setDescription(parser.formatBody());
         setSummary(parser.formatSummary(config.getSummary()));

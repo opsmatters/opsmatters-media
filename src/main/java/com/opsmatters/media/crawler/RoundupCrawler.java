@@ -27,6 +27,7 @@ import org.jsoup.select.Elements;
 import com.opsmatters.media.model.content.roundup.RoundupSummary;
 import com.opsmatters.media.model.content.roundup.RoundupDetails;
 import com.opsmatters.media.model.content.roundup.RoundupConfig;
+import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.model.content.crawler.field.Fields;
@@ -63,10 +64,10 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
     }
 
     /**
-     * Create a roundup summary from the selected node.
+     * Create a roundup teaser from the selected node.
      */
     @Override
-    public RoundupSummary getContentSummary(Element root, Fields fields)
+    protected RoundupSummary getTeaser(Element root, Fields fields)
         throws DateTimeParseException
     {
         RoundupSummary content = new RoundupSummary();
@@ -96,36 +97,24 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
     /**
      * Create a roundup content item from the given url.
      */
-    public RoundupDetails getRoundup(String url)
+    @Override
+    public RoundupDetails getContent(String url)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        return getRoundup(new RoundupSummary(url, removeParameters()));
+        return getContent(new RoundupSummary(url, removeParameters()));
     }
 
     /**
-     * Populate the given roundup content.
+     * Returns the processed roundup derived from the given teaser.
      */
-    public RoundupDetails getRoundup(RoundupSummary summary)
+    @Override
+    public RoundupDetails getContent(RoundupSummary summary)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
         RoundupDetails content = new RoundupDetails(summary);
-//GERALD: fix
-        List<Fields> articles = getArticleFields();
+        List<Fields> articles = getPage().getArticles().getFields(hasRootError());
 
-//GERALD: fix
-        configureImplicitWait(getArticleLoading());
-//GERALD: fix
-        loadPage(content.getUrl(), getArticleLoading());
-//GERALD: fix
-        configureExplicitWait(getArticleLoading());
-
-        // Scroll the page if configured
-//GERALD: fix
-        configureMovement(getArticleLoading());
-
-        // Wait for the page to load
-//GERALD: fix
-        configureSleep(getArticleLoading());
+        loadArticlePage(content.getUrl());
 
         // Trace to see the page
         if(trace(getDriver()))

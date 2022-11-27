@@ -258,7 +258,7 @@ public class EventResource extends Resource
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
 
-        BodyParser parser = new BodyParser(getDescription(), page.getFilters(), debug);
+        BodyParser parser = new BodyParser(getDescription(), page.getArticles().getFilters(), debug);
         if(parser.converted())
             setDescription(parser.formatBody());
         setSummary(parser.formatSummary(config.getSummary()));
