@@ -38,6 +38,7 @@ import com.opsmatters.media.model.ConfigParser;
 import com.opsmatters.media.model.content.organisation.OrganisationListing;
 import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
+import com.opsmatters.media.file.CommonFiles;
 import com.opsmatters.media.handler.ContentHandler;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.util.FileUtils;
@@ -54,13 +55,12 @@ public abstract class ContentConfig<C extends ContentItem> implements FieldSourc
     private static final Logger logger = Logger.getLogger(ContentConfig.class.getName());
 
     private String name = "";
-    private String filename = "";
     private String sheet = "";
     private ContentSource source = ContentSource.STORE;
     private String defaultDatePattern = "";
     private boolean trailingSlash = false;
     private SummaryConfig summary; 
-    private FieldMap fields;
+    private FieldMap fields = new FieldMap();
     private Map<String,String> output;
 
     /**
@@ -86,7 +86,6 @@ public abstract class ContentConfig<C extends ContentItem> implements FieldSourc
     {
         if(obj != null)
         {
-            setFilename(obj.getFilename());
             setSheet(obj.getSheet());
             setSource(obj.getSource());
             setDefaultDatePattern(obj.getDefaultDatePattern());
@@ -135,15 +134,11 @@ public abstract class ContentConfig<C extends ContentItem> implements FieldSourc
      */
     public String getFilename()
     {
-        return filename;
-    }
-
-    /**
-     * Sets the import filename for this configuration.
-     */
-    public void setFilename(String filename)
-    {
-        this.filename = filename;
+        String ret = "";
+        Organisation organisation = Organisations.get(getCode());
+        if(organisation != null)
+            ret = String.format("%s-%s.%s", organisation.getFilePrefix(), getType().tag(), CommonFiles.XLSX_EXT);
+        return ret;
     }
 
     /**
@@ -248,8 +243,6 @@ public abstract class ContentConfig<C extends ContentItem> implements FieldSourc
      */
     public void addFields(Map<String,String> fields)
     {
-        if(this.fields == null)
-            this.fields = new FieldMap();
         this.fields.putAll(fields);
     }
 
@@ -474,8 +467,6 @@ public abstract class ContentConfig<C extends ContentItem> implements FieldSourc
         implements ConfigParser<ContentConfig>
     {
         // The config attribute names
-        private static final String FILENAME = "filename";
-        private static final String SHEET = "sheet";
         private static final String SOURCE = "source";
         private static final String DEFAULT_DATE_PATTERN = "default-date-pattern";
         private static final String TRAILING_SLASH = "trailing-slash";
@@ -502,10 +493,6 @@ public abstract class ContentConfig<C extends ContentItem> implements FieldSourc
         @Override
         public B parse(Map<String, Object> map)
         {
-            if(map.containsKey(FILENAME))
-                ret.setFilename((String)map.get(FILENAME));
-            if(map.containsKey(SHEET))
-                ret.setSheet((String)map.get(SHEET));
             if(map.containsKey(DEFAULT_DATE_PATTERN))
                 ret.setDefaultDatePattern((String)map.get(DEFAULT_DATE_PATTERN));
             if(map.containsKey(TRAILING_SLASH))
@@ -531,8 +518,7 @@ public abstract class ContentConfig<C extends ContentItem> implements FieldSourc
          */
         public B fields(Map<String,Object> map)
         {
-            if(ret.getFields() != null)
-                ret.getFields().put(ORGANISATION, ret.getName());
+            ret.getFields().put(ORGANISATION, ret.getName());
 
             for(Map.Entry<String, Object> entry : map.entrySet())
             {

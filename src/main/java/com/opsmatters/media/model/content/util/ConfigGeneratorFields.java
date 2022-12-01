@@ -37,7 +37,6 @@ public class ConfigGeneratorFields implements java.io.Serializable
 {
     private String code = "";
     private String name = "";
-    private String tag = "";
     private String tags = "";
     private String channelId = "";
     private String userId = "";
@@ -63,7 +62,6 @@ public class ConfigGeneratorFields implements java.io.Serializable
     {
         setCode(organisation.getCode());
         setName(organisation.getName());
-        setTag(getName().toLowerCase().replaceAll(" ","-").replaceAll("\\.|&",""));
         setWebsite(organisation.getWebsite());
 
         if(organisationSite.hasListing())
@@ -132,22 +130,6 @@ public class ConfigGeneratorFields implements java.io.Serializable
     public void setName(String name)
     {
         this.name = name;
-    }
-
-    /**
-     * Returns the tag.
-     */
-    public String getTag()
-    {
-        return tag;
-    }
-
-    /**
-     * Sets the tag.
-     */
-    public void setTag(String tag)
-    {
-        this.tag = tag;
     }
 
     /**

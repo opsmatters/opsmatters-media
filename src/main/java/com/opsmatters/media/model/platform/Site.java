@@ -339,7 +339,7 @@ public class Site implements ConfigElement
                 {
                     for(Map.Entry<String,Object> entry : config.entrySet())
                     {
-                        ret.addEnvironment(Environment.builder(entry.getKey())
+                        ret.addEnvironment(Environment.builder(entry.getKey(), ret)
                             .parse((Map<String,Object>)entry.getValue()).build());
                     }
                 }

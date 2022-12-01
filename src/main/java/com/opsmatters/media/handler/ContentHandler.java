@@ -62,7 +62,7 @@ public class ContentHandler
 
     private String name = "";
     private String filename = "";
-    private String sheet = "";
+    private String sheet = DEFAULT_SHEET;
     private List<String[]> lines;
     private Map<String,String> output;
     private String workingDir = "";
@@ -100,7 +100,6 @@ public class ContentHandler
     {
         setName(config.getName());
         setFilename(config.getFilename());
-        setSheet(config.getSheet());
         setOutput(config.getOutput());
 
         // Use the default sheet name if none was given

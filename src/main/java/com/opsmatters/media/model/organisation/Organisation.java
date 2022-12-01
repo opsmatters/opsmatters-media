@@ -43,6 +43,7 @@ public class Organisation extends OwnedItem implements FieldSource
     private String handle = "";
     private String hashtag = "";
     private String tracking = "";
+    private String filePrefix = "";
     private String imagePrefix = "";
     private String imageText = "";
 
@@ -84,6 +85,7 @@ public class Organisation extends OwnedItem implements FieldSource
             setHandle(new String(obj.getHandle() != null ? obj.getHandle() : ""));
             setHashtag(new String(obj.getHashtag() != null ? obj.getHashtag() : ""));
             setTracking(new String(obj.getTracking() != null ? obj.getTracking() : ""));
+            setFilePrefix(new String(obj.getFilePrefix() != null ? obj.getFilePrefix() : ""));
             setImagePrefix(new String(obj.getImagePrefix() != null ? obj.getImagePrefix() : ""));
             setImageText(new String(obj.getImageText() != null ? obj.getImageText() : ""));
         }
@@ -101,6 +103,7 @@ public class Organisation extends OwnedItem implements FieldSource
         ret.putOpt(HASHTAG.value(), getHashtag());
         ret.putOpt(TRACKING.value(), getTracking());
         ret.putOpt(HANDLE.value(), getHandle());
+        ret.putOpt(FILE_PREFIX.value(), getFilePrefix());
         ret.putOpt(IMAGE_PREFIX.value(), getImagePrefix());
         ret.putOpt(IMAGE_TEXT.value(), getImageText());
 
@@ -117,6 +120,7 @@ public class Organisation extends OwnedItem implements FieldSource
         setHashtag(obj.optString(HASHTAG.value()));
         setTracking(obj.optString(TRACKING.value()));
         setHandle(obj.optString(HANDLE.value()));
+        setFilePrefix(obj.optString(FILE_PREFIX.value()));
         setImagePrefix(obj.optString(IMAGE_PREFIX.value()));
         setImageText(obj.optString(IMAGE_TEXT.value()));
     }
@@ -303,6 +307,30 @@ public class Organisation extends OwnedItem implements FieldSource
     public boolean hasTracking()
     {
         return tracking != null && tracking.length() > 0;
+    }
+
+    /**
+     * Returns the file prefix.
+     */
+    public String getFilePrefix()
+    {
+        return filePrefix;
+    }
+
+    /**
+     * Sets the file prefix.
+     */
+    public void setFilePrefix(String filePrefix)
+    {
+        this.filePrefix = filePrefix;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this organisation has a file prefix.
+     */
+    public boolean hasFilePrefix()
+    {
+        return filePrefix != null && filePrefix.length() > 0;
     }
 
     /**

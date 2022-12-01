@@ -263,11 +263,12 @@ public class Environment implements ConfigElement
     /**
      * Returns a builder for the environment.
      * @param name The name of the environment
+     * @param site The site of the environment
      * @return The builder instance.
      */
-    public static Builder builder(String name)
+    public static Builder builder(String name, Site site)
     {
-        return new Builder(name);
+        return new Builder(name, site);
     }
 
     /**
@@ -277,7 +278,6 @@ public class Environment implements ConfigElement
     {
         // The config attribute names
         private static final String NAME = "name";
-        private static final String KEY = "key";
         private static final String URL = "url";
         private static final String PING = "ping";
         private static final String PATH = "path";
@@ -292,10 +292,17 @@ public class Environment implements ConfigElement
         /**
          * Constructor that takes a name.
          * @param name The name for the environment
+         * @param site The site for the environment
          */
-        public Builder(String name)
+        public Builder(String name, Site site)
         {
             ret = new Environment(name);
+
+            // Generate environment key
+            String key = name;
+            if(site != null)
+                key = String.format("%s-%s", site.getId(), name);
+            ret.setKey(key.replace("_", "-").toLowerCase());
         }
 
         /**
@@ -306,8 +313,6 @@ public class Environment implements ConfigElement
         @Override
         public Builder parse(Map<String, Object> map)
         {
-            if(map.containsKey(KEY))
-                ret.setKey((String)map.get(KEY));
             if(map.containsKey(URL))
                 ret.setUrl((String)map.get(URL));
             if(map.containsKey(PING))

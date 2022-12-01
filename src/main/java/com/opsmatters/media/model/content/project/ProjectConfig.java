@@ -32,6 +32,8 @@ public class ProjectConfig extends ContentConfig<ProjectResource>
 {
     private static final Logger logger = Logger.getLogger(ProjectConfig.class.getName());
 
+    private String branch = "";
+
     /**
      * Constructor that takes a name.
      */
@@ -50,12 +52,39 @@ public class ProjectConfig extends ContentConfig<ProjectResource>
     }
 
     /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(ProjectConfig obj)
+    {
+        if(obj != null)
+        {
+            setBranch(obj.getBranch());
+        }
+    }
+
+    /**
      * Returns the type for this configuration.
      */
     @Override
     public ContentType getType()
     {
         return ContentType.PROJECT;
+    }
+
+    /**
+     * Returns the configuration default branch.
+     */
+    public String getBranch()
+    {
+        return branch;
+    }
+
+    /**
+     * Sets the configuration default branch.
+     */
+    public void setBranch(String branch)
+    {
+        this.branch = branch;
     }
 
     /**
@@ -74,6 +103,9 @@ public class ProjectConfig extends ContentConfig<ProjectResource>
     public static class Builder extends ContentConfig.Builder<ProjectConfig, Builder>
     {
         private ProjectConfig ret = null;
+
+        // The config attribute names
+        private static final String BRANCH = "branch";
 
         /**
          * Constructor that takes a name.
@@ -94,6 +126,12 @@ public class ProjectConfig extends ContentConfig<ProjectResource>
         public Builder parse(Map<String, Object> map)
         {
             super.parse(map);
+
+            if(map.containsKey(BRANCH))
+            {
+                ret.setBranch((String)map.get(BRANCH));
+            }
+
             return this;
         }
 

@@ -33,6 +33,7 @@ import org.kohsuke.github.GHContent;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHLicense;
 import com.opsmatters.media.client.Client;
+import com.opsmatters.media.model.content.project.ProjectConfig;
 import com.opsmatters.media.model.content.project.ProjectDetails;
 import com.opsmatters.media.model.content.project.RepositoryProvider;
 import com.opsmatters.media.model.content.project.OpenSourceLicense;
@@ -50,21 +51,24 @@ public class GitHubClient extends Client implements RepositoryClient
     public static final String SUFFIX = ".github";
 
     private GitHub client;
+    private String branch = "";
     private String accessToken = "";
 
     private static final String LINKS = "<p>Download source code as "
-        +"<a href=\"%s/zipball/master\">[.zip file]</a> "
-        +"<a href=\"%s/tarball/master\">[.tar.gz file]</a>"
+        +"<a href=\"%1$s/zipball/%2$s\">[.zip file]</a> "
+        +"<a href=\"%1$s/tarball/%2$s\">[.tar.gz file]</a>"
         +"<br>Documentation: "
-        +"<a href=\"%s/blob/master/README.md\">[README]</a>"
+        +"<a href=\"%1$s/blob/%2$s/README.md\">[README]</a>"
         +"</p>";
 
     /**
      * Returns a new github client using an access token.
      */
-    static public GitHubClient newClient() throws IOException
+    static public GitHubClient newClient(ProjectConfig config) throws IOException
     {
-        GitHubClient ret = new GitHubClient();
+        GitHubClient ret = new GitHubClient().builder()
+            .branch(config.getBranch())
+            .build();
 
         // Configure and create the github client
         ret.configure();
@@ -134,6 +138,22 @@ public class GitHubClient extends Client implements RepositoryClient
     public void close() 
     {
         client = null;
+    }
+
+    /**
+     * Returns the default branch for the client.
+     */
+    public String getBranch() 
+    {
+        return branch;
+    }
+
+    /**
+     * Sets the default branch for the client.
+     */
+    public void setBranch(String branch) 
+    {
+        this.branch = branch;
     }
 
     /**
@@ -248,7 +268,7 @@ public class GitHubClient extends Client implements RepositoryClient
             project.setFounded(getFounded(repository));
 
             String repoUrl = String.format("%s/%s", getProvider().url(), repository.getFullName());
-            project.setLinks(String.format(LINKS, repoUrl, repoUrl, repoUrl));
+            project.setLinks(String.format(LINKS, repoUrl, branch));
 
             GHLicense license = repository.getLicense();
             if(license != null)
@@ -262,5 +282,42 @@ public class GitHubClient extends Client implements RepositoryClient
         }
 
         return project;
+    }
+
+    /**
+     * Returns a builder for the client.
+     * @return The builder instance.
+     */
+    public static Builder builder()
+    {
+        return new Builder();
+    }
+
+    /**
+     * Builder to make client construction easier.
+     */
+    public static class Builder
+    {
+        private GitHubClient client = new GitHubClient();
+
+        /**
+         * Sets the default branch for the client.
+         * @param branch The default branch for the client
+         * @return This object
+         */
+        public Builder branch(String branch)
+        {
+            client.setBranch(branch);
+            return this;
+        }
+
+        /**
+         * Returns the configured client instance
+         * @return The client instance
+         */
+        public GitHubClient build()
+        {
+            return client;
+        }
     }
 }

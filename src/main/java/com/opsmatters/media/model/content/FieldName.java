@@ -51,6 +51,7 @@ public enum FieldName
     CHANNEL_TITLE("channel-title"),
     VIDEO_TYPE("video-type"),
     EVENT_TYPE("event-type"),
+    FILE_PREFIX("file-prefix"),
     IMAGE("image"),
     IMAGE_SOURCE("image-source"),
     IMAGE_PREFIX("image-prefix"),

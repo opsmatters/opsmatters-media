@@ -238,7 +238,7 @@ public class PlatformSetup extends ConfigSetup
                 {
                     for(Map.Entry<String,Object> entry : config.entrySet())
                     {
-                        ret.addEnvironment(Environment.builder(entry.getKey())
+                        ret.addEnvironment(Environment.builder(entry.getKey(), null)
                             .parse((Map<String,Object>)entry.getValue()).build());
                     }
                 }
