@@ -259,6 +259,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
     {
         // Remove special characters before processing
         value = processValue(value);
+        dflt = processValue(dflt);
 
         String ret = value;
 

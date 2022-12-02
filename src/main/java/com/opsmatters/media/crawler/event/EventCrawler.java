@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.crawler;
+package com.opsmatters.media.crawler.event;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,6 +23,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import com.opsmatters.media.crawler.WebPageCrawler;
 import com.opsmatters.media.model.content.event.EventSummary;
 import com.opsmatters.media.model.content.event.EventDetails;
 import com.opsmatters.media.model.content.event.EventConfig;

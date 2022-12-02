@@ -13,73 +13,80 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.crawler;
+package com.opsmatters.media.crawler.roundup;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 import java.time.format.DateTimeParseException;
+import com.vdurmont.emoji.EmojiParser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import com.opsmatters.media.model.content.publication.PublicationSummary;
-import com.opsmatters.media.model.content.publication.PublicationDetails;
-import com.opsmatters.media.model.content.publication.WhitePaperConfig;
+import com.opsmatters.media.crawler.WebPageCrawler;
+import com.opsmatters.media.model.content.roundup.RoundupSummary;
+import com.opsmatters.media.model.content.roundup.RoundupDetails;
+import com.opsmatters.media.model.content.roundup.RoundupConfig;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.model.content.crawler.field.Fields;
+
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.TimeUtils;
+import com.opsmatters.media.util.FormatUtils;
 
 /**
- * Class representing a crawler for white papers.
+ * Class representing a crawler for roundup posts.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
+public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
 {
-    private static final Logger logger = Logger.getLogger(WhitePaperCrawler.class.getName());
+    private static final Logger logger = Logger.getLogger(RoundupCrawler.class.getName());
 
-    private WhitePaperConfig config;
+    private RoundupConfig config;
 
     /**
      * Constructor that takes a web page configuration.
      */
-    public WhitePaperCrawler(WhitePaperConfig config, CrawlerWebPage page)
+    public RoundupCrawler(RoundupConfig config,  CrawlerWebPage page)
     {
         super(page);
         this.config = config;
     }
 
     /**
-     * Returns the white paper configuration of the crawler.
+     * Returns the roundup configuration of the crawler.
      */
-    public WhitePaperConfig getConfig()
+    public RoundupConfig getConfig()
     {
         return config;
     }
 
     /**
-     * Create the white paper teaser from the selected node.
+     * Create a roundup teaser from the selected node.
      */
     @Override
-    protected PublicationSummary getTeaser(Element root, Fields fields)
+    protected RoundupSummary getTeaser(Element root, Fields fields)
         throws DateTimeParseException
     {
-        PublicationSummary content = new PublicationSummary();
+        RoundupSummary content = new RoundupSummary();
         if(fields.hasValidator())
             validateContent(content, fields.getValidator(), root, "teaser");
         if(content.isValid())
         {
             if(debug() && fields.hasValidator())
-                logger.info("Validated white paper content: "+fields.getValidator());
+                logger.info("Validated roundup content: "+fields.getValidator());
             populateSummaryFields(root, fields, content, "teaser");
             if(fields.hasUrl())
             {
+                String url = null;
                 Field field = fields.getUrl();
-                String url = getAnchor(field, root, "teaser", field.removeParameters());
+                if(field.generate())
+                    url = FormatUtils.generateUrl(getBasePath(), getElements(field, root, "teaser"));
+                else
+                    url = getAnchor(field, root, "teaser", field.removeParameters());
                 if(url != null)
                     content.setUrl(url, field.removeParameters());
             }
@@ -89,23 +96,23 @@ public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
     }
 
     /**
-     * Create a white paper content item from the given url.
+     * Create a roundup content item from the given url.
      */
     @Override
-    public PublicationDetails getContent(String url)
+    public RoundupDetails getContent(String url)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        return getContent(new PublicationSummary(url, removeParameters()));
+        return getContent(new RoundupSummary(url, removeParameters()));
     }
 
     /**
-     * Populate the given white paper content.
+     * Returns the processed roundup derived from the given teaser.
      */
     @Override
-    public PublicationDetails getContent(PublicationSummary summary)
+    public RoundupDetails getContent(RoundupSummary summary)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        PublicationDetails content = new PublicationDetails(summary);
+        RoundupDetails content = new RoundupDetails(summary);
         List<Fields> articles = getPage().getArticles().getFields(hasRootError());
 
         loadArticlePage(content.getUrl());
@@ -121,39 +128,31 @@ public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
         for(Fields fields : articles)
         {
             if(!fields.hasRoot())
-                throw new IllegalArgumentException("Root empty for white paper content");
+                throw new IllegalArgumentException("Root empty for roundup content");
 
             Elements elements = doc.select(fields.getRoot());
             if(elements.size() > 0)
             {
                 root = elements.get(0);
                 if(debug())
-                    logger.info("Root found for white paper content: "+fields.getRoot());
+                    logger.info("Root found for roundup content: "+fields.getRoot());
                 populateSummaryFields(root, fields, content, "content");
             }
             else
             {
-                logger.warning("Root not found for white paper content: "+fields.getRoot());
+                logger.warning("Root not found for roundup content: "+fields.getRoot());
                 continue;
             }
 
             // Trace to see the content root node
             if(trace(root))
-                logger.info("whitepaper-node="+root.html());
-
-            // Default the published date to today if not found
-            if(!fields.hasPublishedDate() && content.getPublishedDate() == null)
-            {
-                content.setPublishedDate(TimeUtils.truncateTimeUTC());
-                if(debug())
-                    logger.info("Defaulting published date: "+content.getPublishedDateAsString());
-            }
+                logger.info("roundup-node="+root.html());
 
             if(root != null && fields.hasBody())
             {
-                String body = getBody(fields.getBody(), root, "content", debug());
+                String body = getBodySummary(fields.getBody(), root, "content", config.getSummary(), debug());
                 if(body != null)
-                    content.setDescription(body);
+                    content.setSummary(body);
             }
 
             if(root != null)
@@ -161,7 +160,7 @@ public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
         }
 
         if(root == null)
-            throw new IllegalArgumentException("Root not found for white paper content");
+            throw new IllegalArgumentException("Root not found for roundup content");
 
         return content;
     }
@@ -170,15 +169,15 @@ public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
      * Populate the content fields from the given node.
      */
     private void populateSummaryFields(Element root, 
-        Fields fields, PublicationSummary content, String type)
+        Fields fields, RoundupSummary content, String type)
         throws DateTimeParseException
     {
         if(fields.hasTitle())
         {
             Field field = fields.getTitle();
             String title = getElements(field, root, type);
-            if(title != null && title.length() > 0)
-                content.setTitle(title);
+            if(title != null && title.length() > 0 && !title.equals("Please wait..."))
+                content.setTitle(EmojiParser.removeAllEmojis(title.trim()));
         }
 
         if(fields.hasPublishedDate())
@@ -211,9 +210,25 @@ public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
                 catch(DateTimeParseException e)
                 {
                     logger.severe(StringUtils.serialize(e));
-                    logger.warning("Unparseable published date: "+publishedDate);
+                    logger.warning("Unparseable published date: "+publishedDate+" code="+config.getCode());
                 }
             }
+        }
+
+        if(fields.hasAuthor())
+        {
+            Field field = fields.getAuthor();
+            String author = getElements(field, root, type);
+            if(author != null && author.length() > 0)
+                content.setAuthor(author);
+        }
+
+        if(fields.hasAuthorLink())
+        {
+            Field field = fields.getAuthorLink();
+            String authorLink = getAnchor(field, root, type, field.removeParameters());
+            if(authorLink != null && authorLink.length() > 0)
+                content.setAuthorLink(authorLink);
         }
 
         if(fields.hasImage())
@@ -230,6 +245,25 @@ public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
                     String name = fields.getImage().getName();
                     logger.info("Image source for "+name+": "+content.getImageSource());
                     logger.info("Image for "+name+": "+content.getImage());
+                }
+            }
+        }
+
+        if(fields.hasBackgroundImage())
+        {
+            Field field = fields.getBackgroundImage();
+            String style = getStyle(field, root, type);
+            if(style != null && style.length() > 0)
+            {
+                String src = getBackgroundImage(style);
+                content.setImageFromPath(getImagePrefix(), src);
+                content.setImageSource(getBasePath(), encodeUrl(src), field.removeParameters());
+
+                if(debug())
+                {
+                    String name = fields.getBackgroundImage().getName();
+                    logger.info("Background Image source for "+name+": "+content.getImageSource());
+                    logger.info("Background Image for "+name+": "+content.getImage());
                 }
             }
         }

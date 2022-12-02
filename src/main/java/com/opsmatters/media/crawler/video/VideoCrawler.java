@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.crawler;
+package com.opsmatters.media.crawler.video;
 
 import java.io.IOException;
 import java.util.Map;
@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
+import com.opsmatters.media.crawler.ContentCrawler;
 import com.opsmatters.media.model.content.video.VideoSummary;
 import com.opsmatters.media.model.content.video.VideoDetails;
 import com.opsmatters.media.model.content.video.VideoConfig;

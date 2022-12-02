@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.crawler;
+package com.opsmatters.media.crawler.publication;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,9 +23,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import com.opsmatters.media.crawler.WebPageCrawler;
 import com.opsmatters.media.model.content.publication.PublicationSummary;
 import com.opsmatters.media.model.content.publication.PublicationDetails;
-import com.opsmatters.media.model.content.publication.EBookConfig;
+import com.opsmatters.media.model.content.publication.WhitePaperConfig;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.field.Field;
@@ -34,35 +35,35 @@ import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
- * Class representing a crawler for ebooks.
+ * Class representing a crawler for white papers.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EBookCrawler extends WebPageCrawler<PublicationSummary>
+public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
 {
-    private static final Logger logger = Logger.getLogger(EBookCrawler.class.getName());
+    private static final Logger logger = Logger.getLogger(WhitePaperCrawler.class.getName());
 
-    private EBookConfig config;
+    private WhitePaperConfig config;
 
     /**
      * Constructor that takes a web page configuration.
      */
-    public EBookCrawler(EBookConfig config, CrawlerWebPage page)
+    public WhitePaperCrawler(WhitePaperConfig config, CrawlerWebPage page)
     {
         super(page);
         this.config = config;
     }
 
     /**
-     * Returns the ebook configuration of the crawler.
+     * Returns the white paper configuration of the crawler.
      */
-    public EBookConfig getConfig()
+    public WhitePaperConfig getConfig()
     {
         return config;
     }
 
     /**
-     * Create the ebook teaser from the selected node.
+     * Create the white paper teaser from the selected node.
      */
     @Override
     protected PublicationSummary getTeaser(Element root, Fields fields)
@@ -74,7 +75,7 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
         if(content.isValid())
         {
             if(debug() && fields.hasValidator())
-                logger.info("Validated ebook content: "+fields.getValidator());
+                logger.info("Validated white paper content: "+fields.getValidator());
             populateSummaryFields(root, fields, content, "teaser");
             if(fields.hasUrl())
             {
@@ -89,7 +90,7 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
     }
 
     /**
-     * Create an ebook content item from the given url.
+     * Create a white paper content item from the given url.
      */
     @Override
     public PublicationDetails getContent(String url)
@@ -99,7 +100,7 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
     }
 
     /**
-     * Populate the given ebook content.
+     * Populate the given white paper content.
      */
     @Override
     public PublicationDetails getContent(PublicationSummary summary)
@@ -121,25 +122,25 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
         for(Fields fields : articles)
         {
             if(!fields.hasRoot())
-                throw new IllegalArgumentException("Root empty for ebook content");
+                throw new IllegalArgumentException("Root empty for white paper content");
 
             Elements elements = doc.select(fields.getRoot());
             if(elements.size() > 0)
             {
                 root = elements.get(0);
                 if(debug())
-                    logger.info("Root found for ebook content: "+fields.getRoot());
+                    logger.info("Root found for white paper content: "+fields.getRoot());
                 populateSummaryFields(root, fields, content, "content");
             }
             else
             {
-                logger.warning("Root not found for ebook content: "+fields.getRoot());
+                logger.warning("Root not found for white paper content: "+fields.getRoot());
                 continue;
             }
 
             // Trace to see the content root node
             if(trace(root))
-                logger.info("ebook-node="+root.html());
+                logger.info("whitepaper-node="+root.html());
 
             // Default the published date to today if not found
             if(!fields.hasPublishedDate() && content.getPublishedDate() == null)
@@ -161,7 +162,7 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
         }
 
         if(root == null)
-            throw new IllegalArgumentException("Root not found for ebook content");
+            throw new IllegalArgumentException("Root not found for white paper content");
 
         return content;
     }
