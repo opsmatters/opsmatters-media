@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.file.CommonFiles;
 
 /**
  * Class that represents the configuration for an organisation's listing.
@@ -48,6 +49,15 @@ public class OrganisationListingConfig extends ContentConfig<OrganisationListing
     {
         super(obj);
         copyAttributes(obj);
+    }
+
+    /**
+     * Returns the import filename for this configuration.
+     */
+    @Override
+    public String getFilename()
+    {
+        return String.format("%s.%s", getType().tag(), CommonFiles.XLSX_EXT);
     }
 
     /**

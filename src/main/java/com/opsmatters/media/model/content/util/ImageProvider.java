@@ -32,6 +32,7 @@ public enum ImageProvider
     PEXELS("pexels", "Pexels", true),
     PIXABAY("pixabay", "Pixabay", true),
     PXHERE("pxhere", "Pxhere", true),
+    PXFUEL("pxfuel", "Pxfuel", true),
     FREEPIK("freepik", "Freepik", true),
     STOCKVAULT("stockvault", "Stockvault", true),
     STOCKSNAP("stocksnap", "StockSnap", true),

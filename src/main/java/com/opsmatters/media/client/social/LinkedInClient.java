@@ -124,7 +124,7 @@ public class LinkedInClient extends Client implements SocialClient
             logger.severe("Unable to read default linkedin auth file: "+e.getClass().getName()+": "+e.getMessage());
         }
 
-        file = new File(directory, channel.getId()+SUFFIX);
+        file = new File(directory, channel.getId().toLowerCase()+SUFFIX);
         try
         {
             // Read file from auth directory

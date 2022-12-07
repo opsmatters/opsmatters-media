@@ -15,11 +15,14 @@
  */
 package com.opsmatters.media.model.feed;
 
+import com.opsmatters.media.model.admin.Email;
+import com.opsmatters.media.model.admin.EmailBody;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.platform.EnvironmentName;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.drupal.FeedsFeed;
 import com.opsmatters.media.util.StringUtils;
+import com.opsmatters.media.util.Formats;
 
 /**
  * Class representing a content feed.
@@ -140,5 +143,27 @@ public class ContentFeed extends Feed
     public void setEnvironment(EnvironmentName environment)
     {
         this.environment = environment;
+    }
+
+    /**
+     * Returns the email for a feed with an error.
+     */
+    public Email getAlertEmail(String description)
+    {
+        String subject = String.format("Feed ERROR: %s %s",
+            getEnvironment().name(), getName());
+        EmailBody body = new EmailBody()
+            .addParagraph("The following feed has an error:")
+            .addTable(new String[][]
+            {
+                {"ID", getId()},
+                {"Name", getName()},
+                {"Type", getContentType().value()},
+                {"Environment", getEnvironment().name()},
+                {"Status", getStatus().name()},
+                {"Executed", getExecutedDateAsString(Formats.CONTENT_DATE_FORMAT)},
+                {"Description", description},
+            });
+        return new Email(subject, body);
     }
 }

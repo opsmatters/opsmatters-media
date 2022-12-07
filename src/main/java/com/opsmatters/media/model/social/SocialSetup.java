@@ -18,6 +18,7 @@ package com.opsmatters.media.model.social;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -37,6 +38,7 @@ public class SocialSetup extends ConfigSetup
     public static final String FILENAME = "social.yml";
 
     private List<SocialChannel> channels = new ArrayList<SocialChannel>();
+    private Map<String,List<String>> hashtagMap = new HashMap<String,List<String>>();
 
     /**
      * Default constructor.
@@ -62,6 +64,8 @@ public class SocialSetup extends ConfigSetup
         {
             for(SocialChannel channel : obj.getChannels())
                 addChannel(new SocialChannel(channel));
+            for(Map.Entry<String,List<String>> entry : obj.getHashtagMap().entrySet())
+                setHashtags(entry.getKey(), entry.getValue());
         }
     }
 
@@ -99,6 +103,38 @@ public class SocialSetup extends ConfigSetup
     }
 
     /**
+     * Returns the map of hashtags.
+     */
+    public Map<String,List<String>> getHashtagMap()
+    {
+        return hashtagMap;
+    }
+
+    /**
+     * Returns the list of hashtags for the given site.
+     */
+    public List<String> getHashtags(String siteId)
+    {
+        return hashtagMap.get(siteId);
+    }
+
+    /**
+     * Adds a list of hashtags for the given site to the list of channels.
+     */
+    public void setHashtags(String siteId, List<String> hashtags)
+    {
+        this.hashtagMap.put(siteId, hashtags);
+    }
+
+    /**
+     * Returns the number of hashtags for the given site.
+     */
+    public int numHashtags(String siteId)
+    {
+        return hashtagMap.get(siteId).size();
+    }
+
+    /**
      * Returns a builder for the social setup.
      * @return The builder instance.
      */
@@ -116,6 +152,7 @@ public class SocialSetup extends ConfigSetup
     {
         // The config attribute names
         private static final String SOCIAL_CHANNELS = "social-channels";
+        private static final String HASHTAGS = "hashtags";
 
         private SocialSetup ret = new SocialSetup();
 
@@ -145,6 +182,16 @@ public class SocialSetup extends ConfigSetup
                         ret.addChannel(SocialChannel.builder(entry.getKey())
                             .parse((Map<String,Object>)entry.getValue()).build());
                     }
+                }
+            }
+
+            if(map.containsKey(HASHTAGS))
+            {
+                List<Map<String,Object>> sites = (List<Map<String,Object>>)map.get(HASHTAGS);
+                for(Map<String,Object> siteMap : sites)
+                {
+                    for(Map.Entry<String,Object> entry : siteMap.entrySet())
+                        ret.setHashtags(entry.getKey(), (List<String>)entry.getValue());
                 }
             }
 

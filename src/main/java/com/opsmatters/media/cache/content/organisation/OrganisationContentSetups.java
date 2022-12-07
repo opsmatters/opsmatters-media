@@ -110,8 +110,11 @@ public class OrganisationContentSetups
     {
         for(ContentType type : ContentType.values())
         {
-            if(type != ContentType.ORGANISATION)
+            if(type != ContentType.ORGANISATION
+                && type != ContentType.ARTICLE)
+            {
                 populateContentType(type);
+            }
         }
     }
 

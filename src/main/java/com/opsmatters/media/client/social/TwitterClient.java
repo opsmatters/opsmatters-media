@@ -93,7 +93,7 @@ public class TwitterClient extends Client implements SocialClient
 
         String directory = System.getProperty("app.auth", ".");
 
-        File file = new File(directory, channel.getId()+SUFFIX);
+        File file = new File(directory, channel.getId().toLowerCase()+SUFFIX);
         try
         {
             // Read file from auth directory
