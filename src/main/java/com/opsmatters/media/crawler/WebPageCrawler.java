@@ -40,6 +40,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import com.opsmatters.media.cache.content.Teasers;
 import com.opsmatters.media.model.content.SummaryConfig;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
@@ -464,7 +465,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
      * Process the configured teasers.
      */
     @Override
-    public int processTeasers() throws IOException, DateTimeParseException
+    public int processTeasers(boolean cache) throws IOException, DateTimeParseException
     {
         int ret = 0;
         ContentLoading loading = page.getTeasers().getLoading();
@@ -475,50 +476,66 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
             if(url.length() == 0)
                 throw new IllegalArgumentException("Root empty for teasers");
 
-            if(lastUrl == null || !lastUrl.equals(url))
-                loadTeaserPage(url);
-
-            Document doc = Jsoup.parse(getPageSource("body"));
-            doc.outputSettings().prettyPrint(false);
-
-            // Process the teaser selections
-            int items = 0;
-            for(Fields fields : page.getTeasers().getFields())
+            // Try to get the teasers from the cache
+            List<ContentSummary> teasers = Teasers.get(url);
+            if(teasers != null)
             {
-                Elements results = doc.select(fields.getRoot());
+                for(ContentSummary teaser : teasers)
+                    addTeaser((T)teaser);
+                ret += numTeasers();
                 if(debug())
-                    logger.info("Found "+results.size()+" teasers for selector: "+fields.getRoot());
-                ret += results.size();
+                    logger.info("Retrieved "+numTeasers()+" teasers from cache");
+            }
+            else
+            {
+                if(lastUrl == null || !lastUrl.equals(url))
+                    loadTeaserPage(url);
 
-                for(Element result : results)
+                Document doc = Jsoup.parse(getPageSource("body"));
+                doc.outputSettings().prettyPrint(false);
+
+                // Process the teaser selections
+                int count = 0;
+                for(Fields fields : page.getTeasers().getFields())
                 {
-                    // Trace to see the teaser root node
-                    if(trace(result))
-                        logger.info("teaser-node="+result.html());
+                    Elements results = doc.select(fields.getRoot());
+                    if(debug())
+                        logger.info("Found "+results.size()+" teasers for selector: "+fields.getRoot());
+                    ret += results.size();
 
-                    T content = getTeaser(result, fields);
-                    if(content.isValid() && !map.containsKey(content.getUniqueId()))
+                    for(Element result : results)
                     {
-                        // Check that the teaser matches the configured keywords
-                        if(loading != null && loading.hasKeywords() && !content.matches(loading.getKeywordList()))
+                        // Trace to see the teaser root node
+                        if(trace(result))
+                            logger.info("teaser-node="+result.html());
+
+                        T teaser = getTeaser(result, fields);
+                        if(teaser.isValid() && !map.containsKey(teaser.getUniqueId()))
                         {
-                            logger.info(String.format("Skipping article as it does not match keywords: %s (%s)",
-                                content.getTitle(), loading.getKeywords()));
-                            continue;
+                            // Check that the teaser matches the configured keywords
+                            if(loading != null && loading.hasKeywords() && !teaser.matches(loading.getKeywordList()))
+                            {
+                                logger.info(String.format("Skipping article as it does not match keywords: %s (%s)",
+                                    teaser.getTitle(), loading.getKeywords()));
+                                continue;
+                            }
+
+                            addTeaser(teaser);
+                            map.put(teaser.getUniqueId(), teaser.getUniqueId());
+                            ++count;
                         }
 
-                        addContent(content);
-                        map.put(content.getUniqueId(), content.getUniqueId());
-                        ++items;
+                        if(count >= getMaxResults())
+                            break;
                     }
-
-                    if(items >= getMaxResults())
-                        break;
                 }
-            }
 
-            if(debug())
-                logger.info("Found "+numContentItems()+" items");
+                if(cache && !debug())
+                    Teasers.set(url, getTeasers());
+
+                if(debug())
+                    logger.info("Found "+numTeasers()+" teasers");
+            }
         }
 
         return ret;

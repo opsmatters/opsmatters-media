@@ -56,7 +56,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
     private boolean debug = false;
     private int maxResults = 0;
     private CrawlerTarget target;
-    private List<T> content = new ArrayList<T>();
+    private List<T> teasers = new ArrayList<T>();
     private boolean rootError = false;
 
     private Map<String, Object> properties = new HashMap<String, Object>();
@@ -126,7 +126,31 @@ public abstract class ContentCrawler<T extends ContentSummary>
     /**
      * Process the configured teasers.
      */
-    public abstract int processTeasers() throws IOException;
+    public abstract int processTeasers(boolean cache) throws IOException;
+
+    /**
+     * Returns the teasers found by the crawler.
+     */
+    public List<T> getTeasers()
+    {
+        return teasers;
+    }
+
+    /**
+     * Returns number of teasers found by the crawler.
+     */
+    public int numTeasers()
+    {
+        return teasers.size();
+    }
+
+    /**
+     * Adds a selected found by the crawler.
+     */
+    public void addTeaser(T teaser)
+    {
+        this.teasers.add(teaser);
+    }
 
     /**
      * Returns the processed content item.
@@ -163,30 +187,6 @@ public abstract class ContentCrawler<T extends ContentSummary>
     public void setMaxResults(int maxResults)
     {
         this.maxResults = maxResults;
-    }
-
-    /**
-     * Returns the content items selected by the crawler.
-     */
-    public List<T> getContent()
-    {
-        return content;
-    }
-
-    /**
-     * Returns number of content items selected by the crawler.
-     */
-    public int numContentItems()
-    {
-        return content.size();
-    }
-
-    /**
-     * Adds a selected content item to the crawler.
-     */
-    public void addContent(T content)
-    {
-        this.content.add(content);
     }
 
     /**

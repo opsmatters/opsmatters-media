@@ -23,7 +23,8 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
-import com.opsmatters.media.crawler.ContentCrawler;
+import com.opsmatters.media.cache.content.Teasers;
+import com.opsmatters.media.model.content.ContentSummary;
 import com.opsmatters.media.model.content.video.VideoSummary;
 import com.opsmatters.media.model.content.video.VideoDetails;
 import com.opsmatters.media.model.content.video.VideoConfig;
@@ -36,6 +37,7 @@ import com.opsmatters.media.model.content.crawler.field.FieldFilter;
 import com.opsmatters.media.model.content.crawler.field.FilterScope;
 import com.opsmatters.media.model.content.crawler.field.FilterResult;
 import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
+import com.opsmatters.media.crawler.ContentCrawler;
 import com.opsmatters.media.client.video.VideoClient;
 import com.opsmatters.media.client.video.VideoClientFactory;
 
@@ -131,46 +133,62 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
      * Process the configured teasers.
      */
     @Override
-    public int processTeasers() throws IOException
+    public int processTeasers(boolean cache) throws IOException
     {
         int ret = 0;
         initialised = true;
 
-        // Process selections
-        Map<String,String> map = new HashMap<String,String>();
-        ContentLoading loading = channel.getTeasers().getLoading();
-        for(Fields fields : channel.getTeasers().getFields())
+        // Try to get the teasers from the cache
+        List<ContentSummary> teasers = Teasers.get(channel.getChannelId());
+        if(teasers != null)
         {
-            List<JSONObject> results = client.listVideos(channel.getChannelId(),
-                channel.getUserId(), getMaxResults());
+            for(ContentSummary teaser : teasers)
+                addTeaser((VideoSummary)teaser);
+            ret += numTeasers();
             if(debug())
-                logger.info("Found "+results.size()+" teasers for channel: "+channel.getChannelId());
-            ret += results.size();
-            for(JSONObject result : results)
+                logger.info("Retrieved "+numTeasers()+" teasers from cache");
+        }
+        else
+        {
+            // Process selections
+            Map<String,String> map = new HashMap<String,String>();
+            ContentLoading loading = channel.getTeasers().getLoading();
+            for(Fields fields : channel.getTeasers().getFields())
             {
-                VideoSummary content = getTeaser(result, fields);
-                if(content.isValid() && !map.containsKey(content.getUniqueId()))
+                List<JSONObject> results = client.listVideos(channel.getChannelId(),
+                    channel.getUserId(), getMaxResults());
+                if(debug())
+                    logger.info("Found "+results.size()+" teasers for channel: "+channel.getChannelId());
+                ret += results.size();
+                for(JSONObject result : results)
                 {
-                    // Check that the teaser matches the configured keywords
-                    if(loading != null && loading.hasKeywords() && !content.matches(loading.getKeywordList()))
+                    VideoSummary teaser = getTeaser(result, fields);
+                    if(teaser.isValid() && !map.containsKey(teaser.getUniqueId()))
                     {
-                        logger.info(String.format("Skipping article as it does not match keywords: %s (%s)",
-                            content.getTitle(), loading.getKeywords()));
-                        continue;
+                        // Check that the teaser matches the configured keywords
+                        if(loading != null && loading.hasKeywords() && !teaser.matches(loading.getKeywordList()))
+                        {
+                            logger.info(String.format("Skipping article as it does not match keywords: %s (%s)",
+                                teaser.getTitle(), loading.getKeywords()));
+                            continue;
+                        }
+
+                        addTeaser(teaser);
+                        map.put(teaser.getUniqueId(), teaser.getUniqueId());
+                        channelTitle = result.optString(CHANNEL_TITLE.value()); // Only for YouTube
                     }
 
-                    addContent(content);
-                    map.put(content.getUniqueId(), content.getUniqueId());
-                    channelTitle = result.optString(CHANNEL_TITLE.value()); // Only for YouTube
+                    if(numTeasers() >= getMaxResults())
+                        break;
                 }
-
-                if(numContentItems() >= getMaxResults())
-                    break;
             }
-        }
 
-        if(debug())
-            logger.info("Found "+numContentItems()+" items");
+            if(cache && !debug())
+                Teasers.set(channel.getChannelId(), getTeasers());
+
+            if(debug())
+                logger.info("Found "+numTeasers()+" teasers");
+        }
 
         return ret;
     }
