@@ -53,7 +53,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
      */
     public EventCrawler(EventConfig config,CrawlerWebPage page)
     {
-        super(page);
+        super(config, page);
         this.config = config;
     }
 

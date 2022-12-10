@@ -41,6 +41,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import com.opsmatters.media.cache.content.Teasers;
+import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.SummaryConfig;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
@@ -73,6 +74,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     private CrawlerBrowser browser;
     private WebDriver driver;
     private TraceObject traceObject = TraceObject.NONE;
+    private ContentConfig config;
     private CrawlerWebPage page;
     private String imagePrefix = "";
     private String lastUrl;
@@ -84,11 +86,12 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     }
 
     /**
-     * Constructor that takes a name.
+     * Constructor that takes a code and page.
      */
-    public WebPageCrawler(CrawlerWebPage page)
+    public WebPageCrawler(ContentConfig config, CrawlerWebPage page)
     {
         super(page);
+        this.config = config;
         this.page = page;
 
         // Create the web driver
@@ -478,6 +481,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
 
             // Try to get the teasers from the cache
             List<ContentSummary> teasers = Teasers.get(url);
+
             if(teasers != null)
             {
                 for(ContentSummary teaser : teasers)
@@ -530,8 +534,8 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
                     }
                 }
 
-                if(cache && !debug())
-                    Teasers.set(url, getTeasers());
+                if(cache)
+                    Teasers.set(url, getTeasers(), config);
 
                 if(debug())
                     logger.info("Found "+numTeasers()+" teasers");
@@ -857,9 +861,18 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
 
         BodyParser parser = new BodyParser(excludes, filters, debug);
         for(Element element : elements)
+{
             parser.parseHtml(element);
 
-        String ret = parser.formatSummary(minLength, maxLength, multiple);
+//GERALD: test
+//            if(!multiple && text.length() > 0)
+            if(!multiple && parser.numElements() > 0)
+                break;
+}
+
+//GERALD
+//        String ret = parser.formatSummary(minLength, maxLength, multiple);
+        String ret = parser.formatSummary(minLength, maxLength);
         if(debug)
             logger.info(String.format("2: getFormattedSummary: ret=%s ret.length=%d",
                 ret, ret.length()));

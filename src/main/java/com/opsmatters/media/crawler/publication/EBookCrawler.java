@@ -50,7 +50,7 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
      */
     public EBookCrawler(EBookConfig config, CrawlerWebPage page)
     {
-        super(page);
+        super(config, page);
         this.config = config;
     }
 

@@ -25,23 +25,15 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
-//GERALD
-//import com.opsmatters.media.config.content.FieldExclude;
-//GERALD
 import com.opsmatters.media.model.content.crawler.field.FieldExclude;
-//import com.opsmatters.media.config.content.FieldFilter;
 import com.opsmatters.media.model.content.crawler.field.FieldFilter;
-//import com.opsmatters.media.config.content.FilterResult;
 import com.opsmatters.media.model.content.crawler.field.FilterResult;
 import com.opsmatters.media.model.content.SummaryConfig;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.crawler.parser.ElementType.*;
 import static com.opsmatters.media.crawler.parser.ElementDisplay.*;
-//GERALD
-//import static com.opsmatters.media.config.content.FilterScope.*;
 import static com.opsmatters.media.model.content.crawler.field.FilterScope.*;
-//import static com.opsmatters.media.config.content.FilterResult.*;
 import static com.opsmatters.media.model.content.crawler.field.FilterResult.*;
 
 /**
@@ -398,6 +390,14 @@ public class BodyParser
     }
 
     /**
+     * Returns the number of parsed elements.
+     */
+    public int numElements()
+    {
+        return elements.size();
+    }
+
+    /**
      * Returns the list of body elements formatted as an article body.
      */
     public String formatBody()
@@ -473,7 +473,9 @@ public class BodyParser
     /**
      * Returns the list of body elements formatted as an article summary.
      */
-    public String formatSummary(int minLength, int maxLength, boolean multiple)
+//GERALD
+//    public String formatSummary(int minLength, int maxLength, boolean multiple)
+    public String formatSummary(int minLength, int maxLength)
     {
         StringBuilder ret = new StringBuilder();
 
@@ -573,8 +575,9 @@ if(text.startsWith("#")  // hashtags
                 break;
             }
 
-            if(!multiple && text.length() > 0)
-                break;
+//GERALD: test
+//            if(!multiple && text.length() > 0)
+//                break;
         }
 
         // Summary should end with full stop if it ends with a semi-colon
@@ -621,7 +624,9 @@ if(text.startsWith("#")  // hashtags
      */
     public String formatSummary(SummaryConfig config)
     {
-        return formatSummary(config.getMinLength(), config.getMaxLength(), true);
+//GERALD
+//        return formatSummary(config.getMinLength(), config.getMaxLength(), true);
+        return formatSummary(config.getMinLength(), config.getMaxLength());
     }
 
     /**

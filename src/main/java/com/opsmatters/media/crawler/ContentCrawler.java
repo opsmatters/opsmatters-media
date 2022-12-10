@@ -62,7 +62,7 @@ public abstract class ContentCrawler<T extends ContentSummary>
     private Map<String, Object> properties = new HashMap<String, Object>();
 
     /**
-     * Constructor that takes a name.
+     * Constructor that takes a target.
      */
     public ContentCrawler(CrawlerTarget target)
     {

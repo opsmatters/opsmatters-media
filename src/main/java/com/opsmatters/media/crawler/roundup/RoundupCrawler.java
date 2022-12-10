@@ -52,7 +52,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
      */
     public RoundupCrawler(RoundupConfig config,  CrawlerWebPage page)
     {
-        super(page);
+        super(config, page);
         this.config = config;
     }
 

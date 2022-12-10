@@ -50,7 +50,7 @@ public class WhitePaperCrawler extends WebPageCrawler<PublicationSummary>
      */
     public WhitePaperCrawler(WhitePaperConfig config, CrawlerWebPage page)
     {
-        super(page);
+        super(config, page);
         this.config = config;
     }
 

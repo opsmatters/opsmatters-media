@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import com.opsmatters.media.model.content.ContentSummary;
+import com.opsmatters.media.model.content.ContentConfig;
+import com.opsmatters.media.model.content.ContentType;
 
 /**
  * Class representing the cache of teasers.
@@ -37,13 +39,27 @@ public class Teasers
     {
         static final long EXPIRY = 300000L; // 5 mins
 
+        String code;
+        ContentType type;
         long tm = 0L;
 
-        TeaserList(List<? extends ContentSummary> items)
+        TeaserList(ContentConfig config, List<? extends ContentSummary> items)
         {
+            this.code = config.getCode();
+            this.type = config.getType();
             tm = System.currentTimeMillis();
             for(ContentSummary item : items)
                 add(item);
+        }
+
+        String getCode()
+        {
+            return code;
+        }
+
+        ContentType getType()
+        {
+            return type;
         }
 
         boolean hasExpired()
@@ -60,15 +76,20 @@ public class Teasers
     }
 
     /**
-     * Sets the given teasers.
+     * Sets the teaser list for the given id.
      */
-    public static void set(String id, List<? extends ContentSummary> teasers)
+    public static void set(String id, List<? extends ContentSummary> teasers, ContentConfig config)
     {
-        teaserMap.put(id, new TeaserList(teasers));
+        synchronized(teaserMap)
+        {
+            clear(id);
+            if(teasers.size() > 0)
+                teaserMap.put(id, new TeaserList(config, teasers));
+        }
     }
 
     /**
-     * Returns the teasers for the given id.
+     * Returns the teaser list for the given id.
      */
     public static List<ContentSummary> get(String id)
     {
@@ -76,28 +97,66 @@ public class Teasers
     }
 
     /**
-     * Clear any expired teasers.
+     * Clears all teaser lists.
      */
-    public synchronized static void clearExpired()
+    public static void clear()
     {
-        if(teaserMap.size() > 0)
+        synchronized(teaserMap)
+        {
+            teaserMap.clear();
+        }
+    }
+
+    /**
+     * Clears the teaser list for the given id.
+     */
+    public static void clear(String id)
+    {
+        synchronized(teaserMap)
+        {
+            teaserMap.remove(id);
+        }
+    }
+
+    /**
+     * Clears the teaser lists for the given organisation.
+     */
+    public static void clear(ContentConfig config)
+    {
+        synchronized(teaserMap)
         {
             Iterator<Entry<String,TeaserList>> iterator = teaserMap.entrySet().iterator();
             while(iterator.hasNext())
             {
                 Entry<String,TeaserList> entry = iterator.next();
-                if(entry.getValue().hasExpired())
+                TeaserList list = entry.getValue();
+                if(list.getCode().equals(config.getCode())
+                    && list.getType() == config.getType())
+                {
                     iterator.remove();
+                }
             }
         }
     }
 
     /**
-     * Clears all teaser lists.
+     * Clear any expired teaser lists.
      */
-    public static void clear()
+    public static void clearExpired()
     {
-        teaserMap.clear();
+        synchronized(teaserMap)
+        {
+            if(teaserMap.size() > 0)
+            {
+                Iterator<Entry<String,TeaserList>> iterator = teaserMap.entrySet().iterator();
+                while(iterator.hasNext())
+                {
+                    Entry<String,TeaserList> entry = iterator.next();
+                    if(entry.getValue().hasExpired())
+                        iterator.remove();
+                }
+            }
+        }
     }
 
     /**

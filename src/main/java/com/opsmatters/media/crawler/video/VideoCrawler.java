@@ -61,7 +61,7 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
     private boolean initialised = false;
 
     /**
-     * Constructor that takes a video channel configuration.
+     * Constructor that takes a video channel.
      */
     public VideoCrawler(VideoConfig config, CrawlerVideoChannel channel) throws IOException
     {
@@ -138,8 +138,11 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
         int ret = 0;
         initialised = true;
 
+        String channelId = channel.getChannelId();
+        String userId = channel.getUserId();
+
         // Try to get the teasers from the cache
-        List<ContentSummary> teasers = Teasers.get(channel.getChannelId());
+        List<ContentSummary> teasers = Teasers.get(channelId);
         if(teasers != null)
         {
             for(ContentSummary teaser : teasers)
@@ -155,10 +158,9 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
             ContentLoading loading = channel.getTeasers().getLoading();
             for(Fields fields : channel.getTeasers().getFields())
             {
-                List<JSONObject> results = client.listVideos(channel.getChannelId(),
-                    channel.getUserId(), getMaxResults());
+                List<JSONObject> results = client.listVideos(channelId, userId, getMaxResults());
                 if(debug())
-                    logger.info("Found "+results.size()+" teasers for channel: "+channel.getChannelId());
+                    logger.info("Found "+results.size()+" teasers for channel: "+channelId);
                 ret += results.size();
                 for(JSONObject result : results)
                 {
@@ -183,8 +185,8 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
                 }
             }
 
-            if(cache && !debug())
-                Teasers.set(channel.getChannelId(), getTeasers());
+            if(cache)
+                Teasers.set(channelId, getTeasers(), config);
 
             if(debug())
                 logger.info("Found "+numTeasers()+" teasers");
