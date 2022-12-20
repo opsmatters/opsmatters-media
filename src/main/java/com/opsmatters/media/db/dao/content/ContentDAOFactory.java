@@ -19,6 +19,7 @@ import com.opsmatters.media.db.JDBCDatabaseDriver;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.db.dao.DAOFactory;
 import com.opsmatters.media.db.dao.content.organisation.OrganisationListingDAO;
+import com.opsmatters.media.db.dao.content.organisation.OrganisationContentTypeDAO;
 import com.opsmatters.media.db.dao.content.video.VideoArticleDAO;
 import com.opsmatters.media.db.dao.content.roundup.RoundupArticleDAO;
 import com.opsmatters.media.db.dao.content.event.EventResourceDAO;
@@ -45,6 +46,7 @@ public class ContentDAOFactory extends DAOFactory
         super(driver, conn);
 
         getOrganisationListingDAO();
+        getOrganisationContentTypeDAO();
         getVideoArticleDAO();
         getRoundupArticleDAO();
         getPostArticleDAO();
@@ -64,6 +66,16 @@ public class ContentDAOFactory extends DAOFactory
         if(organisationListingDAO == null)
             organisationListingDAO = new OrganisationListingDAO(this);
         return organisationListingDAO;
+    }
+
+    /**
+     * Returns the OrganisationContentType DAO.
+     */
+    public OrganisationContentTypeDAO getOrganisationContentTypeDAO()
+    {
+        if(organisationContentTypeDAO == null)
+            organisationContentTypeDAO = new OrganisationContentTypeDAO(this);
+        return organisationContentTypeDAO;
     }
 
     /**
@@ -164,6 +176,7 @@ public class ContentDAOFactory extends DAOFactory
     {
         super.close();
         organisationListingDAO = null;
+        organisationContentTypeDAO = null;
         videoArticleDAO = null;
         roundupArticleDAO = null;
         postArticleDAO = null;
@@ -176,6 +189,7 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     private OrganisationListingDAO organisationListingDAO;
+    private OrganisationContentTypeDAO organisationContentTypeDAO;
     private VideoArticleDAO videoArticleDAO;
     private RoundupArticleDAO roundupArticleDAO;
     private PostArticleDAO postArticleDAO;

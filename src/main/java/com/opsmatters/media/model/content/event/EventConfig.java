@@ -135,6 +135,14 @@ public class EventConfig extends ContentConfig<EventResource>
     }
 
     /**
+     * Returns <CODE>true</CODE> if the page with the given name has been set.
+     */
+    public boolean hasPage(String name)
+    {
+        return getPage(name) != null;
+    }
+
+    /**
      * Returns the providers for this configuration.
      */
     public List<CrawlerWebPage> getProviders()

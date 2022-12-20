@@ -146,6 +146,14 @@ public class VideoConfig extends ContentConfig<VideoArticle>
     }
 
     /**
+     * Returns <CODE>true</CODE> if the channel with the given name has been set.
+     */
+    public boolean hasChannel(String name)
+    {
+        return getChannel(name) != null;
+    }
+
+    /**
      * Returns the providers for this configuration.
      */
     public List<CrawlerVideoChannel> getProviders()

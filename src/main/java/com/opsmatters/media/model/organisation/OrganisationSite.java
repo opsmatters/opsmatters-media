@@ -26,6 +26,7 @@ import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.FieldName;
 import com.opsmatters.media.model.content.FieldSource;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.organisation.OrganisationContentType;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;

@@ -292,10 +292,15 @@ public class AwsRdsClient extends Client
         }
         catch(RdsException e)
         {
-            if(e.statusCode() == 404) // Not Found
+            if(e.statusCode() == 400      // Invalid State
+                || e.statusCode() == 404) // Not Found
+            {
                 ret = false;
+            }
             else
+            {
                 throw e;
+            }
         }
 
         return ret;

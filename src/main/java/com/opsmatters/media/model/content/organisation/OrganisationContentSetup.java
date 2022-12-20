@@ -229,6 +229,14 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
     }
 
     /**
+     * Returns <CODE>true</CODE> if the video configuration has been set.
+     */
+    public boolean hasVideos()
+    {
+        return videos != null;
+    }
+
+    /**
      * Returns the roundup configuration.
      */
     public RoundupConfig getRoundups()
@@ -243,6 +251,14 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
     {
         this.roundups = roundups;
         configs.put(roundups.getType(), roundups);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the roundup configuration has been set.
+     */
+    public boolean hasRoundups()
+    {
+        return roundups != null;
     }
 
     /**
@@ -263,6 +279,14 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
     }
 
     /**
+     * Returns <CODE>true</CODE> if the post configuration has been set.
+     */
+    public boolean hasPosts()
+    {
+        return posts != null;
+    }
+
+    /**
      * Returns the event configuration.
      */
     public EventConfig getEvents()
@@ -277,6 +301,14 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
     {
         this.events = events;
         configs.put(events.getType(), events);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the event configuration has been set.
+     */
+    public boolean hasEvents()
+    {
+        return events != null;
     }
 
     /**
@@ -297,6 +329,14 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
     }
 
     /**
+     * Returns <CODE>true</CODE> if the white paper configuration has been set.
+     */
+    public boolean hasWhitePapers()
+    {
+        return whitePapers != null;
+    }
+
+    /**
      * Returns the ebook configuration.
      */
     public EBookConfig getEBooks()
@@ -311,6 +351,14 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
     {
         this.ebooks = ebooks;
         configs.put(ebooks.getType(), ebooks);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the ebook configuration has been set.
+     */
+    public boolean hasEBooks()
+    {
+        return ebooks != null;
     }
 
     /**
@@ -331,6 +379,14 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
     }
 
     /**
+     * Returns <CODE>true</CODE> if the tool configuration has been set.
+     */
+    public boolean hasTools()
+    {
+        return tools != null;
+    }
+
+    /**
      * Returns the project configuration.
      */
     public ProjectConfig getProjects()
@@ -348,6 +404,14 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
     }
 
     /**
+     * Returns <CODE>true</CODE> if the project configuration has been set.
+     */
+    public boolean hasProjects()
+    {
+        return projects != null;
+    }
+
+    /**
      * Returns the job configuration.
      */
     public JobConfig getJobs()
@@ -362,6 +426,14 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
     {
         this.jobs = jobs;
         configs.put(jobs.getType(), jobs);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the job configuration has been set.
+     */
+    public boolean hasJobs()
+    {
+        return jobs != null;
     }
 
     /**

@@ -35,7 +35,6 @@ public class OrganisationDAOFactory extends DAOFactory
 
         getOrganisationDAO();
         getOrganisationSiteDAO();
-        getOrganisationContentTypeDAO();
     }
 
     /**
@@ -59,16 +58,6 @@ public class OrganisationDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the OrganisationContentType DAO.
-     */
-    public OrganisationContentTypeDAO getOrganisationContentTypeDAO()
-    {
-        if(organisationContentTypeDAO == null)
-            organisationContentTypeDAO = new OrganisationContentTypeDAO(this);
-        return organisationContentTypeDAO;
-    }
-
-    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
@@ -77,10 +66,8 @@ public class OrganisationDAOFactory extends DAOFactory
         super.close();
         organisationDAO = null;
         organisationSiteDAO = null;
-        organisationContentTypeDAO = null;
     }
 
     private OrganisationDAO organisationDAO;
     private OrganisationSiteDAO organisationSiteDAO;
-    private OrganisationContentTypeDAO organisationContentTypeDAO;
 }

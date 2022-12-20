@@ -20,7 +20,7 @@ import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
-import com.opsmatters.media.model.organisation.OrganisationContentType;
+import com.opsmatters.media.model.content.organisation.OrganisationContentType;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;

@@ -89,11 +89,12 @@ public class Teasers
     }
 
     /**
-     * Returns the teaser list for the given id.
+     * Returns the teaser list for the given organisation and id.
      */
-    public static List<ContentSummary> get(String id)
+    public static List<ContentSummary> get(String code, String id)
     {
-        return teaserMap.get(id);
+        TeaserList ret = teaserMap.get(id);
+        return ret != null && ret.getCode().equals(code) ? ret : null;
     }
 
     /**

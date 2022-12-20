@@ -23,11 +23,11 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.cache.platform.Sites;
 import com.opsmatters.media.model.platform.Site;
-import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
-import com.opsmatters.media.model.organisation.OrganisationContentType;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.ContentConfig;
+import com.opsmatters.media.model.content.organisation.OrganisationContentType;
 
 /**
  * Class representing the set of organisation sites.
@@ -208,9 +208,17 @@ public class OrganisationSites
     /**
      * Returns the content type for the given configuration.
      */
+    public static OrganisationContentType getContentType(String siteId, ContentConfig config)
+    {
+        return getContentType(siteId, config.getCode(), config.getType());
+    }
+
+    /**
+     * Returns the content type for the given configuration.
+     */
     public static OrganisationContentType getContentType(Site site, ContentConfig config)
     {
-        return getContentType(site.getId(), config.getCode(), config.getType());
+        return getContentType(site.getId(), config);
     }
 
     /**

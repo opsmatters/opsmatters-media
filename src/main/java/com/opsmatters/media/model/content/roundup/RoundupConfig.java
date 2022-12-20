@@ -132,6 +132,14 @@ public class RoundupConfig extends ContentConfig<RoundupArticle>
     }
 
     /**
+     * Returns <CODE>true</CODE> if the page with the given name has been set.
+     */
+    public boolean hasPage(String name)
+    {
+        return getPage(name) != null;
+    }
+
+    /**
      * Returns a builder for the configuration.
      * @param name The name for the configuration
      * @return The builder instance.

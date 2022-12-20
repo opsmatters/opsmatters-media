@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.LinkedHashMap;
+import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.util.TimeUtils;
 
 /**
  * Class representing an email message body.
@@ -146,6 +148,8 @@ public class EmailBody
         StringBuilder ret = new StringBuilder();
         for(String paragraph : paragraphs)
             ret.append(paragraph);
+        ret.append(String.format("<br><p><em>Generated at %s</em></p>",
+            TimeUtils.toStringUTC(Formats.CONTENT_DATE_FORMAT)));
         return ret.toString();
     }
 }

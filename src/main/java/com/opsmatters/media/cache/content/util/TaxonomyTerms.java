@@ -341,11 +341,11 @@ public class TaxonomyTerms
     }
 
     /**
-     * Add the terms from otherTerms to the terms list for the given site.
+     * Merge the terms from otherTerms into the terms list for the given site.
      * 
      * Ignores terms that do not exist in the taxonomy for the given site.
      */
-    private static void addTerms(String siteId, List<String> terms, List<String> otherTerms, String type)
+    private static List<String> mergeTerms(String siteId, List<String> terms, List<String> otherTerms, String type)
     {
         for(String otherTerm : otherTerms)
         {
@@ -354,13 +354,15 @@ public class TaxonomyTerms
                 terms.add(otherTerm);
             }
         }
+
+        return terms;
     }
 
     /**
-     * Add the tags from otherTerms to the terms list for the given site.
+     * Merge the tags from otherTerms into the terms list for the given site.
      */
-    public static void addTags(String siteId, List<String> terms, List<String> otherTerms)
+    public static List<String> mergeTags(String siteId, List<String> terms, List<String> otherTerms)
     {
-        addTerms(siteId, terms, otherTerms, TaxonomyTerm.TAGS);
+        return mergeTerms(siteId, terms, otherTerms, TaxonomyTerm.TAGS);
     }
 }

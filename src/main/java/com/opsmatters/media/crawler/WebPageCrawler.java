@@ -480,8 +480,7 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
                 throw new IllegalArgumentException("Root empty for teasers");
 
             // Try to get the teasers from the cache
-            List<ContentSummary> teasers = Teasers.get(url);
-
+            List<ContentSummary> teasers = Teasers.get(config.getCode(), url);
             if(teasers != null)
             {
                 for(ContentSummary teaser : teasers)
@@ -861,17 +860,13 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
 
         BodyParser parser = new BodyParser(excludes, filters, debug);
         for(Element element : elements)
-{
+        {
             parser.parseHtml(element);
 
-//GERALD: test
-//            if(!multiple && text.length() > 0)
             if(!multiple && parser.numElements() > 0)
                 break;
-}
+        }
 
-//GERALD
-//        String ret = parser.formatSummary(minLength, maxLength, multiple);
         String ret = parser.formatSummary(minLength, maxLength);
         if(debug)
             logger.info(String.format("2: getFormattedSummary: ret=%s ret.length=%d",

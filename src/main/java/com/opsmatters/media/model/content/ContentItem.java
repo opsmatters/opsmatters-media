@@ -26,7 +26,7 @@ import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
-import com.opsmatters.media.model.organisation.OrganisationContentType;
+import com.opsmatters.media.model.content.organisation.OrganisationContentType;
 import com.opsmatters.media.file.CommonFiles;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.StringUtils;

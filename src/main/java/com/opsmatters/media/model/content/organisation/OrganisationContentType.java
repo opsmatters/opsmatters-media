@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.organisation;
+package com.opsmatters.media.model.content.organisation;
 
 import java.time.Instant;
 import java.util.List;
@@ -22,6 +22,7 @@ import com.opsmatters.media.model.BaseItem;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;

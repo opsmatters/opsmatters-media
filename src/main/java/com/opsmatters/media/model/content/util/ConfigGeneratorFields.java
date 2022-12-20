@@ -19,14 +19,28 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import com.opsmatters.media.cache.organisation.OrganisationSites;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.video.VideoConfig;
 import com.opsmatters.media.model.content.video.VideoProvider;
+import com.opsmatters.media.model.content.roundup.RoundupConfig;
+import com.opsmatters.media.model.content.event.EventConfig;
 import com.opsmatters.media.model.content.event.EventProvider;
+import com.opsmatters.media.model.content.post.PostConfig;
+import com.opsmatters.media.model.content.project.ProjectConfig;
+import com.opsmatters.media.model.content.tool.ToolConfig;
 import com.opsmatters.media.model.content.organisation.OrganisationListing;
 import com.opsmatters.media.model.content.organisation.OrganisationTabs;
+import com.opsmatters.media.model.content.organisation.OrganisationContentSetup;
+import com.opsmatters.media.model.content.organisation.OrganisationContentType;
+import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
+import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
 import com.opsmatters.media.util.StringUtils;
+
+import static com.opsmatters.media.model.content.video.VideoProvider.*;
+import static com.opsmatters.media.model.content.event.EventProvider.*;
 
 /**
  * Class that represents the set of field used to generate a config file.
@@ -98,6 +112,137 @@ public class ConfigGeneratorFields implements java.io.Serializable
         {
             setPosts(true);
         }
+    }
+
+    /**
+     * Sets the fields from an organisation setup.
+     */
+    public void set(Organisation organisation, OrganisationSite organisationSite, OrganisationContentSetup setup)
+    {
+        String siteId = organisationSite.getSiteId();
+
+        setCode(organisation.getCode());
+        setName(organisation.getName());
+        setWebsite(organisation.getWebsite());
+
+        setVideos(setup.hasVideos());
+        setRoundups(setup.hasRoundups());
+        setPosts(setup.hasPosts());
+        setEvents(setup.hasEvents());
+        setWhitepapers(setup.hasWhitePapers());
+        setEbooks(setup.hasEBooks());
+        setProjects(setup.hasProjects());
+        setTools(setup.hasTools());
+        setJobs(setup.hasJobs());
+
+        String channelId = null;
+        String userId = null;
+        String blogUrl = null;
+        String features = null;
+        String tags = null;
+
+        if(setup.hasVideos())
+        {
+            VideoConfig videos = setup.getVideos();
+
+            OrganisationContentType type = OrganisationSites.getContentType(siteId, videos);
+            if(type != null)
+            {
+                if(tags == null)
+                    tags = type.getTags();
+            }
+
+            if(videos.numChannels() > 0)
+            {
+                CrawlerVideoChannel channel = videos.getChannel(0);
+                channelId = channel.getChannelId();
+                userId = channel.getUserId();
+
+                setYoutube(videos.hasChannel(YOUTUBE.value()));
+                setVimeo(videos.hasChannel(VIMEO.value()));
+                setWistia(videos.hasChannel(WISTIA.value()));
+            }
+        }
+
+        if(setup.hasRoundups())
+        {
+            RoundupConfig roundups = setup.getRoundups();
+
+            OrganisationContentType type = OrganisationSites.getContentType(siteId, roundups);
+            if(type != null)
+            {
+                if(tags == null)
+                    tags = type.getTags();
+            }
+
+            if(roundups.numPages() > 0)
+            {
+                CrawlerWebPage page = roundups.getPage(0);
+                blogUrl = page.getUrl(0);
+            }
+        }
+
+        if(setup.hasEvents())
+        {
+            EventConfig events = setup.getEvents();
+
+            if(events.numPages() > 0)
+            {
+                setWebinars(events.hasPage(WEBINARS.value()));
+                setZoom(events.hasPage(ZOOM.value()));
+                setBrighttalk(events.hasPage(BRIGHTTALK.value()));
+                setGotowebinar(events.hasPage(GOTOWEBINAR.value()));
+                setOn24(events.hasPage(ON24.value()));
+                setLivestorm(events.hasPage(LIVESTORM.value()));
+            }
+        }
+
+        if(setup.hasPosts())
+        {
+            PostConfig posts = setup.getPosts();
+
+            OrganisationContentType type = OrganisationSites.getContentType(siteId, posts);
+            if(type != null)
+            {
+                if(tags == null)
+                    tags = type.getTags();
+            }
+        }
+
+        if(setup.hasProjects())
+        {
+            ProjectConfig projects = setup.getProjects();
+
+            OrganisationContentType type = OrganisationSites.getContentType(siteId, projects);
+            if(type != null)
+            {
+                if(features == null)
+                    features = type.getFeatures();
+            }
+        }
+
+        if(setup.hasTools())
+        {
+            ToolConfig tools = setup.getTools();
+
+            OrganisationContentType type = OrganisationSites.getContentType(siteId, tools);
+            if(type != null)
+            {
+                if(features == null)
+                    features = type.getFeatures();
+            }
+        }
+
+        if(channelId != null)
+            setChannelId(channelId);
+        if(userId != null)
+            setUserId(userId);
+        if(blogUrl != null)
+            setBlogUrl(blogUrl);
+        if(features != null)
+            setFeatures(features);
+        if(tags != null)
+            setTags(tags);
     }
 
     /**
@@ -463,7 +608,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public Boolean getWebinars()
     {
-        return hasProvider(EventProvider.WEBINARS);
+        return hasProvider(WEBINARS);
     }
 
     /**
@@ -471,7 +616,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public void setWebinars(Boolean webinars)
     {
-        setProvider(webinars, EventProvider.WEBINARS);
+        setProvider(webinars, WEBINARS);
     }
 
     /**
@@ -479,7 +624,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public Boolean getZoom()
     {
-        return hasProvider(EventProvider.ZOOM);
+        return hasProvider(ZOOM);
     }
 
     /**
@@ -487,7 +632,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public void setZoom(Boolean zoom)
     {
-        setProvider(zoom, EventProvider.ZOOM);
+        setProvider(zoom, ZOOM);
     }
 
     /**
@@ -495,7 +640,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public Boolean getBrighttalk()
     {
-        return hasProvider(EventProvider.BRIGHTTALK);
+        return hasProvider(BRIGHTTALK);
     }
 
     /**
@@ -503,7 +648,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public void setBrighttalk(Boolean brightTalk)
     {
-        setProvider(brightTalk, EventProvider.BRIGHTTALK);
+        setProvider(brightTalk, BRIGHTTALK);
     }
 
     /**
@@ -511,7 +656,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public Boolean getGotowebinar()
     {
-        return hasProvider(EventProvider.GOTOWEBINAR);
+        return hasProvider(GOTOWEBINAR);
     }
 
     /**
@@ -519,7 +664,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public void setGotowebinar(Boolean goToWebinar)
     {
-        setProvider(goToWebinar, EventProvider.GOTOWEBINAR);
+        setProvider(goToWebinar, GOTOWEBINAR);
     }
 
     /**
@@ -527,7 +672,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public Boolean getOn24()
     {
-        return hasProvider(EventProvider.ON24);
+        return hasProvider(ON24);
     }
 
     /**
@@ -535,7 +680,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public void setOn24(Boolean on24)
     {
-        setProvider(on24, EventProvider.ON24);
+        setProvider(on24, ON24);
     }
 
     /**
@@ -543,7 +688,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public Boolean getLivestorm()
     {
-        return hasProvider(EventProvider.LIVESTORM);
+        return hasProvider(LIVESTORM);
     }
 
     /**
@@ -551,7 +696,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public void setLivestorm(Boolean livestorm)
     {
-        setProvider(livestorm, EventProvider.LIVESTORM);
+        setProvider(livestorm, LIVESTORM);
     }
 
     /**
@@ -586,7 +731,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public Boolean getYoutube()
     {
-        return hasProvider(VideoProvider.YOUTUBE);
+        return hasProvider(YOUTUBE);
     }
 
     /**
@@ -594,7 +739,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public void setYoutube(Boolean youtube)
     {
-        setProvider(youtube, VideoProvider.YOUTUBE);
+        setProvider(youtube, YOUTUBE);
     }
 
     /**
@@ -602,7 +747,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public Boolean getVimeo()
     {
-        return hasProvider(VideoProvider.VIMEO);
+        return hasProvider(VIMEO);
     }
 
     /**
@@ -610,7 +755,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public void setVimeo(Boolean vimeo)
     {
-        setProvider(vimeo, VideoProvider.VIMEO);
+        setProvider(vimeo, VIMEO);
     }
 
     /**
@@ -618,7 +763,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public Boolean getWistia()
     {
-        return hasProvider(VideoProvider.WISTIA);
+        return hasProvider(WISTIA);
     }
 
     /**
@@ -626,6 +771,6 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public void setWistia(Boolean wistia)
     {
-        setProvider(wistia, VideoProvider.WISTIA);
+        setProvider(wistia, WISTIA);
     }
 }

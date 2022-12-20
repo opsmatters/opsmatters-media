@@ -109,6 +109,14 @@ public abstract class PublicationConfig<C extends ContentItem> extends ContentCo
     }
 
     /**
+     * Returns <CODE>true</CODE> if the page with the given name has been set.
+     */
+    public boolean hasPage(String name)
+    {
+        return getPage(name) != null;
+    }
+
+    /**
      * Builder to make configuration construction easier.
      */
     protected abstract static class Builder<T extends PublicationConfig, B extends Builder<T,B>>

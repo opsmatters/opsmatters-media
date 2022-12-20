@@ -142,7 +142,7 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
         String userId = channel.getUserId();
 
         // Try to get the teasers from the cache
-        List<ContentSummary> teasers = Teasers.get(channelId);
+        List<ContentSummary> teasers = Teasers.get(config.getCode(), channelId);
         if(teasers != null)
         {
             for(ContentSummary teaser : teasers)

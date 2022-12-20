@@ -58,6 +58,7 @@ public class ProjectConfig extends ContentConfig<ProjectResource>
     {
         if(obj != null)
         {
+            super.copyAttributes(obj);
             setBranch(obj.getBranch());
         }
     }
