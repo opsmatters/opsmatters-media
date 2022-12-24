@@ -286,6 +286,10 @@ public class PostArticle extends Article
         ContentImage image = ContentImages.get(ImageType.BANNER, config.getCode());
         if(image != null && getImage().length() == 0)
             setImage(image.getFilename());
+
+        // Clear social flag if the content is old
+        if(hasSocial())
+            setSocial(isRecent());
     }
 
     /**

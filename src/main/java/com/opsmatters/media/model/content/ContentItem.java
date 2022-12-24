@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.time.Instant;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
@@ -464,6 +465,14 @@ public abstract class ContentItem implements java.io.Serializable
     {
         if(publishedDate != null)
             setPublishedDate(TimeUtils.toInstantUTC(publishedDate));
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content was published recently.
+     */
+    public boolean isRecent()
+    {
+        return Duration.between(getPublishedDate(), Instant.now()).toDays() <= 5;
     }
 
     /**

@@ -359,10 +359,26 @@ public class TaxonomyTerms
     }
 
     /**
-     * Merge the tags from otherTerms into the terms list for the given site.
+     * Merge the features from otherTerms into the feature list for the given site.
+     */
+    public static List<String> mergeFeatures(String siteId, List<String> terms, List<String> otherTerms)
+    {
+        return mergeTerms(siteId, terms, otherTerms, TaxonomyTerm.FEATURES);
+    }
+
+    /**
+     * Merge the tags from otherTerms into the tag list for the given site.
      */
     public static List<String> mergeTags(String siteId, List<String> terms, List<String> otherTerms)
     {
         return mergeTerms(siteId, terms, otherTerms, TaxonomyTerm.TAGS);
+    }
+
+    /**
+     * Merge the technologies from otherTerms into the technology list for the given site.
+     */
+    public static List<String> mergeTechnologies(String siteId, List<String> terms, List<String> otherTerms)
+    {
+        return mergeTerms(siteId, terms, otherTerms, TaxonomyTerm.TECHNOLOGIES);
     }
 }

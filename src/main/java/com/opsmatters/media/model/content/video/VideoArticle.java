@@ -272,6 +272,10 @@ public class VideoArticle extends Article
 
         String text = String.format("%s %s", getTitle(), getDescription());
         setVideoType(VideoType.guess(text, getDuration()));
+
+        // Clear social flag if the content is old
+        if(hasSocial())
+            setSocial(isRecent());
     }
 
     /**
