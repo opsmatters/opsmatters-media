@@ -26,13 +26,13 @@ import java.sql.SQLException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.ContentSummary;
+import com.opsmatters.media.model.content.ContentTeaser;
 import com.opsmatters.media.model.content.ContentItem;
-import com.opsmatters.media.model.content.roundup.RoundupSummary;
-import com.opsmatters.media.model.content.video.VideoSummary;
+import com.opsmatters.media.model.content.roundup.RoundupTeaser;
+import com.opsmatters.media.model.content.video.VideoTeaser;
 import com.opsmatters.media.model.content.video.VideoArticle;
-import com.opsmatters.media.model.content.event.EventSummary;
-import com.opsmatters.media.model.content.publication.PublicationSummary;
+import com.opsmatters.media.model.content.event.EventTeaser;
+import com.opsmatters.media.model.content.publication.PublicationTeaser;
 import com.opsmatters.media.model.content.LinkedContent;
 
 import static com.opsmatters.media.model.content.FieldName.*;
@@ -49,15 +49,15 @@ public class ContentSnapshot extends JSONObject
     private ContentLookup lookup;
 
     /**
-     * Constructor that takes a content type and list of items.
+     * Constructor that takes a content type and list of teasers.
      */
-    public ContentSnapshot(ContentType type, List<? extends ContentSummary> items)
+    public ContentSnapshot(ContentType type, List<? extends ContentTeaser> teasers)
     {
         JSONArray array = new JSONArray();
-        if(items != null)
+        if(teasers != null)
         {
-            for(ContentSummary content : items)
-                array.put(createObject(type, content));
+            for(ContentTeaser teaser : teasers)
+                array.put(createObject(type, teaser));
         }
 
         put(type.tag(), array);
@@ -85,7 +85,7 @@ public class ContentSnapshot extends JSONObject
      */
     public ContentSnapshot(ContentType type)
     {
-        this(type, (List<? extends ContentSummary>)null);
+        this(type, (List<? extends ContentTeaser>)null);
     }
 
     /**
@@ -170,75 +170,75 @@ public class ContentSnapshot extends JSONObject
     }
 
     /**
-     * Create an object for the content item.
+     * Create an object for the teaser.
      */
-    private JSONObject createObject(ContentType type, ContentSummary content)
+    private JSONObject createObject(ContentType type, ContentTeaser teaser)
     {
         switch(type)
         {
             case ROUNDUP:
-                return createObject((RoundupSummary)content);
+                return createObject((RoundupTeaser)teaser);
             case VIDEO:
-                return createObject((VideoSummary)content);
+                return createObject((VideoTeaser)teaser);
             case EVENT:
-                return createObject((EventSummary)content);
+                return createObject((EventTeaser)teaser);
             case WHITE_PAPER:
             case EBOOK:
-                return createObject((PublicationSummary)content);
+                return createObject((PublicationTeaser)teaser);
             default:
                 return null;
         }
     }
 
     /**
-     * Create an object for the roundup item.
+     * Create an object for the roundup teaser.
      */
-    private JSONObject createObject(RoundupSummary content)
+    private JSONObject createObject(RoundupTeaser teaser)
     {
         JSONObject ret = new JSONObject();
-        ret.put(TITLE.value(), content.getTitle());
-        if(content.getPublishedDate() != null)
-            ret.put(PUBLISHED_DATE.value(), content.getPublishedDateAsString());
-        ret.put(URL.value(), content.getUrl());
+        ret.put(TITLE.value(), teaser.getTitle());
+        if(teaser.getPublishedDate() != null)
+            ret.put(PUBLISHED_DATE.value(), teaser.getPublishedDateAsString());
+        ret.put(URL.value(), teaser.getUrl());
         return ret;
     }
 
     /**
-     * Create an object for the video item.
+     * Create an object for the video teaser.
      */
-    private JSONObject createObject(VideoSummary content)
+    private JSONObject createObject(VideoTeaser teaser)
     {
         JSONObject ret = new JSONObject();
-        ret.put(TITLE.value(), content.getTitle());
-        if(content.getPublishedDate() != null)
-            ret.put(PUBLISHED_DATE.value(), content.getPublishedDateAsString());
-        ret.put(VIDEO_ID.value(), content.getVideoId());
+        ret.put(TITLE.value(), teaser.getTitle());
+        if(teaser.getPublishedDate() != null)
+            ret.put(PUBLISHED_DATE.value(), teaser.getPublishedDateAsString());
+        ret.put(VIDEO_ID.value(), teaser.getVideoId());
         return ret;
     }
 
     /**
-     * Create an object for the event item.
+     * Create an object for the event teaser.
      */
-    private JSONObject createObject(EventSummary content)
+    private JSONObject createObject(EventTeaser teaser)
     {
         JSONObject ret = new JSONObject();
-        ret.put(TITLE.value(), content.getTitle());
-        if(content.getStartDate() != null)
-            ret.put(START_DATE.value(), content.getStartDateAsString());
-        ret.put(URL.value(), content.getUrl());
+        ret.put(TITLE.value(), teaser.getTitle());
+        if(teaser.getStartDate() != null)
+            ret.put(START_DATE.value(), teaser.getStartDateAsString());
+        ret.put(URL.value(), teaser.getUrl());
         return ret;
     }
 
     /**
-     * Create an object for the publication item.
+     * Create an object for the publication teaser.
      */
-    private JSONObject createObject(PublicationSummary content)
+    private JSONObject createObject(PublicationTeaser teaser)
     {
         JSONObject ret = new JSONObject();
-        ret.put(TITLE.value(), content.getTitle());
-        if(content.getPublishedDate() != null)
-            ret.put(PUBLISHED_DATE.value(), content.getPublishedDateAsString());
-        ret.put(URL.value(), content.getUrl());
+        ret.put(TITLE.value(), teaser.getTitle());
+        if(teaser.getPublishedDate() != null)
+            ret.put(PUBLISHED_DATE.value(), teaser.getPublishedDateAsString());
+        ret.put(URL.value(), teaser.getUrl());
         return ret;
     }
 

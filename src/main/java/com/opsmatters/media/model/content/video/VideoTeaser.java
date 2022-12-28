@@ -15,33 +15,30 @@
  */
 package com.opsmatters.media.model.content.video;
 
-import java.util.logging.Logger;
 import com.opsmatters.media.model.feed.video.YouTubeEntry;
-import com.opsmatters.media.model.content.ArticleSummary;
+import com.opsmatters.media.model.content.ArticleTeaser;
 
 /**
- * Class representing a video summary.
+ * Class representing a video teaser.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class VideoSummary extends ArticleSummary
+public class VideoTeaser extends ArticleTeaser
 {
-    private static final Logger logger = Logger.getLogger(VideoSummary.class.getName());
-
     private String videoId = "";
     private VideoProvider provider;
 
     /**
      * Default constructor.
      */
-    public VideoSummary()
+    public VideoTeaser()
     {
     }
 
     /**
      * Constructor that takes a video ID.
      */
-    public VideoSummary(String videoId)
+    public VideoTeaser(String videoId)
     {
         setVideoId(videoId);
     }
@@ -49,7 +46,7 @@ public class VideoSummary extends ArticleSummary
     /**
      * Copy constructor.
      */
-    public VideoSummary(VideoSummary obj)
+    public VideoTeaser(VideoTeaser obj)
     {
         super(obj);
 
@@ -63,7 +60,7 @@ public class VideoSummary extends ArticleSummary
     /**
      * Constructor that takes a youtube feed entry.
      */
-    public VideoSummary(YouTubeEntry entry)
+    public VideoTeaser(YouTubeEntry entry)
     {
         setVideoId(entry.getVideoId());
         setProvider(VideoProvider.YOUTUBE);

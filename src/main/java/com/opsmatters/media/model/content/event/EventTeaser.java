@@ -19,16 +19,16 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import com.opsmatters.media.model.content.ResourceSummary;
+import com.opsmatters.media.model.content.ResourceTeaser;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
- * Class representing an event summary.
+ * Class representing an event teaser.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EventSummary extends ResourceSummary
+public class EventTeaser extends ResourceTeaser
 {
     private Instant startDate;
     private Instant endDate;
@@ -36,14 +36,14 @@ public class EventSummary extends ResourceSummary
     /**
      * Default constructor.
      */
-    public EventSummary()
+    public EventTeaser()
     {
     }
 
     /**
      * Constructor that takes a url.
      */
-    public EventSummary(String url, boolean removeParameters)
+    public EventTeaser(String url, boolean removeParameters)
     {
         setUrl(url, removeParameters);
     }
@@ -51,7 +51,7 @@ public class EventSummary extends ResourceSummary
     /**
      * Copy constructor.
      */
-    public EventSummary(EventSummary obj)
+    public EventTeaser(EventTeaser obj)
     {
         super(obj);
 

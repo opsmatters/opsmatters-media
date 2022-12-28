@@ -36,16 +36,14 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ProjectResource extends Resource
+public class ProjectResource extends Resource<ProjectTeaser,ProjectDetails>
 {
-    private ProjectDetails details = new ProjectDetails();
-
     /**
      * Default constructor.
      */
     public ProjectResource()
     {
-        setContentDetails(details);
+        setDetails(new ProjectDetails());
     }
 
     /**
@@ -66,19 +64,19 @@ public class ProjectResource extends Resource
         init();
         setSiteId(site.getId());
         setCode(code);
-        setProjectDetails(obj);
+        setContentDetails(obj);
     }
 
     /**
      * Constructor that takes a project summary.
      */
-    public ProjectResource(Site site, String code, ProjectSummary obj)
+    public ProjectResource(Site site, String code, ProjectTeaser obj)
     {
         this();
         init();
         setSiteId(site.getId());
         setCode(code);
-        setContentSummary(obj);
+        setTeaserDetails(obj);
     }
 
     /**
@@ -87,8 +85,7 @@ public class ProjectResource extends Resource
     public void copyAttributes(ProjectResource obj)
     {
         super.copyAttributes(obj);
-
-        setProjectDetails(obj.getProjectDetails());
+        setContentDetails(obj.getDetails());
     }
 
     /**
@@ -249,34 +246,35 @@ public class ProjectResource extends Resource
     }
 
     /**
-     * Returns the project details.
+     * Sets the project details from a teaser.
      */
-    public ProjectDetails getProjectDetails()
+    @Override
+    public void setTeaserDetails(ProjectTeaser obj)
     {
-        return details;
+        super.setTeaserDetails(obj);
+
+        if(obj != null)
+        {
+            setUrl(new String(obj.getUrl()), false);
+            setFounded(new String(obj.getFounded() != null ? obj.getFounded() : ""));
+            setLicense(new String(obj.getLicense() != null ? obj.getLicense() : ""));
+        }
     }
 
     /**
      * Sets the project details.
      */
-    public void setProjectDetails(ProjectDetails obj)
+    @Override
+    public void setContentDetails(ProjectDetails obj)
     {
-        setContentSummary(obj);
-        setBadges(new String(obj.getBadges() != null ? obj.getBadges() : ""));
-        setLinks(new String(obj.getLinks() != null ? obj.getLinks() : ""));
-        setWebsite(new String(obj.getWebsite() != null ? obj.getWebsite() : ""));
-        setContentDetails(true);
-    }
-
-    /**
-     * Sets the project details from a summary.
-     */
-    public void setContentSummary(ProjectSummary obj)
-    {
-        super.setContentSummary(obj);
-        setUrl(new String(obj.getUrl()), false);
-        setFounded(new String(obj.getFounded() != null ? obj.getFounded() : ""));
-        setLicense(new String(obj.getLicense() != null ? obj.getLicense() : ""));
+        if(obj != null)
+        {
+            setTeaserDetails(obj);
+            setBadges(new String(obj.getBadges() != null ? obj.getBadges() : ""));
+            setLinks(new String(obj.getLinks() != null ? obj.getLinks() : ""));
+            setWebsite(new String(obj.getWebsite() != null ? obj.getWebsite() : ""));
+            setConfigured(true);
+        }
     }
 
     /**
@@ -292,7 +290,7 @@ public class ProjectResource extends Resource
      */
     public String getBadges()
     {
-        return details.getBadges();
+        return getDetails().getBadges();
     }
 
     /**
@@ -300,7 +298,7 @@ public class ProjectResource extends Resource
      */
     public void setBadges(String badges)
     {
-        details.setBadges(badges);
+        getDetails().setBadges(badges);
     }
 
     /**
@@ -308,7 +306,7 @@ public class ProjectResource extends Resource
      */
     public String getLinks()
     {
-        return details.getLinks();
+        return getDetails().getLinks();
     }
 
     /**
@@ -316,7 +314,7 @@ public class ProjectResource extends Resource
      */
     public void setLinks(String links)
     {
-        details.setLinks(links);
+        getDetails().setLinks(links);
     }
 
     /**
@@ -324,7 +322,7 @@ public class ProjectResource extends Resource
      */
     public boolean hasLinks()
     {
-        return details.hasLinks();
+        return getDetails().hasLinks();
     }
 
     /**
@@ -332,7 +330,7 @@ public class ProjectResource extends Resource
      */
     public String getWebsite()
     {
-        return details.getWebsite();
+        return getDetails().getWebsite();
     }
 
     /**
@@ -340,7 +338,7 @@ public class ProjectResource extends Resource
      */
     public void setWebsite(String website)
     {
-        details.setWebsite(website);
+        getDetails().setWebsite(website);
     }
 
     /**
@@ -348,7 +346,7 @@ public class ProjectResource extends Resource
      */
     public boolean hasWebsite()
     {
-        return details.hasWebsite();
+        return getDetails().hasWebsite();
     }
 
     /**
@@ -356,7 +354,7 @@ public class ProjectResource extends Resource
      */
     public String getFounded()
     {
-        return details.getFounded();
+        return getDetails().getFounded();
     }
 
     /**
@@ -364,7 +362,7 @@ public class ProjectResource extends Resource
      */
     public void setFounded(String founded)
     {
-        details.setFounded(founded);
+        getDetails().setFounded(founded);
     }
 
     /**
@@ -372,7 +370,7 @@ public class ProjectResource extends Resource
      */
     public String getLicense()
     {
-        return details.getLicense();
+        return getDetails().getLicense();
     }
 
     /**
@@ -388,6 +386,6 @@ public class ProjectResource extends Resource
      */
     public void setLicense(String license)
     {
-        details.setLicense(license);
+        getDetails().setLicense(license);
     }
 }

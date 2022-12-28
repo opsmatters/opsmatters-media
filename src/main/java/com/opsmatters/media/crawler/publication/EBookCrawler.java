@@ -24,7 +24,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import com.opsmatters.media.crawler.WebPageCrawler;
-import com.opsmatters.media.model.content.publication.PublicationSummary;
+import com.opsmatters.media.model.content.publication.PublicationTeaser;
 import com.opsmatters.media.model.content.publication.PublicationDetails;
 import com.opsmatters.media.model.content.publication.EBookConfig;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
@@ -39,7 +39,7 @@ import com.opsmatters.media.util.TimeUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EBookCrawler extends WebPageCrawler<PublicationSummary>
+public class EBookCrawler extends WebPageCrawler<PublicationTeaser,PublicationDetails>
 {
     private static final Logger logger = Logger.getLogger(EBookCrawler.class.getName());
 
@@ -63,50 +63,49 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
     }
 
     /**
-     * Create the ebook teaser from the selected node.
+     * Create the ebook teaser from the given element.
      */
     @Override
-    protected PublicationSummary getTeaser(Element root, Fields fields)
+    protected PublicationTeaser getTeaser(Element root, Fields fields)
         throws DateTimeParseException
     {
-        PublicationSummary content = new PublicationSummary();
+        PublicationTeaser teaser = new PublicationTeaser();
         if(fields.hasValidator())
-            validateContent(content, fields.getValidator(), root, "teaser");
-        if(content.isValid())
+            validateContent(teaser, fields.getValidator(), root, "teaser");
+        if(teaser.isValid())
         {
             if(debug() && fields.hasValidator())
                 logger.info("Validated ebook content: "+fields.getValidator());
-            populateSummaryFields(root, fields, content, "teaser");
+            populateTeaserFields(root, fields, teaser, "teaser");
             if(fields.hasUrl())
             {
                 Field field = fields.getUrl();
                 String url = getAnchor(field, root, "teaser", field.removeParameters());
                 if(url != null)
-                    content.setUrl(url, field.removeParameters());
+                    teaser.setUrl(url, field.removeParameters());
             }
         }
 
-        return content;
+        return teaser;
     }
 
     /**
-     * Create an ebook content item from the given url.
+     * Create ebook details from the given url.
      */
-    @Override
-    public PublicationDetails getContent(String url)
+    public PublicationDetails getDetails(String url)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        return getContent(new PublicationSummary(url, removeParameters()));
+        return getDetails(new PublicationTeaser(url, removeParameters()));
     }
 
     /**
-     * Populate the given ebook content.
+     * Returns the processed ebook derived from the given teaser.
      */
     @Override
-    public PublicationDetails getContent(PublicationSummary summary)
+    public PublicationDetails getDetails(PublicationTeaser teaser)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        PublicationDetails content = new PublicationDetails(summary);
+        PublicationDetails content = new PublicationDetails(teaser);
         List<Fields> articles = getPage().getArticles().getFields(hasRootError());
 
         loadArticlePage(content.getUrl());
@@ -130,7 +129,7 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
                 root = elements.get(0);
                 if(debug())
                     logger.info("Root found for ebook content: "+fields.getRoot());
-                populateSummaryFields(root, fields, content, "content");
+                populateTeaserFields(root, fields, content, "content");
             }
             else
             {
@@ -168,10 +167,9 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
     }
 
     /**
-     * Populate the content fields from the given node.
+     * Populate the teaser fields from the given element.
      */
-    private void populateSummaryFields(Element root, 
-        Fields fields, PublicationSummary content, String type)
+    private void populateTeaserFields(Element root, Fields fields, PublicationTeaser teaser, String type)
         throws DateTimeParseException
     {
         if(fields.hasTitle())
@@ -179,7 +177,7 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
             Field field = fields.getTitle();
             String title = getElements(field, root, type);
             if(title != null && title.length() > 0)
-                content.setTitle(title);
+                teaser.setTitle(title);
         }
 
         if(fields.hasPublishedDate())
@@ -196,7 +194,7 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
                     {
                         try
                         {
-                            content.setPublishedDateAsString(publishedDate, datePattern);
+                            teaser.setPublishedDateAsString(publishedDate, datePattern);
                             ex = null;
                             break;
                         }
@@ -223,14 +221,14 @@ public class EBookCrawler extends WebPageCrawler<PublicationSummary>
             String src = getImageSrc(field, root, type);
             if(src != null && src.length() > 0)
             {
-                content.setImageFromPath(getImagePrefix(), src);
-                content.setImageSource(getBasePath(), encodeUrl(src), field.removeParameters());
+                teaser.setImageFromPath(getImagePrefix(), src);
+                teaser.setImageSource(getBasePath(), encodeUrl(src), field.removeParameters());
 
                 if(debug())
                 {
                     String name = fields.getImage().getName();
-                    logger.info("Image source for "+name+": "+content.getImageSource());
-                    logger.info("Image for "+name+": "+content.getImage());
+                    logger.info("Image source for "+name+": "+teaser.getImageSource());
+                    logger.info("Image for "+name+": "+teaser.getImage());
                 }
             }
         }

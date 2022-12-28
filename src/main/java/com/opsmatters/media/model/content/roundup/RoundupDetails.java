@@ -20,7 +20,7 @@ package com.opsmatters.media.model.content.roundup;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupDetails extends RoundupSummary
+public class RoundupDetails extends RoundupTeaser
 {
     /**
      * Default constructor.
@@ -32,7 +32,15 @@ public class RoundupDetails extends RoundupSummary
     /**
      * Copy constructor.
      */
-    public RoundupDetails(RoundupSummary obj)
+    public RoundupDetails(RoundupDetails obj)
+    {
+        super(obj);
+    }
+
+    /**
+     * Constructor that takes a teaser.
+     */
+    public RoundupDetails(RoundupTeaser obj)
     {
         super(obj);
     }

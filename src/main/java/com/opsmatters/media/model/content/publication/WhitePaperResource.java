@@ -52,18 +52,18 @@ public class WhitePaperResource extends PublicationResource
         init();
         setSiteId(site.getId());
         setCode(code);
-        setPublicationDetails(obj);
+        setContentDetails(obj);
     }
 
     /**
      * Constructor that takes a publication summary.
      */
-    public WhitePaperResource(Site site, String code, PublicationSummary obj)
+    public WhitePaperResource(Site site, String code, PublicationTeaser obj)
     {
         init();
         setSiteId(site.getId());
         setCode(code);
-        setContentSummary(obj);
+        setTeaserDetails(obj);
     }
 
     /**

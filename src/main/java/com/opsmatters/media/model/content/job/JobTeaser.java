@@ -15,14 +15,14 @@
  */
 package com.opsmatters.media.model.content.job;
 
-import com.opsmatters.media.model.content.ResourceSummary;
+import com.opsmatters.media.model.content.ResourceTeaser;
 
 /**
- * Class representing a job summary.
+ * Class representing a job teaser.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class JobSummary extends ResourceSummary
+public class JobTeaser extends ResourceTeaser
 {
     private String package_ = "";
     private String location = "";
@@ -30,14 +30,14 @@ public class JobSummary extends ResourceSummary
     /**
      * Default constructor.
      */
-    public JobSummary()
+    public JobTeaser()
     {
     }
 
     /**
      * Copy constructor.
      */
-    public JobSummary(JobSummary obj)
+    public JobTeaser(JobTeaser obj)
     {
         super(obj);
 

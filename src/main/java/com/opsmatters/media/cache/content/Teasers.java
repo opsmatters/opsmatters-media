@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import com.opsmatters.media.model.content.ContentSummary;
+import com.opsmatters.media.model.content.ContentTeaser;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.ContentType;
 
@@ -35,7 +35,7 @@ public class Teasers
 {
     private static Map<String,TeaserList> teaserMap = Collections.synchronizedMap(new HashMap<String,TeaserList>());
 
-    static class TeaserList extends ArrayList<ContentSummary>
+    static class TeaserList extends ArrayList<ContentTeaser>
     {
         static final long EXPIRY = 300000L; // 5 mins
 
@@ -43,12 +43,12 @@ public class Teasers
         ContentType type;
         long tm = 0L;
 
-        TeaserList(ContentConfig config, List<? extends ContentSummary> items)
+        TeaserList(ContentConfig config, List<? extends ContentTeaser> items)
         {
             this.code = config.getCode();
             this.type = config.getType();
             tm = System.currentTimeMillis();
-            for(ContentSummary item : items)
+            for(ContentTeaser item : items)
                 add(item);
         }
 
@@ -78,7 +78,7 @@ public class Teasers
     /**
      * Sets the teaser list for the given id.
      */
-    public static void set(String id, List<? extends ContentSummary> teasers, ContentConfig config)
+    public static void set(String id, List<? extends ContentTeaser> teasers, ContentConfig config)
     {
         synchronized(teaserMap)
         {
@@ -91,7 +91,7 @@ public class Teasers
     /**
      * Returns the teaser list for the given organisation and id.
      */
-    public static List<ContentSummary> get(String code, String id)
+    public static List<ContentTeaser> get(String code, String id)
     {
         TeaserList ret = teaserMap.get(id);
         return ret != null && ret.getCode().equals(code) ? ret : null;

@@ -30,10 +30,9 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class Resource extends ContentItem implements LinkedContent
+public abstract class Resource<T extends ResourceTeaser, D extends ResourceTeaser> extends ContentItem<T,D>
+    implements LinkedContent
 {
-    private ResourceSummary details;
-
     private String features = "";
     private String linkText = "";
     private boolean promote = false;
@@ -121,21 +120,17 @@ public abstract class Resource extends ContentItem implements LinkedContent
     }
 
     /**
-     * Sets the details from a summary.
+     * Sets the details from a teaser.
      */
-    public void setContentSummary(ResourceSummary obj)
+    @Override
+    public void setTeaserDetails(T obj)
     {
-        super.setContentSummary(obj);
-        setDescription(new String(obj.getDescription()));
-    }
+        super.setTeaserDetails(obj);
 
-    /**
-     * Set the content details.
-     */
-    protected void setContentDetails(ResourceSummary details)
-    {
-        super.setContentDetails(details);
-        this.details = details;
+        if(obj != null)
+        {
+            setDescription(new String(obj.getDescription()));
+        }
     }
 
     /**
@@ -143,7 +138,7 @@ public abstract class Resource extends ContentItem implements LinkedContent
      */
     public String getDescription()
     {
-        return details.getDescription();
+        return getDetails().getDescription();
     }
 
     /**
@@ -151,7 +146,7 @@ public abstract class Resource extends ContentItem implements LinkedContent
      */
     public void setDescription(String description)
     {
-        details.setDescription(description != null ? description : "");
+        getDetails().setDescription(description != null ? description : "");
     }
 
     /**
@@ -159,7 +154,7 @@ public abstract class Resource extends ContentItem implements LinkedContent
      */
     public String getUrl()
     {
-        return details.getUrl();
+        return getDetails().getUrl();
     }
 
     /**
@@ -175,7 +170,7 @@ public abstract class Resource extends ContentItem implements LinkedContent
      */
     public void setUrl(String url, boolean removeParameters)
     {
-        details.setUrl(url, removeParameters);
+        getDetails().setUrl(url, removeParameters);
     }
 
     /**
@@ -183,7 +178,7 @@ public abstract class Resource extends ContentItem implements LinkedContent
      */
     public boolean hasUrl()
     {
-        return details.hasUrl();
+        return getDetails().hasUrl();
     }
 
     /**

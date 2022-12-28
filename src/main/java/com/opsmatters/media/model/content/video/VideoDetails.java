@@ -23,7 +23,7 @@ import com.opsmatters.media.util.TimeUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class VideoDetails extends VideoSummary
+public class VideoDetails extends VideoTeaser
 {
     private String description = "";
     private long duration = -1L;
@@ -40,17 +40,25 @@ public class VideoDetails extends VideoSummary
     /**
      * Copy constructor.
      */
-    public VideoDetails(VideoSummary obj)
+    public VideoDetails(VideoDetails obj)
     {
         super(obj);
+
+        if(obj != null)
+        {
+            setDescription(obj.getDescription());
+            setDuration(obj.getDuration());
+            setChannelId(obj.getChannelId());
+            setChannelTitle(obj.getChannelTitle());
+        }
     }
 
     /**
-     * Constructor that takes a video ID.
+     * Constructor that takes a teaser.
      */
-    public VideoDetails(String id)
+    public VideoDetails(VideoTeaser obj)
     {
-        super(id);
+        super(obj);
     }
 
     /**

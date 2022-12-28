@@ -32,7 +32,7 @@ import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailBody;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.ContentSummary;
+import com.opsmatters.media.model.content.ContentTeaser;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.crawler.CrawlerTarget;
 import com.opsmatters.media.util.Formats;
@@ -84,7 +84,7 @@ public class ContentMonitor extends BaseItem
     private String title = "";
     private String keywords = "";
 
-    private List<ContentSummary> subscribed = new ArrayList<ContentSummary>();
+    private List<ContentTeaser> subscribed = new ArrayList<ContentTeaser>();
     private Map<String,String> siteMap = new HashMap<String,String>();
 
     /**
@@ -909,7 +909,7 @@ public class ContentMonitor extends BaseItem
     /**
      * Adds a subscribed content item to the monitor.
      */
-    public void addSubscribedContent(ContentSummary content)
+    public void addSubscribedContent(ContentTeaser content)
     {
         subscribed.add(content);
     }
@@ -917,7 +917,7 @@ public class ContentMonitor extends BaseItem
     /**
      * Returns the subscribed content items for the monitor.
      */
-    public List<ContentSummary> getSubscribedContent()
+    public List<ContentTeaser> getSubscribedContent()
     {
         return subscribed;
     }

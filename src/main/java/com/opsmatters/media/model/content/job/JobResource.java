@@ -37,9 +37,8 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class JobResource extends Resource
+public class JobResource extends Resource<JobTeaser,JobDetails>
 {
-    private JobDetails details = new JobDetails();
     private String technologies = "";
 
     /**
@@ -47,7 +46,7 @@ public class JobResource extends Resource
      */
     public JobResource()
     {
-        setContentDetails(details);
+        setDetails(new JobDetails());
     }
 
     /**
@@ -68,19 +67,19 @@ public class JobResource extends Resource
         init();
         setSiteId(site.getId());
         setCode(code);
-        setJobDetails(obj);
+        setContentDetails(obj);
     }
 
     /**
      * Constructor that takes a job summary.
      */
-    public JobResource(Site site, String code, JobSummary obj)
+    public JobResource(Site site, String code, JobTeaser obj)
     {
         this();
         init();
         setSiteId(site.getId());
         setCode(code);
-        setContentSummary(obj);
+        setTeaserDetails(obj);
     }
 
     /**
@@ -89,8 +88,7 @@ public class JobResource extends Resource
     public void copyAttributes(JobResource obj)
     {
         super.copyAttributes(obj);
-
-        setJobDetails(obj.getJobDetails());
+        setContentDetails(obj.getDetails());
         setTechnologies(new String(obj.getTechnologies() != null ? obj.getTechnologies() : ""));
     }
 
@@ -267,33 +265,34 @@ public class JobResource extends Resource
     }
 
     /**
-     * Returns the job details.
+     * Sets the job details from a teaser.
      */
-    public JobDetails getJobDetails()
+    @Override
+    public void setTeaserDetails(JobTeaser obj)
     {
-        return details;
+        super.setTeaserDetails(obj);
+
+        if(obj != null)
+        {
+            setUrl(new String(obj.getUrl()));
+            setLocation(new String(obj.getLocation() != null ? obj.getLocation() : ""));
+            setPackage(new String(obj.getPackage() != null ? obj.getPackage() : ""));
+        }
     }
 
     /**
      * Sets the job details.
      */
-    public void setJobDetails(JobDetails obj)
+    @Override
+    public void setContentDetails(JobDetails obj)
     {
-        setContentSummary(obj);
-        setWebsite(new String(obj.getWebsite() != null ? obj.getWebsite() : ""));
-        setContact(new String(obj.getContact() != null ? obj.getContact() : ""));
-        setContentDetails(true);
-    }
-
-    /**
-     * Sets the job details from a summary.
-     */
-    public void setContentSummary(JobSummary obj)
-    {
-        super.setContentSummary(obj);
-        setUrl(new String(obj.getUrl()));
-        setLocation(new String(obj.getLocation() != null ? obj.getLocation() : ""));
-        setPackage(new String(obj.getPackage() != null ? obj.getPackage() : ""));
+        if(obj != null)
+        {
+            setTeaserDetails(obj);
+            setWebsite(new String(obj.getWebsite() != null ? obj.getWebsite() : ""));
+            setContact(new String(obj.getContact() != null ? obj.getContact() : ""));
+            setConfigured(true);
+        }
     }
 
     /**
@@ -301,7 +300,7 @@ public class JobResource extends Resource
      */
     public String getWebsite()
     {
-        return details.getWebsite();
+        return getDetails().getWebsite();
     }
 
     /**
@@ -309,7 +308,7 @@ public class JobResource extends Resource
      */
     public void setWebsite(String website)
     {
-        details.setWebsite(website);
+        getDetails().setWebsite(website);
     }
 
     /**
@@ -317,7 +316,7 @@ public class JobResource extends Resource
      */
     public boolean hasWebsite()
     {
-        return details.hasWebsite();
+        return getDetails().hasWebsite();
     }
 
     /**
@@ -334,7 +333,7 @@ public class JobResource extends Resource
      */
     public String getLocation()
     {
-        return details.getLocation();
+        return getDetails().getLocation();
     }
 
     /**
@@ -342,7 +341,7 @@ public class JobResource extends Resource
      */
     public void setLocation(String location)
     {
-        details.setLocation(location);
+        getDetails().setLocation(location);
     }
 
     /**
@@ -350,7 +349,7 @@ public class JobResource extends Resource
      */
     public boolean hasLocation()
     {
-        return details.hasLocation();
+        return getDetails().hasLocation();
     }
 
     /**
@@ -358,7 +357,7 @@ public class JobResource extends Resource
      */
     public String getPackage()
     {
-        return details.getPackage();
+        return getDetails().getPackage();
     }
 
     /**
@@ -366,7 +365,7 @@ public class JobResource extends Resource
      */
     public void setPackage(String package_)
     {
-        details.setPackage(package_);
+        getDetails().setPackage(package_);
     }
 
     /**
@@ -374,7 +373,7 @@ public class JobResource extends Resource
      */
     public boolean hasPackage()
     {
-        return details.hasPackage();
+        return getDetails().hasPackage();
     }
 
     /**
@@ -382,7 +381,7 @@ public class JobResource extends Resource
      */
     public String getContact()
     {
-        return details.getContact();
+        return getDetails().getContact();
     }
 
     /**
@@ -390,7 +389,7 @@ public class JobResource extends Resource
      */
     public void setContact(String contact)
     {
-        details.setContact(contact);
+        getDetails().setContact(contact);
     }
 
     /**
@@ -398,7 +397,7 @@ public class JobResource extends Resource
      */
     public boolean hasContact()
     {
-        return details.hasContact();
+        return getDetails().hasContact();
     }
 
     /**

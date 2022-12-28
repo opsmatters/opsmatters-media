@@ -20,7 +20,7 @@ package com.opsmatters.media.model.content.event;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EventDetails extends EventSummary
+public class EventDetails extends EventTeaser
 {
     private String timezone = "";
     private String location = "";
@@ -35,7 +35,21 @@ public class EventDetails extends EventSummary
     /**
      * Copy constructor.
      */
-    public EventDetails(EventSummary obj)
+    public EventDetails(EventDetails obj)
+    {
+        super(obj);
+
+        if(obj != null)
+        {
+            setTimeZone(obj.getTimeZone());
+            setLocation(obj.getLocation());
+        }
+    }
+
+    /**
+     * Constructor that takes a teaser.
+     */
+    public EventDetails(EventTeaser obj)
     {
         super(obj);
     }

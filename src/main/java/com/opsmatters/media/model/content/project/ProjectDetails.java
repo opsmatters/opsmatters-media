@@ -20,7 +20,7 @@ package com.opsmatters.media.model.content.project;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ProjectDetails extends ProjectSummary
+public class ProjectDetails extends ProjectTeaser
 {
     private String badges = "";
     private String links = "";
@@ -36,7 +36,22 @@ public class ProjectDetails extends ProjectSummary
     /**
      * Copy constructor.
      */
-    public ProjectDetails(ProjectSummary obj)
+    public ProjectDetails(ProjectDetails obj)
+    {
+        super(obj);
+
+        if(obj != null)
+        {
+            setBadges(obj.getBadges());
+            setLinks(obj.getLinks());
+            setWebsite(obj.getWebsite());
+        }
+    }
+
+    /**
+     * Constructor that takes a teaser.
+     */
+    public ProjectDetails(ProjectTeaser obj)
     {
         super(obj);
     }

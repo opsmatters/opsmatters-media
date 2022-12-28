@@ -38,9 +38,8 @@ import static com.opsmatters.media.model.content.video.VideoType.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class VideoArticle extends Article
+public class VideoArticle extends Article<VideoTeaser,VideoDetails>
 {
-    private VideoDetails details = new VideoDetails();
     private String videoType = "";
 
     /**
@@ -48,7 +47,7 @@ public class VideoArticle extends Article
      */
     public VideoArticle()
     {
-        setContentDetails(details);
+        setDetails(new VideoDetails());
     }
 
     /**
@@ -69,19 +68,19 @@ public class VideoArticle extends Article
         init();
         setSiteId(site.getId());
         setCode(code);
-        setVideoDetails(obj);
+        setContentDetails(obj);
     }
 
     /**
-     * Constructor that takes a video summary.
+     * Constructor that takes a video teaser.
      */
-    public VideoArticle(Site site, String code, VideoSummary obj)
+    public VideoArticle(Site site, String code, VideoTeaser obj)
     {
         this();
         init();
         setSiteId(site.getId());
         setCode(code);
-        setContentSummary(obj);
+        setTeaserDetails(obj);
     }
 
     /**
@@ -90,8 +89,7 @@ public class VideoArticle extends Article
     public void copyAttributes(VideoArticle obj)
     {
         super.copyAttributes(obj);
-
-        setVideoDetails(obj.getVideoDetails());
+        setContentDetails(obj.getDetails());
         setVideoType(new String(obj.getVideoType() != null ? obj.getVideoType() : ""));
     }
 
@@ -288,37 +286,35 @@ public class VideoArticle extends Article
     }
 
     /**
-     * Returns the video details.
+     * Sets the video details from a teaser.
      */
-    public VideoDetails getVideoDetails()
+    @Override
+    public void setTeaserDetails(VideoTeaser obj)
     {
-        return details;
+        super.setTeaserDetails(obj);
+
+        if(obj != null)
+        {
+            setVideoId(new String(obj.getVideoId()));
+            setProvider(obj.getProvider());
+        }
     }
 
     /**
      * Sets the video details.
      */
-    public void setVideoDetails(VideoDetails obj)
+    @Override
+    public void setContentDetails(VideoDetails obj)
     {
         if(obj != null)
         {
-            setContentSummary(obj);
+            setTeaserDetails(obj);
             setDuration(obj.getDuration());
             setDescription(new String(obj.getDescription() != null ? obj.getDescription() : ""));
             setChannelId(new String(obj.getChannelId()));
             setChannelTitle(new String(obj.getChannelTitle()));
-            setContentDetails(true);
+            setConfigured(true);
         }
-    }
-
-    /**
-     * Sets the video details from a summary.
-     */
-    public void setContentSummary(VideoSummary obj)
-    {
-        super.setContentSummary(obj);
-        setVideoId(new String(obj.getVideoId()));
-        setProvider(obj.getProvider());
     }
 
     /**
@@ -350,7 +346,7 @@ public class VideoArticle extends Article
      */
     public String getVideoId()
     {
-        return details.getVideoId();
+        return getDetails().getVideoId();
     }
 
     /**
@@ -358,7 +354,7 @@ public class VideoArticle extends Article
      */
     public void setVideoId(String videoId)
     {
-        details.setVideoId(videoId);
+        getDetails().setVideoId(videoId);
     }
 
     /**
@@ -366,7 +362,7 @@ public class VideoArticle extends Article
      */
     public boolean hasVideoId()
     {
-        return details.hasVideoId();
+        return getDetails().hasVideoId();
     }
 
     /**
@@ -374,7 +370,7 @@ public class VideoArticle extends Article
      */
     public String getDescription()
     {
-        return details.getDescription();
+        return getDetails().getDescription();
     }
 
     /**
@@ -382,7 +378,7 @@ public class VideoArticle extends Article
      */
     public void setDescription(String description)
     {
-        details.setDescription(description);
+        getDetails().setDescription(description);
     }
 
     /**
@@ -398,7 +394,7 @@ public class VideoArticle extends Article
      */
     public long getDuration()
     {
-        return details.getDuration();
+        return getDetails().getDuration();
     }
 
     /**
@@ -406,7 +402,7 @@ public class VideoArticle extends Article
      */
     public String getFormattedDuration(boolean replaceZero)
     {
-        return details.getFormattedDuration(replaceZero);
+        return getDetails().getFormattedDuration(replaceZero);
     }
 
     /**
@@ -422,7 +418,7 @@ public class VideoArticle extends Article
      */
     public void setDuration(long duration)
     {
-        details.setDuration(duration);
+        getDetails().setDuration(duration);
     }
 
     /**
@@ -430,7 +426,7 @@ public class VideoArticle extends Article
      */
     public String getChannelId()
     {
-        return details.getChannelId();
+        return getDetails().getChannelId();
     }
 
     /**
@@ -438,7 +434,7 @@ public class VideoArticle extends Article
      */
     public void setChannelId(String channelId)
     {
-        details.setChannelId(channelId);
+        getDetails().setChannelId(channelId);
     }
 
     /**
@@ -446,7 +442,7 @@ public class VideoArticle extends Article
      */
     public boolean hasChannelId()
     {
-        return details.hasChannelId();
+        return getDetails().hasChannelId();
     }
 
     /**
@@ -454,7 +450,7 @@ public class VideoArticle extends Article
      */
     public String getChannelTitle()
     {
-        return details.getChannelTitle();
+        return getDetails().getChannelTitle();
     }
 
     /**
@@ -462,7 +458,7 @@ public class VideoArticle extends Article
      */
     public void setChannelTitle(String channelTitle)
     {
-        details.setChannelTitle(channelTitle);
+        getDetails().setChannelTitle(channelTitle);
     }
 
     /**
@@ -470,7 +466,7 @@ public class VideoArticle extends Article
      */
     public boolean hasChannelTitle()
     {
-        return details.hasChannelTitle();
+        return getDetails().hasChannelTitle();
     }
 
     /**
@@ -478,7 +474,7 @@ public class VideoArticle extends Article
      */
     public VideoProvider getProvider()
     {
-        return details.getProvider();
+        return getDetails().getProvider();
     }
 
     /**
@@ -486,7 +482,7 @@ public class VideoArticle extends Article
      */
     public void setProvider(VideoProvider provider)
     {
-        details.setProvider(provider);
+        getDetails().setProvider(provider);
     }
 
     /**
@@ -494,7 +490,7 @@ public class VideoArticle extends Article
      */
     public String getVideoUrl()
     {
-        return details.getVideoUrl();
+        return getDetails().getVideoUrl();
     }
 
     /**
@@ -502,7 +498,7 @@ public class VideoArticle extends Article
      */
     public String getChannelUrl()
     {
-        return details.getChannelUrl();
+        return getDetails().getChannelUrl();
     }
 
     /**
@@ -510,7 +506,7 @@ public class VideoArticle extends Article
      */
     public String getEmbed(int width, int height, boolean autoplay)
     {
-        return details.getEmbed(width, height, autoplay);
+        return getDetails().getEmbed(width, height, autoplay);
     }
 
     /**

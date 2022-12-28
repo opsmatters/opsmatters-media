@@ -13,46 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.content.publication;
+package com.opsmatters.media.model.content.post;
 
-import com.opsmatters.media.model.content.ResourceSummary;
+import com.opsmatters.media.model.content.ArticleTeaser;
 
 /**
- * Class representing a publication summary.
+ * Class representing a post teaser.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PublicationSummary extends ResourceSummary
+public class PostTeaser extends ArticleTeaser
 {
     /**
      * Default constructor.
      */
-    public PublicationSummary()
+    public PostTeaser()
     {
-    }
-
-    /**
-     * Constructor that takes a url.
-     */
-    public PublicationSummary(String url, boolean removeParameters)
-    {
-        setUrl(url, removeParameters);
     }
 
     /**
      * Copy constructor.
      */
-    public PublicationSummary(PublicationSummary obj)
+    public PostTeaser(PostTeaser obj)
     {
         super(obj);
-    }
-
-    /**
-     * Returns the publication url.
-     */
-    @Override
-    public String getUniqueId()
-    {
-        return getUrl();
     }
 }

@@ -25,7 +25,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import com.opsmatters.media.crawler.WebPageCrawler;
-import com.opsmatters.media.model.content.roundup.RoundupSummary;
+import com.opsmatters.media.model.content.roundup.RoundupTeaser;
 import com.opsmatters.media.model.content.roundup.RoundupDetails;
 import com.opsmatters.media.model.content.roundup.RoundupConfig;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
@@ -41,7 +41,7 @@ import com.opsmatters.media.util.FormatUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
+public class RoundupCrawler extends WebPageCrawler<RoundupTeaser,RoundupDetails>
 {
     private static final Logger logger = Logger.getLogger(RoundupCrawler.class.getName());
 
@@ -50,7 +50,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
     /**
      * Constructor that takes a web page configuration.
      */
-    public RoundupCrawler(RoundupConfig config,  CrawlerWebPage page)
+    public RoundupCrawler(RoundupConfig config, CrawlerWebPage page)
     {
         super(config, page);
         this.config = config;
@@ -65,20 +65,20 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
     }
 
     /**
-     * Create a roundup teaser from the selected node.
+     * Create a roundup teaser from the given element.
      */
     @Override
-    protected RoundupSummary getTeaser(Element root, Fields fields)
+    protected RoundupTeaser getTeaser(Element root, Fields fields)
         throws DateTimeParseException
     {
-        RoundupSummary content = new RoundupSummary();
+        RoundupTeaser teaser = new RoundupTeaser();
         if(fields.hasValidator())
-            validateContent(content, fields.getValidator(), root, "teaser");
-        if(content.isValid())
+            validateContent(teaser, fields.getValidator(), root, "teaser");
+        if(teaser.isValid())
         {
             if(debug() && fields.hasValidator())
                 logger.info("Validated roundup content: "+fields.getValidator());
-            populateSummaryFields(root, fields, content, "teaser");
+            populateTeaserFields(root, fields, teaser, "teaser");
             if(fields.hasUrl())
             {
                 String url = null;
@@ -88,31 +88,30 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
                 else
                     url = getAnchor(field, root, "teaser", field.removeParameters());
                 if(url != null)
-                    content.setUrl(url, field.removeParameters());
+                    teaser.setUrl(url, field.removeParameters());
             }
         }
 
-        return content;
+        return teaser;
     }
 
     /**
-     * Create a roundup content item from the given url.
+     * Create roundup details from the given url.
      */
-    @Override
-    public RoundupDetails getContent(String url)
+    public RoundupDetails getDetails(String url)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        return getContent(new RoundupSummary(url, removeParameters()));
+        return getDetails(new RoundupTeaser(url, removeParameters()));
     }
 
     /**
-     * Returns the processed roundup derived from the given teaser.
+     * Returns the processed roundup post derived from the given teaser.
      */
     @Override
-    public RoundupDetails getContent(RoundupSummary summary)
+    public RoundupDetails getDetails(RoundupTeaser teaser)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        RoundupDetails content = new RoundupDetails(summary);
+        RoundupDetails content = new RoundupDetails(teaser);
         List<Fields> articles = getPage().getArticles().getFields(hasRootError());
 
         loadArticlePage(content.getUrl());
@@ -136,7 +135,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
                 root = elements.get(0);
                 if(debug())
                     logger.info("Root found for roundup content: "+fields.getRoot());
-                populateSummaryFields(root, fields, content, "content");
+                populateTeaserFields(root, fields, content, "content");
             }
             else
             {
@@ -166,10 +165,9 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
     }
 
     /**
-     * Populate the content fields from the given node.
+     * Populate the teaser fields from the given element.
      */
-    private void populateSummaryFields(Element root, 
-        Fields fields, RoundupSummary content, String type)
+    private void populateTeaserFields(Element root, Fields fields, RoundupTeaser teaser, String type)
         throws DateTimeParseException
     {
         if(fields.hasTitle())
@@ -177,7 +175,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
             Field field = fields.getTitle();
             String title = getElements(field, root, type);
             if(title != null && title.length() > 0 && !title.equals("Please wait..."))
-                content.setTitle(EmojiParser.removeAllEmojis(title.trim()));
+                teaser.setTitle(EmojiParser.removeAllEmojis(title.trim()));
         }
 
         if(fields.hasPublishedDate())
@@ -194,7 +192,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
                     {
                         try
                         {
-                            content.setPublishedDateAsString(publishedDate, datePattern);
+                            teaser.setPublishedDateAsString(publishedDate, datePattern);
                             ex = null;
                             break;
                         }
@@ -220,7 +218,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
             Field field = fields.getAuthor();
             String author = getElements(field, root, type);
             if(author != null && author.length() > 0)
-                content.setAuthor(author);
+                teaser.setAuthor(author);
         }
 
         if(fields.hasAuthorLink())
@@ -228,7 +226,7 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
             Field field = fields.getAuthorLink();
             String authorLink = getAnchor(field, root, type, field.removeParameters());
             if(authorLink != null && authorLink.length() > 0)
-                content.setAuthorLink(authorLink);
+                teaser.setAuthorLink(authorLink);
         }
 
         if(fields.hasImage())
@@ -237,14 +235,14 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
             String src = getImageSrc(field, root, type);
             if(src != null && src.length() > 0)
             {
-                content.setImageFromPath(getImagePrefix(), src);
-                content.setImageSource(getBasePath(), encodeUrl(src), field.removeParameters());
+                teaser.setImageFromPath(getImagePrefix(), src);
+                teaser.setImageSource(getBasePath(), encodeUrl(src), field.removeParameters());
 
                 if(debug())
                 {
                     String name = fields.getImage().getName();
-                    logger.info("Image source for "+name+": "+content.getImageSource());
-                    logger.info("Image for "+name+": "+content.getImage());
+                    logger.info("Image source for "+name+": "+teaser.getImageSource());
+                    logger.info("Image for "+name+": "+teaser.getImage());
                 }
             }
         }
@@ -256,14 +254,14 @@ public class RoundupCrawler extends WebPageCrawler<RoundupSummary>
             if(style != null && style.length() > 0)
             {
                 String src = getBackgroundImage(style);
-                content.setImageFromPath(getImagePrefix(), src);
-                content.setImageSource(getBasePath(), encodeUrl(src), field.removeParameters());
+                teaser.setImageFromPath(getImagePrefix(), src);
+                teaser.setImageSource(getBasePath(), encodeUrl(src), field.removeParameters());
 
                 if(debug())
                 {
                     String name = fields.getBackgroundImage().getName();
-                    logger.info("Background Image source for "+name+": "+content.getImageSource());
-                    logger.info("Background Image for "+name+": "+content.getImage());
+                    logger.info("Background Image source for "+name+": "+teaser.getImageSource());
+                    logger.info("Background Image for "+name+": "+teaser.getImage());
                 }
             }
         }

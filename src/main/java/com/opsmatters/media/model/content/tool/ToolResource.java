@@ -35,9 +35,8 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ToolResource extends Resource
+public class ToolResource extends Resource<ToolTeaser,ToolDetails>
 {
-    private ToolDetails details = new ToolDetails();
     private String downloadText = "";
 
     /**
@@ -45,7 +44,7 @@ public class ToolResource extends Resource
      */
     public ToolResource()
     {
-        setContentDetails(details);
+        setDetails(new ToolDetails());
     }
 
     /**
@@ -66,19 +65,19 @@ public class ToolResource extends Resource
         init();
         setSiteId(site.getId());
         setCode(code);
-        setToolDetails(obj);
+        setContentDetails(obj);
     }
 
     /**
      * Constructor that takes a tool summary.
      */
-    public ToolResource(Site site, String code, ToolSummary obj)
+    public ToolResource(Site site, String code, ToolTeaser obj)
     {
         this();
         init();
         setSiteId(site.getId());
         setCode(code);
-        setContentSummary(obj);
+        setTeaserDetails(obj);
     }
 
     /**
@@ -87,8 +86,7 @@ public class ToolResource extends Resource
     public void copyAttributes(ToolResource obj)
     {
         super.copyAttributes(obj);
-
-        setToolDetails(obj.getToolDetails());
+        setContentDetails(obj.getDetails());
         setDownloadText(new String(obj.getDownloadText() != null ? obj.getDownloadText() : ""));
     }
 
@@ -253,32 +251,33 @@ public class ToolResource extends Resource
     }
 
     /**
-     * Returns the tool details.
+     * Sets the tool details from a teaser.
      */
-    public ToolDetails getToolDetails()
+    @Override
+    public void setTeaserDetails(ToolTeaser obj)
     {
-        return details;
+        super.setTeaserDetails(obj);
+
+        if(obj != null)
+        {
+            setUrl(new String(obj.getUrl()));
+            setPricing(new String(obj.getPricing() != null ? obj.getPricing() : ""));
+        }
     }
 
     /**
      * Sets the tool details.
      */
-    public void setToolDetails(ToolDetails obj)
+    @Override
+    public void setContentDetails(ToolDetails obj)
     {
-        setContentSummary(obj);
-        setWebsite(new String(obj.getWebsite() != null ? obj.getWebsite() : ""));
-        setDownload(new String(obj.getDownload() != null ? obj.getDownload() : ""));
-        setContentDetails(true);
-    }
-
-    /**
-     * Sets the tool details from a summary.
-     */
-    public void setContentSummary(ToolSummary obj)
-    {
-        super.setContentSummary(obj);
-        setUrl(new String(obj.getUrl()));
-        setPricing(new String(obj.getPricing() != null ? obj.getPricing() : ""));
+        if(obj != null)
+        {
+            setTeaserDetails(obj);
+            setWebsite(new String(obj.getWebsite() != null ? obj.getWebsite() : ""));
+            setDownload(new String(obj.getDownload() != null ? obj.getDownload() : ""));
+            setConfigured(true);
+        }
     }
 
     /**
@@ -286,7 +285,7 @@ public class ToolResource extends Resource
      */
     public String getWebsite()
     {
-        return details.getWebsite();
+        return getDetails().getWebsite();
     }
 
     /**
@@ -294,7 +293,7 @@ public class ToolResource extends Resource
      */
     public void setWebsite(String website)
     {
-        details.setWebsite(website);
+        getDetails().setWebsite(website);
     }
 
     /**
@@ -302,7 +301,7 @@ public class ToolResource extends Resource
      */
     public boolean hasWebsite()
     {
-        return details.hasWebsite();
+        return getDetails().hasWebsite();
     }
 
     /**
@@ -319,7 +318,7 @@ public class ToolResource extends Resource
      */
     public String getDownload()
     {
-        return details.getDownload();
+        return getDetails().getDownload();
     }
 
     /**
@@ -327,7 +326,7 @@ public class ToolResource extends Resource
      */
     public void setDownload(String download)
     {
-        details.setDownload(download);
+        getDetails().setDownload(download);
     }
 
     /**
@@ -335,7 +334,7 @@ public class ToolResource extends Resource
      */
     public boolean hasDownload()
     {
-        return details.hasDownload();
+        return getDetails().hasDownload();
     }
 
     /**
@@ -359,7 +358,7 @@ public class ToolResource extends Resource
      */
     public String getPricing()
     {
-        return details.getPricing();
+        return getDetails().getPricing();
     }
 
     /**
@@ -367,6 +366,6 @@ public class ToolResource extends Resource
      */
     public void setPricing(String pricing)
     {
-        details.setPricing(pricing);
+        getDetails().setPricing(pricing);
     }
 }

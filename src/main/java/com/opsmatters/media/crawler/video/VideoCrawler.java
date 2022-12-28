@@ -24,8 +24,8 @@ import java.util.regex.Pattern;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.cache.content.Teasers;
-import com.opsmatters.media.model.content.ContentSummary;
-import com.opsmatters.media.model.content.video.VideoSummary;
+import com.opsmatters.media.model.content.ContentTeaser;
+import com.opsmatters.media.model.content.video.VideoTeaser;
 import com.opsmatters.media.model.content.video.VideoDetails;
 import com.opsmatters.media.model.content.video.VideoConfig;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
@@ -50,7 +50,7 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class VideoCrawler extends ContentCrawler<VideoSummary>
+public class VideoCrawler extends ContentCrawler<VideoTeaser,VideoDetails>
 {
     private static final Logger logger = Logger.getLogger(VideoCrawler.class.getName());
 
@@ -120,13 +120,13 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
     /**
      * Create the video teaser from a selected node.
      */
-    protected VideoSummary getTeaser(JSONObject video, Fields fields)
+    protected VideoTeaser getTeaser(JSONObject video, Fields fields)
     {
-        VideoSummary content = new VideoSummary();
+        VideoTeaser teaser = new VideoTeaser();
 
-        populateSummaryFields(video, fields, content, "teaser");
+        populateTeaserFields(video, fields, teaser, "teaser");
 
-        return content;
+        return teaser;
     }
 
     /**
@@ -142,11 +142,11 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
         String userId = channel.getUserId();
 
         // Try to get the teasers from the cache
-        List<ContentSummary> teasers = Teasers.get(config.getCode(), channelId);
+        List<ContentTeaser> teasers = Teasers.get(config.getCode(), channelId);
         if(teasers != null)
         {
-            for(ContentSummary teaser : teasers)
-                addTeaser((VideoSummary)teaser);
+            for(ContentTeaser teaser : teasers)
+                addTeaser((VideoTeaser)teaser);
             ret += numTeasers();
             if(debug())
                 logger.info("Retrieved "+numTeasers()+" teasers from cache");
@@ -164,7 +164,7 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
                 ret += results.size();
                 for(JSONObject result : results)
                 {
-                    VideoSummary teaser = getTeaser(result, fields);
+                    VideoTeaser teaser = getTeaser(result, fields);
                     if(teaser.isValid() && !map.containsKey(teaser.getUniqueId()))
                     {
                         // Check that the teaser matches the configured keywords
@@ -196,21 +196,29 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
     }
 
     /**
-     * Populate the given video content.
+     * Create a video content item from the given video id.
+     */
+    public VideoDetails getDetails(String videoId) throws IOException
+    {
+        return getDetails(new VideoTeaser(videoId));
+    }
+
+    /**
+     * Populate the video details.
      */
     @Override
-    public VideoDetails getContent(String videoId) throws IOException
+    public VideoDetails getDetails(VideoTeaser teaser) throws IOException
     {
-        JSONObject video = client.getVideo(videoId);
+        JSONObject video = client.getVideo(teaser.getVideoId());
 
         if(video == null)
             return null;
 
-        VideoDetails content = new VideoDetails(videoId);
+        VideoDetails content = new VideoDetails(teaser);
         List<Fields> articles = channel.getArticles().getFields(hasRootError());
         for(Fields fields : articles)
         {
-            populateSummaryFields(video, fields, content, "content");
+            populateTeaserFields(video, fields, content, "content");
 
             content.setDuration(video.getInt(DURATION.value()));
             content.setChannelTitle(video.getString(CHANNEL_TITLE.value()));
@@ -229,20 +237,19 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
     }
 
     /**
-     * Populate the content fields from the given node.
+     * Populate the teaser fields from the given video.
      */
-    private void populateSummaryFields(JSONObject video, 
-        Fields fields, VideoSummary content, String type)
+    private void populateTeaserFields(JSONObject video, Fields fields, VideoTeaser teaser, String type)
     {
-        content.setVideoId(video.getString(VIDEO_ID.value()));
-        content.setProvider(video.getString(PROVIDER.value()));
+        teaser.setVideoId(video.getString(VIDEO_ID.value()));
+        teaser.setProvider(video.getString(PROVIDER.value()));
 
         if(fields.hasTitle())
         {
             Field field = fields.getTitle();
             String title = getValue(field, video.getString(field.getSelector(0).getExpr()));
             if(title != null && title.length() > 0)
-                content.setTitle(EmojiParser.removeAllEmojis(title));
+                teaser.setTitle(EmojiParser.removeAllEmojis(title));
         }
 
         if(fields.hasPublishedDate())
@@ -250,7 +257,7 @@ public class VideoCrawler extends ContentCrawler<VideoSummary>
             Field field = fields.getPublishedDate();
             String publishedDate = getValue(field, video.getString(field.getSelector(0).getExpr()));
             if(publishedDate != null)
-                content.setPublishedDateAsString(publishedDate, field.getDatePattern());
+                teaser.setPublishedDateAsString(publishedDate, field.getDatePattern());
         }
     }
 

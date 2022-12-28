@@ -30,10 +30,8 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class Article extends ContentItem
+public abstract class Article<T extends ArticleTeaser, D extends ArticleTeaser> extends ContentItem<T,D>
 {
-    private ArticleSummary details;
-
     private String organisation = "";
     private String revisedTitle = "";
     private String tags = "";
@@ -137,20 +135,12 @@ public abstract class Article extends ContentItem
     }
 
     /**
-     * Sets the details from a summary.
+     * Sets the details from a teaser.
      */
-    public void setContentSummary(ArticleSummary obj)
+    @Override
+    public void setTeaserDetails(T obj)
     {
-        super.setContentSummary(obj);
-    }
-
-    /**
-     * Set the content details.
-     */
-    protected void setContentDetails(ArticleSummary details)
-    {
-        super.setContentDetails(details);
-        this.details = details;
+        super.setTeaserDetails(obj);
     }
 
     /**

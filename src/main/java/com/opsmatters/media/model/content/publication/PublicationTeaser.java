@@ -15,33 +15,44 @@
  */
 package com.opsmatters.media.model.content.publication;
 
+import com.opsmatters.media.model.content.ResourceTeaser;
+
 /**
- * Class representing a publication.
+ * Class representing a publication teaser.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PublicationDetails extends PublicationTeaser
+public class PublicationTeaser extends ResourceTeaser
 {
     /**
      * Default constructor.
      */
-    public PublicationDetails()
+    public PublicationTeaser()
     {
+    }
+
+    /**
+     * Constructor that takes a url.
+     */
+    public PublicationTeaser(String url, boolean removeParameters)
+    {
+        setUrl(url, removeParameters);
     }
 
     /**
      * Copy constructor.
      */
-    public PublicationDetails(PublicationDetails obj)
+    public PublicationTeaser(PublicationTeaser obj)
     {
         super(obj);
     }
 
     /**
-     * Constructor that takes a teaser.
+     * Returns the publication url.
      */
-    public PublicationDetails(PublicationTeaser obj)
+    @Override
+    public String getUniqueId()
     {
-        super(obj);
+        return getUrl();
     }
 }

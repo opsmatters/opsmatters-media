@@ -38,9 +38,8 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EventResource extends Resource
+public class EventResource extends Resource<EventTeaser,EventDetails>
 {
-    private EventDetails details = new EventDetails();
     private String eventType = "";
 
     /**
@@ -48,7 +47,7 @@ public class EventResource extends Resource
      */
     public EventResource()
     {
-        setContentDetails(details);
+        setDetails(new EventDetails());
     }
 
     /**
@@ -69,19 +68,19 @@ public class EventResource extends Resource
         init();
         setSiteId(site.getId());
         setCode(code);
-        setEventDetails(obj);
+        setContentDetails(obj);
     }
 
     /**
-     * Constructor that takes an event summary.
+     * Constructor that takes an event teaser.
      */
-    public EventResource(Site site, String code, EventSummary obj)
+    public EventResource(Site site, String code, EventTeaser obj)
     {
         this();
         init();
         setSiteId(site.getId());
         setCode(code);
-        setContentSummary(obj);
+        setTeaserDetails(obj);
     }
 
     /**
@@ -90,8 +89,7 @@ public class EventResource extends Resource
     public void copyAttributes(EventResource obj)
     {
         super.copyAttributes(obj);
-
-        setEventDetails(obj.getEventDetails());
+        setContentDetails(obj.getDetails());
         setEventType(new String(obj.getEventType() != null ? obj.getEventType() : ""));
     }
 
@@ -282,33 +280,34 @@ public class EventResource extends Resource
     }
 
     /**
-     * Returns the event details.
+     * Sets the event details from a teaser.
      */
-    public EventDetails getEventDetails()
+    @Override
+    public void setTeaserDetails(EventTeaser obj)
     {
-        return details;
+        super.setTeaserDetails(obj);
+
+        if(obj != null)
+        {
+            setStartDate(obj.getStartDate());
+            setEndDate(obj.getEndDate());
+            setUrl(new String(obj.getUrl()), false);
+        }
     }
 
     /**
      * Sets the event details.
      */
-    public void setEventDetails(EventDetails obj)
+    @Override
+    public void setContentDetails(EventDetails obj)
     {
-        setContentSummary(obj);
-        setTimeZone(new String(obj.getTimeZone() != null ? obj.getTimeZone() : ""));
-        setLocation(new String(obj.getLocation() != null ? obj.getLocation() : ""));
-        setContentDetails(true);
-    }
-
-    /**
-     * Sets the event details from a summary.
-     */
-    public void setContentSummary(EventSummary obj)
-    {
-        super.setContentSummary(obj);
-        setStartDate(obj.getStartDate());
-        setEndDate(obj.getEndDate());
-        setUrl(new String(obj.getUrl()), false);
+        if(obj != null)
+        {
+            setTeaserDetails(obj);
+            setTimeZone(new String(obj.getTimeZone() != null ? obj.getTimeZone() : ""));
+            setLocation(new String(obj.getLocation() != null ? obj.getLocation() : ""));
+            setConfigured(true);
+        }
     }
 
     /**
@@ -341,7 +340,7 @@ public class EventResource extends Resource
      */
     public Instant getStartDate()
     {
-        return details.getStartDate();
+        return getDetails().getStartDate();
     }
 
     /**
@@ -381,7 +380,7 @@ public class EventResource extends Resource
      */
     public void setStartDate(Instant startDate)
     {
-        details.setStartDate(startDate);
+        getDetails().setStartDate(startDate);
     }
 
     /**
@@ -423,7 +422,7 @@ public class EventResource extends Resource
      */
     public Instant getEndDate()
     {
-        return details.getEndDate();
+        return getDetails().getEndDate();
     }
 
     /**
@@ -463,7 +462,7 @@ public class EventResource extends Resource
      */
     public void setEndDate(Instant endDate)
     {
-        details.setEndDate(endDate);
+        getDetails().setEndDate(endDate);
     }
 
     /**
@@ -505,7 +504,7 @@ public class EventResource extends Resource
      */
     public String getTimeZone()
     {
-        return details.getTimeZone();
+        return getDetails().getTimeZone();
     }
 
     /**
@@ -513,7 +512,7 @@ public class EventResource extends Resource
      */
     public void setTimeZone(String timezone)
     {
-        details.setTimeZone(timezone);
+        getDetails().setTimeZone(timezone);
     }
 
     /**
@@ -521,7 +520,7 @@ public class EventResource extends Resource
      */
     public String getLocation()
     {
-        return details.getLocation();
+        return getDetails().getLocation();
     }
 
     /**
@@ -529,6 +528,6 @@ public class EventResource extends Resource
      */
     public void setLocation(String location)
     {
-        details.setLocation(location);
+        getDetails().setLocation(location);
     }
 }

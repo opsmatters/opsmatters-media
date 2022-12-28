@@ -39,16 +39,14 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupArticle extends Article implements LinkedContent
+public class RoundupArticle extends Article<RoundupTeaser,RoundupDetails> implements LinkedContent
 {
-    private RoundupDetails details = new RoundupDetails();
-
     /**
      * Default constructor.
      */
     public RoundupArticle()
     {
-        setContentDetails(details);
+        setDetails(new RoundupDetails());
     }
 
     /**
@@ -69,19 +67,19 @@ public class RoundupArticle extends Article implements LinkedContent
         init();
         setSiteId(site.getId());
         setCode(code);
-        setRoundupDetails(obj);
+        setContentDetails(obj);
     }
 
     /**
-     * Constructor that takes a roundup summary.
+     * Constructor that takes a roundup teaser.
      */
-    public RoundupArticle(Site site, String code, RoundupSummary obj)
+    public RoundupArticle(Site site, String code, RoundupTeaser obj)
     {
         this();
         init();
         setSiteId(site.getId());
         setCode(code);
-        setContentSummary(obj);
+        setTeaserDetails(obj);
     }
 
     /**
@@ -90,8 +88,7 @@ public class RoundupArticle extends Article implements LinkedContent
     public void copyAttributes(RoundupArticle obj)
     {
         super.copyAttributes(obj);
-
-        setRoundupDetails(obj.getRoundupDetails());
+        setContentDetails(obj.getDetails());
     }
 
     /**
@@ -307,33 +304,31 @@ public class RoundupArticle extends Article implements LinkedContent
     }
 
     /**
-     * Returns the roundup details.
+     * Sets the roundup details from a teaser.
      */
-    public RoundupDetails getRoundupDetails()
+    @Override
+    public void setTeaserDetails(RoundupTeaser obj)
     {
-        return details;
+        super.setTeaserDetails(obj);
+
+        if(obj != null)
+        {
+            setUrl(new String(obj.getUrl()), false);
+            setImageSource(new String(obj.getImageSource() != null ? obj.getImageSource() : ""));
+            setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
+            setAuthor(new String(obj.getAuthor() != null ? obj.getAuthor() : ""));
+            setAuthorLink(new String(obj.getAuthorLink() != null ? obj.getAuthorLink() : ""));
+        }
     }
 
     /**
      * Sets the roundup details.
      */
-    public void setRoundupDetails(RoundupDetails obj)
+    @Override
+    public void setContentDetails(RoundupDetails obj)
     {
-        setContentSummary(obj);
-        setContentDetails(true);
-    }
-
-    /**
-     * Sets the roundup details from a summary.
-     */
-    public void setContentSummary(RoundupSummary obj)
-    {
-        super.setContentSummary(obj);
-        setUrl(new String(obj.getUrl()), false);
-        setImageSource(new String(obj.getImageSource() != null ? obj.getImageSource() : ""));
-        setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
-        setAuthor(new String(obj.getAuthor() != null ? obj.getAuthor() : ""));
-        setAuthorLink(new String(obj.getAuthorLink() != null ? obj.getAuthorLink() : ""));
+        setTeaserDetails(obj);
+        setConfigured(true);
     }
 
     /**
@@ -341,7 +336,7 @@ public class RoundupArticle extends Article implements LinkedContent
      */
     public String getUrl()
     {
-        return details.getUrl();
+        return getDetails().getUrl();
     }
 
     /**
@@ -357,7 +352,7 @@ public class RoundupArticle extends Article implements LinkedContent
      */
     public void setUrl(String url, boolean removeParameters)
     {
-        details.setUrl(url, removeParameters);
+        getDetails().setUrl(url, removeParameters);
     }
 
     /**
@@ -365,7 +360,7 @@ public class RoundupArticle extends Article implements LinkedContent
      */
     public boolean hasUrl()
     {
-        return details.hasUrl();
+        return getDetails().hasUrl();
     }
 
     /**
@@ -374,7 +369,7 @@ public class RoundupArticle extends Article implements LinkedContent
     @Override
     public String getImageSource()
     {
-        return details.getImageSource();
+        return getDetails().getImageSource();
     }
 
     /**
@@ -382,7 +377,7 @@ public class RoundupArticle extends Article implements LinkedContent
      */
     public void setImageSource(String imageSource)
     {
-        details.setImageSource(imageSource);
+        getDetails().setImageSource(imageSource);
     }
 
     /**
@@ -391,7 +386,7 @@ public class RoundupArticle extends Article implements LinkedContent
     @Override
     public boolean hasImageSource()
     {
-        return details.hasImageSource();
+        return getDetails().hasImageSource();
     }
 
     /**
@@ -400,7 +395,7 @@ public class RoundupArticle extends Article implements LinkedContent
     @Override
     public String getImage()
     {
-        return details.getImage();
+        return getDetails().getImage();
     }
 
     /**
@@ -409,7 +404,7 @@ public class RoundupArticle extends Article implements LinkedContent
     @Override
     public void setImage(String image)
     {
-        details.setImage(image);
+        getDetails().setImage(image);
     }
 
     /**
@@ -418,7 +413,7 @@ public class RoundupArticle extends Article implements LinkedContent
     @Override
     public void setImageFromPath(String prefix, String path)
     {
-        details.setImageFromPath(prefix, path);
+        getDetails().setImageFromPath(prefix, path);
     }
 
     /**
@@ -427,7 +422,7 @@ public class RoundupArticle extends Article implements LinkedContent
     @Override
     public boolean hasImage()
     {
-        return details.hasImage();
+        return getDetails().hasImage();
     }
 
     /**
@@ -435,7 +430,7 @@ public class RoundupArticle extends Article implements LinkedContent
      */
     public String getAuthor()
     {
-        return details.getAuthor();
+        return getDetails().getAuthor();
     }
 
     /**
@@ -443,7 +438,7 @@ public class RoundupArticle extends Article implements LinkedContent
      */
     public void setAuthor(String author)
     {
-        details.setAuthor(author);
+        getDetails().setAuthor(author);
     }
 
     /**
@@ -459,7 +454,7 @@ public class RoundupArticle extends Article implements LinkedContent
      */
     public String getAuthorLink()
     {
-        return details.getAuthorLink();
+        return getDetails().getAuthorLink();
     }
 
     /**
@@ -467,7 +462,7 @@ public class RoundupArticle extends Article implements LinkedContent
      */
     public void setAuthorLink(String authorLink)
     {
-        details.setAuthorLink(authorLink);
+        getDetails().setAuthorLink(authorLink);
     }
 
     /**

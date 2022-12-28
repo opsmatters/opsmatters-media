@@ -15,27 +15,27 @@
  */
 package com.opsmatters.media.model.content.roundup;
 
-import com.opsmatters.media.model.content.ArticleSummary;
+import com.opsmatters.media.model.content.ArticleTeaser;
 import com.opsmatters.media.model.content.LinkedContent;
 import com.opsmatters.media.util.FormatUtils;
 
 /**
- * Class representing a roundup summary.
+ * Class representing a roundup teaser.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupSummary extends ArticleSummary implements LinkedContent
+public class RoundupTeaser extends ArticleTeaser implements LinkedContent
 {
     private String url = "";
 
     /**
      * Default constructor.
      */
-    public RoundupSummary()
+    public RoundupTeaser()
     {
     }
 
-    public RoundupSummary(String url, boolean removeParameters)
+    public RoundupTeaser(String url, boolean removeParameters)
     {
         setUrl(url, removeParameters);
     }
@@ -43,7 +43,7 @@ public class RoundupSummary extends ArticleSummary implements LinkedContent
     /**
      * Copy constructor.
      */
-    public RoundupSummary(RoundupSummary obj)
+    public RoundupTeaser(RoundupTeaser obj)
     {
         super(obj);
 

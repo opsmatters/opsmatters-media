@@ -54,7 +54,7 @@ import com.opsmatters.media.model.content.crawler.field.FieldFilter;
 import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.crawler.parser.ElementType;
 import com.opsmatters.media.model.admin.TraceObject;
-import com.opsmatters.media.model.content.ContentSummary;
+import com.opsmatters.media.model.content.ContentTeaser;
 import com.opsmatters.media.util.FormatUtils;
 
 /**
@@ -62,7 +62,7 @@ import com.opsmatters.media.util.FormatUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCrawler<T>
+public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentTeaser> extends ContentCrawler<T,D>
 {
     private static final Logger logger = Logger.getLogger(WebPageCrawler.class.getName());
 
@@ -455,14 +455,9 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
     }
 
     /**
-     * Create a teaser from the selected node.
+     * Create a teaser from the given element.
      */
     protected abstract T getTeaser(Element result, Fields fields) throws DateTimeParseException;
-
-    /**
-     * Returns the processed content item derived from the given teaser.
-     */
-    public abstract T getContent(T summary) throws IOException;
 
     /**
      * Process the configured teasers.
@@ -480,10 +475,10 @@ public abstract class WebPageCrawler<T extends ContentSummary> extends ContentCr
                 throw new IllegalArgumentException("Root empty for teasers");
 
             // Try to get the teasers from the cache
-            List<ContentSummary> teasers = Teasers.get(config.getCode(), url);
+            List<ContentTeaser> teasers = Teasers.get(config.getCode(), url);
             if(teasers != null)
             {
-                for(ContentSummary teaser : teasers)
+                for(ContentTeaser teaser : teasers)
                     addTeaser((T)teaser);
                 ret += numTeasers();
                 if(debug())

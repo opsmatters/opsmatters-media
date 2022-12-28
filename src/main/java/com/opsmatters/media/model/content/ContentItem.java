@@ -40,12 +40,13 @@ import static com.opsmatters.media.model.content.ContentStatus.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ContentItem implements java.io.Serializable
+public abstract class ContentItem<T extends ContentTeaser, D extends ContentTeaser>
+    implements java.io.Serializable
 {
     public static final String EMPTY = "-";
 
-    private ContentSummary details;
-    private boolean detailsSet = false;
+    private D details;
+    private boolean configured = false;
 
     private String uuid = "";
     private String siteId = "";
@@ -205,9 +206,9 @@ public abstract class ContentItem implements java.io.Serializable
     public abstract ContentType getType();
 
     /**
-     * Sets the details from a summary.
+     * Sets the details from a teaser.
      */
-    public void setContentSummary(ContentSummary obj)
+    public void setTeaserDetails(T obj)
     {
         if(obj != null)
         {
@@ -218,25 +219,16 @@ public abstract class ContentItem implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if the details have been set.
+     * Sets the content details.
      */
-    public boolean hasContentDetails()
+    public void setContentDetails(D obj)
     {
-        return detailsSet;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the details have been set.
-     */
-    public void setContentDetails(boolean detailsSet)
-    {
-        this.detailsSet = detailsSet;
     }
 
     /**
      * Returns the content details.
      */
-    public ContentSummary getContentDetails()
+    public D getDetails()
     {
         return details;
     }
@@ -244,9 +236,25 @@ public abstract class ContentItem implements java.io.Serializable
     /**
      * Set the content details.
      */
-    protected void setContentDetails(ContentSummary details)
+    protected void setDetails(D details)
     {
         this.details = details;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the details have been configured.
+     */
+    public boolean isConfigured()
+    {
+        return configured;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the details have been configured.
+     */
+    public void setConfigured(boolean configured)
+    {
+        this.configured = configured;
     }
 
     /**

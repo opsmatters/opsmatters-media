@@ -36,9 +36,8 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class PublicationResource extends Resource
+public abstract class PublicationResource extends Resource<PublicationTeaser,PublicationDetails>
 {
-    private PublicationDetails details = new PublicationDetails();
     private String tags = "";
     private String creatorEmail = "";
 
@@ -47,7 +46,7 @@ public abstract class PublicationResource extends Resource
      */
     public PublicationResource()
     {
-        setContentDetails(details);
+        setDetails(new PublicationDetails());
     }
 
     /**
@@ -56,8 +55,7 @@ public abstract class PublicationResource extends Resource
     public void copyAttributes(PublicationResource obj)
     {
         super.copyAttributes(obj);
-
-        setPublicationDetails(obj.getPublicationDetails());
+        setContentDetails(obj.getDetails());
         setTags(new String(obj.getTags() != null ? obj.getTags() : ""));
         setCreatorEmail(new String(obj.getCreatorEmail() != null ? obj.getCreatorEmail() : ""));
     }
@@ -207,31 +205,29 @@ public abstract class PublicationResource extends Resource
     }
 
     /**
-     * Returns the publication details.
+     * Sets the publication details from a teaser.
      */
-    public PublicationDetails getPublicationDetails()
+    @Override
+    public void setTeaserDetails(PublicationTeaser obj)
     {
-        return details;
+        super.setTeaserDetails(obj);
+
+        if(obj != null)
+        {
+            setUrl(new String(obj.getUrl()), false);
+            setImageSource(new String(obj.getImageSource() != null ? obj.getImageSource() : ""));
+            setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
+        }
     }
 
     /**
      * Sets the publication details.
      */
-    public void setPublicationDetails(PublicationDetails obj)
+    @Override
+    public void setContentDetails(PublicationDetails obj)
     {
-        setContentSummary(obj);
-        setContentDetails(true);
-    }
-
-    /**
-     * Sets the publication details from a summary.
-     */
-    public void setContentSummary(PublicationSummary obj)
-    {
-        super.setContentSummary(obj);
-        setUrl(new String(obj.getUrl()), false);
-        setImageSource(new String(obj.getImageSource() != null ? obj.getImageSource() : ""));
-        setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
+        setTeaserDetails(obj);
+        setConfigured(true);
     }
 
     /**
@@ -288,7 +284,7 @@ public abstract class PublicationResource extends Resource
     @Override
     public String getImage()
     {
-        return details.getImage();
+        return getDetails().getImage();
     }
 
     /**
@@ -297,7 +293,7 @@ public abstract class PublicationResource extends Resource
     @Override
     public void setImage(String image)
     {
-        details.setImage(image);
+        getDetails().setImage(image);
     }
 
     /**
@@ -306,7 +302,7 @@ public abstract class PublicationResource extends Resource
     @Override
     public void setImageFromPath(String prefix, String path)
     {
-        details.setImageFromPath(prefix, path);
+        getDetails().setImageFromPath(prefix, path);
     }
 
     /**
@@ -315,7 +311,7 @@ public abstract class PublicationResource extends Resource
     @Override
     public boolean hasImage()
     {
-        return details.hasImage();
+        return getDetails().hasImage();
     }
 
     /**
@@ -324,7 +320,7 @@ public abstract class PublicationResource extends Resource
     @Override
     public String getImageSource()
     {
-        return details.getImageSource();
+        return getDetails().getImageSource();
     }
 
     /**
@@ -332,7 +328,7 @@ public abstract class PublicationResource extends Resource
      */
     public void setImageSource(String imageSource)
     {
-        details.setImageSource(imageSource);
+        getDetails().setImageSource(imageSource);
     }
 
     /**
@@ -341,7 +337,7 @@ public abstract class PublicationResource extends Resource
     @Override
     public boolean hasImageSource()
     {
-        return details.hasImageSource();
+        return getDetails().hasImageSource();
     }
 
     /**

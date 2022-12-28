@@ -37,9 +37,8 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PostArticle extends Article
+public class PostArticle extends Article<PostTeaser,PostDetails>
 {
-    private PostDetails details = new PostDetails();
     private String urlAlias = "";
     private String basePath = "";
 
@@ -48,7 +47,7 @@ public class PostArticle extends Article
      */
     public PostArticle()
     {
-        setContentDetails(details);
+        setDetails(new PostDetails());
     }
 
     /**
@@ -69,19 +68,19 @@ public class PostArticle extends Article
         init();
         setSiteId(site.getId());
         setCode(code);
-        setPostDetails(obj);
+        setContentDetails(obj);
     }
 
     /**
      * Constructor that takes a post summary.
      */
-    public PostArticle(Site site, String code, PostSummary obj)
+    public PostArticle(Site site, String code, PostTeaser obj)
     {
         this();
         init();
         setSiteId(site.getId());
         setCode(code);
-        setContentSummary(obj);
+        setTeaserDetails(obj);
     }
 
     /**
@@ -90,8 +89,7 @@ public class PostArticle extends Article
     public void copyAttributes(PostArticle obj)
     {
         super.copyAttributes(obj);
-
-        setPostDetails(obj.getPostDetails());
+        setContentDetails(obj.getDetails());
         setBasePath(obj.getBasePath());
         setUrlAlias(new String(obj.getUrlAlias() != null ? obj.getUrlAlias() : ""));
     }
@@ -302,33 +300,34 @@ public class PostArticle extends Article
     }
 
     /**
-     * Returns the post details.
+     * Sets the post details from a teaser.
      */
-    public PostDetails getPostDetails()
+    @Override
+    public void setTeaserDetails(PostTeaser obj)
     {
-        return details;
+        super.setTeaserDetails(obj);
+
+        if(obj != null)
+        {
+            setImageSource(new String(obj.getImageSource() != null ? obj.getImageSource() : ""));
+            setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
+            setAuthor(new String(obj.getAuthor() != null ? obj.getAuthor() : ""));
+            setAuthorLink(new String(obj.getAuthorLink() != null ? obj.getAuthorLink() : ""));
+        }
     }
 
     /**
      * Sets the post details.
      */
-    public void setPostDetails(PostDetails obj)
+    @Override
+    public void setContentDetails(PostDetails obj)
     {
-        setContentSummary(obj);
-        setDescription(new String(obj.getDescription() != null ? obj.getDescription() : ""));
-        setContentDetails(true);
-    }
-
-    /**
-     * Sets the post details from a summary.
-     */
-    public void setContentSummary(PostSummary obj)
-    {
-        super.setContentSummary(obj);
-        setImageSource(new String(obj.getImageSource() != null ? obj.getImageSource() : ""));
-        setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
-        setAuthor(new String(obj.getAuthor() != null ? obj.getAuthor() : ""));
-        setAuthorLink(new String(obj.getAuthorLink() != null ? obj.getAuthorLink() : ""));
+        if(obj != null)
+        {
+            setTeaserDetails(obj);
+            setDescription(new String(obj.getDescription() != null ? obj.getDescription() : ""));
+            setConfigured(true);
+        }
     }
 
     /**
@@ -336,7 +335,7 @@ public class PostArticle extends Article
      */
     public String getDescription()
     {
-        return details.getDescription();
+        return getDetails().getDescription();
     }
 
     /**
@@ -344,7 +343,7 @@ public class PostArticle extends Article
      */
     public void setDescription(String description)
     {
-        details.setDescription(description);
+        getDetails().setDescription(description);
     }
 
     /**
@@ -353,7 +352,7 @@ public class PostArticle extends Article
     @Override
     public String getImage()
     {
-        return details.getImage();
+        return getDetails().getImage();
     }
 
     /**
@@ -362,7 +361,7 @@ public class PostArticle extends Article
     @Override
     public void setImage(String image)
     {
-        details.setImage(image);
+        getDetails().setImage(image);
     }
 
     /**
@@ -371,7 +370,7 @@ public class PostArticle extends Article
     @Override
     public void setImageFromPath(String prefix, String path)
     {
-        details.setImageFromPath(prefix, path);
+        getDetails().setImageFromPath(prefix, path);
     }
 
     /**
@@ -380,7 +379,7 @@ public class PostArticle extends Article
     @Override
     public boolean hasImage()
     {
-        return details.hasImage();
+        return getDetails().hasImage();
     }
 
     /**
@@ -391,7 +390,7 @@ public class PostArticle extends Article
     @Override
     public String getImageSource()
     {
-        return details.getImageSource();
+        return getDetails().getImageSource();
     }
 
     /**
@@ -399,7 +398,7 @@ public class PostArticle extends Article
      */
     public void setImageSource(String imageSource)
     {
-        details.setImageSource(imageSource);
+        getDetails().setImageSource(imageSource);
     }
 
     /**
@@ -410,7 +409,7 @@ public class PostArticle extends Article
     @Override
     public boolean hasImageSource()
     {
-        return details.hasImageSource();
+        return getDetails().hasImageSource();
     }
 
     /**
@@ -496,7 +495,7 @@ public class PostArticle extends Article
      */
     public String getAuthor()
     {
-        return details.getAuthor();
+        return getDetails().getAuthor();
     }
 
     /**
@@ -504,7 +503,7 @@ public class PostArticle extends Article
      */
     public void setAuthor(String author)
     {
-        details.setAuthor(author);
+        getDetails().setAuthor(author);
     }
 
     /**
@@ -512,7 +511,7 @@ public class PostArticle extends Article
      */
     public String getAuthorLink()
     {
-        return details.getAuthorLink();
+        return getDetails().getAuthorLink();
     }
 
     /**
@@ -520,7 +519,7 @@ public class PostArticle extends Article
      */
     public void setAuthorLink(String authorLink)
     {
-        details.setAuthorLink(authorLink);
+        getDetails().setAuthorLink(authorLink);
     }
 
     /**

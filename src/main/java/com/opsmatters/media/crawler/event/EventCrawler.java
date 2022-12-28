@@ -24,7 +24,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import com.opsmatters.media.crawler.WebPageCrawler;
-import com.opsmatters.media.model.content.event.EventSummary;
+import com.opsmatters.media.model.content.event.EventTeaser;
 import com.opsmatters.media.model.content.event.EventDetails;
 import com.opsmatters.media.model.content.event.EventConfig;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
@@ -42,7 +42,7 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EventCrawler extends WebPageCrawler<EventSummary>
+public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
 {
     private static final Logger logger = Logger.getLogger(EventCrawler.class.getName());
 
@@ -51,7 +51,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
     /**
      * Constructor that takes a web page configuration.
      */
-    public EventCrawler(EventConfig config,CrawlerWebPage page)
+    public EventCrawler(EventConfig config, CrawlerWebPage page)
     {
         super(config, page);
         this.config = config;
@@ -66,50 +66,49 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
     }
 
     /**
-     * Create an event teaser from the selected node.
+     * Create an event teaser from the given element.
      */
     @Override
-    protected EventSummary getTeaser(Element root, Fields fields)
+    protected EventTeaser getTeaser(Element root, Fields fields)
         throws DateTimeParseException
     {
-        EventSummary content = new EventSummary();
+        EventTeaser teaser = new EventTeaser();
         if(fields.hasValidator())
-            validateContent(content, fields.getValidator(), root, "teaser");
-        if(content.isValid())
+            validateContent(teaser, fields.getValidator(), root, "teaser");
+        if(teaser.isValid())
         {
             if(debug() && fields.hasValidator())
                 logger.info("Validated event content: "+fields.getValidator());
-            populateSummaryFields(root, fields, content, "teaser");
+            populateTeaserFields(root, fields, teaser, "teaser");
             if(fields.hasUrl())
             {
                 Field field = fields.getUrl();
                 String url = getAnchor(field, root, "teaser", field.removeParameters());
                 if(url != null)
-                    content.setUrl(url, field.removeParameters());
+                    teaser.setUrl(url, field.removeParameters());
             }
         }
 
-        return content;
+        return teaser;
     }
 
     /**
-     * Create an event content item from the given url.
+     * Create event details from the given url.
      */
-    @Override
-    public EventDetails getContent(String url)
+    public EventDetails getDetails(String url)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        return getContent(new EventSummary(url, removeParameters()));
+        return getDetails(new EventTeaser(url, removeParameters()));
     }
 
     /**
-     * Populate the given event content.
+     * Returns the processed event derived from the given teaser.
      */
     @Override
-    public EventDetails getContent(EventSummary summary)
+    public EventDetails getDetails(EventTeaser teaser)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        EventDetails content = new EventDetails(summary);
+        EventDetails content = new EventDetails(teaser);
         List<Fields> articles = getPage().getArticles().getFields(hasRootError());
 
         loadArticlePage(content.getUrl());
@@ -133,7 +132,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
                 root = elements.get(0);
                 if(debug())
                     logger.info("Root found for event content: "+fields.getRoot());
-                populateSummaryFields(root, fields, content, "content");
+                populateTeaserFields(root, fields, content, "content");
             }
             else
             {
@@ -233,10 +232,9 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
     }
 
     /**
-     * Populate the content fields from the given node.
+     * Populate the teaser fields from the given element.
      */
-    private void populateSummaryFields(Element root, 
-        Fields fields, EventSummary content, String type)
+    private void populateTeaserFields(Element root,  Fields fields, EventTeaser teaser, String type)
         throws DateTimeParseException
     {
         if(fields.hasTitle())
@@ -250,13 +248,13 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
                 {
                     if(debug())
                         logger.info("Adding organisation to event title: "+config.getName());
-                    content.setTitle(String.format("%s: %s", config.getName(), title));
+                    teaser.setTitle(String.format("%s: %s", config.getName(), title));
                     if(debug())
-                        logger.info("Added organisation to event title: "+content.getTitle());
+                        logger.info("Added organisation to event title: "+teaser.getTitle());
                 }
                 else
                 {
-                    content.setTitle(title);
+                    teaser.setTitle(title);
                 }
             }
         }
@@ -278,7 +276,7 @@ public class EventCrawler extends WebPageCrawler<EventSummary>
                     {
                         try
                         {
-                            content.setStartDateAsString(startDate, datePattern);
+                            teaser.setStartDateAsString(startDate, datePattern);
                             ex = null;
                             break;
                         }

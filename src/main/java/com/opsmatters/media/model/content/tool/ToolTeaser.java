@@ -13,29 +13,61 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.content.post;
+package com.opsmatters.media.model.content.tool;
 
-import com.opsmatters.media.model.content.ArticleSummary;
+import com.opsmatters.media.model.content.ResourceTeaser;
 
 /**
- * Class representing a post summary.
+ * Class representing a tool teaser.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PostSummary extends ArticleSummary
+public class ToolTeaser extends ResourceTeaser
 {
+    private String pricing = "";
+
     /**
      * Default constructor.
      */
-    public PostSummary()
+    public ToolTeaser()
     {
     }
 
     /**
      * Copy constructor.
      */
-    public PostSummary(PostSummary obj)
+    public ToolTeaser(ToolTeaser obj)
     {
         super(obj);
+
+        if(obj != null)
+        {
+            setUrl(obj.getUrl());
+            setPricing(obj.getPricing());
+        }
+    }
+
+    /**
+     * Sets the tool url.
+     */
+    public void setUrl(String url)
+    {
+        setUrl("", url, true);
+    }
+
+    /**
+     * Returns the tool pricing.
+     */
+    public String getPricing()
+    {
+        return pricing;
+    }
+
+    /**
+     * Sets the tool pricing.
+     */
+    public void setPricing(String pricing)
+    {
+        this.pricing = pricing;
     }
 }

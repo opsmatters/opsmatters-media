@@ -29,7 +29,7 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.WordUtils;
-import com.opsmatters.media.model.content.ContentSummary;
+import com.opsmatters.media.model.content.ContentTeaser;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerTarget;
 import com.opsmatters.media.model.content.crawler.field.Field;
@@ -43,7 +43,7 @@ import com.opsmatters.media.model.content.crawler.field.FieldExtractor;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ContentCrawler<T extends ContentSummary>
+public abstract class ContentCrawler<T extends ContentTeaser, D extends ContentTeaser>
 {
     private static final Logger logger = Logger.getLogger(ContentCrawler.class.getName());
 
@@ -153,9 +153,9 @@ public abstract class ContentCrawler<T extends ContentSummary>
     }
 
     /**
-     * Returns the processed content item.
+     * Returns the processed content details from the given teaser.
      */
-    public abstract T getContent(String id) throws IOException;
+    public abstract D getDetails(T teaser) throws IOException;
 
     /**
      * Returns <CODE>true</CODE> if the root needs to be replaced following an error.

@@ -20,7 +20,7 @@ package com.opsmatters.media.model.content.job;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class JobDetails extends JobSummary
+public class JobDetails extends JobTeaser
 {
     private String website = "";
     private String contact = "";
@@ -35,7 +35,21 @@ public class JobDetails extends JobSummary
     /**
      * Copy constructor.
      */
-    public JobDetails(JobSummary obj)
+    public JobDetails(JobDetails obj)
+    {
+        super(obj);
+
+        if(obj != null)
+        {
+            setWebsite(obj.getWebsite());
+            setContact(obj.getContact());
+        }
+    }
+
+    /**
+     * Constructor that takes a teaser.
+     */
+    public JobDetails(JobTeaser obj)
     {
         super(obj);
     }

@@ -23,11 +23,11 @@ import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.FormatUtils;
 
 /**
- * Class representing a content item summary.
+ * Class representing a content teaser.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ContentSummary implements java.io.Serializable
+public abstract class ContentTeaser implements java.io.Serializable
 {
     private String uuid = "";
     private String title = "";
@@ -40,14 +40,14 @@ public abstract class ContentSummary implements java.io.Serializable
     /**
      * Default constructor.
      */
-    public ContentSummary()
+    public ContentTeaser()
     {
     }
 
     /**
      * Copy constructor.
      */
-    public ContentSummary(ContentSummary obj)
+    public ContentTeaser(ContentTeaser obj)
     {
         if(obj != null)
         {

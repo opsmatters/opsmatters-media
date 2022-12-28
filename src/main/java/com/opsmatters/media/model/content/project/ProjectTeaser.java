@@ -13,61 +13,72 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.content.tool;
+package com.opsmatters.media.model.content.project;
 
-import com.opsmatters.media.model.content.ResourceSummary;
+import com.opsmatters.media.util.FormatUtils;
+
+import com.opsmatters.media.model.content.ResourceTeaser;
 
 /**
- * Class representing a tool summary.
+ * Class representing a project teaser.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ToolSummary extends ResourceSummary
+public class ProjectTeaser extends ResourceTeaser
 {
-    private String pricing = "";
+    private String founded = "";
+    private String license = "";
 
     /**
      * Default constructor.
      */
-    public ToolSummary()
+    public ProjectTeaser()
     {
     }
 
     /**
      * Copy constructor.
      */
-    public ToolSummary(ToolSummary obj)
+    public ProjectTeaser(ProjectTeaser obj)
     {
         super(obj);
 
         if(obj != null)
         {
-            setUrl(obj.getUrl());
-            setPricing(obj.getPricing());
+            setFounded(obj.getFounded());
+            setLicense(obj.getLicense());
         }
     }
 
     /**
-     * Sets the tool url.
+     * Returns the project license.
      */
-    public void setUrl(String url)
+    public String getLicense()
     {
-        setUrl("", url, true);
+        return license;
     }
 
     /**
-     * Returns the tool pricing.
+     * Sets the project license.
      */
-    public String getPricing()
+    public void setLicense(String license)
     {
-        return pricing;
+        this.license = license;
     }
 
     /**
-     * Sets the tool pricing.
+     * Returns the project founded year.
      */
-    public void setPricing(String pricing)
+    public String getFounded()
     {
-        this.pricing = pricing;
+        return founded;
+    }
+
+    /**
+     * Sets the project founded year.
+     */
+    public void setFounded(String founded)
+    {
+        this.founded = founded;
     }
 }

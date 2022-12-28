@@ -20,7 +20,7 @@ package com.opsmatters.media.model.content.post;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PostDetails extends PostSummary
+public class PostDetails extends PostTeaser
 {
     private String description = "";
 
@@ -34,7 +34,20 @@ public class PostDetails extends PostSummary
     /**
      * Copy constructor.
      */
-    public PostDetails(PostSummary obj)
+    public PostDetails(PostDetails obj)
+    {
+        super(obj);
+
+        if(obj != null)
+        {
+            setDescription(obj.getDescription());
+        }
+    }
+
+    /**
+     * Constructor that takes a teaser.
+     */
+    public PostDetails(PostTeaser obj)
     {
         super(obj);
     }

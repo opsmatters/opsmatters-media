@@ -20,7 +20,7 @@ package com.opsmatters.media.model.content.tool;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ToolDetails extends ToolSummary
+public class ToolDetails extends ToolTeaser
 {
     private String website = "";
     private String download = "";
@@ -35,7 +35,21 @@ public class ToolDetails extends ToolSummary
     /**
      * Copy constructor.
      */
-    public ToolDetails(ToolSummary obj)
+    public ToolDetails(ToolDetails obj)
+    {
+        super(obj);
+
+        if(obj != null)
+        {
+            setWebsite(obj.getWebsite());
+            setDownload(obj.getDownload());
+        }
+    }
+
+    /**
+     * Constructor that takes a teaser.
+     */
+    public ToolDetails(ToolTeaser obj)
     {
         super(obj);
     }
