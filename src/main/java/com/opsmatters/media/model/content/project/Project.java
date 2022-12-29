@@ -32,24 +32,24 @@ import com.opsmatters.media.util.StringUtils;
 import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
- * Class representing a project resource.
+ * Class representing an open source project.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ProjectResource extends Resource<ProjectTeaser,ProjectDetails>
+public class Project extends Resource<ProjectTeaser,ProjectDetails>
 {
     /**
      * Default constructor.
      */
-    public ProjectResource()
+    public Project()
     {
         setDetails(new ProjectDetails());
     }
 
     /**
-     * Constructor that takes a project resource.
+     * Constructor that takes a project.
      */
-    public ProjectResource(ProjectResource obj)
+    public Project(Project obj)
     {
         this();
         copyAttributes(obj);
@@ -58,7 +58,7 @@ public class ProjectResource extends Resource<ProjectTeaser,ProjectDetails>
     /**
      * Constructor that takes a project.
      */
-    public ProjectResource(Site site, String code, ProjectDetails obj)
+    public Project(Site site, String code, ProjectDetails obj)
     {
         this();
         init();
@@ -70,7 +70,7 @@ public class ProjectResource extends Resource<ProjectTeaser,ProjectDetails>
     /**
      * Constructor that takes a project summary.
      */
-    public ProjectResource(Site site, String code, ProjectTeaser obj)
+    public Project(Site site, String code, ProjectTeaser obj)
     {
         this();
         init();
@@ -82,7 +82,7 @@ public class ProjectResource extends Resource<ProjectTeaser,ProjectDetails>
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ProjectResource obj)
+    public void copyAttributes(Project obj)
     {
         super.copyAttributes(obj);
         setContentDetails(obj.getDetails());
@@ -91,7 +91,7 @@ public class ProjectResource extends Resource<ProjectTeaser,ProjectDetails>
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public ProjectResource(Site site, String code, String[] values) throws DateTimeParseException
+    public Project(Site site, String code, String[] values) throws DateTimeParseException
     {
         this();
         init();
@@ -137,7 +137,7 @@ public class ProjectResource extends Resource<ProjectTeaser,ProjectDetails>
     /**
      * Constructor that takes a JSON object.
      */
-    public ProjectResource(JSONObject obj)
+    public Project(JSONObject obj)
     {
         this();
         fromJson(obj);
@@ -176,7 +176,7 @@ public class ProjectResource extends Resource<ProjectTeaser,ProjectDetails>
     }
 
     /**
-     * Returns the set of output fields from the resource.
+     * Returns the set of output fields from the project.
      */
     @Override
     public FieldMap toFields()
@@ -194,25 +194,25 @@ public class ProjectResource extends Resource<ProjectTeaser,ProjectDetails>
     }
 
     /**
-     * Returns a new resource with defaults.
+     * Returns a new project with defaults.
      */
-    public static ProjectResource getDefault(Organisation organisation, OrganisationSite organisationSite, ProjectConfig config)
+    public static Project getDefault(Organisation organisation, OrganisationSite organisationSite, ProjectConfig config)
         throws DateTimeParseException
     {
-        ProjectResource resource = new ProjectResource();
+        Project project = new Project();
 
-        resource.init();
-        resource.setSiteId(organisationSite.getSiteId());
-        resource.setTitle("New Project");
-        resource.setDescription(StringUtils.EMPTY);
-        resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
-        resource.setFounded(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
+        project.init();
+        project.setSiteId(organisationSite.getSiteId());
+        project.setTitle("New Project");
+        project.setDescription(StringUtils.EMPTY);
+        project.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        project.setFounded(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
 
-        return resource;
+        return project;
     }
 
     /**
-     * Use the given configuration to set defaults for the resource.
+     * Use the given configuration to set defaults for the project.
      */
     public void init(Organisation organisation, OrganisationSite organisationSite, ProjectConfig config)
     {
@@ -223,7 +223,7 @@ public class ProjectResource extends Resource<ProjectTeaser,ProjectDetails>
     }
 
     /**
-     * Prepare the fields in the resource using the given configuration.
+     * Prepare the fields in the project using the given configuration.
      */
     public void prepare(ProjectConfig config, boolean debug) throws DateTimeParseException
     {

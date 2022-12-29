@@ -26,7 +26,7 @@ import com.opsmatters.media.db.dao.content.event.EventDAO;
 import com.opsmatters.media.db.dao.content.publication.WhitePaperResourceDAO;
 import com.opsmatters.media.db.dao.content.publication.EBookResourceDAO;
 import com.opsmatters.media.db.dao.content.post.PostDAO;
-import com.opsmatters.media.db.dao.content.project.ProjectResourceDAO;
+import com.opsmatters.media.db.dao.content.project.ProjectDAO;
 import com.opsmatters.media.db.dao.content.tool.ToolResourceDAO;
 import com.opsmatters.media.db.dao.content.job.JobResourceDAO;
 
@@ -54,7 +54,7 @@ public class ContentDAOFactory extends DAOFactory
         getWhitePaperResourceDAO();
         getEBookResourceDAO();
         getToolResourceDAO();
-        getProjectResourceDAO();
+        getProjectDAO();
         getJobResourceDAO();
     }
 
@@ -149,13 +149,13 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the ProjectResource DAO.
+     * Returns the Project DAO.
      */
-    public ProjectResourceDAO getProjectResourceDAO()
+    public ProjectDAO getProjectDAO()
     {
-        if(projectResourceDAO == null)
-            projectResourceDAO = new ProjectResourceDAO(this);
-        return projectResourceDAO;
+        if(projectDAO == null)
+            projectDAO = new ProjectDAO(this);
+        return projectDAO;
     }
 
     /**
@@ -184,7 +184,7 @@ public class ContentDAOFactory extends DAOFactory
         whitePaperResourceDAO = null;
         ebookResourceDAO = null;
         toolResourceDAO = null;
-        projectResourceDAO = null;
+        projectDAO = null;
         jobResourceDAO = null;
     }
 
@@ -197,6 +197,6 @@ public class ContentDAOFactory extends DAOFactory
     private WhitePaperResourceDAO whitePaperResourceDAO;
     private EBookResourceDAO ebookResourceDAO;
     private ToolResourceDAO toolResourceDAO;
-    private ProjectResourceDAO projectResourceDAO;
+    private ProjectDAO projectDAO;
     private JobResourceDAO jobResourceDAO;
 }

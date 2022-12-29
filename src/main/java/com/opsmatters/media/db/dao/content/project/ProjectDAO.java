@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentStatus;
-import com.opsmatters.media.model.content.project.ProjectResource;
+import com.opsmatters.media.model.content.project.Project;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
 import com.opsmatters.media.util.AppSession;
@@ -35,9 +35,9 @@ import com.opsmatters.media.util.AppSession;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ProjectResourceDAO extends ContentDAO<ProjectResource>
+public class ProjectDAO extends ContentDAO<Project>
 {
-    private static final Logger logger = Logger.getLogger(ProjectResourceDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(ProjectDAO.class.getName());
 
     /**
      * The query to use to select a project from the PROJECTS table by URL.
@@ -64,7 +64,7 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
     /**
      * Constructor that takes a DAO factory.
      */
-    public ProjectResourceDAO(ContentDAOFactory factory)
+    public ProjectDAO(ContentDAOFactory factory)
     {
         super(factory, "PROJECTS");
     }
@@ -97,9 +97,9 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
     /**
      * Returns a project from the PROJECTS table by URL.
      */
-    public synchronized ProjectResource getByUrl(String siteId, String code, String url) throws SQLException
+    public synchronized Project getByUrl(String siteId, String code, String url) throws SQLException
     {
-        ProjectResource ret = null;
+        Project ret = null;
 
         if(!hasConnection())
             return ret;
@@ -121,7 +121,7 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = new ProjectResource(attributes);
+                ret = new Project(attributes);
                 ret.setSiteId(rs.getString(2));
             }
         }
@@ -145,7 +145,7 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
     /**
      * Stores the given project in the PROJECTS table.
      */
-    public synchronized void add(ProjectResource content) throws SQLException
+    public synchronized void add(Project content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
@@ -203,7 +203,7 @@ public class ProjectResourceDAO extends ContentDAO<ProjectResource>
     /**
      * Updates the given project in the PROJECTS table.
      */
-    public synchronized void update(ProjectResource content) throws SQLException
+    public synchronized void update(Project content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;

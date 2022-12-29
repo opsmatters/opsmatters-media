@@ -28,7 +28,7 @@ import com.opsmatters.media.model.content.ContentConfig;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ProjectConfig extends ContentConfig<ProjectResource>
+public class ProjectConfig extends ContentConfig<Project>
 {
     private static final Logger logger = Logger.getLogger(ProjectConfig.class.getName());
 
