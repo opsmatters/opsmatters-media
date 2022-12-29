@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentStatus;
-import com.opsmatters.media.model.content.video.VideoArticle;
+import com.opsmatters.media.model.content.video.Video;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
 import com.opsmatters.media.util.AppSession;
@@ -38,9 +38,9 @@ import com.opsmatters.media.util.AppSession;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class VideoArticleDAO extends ContentDAO<VideoArticle>
+public class VideoDAO extends ContentDAO<Video>
 {
-    private static final Logger logger = Logger.getLogger(VideoArticleDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(VideoDAO.class.getName());
 
     /**
      * The query to use to select a video from the VIDEOS table by videoId.
@@ -73,7 +73,7 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
     /**
      * Constructor that takes a DAO factory.
      */
-    public VideoArticleDAO(ContentDAOFactory factory)
+    public VideoDAO(ContentDAOFactory factory)
     {
         super(factory, "VIDEOS");
     }
@@ -110,9 +110,9 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
     /**
      * Returns a video from the VIDEOS table by video id.
      */
-    public synchronized VideoArticle getByVideoId(String siteId, String code, String videoId) throws SQLException
+    public synchronized Video getByVideoId(String siteId, String code, String videoId) throws SQLException
     {
-        VideoArticle ret = null;
+        Video ret = null;
 
         if(!hasConnection())
             return ret;
@@ -134,9 +134,9 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                VideoArticle item = new VideoArticle(attributes);
-                item.setSiteId(rs.getString(2));
-                ret = item;
+                Video content = new Video(attributes);
+                content.setSiteId(rs.getString(2));
+                ret = content;
             }
         }
         finally
@@ -159,9 +159,9 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
     /**
      * Returns a list of videos from the VIDEOS table by videoId.
      */
-    public synchronized List<VideoArticle> listByVideoId(String code, String videoId) throws SQLException
+    public synchronized List<Video> listByVideoId(String code, String videoId) throws SQLException
     {
-        List<VideoArticle> ret = null;
+        List<Video> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -179,13 +179,13 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
             listByVideoIdStmt.setString(2, videoId);
             listByVideoIdStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByVideoIdStmt.executeQuery();
-            ret = new ArrayList<VideoArticle>();
+            ret = new ArrayList<Video>();
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                VideoArticle item = new VideoArticle(attributes);
-                item.setSiteId(rs.getString(2));
-                ret.add(item);
+                Video content = new Video(attributes);
+                content.setSiteId(rs.getString(2));
+                ret.add(content);
             }
         }
         finally
@@ -208,7 +208,7 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
     /**
      * Stores the given video in the VIDEOS table.
      */
-    public synchronized void add(VideoArticle content) throws SQLException
+    public synchronized void add(Video content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
@@ -268,7 +268,7 @@ public class VideoArticleDAO extends ContentDAO<VideoArticle>
     /**
      * Updates the given video in the VIDEOS table.
      */
-    public synchronized void update(VideoArticle content) throws SQLException
+    public synchronized void update(Video content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;

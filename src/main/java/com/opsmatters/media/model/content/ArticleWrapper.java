@@ -17,7 +17,7 @@ package com.opsmatters.media.model.content;
 
 import java.time.Instant;
 
-import com.opsmatters.media.model.content.video.VideoArticle;
+import com.opsmatters.media.model.content.video.Video;
 import com.opsmatters.media.model.content.roundup.RoundupArticle;
 import com.opsmatters.media.model.content.post.PostArticle;
 
@@ -154,9 +154,9 @@ public class ArticleWrapper extends Article
             RoundupArticle roundup = (RoundupArticle)article;
             ret = roundup.getUrl();
         }
-        else if(article instanceof VideoArticle)
+        else if(article instanceof Video)
         {
-            VideoArticle video = (VideoArticle)article;
+            Video video = (Video)article;
             ret = video.getVideoUrl();
         }
         else if(article instanceof PostArticle)
@@ -178,9 +178,9 @@ public class ArticleWrapper extends Article
             RoundupArticle roundup = (RoundupArticle)article;
             roundup.setUrl(url);
         }
-        else if(article instanceof VideoArticle)
+        else if(article instanceof Video)
         {
-            VideoArticle video = (VideoArticle)article;
+            Video video = (Video)article;
             video.setVideoId(video.getProvider().getVideoId(url));
         }
         else if(article instanceof PostArticle)
@@ -252,8 +252,8 @@ public class ArticleWrapper extends Article
     public String getVideoId()
     {
         String ret = null;
-        if(article instanceof VideoArticle)
-            ret = ((VideoArticle)article).getVideoId();
+        if(article instanceof Video)
+            ret = ((Video)article).getVideoId();
         return ret;
     }
 
@@ -263,8 +263,8 @@ public class ArticleWrapper extends Article
     public boolean hasVideoId()
     {
         boolean ret = false;
-        if(article instanceof VideoArticle)
-            ret = ((VideoArticle)article).hasVideoId();
+        if(article instanceof Video)
+            ret = ((Video)article).hasVideoId();
         return ret;
     }
 
@@ -274,8 +274,8 @@ public class ArticleWrapper extends Article
     public String getFormattedDuration(boolean replaceZero)
     {
         String ret = null;
-        if(article instanceof VideoArticle)
-            ret = ((VideoArticle)article).getFormattedDuration(replaceZero);
+        if(article instanceof Video)
+            ret = ((Video)article).getFormattedDuration(replaceZero);
         return ret;
     }
 }

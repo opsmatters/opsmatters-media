@@ -34,18 +34,18 @@ import static com.opsmatters.media.model.content.FieldName.*;
 import static com.opsmatters.media.model.content.video.VideoType.*;
 
 /**
- * Class representing a video article.
+ * Class representing a video.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class VideoArticle extends Article<VideoTeaser,VideoDetails>
+public class Video extends Article<VideoTeaser,VideoDetails>
 {
     private String videoType = "";
 
     /**
      * Default constructor.
      */
-    public VideoArticle()
+    public Video()
     {
         setDetails(new VideoDetails());
     }
@@ -53,7 +53,7 @@ public class VideoArticle extends Article<VideoTeaser,VideoDetails>
     /**
      * Constructor that takes a video.
      */
-    public VideoArticle(VideoArticle obj)
+    public Video(Video obj)
     {
         this();
         copyAttributes(obj);
@@ -62,7 +62,7 @@ public class VideoArticle extends Article<VideoTeaser,VideoDetails>
     /**
      * Constructor that takes a video.
      */
-    public VideoArticle(Site site, String code, VideoDetails obj)
+    public Video(Site site, String code, VideoDetails obj)
     {
         this();
         init();
@@ -74,7 +74,7 @@ public class VideoArticle extends Article<VideoTeaser,VideoDetails>
     /**
      * Constructor that takes a video teaser.
      */
-    public VideoArticle(Site site, String code, VideoTeaser obj)
+    public Video(Site site, String code, VideoTeaser obj)
     {
         this();
         init();
@@ -86,7 +86,7 @@ public class VideoArticle extends Article<VideoTeaser,VideoDetails>
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(VideoArticle obj)
+    public void copyAttributes(Video obj)
     {
         super.copyAttributes(obj);
         setContentDetails(obj.getDetails());
@@ -96,7 +96,7 @@ public class VideoArticle extends Article<VideoTeaser,VideoDetails>
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public VideoArticle(Site site, String code, String[] values) throws DateTimeParseException
+    public Video(Site site, String code, String[] values) throws DateTimeParseException
     {
         this();
         init();
@@ -147,7 +147,7 @@ public class VideoArticle extends Article<VideoTeaser,VideoDetails>
     /**
      * Constructor that takes a JSON object.
      */
-    public VideoArticle(JSONObject obj)
+    public Video(JSONObject obj)
     {
         this();
         fromJson(obj);
@@ -215,28 +215,28 @@ public class VideoArticle extends Article<VideoTeaser,VideoDetails>
     @Override
     public void copyExternalAttributes(Content obj)
     {
-        if(obj instanceof VideoArticle)
+        if(obj instanceof Video)
         {
-            VideoArticle article = (VideoArticle)obj;
-            if(article.getDuration() > 0L)
-                setDuration(article.getDuration());
+            Video video = (Video)obj;
+            if(video.getDuration() > 0L)
+                setDuration(video.getDuration());
         }
     }
 
     /**
      * Returns a new content item with defaults.
      */
-    public static VideoArticle getDefault(Site site, VideoConfig config)
+    public static Video getDefault(Site site, VideoConfig config)
         throws DateTimeParseException
     {
-        VideoArticle article = new VideoArticle();
+        Video video = new Video();
 
-        article.init();
-        article.setSiteId(site.getId());
-        article.setTitle("New Video");
-        article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        video.init();
+        video.setSiteId(site.getId());
+        video.setTitle("New Video");
+        video.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
 
-        return article;
+        return video;
     }
 
     /**

@@ -322,9 +322,9 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                T item = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
-                item.setSiteId(rs.getString(2));
-                ret.add(item);
+                T content = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
+                content.setSiteId(rs.getString(2));
+                ret.add(content);
             }
         }
         catch(IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
@@ -375,9 +375,9 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                T item = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
-                item.setSiteId(rs.getString(2));
-                ret.add(item);
+                T content = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
+                content.setSiteId(rs.getString(2));
+                ret.add(content);
             }
         }
         catch(IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
@@ -428,9 +428,9 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                T item = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
-                item.setSiteId(rs.getString(2));
-                ret.add(item);
+                T content = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
+                content.setSiteId(rs.getString(2));
+                ret.add(content);
             }
         }
         catch(IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
@@ -480,9 +480,9 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                T item = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
-                item.setSiteId(rs.getString(2));
-                ret.add(item);
+                T content = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
+                content.setSiteId(rs.getString(2));
+                ret.add(content);
             }
         }
         catch(IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
@@ -533,9 +533,9 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                T item = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
-                item.setSiteId(rs.getString(2));
-                ret.add(item);
+                T content = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
+                content.setSiteId(rs.getString(2));
+                ret.add(content);
             }
         }
         catch(IllegalAccessException | NoSuchMethodException | InvocationTargetException e)

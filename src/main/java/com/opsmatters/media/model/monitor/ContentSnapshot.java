@@ -30,7 +30,7 @@ import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentTeaser;
 import com.opsmatters.media.model.content.roundup.RoundupTeaser;
 import com.opsmatters.media.model.content.video.VideoTeaser;
-import com.opsmatters.media.model.content.video.VideoArticle;
+import com.opsmatters.media.model.content.video.Video;
 import com.opsmatters.media.model.content.event.EventTeaser;
 import com.opsmatters.media.model.content.publication.PublicationTeaser;
 import com.opsmatters.media.model.content.LinkedContent;
@@ -321,7 +321,7 @@ public class ContentSnapshot extends JSONObject
                     // Store the last videoId or URL if it has changed
                     if(type == ContentType.VIDEO)
                     {
-                        VideoArticle video = (VideoArticle)content;
+                        Video video = (Video)content;
                         if(!id.equals(video.getVideoId()))
                         {
                             item.put(LAST_VIDEO_ID.value(), video.getVideoId());
@@ -416,7 +416,7 @@ public class ContentSnapshot extends JSONObject
                         // Store the last videoId or URL if it has changed
                         if(type == ContentType.VIDEO)
                         {
-                            VideoArticle video = (VideoArticle)content;
+                            Video video = (Video)content;
                             if(!id.equals(video.getVideoId()))
                             {
                                 item.put(LAST_VIDEO_ID.value(), video.getVideoId());

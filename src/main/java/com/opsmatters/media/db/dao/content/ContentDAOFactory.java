@@ -20,7 +20,7 @@ import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.db.dao.DAOFactory;
 import com.opsmatters.media.db.dao.content.organisation.OrganisationListingDAO;
 import com.opsmatters.media.db.dao.content.organisation.OrganisationContentTypeDAO;
-import com.opsmatters.media.db.dao.content.video.VideoArticleDAO;
+import com.opsmatters.media.db.dao.content.video.VideoDAO;
 import com.opsmatters.media.db.dao.content.roundup.RoundupArticleDAO;
 import com.opsmatters.media.db.dao.content.event.EventResourceDAO;
 import com.opsmatters.media.db.dao.content.publication.WhitePaperResourceDAO;
@@ -47,7 +47,7 @@ public class ContentDAOFactory extends DAOFactory
 
         getOrganisationListingDAO();
         getOrganisationContentTypeDAO();
-        getVideoArticleDAO();
+        getVideoDAO();
         getRoundupArticleDAO();
         getPostArticleDAO();
         getEventResourceDAO();
@@ -79,13 +79,13 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the VideoArticle DAO.
+     * Returns the Video DAO.
      */
-    public VideoArticleDAO getVideoArticleDAO()
+    public VideoDAO getVideoDAO()
     {
-        if(videoArticleDAO == null)
-            videoArticleDAO = new VideoArticleDAO(this);
-        return videoArticleDAO;
+        if(videoDAO == null)
+            videoDAO = new VideoDAO(this);
+        return videoDAO;
     }
 
     /**
@@ -177,7 +177,7 @@ public class ContentDAOFactory extends DAOFactory
         super.close();
         organisationListingDAO = null;
         organisationContentTypeDAO = null;
-        videoArticleDAO = null;
+        videoDAO = null;
         roundupArticleDAO = null;
         postArticleDAO = null;
         eventResourceDAO = null;
@@ -190,7 +190,7 @@ public class ContentDAOFactory extends DAOFactory
 
     private OrganisationListingDAO organisationListingDAO;
     private OrganisationContentTypeDAO organisationContentTypeDAO;
-    private VideoArticleDAO videoArticleDAO;
+    private VideoDAO videoDAO;
     private RoundupArticleDAO roundupArticleDAO;
     private PostArticleDAO postArticleDAO;
     private EventResourceDAO eventResourceDAO;

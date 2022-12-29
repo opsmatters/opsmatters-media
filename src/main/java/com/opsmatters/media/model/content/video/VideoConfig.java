@@ -30,7 +30,7 @@ import com.opsmatters.media.model.content.crawler.field.FieldFilter;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class VideoConfig extends ContentConfig<VideoArticle>
+public class VideoConfig extends ContentConfig<Video>
 {
     private static final Logger logger = Logger.getLogger(VideoConfig.class.getName());
 
