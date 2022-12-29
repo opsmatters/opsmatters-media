@@ -28,7 +28,7 @@ import com.opsmatters.media.model.content.ContentConfig;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class JobConfig extends ContentConfig<JobResource>
+public class JobConfig extends ContentConfig<Job>
 {
     private static final Logger logger = Logger.getLogger(JobConfig.class.getName());
 

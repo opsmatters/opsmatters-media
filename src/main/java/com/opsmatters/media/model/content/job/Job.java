@@ -33,26 +33,26 @@ import com.opsmatters.media.util.StringUtils;
 import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
- * Class representing a job resource.
+ * Class representing a job.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class JobResource extends Resource<JobTeaser,JobDetails>
+public class Job extends Resource<JobTeaser,JobDetails>
 {
     private String technologies = "";
 
     /**
      * Default constructor.
      */
-    public JobResource()
+    public Job()
     {
         setDetails(new JobDetails());
     }
 
     /**
-     * Constructor that takes a job resource.
+     * Constructor that takes a job.
      */
-    public JobResource(JobResource obj)
+    public Job(Job obj)
     {
         this();
         copyAttributes(obj);
@@ -61,7 +61,7 @@ public class JobResource extends Resource<JobTeaser,JobDetails>
     /**
      * Constructor that takes a job.
      */
-    public JobResource(Site site, String code, JobDetails obj)
+    public Job(Site site, String code, JobDetails obj)
     {
         this();
         init();
@@ -73,7 +73,7 @@ public class JobResource extends Resource<JobTeaser,JobDetails>
     /**
      * Constructor that takes a job summary.
      */
-    public JobResource(Site site, String code, JobTeaser obj)
+    public Job(Site site, String code, JobTeaser obj)
     {
         this();
         init();
@@ -85,7 +85,7 @@ public class JobResource extends Resource<JobTeaser,JobDetails>
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(JobResource obj)
+    public void copyAttributes(Job obj)
     {
         super.copyAttributes(obj);
         setContentDetails(obj.getDetails());
@@ -95,7 +95,7 @@ public class JobResource extends Resource<JobTeaser,JobDetails>
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public JobResource(Site site, String code, String[] values) throws DateTimeParseException
+    public Job(Site site, String code, String[] values) throws DateTimeParseException
     {
         this();
         init();
@@ -143,7 +143,7 @@ public class JobResource extends Resource<JobTeaser,JobDetails>
     /**
      * Constructor that takes a JSON object.
      */
-    public JobResource(JSONObject obj)
+    public Job(JSONObject obj)
     {
         this();
         fromJson(obj);
@@ -180,7 +180,7 @@ public class JobResource extends Resource<JobTeaser,JobDetails>
     }
 
     /**
-     * Returns the set of output fields from the resource.
+     * Returns the set of output fields from the job.
      */
     @Override
     public FieldMap toFields()
@@ -197,25 +197,25 @@ public class JobResource extends Resource<JobTeaser,JobDetails>
     }
 
     /**
-     * Returns a new resource with defaults.
+     * Returns a new job with defaults.
      */
-    public static JobResource getDefault(Organisation organisation, OrganisationSite organisationSite, JobConfig config)
+    public static Job getDefault(Organisation organisation, OrganisationSite organisationSite, JobConfig config)
         throws DateTimeParseException
     {
-        JobResource resource = new JobResource();
+        Job job = new Job();
 
-        resource.init();
-        resource.setSiteId(organisationSite.getSiteId());
-        resource.setTitle("New Job");
-        resource.setDescription(StringUtils.EMPTY);
-        resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
-        resource.setSocial(organisationSite.hasSocial());
+        job.init();
+        job.setSiteId(organisationSite.getSiteId());
+        job.setTitle("New Job");
+        job.setDescription(StringUtils.EMPTY);
+        job.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        job.setSocial(organisationSite.hasSocial());
 
-        return resource;
+        return job;
     }
 
     /**
-     * Use the given configuration to set defaults for the resource.
+     * Use the given configuration to set defaults for the job.
      */
     public void init(Organisation organisation, OrganisationSite organisationSite, JobConfig config)
     {
@@ -239,7 +239,7 @@ public class JobResource extends Resource<JobTeaser,JobDetails>
     }
 
     /**
-     * Prepare the fields in the resource using the given configuration.
+     * Prepare the fields in the job using the given configuration.
      */
     public void prepare(JobConfig config, boolean debug) throws DateTimeParseException
     {
@@ -250,7 +250,7 @@ public class JobResource extends Resource<JobTeaser,JobDetails>
             setDescription(parser.formatBody());
         setSummary(parser.formatSummary(config.getSummary()));
 
-        // Use the default location if a resource location wasn't found
+        // Use the default location if a job location wasn't found
         if(config.hasField(LOCATION) && getLocation().length() == 0)
             setLocation(config.getField(LOCATION));
     }
@@ -320,7 +320,7 @@ public class JobResource extends Resource<JobTeaser,JobDetails>
     }
 
     /**
-     * Sets the URL of the resource.
+     * Sets the URL of the job.
      */
     @Override
     public void setUrl(String url)

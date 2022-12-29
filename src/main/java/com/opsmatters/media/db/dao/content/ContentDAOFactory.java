@@ -28,7 +28,7 @@ import com.opsmatters.media.db.dao.content.publication.EBookResourceDAO;
 import com.opsmatters.media.db.dao.content.post.PostDAO;
 import com.opsmatters.media.db.dao.content.project.ProjectDAO;
 import com.opsmatters.media.db.dao.content.tool.ToolDAO;
-import com.opsmatters.media.db.dao.content.job.JobResourceDAO;
+import com.opsmatters.media.db.dao.content.job.JobDAO;
 
 
 /**
@@ -55,7 +55,7 @@ public class ContentDAOFactory extends DAOFactory
         getEBookResourceDAO();
         getToolDAO();
         getProjectDAO();
-        getJobResourceDAO();
+        getJobDAO();
     }
 
     /**
@@ -159,13 +159,13 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the JobResource DAO.
+     * Returns the Job DAO.
      */
-    public JobResourceDAO getJobResourceDAO()
+    public JobDAO getJobDAO()
     {
-        if(jobResourceDAO == null)
-            jobResourceDAO = new JobResourceDAO(this);
-        return jobResourceDAO;
+        if(jobDAO == null)
+            jobDAO = new JobDAO(this);
+        return jobDAO;
     }
 
     /**
@@ -185,7 +185,7 @@ public class ContentDAOFactory extends DAOFactory
         ebookResourceDAO = null;
         toolDAO = null;
         projectDAO = null;
-        jobResourceDAO = null;
+        jobDAO = null;
     }
 
     private OrganisationListingDAO organisationListingDAO;
@@ -198,5 +198,5 @@ public class ContentDAOFactory extends DAOFactory
     private EBookResourceDAO ebookResourceDAO;
     private ToolDAO toolDAO;
     private ProjectDAO projectDAO;
-    private JobResourceDAO jobResourceDAO;
+    private JobDAO jobDAO;
 }

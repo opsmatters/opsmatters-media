@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentStatus;
-import com.opsmatters.media.model.content.job.JobResource;
+import com.opsmatters.media.model.content.job.Job;
 import com.opsmatters.media.util.AppSession;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
@@ -35,9 +35,9 @@ import com.opsmatters.media.db.dao.content.ContentDAOFactory;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class JobResourceDAO extends ContentDAO<JobResource>
+public class JobDAO extends ContentDAO<Job>
 {
-    private static final Logger logger = Logger.getLogger(JobResourceDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(JobDAO.class.getName());
 
     /**
      * The query to use to insert a job into the JOBS table.
@@ -58,7 +58,7 @@ public class JobResourceDAO extends ContentDAO<JobResource>
     /**
      * Constructor that takes a DAO factory.
      */
-    public JobResourceDAO(ContentDAOFactory factory)
+    public JobDAO(ContentDAOFactory factory)
     {
         super(factory, "JOBS");
     }
@@ -89,7 +89,7 @@ public class JobResourceDAO extends ContentDAO<JobResource>
     /**
      * Stores the given job in the JOBS table.
      */
-    public synchronized void add(JobResource content) throws SQLException
+    public synchronized void add(Job content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
@@ -146,7 +146,7 @@ public class JobResourceDAO extends ContentDAO<JobResource>
     /**
      * Updates the given job in the JOBS table.
      */
-    public synchronized void update(JobResource content) throws SQLException
+    public synchronized void update(Job content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
