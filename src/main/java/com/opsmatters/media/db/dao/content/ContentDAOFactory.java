@@ -25,7 +25,7 @@ import com.opsmatters.media.db.dao.content.roundup.RoundupArticleDAO;
 import com.opsmatters.media.db.dao.content.event.EventResourceDAO;
 import com.opsmatters.media.db.dao.content.publication.WhitePaperResourceDAO;
 import com.opsmatters.media.db.dao.content.publication.EBookResourceDAO;
-import com.opsmatters.media.db.dao.content.post.PostArticleDAO;
+import com.opsmatters.media.db.dao.content.post.PostDAO;
 import com.opsmatters.media.db.dao.content.project.ProjectResourceDAO;
 import com.opsmatters.media.db.dao.content.tool.ToolResourceDAO;
 import com.opsmatters.media.db.dao.content.job.JobResourceDAO;
@@ -49,7 +49,7 @@ public class ContentDAOFactory extends DAOFactory
         getOrganisationContentTypeDAO();
         getVideoDAO();
         getRoundupArticleDAO();
-        getPostArticleDAO();
+        getPostDAO();
         getEventResourceDAO();
         getWhitePaperResourceDAO();
         getEBookResourceDAO();
@@ -99,13 +99,13 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the PostArticle DAO.
+     * Returns the Post DAO.
      */
-    public PostArticleDAO getPostArticleDAO()
+    public PostDAO getPostDAO()
     {
-        if(postArticleDAO == null)
-            postArticleDAO = new PostArticleDAO(this);
-        return postArticleDAO;
+        if(postDAO == null)
+            postDAO = new PostDAO(this);
+        return postDAO;
     }
 
     /**
@@ -179,7 +179,7 @@ public class ContentDAOFactory extends DAOFactory
         organisationContentTypeDAO = null;
         videoDAO = null;
         roundupArticleDAO = null;
-        postArticleDAO = null;
+        postDAO = null;
         eventResourceDAO = null;
         whitePaperResourceDAO = null;
         ebookResourceDAO = null;
@@ -192,7 +192,7 @@ public class ContentDAOFactory extends DAOFactory
     private OrganisationContentTypeDAO organisationContentTypeDAO;
     private VideoDAO videoDAO;
     private RoundupArticleDAO roundupArticleDAO;
-    private PostArticleDAO postArticleDAO;
+    private PostDAO postDAO;
     private EventResourceDAO eventResourceDAO;
     private WhitePaperResourceDAO whitePaperResourceDAO;
     private EBookResourceDAO ebookResourceDAO;

@@ -33,11 +33,11 @@ import com.opsmatters.media.util.TimeUtils;
 import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
- * Class representing a post article.
+ * Class representing a post.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PostArticle extends Article<PostTeaser,PostDetails>
+public class Post extends Article<PostTeaser,PostDetails>
 {
     private String urlAlias = "";
     private String basePath = "";
@@ -45,7 +45,7 @@ public class PostArticle extends Article<PostTeaser,PostDetails>
     /**
      * Default constructor.
      */
-    public PostArticle()
+    public Post()
     {
         setDetails(new PostDetails());
     }
@@ -53,7 +53,7 @@ public class PostArticle extends Article<PostTeaser,PostDetails>
     /**
      * Constructor that takes a post.
      */
-    public PostArticle(PostArticle obj)
+    public Post(Post obj)
     {
         this();
         copyAttributes(obj);
@@ -62,7 +62,7 @@ public class PostArticle extends Article<PostTeaser,PostDetails>
     /**
      * Constructor that takes a post.
      */
-    public PostArticle(Site site, String code, PostDetails obj)
+    public Post(Site site, String code, PostDetails obj)
     {
         this();
         init();
@@ -74,7 +74,7 @@ public class PostArticle extends Article<PostTeaser,PostDetails>
     /**
      * Constructor that takes a post summary.
      */
-    public PostArticle(Site site, String code, PostTeaser obj)
+    public Post(Site site, String code, PostTeaser obj)
     {
         this();
         init();
@@ -86,7 +86,7 @@ public class PostArticle extends Article<PostTeaser,PostDetails>
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(PostArticle obj)
+    public void copyAttributes(Post obj)
     {
         super.copyAttributes(obj);
         setContentDetails(obj.getDetails());
@@ -97,7 +97,7 @@ public class PostArticle extends Article<PostTeaser,PostDetails>
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public PostArticle(Site site, String code, String[] values) throws DateTimeParseException
+    public Post(Site site, String code, String[] values) throws DateTimeParseException
     {
         this();
         init();
@@ -155,7 +155,7 @@ public class PostArticle extends Article<PostTeaser,PostDetails>
     /**
      * Constructor that takes a JSON object.
      */
-    public PostArticle(JSONObject obj)
+    public Post(JSONObject obj)
     {
         this();
         fromJson(obj);
@@ -220,28 +220,28 @@ public class PostArticle extends Article<PostTeaser,PostDetails>
     @Override
     public void copyExternalAttributes(Content obj)
     {
-        if(obj instanceof PostArticle)
+        if(obj instanceof Post)
         {
-            PostArticle article = (PostArticle)obj;
-            if(article.hasUrlAlias())
-                setUrlAlias(article.getUrlAlias());
+            Post post = (Post)obj;
+            if(post.hasUrlAlias())
+                setUrlAlias(post.getUrlAlias());
         }
     }
 
     /**
-     * Returns a new article with defaults.
+     * Returns a new post with defaults.
      */
-    public static PostArticle getDefault(Organisation organisation, OrganisationSite organisationSite, PostConfig config)
+    public static Post getDefault(Organisation organisation, OrganisationSite organisationSite, PostConfig config)
         throws DateTimeParseException
     {
-        PostArticle article = new PostArticle();
+        Post post = new Post();
 
-        article.init();
-        article.setSiteId(organisationSite.getSiteId());
-        article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
-        article.setSocial(organisationSite.hasSocial());
+        post.init();
+        post.setSiteId(organisationSite.getSiteId());
+        post.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        post.setSocial(organisationSite.hasSocial());
 
-        return article;
+        return post;
     }
 
     /**

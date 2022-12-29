@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.ContentConfig;
 
 /**
  * Class that represents the configuration for project content items.

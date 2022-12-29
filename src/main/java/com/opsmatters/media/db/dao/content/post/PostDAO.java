@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentStatus;
-import com.opsmatters.media.model.content.post.PostArticle;
+import com.opsmatters.media.model.content.post.Post;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
 import com.opsmatters.media.util.AppSession;
@@ -35,9 +35,9 @@ import com.opsmatters.media.util.AppSession;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PostArticleDAO extends ContentDAO<PostArticle>
+public class PostDAO extends ContentDAO<Post>
 {
-    private static final Logger logger = Logger.getLogger(PostArticleDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(PostDAO.class.getName());
 
     /**
      * The query to use to insert a post into the POSTS table.
@@ -58,7 +58,7 @@ public class PostArticleDAO extends ContentDAO<PostArticle>
     /**
      * Constructor that takes a DAO factory.
      */
-    public PostArticleDAO(ContentDAOFactory factory)
+    public PostDAO(ContentDAOFactory factory)
     {
         super(factory, "POSTS");
     }
@@ -91,7 +91,7 @@ public class PostArticleDAO extends ContentDAO<PostArticle>
     /**
      * Stores the given post in the POSTS table.
      */
-    public synchronized void add(PostArticle content) throws SQLException
+    public synchronized void add(Post content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
@@ -148,7 +148,7 @@ public class PostArticleDAO extends ContentDAO<PostArticle>
     /**
      * Updates the given post in the POSTS table.
      */
-    public synchronized void update(PostArticle content) throws SQLException
+    public synchronized void update(Post content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;

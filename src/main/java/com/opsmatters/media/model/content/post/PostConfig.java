@@ -20,15 +20,15 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.ContentConfig;
 
 /**
  * Class that represents the configuration for post content items.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PostConfig extends ContentConfig<PostArticle>
+public class PostConfig extends ContentConfig<Post>
 {
     private static final Logger logger = Logger.getLogger(PostConfig.class.getName());
 

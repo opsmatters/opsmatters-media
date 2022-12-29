@@ -19,10 +19,10 @@ import java.time.Instant;
 
 import com.opsmatters.media.model.content.video.Video;
 import com.opsmatters.media.model.content.roundup.RoundupArticle;
-import com.opsmatters.media.model.content.post.PostArticle;
+import com.opsmatters.media.model.content.post.Post;
 
 /**
- * Class representing a wrapped content article.
+ * Class representing wrapped content containg an article.
  * 
  * @author Gerald Curley (opsmatters)
  */
@@ -159,9 +159,9 @@ public class ArticleWrapper extends Article
             Video video = (Video)article;
             ret = video.getVideoUrl();
         }
-        else if(article instanceof PostArticle)
+        else if(article instanceof Post)
         {
-            PostArticle post = (PostArticle)article;
+            Post post = (Post)article;
             ret = post.getUrl();
         }
 
@@ -183,9 +183,9 @@ public class ArticleWrapper extends Article
             Video video = (Video)article;
             video.setVideoId(video.getProvider().getVideoId(url));
         }
-        else if(article instanceof PostArticle)
+        else if(article instanceof Post)
         {
-            PostArticle post = (PostArticle)article;
+            Post post = (Post)article;
             post.setUrl(url);
         }
     }
@@ -211,9 +211,9 @@ public class ArticleWrapper extends Article
             RoundupArticle roundup = (RoundupArticle)article;
             ret = roundup.getImage();
         }
-        else if(article instanceof PostArticle)
+        else if(article instanceof Post)
         {
-            PostArticle post = (PostArticle)article;
+            Post post = (Post)article;
             ret = post.getImage();
         }
 
@@ -230,9 +230,9 @@ public class ArticleWrapper extends Article
             RoundupArticle roundup = (RoundupArticle)article;
             roundup.setImage(image);
         }
-        else if(article instanceof PostArticle)
+        else if(article instanceof Post)
         {
-            PostArticle post = (PostArticle)article;
+            Post post = (Post)article;
             post.setImage(image);
         }
     }
