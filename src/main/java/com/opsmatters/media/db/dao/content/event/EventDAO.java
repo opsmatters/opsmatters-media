@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentStatus;
-import com.opsmatters.media.model.content.event.EventResource;
+import com.opsmatters.media.model.content.event.Event;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
 import com.opsmatters.media.util.AppSession;
@@ -38,9 +38,9 @@ import com.opsmatters.media.util.AppSession;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EventResourceDAO extends ContentDAO<EventResource>
+public class EventDAO extends ContentDAO<Event>
 {
-    private static final Logger logger = Logger.getLogger(EventResourceDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(EventDAO.class.getName());
 
     /**
      * The query to use to select a list of events from the EVENTS table by URL.
@@ -67,7 +67,7 @@ public class EventResourceDAO extends ContentDAO<EventResource>
     /**
      * Constructor that takes a DAO factory.
      */
-    public EventResourceDAO(ContentDAOFactory factory)
+    public EventDAO(ContentDAOFactory factory)
     {
         super(factory, "EVENTS");
     }
@@ -104,9 +104,9 @@ public class EventResourceDAO extends ContentDAO<EventResource>
     /**
      * Returns a list of events from the EVENTS table by URL.
      */
-    public synchronized List<EventResource> listByUrl(String code, String url, long startDate) throws SQLException
+    public synchronized List<Event> listByUrl(String code, String url, long startDate) throws SQLException
     {
-        List<EventResource> ret = null;
+        List<Event> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -126,13 +126,13 @@ public class EventResourceDAO extends ContentDAO<EventResource>
             listByUrlStmt.setTimestamp(4, new Timestamp(startDate), UTC);
             listByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByUrlStmt.executeQuery();
-            ret = new ArrayList<EventResource>();
+            ret = new ArrayList<Event>();
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                EventResource item = new EventResource(attributes);
-                item.setSiteId(rs.getString(2));
-                ret.add(item);
+                Event event = new Event(attributes);
+                event.setSiteId(rs.getString(2));
+                ret.add(event);
             }
         }
         finally
@@ -155,7 +155,7 @@ public class EventResourceDAO extends ContentDAO<EventResource>
     /**
      * Stores the given event in the EVENTS table.
      */
-    public synchronized void add(EventResource content) throws SQLException
+    public synchronized void add(Event content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
@@ -215,7 +215,7 @@ public class EventResourceDAO extends ContentDAO<EventResource>
     /**
      * Updates the given event in the EVENTS table.
      */
-    public synchronized void update(EventResource content) throws SQLException
+    public synchronized void update(Event content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;

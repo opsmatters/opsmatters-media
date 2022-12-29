@@ -34,26 +34,26 @@ import com.opsmatters.media.util.TimeUtils;
 import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
- * Class representing an event resource.
+ * Class representing an event.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EventResource extends Resource<EventTeaser,EventDetails>
+public class Event extends Resource<EventTeaser,EventDetails>
 {
     private String eventType = "";
 
     /**
      * Default constructor.
      */
-    public EventResource()
+    public Event()
     {
         setDetails(new EventDetails());
     }
 
     /**
-     * Constructor that takes an event resource.
+     * Constructor that takes an event.
      */
-    public EventResource(EventResource obj)
+    public Event(Event obj)
     {
         this();
         copyAttributes(obj);
@@ -62,7 +62,7 @@ public class EventResource extends Resource<EventTeaser,EventDetails>
     /**
      * Constructor that takes an event.
      */
-    public EventResource(Site site, String code, EventDetails obj)
+    public Event(Site site, String code, EventDetails obj)
     {
         this();
         init();
@@ -74,7 +74,7 @@ public class EventResource extends Resource<EventTeaser,EventDetails>
     /**
      * Constructor that takes an event teaser.
      */
-    public EventResource(Site site, String code, EventTeaser obj)
+    public Event(Site site, String code, EventTeaser obj)
     {
         this();
         init();
@@ -86,7 +86,7 @@ public class EventResource extends Resource<EventTeaser,EventDetails>
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(EventResource obj)
+    public void copyAttributes(Event obj)
     {
         super.copyAttributes(obj);
         setContentDetails(obj.getDetails());
@@ -96,7 +96,7 @@ public class EventResource extends Resource<EventTeaser,EventDetails>
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public EventResource(Site site, String code, String[] values) throws DateTimeParseException
+    public Event(Site site, String code, String[] values) throws DateTimeParseException
     {
         this();
         init();
@@ -142,7 +142,7 @@ public class EventResource extends Resource<EventTeaser,EventDetails>
     /**
      * Constructor that takes a JSON object.
      */
-    public EventResource(JSONObject obj)
+    public Event(JSONObject obj)
     {
         this();
         fromJson(obj);
@@ -181,7 +181,7 @@ public class EventResource extends Resource<EventTeaser,EventDetails>
     }
 
     /**
-     * Returns the set of output fields from the resource.
+     * Returns the set of output fields from the event.
      */
     @Override
     public FieldMap toFields()
@@ -198,22 +198,22 @@ public class EventResource extends Resource<EventTeaser,EventDetails>
     }
 
     /**
-     * Returns a new resource with defaults.
+     * Returns a new event with defaults.
      */
-    public static EventResource getDefault(Site site, EventConfig config)
+    public static Event getDefault(Site site, EventConfig config)
         throws DateTimeParseException
     {
-        EventResource resource = new EventResource();
+        Event event = new Event();
 
-        resource.init();
-        resource.setSiteId(site.getId());
-        resource.setTitle(config.getName()+": New Event");
-        resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
-        resource.setStartDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
-        resource.addStartTime(config);
-        resource.setEventType("Webinar");
+        event.init();
+        event.setSiteId(site.getId());
+        event.setTitle(config.getName()+": New Event");
+        event.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        event.setStartDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        event.addStartTime(config);
+        event.setEventType("Webinar");
 
-        return resource;
+        return event;
     }
 
     /**
@@ -238,7 +238,7 @@ public class EventResource extends Resource<EventTeaser,EventDetails>
     }
 
     /**
-     * Use the given configuration to set defaults for the resource.
+     * Use the given configuration to set defaults for the event.
      */
     public void init(Organisation organisation, OrganisationSite organisationSite,
         EventConfig config, CrawlerWebPage page)
@@ -250,7 +250,7 @@ public class EventResource extends Resource<EventTeaser,EventDetails>
     }
 
     /**
-     * Prepare the fields in the resource using the given configuration.
+     * Prepare the fields in the event using the given configuration.
      */
     public void prepare(EventConfig config, CrawlerWebPage page, boolean debug)
     {
@@ -261,11 +261,11 @@ public class EventResource extends Resource<EventTeaser,EventDetails>
             setDescription(parser.formatBody());
         setSummary(parser.formatSummary(config.getSummary()));
 
-        // Use the default timezone if a resource timezone wasn't found
+        // Use the default timezone if an event timezone wasn't found
         if(config.hasField(TIMEZONE) && getTimeZone().length() == 0)
             setTimeZone(config.getField(TIMEZONE));
 
-        // Use the default location if a resource location wasn't found
+        // Use the default location if an event location wasn't found
         if(config.hasField(LOCATION) && getLocation().length() == 0)
             setLocation(config.getField(LOCATION));
     }

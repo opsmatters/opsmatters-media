@@ -29,7 +29,7 @@ import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EventConfig extends ContentConfig<EventResource>
+public class EventConfig extends ContentConfig<Event>
 {
     private static final Logger logger = Logger.getLogger(EventConfig.class.getName());
 
