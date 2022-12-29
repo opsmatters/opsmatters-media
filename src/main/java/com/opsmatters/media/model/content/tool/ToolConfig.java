@@ -28,7 +28,7 @@ import com.opsmatters.media.model.content.ContentConfig;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ToolConfig extends ContentConfig<ToolResource>
+public class ToolConfig extends ContentConfig<Tool>
 {
     private static final Logger logger = Logger.getLogger(ToolConfig.class.getName());
 

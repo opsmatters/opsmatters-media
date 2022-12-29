@@ -31,26 +31,26 @@ import com.opsmatters.media.util.StringUtils;
 import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
- * Class representing a tool resource.
+ * Class representing a tool.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ToolResource extends Resource<ToolTeaser,ToolDetails>
+public class Tool extends Resource<ToolTeaser,ToolDetails>
 {
     private String downloadText = "";
 
     /**
      * Default constructor.
      */
-    public ToolResource()
+    public Tool()
     {
         setDetails(new ToolDetails());
     }
 
     /**
-     * Constructor that takes a tool resource.
+     * Constructor that takes a tool.
      */
-    public ToolResource(ToolResource obj)
+    public Tool(Tool obj)
     {
         this();
         copyAttributes(obj);
@@ -59,7 +59,7 @@ public class ToolResource extends Resource<ToolTeaser,ToolDetails>
     /**
      * Constructor that takes a tool.
      */
-    public ToolResource(Site site, String code, ToolDetails obj)
+    public Tool(Site site, String code, ToolDetails obj)
     {
         this();
         init();
@@ -71,7 +71,7 @@ public class ToolResource extends Resource<ToolTeaser,ToolDetails>
     /**
      * Constructor that takes a tool summary.
      */
-    public ToolResource(Site site, String code, ToolTeaser obj)
+    public Tool(Site site, String code, ToolTeaser obj)
     {
         this();
         init();
@@ -83,7 +83,7 @@ public class ToolResource extends Resource<ToolTeaser,ToolDetails>
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ToolResource obj)
+    public void copyAttributes(Tool obj)
     {
         super.copyAttributes(obj);
         setContentDetails(obj.getDetails());
@@ -93,7 +93,7 @@ public class ToolResource extends Resource<ToolTeaser,ToolDetails>
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public ToolResource(Site site, String code, String[] values) throws DateTimeParseException
+    public Tool(Site site, String code, String[] values) throws DateTimeParseException
     {
         this();
         init();
@@ -141,7 +141,7 @@ public class ToolResource extends Resource<ToolTeaser,ToolDetails>
     /**
      * Constructor that takes a JSON object.
      */
-    public ToolResource(JSONObject obj)
+    public Tool(JSONObject obj)
     {
         this();
         fromJson(obj);
@@ -176,7 +176,7 @@ public class ToolResource extends Resource<ToolTeaser,ToolDetails>
     }
 
     /**
-     * Returns the set of output fields from the resource.
+     * Returns the set of output fields from the tool.
      */
     @Override
     public FieldMap toFields()
@@ -192,25 +192,25 @@ public class ToolResource extends Resource<ToolTeaser,ToolDetails>
     }
 
     /**
-     * Returns a new resource with defaults.
+     * Returns a new tool with defaults.
      */
-    public static ToolResource getDefault(Organisation organisation, OrganisationSite organisationSite, ToolConfig config)
+    public static Tool getDefault(Organisation organisation, OrganisationSite organisationSite, ToolConfig config)
         throws DateTimeParseException
     {
-        ToolResource resource = new ToolResource();
+        Tool tool = new Tool();
 
-        resource.init();
-        resource.setSiteId(organisationSite.getSiteId());
-        resource.setTitle("New Tool");
-        resource.setDescription(StringUtils.EMPTY);
-        resource.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
-        resource.setSocial(organisationSite.hasSocial());
+        tool.init();
+        tool.setSiteId(organisationSite.getSiteId());
+        tool.setTitle("New Tool");
+        tool.setDescription(StringUtils.EMPTY);
+        tool.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        tool.setSocial(organisationSite.hasSocial());
 
-        return resource;
+        return tool;
     }
 
     /**
-     * Use the given configuration to set defaults for the resource.
+     * Use the given configuration to set defaults for the tool.
      */
     public void init(Organisation organisation, OrganisationSite organisationSite, ToolConfig config)
     {
@@ -229,7 +229,7 @@ public class ToolResource extends Resource<ToolTeaser,ToolDetails>
     }
 
     /**
-     * Prepare the fields in the resource using the given configuration.
+     * Prepare the fields in the tool using the given configuration.
      */
     public void prepare(ToolConfig config, boolean debug) throws DateTimeParseException
     {
@@ -305,7 +305,7 @@ public class ToolResource extends Resource<ToolTeaser,ToolDetails>
     }
 
     /**
-     * Sets the URL of the resource.
+     * Sets the URL of the tool.
      */
     @Override
     public void setUrl(String url)

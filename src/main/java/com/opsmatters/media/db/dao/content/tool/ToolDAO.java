@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentStatus;
-import com.opsmatters.media.model.content.tool.ToolResource;
+import com.opsmatters.media.model.content.tool.Tool;
 import com.opsmatters.media.util.AppSession;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
@@ -35,9 +35,9 @@ import com.opsmatters.media.db.dao.content.ContentDAOFactory;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ToolResourceDAO extends ContentDAO<ToolResource>
+public class ToolDAO extends ContentDAO<Tool>
 {
-    private static final Logger logger = Logger.getLogger(ToolResourceDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(ToolDAO.class.getName());
 
     /**
      * The query to use to insert a tool into the TOOLS table.
@@ -58,7 +58,7 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
     /**
      * Constructor that takes a DAO factory.
      */
-    public ToolResourceDAO(ContentDAOFactory factory)
+    public ToolDAO(ContentDAOFactory factory)
     {
         super(factory, "TOOLS");
     }
@@ -89,7 +89,7 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
     /**
      * Stores the given tool in the TOOLS table.
      */
-    public synchronized void add(ToolResource content) throws SQLException
+    public synchronized void add(Tool content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
@@ -146,7 +146,7 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
     /**
      * Updates the given tool in the TOOLS table.
      */
-    public synchronized void update(ToolResource content) throws SQLException
+    public synchronized void update(Tool content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
@@ -187,7 +187,7 @@ public class ToolResourceDAO extends ContentDAO<ToolResource>
     }
 
     /**
-     * Close any resources associated with this DAO.
+     * Close any tools associated with this DAO.
      */
     @Override
     protected void close()
