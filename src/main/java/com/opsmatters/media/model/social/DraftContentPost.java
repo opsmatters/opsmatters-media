@@ -21,8 +21,8 @@ import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.platform.EnvironmentName;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -65,7 +65,7 @@ public class DraftContentPost extends DraftPost
     /**
      * Constructor that takes an organisation listing and a content item.
      */
-    public DraftContentPost(Site site, Organisation organisation, ContentItem content)
+    public DraftContentPost(Site site, Organisation organisation, Content content)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());

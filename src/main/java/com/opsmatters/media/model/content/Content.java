@@ -36,11 +36,11 @@ import com.opsmatters.media.util.TimeUtils;
 import static com.opsmatters.media.model.content.ContentStatus.*;
 
 /**
- * Class representing a content item.
+ * Class representing a piece of content.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ContentItem<T extends ContentTeaser, D extends ContentTeaser>
+public abstract class Content<T extends ContentTeaser, D extends ContentTeaser>
     implements java.io.Serializable
 {
     public static final String EMPTY = "-";
@@ -63,12 +63,12 @@ public abstract class ContentItem<T extends ContentTeaser, D extends ContentTeas
     /**
      * Default constructor.
      */
-    public ContentItem()
+    public Content()
     {
     }
 
     /**
-     * Initialise the content item.
+     * Initialise the content.
      */
     public void init()
     {
@@ -89,7 +89,7 @@ public abstract class ContentItem<T extends ContentTeaser, D extends ContentTeas
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ContentItem obj)
+    public void copyAttributes(Content obj)
     {
         setUuid(new String(obj.getUuid() != null ? obj.getUuid() : ""));
         setSiteId(obj.getSiteId());
@@ -146,7 +146,7 @@ public abstract class ContentItem<T extends ContentTeaser, D extends ContentTeas
     }
 
     /**
-     * Returns the set of output fields from the content item.
+     * Returns the set of output fields from the content.
      */
     public FieldMap toFields()
     {
@@ -169,12 +169,12 @@ public abstract class ContentItem<T extends ContentTeaser, D extends ContentTeas
      * <p>
      * Implemented by super-class.
      */
-    public void copyExternalAttributes(ContentItem obj)
+    public void copyExternalAttributes(Content obj)
     {
     }
 
     /**
-     * Use the given configuration to set defaults for the content item.
+     * Use the given configuration to set defaults for the content.
      */
     public void init(Organisation organisation, OrganisationSite organisationSite, ContentConfig config)
     {
@@ -825,19 +825,19 @@ public abstract class ContentItem<T extends ContentTeaser, D extends ContentTeas
     /**
      * Sets the other site ids.
      */
-    public void setOtherSites(List<? extends ContentItem> items)
+    public void setOtherSites(List<? extends Content> items)
     {
         StringBuilder str = new StringBuilder();
 
         if(items != null)
         {
-            for(ContentItem item : items)
+            for(Content content : items)
             {
-                if(str.indexOf(item.getSiteId()) == -1)
+                if(str.indexOf(content.getSiteId()) == -1)
                 {
                     if(str.length() > 0)
                         str.append(",");
-                    str.append(item.getSiteId());
+                    str.append(content.getSiteId());
                 }
             }
         }

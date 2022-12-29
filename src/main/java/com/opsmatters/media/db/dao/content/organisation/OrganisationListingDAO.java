@@ -329,9 +329,9 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                OrganisationListing item = new OrganisationListing(attributes);
-                item.setSiteId(rs.getString(2));
-                ret.add(item);
+                OrganisationListing listing = new OrganisationListing(attributes);
+                listing.setSiteId(rs.getString(2));
+                ret.add(listing);
             }
         }
         finally
@@ -380,9 +380,9 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                OrganisationListing item = new OrganisationListing(attributes);
-                item.setSiteId(rs.getString(2));
-                ret.add(item);
+                OrganisationListing listing = new OrganisationListing(attributes);
+                listing.setSiteId(rs.getString(2));
+                ret.add(listing);
             }
         }
         finally

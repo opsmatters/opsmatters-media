@@ -26,11 +26,11 @@ import com.opsmatters.media.util.StringUtils;
 import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
- * Class representing a content article.
+ * Class representing a piece of article content.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class Article<T extends ArticleTeaser, D extends ArticleTeaser> extends ContentItem<T,D>
+public abstract class Article<T extends ArticleTeaser, D extends ArticleTeaser> extends Content<T,D>
 {
     private String organisation = "";
     private String revisedTitle = "";

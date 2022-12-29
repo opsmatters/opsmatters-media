@@ -18,15 +18,15 @@ package com.opsmatters.media.model.monitor;
 import java.util.List;
 import java.util.logging.Logger;
 import java.sql.SQLException;
+import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.organisation.OrganisationSite;
-import com.opsmatters.media.model.content.ContentItem;
 
 /**
  * Class representing a lookup for content items.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ContentLookup<T extends ContentItem>
+public abstract class ContentLookup<T extends Content>
 {
     private static final Logger logger = Logger.getLogger(ContentLookup.class.getName());
 

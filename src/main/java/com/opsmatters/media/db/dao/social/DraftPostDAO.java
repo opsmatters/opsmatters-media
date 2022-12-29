@@ -26,8 +26,8 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.social.DraftPost;
@@ -270,9 +270,9 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     }
 
     /**
-     * Returns the pending posts for the given content item in the DRAFT_POSTS table.
+     * Returns the pending posts for the given content in the DRAFT_POSTS table.
      */
-    public List<DraftPost> getPending(ContentItem content) throws SQLException
+    public List<DraftPost> getPending(Content content) throws SQLException
     {
         List<DraftPost> ret = new ArrayList<DraftPost>();
 
@@ -297,9 +297,9 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given content item has a pending post in the DRAFT_POSTS table.
+     * Returns <CODE>true</CODE> if the given content has a pending post in the DRAFT_POSTS table.
      */
-    public boolean hasPending(ContentItem content) throws SQLException
+    public boolean hasPending(Content content) throws SQLException
     {
         return getPending(content).size() > 0;
     }
@@ -766,7 +766,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Removes the post for the given content from the DRAFT_POSTS table.
      */
-    public void delete(ContentItem content) throws SQLException
+    public void delete(Content content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;

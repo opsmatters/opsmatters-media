@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.Instant;
-import com.opsmatters.media.model.content.ContentItem;
+import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
 
@@ -123,9 +123,9 @@ public class ContentImages
     }
 
     /**
-     * Returns the banner image for the given content item (if one exists).
+     * Returns the banner image for the given content (if one exists).
      */
-    public static ContentImage get(ContentItem content)
+    public static ContentImage get(Content content)
     {
         ContentImage ret = null;
 

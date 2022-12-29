@@ -20,16 +20,16 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.content.ContentItem;
+import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 
 /**
- * Class that represents the configuration for publication content items.
+ * Class that represents the configuration for publication content.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class PublicationConfig<C extends ContentItem> extends ContentConfig<C>
+public abstract class PublicationConfig<C extends Content> extends ContentConfig<C>
 {
     private static final Logger logger = Logger.getLogger(PublicationConfig.class.getName());
 

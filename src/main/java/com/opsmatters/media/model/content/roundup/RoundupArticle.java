@@ -23,8 +23,8 @@ import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.Article;
+import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.content.LinkedContent;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.util.ContentImage;
@@ -203,7 +203,7 @@ public class RoundupArticle extends Article<RoundupTeaser,RoundupDetails> implem
      * Copies any external attributes of the given object.
      */
     @Override
-    public void copyExternalAttributes(ContentItem obj)
+    public void copyExternalAttributes(Content obj)
     {
         if(obj instanceof RoundupArticle)
         {

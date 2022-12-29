@@ -20,7 +20,7 @@ import java.util.List;
 import org.json.JSONObject;
 import com.opsmatters.media.model.BaseItem;
 import com.opsmatters.media.model.platform.Site;
-import com.opsmatters.media.model.content.ContentItem;
+import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.util.StringUtils;
@@ -56,7 +56,7 @@ public class OrganisationContentType extends BaseItem
     /**
      * Constructor that takes an organisation and content type.
      */
-    public OrganisationContentType(OrganisationSite organisation, List<? extends ContentItem> content)
+    public OrganisationContentType(OrganisationSite organisation, List<? extends Content> content)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(organisation.getCreatedDate());
@@ -66,15 +66,15 @@ public class OrganisationContentType extends BaseItem
     }
 
     /**
-     * Constructor that takes a new content item.
+     * Constructor that takes new content.
      */
-    public OrganisationContentType(ContentItem item)
+    public OrganisationContentType(Content content)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
-        setSiteId(item.getSiteId());
-        setCode(item.getCode());
-        setType(item.getType());
+        setSiteId(content.getSiteId());
+        setCode(content.getCode());
+        setType(content.getType());
         setItemCount(1);
         setDeployed(false);
     }
@@ -471,26 +471,26 @@ public class OrganisationContentType extends BaseItem
     }
 
     /**
-     * Go through the items to populate the summary.
+     * Go through the items to populate the content type.
      */
-    public void setContent(List<? extends ContentItem> content)
+    public void setContent(List<? extends Content> items)
     {
         int count = 0;
         boolean deployed = true;
-        for(ContentItem item : content)
+        for(Content content : items)
         {
-            if(item.isSkipped())
+            if(content.isSkipped())
                 continue;
 
-            setType(item.getType());
-            if(item.getPublishedDate() != null)
+            setType(content.getType());
+            if(content.getPublishedDate() != null)
             {
-                if(getUpdatedDate() == null || item.getPublishedDate().isAfter(getUpdatedDate()))
-                    setUpdatedDate(item.getPublishedDate());
+                if(getUpdatedDate() == null || content.getPublishedDate().isAfter(getUpdatedDate()))
+                    setUpdatedDate(content.getPublishedDate());
             }
 
             ++count;
-            if(!item.isDeployed())
+            if(!content.isDeployed())
                 deployed = false;
         }
 

@@ -24,8 +24,8 @@ import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.Article;
+import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
 import com.opsmatters.media.util.TimeUtils;
@@ -218,7 +218,7 @@ public class PostArticle extends Article<PostTeaser,PostDetails>
      * Copies any external attributes of the given object.
      */
     @Override
-    public void copyExternalAttributes(ContentItem obj)
+    public void copyExternalAttributes(Content obj)
     {
         if(obj instanceof PostArticle)
         {

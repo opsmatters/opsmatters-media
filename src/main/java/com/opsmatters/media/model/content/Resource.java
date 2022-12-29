@@ -26,11 +26,11 @@ import com.opsmatters.media.util.StringUtils;
 import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
- * Class representing a content resource.
+ * Class representing a piece of resource content.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class Resource<T extends ResourceTeaser, D extends ResourceTeaser> extends ContentItem<T,D>
+public abstract class Resource<T extends ResourceTeaser, D extends ResourceTeaser> extends Content<T,D>
     implements LinkedContent
 {
     private String features = "";

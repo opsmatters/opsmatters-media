@@ -25,9 +25,9 @@ import java.util.logging.Logger;
 import java.sql.SQLException;
 import org.json.JSONObject;
 import org.json.JSONArray;
+import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentTeaser;
-import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.content.roundup.RoundupTeaser;
 import com.opsmatters.media.model.content.video.VideoTeaser;
 import com.opsmatters.media.model.content.video.VideoArticle;
@@ -315,7 +315,7 @@ public class ContentSnapshot extends JSONObject
                 if(type == ContentType.VIDEO)
                     id = item.optString(VIDEO_ID.value());
 
-                ContentItem content = lookup.getByTitle(title);
+                Content content = lookup.getByTitle(title);
                 if(content != null)
                 {
                     // Store the last videoId or URL if it has changed
@@ -385,7 +385,7 @@ public class ContentSnapshot extends JSONObject
                     publishedDate = publishedDate.substring(0, publishedDate.indexOf(" ")); // Remove time part
                 String title = item.optString(TITLE.value());
 
-                ContentItem content = lookup.getById(id);
+                Content content = lookup.getById(id);
                 if(content != null)
                 {
                     // Store the last title if it has changed

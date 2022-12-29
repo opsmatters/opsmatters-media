@@ -46,11 +46,11 @@ import com.opsmatters.media.util.FileUtils;
 import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
- * Class that represents a YAML configuration for content items.
+ * Class that represents a YAML configuration for content.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ContentConfig<C extends ContentItem> implements FieldSource, ConfigElement
+public abstract class ContentConfig<C extends Content> implements FieldSource, ConfigElement
 {
     private static final Logger logger = Logger.getLogger(ContentConfig.class.getName());
 

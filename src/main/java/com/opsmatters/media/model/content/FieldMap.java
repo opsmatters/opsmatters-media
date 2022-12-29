@@ -62,7 +62,7 @@ public class FieldMap extends LinkedHashMap<String,String>
                             {
                                 // Ignore fields that have been marked as empty
                                 String fieldValue = fields.get(key);
-                                if(fieldValue != null && !fieldValue.equals(ContentItem.EMPTY))
+                                if(fieldValue != null && !fieldValue.equals(Content.EMPTY))
                                     put(key, fieldValue);
                             }
                         }

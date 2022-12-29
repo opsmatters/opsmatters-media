@@ -29,7 +29,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.db.dao.DAOFactory;
 import com.opsmatters.media.model.platform.Site;
-import com.opsmatters.media.model.content.ContentItem;
+import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.util.ClassUtils;
 import com.opsmatters.media.util.StringUtils;
@@ -39,7 +39,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ContentDAO<T extends ContentItem> extends BaseDAO
+public abstract class ContentDAO<T extends Content> extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(ContentDAO.class.getName());
 

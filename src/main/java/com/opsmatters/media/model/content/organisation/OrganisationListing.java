@@ -21,7 +21,7 @@ import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
-import com.opsmatters.media.model.content.ContentItem;
+import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.organisation.Organisation;
@@ -37,7 +37,7 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrganisationListing extends ContentItem
+public class OrganisationListing extends Content
 {
     private Instant publishedDate;
     private String title = "";

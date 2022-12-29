@@ -24,8 +24,8 @@ import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.Article;
+import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.ContentItem;
 import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
@@ -213,7 +213,7 @@ public class VideoArticle extends Article<VideoTeaser,VideoDetails>
      * Copies any external attributes of the given object.
      */
     @Override
-    public void copyExternalAttributes(ContentItem obj)
+    public void copyExternalAttributes(Content obj)
     {
         if(obj instanceof VideoArticle)
         {
