@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.Content;
+import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 
@@ -29,7 +30,7 @@ import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class PublicationConfig<C extends Content> extends ContentConfig<C>
+public class PublicationConfig extends ContentConfig<Publication>
 {
     private static final Logger logger = Logger.getLogger(PublicationConfig.class.getName());
 
@@ -49,6 +50,29 @@ public abstract class PublicationConfig<C extends Content> extends ContentConfig
     public PublicationConfig(PublicationConfig obj)
     {
         super(obj);
+        copyAttributes(obj);
+    }
+
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(PublicationConfig obj)
+    {
+        if(obj != null)
+        {
+            super.copyAttributes(obj);
+            for(CrawlerWebPage page : obj.getPages())
+                addPage(new CrawlerWebPage(page));
+        }
+    }
+
+    /**
+     * Returns the type for this configuration.
+     */
+    @Override
+    public ContentType getType()
+    {
+        return ContentType.PUBLICATION;
     }
 
     /**
@@ -117,10 +141,19 @@ public abstract class PublicationConfig<C extends Content> extends ContentConfig
     }
 
     /**
+     * Returns a builder for the configuration.
+     * @param name The name for the configuration
+     * @return The builder instance.
+     */
+    public static Builder builder(String name)
+    {
+        return new Builder(name);
+    }
+
+    /**
      * Builder to make configuration construction easier.
      */
-    protected abstract static class Builder<T extends PublicationConfig, B extends Builder<T,B>>
-        extends ContentConfig.Builder<T,B>
+    public static class Builder extends ContentConfig.Builder<PublicationConfig, Builder>
     {
         // The config attribute names
         private static final String PAGES = "pages";
@@ -128,12 +161,12 @@ public abstract class PublicationConfig<C extends Content> extends ContentConfig
         private PublicationConfig ret = null;
 
         /**
-         * Sets the configuration.
-         * @param config The configuration
+         * Constructor that takes a name.
+         * @param name The name for the configuration
          */
-        public void set(PublicationConfig config)
+        public Builder(String name)
         {
-            ret = config;
+            ret = new PublicationConfig(name);
             super.set(ret);
         }
 
@@ -143,7 +176,7 @@ public abstract class PublicationConfig<C extends Content> extends ContentConfig
          * @return This object
          */
         @Override
-        public B parse(Map<String, Object> map)
+        public Builder parse(Map<String, Object> map)
         {
             super.parse(map);
 
@@ -160,7 +193,38 @@ public abstract class PublicationConfig<C extends Content> extends ContentConfig
                 }
             }
 
-            return self();
+            return this;
+        }
+
+        /**
+         * Copy constructor.
+         * @param obj The object to copy attributes from
+         * @return This object
+         */
+        public Builder copy(PublicationConfig obj)
+        {
+            ret.copyAttributes(obj);
+            return this;
+        }
+
+        /**
+         * Returns this object.
+         * @return This object
+         */
+        @Override
+        protected Builder self()
+        {
+            return this;
+        }
+
+        /**
+         * Returns the configured configuration instance
+         * @return The configuration instance
+         */
+        @Override
+        public PublicationConfig build()
+        {
+            return ret;
         }
     }
 }

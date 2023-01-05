@@ -54,6 +54,14 @@ public class OrganisationContentType extends BaseItem
     }
 
     /**
+     * Copy constructor.
+     */
+    public OrganisationContentType(OrganisationContentType obj)
+    {
+        copyAttributes(obj);
+    }
+
+    /**
      * Constructor that takes an organisation and content type.
      */
     public OrganisationContentType(OrganisationSite organisation, List<? extends Content> content)

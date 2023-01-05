@@ -28,7 +28,7 @@ import org.json.JSONArray;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentTeaser;
-import com.opsmatters.media.model.content.roundup.RoundupTeaser;
+import com.opsmatters.media.model.content.post.RoundupPostTeaser;
 import com.opsmatters.media.model.content.video.VideoTeaser;
 import com.opsmatters.media.model.content.video.Video;
 import com.opsmatters.media.model.content.event.EventTeaser;
@@ -177,13 +177,12 @@ public class ContentSnapshot extends JSONObject
         switch(type)
         {
             case ROUNDUP:
-                return createObject((RoundupTeaser)teaser);
+                return createObject((RoundupPostTeaser)teaser);
             case VIDEO:
                 return createObject((VideoTeaser)teaser);
             case EVENT:
                 return createObject((EventTeaser)teaser);
-            case WHITE_PAPER:
-            case EBOOK:
+            case PUBLICATION:
                 return createObject((PublicationTeaser)teaser);
             default:
                 return null;
@@ -193,7 +192,7 @@ public class ContentSnapshot extends JSONObject
     /**
      * Create an object for the roundup teaser.
      */
-    private JSONObject createObject(RoundupTeaser teaser)
+    private JSONObject createObject(RoundupPostTeaser teaser)
     {
         JSONObject ret = new JSONObject();
         ret.put(TITLE.value(), teaser.getTitle());

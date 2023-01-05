@@ -32,11 +32,10 @@ import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.FieldSource;
 import com.opsmatters.media.model.content.video.VideoConfig;
-import com.opsmatters.media.model.content.roundup.RoundupConfig;
 import com.opsmatters.media.model.content.event.EventConfig;
-import com.opsmatters.media.model.content.publication.WhitePaperConfig;
-import com.opsmatters.media.model.content.publication.EBookConfig;
+import com.opsmatters.media.model.content.publication.PublicationConfig;
 import com.opsmatters.media.model.content.post.PostConfig;
+import com.opsmatters.media.model.content.post.RoundupPostConfig;
 import com.opsmatters.media.model.content.project.ProjectConfig;
 import com.opsmatters.media.model.content.tool.ToolConfig;
 import com.opsmatters.media.model.content.job.JobConfig;
@@ -63,11 +62,10 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
     private String name = "";
     private String filename = "";
     private VideoConfig videos;
-    private RoundupConfig roundups;
+    private RoundupPostConfig roundups;
     private PostConfig posts;
     private EventConfig events;
-    private WhitePaperConfig whitePapers;
-    private EBookConfig ebooks;
+    private PublicationConfig publications;
     private ToolConfig tools;
     private ProjectConfig projects;
     private JobConfig jobs;
@@ -239,7 +237,7 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
     /**
      * Returns the roundup configuration.
      */
-    public RoundupConfig getRoundups()
+    public RoundupPostConfig getRoundups()
     {
         return roundups;
     }
@@ -247,7 +245,7 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
     /**
      * Sets the roundup configuration.
      */
-    public void setRoundups(RoundupConfig roundups)
+    public void setRoundups(RoundupPostConfig roundups)
     {
         this.roundups = roundups;
         configs.put(roundups.getType(), roundups);
@@ -312,53 +310,28 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
     }
 
     /**
-     * Returns the white paper configuration.
+     * Returns the publication configuration.
      */
-    public WhitePaperConfig getWhitePapers()
+    public PublicationConfig getPublications()
     {
-        return whitePapers;
+        return publications;
     }
 
     /**
-     * Sets the white paper configuration.
+     * Sets the publication configuration.
      */
-    public void setWhitePapers(WhitePaperConfig whitePapers)
+    public void setPublications(PublicationConfig publications)
     {
-        this.whitePapers = whitePapers;
-        configs.put(whitePapers.getType(), whitePapers);
+        this.publications = publications;
+        configs.put(publications.getType(), publications);
     }
 
     /**
-     * Returns <CODE>true</CODE> if the white paper configuration has been set.
+     * Returns <CODE>true</CODE> if the publication configuration has been set.
      */
-    public boolean hasWhitePapers()
+    public boolean hasPublications()
     {
-        return whitePapers != null;
-    }
-
-    /**
-     * Returns the ebook configuration.
-     */
-    public EBookConfig getEBooks()
-    {
-        return ebooks;
-    }
-
-    /**
-     * Sets the ebook configuration.
-     */
-    public void setEBooks(EBookConfig ebooks)
-    {
-        this.ebooks = ebooks;
-        configs.put(ebooks.getType(), ebooks);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the ebook configuration has been set.
-     */
-    public boolean hasEBooks()
-    {
-        return ebooks != null;
+        return publications != null;
     }
 
     /**
@@ -507,7 +480,7 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
 
             if(map.containsKey(ROUNDUP.tag()))
             {
-                RoundupConfig.Builder builder = RoundupConfig.builder(name);
+                RoundupPostConfig.Builder builder = RoundupPostConfig.builder(name);
                 if(defaults != null)
                     builder = builder.copy(defaults.getRoundups());
                 ret.setRoundups(builder.fields(map)
@@ -523,22 +496,13 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
                     .parse((Map<String,Object>)map.get(EVENT.tag())).build());
             }
 
-            if(map.containsKey(WHITE_PAPER.tag()))
+            if(map.containsKey(PUBLICATION.tag()))
             {
-                WhitePaperConfig.Builder builder = WhitePaperConfig.builder(name);
+                PublicationConfig.Builder builder = PublicationConfig.builder(name);
                 if(defaults != null)
-                    builder = builder.copy(defaults.getWhitePapers());
-                ret.setWhitePapers(builder.fields(map)
-                    .parse((Map<String,Object>)map.get(WHITE_PAPER.tag())).build());
-            }
-
-            if(map.containsKey(EBOOK.tag()))
-            {
-                EBookConfig.Builder builder = EBookConfig.builder(name);
-                if(defaults != null)
-                    builder = builder.copy(defaults.getEBooks());
-                ret.setEBooks(builder.fields(map)
-                    .parse((Map<String,Object>)map.get(EBOOK.tag())).build());
+                    builder = builder.copy(defaults.getPublications());
+                ret.setPublications(builder.fields(map)
+                    .parse((Map<String,Object>)map.get(PUBLICATION.tag())).build());
             }
 
             if(map.containsKey(POST.tag()))

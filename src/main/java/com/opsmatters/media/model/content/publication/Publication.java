@@ -24,38 +24,75 @@ import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.Resource;
+import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.organisation.OrganisationContentType;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.util.FormatUtils;
+import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
- * Class representing a publication resource.
+ * Class representing a publication.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class PublicationResource extends Resource<PublicationTeaser,PublicationDetails>
+public class Publication extends Resource<PublicationTeaser,PublicationDetails>
 {
+    private String publicationType = "";
     private String tags = "";
     private String creatorEmail = "";
 
     /**
      * Default constructor.
      */
-    public PublicationResource()
+    public Publication()
     {
         setDetails(new PublicationDetails());
     }
 
     /**
+     * Constructor that takes a publication.
+     */
+    public Publication(Publication obj)
+    {
+        this();
+        copyAttributes(obj);
+    }
+
+    /**
+     * Constructor that takes a publication.
+     */
+    public Publication(Site site, String code, PublicationDetails obj)
+    {
+        this();
+        init();
+        setSiteId(site.getId());
+        setCode(code);
+        setContentDetails(obj);
+    }
+
+    /**
+     * Constructor that takes a publication teaser.
+     */
+    public Publication(Site site, String code, PublicationTeaser obj)
+    {
+        this();
+        init();
+        setSiteId(site.getId());
+        setCode(code);
+        setTeaserDetails(obj);
+    }
+
+    /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(PublicationResource obj)
+    public void copyAttributes(Publication obj)
     {
         super.copyAttributes(obj);
         setContentDetails(obj.getDetails());
+        setPublicationType(new String(obj.getPublicationType() != null ? obj.getPublicationType() : ""));
         setTags(new String(obj.getTags() != null ? obj.getTags() : ""));
         setCreatorEmail(new String(obj.getCreatorEmail() != null ? obj.getCreatorEmail() : ""));
     }
@@ -63,7 +100,7 @@ public abstract class PublicationResource extends Resource<PublicationTeaser,Pub
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public PublicationResource(Site site, String code, String[] values) throws DateTimeParseException
+    public Publication(Site site, String code, String[] values) throws DateTimeParseException
     {
         this();
         init();
@@ -83,19 +120,20 @@ public abstract class PublicationResource extends Resource<PublicationTeaser,Pub
         String url = values[5];
         String linkText = values[6];
         String organisation = values[7];
-        String tags = values[8];
-        String image = values[9];
-        String imageText = values[10];
-        String imageTitle = values[11];
-        String thumbnail = values[12];
-        String thumbnailText = values[13];
-        String thumbnailTitle = values[14];
-        String creator = values[15];
-        String creatorEmail = values[16];
-        String createdBy = values[17];
-        String published = values[18];
-        String promote = values[19];
-        String canonicalUrl = values.length > 20 ? values[20] : "";
+        String publicationType = values[8];
+        String tags = values[9];
+        String image = values[10];
+        String imageText = values[11];
+        String imageTitle = values[12];
+        String thumbnail = values[13];
+        String thumbnailText = values[14];
+        String thumbnailTitle = values[15];
+        String creator = values[16];
+        String creatorEmail = values[17];
+        String createdBy = values[18];
+        String published = values[19];
+        String promote = values[20];
+        String canonicalUrl = values.length > 21 ? values[21] : "";
 
         // Remove feeds path from image
         if(image.indexOf("/") != -1)
@@ -110,6 +148,7 @@ public abstract class PublicationResource extends Resource<PublicationTeaser,Pub
         setImage(image);
         setUrl(url, false);
         setLinkText(linkText);
+        setPublicationType(publicationType);
         setTags(tags);
         setCreatorEmail(creatorEmail);
         setCreatedBy(createdBy);
@@ -119,12 +158,22 @@ public abstract class PublicationResource extends Resource<PublicationTeaser,Pub
     }
 
     /**
+     * Constructor that takes a JSON object.
+     */
+    public Publication(JSONObject obj)
+    {
+        this();
+        fromJson(obj);
+    }
+
+    /**
      * Initialise this object using a JSON object.
      */
     public void fromJson(JSONObject obj)
     {
         super.fromJson(obj);
 
+        setPublicationType(obj.optString(PUBLICATION_TYPE.value()));
         setTags(obj.optString(TAGS.value()));
         setCreatorEmail(obj.optString(EMAIL.value()));
         setCanonicalUrl(obj.optString(CANONICAL_URL.value()));
@@ -139,6 +188,7 @@ public abstract class PublicationResource extends Resource<PublicationTeaser,Pub
     {
         JSONObject ret = super.toJson();
 
+        ret.putOpt(PUBLICATION_TYPE.value(), getPublicationType());
         ret.putOpt(TAGS.value(), getTags());
         ret.putOpt(EMAIL.value(), getCreatorEmail());
         ret.putOpt(CANONICAL_URL.value(), getCanonicalUrl());
@@ -149,13 +199,14 @@ public abstract class PublicationResource extends Resource<PublicationTeaser,Pub
     }
 
     /**
-     * Returns the set of output fields from the resource.
+     * Returns the set of output fields from the publication.
      */
     @Override
     public FieldMap toFields()
     {
         FieldMap ret = super.toFields();
 
+        ret.put(PUBLICATION_TYPE, getPublicationType());
         ret.put(TAGS, getTags());
         ret.put(EMAIL, getCreatorEmail());
         ret.put(CANONICAL_URL, getCanonicalUrl());
@@ -166,7 +217,23 @@ public abstract class PublicationResource extends Resource<PublicationTeaser,Pub
     }
 
     /**
-     * Use the given configuration to set defaults for the resource.
+     * Returns a new publication with defaults.
+     */
+    public static Publication getDefault(Site site, PublicationConfig config) throws DateTimeParseException
+    {
+        Publication publication = new Publication();
+
+        publication.init();
+        publication.setSiteId(site.getId());
+        publication.setTitle("New Publication");
+        publication.setDescription(StringUtils.EMPTY);
+        publication.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+
+        return publication;
+    }
+
+    /**
+     * Use the given configuration to set defaults for the publication.
      */
     public void init(Organisation organisation, OrganisationSite organisationSite,
         PublicationConfig config, CrawlerWebPage page)
@@ -192,7 +259,7 @@ public abstract class PublicationResource extends Resource<PublicationTeaser,Pub
     }
 
     /**
-     * Prepare the fields in the resource using the given configuration.
+     * Prepare the fields in the publication using the given configuration.
      */
     public void prepare(PublicationConfig config, CrawlerWebPage page, boolean debug) throws DateTimeParseException
     {
@@ -228,6 +295,39 @@ public abstract class PublicationResource extends Resource<PublicationTeaser,Pub
     {
         setTeaserDetails(obj);
         setConfigured(true);
+    }
+
+    /**
+     * Returns the content type.
+     */
+    @Override
+    public ContentType getType()
+    {
+        return ContentType.PUBLICATION;
+    }
+
+    /**
+     * Returns the publication type.
+     */
+    public String getPublicationType()
+    {
+        return publicationType;
+    }
+
+    /**
+     * Sets the publication type.
+     */
+    public void setPublicationType(String publicationType)
+    {
+        this.publicationType = publicationType;
+    }
+
+    /**
+     * Sets the publication type.
+     */
+    public void setPublicationType(PublicationType publicationType)
+    {
+        setPublicationType(publicationType.value());
     }
 
     /**

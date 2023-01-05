@@ -105,8 +105,7 @@ public enum OrganisationTabs
                 case EVENT:
                     ret = this == ALL || name().indexOf("E") != -1;
                     break;
-                case WHITE_PAPER:
-                case EBOOK:
+                case PUBLICATION:
                     ret = this == ALL || name().indexOf("P") != -1;
                     break;
             }

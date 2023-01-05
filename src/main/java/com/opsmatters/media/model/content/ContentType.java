@@ -31,8 +31,7 @@ public enum ContentType
     ROUNDUP("RP", "Roundup", "roundups", "glyphicon-file"),
     POST("PO", "Post", "posts", "glyphicon-file"),
     EVENT("EV", "Event", "events", "glyphicon-calendar"),
-    WHITE_PAPER("WP", "White Paper", "white-papers", "glyphicon-book"),
-    EBOOK("EB", "EBook", "ebooks", "glyphicon-book"),
+    PUBLICATION("PB", "Publication", "publications", "glyphicon-book"),
     PROJECT("PR", "Project", "projects", "glyphicon-tasks"),
     TOOL("TL", "Tool", "tools", "glyphicon-wrench"),
     JOB("JB", "Job", "jobs", "glyphicon-briefcase"),
@@ -123,8 +122,7 @@ public enum ContentType
             || this == ROUNDUP
             || this == POST
             || this == EVENT
-            || this == WHITE_PAPER
-            || this == EBOOK
+            || this == PUBLICATION
             || this == TOOL;
     }
 
@@ -144,8 +142,7 @@ public enum ContentType
     {
         return this == VIDEO
             || this == ROUNDUP
-            || this == WHITE_PAPER
-            || this == EBOOK
+            || this == PUBLICATION
             || this == POST;
     }
 
@@ -165,8 +162,7 @@ public enum ContentType
         return this == VIDEO
             || this == ROUNDUP
             || this == EVENT
-            || this == WHITE_PAPER
-            || this == EBOOK
+            || this == PUBLICATION
             || this == TOOL;
     }
 
@@ -233,8 +229,7 @@ public enum ContentType
         ret.add(ROUNDUP);
         ret.add(POST);
         ret.add(EVENT);
-        ret.add(WHITE_PAPER);
-        ret.add(EBOOK);
+        ret.add(PUBLICATION);
         ret.add(PROJECT);
         ret.add(TOOL);
         ret.add(JOB);

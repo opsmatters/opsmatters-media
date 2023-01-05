@@ -21,11 +21,10 @@ import com.opsmatters.media.db.dao.DAOFactory;
 import com.opsmatters.media.db.dao.content.organisation.OrganisationListingDAO;
 import com.opsmatters.media.db.dao.content.organisation.OrganisationContentTypeDAO;
 import com.opsmatters.media.db.dao.content.video.VideoDAO;
-import com.opsmatters.media.db.dao.content.roundup.RoundupArticleDAO;
 import com.opsmatters.media.db.dao.content.event.EventDAO;
-import com.opsmatters.media.db.dao.content.publication.WhitePaperResourceDAO;
-import com.opsmatters.media.db.dao.content.publication.EBookResourceDAO;
+import com.opsmatters.media.db.dao.content.publication.PublicationDAO;
 import com.opsmatters.media.db.dao.content.post.PostDAO;
+import com.opsmatters.media.db.dao.content.post.RoundupPostDAO;
 import com.opsmatters.media.db.dao.content.project.ProjectDAO;
 import com.opsmatters.media.db.dao.content.tool.ToolDAO;
 import com.opsmatters.media.db.dao.content.job.JobDAO;
@@ -48,11 +47,10 @@ public class ContentDAOFactory extends DAOFactory
         getOrganisationListingDAO();
         getOrganisationContentTypeDAO();
         getVideoDAO();
-        getRoundupArticleDAO();
         getPostDAO();
+        getRoundupPostDAO();
         getEventDAO();
-        getWhitePaperResourceDAO();
-        getEBookResourceDAO();
+        getPublicationDAO();
         getToolDAO();
         getProjectDAO();
         getJobDAO();
@@ -89,16 +87,6 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the RoundupArticle DAO.
-     */
-    public RoundupArticleDAO getRoundupArticleDAO()
-    {
-        if(roundupArticleDAO == null)
-            roundupArticleDAO = new RoundupArticleDAO(this);
-        return roundupArticleDAO;
-    }
-
-    /**
      * Returns the Post DAO.
      */
     public PostDAO getPostDAO()
@@ -106,6 +94,16 @@ public class ContentDAOFactory extends DAOFactory
         if(postDAO == null)
             postDAO = new PostDAO(this);
         return postDAO;
+    }
+
+    /**
+     * Returns the RoundupPost DAO.
+     */
+    public RoundupPostDAO getRoundupPostDAO()
+    {
+        if(roundupPostDAO == null)
+            roundupPostDAO = new RoundupPostDAO(this);
+        return roundupPostDAO;
     }
 
     /**
@@ -119,23 +117,13 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the WhitePaperResource DAO.
+     * Returns the Publication DAO.
      */
-    public WhitePaperResourceDAO getWhitePaperResourceDAO()
+    public PublicationDAO getPublicationDAO()
     {
-        if(whitePaperResourceDAO == null)
-            whitePaperResourceDAO = new WhitePaperResourceDAO(this);
-        return whitePaperResourceDAO;
-    }
-
-    /**
-     * Returns the EBookResource DAO.
-     */
-    public EBookResourceDAO getEBookResourceDAO()
-    {
-        if(ebookResourceDAO == null)
-            ebookResourceDAO = new EBookResourceDAO(this);
-        return ebookResourceDAO;
+        if(publicationDAO == null)
+            publicationDAO = new PublicationDAO(this);
+        return publicationDAO;
     }
 
     /**
@@ -178,11 +166,10 @@ public class ContentDAOFactory extends DAOFactory
         organisationListingDAO = null;
         organisationContentTypeDAO = null;
         videoDAO = null;
-        roundupArticleDAO = null;
+        roundupPostDAO = null;
         postDAO = null;
         eventDAO = null;
-        whitePaperResourceDAO = null;
-        ebookResourceDAO = null;
+        publicationDAO = null;
         toolDAO = null;
         projectDAO = null;
         jobDAO = null;
@@ -191,11 +178,10 @@ public class ContentDAOFactory extends DAOFactory
     private OrganisationListingDAO organisationListingDAO;
     private OrganisationContentTypeDAO organisationContentTypeDAO;
     private VideoDAO videoDAO;
-    private RoundupArticleDAO roundupArticleDAO;
+    private RoundupPostDAO roundupPostDAO;
     private PostDAO postDAO;
     private EventDAO eventDAO;
-    private WhitePaperResourceDAO whitePaperResourceDAO;
-    private EBookResourceDAO ebookResourceDAO;
+    private PublicationDAO publicationDAO;
     private ToolDAO toolDAO;
     private ProjectDAO projectDAO;
     private JobDAO jobDAO;

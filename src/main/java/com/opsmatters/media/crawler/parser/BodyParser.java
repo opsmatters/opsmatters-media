@@ -473,8 +473,6 @@ public class BodyParser
     /**
      * Returns the list of body elements formatted as an article summary.
      */
-//GERALD
-//    public String formatSummary(int minLength, int maxLength, boolean multiple)
     public String formatSummary(int minLength, int maxLength)
     {
         StringBuilder ret = new StringBuilder();
@@ -574,10 +572,6 @@ if(text.startsWith("#")  // hashtags
                         ret, text.length(), ret.length()));
                 break;
             }
-
-//GERALD: test
-//            if(!multiple && text.length() > 0)
-//                break;
         }
 
         // Summary should end with full stop if it ends with a semi-colon
@@ -624,8 +618,6 @@ if(text.startsWith("#")  // hashtags
      */
     public String formatSummary(SummaryConfig config)
     {
-//GERALD
-//        return formatSummary(config.getMinLength(), config.getMaxLength(), true);
         return formatSummary(config.getMinLength(), config.getMaxLength());
     }
 

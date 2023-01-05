@@ -25,10 +25,10 @@ import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.video.VideoConfig;
 import com.opsmatters.media.model.content.video.VideoProvider;
-import com.opsmatters.media.model.content.roundup.RoundupConfig;
 import com.opsmatters.media.model.content.event.EventConfig;
 import com.opsmatters.media.model.content.event.EventProvider;
 import com.opsmatters.media.model.content.post.PostConfig;
+import com.opsmatters.media.model.content.post.RoundupPostConfig;
 import com.opsmatters.media.model.content.project.ProjectConfig;
 import com.opsmatters.media.model.content.tool.ToolConfig;
 import com.opsmatters.media.model.content.organisation.OrganisationListing;
@@ -85,8 +85,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
             setRoundups(tabs.contains(ContentType.ROUNDUP));
             setPosts(tabs.contains(ContentType.POST));
             setEvents(tabs.contains(ContentType.EVENT));
-            setWhitepapers(tabs.contains(ContentType.WHITE_PAPER));
-            setEbooks(tabs.contains(ContentType.EBOOK));
+            setPublications(tabs.contains(ContentType.PUBLICATION));
 
             setProjects(listing.hasProjects());
             setTools(listing.hasTools());
@@ -129,8 +128,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
         setRoundups(setup.hasRoundups());
         setPosts(setup.hasPosts());
         setEvents(setup.hasEvents());
-        setWhitepapers(setup.hasWhitePapers());
-        setEbooks(setup.hasEBooks());
+        setPublications(setup.hasPublications());
         setProjects(setup.hasProjects());
         setTools(setup.hasTools());
         setJobs(setup.hasJobs());
@@ -166,7 +164,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
 
         if(setup.hasRoundups())
         {
-            RoundupConfig roundups = setup.getRoundups();
+            RoundupPostConfig roundups = setup.getRoundups();
 
             OrganisationContentType type = OrganisationSites.getContentType(siteId, roundups);
             if(type != null)
@@ -481,35 +479,19 @@ public class ConfigGeneratorFields implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if white papers are enabled.
+     * Returns <CODE>true</CODE> if publications are enabled.
      */
-    public Boolean getWhitepapers()
+    public Boolean getPublications()
     {
-        return hasType(ContentType.WHITE_PAPER);
+        return hasType(ContentType.PUBLICATION);
     }
 
     /**
-     * Set to <CODE>true</CODE> if white papers are enabled.
+     * Set to <CODE>true</CODE> if publications are enabled.
      */
-    public void setWhitepapers(Boolean whitePapers)
+    public void setPublications(Boolean publications)
     {
-        setType(whitePapers, ContentType.WHITE_PAPER);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if ebooks are enabled.
-     */
-    public Boolean getEbooks()
-    {
-        return hasType(ContentType.EBOOK);
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if ebooks are enabled.
-     */
-    public void setEbooks(Boolean ebooks)
-    {
-        setType(ebooks, ContentType.EBOOK);
+        setType(publications, ContentType.PUBLICATION);
     }
 
     /**

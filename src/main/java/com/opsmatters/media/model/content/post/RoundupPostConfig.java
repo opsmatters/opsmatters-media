@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.content.roundup;
+package com.opsmatters.media.model.content.post;
 
 import java.util.Map;
 import java.util.List;
@@ -29,16 +29,16 @@ import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupConfig extends ContentConfig<RoundupArticle>
+public class RoundupPostConfig extends ContentConfig<RoundupPost>
 {
-    private static final Logger logger = Logger.getLogger(RoundupConfig.class.getName());
+    private static final Logger logger = Logger.getLogger(RoundupPostConfig.class.getName());
 
     private List<CrawlerWebPage> pages = new ArrayList<CrawlerWebPage>();
 
     /**
      * Constructor that takes a name.
      */
-    public RoundupConfig(String name)
+    public RoundupPostConfig(String name)
     {
         super(name);
     }
@@ -46,7 +46,7 @@ public class RoundupConfig extends ContentConfig<RoundupArticle>
     /**
      * Copy constructor.
      */
-    public RoundupConfig(RoundupConfig obj)
+    public RoundupPostConfig(RoundupPostConfig obj)
     {
         super(obj);
         copyAttributes(obj);
@@ -55,7 +55,7 @@ public class RoundupConfig extends ContentConfig<RoundupArticle>
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(RoundupConfig obj)
+    public void copyAttributes(RoundupPostConfig obj)
     {
         if(obj != null)
         {
@@ -152,12 +152,12 @@ public class RoundupConfig extends ContentConfig<RoundupArticle>
     /**
      * Builder to make configuration construction easier.
      */
-    public static class Builder extends ContentConfig.Builder<RoundupConfig, Builder>
+    public static class Builder extends ContentConfig.Builder<RoundupPostConfig, Builder>
     {
         // The config attribute names
         private static final String PAGES = "pages";
 
-        private RoundupConfig ret = null;
+        private RoundupPostConfig ret = null;
 
         /**
          * Constructor that takes a name.
@@ -165,7 +165,7 @@ public class RoundupConfig extends ContentConfig<RoundupArticle>
          */
         public Builder(String name)
         {
-            ret = new RoundupConfig(name);
+            ret = new RoundupPostConfig(name);
             super.set(ret);
         }
 
@@ -200,7 +200,7 @@ public class RoundupConfig extends ContentConfig<RoundupArticle>
          * @param obj The object to copy attributes from
          * @return This object
          */
-        public Builder copy(RoundupConfig obj)
+        public Builder copy(RoundupPostConfig obj)
         {
             ret.copyAttributes(obj);
             return this;
@@ -221,7 +221,7 @@ public class RoundupConfig extends ContentConfig<RoundupArticle>
          * @return The configuration instance
          */
         @Override
-        public RoundupConfig build()
+        public RoundupPostConfig build()
         {
             return ret;
         }

@@ -28,58 +28,58 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentStatus;
-import com.opsmatters.media.model.content.publication.EBookResource;
+import com.opsmatters.media.model.content.publication.Publication;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
 import com.opsmatters.media.util.AppSession;
 
 /**
- * DAO that provides operations on the EBOOKS table in the database.
+ * DAO that provides operations on the PUBLICATIONS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EBookResourceDAO extends ContentDAO<EBookResource>
+public class PublicationDAO extends ContentDAO<Publication>
 {
-    private static final Logger logger = Logger.getLogger(EBookResourceDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(PublicationDAO.class.getName());
 
     /**
-     * The query to use to select an ebook from the EBOOKS table by URL.
+     * The query to use to select an publication from the PUBLICATIONS table by URL.
      */
     private static final String GET_BY_URL_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM EBOOKS WHERE SITE_ID=? AND CODE=? AND URL=? ";
+      "SELECT ATTRIBUTES, SITE_ID FROM PUBLICATIONS WHERE SITE_ID=? AND CODE=? AND URL=? ";
 
     /**
-     * The query to use to select a list of ebooks from the EBOOKS table by URL.
+     * The query to use to select a list of publications from the PUBLICATIONS table by URL.
      */
     private static final String LIST_BY_URL_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM EBOOKS WHERE CODE=? AND URL=?";
+      "SELECT ATTRIBUTES, SITE_ID FROM PUBLICATIONS WHERE CODE=? AND URL=?";
 
     /**
-     * The query to use to insert a ebook into the EBOOKS table.
+     * The query to use to insert a publication into the PUBLICATIONS table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO EBOOKS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, URL, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
+      "INSERT INTO PUBLICATIONS"
+      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, URL, PUBLICATION_TYPE, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update a ebook in the EBOOKS table.
+     * The query to use to update a publication in the PUBLICATIONS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE EBOOKS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, URL=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=?, SESSION_ID=? "
+      "UPDATE PUBLICATIONS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, URL=?, PUBLICATION_TYPE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=?, SESSION_ID=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public EBookResourceDAO(ContentDAOFactory factory)
+    public PublicationDAO(ContentDAOFactory factory)
     {
-        super(factory, "EBOOKS");
+        super(factory, "PUBLICATIONS");
     }
 
     /**
-     * Defines the columns and indices for the EBOOKS table.
+     * Defines the columns and indices for the PUBLICATIONS table.
      */
     @Override
     protected void defineTable()
@@ -91,26 +91,27 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
         table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("TITLE", Types.VARCHAR, 256, true);
         table.addColumn("URL", Types.VARCHAR, 256, true);
+        table.addColumn("PUBLICATION_TYPE", Types.VARCHAR, 30, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("SESSION_ID", Types.INTEGER, true);
-        table.setPrimaryKey("EBOOKS_PK", new String[] {"SITE_ID","CODE","ID"});
-        table.addIndex("EBOOKS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
-        table.addIndex("EBOOKS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
-        table.addIndex("EBOOKS_URL_IDX", new String[] {"SITE_ID","CODE","URL"});
-        table.addIndex("EBOOKS_STATUS_IDX", new String[] {"STATUS"});
-        table.addIndex("EBOOKS_SESSION_IDX", new String[] {"SESSION_ID"});
+        table.setPrimaryKey("PUBLICATIONS_PK", new String[] {"SITE_ID","CODE","ID"});
+        table.addIndex("PUBLICATIONS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
+        table.addIndex("PUBLICATIONS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
+        table.addIndex("PUBLICATIONS_URL_IDX", new String[] {"SITE_ID","CODE","URL"});
+        table.addIndex("PUBLICATIONS_STATUS_IDX", new String[] {"STATUS"});
+        table.addIndex("PUBLICATIONS_SESSION_IDX", new String[] {"SESSION_ID"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns an ebook from the EBOOKS table by URL.
+     * Returns an publication from the PUBLICATIONS table by URL.
      */
-    public synchronized EBookResource getByUrl(String siteId, String code, String url) throws SQLException
+    public synchronized Publication getByUrl(String siteId, String code, String url) throws SQLException
     {
-        EBookResource ret = null;
+        Publication ret = null;
 
         if(!hasConnection())
             return ret;
@@ -132,7 +133,7 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                EBookResource item = new EBookResource(attributes);
+                Publication item = new Publication(attributes);
                 item.setSiteId(rs.getString(2));
                 ret = item;
             }
@@ -155,11 +156,11 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
     }
 
     /**
-     * Returns a list of ebooks from the EBOOKS table by URL.
+     * Returns a list of publications from the PUBLICATIONS table by URL.
      */
-    public synchronized List<EBookResource> listByUrl(String code, String url) throws SQLException
+    public synchronized List<Publication> listByUrl(String code, String url) throws SQLException
     {
-        List<EBookResource> ret = null;
+        List<Publication> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -177,11 +178,11 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
             listByUrlStmt.setString(2, url);
             listByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByUrlStmt.executeQuery();
-            ret = new ArrayList<EBookResource>();
+            ret = new ArrayList<Publication>();
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                EBookResource item = new EBookResource(attributes);
+                Publication item = new Publication(attributes);
                 item.setSiteId(rs.getString(2));
                 ret.add(item);
             }
@@ -204,15 +205,15 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
     }
 
     /**
-     * Stores the given ebook in the EBOOKS table.
+     * Stores the given publication in the PUBLICATIONS table.
      */
-    public synchronized void add(EBookResource content) throws SQLException
+    public synchronized void add(Publication content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
 
         if(!content.hasUniqueId())
-            throw new IllegalArgumentException("ebook uuid null");
+            throw new IllegalArgumentException("publication uuid null");
 
         if(insertStmt == null)
             insertStmt = prepareStatement(getConnection(), INSERT_SQL);
@@ -229,13 +230,14 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
             insertStmt.setString(5, content.getUuid());
             insertStmt.setString(6, content.getTitle());
             insertStmt.setString(7, content.getUrl());
-            insertStmt.setBoolean(8, content.isPublished());
-            insertStmt.setString(9, content.getStatus().name());
-            insertStmt.setString(10, content.getCreatedBy());
+            insertStmt.setString(8, content.getPublicationType());
+            insertStmt.setBoolean(9, content.isPublished());
+            insertStmt.setString(10, content.getStatus().name());
+            insertStmt.setString(11, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(11, reader, attributes.length());
-            insertStmt.setInt(12, AppSession.id());
+            insertStmt.setCharacterStream(12, reader, attributes.length());
+            insertStmt.setInt(13, AppSession.id());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -250,7 +252,7 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
                 insertStmt = null;
             }
 
-            // Unique constraint violated means that the ebook already exists
+            // Unique constraint violated means that the publication already exists
             if(!getDriver().isConstraintViolation(ex))
                 throw ex;
         }
@@ -262,15 +264,15 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
     }
 
     /**
-     * Updates the given ebook in the EBOOKS table.
+     * Updates the given publication in the PUBLICATIONS table.
      */
-    public synchronized void update(EBookResource content) throws SQLException
+    public synchronized void update(Publication content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
 
         if(!content.hasUniqueId())
-            throw new IllegalArgumentException("ebook uuid null");
+            throw new IllegalArgumentException("publication uuid null");
 
         if(updateStmt == null)
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
@@ -284,15 +286,16 @@ public class EBookResourceDAO extends ContentDAO<EBookResource>
             updateStmt.setString(2, content.getUuid());
             updateStmt.setString(3, content.getTitle());
             updateStmt.setString(4, content.getUrl());
-            updateStmt.setBoolean(5, content.isPublished());
-            updateStmt.setString(6, content.getStatus().name());
+            updateStmt.setString(5, content.getPublicationType());
+            updateStmt.setBoolean(6, content.isPublished());
+            updateStmt.setString(7, content.getStatus().name());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(7, reader, attributes.length());
-            updateStmt.setInt(8, AppSession.id());
-            updateStmt.setString(9, content.getSiteId());
-            updateStmt.setString(10, content.getCode());
-            updateStmt.setInt(11, content.getId());
+            updateStmt.setCharacterStream(8, reader, attributes.length());
+            updateStmt.setInt(9, AppSession.id());
+            updateStmt.setString(10, content.getSiteId());
+            updateStmt.setString(11, content.getCode());
+            updateStmt.setInt(12, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 

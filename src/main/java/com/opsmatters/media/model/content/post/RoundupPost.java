@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.content.roundup;
+package com.opsmatters.media.model.content.post;
 
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
@@ -35,24 +35,24 @@ import com.opsmatters.media.util.StringUtils;
 import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
- * Class representing a roundup post article.
+ * Class representing a roundup post.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupArticle extends Article<RoundupTeaser,RoundupDetails> implements LinkedContent
+public class RoundupPost extends Article<RoundupPostTeaser,RoundupPostDetails> implements LinkedContent
 {
     /**
      * Default constructor.
      */
-    public RoundupArticle()
+    public RoundupPost()
     {
-        setDetails(new RoundupDetails());
+        setDetails(new RoundupPostDetails());
     }
 
     /**
      * Constructor that takes a roundup post.
      */
-    public RoundupArticle(RoundupArticle obj)
+    public RoundupPost(RoundupPost obj)
     {
         this();
         copyAttributes(obj);
@@ -61,7 +61,7 @@ public class RoundupArticle extends Article<RoundupTeaser,RoundupDetails> implem
     /**
      * Constructor that takes a roundup.
      */
-    public RoundupArticle(Site site, String code, RoundupDetails obj)
+    public RoundupPost(Site site, String code, RoundupPostDetails obj)
     {
         this();
         init();
@@ -73,7 +73,7 @@ public class RoundupArticle extends Article<RoundupTeaser,RoundupDetails> implem
     /**
      * Constructor that takes a roundup teaser.
      */
-    public RoundupArticle(Site site, String code, RoundupTeaser obj)
+    public RoundupPost(Site site, String code, RoundupPostTeaser obj)
     {
         this();
         init();
@@ -85,7 +85,7 @@ public class RoundupArticle extends Article<RoundupTeaser,RoundupDetails> implem
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(RoundupArticle obj)
+    public void copyAttributes(RoundupPost obj)
     {
         super.copyAttributes(obj);
         setContentDetails(obj.getDetails());
@@ -94,7 +94,7 @@ public class RoundupArticle extends Article<RoundupTeaser,RoundupDetails> implem
     /**
      * Constructor that takes a spreadsheet row.
      */
-    public RoundupArticle(Site site, String code, String[] values) throws DateTimeParseException
+    public RoundupPost(Site site, String code, String[] values) throws DateTimeParseException
     {
         this();
         init();
@@ -147,7 +147,7 @@ public class RoundupArticle extends Article<RoundupTeaser,RoundupDetails> implem
     /**
      * Constructor that takes a JSON object.
      */
-    public RoundupArticle(JSONObject obj)
+    public RoundupPost(JSONObject obj)
     {
         this();
         fromJson(obj);
@@ -205,37 +205,37 @@ public class RoundupArticle extends Article<RoundupTeaser,RoundupDetails> implem
     @Override
     public void copyExternalAttributes(Content obj)
     {
-        if(obj instanceof RoundupArticle)
+        if(obj instanceof RoundupPost)
         {
-            RoundupArticle article = (RoundupArticle)obj;
-            if(article.hasImageSource())
-                setImageSource(article.getImageSource());
+            RoundupPost post = (RoundupPost)obj;
+            if(post.hasImageSource())
+                setImageSource(post.getImageSource());
         }
     }
 
     /**
-     * Returns a new article with defaults.
+     * Returns a new post with defaults.
      */
-    public static RoundupArticle getDefault(Organisation organisation, OrganisationSite organisationSite, RoundupConfig config)
+    public static RoundupPost getDefault(Organisation organisation, OrganisationSite organisationSite, RoundupPostConfig config)
         throws DateTimeParseException
     {
-        RoundupArticle article = new RoundupArticle();
+        RoundupPost post = new RoundupPost();
 
-        article.init();
-        article.setSiteId(organisationSite.getSiteId());
-        article.setTitle("New Roundup");
-        article.setSummary(StringUtils.EMPTY);
-        article.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
-        article.setSocial(organisationSite.hasSocial());
+        post.init();
+        post.setSiteId(organisationSite.getSiteId());
+        post.setTitle("New Roundup");
+        post.setSummary(StringUtils.EMPTY);
+        post.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        post.setSocial(organisationSite.hasSocial());
 
-        return article;
+        return post;
     }
 
     /**
      * Use the given configuration to set defaults for the content.
      */
     public void init(Organisation organisation, OrganisationSite organisationSite,
-        RoundupConfig config, CrawlerWebPage page)
+        RoundupPostConfig config, CrawlerWebPage page)
     {
         super.init(organisation, organisationSite, config);
 
@@ -261,7 +261,7 @@ public class RoundupArticle extends Article<RoundupTeaser,RoundupDetails> implem
     /**
      * Prepare the fields in the content using the given configuration.
      */
-    public void prepare(RoundupConfig config, CrawlerWebPage page, boolean debug)
+    public void prepare(RoundupPostConfig config, CrawlerWebPage page, boolean debug)
         throws DateTimeParseException
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
@@ -307,7 +307,7 @@ public class RoundupArticle extends Article<RoundupTeaser,RoundupDetails> implem
      * Sets the roundup details from a teaser.
      */
     @Override
-    public void setTeaserDetails(RoundupTeaser obj)
+    public void setTeaserDetails(RoundupPostTeaser obj)
     {
         super.setTeaserDetails(obj);
 
@@ -325,7 +325,7 @@ public class RoundupArticle extends Article<RoundupTeaser,RoundupDetails> implem
      * Sets the roundup details.
      */
     @Override
-    public void setContentDetails(RoundupDetails obj)
+    public void setContentDetails(RoundupPostDetails obj)
     {
         setTeaserDetails(obj);
         setConfigured(true);

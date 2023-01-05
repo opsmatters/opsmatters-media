@@ -13,26 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.content.roundup;
+package com.opsmatters.media.model.content.post;
 
 /**
  * Class representing a roundup post.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupDetails extends RoundupTeaser
+public class RoundupPostDetails extends RoundupPostTeaser
 {
     /**
      * Default constructor.
      */
-    public RoundupDetails()
+    public RoundupPostDetails()
     {
     }
 
     /**
      * Copy constructor.
      */
-    public RoundupDetails(RoundupDetails obj)
+    public RoundupPostDetails(RoundupPostDetails obj)
     {
         super(obj);
     }
@@ -40,7 +40,7 @@ public class RoundupDetails extends RoundupTeaser
     /**
      * Constructor that takes a teaser.
      */
-    public RoundupDetails(RoundupTeaser obj)
+    public RoundupPostDetails(RoundupPostTeaser obj)
     {
         super(obj);
     }

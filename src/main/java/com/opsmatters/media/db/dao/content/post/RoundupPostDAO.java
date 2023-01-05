@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.db.dao.content.roundup;
+package com.opsmatters.media.db.dao.content.post;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentStatus;
-import com.opsmatters.media.model.content.roundup.RoundupArticle;
+import com.opsmatters.media.model.content.post.RoundupPost;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
 import com.opsmatters.media.util.AppSession;
@@ -38,9 +38,9 @@ import com.opsmatters.media.util.AppSession;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupArticleDAO extends ContentDAO<RoundupArticle>
+public class RoundupPostDAO extends ContentDAO<RoundupPost>
 {
-    private static final Logger logger = Logger.getLogger(RoundupArticleDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(RoundupPostDAO.class.getName());
 
     /**
      * The query to use to select a roundup from the ROUNDUPS table by URL.
@@ -73,7 +73,7 @@ public class RoundupArticleDAO extends ContentDAO<RoundupArticle>
     /**
      * Constructor that takes a DAO factory.
      */
-    public RoundupArticleDAO(ContentDAOFactory factory)
+    public RoundupPostDAO(ContentDAOFactory factory)
     {
         super(factory, "ROUNDUPS");
     }
@@ -108,9 +108,9 @@ public class RoundupArticleDAO extends ContentDAO<RoundupArticle>
     /**
      * Returns a roundup from the ROUNDUPS table by URL.
      */
-    public synchronized RoundupArticle getByUrl(String siteId, String code, String url) throws SQLException
+    public synchronized RoundupPost getByUrl(String siteId, String code, String url) throws SQLException
     {
-        RoundupArticle ret = null;
+        RoundupPost ret = null;
 
         if(!hasConnection())
             return ret;
@@ -132,7 +132,7 @@ public class RoundupArticleDAO extends ContentDAO<RoundupArticle>
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                RoundupArticle item = new RoundupArticle(attributes);
+                RoundupPost item = new RoundupPost(attributes);
                 item.setSiteId(rs.getString(2));
                 ret = item;
             }
@@ -157,9 +157,9 @@ public class RoundupArticleDAO extends ContentDAO<RoundupArticle>
     /**
      * Returns a list of roundups from the ROUNDUPS table by URL.
      */
-    public synchronized List<RoundupArticle> listByUrl(String code, String url, long publishedDate) throws SQLException
+    public synchronized List<RoundupPost> listByUrl(String code, String url, long publishedDate) throws SQLException
     {
-        List<RoundupArticle> ret = null;
+        List<RoundupPost> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -179,11 +179,11 @@ public class RoundupArticleDAO extends ContentDAO<RoundupArticle>
             listByUrlStmt.setTimestamp(4, new Timestamp(publishedDate), UTC);
             listByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByUrlStmt.executeQuery();
-            ret = new ArrayList<RoundupArticle>();
+            ret = new ArrayList<RoundupPost>();
             while(rs.next())
             {
                 JSONObject attributes = new JSONObject(getClob(rs, 1));
-                RoundupArticle item = new RoundupArticle(attributes);
+                RoundupPost item = new RoundupPost(attributes);
                 item.setSiteId(rs.getString(2));
                 ret.add(item);
             }
@@ -208,7 +208,7 @@ public class RoundupArticleDAO extends ContentDAO<RoundupArticle>
     /**
      * Stores the given roundup in the ROUNDUPS table.
      */
-    public synchronized void add(RoundupArticle content) throws SQLException
+    public synchronized void add(RoundupPost content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;
@@ -266,7 +266,7 @@ public class RoundupArticleDAO extends ContentDAO<RoundupArticle>
     /**
      * Updates the given roundup in the ROUNDUPS table.
      */
-    public synchronized void update(RoundupArticle content) throws SQLException
+    public synchronized void update(RoundupPost content) throws SQLException
     {
         if(!hasConnection() || content == null)
             return;

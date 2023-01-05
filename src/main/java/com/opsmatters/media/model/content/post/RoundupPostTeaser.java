@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.content.roundup;
+package com.opsmatters.media.model.content.post;
 
 import com.opsmatters.media.model.content.ArticleTeaser;
 import com.opsmatters.media.model.content.LinkedContent;
@@ -24,18 +24,18 @@ import com.opsmatters.media.util.FormatUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupTeaser extends ArticleTeaser implements LinkedContent
+public class RoundupPostTeaser extends ArticleTeaser implements LinkedContent
 {
     private String url = "";
 
     /**
      * Default constructor.
      */
-    public RoundupTeaser()
+    public RoundupPostTeaser()
     {
     }
 
-    public RoundupTeaser(String url, boolean removeParameters)
+    public RoundupPostTeaser(String url, boolean removeParameters)
     {
         setUrl(url, removeParameters);
     }
@@ -43,7 +43,7 @@ public class RoundupTeaser extends ArticleTeaser implements LinkedContent
     /**
      * Copy constructor.
      */
-    public RoundupTeaser(RoundupTeaser obj)
+    public RoundupPostTeaser(RoundupPostTeaser obj)
     {
         super(obj);
 

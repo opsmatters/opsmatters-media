@@ -305,6 +305,22 @@ public class TaxonomyTerms
     }
 
     /**
+     * Returns the publication types for the given site.
+     */
+    public static List<String> getPublicationTypes(String siteId)
+    {
+        return getTermNames(siteId, TaxonomyTerm.PUBLICATION_TYPES);
+    }
+
+    /**
+     * Returns the publication types for the given site.
+     */
+    public static List<String> getPublicationTypes(Site site)
+    {
+        return getPublicationTypes(site.getId());
+    }
+
+    /**
      * Returns the term with the given name for the given site.
      */
     private static TaxonomyTerm getTerm(String siteId, String name, String type)

@@ -18,8 +18,8 @@ package com.opsmatters.media.model.content;
 import java.time.Instant;
 
 import com.opsmatters.media.model.content.video.Video;
-import com.opsmatters.media.model.content.roundup.RoundupArticle;
 import com.opsmatters.media.model.content.post.Post;
+import com.opsmatters.media.model.content.post.RoundupPost;
 
 /**
  * Class representing wrapped content containg an article.
@@ -149,10 +149,10 @@ public class ArticleWrapper extends Article
     {
         String ret = null;
 
-        if(article instanceof RoundupArticle)
+        if(article instanceof RoundupPost)
         {
-            RoundupArticle roundup = (RoundupArticle)article;
-            ret = roundup.getUrl();
+            RoundupPost post = (RoundupPost)article;
+            ret = post.getUrl();
         }
         else if(article instanceof Video)
         {
@@ -173,10 +173,10 @@ public class ArticleWrapper extends Article
      */
     public void setUrl(String url)
     {
-        if(article instanceof RoundupArticle)
+        if(article instanceof RoundupPost)
         {
-            RoundupArticle roundup = (RoundupArticle)article;
-            roundup.setUrl(url);
+            RoundupPost post = (RoundupPost)article;
+            post.setUrl(url);
         }
         else if(article instanceof Video)
         {
@@ -206,10 +206,10 @@ public class ArticleWrapper extends Article
     {
         String ret = null;
 
-        if(article instanceof RoundupArticle)
+        if(article instanceof RoundupPost)
         {
-            RoundupArticle roundup = (RoundupArticle)article;
-            ret = roundup.getImage();
+            RoundupPost post = (RoundupPost)article;
+            ret = post.getImage();
         }
         else if(article instanceof Post)
         {
@@ -225,10 +225,10 @@ public class ArticleWrapper extends Article
      */
     public void setImage(String image)
     {
-        if(article instanceof RoundupArticle)
+        if(article instanceof RoundupPost)
         {
-            RoundupArticle roundup = (RoundupArticle)article;
-            roundup.setImage(image);
+            RoundupPost post = (RoundupPost)article;
+            post.setImage(image);
         }
         else if(article instanceof Post)
         {
