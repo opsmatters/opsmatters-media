@@ -26,6 +26,7 @@ import com.opsmatters.media.cache.admin.AppParameters;
 public enum PublicationType
 {
     CASE_STUDY("Case Study"),
+    CHEAT_SHEET("Cheat Sheet"),
     DATASHEET("Datasheet"),
     EBOOK("EBook"),
     HANDBOOK("Handbook"),

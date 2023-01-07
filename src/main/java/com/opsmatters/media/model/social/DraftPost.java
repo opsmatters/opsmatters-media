@@ -305,6 +305,14 @@ public abstract class DraftPost extends SocialPost
     }
 
     /**
+     * Returns <CODE>true</CODE> if the draft status is NEW.
+     */
+    public boolean isNew()
+    {
+        return status == DraftStatus.NEW;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the draft status is SUBMITTED.
      */
     public boolean isSubmitted()
