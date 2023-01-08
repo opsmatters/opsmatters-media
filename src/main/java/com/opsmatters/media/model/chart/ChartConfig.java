@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.ConfigSetup;
+import com.opsmatters.media.model.ConfigStore;
 import com.opsmatters.media.model.ConfigElement;
 import com.opsmatters.media.model.ConfigParser;
 
@@ -30,9 +30,9 @@ import com.opsmatters.media.model.ConfigParser;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ChartSetup extends ConfigSetup
+public class ChartConfig extends ConfigStore
 {
-    private static final Logger logger = Logger.getLogger(ChartSetup.class.getName());
+    private static final Logger logger = Logger.getLogger(ChartConfig.class.getName());
 
     public static final String FILENAME = "charts.yml";
 
@@ -42,14 +42,14 @@ public class ChartSetup extends ConfigSetup
     /**
      * Default constructor.
      */
-    protected ChartSetup()
+    protected ChartConfig()
     {
     }
 
     /**
      * Copy constructor.
      */
-    public ChartSetup(ChartSetup obj)
+    public ChartConfig(ChartConfig obj)
     {
         copyAttributes(obj);
     }
@@ -57,7 +57,7 @@ public class ChartSetup extends ConfigSetup
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ChartSetup obj)
+    public void copyAttributes(ChartConfig obj)
     {
         if(obj != null)
         {
@@ -69,7 +69,7 @@ public class ChartSetup extends ConfigSetup
     }
 
     /**
-     * Returns the name of the setup file.
+     * Returns the name of the config file.
      */
     @Override
     public String getFilename()
@@ -158,7 +158,7 @@ public class ChartSetup extends ConfigSetup
     }
 
     /**
-     * Returns a builder for the chart setup.
+     * Returns a builder for the chart config.
      * @return The builder instance.
      */
     public static Builder builder()
@@ -167,17 +167,17 @@ public class ChartSetup extends ConfigSetup
     }
 
     /**
-     * Builder to make chart setup construction easier.
+     * Builder to make chart config construction easier.
      */
     public static class Builder
-        extends ConfigSetup.Builder<ChartSetup,Builder>
-        implements ConfigParser<ChartSetup>
+        extends ConfigStore.Builder<ChartConfig,Builder>
+        implements ConfigParser<ChartConfig>
     {
         // The config attribute names
         private static final String CHARTS = "charts";
         private static final String DASHBOARDS = "dashboards";
 
-        private ChartSetup ret = new ChartSetup();
+        private ChartConfig ret = new ChartConfig();
 
         /**
          * Default constructor.
@@ -230,11 +230,11 @@ public class ChartSetup extends ConfigSetup
         }
 
         /**
-         * Returns the configured chart setup instance
-         * @return The chart setup instance
+         * Returns the configured chart config instance
+         * @return The chart config instance
          */
         @Override
-        public ChartSetup build() throws IOException
+        public ChartConfig build() throws IOException
         {
             read(this);
             return ret;

@@ -22,28 +22,28 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.organisation.OrganisationContentSetup;
+import com.opsmatters.media.model.content.organisation.OrganisationContentConfig;
 
 /**
- * Class representing the set of content configuration setups.
+ * Class representing the set of content configurations for organisations.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrganisationContentSetups
+public class OrganisationContentConfigs
 {
-    private static final Logger logger = Logger.getLogger(OrganisationContentSetups.class.getName());
+    private static final Logger logger = Logger.getLogger(OrganisationContentConfigs.class.getName());
 
-    private static List<OrganisationContentSetup> configList = new ArrayList<OrganisationContentSetup>();
-    private static Map<String,OrganisationContentSetup> configMap = new HashMap<String,OrganisationContentSetup>();
-    private static Map<String,OrganisationContentSetup> nameMap = new HashMap<String,OrganisationContentSetup>();
-    private static Map<ContentType,Map<String,OrganisationContentSetup>> typeMap = new HashMap<ContentType,Map<String,OrganisationContentSetup>>();
+    private static List<OrganisationContentConfig> configList = new ArrayList<OrganisationContentConfig>();
+    private static Map<String,OrganisationContentConfig> configMap = new HashMap<String,OrganisationContentConfig>();
+    private static Map<String,OrganisationContentConfig> nameMap = new HashMap<String,OrganisationContentConfig>();
+    private static Map<ContentType,Map<String,OrganisationContentConfig>> typeMap = new HashMap<ContentType,Map<String,OrganisationContentConfig>>();
 
     private static boolean initialised = false;
 
     /**
      * Private constructor.
      */
-    private OrganisationContentSetups()
+    private OrganisationContentConfigs()
     {
     }
 
@@ -58,15 +58,15 @@ public class OrganisationContentSetups
     /**
      * Loads the set of configurations.
      */
-    public static void load(List<OrganisationContentSetup> configs)
+    public static void load(List<OrganisationContentConfig> configs)
     {
         initialised = false;
 
         clear();
-        for(OrganisationContentSetup config : configs)
+        for(OrganisationContentConfig config : configs)
             add(config);
 
-        logger.info("Loaded "+size()+" organisation content setups");
+        logger.info("Loaded "+size()+" organisation content configs");
 
         initialised = true;
     }
@@ -74,12 +74,12 @@ public class OrganisationContentSetups
     /**
      * Loads the set of archived configurations.
      */
-    public static void loadArchived(List<OrganisationContentSetup> configs)
+    public static void loadArchived(List<OrganisationContentConfig> configs)
     {
-        for(OrganisationContentSetup config : configs)
+        for(OrganisationContentConfig config : configs)
             add(config);
 
-        logger.info("Loaded "+size()+" archived organisation content setups");
+        logger.info("Loaded "+size()+" archived organisation content configs");
     }
 
     /**
@@ -96,7 +96,7 @@ public class OrganisationContentSetups
     /**
      * Adds the given configuration.
      */
-    private static void add(OrganisationContentSetup config)
+    private static void add(OrganisationContentConfig config)
     {
         configList.add(config);
         configMap.put(config.getCode(), config);
@@ -123,11 +123,11 @@ public class OrganisationContentSetups
      */
     private static void populateContentType(ContentType type)
     {
-        Map<String,OrganisationContentSetup> map = new TreeMap<String,OrganisationContentSetup>();
+        Map<String,OrganisationContentConfig> map = new TreeMap<String,OrganisationContentConfig>();
         typeMap.put(type, map);
 
         // Get the config files for the given content type
-        for(OrganisationContentSetup config : configList)
+        for(OrganisationContentConfig config : configList)
         {
             if(config.hasConfig(type))
                 map.put(config.getName(), config);
@@ -140,7 +140,7 @@ public class OrganisationContentSetups
     /**
      * Returns the configuration for the given code.
      */
-    public static OrganisationContentSetup get(String code)
+    public static OrganisationContentConfig get(String code)
     {
         return configMap.get(code);
     }
@@ -148,7 +148,7 @@ public class OrganisationContentSetups
     /**
      * Returns the configuration for the given name.
      */
-    public static OrganisationContentSetup getByName(String name)
+    public static OrganisationContentConfig getByName(String name)
     {
         return nameMap.get(name);
     }
@@ -156,9 +156,9 @@ public class OrganisationContentSetups
     /**
      * Sets the given configuration.
      */
-    public static void set(OrganisationContentSetup config)
+    public static void set(OrganisationContentConfig config)
     {
-        OrganisationContentSetup existing = configMap.get(config.getCode());
+        OrganisationContentConfig existing = configMap.get(config.getCode());
 
         if(existing != null)
         {
@@ -173,7 +173,7 @@ public class OrganisationContentSetups
         {
             if(type != ContentType.ORGANISATION)
             {
-                Map<String,OrganisationContentSetup> map = typeMap.get(type);
+                Map<String,OrganisationContentConfig> map = typeMap.get(type);
                 if(config.hasConfig(type))
                     map.put(config.getName(), config);
             }
@@ -186,7 +186,7 @@ public class OrganisationContentSetups
     /**
      * Returns the list of configurations.
      */
-    public static List<OrganisationContentSetup> list()
+    public static List<OrganisationContentConfig> list()
     {
         return configList;
     }
@@ -194,7 +194,7 @@ public class OrganisationContentSetups
     /**
      * Returns the map of configurations for the given type.
      */
-    public static Map<String,OrganisationContentSetup> mapByType(ContentType type)
+    public static Map<String,OrganisationContentConfig> mapByType(ContentType type)
     {
         return typeMap.get(type);
     }

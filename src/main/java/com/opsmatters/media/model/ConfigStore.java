@@ -20,18 +20,18 @@ import java.io.IOException;
 import com.opsmatters.media.file.YamlFileReader;
 
 /**
- * Base class for a configuration setup file.
+ * Base class for a configuration store file.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ConfigSetup implements ConfigElement
+public abstract class ConfigStore implements ConfigElement
 {
     /**
-     * Returns the name of the setup file.
+     * Returns the name of the store file.
      */
     public abstract String getFilename();
 
-    protected abstract static class Builder<T extends ConfigSetup, B extends Builder<T,B>>
+    protected abstract static class Builder<T extends ConfigStore, B extends Builder<T,B>>
     {
         protected String directory = "";
         protected String filename = "";
@@ -72,8 +72,8 @@ public abstract class ConfigSetup implements ConfigElement
         }
 
         /**
-         * Read the configuration setup file
-         * @return The social setup instance
+         * Read the configuration store file
+         * @return The social store instance
          */
         protected void read(ConfigParser parser) throws IOException
         {

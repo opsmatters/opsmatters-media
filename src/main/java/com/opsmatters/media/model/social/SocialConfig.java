@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.ConfigSetup;
+import com.opsmatters.media.model.ConfigStore;
 import com.opsmatters.media.model.ConfigElement;
 import com.opsmatters.media.model.ConfigParser;
 
@@ -31,9 +31,9 @@ import com.opsmatters.media.model.ConfigParser;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialSetup extends ConfigSetup
+public class SocialConfig extends ConfigStore
 {
-    private static final Logger logger = Logger.getLogger(SocialSetup.class.getName());
+    private static final Logger logger = Logger.getLogger(SocialConfig.class.getName());
 
     public static final String FILENAME = "social.yml";
 
@@ -43,14 +43,14 @@ public class SocialSetup extends ConfigSetup
     /**
      * Default constructor.
      */
-    protected SocialSetup()
+    protected SocialConfig()
     {
     }
 
     /**
      * Copy constructor.
      */
-    public SocialSetup(SocialSetup obj)
+    public SocialConfig(SocialConfig obj)
     {
         copyAttributes(obj);
     }
@@ -58,7 +58,7 @@ public class SocialSetup extends ConfigSetup
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(SocialSetup obj)
+    public void copyAttributes(SocialConfig obj)
     {
         if(obj != null)
         {
@@ -70,7 +70,7 @@ public class SocialSetup extends ConfigSetup
     }
 
     /**
-     * Returns the name of the setup file.
+     * Returns the name of the config file.
      */
     @Override
     public String getFilename()
@@ -135,7 +135,7 @@ public class SocialSetup extends ConfigSetup
     }
 
     /**
-     * Returns a builder for the social setup.
+     * Returns a builder for the social config.
      * @return The builder instance.
      */
     public static Builder builder()
@@ -144,17 +144,17 @@ public class SocialSetup extends ConfigSetup
     }
 
     /**
-     * Builder to make social setup construction easier.
+     * Builder to make social config construction easier.
      */
     public static class Builder
-        extends ConfigSetup.Builder<SocialSetup,Builder>
-        implements ConfigParser<SocialSetup>
+        extends ConfigStore.Builder<SocialConfig,Builder>
+        implements ConfigParser<SocialConfig>
     {
         // The config attribute names
         private static final String SOCIAL_CHANNELS = "social-channels";
         private static final String HASHTAGS = "hashtags";
 
-        private SocialSetup ret = new SocialSetup();
+        private SocialConfig ret = new SocialConfig();
 
         /**
          * Default constructor.
@@ -209,11 +209,11 @@ public class SocialSetup extends ConfigSetup
         }
 
         /**
-         * Returns the configured social setup instance
-         * @return The social setup instance
+         * Returns the configured social config instance
+         * @return The social config instance
          */
         @Override
-        public SocialSetup build() throws IOException
+        public SocialConfig build() throws IOException
         {
             read(this);
             return ret;

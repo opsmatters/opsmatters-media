@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.ConfigSetup;
+import com.opsmatters.media.model.ConfigStore;
 import com.opsmatters.media.model.ConfigElement;
 import com.opsmatters.media.model.ConfigParser;
 import com.opsmatters.media.model.platform.aws.S3Config;
@@ -32,9 +32,9 @@ import com.opsmatters.media.model.platform.aws.SesConfig;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PlatformSetup extends ConfigSetup
+public class PlatformConfig extends ConfigStore
 {
-    private static final Logger logger = Logger.getLogger(PlatformSetup.class.getName());
+    private static final Logger logger = Logger.getLogger(PlatformConfig.class.getName());
 
     public static final String FILENAME = "platform.yml";
 
@@ -48,14 +48,14 @@ public class PlatformSetup extends ConfigSetup
     /**
      * Default constructor.
      */
-    protected PlatformSetup()
+    protected PlatformConfig()
     {
     }
 
     /**
      * Copy constructor.
      */
-    public PlatformSetup(PlatformSetup obj)
+    public PlatformConfig(PlatformConfig obj)
     {
         copyAttributes(obj);
     }
@@ -63,7 +63,7 @@ public class PlatformSetup extends ConfigSetup
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(PlatformSetup obj)
+    public void copyAttributes(PlatformConfig obj)
     {
         if(obj != null)
         {
@@ -77,7 +77,7 @@ public class PlatformSetup extends ConfigSetup
     }
 
     /**
-     * Returns the name of the setup file.
+     * Returns the name of the config file.
      */
     @Override
     public String getFilename()
@@ -98,7 +98,7 @@ public class PlatformSetup extends ConfigSetup
      */
     public static void setS3Config(S3Config s3)
     {
-        PlatformSetup.s3 = s3;
+        PlatformConfig.s3 = s3;
     }
 
     /**
@@ -114,7 +114,7 @@ public class PlatformSetup extends ConfigSetup
      */
     public static void setSesConfig(SesConfig ses)
     {
-        PlatformSetup.ses = ses;
+        PlatformConfig.ses = ses;
     }
 
     /**
@@ -182,7 +182,7 @@ public class PlatformSetup extends ConfigSetup
     }
 
     /**
-     * Returns a builder for the platform setup.
+     * Returns a builder for the platform config.
      * @return The builder instance.
      */
     public static Builder builder()
@@ -191,11 +191,11 @@ public class PlatformSetup extends ConfigSetup
     }
 
     /**
-     * Builder to make platform setup construction easier.
+     * Builder to make platform config construction easier.
      */
     public static class Builder
-        extends ConfigSetup.Builder<PlatformSetup,Builder>
-        implements ConfigParser<PlatformSetup>
+        extends ConfigStore.Builder<PlatformConfig,Builder>
+        implements ConfigParser<PlatformConfig>
     {
         // The config attribute names
         private static final String S3 = "s3";
@@ -203,7 +203,7 @@ public class PlatformSetup extends ConfigSetup
         private static final String ENVIRONMENTS = "environments";
         private static final String SITES = "sites";
 
-        private PlatformSetup ret = new PlatformSetup();
+        private PlatformConfig ret = new PlatformConfig();
 
         /**
          * Default constructor.
@@ -271,11 +271,11 @@ public class PlatformSetup extends ConfigSetup
         }
 
         /**
-         * Returns the configured platform setup instance
-         * @return The platform setup instance
+         * Returns the configured platform config instance
+         * @return The platform config instance
          */
         @Override
-        public PlatformSetup build() throws IOException
+        public PlatformConfig build() throws IOException
         {
             read(this);
             return ret;

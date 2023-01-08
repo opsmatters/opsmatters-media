@@ -31,7 +31,7 @@ import org.apache.commons.text.StringSubstitutor;
 import com.google.common.io.Files;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
-import com.opsmatters.media.model.platform.PlatformSetup;
+import com.opsmatters.media.model.platform.PlatformConfig;
 import com.opsmatters.media.model.platform.Environment;
 import com.opsmatters.media.model.platform.aws.S3Config;
 import com.opsmatters.media.model.content.ContentConfig;
@@ -106,7 +106,7 @@ public class ContentHandler
         if(sheet == null || sheet.length() == 0)
             sheet = DEFAULT_SHEET;
 
-        s3Config = PlatformSetup.getS3Config();
+        s3Config = PlatformConfig.getS3Config();
     }
 
     /**

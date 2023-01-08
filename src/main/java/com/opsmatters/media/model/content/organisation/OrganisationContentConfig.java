@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.cache.organisation.Organisations;
-import com.opsmatters.media.model.ConfigSetup;
+import com.opsmatters.media.model.ConfigStore;
 import com.opsmatters.media.model.ConfigParser;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.content.ContentConfig;
@@ -48,14 +48,14 @@ import static com.opsmatters.media.model.content.ContentType.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrganisationContentSetup extends ConfigSetup implements FieldSource
+public class OrganisationContentConfig extends ConfigStore implements FieldSource
 {
-    private static final Logger logger = Logger.getLogger(OrganisationContentSetup.class.getName());
+    private static final Logger logger = Logger.getLogger(OrganisationContentConfig.class.getName());
 
     public static final String DEFAULTS = "content.yml";
     public static final String SUFFIX = "-content.yml";
 
-    private static OrganisationContentSetup defaults;
+    private static OrganisationContentConfig defaults;
     private static OrganisationListingConfig listing;
 
     private String code = "";
@@ -76,7 +76,7 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
     /**
      * Constructor that takes a name.
      */
-    public OrganisationContentSetup(String name)
+    public OrganisationContentConfig(String name)
     {
         setName(name);
     }
@@ -156,7 +156,7 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
     /**
      * Returns the default content configuration.
      */
-    public static OrganisationContentSetup getGlobalDefaults()
+    public static OrganisationContentConfig getGlobalDefaults()
     {
         return defaults;
     }
@@ -164,9 +164,9 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
     /**
      * Sets the default content configuration.
      */
-    public static void setGlobalDefaults(OrganisationContentSetup defaults)
+    public static void setGlobalDefaults(OrganisationContentConfig defaults)
     {
-        OrganisationContentSetup.defaults = defaults;
+        OrganisationContentConfig.defaults = defaults;
     }
 
     /**
@@ -206,7 +206,7 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
      */
     public static void setOrganisationListing(OrganisationListingConfig listing)
     {
-        OrganisationContentSetup.listing = listing;
+        OrganisationContentConfig.listing = listing;
     }
 
     /**
@@ -423,14 +423,14 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
      * Builder to make configuration construction easier.
      */
     public static class Builder
-        extends ConfigSetup.Builder<OrganisationContentSetup,Builder>
-        implements ConfigParser<OrganisationContentSetup>
+        extends ConfigStore.Builder<OrganisationContentConfig,Builder>
+        implements ConfigParser<OrganisationContentConfig>
     {
         // The config attribute names
         private static final String CODE = "code";
         private static final String FIELDS = "fields";
 
-        private OrganisationContentSetup ret = null;
+        private OrganisationContentConfig ret = null;
 
         /**
          * Constructor that takes a name.
@@ -439,7 +439,7 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
         public Builder(String name)
         {
             name = FileUtils.getName(name);
-            ret = new OrganisationContentSetup(name);
+            ret = new OrganisationContentConfig(name);
         }
 
         /**
@@ -450,7 +450,7 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
         @Override
         public Builder parse(Map<String, Object> map)
         {
-            OrganisationContentSetup defaults = OrganisationContentSetup.getGlobalDefaults();
+            OrganisationContentConfig defaults = OrganisationContentConfig.getGlobalDefaults();
 
             if(map.containsKey(CODE))
                 ret.setCode((String)map.get(CODE));
@@ -559,7 +559,7 @@ public class OrganisationContentSetup extends ConfigSetup implements FieldSource
          * @return The configuration instance
          */
         @Override
-        public OrganisationContentSetup build() throws IOException
+        public OrganisationContentConfig build() throws IOException
         {
             read(this);
             ret.setFilename(filename);
