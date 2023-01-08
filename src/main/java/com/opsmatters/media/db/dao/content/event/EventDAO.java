@@ -31,7 +31,7 @@ import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.model.content.event.Event;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
-import com.opsmatters.media.util.AppSession;
+import com.opsmatters.media.util.SessionId;
 
 /**
  * DAO that provides operations on the EVENTS table in the database.
@@ -186,7 +186,7 @@ public class EventDAO extends ContentDAO<Event>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(13, reader, attributes.length());
-            insertStmt.setInt(14, AppSession.id());
+            insertStmt.setInt(14, SessionId.get());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -242,7 +242,7 @@ public class EventDAO extends ContentDAO<Event>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(9, reader, attributes.length());
-            updateStmt.setInt(10, AppSession.id());
+            updateStmt.setInt(10, SessionId.get());
             updateStmt.setString(11, content.getSiteId());
             updateStmt.setString(12, content.getCode());
             updateStmt.setInt(13, content.getId());

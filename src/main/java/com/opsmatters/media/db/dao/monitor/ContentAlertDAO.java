@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.monitor.ContentAlert;
 import com.opsmatters.media.model.monitor.AlertStatus;
-import com.opsmatters.media.util.AppSession;
+import com.opsmatters.media.util.SessionId;
 
 /**
  * DAO that provides operations on the CONTENT_ALERTS table in the database.
@@ -211,7 +211,7 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
             insertStmt.setString(8, alert.getStatus().name());
             insertStmt.setString(9, alert.getMonitorId());
             insertStmt.setString(10, alert.getCreatedBy());
-            insertStmt.setInt(11, AppSession.id());
+            insertStmt.setInt(11, SessionId.get());
             insertStmt.executeUpdate();
 
             logger.info("Created alert '"+alert.getId()+"' in CONTENT_ALERTS");
@@ -258,7 +258,7 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
             updateStmt.setCharacterStream(2, reader, attributes.length());
             updateStmt.setString(3, alert.getStatus().name());
             updateStmt.setString(4, alert.getCreatedBy());
-            updateStmt.setInt(5, AppSession.id());
+            updateStmt.setInt(5, SessionId.get());
             updateStmt.setString(6, alert.getId());
             updateStmt.executeUpdate();
 

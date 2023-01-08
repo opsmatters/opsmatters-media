@@ -29,7 +29,7 @@ import com.opsmatters.media.model.DeliveryStatus;
 import com.opsmatters.media.model.social.PreparedPost;
 import com.opsmatters.media.model.social.DraftPost;
 import com.opsmatters.media.model.social.MessageFormat;
-import com.opsmatters.media.util.AppSession;
+import com.opsmatters.media.util.SessionId;
 
 /**
  * DAO that provides operations on the PREPARED_POSTS table in the database.
@@ -247,7 +247,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
             insertStmt.setString(12, post.getStatus().name());
             insertStmt.setString(13, post.getExternalId());
             insertStmt.setString(14, post.getCreatedBy());
-            insertStmt.setInt(15, AppSession.id());
+            insertStmt.setInt(15, SessionId.get());
             insertStmt.executeUpdate();
 
             logger.info("Created post '"+post.getId()+"' in PREPARED_POSTS");
@@ -292,7 +292,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
         updateStmt.setString(7, post.getExternalId());
         updateStmt.setInt(8, post.getErrorCode());
         updateStmt.setString(9, errorMessage);
-        updateStmt.setInt(10, AppSession.id());
+        updateStmt.setInt(10, SessionId.get());
         updateStmt.setString(11, post.getId());
         updateStmt.executeUpdate();
 

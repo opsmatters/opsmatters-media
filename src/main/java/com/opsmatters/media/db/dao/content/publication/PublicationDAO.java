@@ -31,7 +31,7 @@ import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.model.content.publication.Publication;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
-import com.opsmatters.media.util.AppSession;
+import com.opsmatters.media.util.SessionId;
 
 /**
  * DAO that provides operations on the PUBLICATIONS table in the database.
@@ -237,7 +237,7 @@ public class PublicationDAO extends ContentDAO<Publication>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(12, reader, attributes.length());
-            insertStmt.setInt(13, AppSession.id());
+            insertStmt.setInt(13, SessionId.get());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -292,7 +292,7 @@ public class PublicationDAO extends ContentDAO<Publication>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(8, reader, attributes.length());
-            updateStmt.setInt(9, AppSession.id());
+            updateStmt.setInt(9, SessionId.get());
             updateStmt.setString(10, content.getSiteId());
             updateStmt.setString(11, content.getCode());
             updateStmt.setInt(12, content.getId());

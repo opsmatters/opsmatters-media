@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.monitor.ContentChange;
 import com.opsmatters.media.model.monitor.ChangeStatus;
-import com.opsmatters.media.util.AppSession;
+import com.opsmatters.media.util.SessionId;
 
 /**
  * DAO that provides operations on the CONTENT_CHANGES table in the database.
@@ -225,7 +225,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
             insertStmt.setInt(11, change.getDifference());
             insertStmt.setString(12, change.getSites());
             insertStmt.setString(13, change.getCreatedBy());
-            insertStmt.setInt(14, AppSession.id());
+            insertStmt.setInt(14, SessionId.get());
             insertStmt.executeUpdate();
 
             logger.info("Created change '"+change.getId()+"' in CONTENT_CHANGES");
@@ -271,7 +271,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
         updateStmt.setString(2, change.getStatus().name());
         updateStmt.setString(3, change.getSites());
         updateStmt.setString(4, change.getCreatedBy());
-        updateStmt.setInt(5, AppSession.id());
+        updateStmt.setInt(5, SessionId.get());
         updateStmt.setString(6, change.getId());
         updateStmt.executeUpdate();
 

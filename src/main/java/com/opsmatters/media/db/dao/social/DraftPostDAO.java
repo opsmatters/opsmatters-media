@@ -35,7 +35,7 @@ import com.opsmatters.media.model.social.DraftPostFactory;
 import com.opsmatters.media.model.social.DraftStatus;
 import com.opsmatters.media.model.social.PostType;
 import com.opsmatters.media.model.social.DraftContentPost;
-import com.opsmatters.media.util.AppSession;
+import com.opsmatters.media.util.SessionId;
 
 /**
  * DAO that provides operations on the DRAFT_POSTS table in the database.
@@ -366,7 +366,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
             insertStmt.setString(10, post.getMessage());
             insertStmt.setString(11, post.getStatus().name());
             insertStmt.setString(12, post.getCreatedBy());
-            insertStmt.setInt(13, AppSession.id());
+            insertStmt.setInt(13, SessionId.get());
             insertStmt.executeUpdate();
 
             logger.info("Created post '"+post.getId()+"' in DRAFT_POSTS");
@@ -421,7 +421,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
             updateStmt.setCharacterStream(6, reader2, attributes.length());
             updateStmt.setString(7, post.getMessage());
             updateStmt.setString(8, post.getStatus().name());
-            updateStmt.setInt(9, AppSession.id());
+            updateStmt.setInt(9, SessionId.get());
             updateStmt.setString(10, post.getId());
             updateStmt.executeUpdate();
 

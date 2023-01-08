@@ -28,7 +28,7 @@ import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.model.content.project.Project;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
-import com.opsmatters.media.util.AppSession;
+import com.opsmatters.media.util.SessionId;
 
 /**
  * DAO that provides operations on the PROJECTS table in the database.
@@ -174,7 +174,7 @@ public class ProjectDAO extends ContentDAO<Project>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(11, reader, attributes.length());
-            insertStmt.setInt(12, AppSession.id());
+            insertStmt.setInt(12, SessionId.get());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -228,7 +228,7 @@ public class ProjectDAO extends ContentDAO<Project>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(7, reader, attributes.length());
-            updateStmt.setInt(8, AppSession.id());
+            updateStmt.setInt(8, SessionId.get());
             updateStmt.setString(9, content.getSiteId());
             updateStmt.setString(10, content.getCode());
             updateStmt.setInt(11, content.getId());

@@ -17,20 +17,20 @@
 package com.opsmatters.media.util;
 
 /**
- * A set of utility methods to manage the current app session.
+ * Class to manage the current app session id.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class AppSession
+public class SessionId
 {
     private int id = -1;
 
-    private static AppSession _session = new AppSession();
+    private static SessionId _session = new SessionId();
 
     /**
      * Private constructor as this class shouldn't be instantiated.
      */
-    private AppSession()
+    private SessionId()
     {
         setId(Integer.parseInt(TimeUtils.toStringUTC(Formats.SESSION_FORMAT)));
     }
@@ -52,9 +52,9 @@ public class AppSession
     }
 
     /**
-     * Sets the session id.
+     * Sets the current session id.
      */
-    public static void id(int id)
+    public static void set(int id)
     {
         _session.setId(id);
     }
@@ -62,7 +62,7 @@ public class AppSession
     /**
      * Returns the current session id.
      */
-    public static int id()
+    public static int get()
     {
         return _session.getId();
     }

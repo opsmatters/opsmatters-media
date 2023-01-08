@@ -26,7 +26,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.model.content.tool.Tool;
-import com.opsmatters.media.util.AppSession;
+import com.opsmatters.media.util.SessionId;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
 
@@ -117,7 +117,7 @@ public class ToolDAO extends ContentDAO<Tool>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(10, reader, attributes.length());
-            insertStmt.setInt(11, AppSession.id());
+            insertStmt.setInt(11, SessionId.get());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -170,7 +170,7 @@ public class ToolDAO extends ContentDAO<Tool>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(6, reader, attributes.length());
-            updateStmt.setInt(7, AppSession.id());
+            updateStmt.setInt(7, SessionId.get());
             updateStmt.setString(8, content.getSiteId());
             updateStmt.setString(9, content.getCode());
             updateStmt.setInt(10, content.getId());
