@@ -36,7 +36,7 @@ public class AdminDAOFactory extends DAOFactory
         getUserDAO();
         getEmailDAO();
         getNotificationDAO();
-        getAppParameterDAO();
+        getParameterDAO();
         getTableTaskDAO();
         getTaskExecutionDAO();
     }
@@ -74,10 +74,10 @@ public class AdminDAOFactory extends DAOFactory
     /**
      * Returns the application parameter DAO.
      */
-    public AppParameterDAO getAppParameterDAO()
+    public ParameterDAO getParameterDAO()
     {
         if(parameterDAO == null)
-            parameterDAO = new AppParameterDAO(this);
+            parameterDAO = new ParameterDAO(this);
         return parameterDAO;
     }
 
@@ -119,7 +119,7 @@ public class AdminDAOFactory extends DAOFactory
     private UserDAO userDAO;
     private EmailDAO emailDAO;
     private NotificationDAO notificationDAO;
-    private AppParameterDAO parameterDAO;
+    private ParameterDAO parameterDAO;
     private TableTaskDAO tableTaskDAO;
     private TaskExecutionDAO taskExecutionDAO;
 }

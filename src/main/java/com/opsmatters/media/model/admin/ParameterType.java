@@ -21,7 +21,7 @@ package com.opsmatters.media.model.admin;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum AppParameterType
+public enum ParameterType
 {
     UI("ui"),
     DASHBOARD("dashboard"),
@@ -40,7 +40,7 @@ public enum AppParameterType
      * Constructor that takes the type value.
      * @param value The value for the type
      */
-    AppParameterType(String value)
+    ParameterType(String value)
     {
         this.value = value;
     }
@@ -68,10 +68,10 @@ public enum AppParameterType
      * @param value The type value
      * @return The type for the given value
      */
-    public static AppParameterType fromValue(String value)
+    public static ParameterType fromValue(String value)
     {
-        AppParameterType[] types = values();
-        for(AppParameterType type : types)
+        ParameterType[] types = values();
+        for(ParameterType type : types)
         {
             if(type.value().equals(value))
                 return type;

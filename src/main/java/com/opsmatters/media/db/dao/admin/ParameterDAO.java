@@ -24,9 +24,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.admin.AppParameter;
-import com.opsmatters.media.model.admin.AppParameterType;
-import com.opsmatters.media.model.admin.AppParameterName;
+import com.opsmatters.media.model.admin.Parameter;
+import com.opsmatters.media.model.admin.ParameterType;
+import com.opsmatters.media.model.admin.ParameterName;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -34,9 +34,9 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class AppParameterDAO extends AdminDAO<AppParameter>
+public class ParameterDAO extends AdminDAO<Parameter>
 {
-    private static final Logger logger = Logger.getLogger(AppParameterDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(ParameterDAO.class.getName());
 
     /**
      * The query to use to select a parameter from the PARAMETERS table by id.
@@ -97,7 +97,7 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     /**
      * Constructor that takes a DAO factory.
      */
-    public AppParameterDAO(AdminDAOFactory factory)
+    public ParameterDAO(AdminDAOFactory factory)
     {
         super(factory, "PARAMETERS");
     }
@@ -122,12 +122,12 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     /**
      * Sets the default for the given parameter.
      */
-    public void setDefault(AppParameterType type, AppParameterName name, String value) throws SQLException
+    public void setDefault(ParameterType type, ParameterName name, String value) throws SQLException
     {
-        AppParameter parameter = getByName(type, name);
+        Parameter parameter = getByName(type, name);
         if(parameter == null)
         {
-            parameter = new AppParameter();
+            parameter = new Parameter();
             parameter.setId(StringUtils.getUUID(null));
             parameter.setCreatedDate(Instant.now());
             parameter.setType(type);
@@ -140,7 +140,7 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     /**
      * Sets the default for the given parameter.
      */
-    public void setDefault(AppParameterType type, AppParameterName name, int value) throws SQLException
+    public void setDefault(ParameterType type, ParameterName name, int value) throws SQLException
     {
         setDefault(type, name, Integer.toString(value));
     }
@@ -148,7 +148,7 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     /**
      * Sets the default for the given parameter.
      */
-    public void setDefault(AppParameterType type, AppParameterName name, boolean value) throws SQLException
+    public void setDefault(ParameterType type, ParameterName name, boolean value) throws SQLException
     {
         setDefault(type, name, Boolean.toString(value));
     }
@@ -156,9 +156,9 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     /**
      * Returns a parameter from the PARAMETERS table by id.
      */
-    public synchronized AppParameter getById(String id) throws SQLException
+    public synchronized Parameter getById(String id) throws SQLException
     {
-        AppParameter ret = null;
+        Parameter ret = null;
 
         if(!hasConnection())
             return ret;
@@ -177,12 +177,12 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
             rs = getByIdStmt.executeQuery();
             while(rs.next())
             {
-                AppParameter parameter = new AppParameter();
+                Parameter parameter = new Parameter();
                 parameter.setId(rs.getString(1));
                 parameter.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 parameter.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                parameter.setType(AppParameterType.fromValue(rs.getString(4)));
-                parameter.setName(AppParameterName.fromValue(rs.getString(5)));
+                parameter.setType(ParameterType.fromValue(rs.getString(4)));
+                parameter.setName(ParameterName.fromValue(rs.getString(5)));
                 parameter.setValue(rs.getString(6));
                 ret = parameter;
             }
@@ -207,9 +207,9 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     /**
      * Returns a parameter from the PARAMETERS table by name.
      */
-    public synchronized AppParameter getByName(AppParameterType type, AppParameterName name) throws SQLException
+    public synchronized Parameter getByName(ParameterType type, ParameterName name) throws SQLException
     {
-        AppParameter ret = null;
+        Parameter ret = null;
 
         if(!hasConnection())
             return ret;
@@ -229,12 +229,12 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
             rs = getByNameStmt.executeQuery();
             while(rs.next())
             {
-                AppParameter parameter = new AppParameter();
+                Parameter parameter = new Parameter();
                 parameter.setId(rs.getString(1));
                 parameter.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 parameter.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                parameter.setType(AppParameterType.fromValue(rs.getString(4)));
-                parameter.setName(AppParameterName.fromValue(rs.getString(5)));
+                parameter.setType(ParameterType.fromValue(rs.getString(4)));
+                parameter.setName(ParameterName.fromValue(rs.getString(5)));
                 parameter.setValue(rs.getString(6));
                 ret = parameter;
             }
@@ -259,7 +259,7 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     /**
      * Stores the given parameter in the PARAMETERS table.
      */
-    public synchronized void add(AppParameter parameter) throws SQLException
+    public synchronized void add(Parameter parameter) throws SQLException
     {
         if(!hasConnection() || parameter == null)
             return;
@@ -299,16 +299,16 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     /**
      * Updates the given parameters in the PARAMETERS table.
      */
-    public void update(List<AppParameter> parameters) throws SQLException
+    public void update(List<Parameter> parameters) throws SQLException
     {
-        for(AppParameter parameter : parameters)
+        for(Parameter parameter : parameters)
             update(parameter, false);
     }
 
     /**
      * Updates the given parameter in the PARAMETERS table.
      */
-    public synchronized void update(AppParameter parameter, boolean log) throws SQLException
+    public synchronized void update(Parameter parameter, boolean log) throws SQLException
     {
         if(!hasConnection() || parameter == null)
             return;
@@ -332,7 +332,7 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     /**
      * Updates the given parameter in the PARAMETERS table.
      */
-    public void update(AppParameter parameter) throws SQLException
+    public void update(Parameter parameter) throws SQLException
     {
         update(parameter, true);
     }
@@ -340,9 +340,9 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     /**
      * Returns the parameters from the PARAMETERS table.
      */
-    public synchronized List<AppParameter> list() throws SQLException
+    public synchronized List<Parameter> list() throws SQLException
     {
-        List<AppParameter> ret = null;
+        List<Parameter> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -358,17 +358,17 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
         {
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
-            ret = new ArrayList<AppParameter>();
+            ret = new ArrayList<Parameter>();
             while(rs.next())
             {
-                AppParameter parameter = new AppParameter();
+                Parameter parameter = new Parameter();
                 parameter.setId(rs.getString(1));
                 parameter.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 parameter.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 String parameterType = rs.getString(4);
-                parameter.setType(AppParameterType.fromValue(parameterType));
+                parameter.setType(ParameterType.fromValue(parameterType));
                 String parameterName = rs.getString(5);
-                parameter.setName(AppParameterName.fromValue(parameterName));
+                parameter.setName(ParameterName.fromValue(parameterName));
                 parameter.setValue(rs.getString(6));
                 if(parameter.getType() == null || parameter.getName() == null)
                     logger.warning(String.format("Unable to load parameter: %s/%s",
@@ -397,9 +397,9 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     /**
      * Returns the parameters from the PARAMETERS table by type.
      */
-    public synchronized List<AppParameter> list(AppParameterType type) throws SQLException
+    public synchronized List<Parameter> list(ParameterType type) throws SQLException
     {
-        List<AppParameter> ret = null;
+        List<Parameter> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -416,17 +416,17 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
             listByTypeStmt.setString(1, type.value());
             listByTypeStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByTypeStmt.executeQuery();
-            ret = new ArrayList<AppParameter>();
+            ret = new ArrayList<Parameter>();
             while(rs.next())
             {
-                AppParameter parameter = new AppParameter();
+                Parameter parameter = new Parameter();
                 parameter.setId(rs.getString(1));
                 parameter.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 parameter.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 String parameterType = rs.getString(4);
-                parameter.setType(AppParameterType.fromValue(parameterType));
+                parameter.setType(ParameterType.fromValue(parameterType));
                 String parameterName = rs.getString(5);
-                parameter.setName(AppParameterName.fromValue(parameterName));
+                parameter.setName(ParameterName.fromValue(parameterName));
                 parameter.setValue(rs.getString(6));
                 if(parameter.getType() == null || parameter.getName() == null)
                     logger.warning(String.format("Unable to load parameter: %s/%s",
@@ -473,7 +473,7 @@ public class AppParameterDAO extends AdminDAO<AppParameter>
     /**
      * Removes the given parameter from the PARAMETERS table.
      */
-    public synchronized void delete(AppParameter parameter) throws SQLException
+    public synchronized void delete(Parameter parameter) throws SQLException
     {
         if(!hasConnection() || parameter == null)
             return;

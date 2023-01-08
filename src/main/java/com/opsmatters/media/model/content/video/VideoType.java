@@ -16,10 +16,10 @@
 
 package com.opsmatters.media.model.content.video;
 
-import com.opsmatters.media.cache.admin.AppParameters;
+import com.opsmatters.media.cache.admin.Parameters;
 
-import static com.opsmatters.media.model.admin.AppParameterType.*;
-import static com.opsmatters.media.model.admin.AppParameterName.*;
+import static com.opsmatters.media.model.admin.ParameterType.*;
+import static com.opsmatters.media.model.admin.ParameterName.*;
 
 /**
  * Represents a video type.
@@ -114,7 +114,7 @@ public enum VideoType
         if(ret == null)
             ret = test(text, DEMO);
 
-        long min = AppParameters.get(UI, MIN_WEBINAR_DURATION).getValueAsLong();
+        long min = Parameters.get(UI, MIN_WEBINAR_DURATION).getValueAsLong();
         if((ret == null || ret == DEMO || ret == HOW_TO) && duration > min)
             ret = WEBINAR;
 

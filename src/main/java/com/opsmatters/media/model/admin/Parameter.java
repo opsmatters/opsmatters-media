@@ -23,23 +23,23 @@ import com.opsmatters.media.model.BaseEntity;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class AppParameter extends BaseEntity
+public class Parameter extends BaseEntity
 {
-    private AppParameterType type;
-    private AppParameterName name;
+    private ParameterType type;
+    private ParameterName name;
     private String value = "";
 
     /**
      * Default constructor.
      */
-    public AppParameter()
+    public Parameter()
     {
     }
 
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(AppParameter obj)
+    public void copyAttributes(Parameter obj)
     {
         if(obj != null)
         {
@@ -61,7 +61,7 @@ public class AppParameter extends BaseEntity
     /**
      * Returns the type.
      */
-    public AppParameterType getType()
+    public ParameterType getType()
     {
         return type;
     }
@@ -69,7 +69,7 @@ public class AppParameter extends BaseEntity
     /**
      * Sets the type.
      */
-    public void setType(AppParameterType type)
+    public void setType(ParameterType type)
     {
         this.type = type;
     }
@@ -85,7 +85,7 @@ public class AppParameter extends BaseEntity
     /**
      * Returns the name.
      */
-    public AppParameterName getName()
+    public ParameterName getName()
     {
         return name;
     }
@@ -93,7 +93,7 @@ public class AppParameter extends BaseEntity
     /**
      * Sets the name.
      */
-    public void setName(AppParameterName name)
+    public void setName(ParameterName name)
     {
         this.name = name;
     }

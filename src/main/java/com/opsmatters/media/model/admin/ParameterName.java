@@ -21,7 +21,7 @@ package com.opsmatters.media.model.admin;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum AppParameterName
+public enum ParameterName
 {
     DRAFT_POST_INTERVAL("draft-post-interval"),
     PREPARED_POST_INTERVAL("prepared-post-interval"),
@@ -63,7 +63,7 @@ public enum AppParameterName
      * Constructor that takes the name value.
      * @param value The value for the name
      */
-    AppParameterName(String value)
+    ParameterName(String value)
     {
         this.value = value;
     }
@@ -91,10 +91,10 @@ public enum AppParameterName
      * @param value The type value
      * @return The type for the given value
      */
-    public static AppParameterName fromValue(String value)
+    public static ParameterName fromValue(String value)
     {
-        AppParameterName[] types = values();
-        for(AppParameterName type : types)
+        ParameterName[] types = values();
+        for(ParameterName type : types)
         {
             if(type.value().equals(value))
                 return type;

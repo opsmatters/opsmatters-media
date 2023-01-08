@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import com.opsmatters.media.cache.admin.AppParameters;
-import com.opsmatters.media.model.admin.AppParameterType;
-import com.opsmatters.media.model.admin.AppParameterName;
+import com.opsmatters.media.cache.admin.Parameters;
+import com.opsmatters.media.model.admin.ParameterType;
+import com.opsmatters.media.model.admin.ParameterName;
 import com.opsmatters.media.model.chart.Dashboard;
 
 /**
@@ -100,9 +100,9 @@ public class Dashboards
     /**
      * Returns the dashboard for the given parameter.
      */
-    public static Dashboard get(AppParameterName name)
+    public static Dashboard get(ParameterName name)
     {
-        Dashboard ret = get(AppParameters.get(AppParameterType.DASHBOARD, name).getValue());
+        Dashboard ret = get(Parameters.get(ParameterType.DASHBOARD, name).getValue());
         if(ret == null && size() > 0)
             ret = dashboardList.get(0); // default to the 1st dashboard
         return ret;

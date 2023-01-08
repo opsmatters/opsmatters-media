@@ -16,8 +16,6 @@
 
 package com.opsmatters.media.model.content.publication;
 
-import com.opsmatters.media.cache.admin.AppParameters;
-
 /**
  * Represents a publication type.
  * 
