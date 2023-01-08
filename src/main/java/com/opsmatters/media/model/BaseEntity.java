@@ -22,11 +22,11 @@ import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
- * Class representing a created item.
+ * Class representing a created entity.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class BaseItem implements java.io.Serializable
+public abstract class BaseEntity implements java.io.Serializable
 {
     private String id = "";
     private Instant createdDate;
@@ -35,7 +35,7 @@ public abstract class BaseItem implements java.io.Serializable
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(BaseItem obj)
+    public void copyAttributes(BaseEntity obj)
     {
         if(obj != null)
         {
@@ -46,7 +46,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the item id.
+     * Returns the entity id.
      */
     public String toString()
     {
@@ -54,7 +54,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the item id.
+     * Returns the entity id.
      */
     public String getId()
     {
@@ -62,7 +62,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Sets the item id.
+     * Sets the entity id.
      */
     public void setId(String id)
     {
@@ -70,7 +70,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if the item id has been set.
+     * Returns <CODE>true</CODE> if the entity id has been set.
      */
     public boolean hasId()
     {
@@ -78,7 +78,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was created.
+     * Returns the date the entity was created.
      */
     public Instant getCreatedDate()
     {
@@ -86,7 +86,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was created.
+     * Returns the date the entity was created.
      */
     public long getCreatedDateMillis()
     {
@@ -94,7 +94,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was created.
+     * Returns the date the entity was created.
      */
     public LocalDateTime getCreatedDateUTC()
     {
@@ -102,7 +102,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was created.
+     * Returns the date the entity was created.
      */
     public String getCreatedDateAsString(String pattern)
     {
@@ -110,7 +110,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was created.
+     * Returns the date the entity was created.
      */
     public String getCreatedDateAsString(String pattern, String timezone)
     {
@@ -118,7 +118,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was created.
+     * Returns the date the entity was created.
      */
     public String getCreatedDateAsString()
     {
@@ -126,7 +126,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was created.
+     * Sets the date the entity was created.
      */
     public void setCreatedDate(Instant createdDate)
     {
@@ -134,7 +134,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was created.
+     * Sets the date the entity was created.
      */
     public void setCreatedDateMillis(long millis)
     {
@@ -143,7 +143,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was created.
+     * Sets the date the entity was created.
      */
     public void setCreatedDateAsString(String str, String pattern) throws DateTimeParseException
     {
@@ -151,7 +151,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was created.
+     * Sets the date the entity was created.
      */
     public void setCreatedDateAsString(String str) throws DateTimeParseException
     {
@@ -159,7 +159,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was created.
+     * Sets the date the entity was created.
      */
     public void setCreatedDateUTC(LocalDateTime createdDate)
     {
@@ -168,7 +168,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was last updated.
+     * Returns the date the entity was last updated.
      */
     public Instant getUpdatedDate()
     {
@@ -176,7 +176,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was last updated.
+     * Returns the date the entity was last updated.
      */
     public long getUpdatedDateMillis()
     {
@@ -184,7 +184,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was last updated.
+     * Returns the date the entity was last updated.
      */
     public LocalDateTime getUpdatedDateUTC()
     {
@@ -192,7 +192,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was last updated.
+     * Returns the date the entity was last updated.
      */
     public String getUpdatedDateAsString(String pattern)
     {
@@ -200,7 +200,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was last updated.
+     * Returns the date the entity was last updated.
      */
     public String getUpdatedDateAsString(String pattern, String timezone)
     {
@@ -208,7 +208,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was last updated.
+     * Returns the date the entity was last updated.
      */
     public String getUpdatedDateAsString()
     {
@@ -216,7 +216,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was last updated.
+     * Sets the date the entity was last updated.
      */
     public void setUpdatedDate(Instant updatedDate)
     {
@@ -224,7 +224,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was last updated.
+     * Sets the date the entity was last updated.
      */
     public void setUpdatedDateMillis(long millis)
     {
@@ -233,7 +233,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was last updated.
+     * Sets the date the entity was last updated.
      */
     public void setUpdatedDateAsString(String str, String pattern) throws DateTimeParseException
     {
@@ -241,7 +241,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was last updated.
+     * Sets the date the entity was last updated.
      */
     public void setUpdatedDateAsString(String str) throws DateTimeParseException
     {
@@ -249,7 +249,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Sets the date the item was last updated.
+     * Sets the date the entity was last updated.
      */
     public void setUpdatedDateUTC(LocalDateTime updatedDate)
     {
@@ -258,7 +258,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was created or last updated.
+     * Returns the date the entity was created or last updated.
      */
     public Instant getDate()
     {
@@ -266,7 +266,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was created or last updated.
+     * Returns the date the entity was created or last updated.
      */
     public long getDateMillis()
     {
@@ -274,7 +274,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was created or last updated.
+     * Returns the date the entity was created or last updated.
      */
     public LocalDateTime getDateUTC()
     {
@@ -282,7 +282,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was created or last updated.
+     * Returns the date the entity was created or last updated.
      */
     public String getDateAsString(String pattern)
     {
@@ -290,7 +290,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was created or last updated.
+     * Returns the date the entity was created or last updated.
      */
     public String getDateAsString(String pattern, String timezone)
     {
@@ -298,7 +298,7 @@ public abstract class BaseItem implements java.io.Serializable
     }
 
     /**
-     * Returns the date the item was created or last updated.
+     * Returns the date the entity was created or last updated.
      */
     public String getDateAsString()
     {

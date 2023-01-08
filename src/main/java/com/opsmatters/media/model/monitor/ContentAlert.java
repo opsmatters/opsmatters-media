@@ -19,7 +19,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
-import com.opsmatters.media.model.OwnedItem;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;

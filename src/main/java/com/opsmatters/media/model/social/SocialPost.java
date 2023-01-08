@@ -16,14 +16,14 @@
 package com.opsmatters.media.model.social;
 
 import com.vdurmont.emoji.EmojiParser;
-import com.opsmatters.media.model.OwnedItem;
+import com.opsmatters.media.model.OwnedEntity;
 
 /**
  * Class representing a social media post.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class SocialPost extends OwnedItem
+public abstract class SocialPost extends OwnedEntity
 {
     public static final String HANDLE = "handle";
     public static final String HASHTAG = "hashtag";

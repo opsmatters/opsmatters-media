@@ -15,14 +15,14 @@
  */
 package com.opsmatters.media.model.drupal;
 
-import com.opsmatters.media.model.BaseItem;
+import com.opsmatters.media.model.BaseEntity;
 
 /**
  * Class representing a drupal taxonomy term.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class TaxonomyTerm extends BaseItem
+public class TaxonomyTerm extends BaseEntity
 {
     // The vocabulary types
     public static final String TAGS = "tags";

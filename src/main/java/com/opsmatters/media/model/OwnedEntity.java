@@ -16,18 +16,18 @@
 package com.opsmatters.media.model;
 
 /**
- * Class representing an item with an owner.
+ * Class representing an entity with an owner.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class OwnedItem extends BaseItem
+public abstract class OwnedEntity extends BaseEntity
 {
     private String createdBy = "";
 
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(OwnedItem obj)
+    public void copyAttributes(OwnedEntity obj)
     {
         if(obj != null)
         {
@@ -37,7 +37,7 @@ public abstract class OwnedItem extends BaseItem
     }
 
     /**
-     * Returns the user that changed the item.
+     * Returns the user that changed the entity.
      */
     public String getCreatedBy()
     {
@@ -45,7 +45,7 @@ public abstract class OwnedItem extends BaseItem
     }
 
     /**
-     * Sets the user that changed the item.
+     * Sets the user that changed the entity.
      */
     public void setCreatedBy(String createdBy)
     {

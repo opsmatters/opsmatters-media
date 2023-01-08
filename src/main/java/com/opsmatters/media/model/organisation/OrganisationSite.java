@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.time.Instant;
 import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.Organisations;
-import com.opsmatters.media.model.OwnedItem;
+import com.opsmatters.media.model.OwnedEntity;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.FieldName;
@@ -36,7 +36,7 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrganisationSite extends OwnedItem implements FieldSource
+public class OrganisationSite extends OwnedEntity implements FieldSource
 {
     private String siteId = "";
     private String code = "";

@@ -16,7 +16,7 @@
 package com.opsmatters.media.model.admin;
 
 import java.time.Instant;
-import com.opsmatters.media.model.BaseItem;
+import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.AppTimeZone;
 
@@ -25,7 +25,7 @@ import com.opsmatters.media.util.AppTimeZone;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class User extends BaseItem
+public class User extends BaseEntity
 {
     private String username = "";
     private String email = "";

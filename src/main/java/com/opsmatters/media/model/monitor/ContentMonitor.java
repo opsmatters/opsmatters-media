@@ -26,7 +26,7 @@ import java.time.format.DateTimeParseException;
 import java.sql.SQLException;
 import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.Organisations;
-import com.opsmatters.media.model.BaseItem;
+import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailBody;
@@ -44,7 +44,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentMonitor extends BaseItem
+public class ContentMonitor extends BaseEntity
 {
     private static final Logger logger = Logger.getLogger(ContentMonitor.class.getName());
 

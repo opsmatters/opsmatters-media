@@ -18,7 +18,7 @@ package com.opsmatters.media.model.content.organisation;
 import java.time.Instant;
 import java.util.List;
 import org.json.JSONObject;
-import com.opsmatters.media.model.BaseItem;
+import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
@@ -32,7 +32,7 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrganisationContentType extends BaseItem
+public class OrganisationContentType extends BaseEntity
 {
     private String siteId = "";
     private String code = "";
