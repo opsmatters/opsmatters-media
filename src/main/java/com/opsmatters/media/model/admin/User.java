@@ -18,7 +18,7 @@ package com.opsmatters.media.model.admin;
 import java.time.Instant;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.AppTimeZone;
+import com.opsmatters.media.cache.util.TimeZones;
 
 /**
  * Class representing a user.
@@ -32,7 +32,7 @@ public class User extends BaseEntity
     private String firstName = "";
     private String lastName = "";
     private String role = "";
-    private String timezone = AppTimeZone.DEFAULT; // UTC
+    private String timezone = TimeZones.DEFAULT; // UTC
     private boolean admin = false;
     private UserStatus status = UserStatus.DISABLED;
     private TraceObject traceObject = TraceObject.NONE;

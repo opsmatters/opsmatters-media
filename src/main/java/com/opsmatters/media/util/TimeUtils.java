@@ -39,6 +39,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import org.apache.commons.lang3.LocaleUtils;
+import com.opsmatters.media.cache.util.TimeZones;
 
 /**
  * A set of utility methods to perform miscellaneous tasks related to dates and calendars.
@@ -264,7 +265,7 @@ public class TimeUtils
 
         // First try the configured timezone
         String tz = DEFAULT_TIMEZONE;
-        ret = AppTimeZone.getTimeZoneById(tz);
+        ret = TimeZones.getTimeZoneById(tz);
         if(ret == null)
         {
             // Next try the locale timezone
