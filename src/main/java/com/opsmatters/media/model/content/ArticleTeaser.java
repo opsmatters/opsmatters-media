@@ -39,10 +39,17 @@ public abstract class ArticleTeaser extends ContentTeaser
      */
     public ArticleTeaser(ArticleTeaser obj)
     {
-        super(obj);
+        copyAttributes(obj);
+    }
 
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(ArticleTeaser obj)
+    {
         if(obj != null)
         {
+            super.copyAttributes(obj);
             setAuthor(obj.getAuthor());
             setAuthorLink(obj.getAuthorLink());
         }

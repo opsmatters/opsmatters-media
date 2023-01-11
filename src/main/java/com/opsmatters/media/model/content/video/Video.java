@@ -297,6 +297,7 @@ public class Video extends Article<VideoTeaser,VideoDetails>
         {
             setVideoId(new String(obj.getVideoId()));
             setProvider(obj.getProvider());
+            setDuration(obj.getDuration());
         }
     }
 
@@ -309,7 +310,6 @@ public class Video extends Article<VideoTeaser,VideoDetails>
         if(obj != null)
         {
             setTeaserDetails(obj);
-            setDuration(obj.getDuration());
             setDescription(new String(obj.getDescription() != null ? obj.getDescription() : ""));
             setChannelId(new String(obj.getChannelId()));
             setChannelTitle(new String(obj.getChannelTitle()));

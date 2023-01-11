@@ -56,6 +56,7 @@ import com.opsmatters.media.crawler.parser.ElementType;
 import com.opsmatters.media.model.admin.TraceObject;
 import com.opsmatters.media.model.content.ContentTeaser;
 import com.opsmatters.media.util.FormatUtils;
+import com.opsmatters.media.util.StringUtils;
 
 /**
  * Class representing a crawler for content items from a web page.
@@ -745,6 +746,9 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                 Element anchor = null;
                 Element div = null;
                 Element section = null;
+                Element elem = null;
+
+                String attribute = selector.hasAttribute() ? selector.getAttribute() : "href";
 
                 if(selector.getExpr().equals(ROOT)) // The anchor is the root node itself
                 {
@@ -752,6 +756,10 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                         anchor = root;
                     else if(root.tagName().equals(DIV))
                         div = root;
+                    else if(root.tagName().equals(SECTION))
+                        section = root;
+                    else if(root.hasAttr(attribute))
+                        elem = root;
                 }
                 else
                 {
@@ -764,10 +772,10 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                             div = element;
                         else if(element.tagName().equals(SECTION))
                             section = element;
+                        else if(element.hasAttr(attribute))
+                            elem = element;
                     }
                 }
-
-                String attribute = selector.hasAttribute() ? selector.getAttribute() : "href";
 
                 if(anchor != null)
                 {
@@ -797,6 +805,24 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                     ret = FormatUtils.getFormattedUrl(getBasePath(), value, removeParameters);
                     if(debug())
                         logger.info("Found anchor section for "+type+" field "+field.getName()+": "+ret);
+                    break;
+                }
+                else if(elem != null)
+                {
+                    String value = elem.attr(attribute);
+                    if(value != null)
+                    {
+                        value = value.trim();
+                        if(value.matches("\\w+\\(.+\\);"))  // eg. onclick="postURL('https://something/else');"
+                        {
+                            value = value.replaceAll("\\w+\\((.+)\\);", "$1"); // extract the URL
+                            value = StringUtils.stripQuotes(value);
+                        }
+                    }
+
+                    ret = FormatUtils.getFormattedUrl(getBasePath(), value, removeParameters);
+                    if(debug())
+                        logger.info("Found anchor element for "+type+" field "+field.getName()+": "+ret);
                     break;
                 }
             }

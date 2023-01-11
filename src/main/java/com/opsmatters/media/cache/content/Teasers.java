@@ -66,6 +66,21 @@ public class Teasers
         {
             return (System.currentTimeMillis() - tm) > EXPIRY;
         }
+
+        void update(ContentTeaser teaser)
+        {
+            int idx = 0;
+            for(ContentTeaser item : this)
+            {
+                if(teaser.hasSameUniqueId(item))
+                {
+                    set(idx, teaser);
+                    break;
+                }
+
+                ++idx;
+            }
+        }
     }
 
     /**
@@ -86,6 +101,28 @@ public class Teasers
             if(teasers.size() > 0)
                 teaserMap.put(id, new TeaserList(config, teasers));
         }
+    }
+
+    /**
+     * Sets the teaser list for the given id.
+     */
+    public static void update(String id, ContentTeaser teaser)
+    {
+        synchronized(teaserMap)
+        {
+            TeaserList list = teaserMap.get(id);
+            if(list != null)
+                list.update(teaser);
+        }
+    }
+
+    /**
+     * Sets the teaser list for the given ids.
+     */
+    public static void update(List<String> ids, ContentTeaser teaser)
+    {
+        for(String id : ids)
+            update(id, teaser);
     }
 
     /**

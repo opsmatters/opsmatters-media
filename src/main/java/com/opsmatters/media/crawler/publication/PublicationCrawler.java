@@ -24,6 +24,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import com.opsmatters.media.crawler.WebPageCrawler;
+import com.opsmatters.media.cache.content.Teasers;
 import com.opsmatters.media.model.content.publication.PublicationTeaser;
 import com.opsmatters.media.model.content.publication.PublicationDetails;
 import com.opsmatters.media.model.content.publication.PublicationConfig;
@@ -162,6 +163,8 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
 
         if(root == null)
             throw new IllegalArgumentException("Root not found for publication content");
+
+        Teasers.update(getPage().getUrls(), content);
 
         return content;
     }

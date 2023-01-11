@@ -53,10 +53,17 @@ public class EventTeaser extends ResourceTeaser
      */
     public EventTeaser(EventTeaser obj)
     {
-        super(obj);
+        copyAttributes(obj);
+    }
 
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(EventTeaser obj)
+    {
         if(obj != null)
         {
+            super.copyAttributes(obj);
             setStartDate(obj.getStartDate());
             setEndDate(obj.getEndDate());
         }

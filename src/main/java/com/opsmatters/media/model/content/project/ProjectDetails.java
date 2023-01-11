@@ -38,10 +38,17 @@ public class ProjectDetails extends ProjectTeaser
      */
     public ProjectDetails(ProjectDetails obj)
     {
-        super(obj);
+        copyAttributes(obj);
+    }
 
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(ProjectDetails obj)
+    {
         if(obj != null)
         {
+            super.copyAttributes(obj);
             setBadges(obj.getBadges());
             setLinks(obj.getLinks());
             setWebsite(obj.getWebsite());

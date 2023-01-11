@@ -220,7 +220,6 @@ public class VideoCrawler extends ContentCrawler<VideoTeaser,VideoDetails>
         {
             populateTeaserFields(video, fields, content, "content");
 
-            content.setDuration(video.getInt(DURATION.value()));
             content.setChannelTitle(video.getString(CHANNEL_TITLE.value()));
             content.setChannelId(video.getString(CHANNEL_ID.value()));
 
@@ -233,6 +232,8 @@ public class VideoCrawler extends ContentCrawler<VideoTeaser,VideoDetails>
             }
         }
 
+        Teasers.update(channel.getChannelId(), content);
+
         return content;
     }
 
@@ -243,6 +244,8 @@ public class VideoCrawler extends ContentCrawler<VideoTeaser,VideoDetails>
     {
         teaser.setVideoId(video.getString(VIDEO_ID.value()));
         teaser.setProvider(video.getString(PROVIDER.value()));
+        if(video.has(DURATION.value()))
+            teaser.setDuration(video.getInt(DURATION.value()));
 
         if(fields.hasTitle())
         {

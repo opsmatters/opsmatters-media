@@ -15,9 +15,6 @@
  */
 package com.opsmatters.media.model.content.video;
 
-import com.opsmatters.media.util.Formats;
-import com.opsmatters.media.util.TimeUtils;
-
 /**
  * Class representing a video.
  * 
@@ -26,7 +23,6 @@ import com.opsmatters.media.util.TimeUtils;
 public class VideoDetails extends VideoTeaser
 {
     private String description = "";
-    private long duration = -1L;
     private String channelId = "";
     private String channelTitle = "";
 
@@ -42,12 +38,18 @@ public class VideoDetails extends VideoTeaser
      */
     public VideoDetails(VideoDetails obj)
     {
-        super(obj);
+        copyAttributes(obj);
+    }
 
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(VideoDetails obj)
+    {
         if(obj != null)
         {
+            super.copyAttributes(obj);
             setDescription(obj.getDescription());
-            setDuration(obj.getDuration());
             setChannelId(obj.getChannelId());
             setChannelTitle(obj.getChannelTitle());
         }
@@ -75,47 +77,6 @@ public class VideoDetails extends VideoTeaser
     public void setDescription(String description)
     {
         this.description = description;
-    }
-
-    /**
-     * Returns the video duration (in seconds).
-     */
-    public long getDuration()
-    {
-        return duration;
-    }
-
-    /**
-     * Returns the video duration in hh:MM:ss format.
-     */
-    public String getFormattedDuration(boolean replaceZero)
-    {
-        String ret = TimeUtils.toStringUTC(duration*1000L, Formats.TIME_FORMAT);
-        if(replaceZero)
-        {
-            if(duration == 0L)
-                ret = "N/A";
-            else if (duration < 0L)
-                ret = "-";
-        }
-
-        return ret;
-    }
-
-    /**
-     * Returns the video duration in hh:MM:ss format.
-     */
-    public String getFormattedDuration()
-    {
-        return getFormattedDuration(false);
-    }
-
-    /**
-     * Sets the video duration (in seconds).
-     */
-    public void setDuration(long duration)
-    {
-        this.duration = duration;
     }
 
     /**

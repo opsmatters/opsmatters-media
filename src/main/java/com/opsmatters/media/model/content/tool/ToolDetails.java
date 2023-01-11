@@ -37,10 +37,17 @@ public class ToolDetails extends ToolTeaser
      */
     public ToolDetails(ToolDetails obj)
     {
-        super(obj);
+        copyAttributes(obj);
+    }
 
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(ToolDetails obj)
+    {
         if(obj != null)
         {
+            super.copyAttributes(obj);
             setWebsite(obj.getWebsite());
             setDownload(obj.getDownload());
         }

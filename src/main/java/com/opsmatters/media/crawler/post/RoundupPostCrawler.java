@@ -25,6 +25,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import com.opsmatters.media.crawler.WebPageCrawler;
+import com.opsmatters.media.cache.content.Teasers;
 import com.opsmatters.media.model.content.post.RoundupPostTeaser;
 import com.opsmatters.media.model.content.post.RoundupPostDetails;
 import com.opsmatters.media.model.content.post.RoundupPostConfig;
@@ -160,6 +161,8 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostTeaser,Roundup
 
         if(root == null)
             throw new IllegalArgumentException("Root not found for roundup content");
+
+        Teasers.update(getPage().getUrls(), content);
 
         return content;
     }

@@ -36,10 +36,17 @@ public class PostDetails extends PostTeaser
      */
     public PostDetails(PostDetails obj)
     {
-        super(obj);
+        copyAttributes(obj);
+    }
 
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(PostDetails obj)
+    {
         if(obj != null)
         {
+            super.copyAttributes(obj);
             setDescription(obj.getDescription());
         }
     }

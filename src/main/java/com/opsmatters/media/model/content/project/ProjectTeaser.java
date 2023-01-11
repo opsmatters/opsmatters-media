@@ -41,10 +41,17 @@ public class ProjectTeaser extends ResourceTeaser
      */
     public ProjectTeaser(ProjectTeaser obj)
     {
-        super(obj);
+        copyAttributes(obj);
+    }
 
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(ProjectTeaser obj)
+    {
         if(obj != null)
         {
+            super.copyAttributes(obj);
             setFounded(obj.getFounded());
             setLicense(obj.getLicense());
         }

@@ -640,14 +640,24 @@ public class StringUtils
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given string has leading and trailing single quotes.
+     * @param s The string to be checked
+     * @return <CODE>true</CODE> if the given string has leading and trailing single quotes
+     */
+    public static boolean hasSingleQuotes(String s)
+    {
+        return s != null && s.startsWith("'") && s.endsWith("'") && s.length() > 2;
+    }
+
+    /**
      * Returns the given string with leading and trailing quotes removed.
      * @param s The string to have leading and trailing quotes removed
      * @return The given string with leading and trailing quotes removed
      */
-    public static String stripDoubleQuotes(String s)
+    public static String stripQuotes(String s)
     {
         String ret = s;
-        if(hasDoubleQuotes(s))
+        if(hasSingleQuotes(s) || hasDoubleQuotes(s))
             ret = s.substring(1, s.length()-1);
         return ret;
     }

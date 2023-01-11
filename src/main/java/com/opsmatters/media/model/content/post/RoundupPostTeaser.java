@@ -45,10 +45,17 @@ public class RoundupPostTeaser extends ArticleTeaser implements LinkedContent
      */
     public RoundupPostTeaser(RoundupPostTeaser obj)
     {
-        super(obj);
+        copyAttributes(obj);
+    }
 
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(RoundupPostTeaser obj)
+    {
         if(obj != null)
         {
+            super.copyAttributes(obj);
             setUrl(obj.getUrl(), false);
         }
     }

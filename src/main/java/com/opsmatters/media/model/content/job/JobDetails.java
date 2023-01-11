@@ -37,10 +37,17 @@ public class JobDetails extends JobTeaser
      */
     public JobDetails(JobDetails obj)
     {
-        super(obj);
+        copyAttributes(obj);
+    }
 
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(JobDetails obj)
+    {
         if(obj != null)
         {
+            super.copyAttributes(obj);
             setWebsite(obj.getWebsite());
             setContact(obj.getContact());
         }

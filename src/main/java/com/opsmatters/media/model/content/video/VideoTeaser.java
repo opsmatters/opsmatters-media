@@ -17,6 +17,8 @@ package com.opsmatters.media.model.content.video;
 
 import com.opsmatters.media.model.feed.video.YouTubeEntry;
 import com.opsmatters.media.model.content.ArticleTeaser;
+import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.util.TimeUtils;
 
 /**
  * Class representing a video teaser.
@@ -27,6 +29,7 @@ public class VideoTeaser extends ArticleTeaser
 {
     private String videoId = "";
     private VideoProvider provider;
+    private long duration = -1L;
 
     /**
      * Default constructor.
@@ -48,12 +51,20 @@ public class VideoTeaser extends ArticleTeaser
      */
     public VideoTeaser(VideoTeaser obj)
     {
-        super(obj);
+        copyAttributes(obj);
+    }
 
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(VideoTeaser obj)
+    {
         if(obj != null)
         {
+            super.copyAttributes(obj);
             setVideoId(obj.getVideoId());
             setProvider(obj.getProvider());
+            setDuration(obj.getDuration());
         }
     }
 
@@ -150,5 +161,46 @@ public class VideoTeaser extends ArticleTeaser
     public String getEmbed(int width, int height, boolean autoplay)
     {
         return provider != null ? String.format(provider.embed(), videoId, autoplay ? "1" : "0", width, height) : "";
+    }
+
+    /**
+     * Returns the video duration (in seconds).
+     */
+    public long getDuration()
+    {
+        return duration;
+    }
+
+    /**
+     * Returns the video duration in hh:MM:ss format.
+     */
+    public String getFormattedDuration(boolean replaceZero)
+    {
+        String ret = TimeUtils.toStringUTC(duration*1000L, Formats.TIME_FORMAT);
+        if(replaceZero)
+        {
+            if(duration == 0L)
+                ret = "N/A";
+            else if (duration < 0L)
+                ret = "-";
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the video duration in hh:MM:ss format.
+     */
+    public String getFormattedDuration()
+    {
+        return getFormattedDuration(false);
+    }
+
+    /**
+     * Sets the video duration (in seconds).
+     */
+    public void setDuration(long duration)
+    {
+        this.duration = duration;
     }
 }

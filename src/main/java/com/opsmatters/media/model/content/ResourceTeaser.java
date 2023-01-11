@@ -47,10 +47,17 @@ public class ResourceTeaser extends ContentTeaser implements LinkedContent
      */
     public ResourceTeaser(ResourceTeaser obj)
     {
-        super(obj);
+        copyAttributes(obj);
+    }
 
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(ResourceTeaser obj)
+    {
         if(obj != null)
         {
+            super.copyAttributes(obj);
             setDescription(obj.getDescription());
             setUrl(obj.getUrl(), false);
         }

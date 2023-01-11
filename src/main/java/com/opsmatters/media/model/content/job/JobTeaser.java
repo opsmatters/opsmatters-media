@@ -39,10 +39,17 @@ public class JobTeaser extends ResourceTeaser
      */
     public JobTeaser(JobTeaser obj)
     {
-        super(obj);
+        copyAttributes(obj);
+    }
 
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(JobTeaser obj)
+    {
         if(obj != null)
         {
+            super.copyAttributes(obj);
             setUrl(obj.getUrl());
             setPackage(obj.getPackage());
             setLocation(obj.getLocation());

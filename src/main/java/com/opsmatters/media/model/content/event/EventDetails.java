@@ -37,10 +37,17 @@ public class EventDetails extends EventTeaser
      */
     public EventDetails(EventDetails obj)
     {
-        super(obj);
+        copyAttributes(obj);
+    }
 
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(EventDetails obj)
+    {
         if(obj != null)
         {
+            super.copyAttributes(obj);
             setTimeZone(obj.getTimeZone());
             setLocation(obj.getLocation());
         }

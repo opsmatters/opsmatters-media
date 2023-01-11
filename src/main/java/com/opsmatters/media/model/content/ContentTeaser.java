@@ -49,6 +49,14 @@ public abstract class ContentTeaser implements java.io.Serializable
      */
     public ContentTeaser(ContentTeaser obj)
     {
+        copyAttributes(obj);
+    }
+
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(ContentTeaser obj)
+    {
         if(obj != null)
         {
             setUuid(obj.getUuid());
@@ -74,6 +82,14 @@ public abstract class ContentTeaser implements java.io.Serializable
     public String getUniqueId()
     {
         return getUuid();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this teaser has the same unique id as the given teaser.
+     */
+    public boolean hasSameUniqueId(ContentTeaser teaser)
+    {
+        return getUniqueId().equals(teaser.getUniqueId());
     }
 
     /**

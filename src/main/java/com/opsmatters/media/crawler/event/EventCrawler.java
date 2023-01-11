@@ -24,6 +24,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import com.opsmatters.media.crawler.WebPageCrawler;
+import com.opsmatters.media.cache.content.Teasers;
 import com.opsmatters.media.model.content.event.EventTeaser;
 import com.opsmatters.media.model.content.event.EventDetails;
 import com.opsmatters.media.model.content.event.EventConfig;
@@ -227,6 +228,8 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
 
         if(root == null)
             throw new IllegalArgumentException("Root not found for event content");
+
+        Teasers.update(getPage().getUrls(), content);
 
         return content;
     }

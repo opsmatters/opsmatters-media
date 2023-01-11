@@ -38,10 +38,17 @@ public class ToolTeaser extends ResourceTeaser
      */
     public ToolTeaser(ToolTeaser obj)
     {
-        super(obj);
+        copyAttributes(obj);
+    }
 
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(ToolTeaser obj)
+    {
         if(obj != null)
         {
+            super.copyAttributes(obj);
             setUrl(obj.getUrl());
             setPricing(obj.getPricing());
         }
