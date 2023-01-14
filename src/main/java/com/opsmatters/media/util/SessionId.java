@@ -66,4 +66,12 @@ public class SessionId
     {
         return _session.getId();
     }
+
+    /**
+     * Returns the session id for the current system date.
+     */
+    public static int now()
+    {
+        return new SessionId().getId();
+    }
 }
