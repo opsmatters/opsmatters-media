@@ -19,9 +19,11 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.logging.Logger;
 import com.opsmatters.media.cache.platform.Sites;
 import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.social.Hashtag;
 
 /**
  * Class representing the list of social media hashtags.
@@ -32,9 +34,8 @@ public class Hashtags implements java.io.Serializable
 {
     private static final Logger logger = Logger.getLogger(Hashtags.class.getName());
 
-    private static final String GLOBAL = "GLOBAL";
-
-    private static Map<String,List<String>> hashtagMap = new LinkedHashMap<String,List<String>>();
+    private static List<Hashtag> hashtagList = new ArrayList<Hashtag>();
+    private static Map<String,List<Hashtag>> hashtagMap = new LinkedHashMap<String,List<Hashtag>>();
 
     private static boolean initialised = false;
 
@@ -56,22 +57,25 @@ public class Hashtags implements java.io.Serializable
     /**
      * Loads the set of hashtags for each site.
      */
-    public static void load(Map<String,List<String>> hashtags)
+    public static void load(List<Hashtag> hashtags)
     {
         initialised = false;
 
         clear();
 
-        set(GLOBAL, hashtags.get(GLOBAL));
-        logger.info(String.format("Loaded %d %s hashtags",
-            size(GLOBAL), GLOBAL));
-
         for(Site site : Sites.list())
         {
-            set(site.getId(), hashtags.get(site.getId()));
+            for(Hashtag hashtag : hashtags)
+            {
+                if(hashtag.hasSite(site))
+                    add(site.getId(), hashtag);
+            }
+
             logger.info(String.format("Loaded %d hashtags for site %s",
                 size(site.getId()), site.getName()));
         }
+
+        logger.info(String.format("Loaded %d hashtags", size()));
 
         initialised = true;
     }
@@ -81,31 +85,86 @@ public class Hashtags implements java.io.Serializable
      */
     public static void clear()
     {
+        hashtagList.clear();
         hashtagMap.clear();
     }
 
     /**
-     * Returns the list of hashtags for the given site.
-     * <P>
-     * Includes global hashtags too.
+     * Returns the list of all hashtags.
      */
-    public static List<String> list(String siteId, boolean global)
+    public static List<Hashtag> list()
     {
-        List<String> ret = new ArrayList<String>();
-        ret.addAll(hashtagMap.get(GLOBAL));
-        ret.addAll(hashtagMap.get(siteId));
-        return ret;
+        return hashtagList;
     }
 
     /**
-     * Sets the hashtags for the given site.
+     * Returns the list of hashtags for the given site.
      */
-    public static void set(String siteId, List<String> hashtags)
+    public static List<Hashtag> list(String siteId)
     {
-        List<String> list = new ArrayList<String>();
-        for(String hashtag : hashtags)
-            list.add("#"+hashtag);
-        hashtagMap.put(siteId, list);
+        return hashtagMap.get(siteId);
+    }
+
+    /**
+     * Returns the list of hashtags for the given site.
+     */
+    public static List<Hashtag> list(Site site)
+    {
+        return list(site.getId());
+    }
+
+    /**
+     * Adds the given hashtag for the given site.
+     */
+    private static void add(String siteId, Hashtag hashtag)
+    {
+        if(hashtag.isActive())
+        {
+            List<Hashtag> list = hashtagMap.get(siteId);
+            if(list == null)
+            {
+                list = new ArrayList<Hashtag>();
+                hashtagMap.put(siteId, list);
+            }
+
+            list.add(hashtag);
+        }
+
+        if(!hashtagList.contains(hashtag))
+            hashtagList.add(hashtag);
+    }
+
+    /**
+     * Adds the given hashtag.
+     */
+    public static void add(Hashtag hashtag)
+    {
+        for(String siteId : hashtag.getSiteList())
+            add(siteId, hashtag);
+    }
+
+    /**
+     * Removes the given hashtag.
+     */
+    public static void remove(Hashtag hashtag)
+    {
+        for(Map.Entry<String,List<Hashtag>> entry : hashtagMap.entrySet())
+        {
+            if(hashtag.hasSite(entry.getKey()))
+            {
+                Iterator<Hashtag> iterator = entry.getValue().iterator();
+                while(iterator.hasNext())
+                {
+                    Hashtag item = iterator.next();
+                    if(item.getName().equals(hashtag.getName()))
+                    {
+                        iterator.remove();
+                    }
+                }
+            }
+        }
+
+        hashtagList.remove(hashtag);
     }
 
     /**
@@ -113,6 +172,15 @@ public class Hashtags implements java.io.Serializable
      */
     public static int size(String siteId)
     {
-        return hashtagMap.get(siteId).size();
+        List<Hashtag> list = hashtagMap.get(siteId);
+        return list != null ? list.size() : -1;
+    }
+
+    /**
+     * Returns the count of hashtags.
+     */
+    public static int size()
+    {
+        return hashtagList.size();
     }
 }

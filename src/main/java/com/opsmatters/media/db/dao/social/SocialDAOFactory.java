@@ -37,6 +37,7 @@ public class SocialDAOFactory extends DAOFactory
         getSavedPostDAO();
         getDraftPostDAO();
         getPreparedPostDAO();
+        getHashtagDAO();
     }
 
     /**
@@ -80,6 +81,16 @@ public class SocialDAOFactory extends DAOFactory
     }
 
     /**
+     * Returns the hashtag DAO.
+     */
+    public HashtagDAO getHashtagDAO()
+    {
+        if(hashtagDAO == null)
+            hashtagDAO = new HashtagDAO(this);
+        return hashtagDAO;
+    }
+
+    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
@@ -90,10 +101,12 @@ public class SocialDAOFactory extends DAOFactory
         savedPostDAO = null;
         draftPostDAO = null;
         preparedPostDAO = null;
+        hashtagDAO = null;
     }
 
     private PostTemplateDAO postTemplateDAO;
     private SavedPostDAO savedPostDAO;
     private DraftPostDAO draftPostDAO;
     private PreparedPostDAO preparedPostDAO;
+    private HashtagDAO hashtagDAO;
 }

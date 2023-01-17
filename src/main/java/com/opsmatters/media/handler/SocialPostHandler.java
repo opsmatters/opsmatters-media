@@ -23,10 +23,11 @@ import java.util.Collection;
 import org.apache.commons.text.StringSubstitutor;
 import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.util.StringUtils;
+import com.opsmatters.media.cache.social.Hashtags;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.model.social.SocialPost;
-import com.opsmatters.media.cache.social.Hashtags;
+import com.opsmatters.media.model.social.Hashtag;
 
 /**
  * Class representing a handler used to prepare social media posts.
@@ -37,8 +38,8 @@ public class SocialPostHandler
 {
     private List<Token> tokens = new ArrayList<Token>();
     private String hashtags = null;
-    private Map<String,Hashtag> postHashtagMap = new LinkedHashMap<String,Hashtag>();
-    private Map<String,Hashtag> siteHashtagMap = new LinkedHashMap<String,Hashtag>();
+    private Map<String,HashtagItem> postHashtagMap = new LinkedHashMap<String,HashtagItem>();
+    private Map<String,HashtagItem> siteHashtagMap = new LinkedHashMap<String,HashtagItem>();
     private Map<String,String> properties = new LinkedHashMap<String,String>();
     private String siteId = null;
     private SocialChannel channel;
@@ -103,7 +104,7 @@ public class SocialPostHandler
     /**
      * Represents a hashtag in the hashtag list.
      */
-    class Hashtag
+    class HashtagItem
     {
         String key;
         String value;
@@ -113,7 +114,7 @@ public class SocialPostHandler
         /**
          * Constructor that takes a hashtag with format: #value[?]
          */
-        Hashtag(String str)
+        HashtagItem(String str)
         {
             if(str.endsWith("?"))
             {
@@ -194,20 +195,19 @@ public class SocialPostHandler
             {
                 if(str.startsWith("#") && str.length() > 2)
                 {
-                    Hashtag hashtag = new Hashtag(str);
-                    postHashtagMap.put(hashtag.getKey(), hashtag);
+                    HashtagItem item = new HashtagItem(str);
+                    postHashtagMap.put(item.getKey(), item);
                 }
             }
         }
 
-        // Add the site and global hashtags
+        // Add the site hashtags
         if(siteId != null && siteId.length() > 0)
         {
-            List<String> hashtags = Hashtags.list(siteId, true);
-            for(String str : hashtags)
+            for(Hashtag hashtag : Hashtags.list(siteId))
             {
-                Hashtag hashtag = new Hashtag(str);
-                siteHashtagMap.put(hashtag.getKey(), hashtag);
+                HashtagItem item = new HashtagItem(hashtag.getValue());
+                siteHashtagMap.put(item.getKey(), item);
             }
         }
     }
@@ -218,14 +218,14 @@ public class SocialPostHandler
     private String getHashtags()
     {
         StringBuilder builder = new StringBuilder();
-        Collection<Hashtag> hashtags = postHashtagMap.values();
-        for(Hashtag hashtag : hashtags)
+        Collection<HashtagItem> items = postHashtagMap.values();
+        for(HashtagItem item : items)
         {
-            if(!hashtag.isOptional())
+            if(!item.isOptional())
             {
                 if(builder.length() > 0)
                     builder.append(" ");
-                builder.append(hashtag);
+                builder.append(item);
             }
         }
 
@@ -353,8 +353,8 @@ public class SocialPostHandler
         {
             if(postHashtagMap.containsKey(token.getKey()))
             {
-                Hashtag hashtag = postHashtagMap.get(token.getKey());
-                if(!hashtag.isIgnored())
+                HashtagItem item = postHashtagMap.get(token.getKey());
+                if(!item.isIgnored())
                 {
                     postHashtagMap.remove(token.getKey());
                     siteHashtagMap.remove(token.getKey());
