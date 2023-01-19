@@ -100,7 +100,7 @@ public class HashtagDAO extends SocialDAO<Hashtag>
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
-        table.addColumn("NAME", Types.VARCHAR, 30, true);
+        table.addColumn("NAME", Types.VARCHAR, 32, true);
         table.addColumn("SITES", Types.VARCHAR, 15, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.setPrimaryKey("HASHTAGS_PK", new String[] {"ID"});
