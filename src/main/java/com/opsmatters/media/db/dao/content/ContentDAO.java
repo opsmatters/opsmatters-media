@@ -18,6 +18,7 @@ package com.opsmatters.media.db.dao.content;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
@@ -555,6 +556,34 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
         }
 
         postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the count of duplicates of the given content item from the table.
+     */
+    public int getDuplicateCount(T content) throws SQLException
+    {
+        int ret = 0;
+        List<T> duplicates = listByTitle(content.getCode(),
+            content.getTitle());
+        for(T duplicate : duplicates)
+        {
+            if(duplicate.getSiteId().equals(content.getSiteId())
+                && duplicate.getId() != content.getId())
+            {
+                if(content.getPublishedDate() != null)
+                {
+                    long diff = ChronoUnit.DAYS.between(duplicate.getPublishedDate(),
+                        content.getPublishedDate());
+                    if(diff >= 90) // more than 90 days older
+                        continue;
+                }
+
+                ++ret;
+            }
+        }
 
         return ret;
     }
