@@ -230,6 +230,14 @@ public abstract class Resource<T extends ResourceTeaser, D extends ResourceTease
     }
 
     /**
+     * Sets the link text.
+     */
+    public void setLinkText(LinkText linkText)
+    {
+        setLinkText(linkText.value());
+    }
+
+    /**
      * Returns <CODE>true</CODE> if this content should be promoted.
      */
     @Override

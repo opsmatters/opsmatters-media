@@ -186,7 +186,7 @@ public class OrganisationListing extends Content
 
         ret.put(CODE, getCode());
         ret.put(TABS, getTabs().name());
-        ret.put(CONTENT, Integer.toString(getTabs().value()));
+        ret.put(CONTENT, Integer.toString(getTabs().content()));
         ret.put(DESCRIPTION, getDescription());
         ret.put(FOOTER, getFooter());
         ret.put(FOUNDED, getFounded());
@@ -325,7 +325,7 @@ public class OrganisationListing extends Content
     public void setTabs(OrganisationTabs tabs)
     {
         this.tabs = tabs;
-        setContent(getTabs() != null ? getTabs().value() : 0);
+        setContent(getTabs() != null ? getTabs().content() : 0);
     }
 
     /**

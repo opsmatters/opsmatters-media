@@ -236,4 +236,19 @@ public enum ContentType
 
         return ret;
     }
+
+    /**
+     * Returns a list of the type values.
+     */
+    public static List<String> toList(String blank)
+    {
+        List<String> ret = new ArrayList<String>();
+
+        if(blank != null)
+            ret.add(blank);
+        for(ContentType type : ContentType.values())
+            ret.add(type.value());
+
+        return ret;
+    }
 }

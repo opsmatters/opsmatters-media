@@ -25,6 +25,7 @@ import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.Resource;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.LinkText;
 import com.opsmatters.media.model.content.organisation.OrganisationContentType;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.util.FormatUtils;
@@ -225,8 +226,10 @@ public class Publication extends Resource<PublicationTeaser,PublicationDetails>
 
         publication.init();
         publication.setSiteId(site.getId());
+        publication.setPublicationType(PublicationType.WHITE_PAPER);
         publication.setTitle("New Publication");
         publication.setDescription(StringUtils.EMPTY);
+        publication.setLinkText(LinkText.GET_WHITE_PAPER);
         publication.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
 
         return publication;

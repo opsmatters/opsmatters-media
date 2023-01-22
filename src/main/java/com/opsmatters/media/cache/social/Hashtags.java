@@ -90,6 +90,24 @@ public class Hashtags implements java.io.Serializable
     }
 
     /**
+     * Returns the hashtag with the given name.
+     */
+    public static Hashtag get(String name)
+    {
+        Hashtag ret = null;
+        for(Hashtag hashtag : hashtagList)
+        {
+            if(hashtag.getName().equals(name))
+            {
+                ret = hashtag;
+                break;
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the list of all hashtags.
      */
     public static List<Hashtag> list()

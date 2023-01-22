@@ -16,10 +16,12 @@
 
 package com.opsmatters.media.model.content.organisation;
 
+import java.util.List;
+import java.util.ArrayList;
 import com.opsmatters.media.model.content.ContentType;
 
 /**
- * Represents a set of organisation tabs.
+ * Represents the sets of organisation listing tabs.
  * 
  * @author Gerald Curley (opsmatters)
  */
@@ -36,46 +38,46 @@ public enum OrganisationTabs
     NVE(50),
     NPE(60);
 
-    private int value;
+    private int content;
 
     /**
-     * Constructor that takes the tabs value.
-     * @param value The value for the tabs
+     * Constructor that takes the tabs content.
+     * @param content The content for the tabs
      */
-    OrganisationTabs(int value)
+    OrganisationTabs(int content)
     {
-        this.value = value;
+        this.content = content;
     }
 
     /**
-     * Returns the value of the tabs.
-     * @return The value of the tabs.
+     * Returns the content of the tabs.
+     * @return The content of the tabs.
      */
-    public int value()
+    public int content()
     {
-        return value;
+        return content;
     }
 
     /**
-     * Returns the type for the given value.
-     * @param value The type value
-     * @return The type for the given value
+     * Returns the tabs for the given content.
+     * @param content The tabs content
+     * @return The tabs for the given content
      */
-    public static OrganisationTabs fromValue(int value)
+    public static OrganisationTabs fromContent(int content)
     {
-        OrganisationTabs[] types = values();
-        for(OrganisationTabs type : types)
+        for(OrganisationTabs tabs : values())
         {
-            if(type.value() == value)
-                return type;
+            if(tabs.content() == content)
+                return tabs;
         }
+
         return null;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given value is contained in the list of types.
-     * @param value The type value
-     * @return <CODE>true</CODE> if the given value is contained in the list of types
+     * Returns <CODE>true</CODE> if the given value is contained in the list of tabs.
+     * @param value The tabs value
+     * @return <CODE>true</CODE> if the given value is contained in the list of tabs
      */
     public static boolean contains(String value)
     {
@@ -83,9 +85,9 @@ public enum OrganisationTabs
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given content type is contained in the list of types.
+     * Returns <CODE>true</CODE> if the given content type is contained in the list of tabs.
      * @param type The content type
-     * @return <CODE>true</CODE> if the given content type is contained in the list of types
+     * @return <CODE>true</CODE> if the given content type is contained in the list of tabs
      */
     public boolean contains(ContentType type)
     {
@@ -110,6 +112,27 @@ public enum OrganisationTabs
                     break;
             }
         }
+
+        return ret;
+    }
+
+    /**
+     * Returns a list of the tabs.
+     */
+    public static List<OrganisationTabs> toList()
+    {
+        List<OrganisationTabs> ret = new ArrayList<OrganisationTabs>();
+
+        ret.add(ALL);
+        ret.add(N);
+        ret.add(V);
+        ret.add(NV);
+        ret.add(NE);
+        ret.add(NP);
+        ret.add(NVP);
+        ret.add(NVE);
+        ret.add(NPE);
+        ret.add(NONE);
 
         return ret;
     }

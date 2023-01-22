@@ -16,6 +16,9 @@
 
 package com.opsmatters.media.model.content.project;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * Represents an open source license.
  * 
@@ -107,5 +110,20 @@ public enum OpenSourceLicense
     public static boolean contains(String code)
     {
         return fromCode(code) != null;
+    }
+
+    /**
+     * Returns a list of the license values.
+     */
+    public static List<String> toList(String blank)
+    {
+        List<String> ret = new ArrayList<String>();
+
+        if(blank != null)
+            ret.add(blank);
+        for(OpenSourceLicense license : OpenSourceLicense.values())
+            ret.add(license.value());
+
+        return ret;
     }
 }
