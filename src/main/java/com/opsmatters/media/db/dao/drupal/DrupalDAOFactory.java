@@ -34,7 +34,7 @@ public class DrupalDAOFactory extends DAOFactory
         super(driver, conn);
 
         getFeedsFeedDAO();
-        getTaxonomyTermDAO();
+        getDrupalTaxonomyTermDAO();
     }
 
     /**
@@ -50,11 +50,11 @@ public class DrupalDAOFactory extends DAOFactory
     /**
      * Returns the taxonomy term DAO.
      */
-    public TaxonomyTermDAO getTaxonomyTermDAO()
+    public DrupalTaxonomyTermDAO getDrupalTaxonomyTermDAO()
     {
-        if(taxonomyTermDAO == null)
-            taxonomyTermDAO = new TaxonomyTermDAO(this);
-        return taxonomyTermDAO;
+        if(drupalTaxonomyTermDAO == null)
+            drupalTaxonomyTermDAO = new DrupalTaxonomyTermDAO(this);
+        return drupalTaxonomyTermDAO;
     }
 
     /**
@@ -65,9 +65,9 @@ public class DrupalDAOFactory extends DAOFactory
     {
         super.close();
         feedsFeedDAO = null;
-        taxonomyTermDAO = null;
+        drupalTaxonomyTermDAO = null;
     }
 
     private FeedsFeedDAO feedsFeedDAO;
-    private TaxonomyTermDAO taxonomyTermDAO;
+    private DrupalTaxonomyTermDAO drupalTaxonomyTermDAO;
 }

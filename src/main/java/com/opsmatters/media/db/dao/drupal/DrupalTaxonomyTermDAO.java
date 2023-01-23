@@ -21,22 +21,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.drupal.TaxonomyTerm;
+import com.opsmatters.media.model.drupal.DrupalTaxonomyTerm;
 
 /**
  * DAO that provides operations on the TAXONOMY_TERM_FIELD_DATA table in the drupal database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class TaxonomyTermDAO extends DrupalDAO<TaxonomyTerm>
+public class DrupalTaxonomyTermDAO extends DrupalDAO<DrupalTaxonomyTerm>
 {
-    private static final Logger logger = Logger.getLogger(TaxonomyTermDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(DrupalTaxonomyTermDAO.class.getName());
 
     /**
      * The query to use to select the terms from the TAXONOMY_TERM_FIELD_DATA table.
      */
     private static final String LIST_SQL =  
-      "SELECT TID, CHANGED, VID, NAME, DESCRIPTION__VALUE "
+      "SELECT TID, CHANGED, VID, NAME, DESCRIPTION__VALUE, STATUS "
       + "FROM taxonomy_term_field_data WHERE STATUS=1";
 
     /**
@@ -48,7 +48,7 @@ public class TaxonomyTermDAO extends DrupalDAO<TaxonomyTerm>
     /**
      * Constructor that takes a DAO factory.
      */
-    public TaxonomyTermDAO(DrupalDAOFactory factory)
+    public DrupalTaxonomyTermDAO(DrupalDAOFactory factory)
     {
         super(factory, "TAXONOMY_TERM_FIELD_DATA");
     }
@@ -56,9 +56,9 @@ public class TaxonomyTermDAO extends DrupalDAO<TaxonomyTerm>
     /**
      * Returns the terms from the TAXONOMY_TERM_FIELD_DATA table.
      */
-    public synchronized List<TaxonomyTerm> list() throws SQLException
+    public synchronized List<DrupalTaxonomyTerm> list() throws SQLException
     {
-        List<TaxonomyTerm> ret = null;
+        List<DrupalTaxonomyTerm> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -74,15 +74,16 @@ public class TaxonomyTermDAO extends DrupalDAO<TaxonomyTerm>
         {
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
-            ret = new ArrayList<TaxonomyTerm>();
+            ret = new ArrayList<DrupalTaxonomyTerm>();
             while(rs.next())
             {
-                TaxonomyTerm term = new TaxonomyTerm();
+                DrupalTaxonomyTerm term = new DrupalTaxonomyTerm();
                 term.setTid(rs.getInt(1));
                 term.setCreatedDateMillis(rs.getLong(2)*1000L);
                 term.setType(rs.getString(3));
                 term.setName(rs.getString(4));
                 term.setDescription(rs.getString(5));
+                term.setPublished(rs.getBoolean(6));
                 ret.add(term);
             }
         }

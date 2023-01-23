@@ -22,34 +22,25 @@ import com.opsmatters.media.model.BaseEntity;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class TaxonomyTerm extends BaseEntity
+public class DrupalTaxonomyTerm extends BaseEntity
 {
-    // The vocabulary types
-    public static final String TAGS = "tags";
-    public static final String FEATURES = "features";
-    public static final String TECHNOLOGIES = "technologies";
-    public static final String PRICINGS = "pricing_model";
-    public static final String EVENT_TYPES = "activity_type";
-    public static final String VIDEO_TYPES = "video_type";
-    public static final String PUBLICATION_TYPES = "publication_type";
-    public static final String ORGANISATIONS = "organisation";
-
     private String name = "";
     private String type = "";
     private int tid = -1;
     private String description = "";
+    private boolean published = false;
 
     /**
      * Default constructor.
      */
-    public TaxonomyTerm()
+    public DrupalTaxonomyTerm()
     {
     }
 
     /**
      * Copy constructor.
      */
-    public TaxonomyTerm(TaxonomyTerm obj)
+    public DrupalTaxonomyTerm(DrupalTaxonomyTerm obj)
     {
         copyAttributes(obj);
     }
@@ -57,7 +48,7 @@ public class TaxonomyTerm extends BaseEntity
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(TaxonomyTerm obj)
+    public void copyAttributes(DrupalTaxonomyTerm obj)
     {
         if(obj != null)
         {
@@ -66,6 +57,7 @@ public class TaxonomyTerm extends BaseEntity
             setType(obj.getType());
             setTid(obj.getTid());
             setDescription(obj.getDescription());
+            setPublished(obj.isPublished());
         }
     }
 
@@ -139,5 +131,21 @@ public class TaxonomyTerm extends BaseEntity
     public void setDescription(String description)
     {
         this.description = description;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the term is published.
+     */
+    public boolean isPublished()
+    {
+        return published;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the term is published.
+     */
+    public void setPublished(boolean published)
+    {
+        this.published = published;
     }
 }

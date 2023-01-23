@@ -24,7 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.platform.Site;
-import com.opsmatters.media.model.drupal.TaxonomyTerm;
+import com.opsmatters.media.model.content.util.TaxonomyTerm;
 
 /**
  * DAO that provides operations on the TAXONOMY_TERMS table in the database.
@@ -40,15 +40,15 @@ public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO TAXONOMY_TERMS"
-      + "( SITE_ID, CREATED_DATE, TID, TYPE, NAME )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, SITE_ID, TYPE, NAME, STATUS )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to select the terms from the TAXONOMY_TERMS table.
      */
     private static final String LIST_SQL =  
-      "SELECT CREATED_DATE, TID, TYPE, NAME "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, TYPE, NAME, STATUS "
       + "FROM TAXONOMY_TERMS WHERE SITE_ID=?";
 
     /**
@@ -77,12 +77,15 @@ public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
     @Override
     protected void defineTable()
     {
-        table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
+        table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
-        table.addColumn("TID", Types.INTEGER, true);
+        table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
+        table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("TYPE", Types.VARCHAR, 20, true);
         table.addColumn("NAME", Types.VARCHAR, 30, true);
-        table.setPrimaryKey("TAXONOMY_TERMS_PK", new String[] {"SITE_ID, TYPE,TID"});
+        table.addColumn("STATUS", Types.VARCHAR, 15, true);
+        table.setPrimaryKey("TAXONOMY_TERMS_PK", new String[] {"ID"});
+        table.addIndex("TAXONOMY_TERMS_NAME_IDX", new String[] {"SITE_ID", "NAME"});
         table.setInitialised(true);
     }
 
@@ -100,14 +103,16 @@ public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
 
         try
         {
-            insertStmt.setString(1, site.getId());
+            insertStmt.setString(1, term.getId());
             insertStmt.setTimestamp(2, new Timestamp(term.getCreatedDateMillis()), UTC);
-            insertStmt.setInt(3, term.getTid());
-            insertStmt.setString(4, term.getType());
-            insertStmt.setString(5, term.getName());
+            insertStmt.setTimestamp(3, new Timestamp(term.getUpdatedDateMillis()), UTC);
+            insertStmt.setString(4, term.getSiteId());
+            insertStmt.setString(5, term.getType().name());
+            insertStmt.setString(6, term.getName());
+            insertStmt.setString(7, term.getStatus().name());
             insertStmt.executeUpdate();
 
-            //logger.info("Created term '"+term.getTid()+"' in TAXONOMY_TERMS");
+            logger.info("Created term '"+term.getId()+"' in TAXONOMY_TERMS");
         }
         catch(SQLException ex)
         {
@@ -125,7 +130,7 @@ public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
     }
 
     /**
-     * Returns the terms from the TAXONOMY_TERM_FIELD_DATA table by site.
+     * Returns the terms from the TAXONOMY_TERMS table by site.
      */
     public synchronized List<TaxonomyTerm> list(Site site) throws SQLException
     {
@@ -150,10 +155,13 @@ public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
             while(rs.next())
             {
                 TaxonomyTerm term = new TaxonomyTerm();
-                term.setCreatedDateMillis(rs.getTimestamp(1, UTC).getTime());
-                term.setTid(rs.getInt(2));
-                term.setType(rs.getString(3));
-                term.setName(rs.getString(4));
+                term.setId(rs.getString(1));
+                term.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                term.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                term.setSiteId(rs.getString(4));
+                term.setType(rs.getString(5));
+                term.setName(rs.getString(6));
+                term.setStatus(rs.getString(7));
                 ret.add(term);
             }
         }

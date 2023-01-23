@@ -16,6 +16,8 @@
 
 package com.opsmatters.media.model.content.video;
 
+import java.util.List;
+import java.util.ArrayList;
 import com.opsmatters.media.cache.admin.Parameters;
 
 import static com.opsmatters.media.model.admin.ParameterType.*;
@@ -28,17 +30,24 @@ import static com.opsmatters.media.model.admin.ParameterName.*;
  */
 public enum VideoType
 {
+    BLOG("Blog"),
+    CASE_STUDY("Case Study"),
     CONFERENCE("Conference"),
     DEMO("Demo"),
+    EVENT("Event"),
     HOW_TO("How to"),
     INTERVIEW("Interview"),
     MEETUP("Meetup"),
+    NEWS("News"),
+    OTHER("Other"),
     PANEL("Panel"),
     PODCAST("Podcast"),
+    PRESENTATION("Presentation"),
+    SALES("Sales"),
     SEMINAR("Seminar"),
     USER_GROUP("User Group"),
-    WEBINAR("Webinar"),
-    WEBCAST("Webcast");
+    WEBCAST("Webcast"),
+    WEBINAR("Webinar");
 
     private String value;
 
@@ -73,6 +82,7 @@ public enum VideoType
             if(type.value().equals(value))
                 return type;
         }
+
         return null;
     }
 
@@ -129,5 +139,20 @@ public enum VideoType
         if(text.indexOf(type.value().toLowerCase()) != -1)
             return type;
         return null;
+    }
+
+    /**
+     * Returns a list of the type values.
+     */
+    public static List<String> toList(String blank)
+    {
+        List<String> ret = new ArrayList<String>();
+
+        if(blank != null)
+            ret.add(blank);
+        for(VideoType type : VideoType.values())
+            ret.add(type.value());
+
+        return ret;
     }
 }

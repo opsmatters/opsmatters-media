@@ -23,9 +23,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.platform.Site;
-import com.opsmatters.media.model.drupal.TaxonomyTerm;
-
-import static com.opsmatters.media.cache.content.util.TaxonomyTerms.TaxonomyStatus.*;
+import com.opsmatters.media.model.content.util.TaxonomyTerm;
+import com.opsmatters.media.model.content.util.TaxonomyType;
 
 /**
  * Class representing a handler for taxonomy terms.
@@ -36,9 +35,8 @@ public class TaxonomyTerms
 {
     private static final Logger logger = Logger.getLogger(TaxonomyTerms.class.getName());
 
-    private static Map<String,TaxonomyStatus> statuses = new HashMap<String,TaxonomyStatus>();
     private static Map<String,List<TaxonomyTerm>> terms = new HashMap<String,List<TaxonomyTerm>>();
-    private static Map<String,Map<String,List<String>>> names = new HashMap<String,Map<String,List<String>>>();
+    private static Map<String,Map<TaxonomyType,List<String>>> names = new HashMap<String,Map<TaxonomyType,List<String>>>();
 
     private static Comparator comparator = new Comparator<String>()
     {
@@ -47,13 +45,6 @@ public class TaxonomyTerms
             return arg1.compareTo(arg2);
         }
     };
-
-    enum TaxonomyStatus
-    {
-        NEW,
-        VALID,
-        INVALID;
-    }
 
     /**
      * Private constructor.
@@ -65,73 +56,108 @@ public class TaxonomyTerms
     /**
      * Loads the taxonomy terms for the given site.
      */
-    public static void loadTerms(String siteId, List<TaxonomyTerm> terms)
+    public static void load(Site site, List<TaxonomyTerm> terms)
     {
         if(terms != null && terms.size() > 0)
         {
-            TaxonomyTerms.terms.put(siteId, terms);
-            names.remove(siteId);
-            setStatus(siteId, VALID);
+            for(TaxonomyTerm term : terms)
+            {
+                add(site.getId(), term,
+                    term == terms.get(terms.size()-1));
+            }
+
+            logger.info(String.format("Loaded %d taxonomy terms for site %s",
+                terms.size(), site.getName()));
         }
     }
 
     /**
-     * Loads the taxonomy terms for the given site.
+     * Adds the taxonomy term for the given site.
      */
-    public static void loadTerms(Site site, List<TaxonomyTerm> terms)
+    public static void add(String siteId, TaxonomyTerm term, boolean sort)
     {
-        loadTerms(site.getId(), terms);
+        List<TaxonomyTerm> termsList = terms.get(siteId);
+        if(termsList == null)
+        {
+            termsList = new ArrayList<TaxonomyTerm>();
+            terms.put(siteId, termsList);
+        }
+
+        termsList.add(term);
+
+        Map<TaxonomyType,List<String>> map = names.get(siteId);
+        if(map == null)
+        {
+            map = new HashMap<TaxonomyType,List<String>>();
+            names.put(siteId, map);
+        }
+
+        List<String> namesList = map.get(term.getType());
+        if(namesList == null)
+        {
+            namesList = new ArrayList<String>();
+            map.put(term.getType(), namesList);
+        }
+
+        if(term.isActive())
+            namesList.add(term.getName());
+
+        if(sort)
+            Collections.sort(namesList, comparator);
     }
 
     /**
-     * Returns <CODE>true</CODE> if taxonomy terms have been loaded for the given site.
+     * Adds the taxonomy term for the given site.
      */
-    public static boolean isValid(String siteId)
+    public static void add(String siteId, TaxonomyTerm term)
     {
-        return getStatus(siteId) == VALID;
+        add(siteId, term, true);
     }
 
     /**
-     * Returns <CODE>true</CODE> if taxonomy terms have been loaded for the given site.
+     * Adds the taxonomy term for the given site.
      */
-    public static boolean isValid(Site site)
+    public static void add(Site site, TaxonomyTerm term)
     {
-        return isValid(site.getId());
+        add(site.getId(), term);
     }
 
     /**
-     * Sets the taxonomy terms for the given site to require reloading.
+     * Returns the term with the given name for the given site.
      */
-    public static void invalidate(String siteId)
+    private static TaxonomyTerm getTerm(String siteId, String name, TaxonomyType type)
     {
-        setStatus(siteId, INVALID);
+        TaxonomyTerm ret = null;
+        List<TaxonomyTerm> terms = getTerms(siteId);
+        if(terms != null)
+        {
+            for(TaxonomyTerm term : terms)
+            {
+                if(term.getType() == type && term.getName().equals(name))
+                {
+                    ret = term;
+                    break;
+                }
+            }
+        }
+
+        return ret;
     }
 
     /**
-     * Sets the taxonomy terms for the given site to require reloading.
+     * Returns <CODE>true</CODE> if the term with the given name exists for the given site.
      */
-    public static void invalidate(Site site)
+    public static boolean hasTerm(String siteId, String name, TaxonomyType type)
     {
-        invalidate(site.getId());
+        return getTerm(siteId, name, type) != null;
     }
 
     /**
-     * Returns the status of the taxonomy terms for the given site.
+     * Returns <CODE>true</CODE> if the given term exists.
      */
-    private static TaxonomyStatus getStatus(String siteId)
+    public static boolean hasTerm(TaxonomyTerm term)
     {
-        TaxonomyStatus status = statuses.get(siteId);
-        if(status == null)
-            setStatus(siteId, status = NEW);
-        return status;
-    }
-
-    /**
-     * Sets the status of the taxonomy terms for the given site.
-     */
-    private static void setStatus(String siteId, TaxonomyStatus status)
-    {
-        statuses.put(siteId, status);
+        return getTerm(term.getSiteId(), term.getName(), term.getType()) != null;
     }
 
     /**
@@ -153,35 +179,10 @@ public class TaxonomyTerms
     /**
      * Returns the term names for the given site and type.
      */
-    private static List<String> getTermNames(String siteId, String type)
+    private static List<String> getTermNames(String siteId, TaxonomyType type)
     {
-        Map<String,List<String>> map = names.get(siteId);
-        if(map == null)
-        {
-            map = new HashMap<String,List<String>>();
-            names.put(siteId, map);
-        }
-
-        List<String> ret = map.get(type);
-        if(ret == null)
-        {
-            ret = new ArrayList<String>();
-
-            List<TaxonomyTerm> terms = getTerms(siteId);
-            if(terms != null)
-            {
-                for(TaxonomyTerm term : terms)
-                {
-                    if(term.getType().equals(type))
-                        ret.add(term.getName());
-                }
-
-                Collections.sort(ret, comparator);
-                map.put(type, ret);
-            }
-        }
-
-        return ret;
+        Map<TaxonomyType,List<String>> map = names.get(siteId);
+        return map != null ? map.get(type) : null;
     }
 
     /**
@@ -189,7 +190,7 @@ public class TaxonomyTerms
      */
     public static List<String> getTags(String siteId)
     {
-        return getTermNames(siteId, TaxonomyTerm.TAGS);
+        return getTermNames(siteId, TaxonomyType.TAGS);
     }
 
     /**
@@ -205,7 +206,7 @@ public class TaxonomyTerms
      */
     public static TaxonomyTerm getTag(String siteId, String name)
     {
-        return getTerm(siteId, name, TaxonomyTerm.TAGS);
+        return getTerm(siteId, name, TaxonomyType.TAGS);
     }
 
     /**
@@ -213,7 +214,7 @@ public class TaxonomyTerms
      */
     public static List<String> getFeatures(String siteId)
     {
-        return getTermNames(siteId, TaxonomyTerm.FEATURES);
+        return getTermNames(siteId, TaxonomyType.FEATURES);
     }
 
     /**
@@ -229,7 +230,7 @@ public class TaxonomyTerms
      */
     public static TaxonomyTerm getFeature(String siteId, String name)
     {
-        return getTerm(siteId, name, TaxonomyTerm.FEATURES);
+        return getTerm(siteId, name, TaxonomyType.FEATURES);
     }
 
     /**
@@ -237,7 +238,7 @@ public class TaxonomyTerms
      */
     public static List<String> getTechnologies(String siteId)
     {
-        return getTermNames(siteId, TaxonomyTerm.TECHNOLOGIES);
+        return getTermNames(siteId, TaxonomyType.TECHNOLOGIES);
     }
 
     /**
@@ -253,7 +254,7 @@ public class TaxonomyTerms
      */
     public static TaxonomyTerm getTechnology(String siteId, String name)
     {
-        return getTerm(siteId, name, TaxonomyTerm.TECHNOLOGIES);
+        return getTerm(siteId, name, TaxonomyType.TECHNOLOGIES);
     }
 
     /**
@@ -261,7 +262,7 @@ public class TaxonomyTerms
      */
     public static List<String> getPricings(String siteId)
     {
-        return getTermNames(siteId, TaxonomyTerm.PRICINGS);
+        return getTermNames(siteId, TaxonomyType.PRICINGS);
     }
 
     /**
@@ -273,95 +274,12 @@ public class TaxonomyTerms
     }
 
     /**
-     * Returns the event types for the given site.
-     */
-    public static List<String> getEventTypes(String siteId)
-    {
-        return getTermNames(siteId, TaxonomyTerm.EVENT_TYPES);
-    }
-
-    /**
-     * Returns the event types for the given site.
-     */
-    public static List<String> getEventTypes(Site site)
-    {
-        return getEventTypes(site.getId());
-    }
-
-    /**
-     * Returns the video types for the given site.
-     */
-    public static List<String> getVideoTypes(String siteId)
-    {
-        return getTermNames(siteId, TaxonomyTerm.VIDEO_TYPES);
-    }
-
-    /**
-     * Returns the video types for the given site.
-     */
-    public static List<String> getVideoTypes(Site site)
-    {
-        return getVideoTypes(site.getId());
-    }
-
-    /**
-     * Returns the publication types for the given site.
-     */
-    public static List<String> getPublicationTypes(String siteId)
-    {
-        return getTermNames(siteId, TaxonomyTerm.PUBLICATION_TYPES);
-    }
-
-    /**
-     * Returns the publication types for the given site.
-     */
-    public static List<String> getPublicationTypes(Site site)
-    {
-        return getPublicationTypes(site.getId());
-    }
-
-    /**
-     * Returns the term with the given name for the given site.
-     */
-    private static TaxonomyTerm getTerm(String siteId, String name, String type)
-    {
-        TaxonomyTerm ret = null;
-        List<TaxonomyTerm> terms = getTerms(siteId);
-        for(TaxonomyTerm term : terms)
-        {
-            if(term.getType().equals(type)
-                && term.getName().equals(name))
-            {
-                ret = term;
-                break;
-            }
-        }
-
-        return ret;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the term with the given name exists for the given site.
-     */
-    public static boolean hasTerm(String siteId, String name, String type)
-    {
-        return getTerm(siteId, name, type) != null;
-    }
-
-    /**
-     * Returns the organisation with the given name for the given site.
-     */
-    public static TaxonomyTerm getOrganisation(String siteId, String name)
-    {
-        return getTerm(siteId, name, TaxonomyTerm.ORGANISATIONS);
-    }
-
-    /**
      * Merge the terms from otherTerms into the terms list for the given site.
      * 
      * Ignores terms that do not exist in the taxonomy for the given site.
      */
-    private static List<String> mergeTerms(String siteId, List<String> terms, List<String> otherTerms, String type)
+    private static List<String> mergeTerms(String siteId,
+        List<String> terms, List<String> otherTerms, TaxonomyType type)
     {
         for(String otherTerm : otherTerms)
         {
@@ -379,7 +297,7 @@ public class TaxonomyTerms
      */
     public static List<String> mergeFeatures(String siteId, List<String> terms, List<String> otherTerms)
     {
-        return mergeTerms(siteId, terms, otherTerms, TaxonomyTerm.FEATURES);
+        return mergeTerms(siteId, terms, otherTerms, TaxonomyType.FEATURES);
     }
 
     /**
@@ -387,7 +305,7 @@ public class TaxonomyTerms
      */
     public static List<String> mergeTags(String siteId, List<String> terms, List<String> otherTerms)
     {
-        return mergeTerms(siteId, terms, otherTerms, TaxonomyTerm.TAGS);
+        return mergeTerms(siteId, terms, otherTerms, TaxonomyType.TAGS);
     }
 
     /**
@@ -395,6 +313,6 @@ public class TaxonomyTerms
      */
     public static List<String> mergeTechnologies(String siteId, List<String> terms, List<String> otherTerms)
     {
-        return mergeTerms(siteId, terms, otherTerms, TaxonomyTerm.TECHNOLOGIES);
+        return mergeTerms(siteId, terms, otherTerms, TaxonomyType.TECHNOLOGIES);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Gerald Curley
+ * Copyright 2023 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.content.publication;
+package com.opsmatters.media.model.content.event;
 
 import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Represents a publication type.
+ * Represents a event type.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum PublicationType
+public enum EventType
 {
-    CASE_STUDY("Case Study"),
-    CHEAT_SHEET("Cheat Sheet"),
-    DATASHEET("Datasheet"),
-    EBOOK("EBook"),
-    HANDBOOK("Handbook"),
-    GUIDE("Guide"),
-    REPORT("Report"),
-    SOLUTION_BRIEF("Solution Brief"),
-    WHITE_PAPER("White Paper");
+    CONFERENCE("Conference"),
+    EXHIBITION("Exhibition"),
+    MEETUP("Meetup"),
+    PRESENTATION("Presentation"),
+    SEMINAR("Seminar"),
+    SPECIAL_EVENT("Special Event"),
+    WEBCAST("Webcast"),
+    WEBINAR("Webinar"),
+    WORKSHOP("Workshop");
 
     private String value;
 
@@ -42,7 +42,7 @@ public enum PublicationType
      * Constructor that takes the type value.
      * @param value The value for the type
      */
-    PublicationType(String value)
+    EventType(String value)
     {
         this.value = value;
     }
@@ -61,10 +61,10 @@ public enum PublicationType
      * @param value The type value
      * @return The type for the given value
      */
-    public static PublicationType fromValue(String value)
+    public static EventType fromValue(String value)
     {
-        PublicationType[] types = values();
-        for(PublicationType type : types)
+        EventType[] types = values();
+        for(EventType type : types)
         {
             if(type.value().equals(value))
                 return type;
@@ -92,7 +92,7 @@ public enum PublicationType
 
         if(blank != null)
             ret.add(blank);
-        for(PublicationType type : PublicationType.values())
+        for(EventType type : EventType.values())
             ret.add(type.value());
 
         return ret;
