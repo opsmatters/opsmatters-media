@@ -45,6 +45,13 @@ public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
       + "( ?, ?, ?, ?, ?, ?, ? )";
 
     /**
+     * The query to use to update a term in the TAXONOMY_TERMS table.
+     */
+    private static final String UPDATE_SQL =  
+      "UPDATE TAXONOMY_TERMS SET UPDATED_DATE=?, STATUS=? "
+      + "WHERE ID=?";
+
+    /**
      * The query to use to select the terms from the TAXONOMY_TERMS table.
      */
     private static final String LIST_SQL =  
@@ -92,7 +99,7 @@ public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
     /**
      * Stores the given term in the TAXONOMY_TERMS table.
      */
-    public synchronized void add(Site site, TaxonomyTerm term) throws SQLException
+    public synchronized void add(TaxonomyTerm term) throws SQLException
     {
         if(!hasConnection() || term == null)
             return;
@@ -127,6 +134,26 @@ public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
             if(!getDriver().isConstraintViolation(ex))
                 throw ex;
         }
+    }
+
+    /**
+     * Updates the given term in the TAXONOMY_TERMS table.
+     */
+    public synchronized void update(TaxonomyTerm term) throws SQLException
+    {
+        if(!hasConnection() || term == null)
+            return;
+
+        if(updateStmt == null)
+            updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
+        clearParameters(updateStmt);
+
+        updateStmt.setTimestamp(1, new Timestamp(term.getUpdatedDateMillis()), UTC);
+        updateStmt.setString(2, term.getStatus().name());
+        updateStmt.setString(3, term.getId());
+        updateStmt.executeUpdate();
+
+        logger.info("Updated term '"+term.getId()+"' in TAXONOMY_TERMS");
     }
 
     /**
@@ -227,6 +254,8 @@ public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
     {
         closeStatement(insertStmt);
         insertStmt = null;
+        closeStatement(updateStmt);
+        updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
         closeStatement(countStmt);
@@ -236,6 +265,7 @@ public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
     }
 
     private PreparedStatement insertStmt;
+    private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;

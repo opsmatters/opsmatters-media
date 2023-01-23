@@ -125,10 +125,10 @@ public class TaxonomyTerms
     /**
      * Returns the term with the given name for the given site.
      */
-    private static TaxonomyTerm getTerm(String siteId, String name, TaxonomyType type)
+    private static TaxonomyTerm get(String siteId, String name, TaxonomyType type)
     {
         TaxonomyTerm ret = null;
-        List<TaxonomyTerm> terms = getTerms(siteId);
+        List<TaxonomyTerm> terms = list(siteId);
         if(terms != null)
         {
             for(TaxonomyTerm term : terms)
@@ -145,19 +145,19 @@ public class TaxonomyTerms
     }
 
     /**
-     * Returns <CODE>true</CODE> if the term with the given name exists for the given site.
+     * Returns the given term if it exists.
      */
-    public static boolean hasTerm(String siteId, String name, TaxonomyType type)
+    public static TaxonomyTerm get(TaxonomyTerm term)
     {
-        return getTerm(siteId, name, type) != null;
+        return get(term.getSiteId(), term.getName(), term.getType());
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given term exists.
+     * Returns <CODE>true</CODE> if the term with the given name exists for the given site.
      */
-    public static boolean hasTerm(TaxonomyTerm term)
+    public static boolean exists(String siteId, String name, TaxonomyType type)
     {
-        return getTerm(term.getSiteId(), term.getName(), term.getType()) != null;
+        return get(siteId, name, type) != null;
     }
 
     /**
@@ -169,9 +169,9 @@ public class TaxonomyTerms
     }
 
     /**
-     * Returns the taxonomy terms for the given site.
+     * Returns the list of taxonomy terms for the given site.
      */
-    public static List<TaxonomyTerm> getTerms(String siteId)
+    public static List<TaxonomyTerm> list(String siteId)
     {
         return terms.get(siteId);
     }
@@ -179,7 +179,7 @@ public class TaxonomyTerms
     /**
      * Returns the term names for the given site and type.
      */
-    private static List<String> getTermNames(String siteId, TaxonomyType type)
+    private static List<String> getNames(String siteId, TaxonomyType type)
     {
         Map<TaxonomyType,List<String>> map = names.get(siteId);
         return map != null ? map.get(type) : null;
@@ -190,7 +190,7 @@ public class TaxonomyTerms
      */
     public static List<String> getTags(String siteId)
     {
-        return getTermNames(siteId, TaxonomyType.TAGS);
+        return getNames(siteId, TaxonomyType.TAGS);
     }
 
     /**
@@ -206,7 +206,7 @@ public class TaxonomyTerms
      */
     public static TaxonomyTerm getTag(String siteId, String name)
     {
-        return getTerm(siteId, name, TaxonomyType.TAGS);
+        return get(siteId, name, TaxonomyType.TAGS);
     }
 
     /**
@@ -214,7 +214,7 @@ public class TaxonomyTerms
      */
     public static List<String> getFeatures(String siteId)
     {
-        return getTermNames(siteId, TaxonomyType.FEATURES);
+        return getNames(siteId, TaxonomyType.FEATURES);
     }
 
     /**
@@ -230,7 +230,7 @@ public class TaxonomyTerms
      */
     public static TaxonomyTerm getFeature(String siteId, String name)
     {
-        return getTerm(siteId, name, TaxonomyType.FEATURES);
+        return get(siteId, name, TaxonomyType.FEATURES);
     }
 
     /**
@@ -238,7 +238,7 @@ public class TaxonomyTerms
      */
     public static List<String> getTechnologies(String siteId)
     {
-        return getTermNames(siteId, TaxonomyType.TECHNOLOGIES);
+        return getNames(siteId, TaxonomyType.TECHNOLOGIES);
     }
 
     /**
@@ -254,7 +254,7 @@ public class TaxonomyTerms
      */
     public static TaxonomyTerm getTechnology(String siteId, String name)
     {
-        return getTerm(siteId, name, TaxonomyType.TECHNOLOGIES);
+        return get(siteId, name, TaxonomyType.TECHNOLOGIES);
     }
 
     /**
@@ -262,7 +262,7 @@ public class TaxonomyTerms
      */
     public static List<String> getPricings(String siteId)
     {
-        return getTermNames(siteId, TaxonomyType.PRICINGS);
+        return getNames(siteId, TaxonomyType.PRICINGS);
     }
 
     /**
@@ -283,7 +283,7 @@ public class TaxonomyTerms
     {
         for(String otherTerm : otherTerms)
         {
-            if(!terms.contains(otherTerm) && hasTerm(siteId, otherTerm, type))
+            if(!terms.contains(otherTerm) && exists(siteId, otherTerm, type))
             {
                 terms.add(otherTerm);
             }
