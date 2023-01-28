@@ -23,7 +23,7 @@ package com.opsmatters.media.model.monitor;
  */
 public enum AlertReason
 {
-    INACTIVITY("No recent activity", false),
+    INACTIVITY("No Activity", false),
     SUSPENDED("Suspended", true),
     UNREACHABLE("Unreachable", true),
     MANUAL("Manual", false),
