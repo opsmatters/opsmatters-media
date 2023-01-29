@@ -21,7 +21,7 @@ import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.drupal.DrupalTaxonomyTerm;
 import com.opsmatters.media.util.StringUtils;
 
-import static com.opsmatters.media.model.content.util.TaxonomyTermStatus.*;
+import static com.opsmatters.media.model.content.util.TermStatus.*;
 
 /**
  * Class representing a taxonomy term.
@@ -33,7 +33,7 @@ public class TaxonomyTerm extends BaseEntity
     private String siteId = "";
     private TaxonomyType type;
     private String name = "";
-    private TaxonomyTermStatus status = NEW;
+    private TermStatus status = NEW;
 
     /**
      * Default constructor.
@@ -53,6 +53,17 @@ public class TaxonomyTerm extends BaseEntity
         setType(TaxonomyType.fromVocabulary(term.getType()));
         setName(term.getName());
         setStatus(term.isPublished() ? ACTIVE : DISABLED);
+    }
+
+    /**
+     * Constructor that takes a site and type.
+     */
+    public TaxonomyTerm(String siteId, TaxonomyType type)
+    {
+        setId(StringUtils.getUUID(null));
+        setCreatedDate(Instant.now());
+        setSiteId(siteId);
+        setType(type);
     }
 
     /**
@@ -153,7 +164,7 @@ public class TaxonomyTerm extends BaseEntity
     /**
      * Returns the term's status.
      */
-    public TaxonomyTermStatus getStatus()
+    public TermStatus getStatus()
     {
         return status;
     }
@@ -167,9 +178,17 @@ public class TaxonomyTerm extends BaseEntity
     }
 
     /**
+     * Returns <CODE>true</CODE> if the term is available to be used.
+     */
+    public boolean isAvailable()
+    {
+        return status == NEW || status == ACTIVE;
+    }
+
+    /**
      * Sets the term's status.
      */
-    public void setStatus(TaxonomyTermStatus status)
+    public void setStatus(TermStatus status)
     {
         this.status = status;
     }
@@ -179,6 +198,6 @@ public class TaxonomyTerm extends BaseEntity
      */
     public void setStatus(String status)
     {
-        setStatus(TaxonomyTermStatus.valueOf(status));
+        setStatus(TermStatus.valueOf(status));
     }
 }

@@ -27,9 +27,9 @@ public enum TaxonomyType
     FEATURES("Features", "features", true),
     TECHNOLOGIES("Technologies", "technologies", true),
     PRICINGS("Pricings", "pricing_model", true),
-    EVENT_TYPES("Event Types", "activity_type", false),
-    VIDEO_TYPES("Video Types", "video_type", false),
-    PUBLICATION_TYPES("Publication Types", "publication_type", false),
+    EVENT_TYPES("Event Types", "activity_type", true),
+    VIDEO_TYPES("Video Types", "video_type", true),
+    PUBLICATION_TYPES("Publication Types", "publication_type", true),
     ORGANISATIONS("Organisations", "organisation", false);
 
     private String value;

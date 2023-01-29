@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.util.TaxonomyTerm;
@@ -61,10 +62,7 @@ public class TaxonomyTerms
         if(terms != null && terms.size() > 0)
         {
             for(TaxonomyTerm term : terms)
-            {
-                add(site.getId(), term,
-                    term == terms.get(terms.size()-1));
-            }
+                add(term, term == terms.get(terms.size()-1));
 
             logger.info(String.format("Loaded %d taxonomy terms for site %s",
                 terms.size(), site.getName()));
@@ -72,24 +70,24 @@ public class TaxonomyTerms
     }
 
     /**
-     * Adds the taxonomy term for the given site.
+     * Adds the taxonomy term.
      */
-    public static void add(String siteId, TaxonomyTerm term, boolean sort)
+    public static void add(TaxonomyTerm term, boolean sort)
     {
-        List<TaxonomyTerm> termsList = terms.get(siteId);
-        if(termsList == null)
+        List<TaxonomyTerm> termList = list(term.getSiteId());
+        if(termList == null)
         {
-            termsList = new ArrayList<TaxonomyTerm>();
-            terms.put(siteId, termsList);
+            termList = new ArrayList<TaxonomyTerm>();
+            terms.put(term.getSiteId(), termList);
         }
 
-        termsList.add(term);
+        termList.add(term);
 
-        Map<TaxonomyType,List<String>> map = names.get(siteId);
+        Map<TaxonomyType,List<String>> map = map(term.getSiteId());
         if(map == null)
         {
             map = new HashMap<TaxonomyType,List<String>>();
-            names.put(siteId, map);
+            names.put(term.getSiteId(), map);
         }
 
         List<String> namesList = map.get(term.getType());
@@ -99,7 +97,7 @@ public class TaxonomyTerms
             map.put(term.getType(), namesList);
         }
 
-        if(term.isActive())
+        if(term.isAvailable())
             namesList.add(term.getName());
 
         if(sort)
@@ -109,17 +107,9 @@ public class TaxonomyTerms
     /**
      * Adds the taxonomy term for the given site.
      */
-    public static void add(String siteId, TaxonomyTerm term)
+    public static void add(TaxonomyTerm term)
     {
-        add(siteId, term, true);
-    }
-
-    /**
-     * Adds the taxonomy term for the given site.
-     */
-    public static void add(Site site, TaxonomyTerm term)
-    {
-        add(site.getId(), term);
+        add(term, true);
     }
 
     /**
@@ -161,6 +151,14 @@ public class TaxonomyTerms
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given term exists.
+     */
+    public static boolean exists(TaxonomyTerm term)
+    {
+        return get(term) != null;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if taxonomy terms have been loaded for the given site.
      */
     public static boolean hasTerms(String siteId)
@@ -177,11 +175,34 @@ public class TaxonomyTerms
     }
 
     /**
+     * Returns the list of taxonomy terms for the given site and type.
+     */
+    public static List<TaxonomyTerm> list(String siteId, TaxonomyType type)
+    {
+        List<TaxonomyTerm> ret = new ArrayList<TaxonomyTerm>();
+        for(TaxonomyTerm term : list(siteId))
+        {
+            if(term.getType() == type)
+                ret.add(term);
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the map of taxonomy terms for the given site.
+     */
+    public static Map<TaxonomyType,List<String>> map(String siteId)
+    {
+        return names.get(siteId);
+    }
+
+    /**
      * Returns the term names for the given site and type.
      */
     private static List<String> getNames(String siteId, TaxonomyType type)
     {
-        Map<TaxonomyType,List<String>> map = names.get(siteId);
+        Map<TaxonomyType,List<String>> map = map(siteId);
         return map != null ? map.get(type) : null;
     }
 
@@ -314,5 +335,33 @@ public class TaxonomyTerms
     public static List<String> mergeTechnologies(String siteId, List<String> terms, List<String> otherTerms)
     {
         return mergeTerms(siteId, terms, otherTerms, TaxonomyType.TECHNOLOGIES);
+    }
+
+    /**
+     * Removes the given term.
+     */
+    public static void remove(TaxonomyTerm term)
+    {
+        List<TaxonomyTerm> list = list(term.getSiteId());
+        if(list != null)
+        {
+            Iterator<TaxonomyTerm> iterator = list.iterator();
+            while(iterator.hasNext())
+            {
+                TaxonomyTerm item = iterator.next();
+                if(item.getName().equals(term.getName()))
+                {
+                    iterator.remove();
+                }
+            }
+        }
+
+        Map<TaxonomyType,List<String>> map = map(term.getSiteId());
+        if(map != null)
+        {
+            List<String> names = map.get(term.getType());
+            if(names != null)
+                names.remove(term.getName());
+        }
     }
 }

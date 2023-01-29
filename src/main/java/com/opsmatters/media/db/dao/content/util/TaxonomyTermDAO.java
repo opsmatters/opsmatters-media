@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.util.TaxonomyTerm;
+import com.opsmatters.media.model.content.util.TaxonomyType;
 
 /**
  * DAO that provides operations on the TAXONOMY_TERMS table in the database.
@@ -34,6 +35,13 @@ import com.opsmatters.media.model.content.util.TaxonomyTerm;
 public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
 {
     private static final Logger logger = Logger.getLogger(TaxonomyTermDAO.class.getName());
+
+    /**
+     * The query to use to select a term from the TAXONOMY_TERMS table by id.
+     */
+    private static final String GET_BY_ID_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, TYPE, NAME, STATUS "
+      + "FROM TAXONOMY_TERMS WHERE ID=?";
 
     /**
      * The query to use to insert a term into the TAXONOMY_TERMS table.
@@ -52,11 +60,18 @@ public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
       + "WHERE ID=?";
 
     /**
-     * The query to use to select the terms from the TAXONOMY_TERMS table.
+     * The query to use to select the terms from the TAXONOMY_TERMS table by site.
      */
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, TYPE, NAME, STATUS "
       + "FROM TAXONOMY_TERMS WHERE SITE_ID=?";
+
+    /**
+     * The query to use to select the terms from the TAXONOMY_TERMS table by site and type.
+     */
+    private static final String LIST_BY_TYPE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, TYPE, NAME, STATUS "
+      + "FROM TAXONOMY_TERMS WHERE SITE_ID=? AND TYPE=?";
 
     /**
      * The query to use to get the count of terms from the TAXONOMY_TERMS table.
@@ -68,7 +83,7 @@ public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
      * The query to use to delete terms from the TAXONOMY_TERMS table.
      */
     private static final String DELETE_SQL =  
-      "DELETE FROM TAXONOMY_TERMS WHERE SITE_ID=?";
+      "DELETE FROM TAXONOMY_TERMS WHERE ID=?";
 
     /**
      * Constructor that takes a DAO factory.
@@ -94,6 +109,58 @@ public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
         table.setPrimaryKey("TAXONOMY_TERMS_PK", new String[] {"ID"});
         table.addIndex("TAXONOMY_TERMS_NAME_IDX", new String[] {"SITE_ID", "NAME"});
         table.setInitialised(true);
+    }
+
+    /**
+     * Returns a term from the TAXONOMY_TERMS table by id.
+     */
+    public synchronized TaxonomyTerm getById(String id) throws SQLException
+    {
+        TaxonomyTerm ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(getByIdStmt == null)
+            getByIdStmt = prepareStatement(getConnection(), GET_BY_ID_SQL);
+        clearParameters(getByIdStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            getByIdStmt.setString(1, id);
+            getByIdStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = getByIdStmt.executeQuery();
+            while(rs.next())
+            {
+                TaxonomyTerm term = new TaxonomyTerm();
+                term.setId(rs.getString(1));
+                term.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                term.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                term.setSiteId(rs.getString(4));
+                term.setType(rs.getString(5));
+                term.setName(rs.getString(6));
+                term.setStatus(rs.getString(7));
+                ret = term;
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
     }
 
     /**
@@ -157,6 +224,27 @@ public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
     }
 
     /**
+     * Adds or Updates the given feed in the TAXONOMY_TERMS table.
+     */
+    public boolean upsert(TaxonomyTerm term) throws SQLException
+    {
+        boolean ret = false;
+
+        TaxonomyTerm existing = getById(term.getId());
+        if(existing != null)
+        {
+            update(term);
+        }
+        else
+        {
+            add(term);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the terms from the TAXONOMY_TERMS table by site.
      */
     public synchronized List<TaxonomyTerm> list(Site site) throws SQLException
@@ -210,6 +298,60 @@ public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
     }
 
     /**
+     * Returns the terms from the TAXONOMY_TERMS table by site and type.
+     */
+    public synchronized List<TaxonomyTerm> list(Site site, TaxonomyType type) throws SQLException
+    {
+        List<TaxonomyTerm> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByTypeStmt == null)
+            listByTypeStmt = prepareStatement(getConnection(), LIST_BY_TYPE_SQL);
+        clearParameters(listByTypeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByTypeStmt.setString(1, site.getId());
+            listByTypeStmt.setString(2, type.name());
+            listByTypeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByTypeStmt.executeQuery();
+            ret = new ArrayList<TaxonomyTerm>();
+            while(rs.next())
+            {
+                TaxonomyTerm term = new TaxonomyTerm();
+                term.setId(rs.getString(1));
+                term.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                term.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                term.setSiteId(rs.getString(4));
+                term.setType(rs.getString(5));
+                term.setName(rs.getString(6));
+                term.setStatus(rs.getString(7));
+                ret.add(term);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the count of terms from the table.
      */
     public int count() throws SQLException
@@ -229,21 +371,21 @@ public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
     }
 
     /**
-     * Removes the terms for the given site from the TAXONOMY_TERMS table.
+     * Removes the given term from the TAXONOMY_TERMS table.
      */
-    public synchronized void delete(Site site) throws SQLException
+    public synchronized void delete(TaxonomyTerm term) throws SQLException
     {
-        if(!hasConnection() || site == null)
+        if(!hasConnection() || term == null)
             return;
 
         if(deleteStmt == null)
             deleteStmt = prepareStatement(getConnection(), DELETE_SQL);
         clearParameters(deleteStmt);
 
-        deleteStmt.setString(1, site.getId());
+        deleteStmt.setString(1, term.getId());
         deleteStmt.executeUpdate();
 
-        logger.info("Deleted terms for '"+site.getId()+"' in TAXONOMY_TERMS");
+        logger.info("Deleted term '"+term.getId()+"' from TAXONOMY_TERMS");
     }
 
     /**
@@ -252,21 +394,27 @@ public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
     @Override
     protected void close()
     {
+        closeStatement(getByIdStmt);
+        getByIdStmt = null;
         closeStatement(insertStmt);
         insertStmt = null;
         closeStatement(updateStmt);
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
+        closeStatement(listByTypeStmt);
+        listByTypeStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
         deleteStmt = null;
     }
 
+    private PreparedStatement getByIdStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
+    private PreparedStatement listByTypeStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }

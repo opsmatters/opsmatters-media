@@ -16,12 +16,15 @@
 
 package com.opsmatters.media.model.content.util;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * Represents the status of a taxonomy term.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum TaxonomyTermStatus
+public enum TermStatus
 {
     NEW("New", "glyphicon-unchecked", ""),
     ACTIVE("Active", "glyphicon-ok-circle", "status-success"),
@@ -38,7 +41,7 @@ public enum TaxonomyTermStatus
      * @param icon The glyphicon for the status
      * @param css The css class for the status
      */
-    TaxonomyTermStatus(String value, String icon, String css)
+    TermStatus(String value, String icon, String css)
     {
         this.value = value;
         this.icon = icon;
@@ -86,10 +89,10 @@ public enum TaxonomyTermStatus
      * @param value The type value
      * @return The type for the given value
      */
-    public static TaxonomyTermStatus fromValue(String value)
+    public static TermStatus fromValue(String value)
     {
-        TaxonomyTermStatus[] types = values();
-        for(TaxonomyTermStatus type : types)
+        TermStatus[] types = values();
+        for(TermStatus type : types)
         {
             if(type.value().equals(value))
                 return type;
@@ -105,5 +108,19 @@ public enum TaxonomyTermStatus
     public static boolean contains(String value)
     {
         return valueOf(value) != null;
+    }
+
+    /**
+     * Returns a list of the taxonomy term statuses.
+     */
+    public static List<TermStatus> toList()
+    {
+        List<TermStatus> ret = new ArrayList<TermStatus>();
+
+        ret.add(NEW);
+        ret.add(ACTIVE);
+        ret.add(DISABLED);
+
+        return ret;
     }
 }
