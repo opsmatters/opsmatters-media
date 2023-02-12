@@ -33,7 +33,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.text.StringSubstitutor;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.video.VideoProvider;
-import com.opsmatters.media.model.content.event.EventProvider;
 import com.opsmatters.media.model.content.project.RepositoryBranch;
 import com.opsmatters.media.model.content.util.ConfigGeneratorFields;
 import com.opsmatters.media.util.StringUtils;
@@ -51,7 +50,6 @@ public class ConfigGenerator
     private static String header = null;
     private static Map<ContentType,String> contentTypeTemplates = new HashMap<ContentType,String>();
     private static Map<VideoProvider,String> videoTemplates = new HashMap<VideoProvider,String>();
-    private static Map<EventProvider,String> eventTemplates = new HashMap<EventProvider,String>();
 
     private String config = null;
     private ConfigGeneratorFields fields;
@@ -97,8 +95,6 @@ public class ConfigGenerator
             contentTypeTemplates.put(type, getContents(String.format("%s.yml", type.tag())));
         for(VideoProvider provider : VideoProvider.toList())
             videoTemplates.put(provider, getContents(String.format("videos-%s.yml", provider.code())));
-        for(EventProvider provider : EventProvider.toList())
-            eventTemplates.put(provider, getContents(String.format("events-%s.yml", provider.code())));
 
         initialised = true;
     }
@@ -204,35 +200,8 @@ public class ConfigGenerator
                 }
                 else if(type == ContentType.EVENT)
                 {
-                    // Go through the existing sections and map to providers
-                    Map<EventProvider,String> providers = new HashMap<EventProvider,String>();
-                    if(events.size() > 0)
-                    {
-                        for(Map.Entry<String,String> entry : events.entrySet())
-                        {
-                            EventProvider provider = EventProvider.fromValue(entry.getKey());
-                            if(provider != null)
-                                providers.put(provider, entry.getKey());
-
-                            // Exclude the section if the field has been deselected
-                            if(provider == null || fields.getEventProviders().contains(provider))
-                            {
-                                buff.append("\r\n");
-                                buff.append(entry.getValue());
-                            }
-                        }
-                    }
-
-                    // Output any other providers that were requested but don't exist yet
-                    for(EventProvider provider : EventProvider.toList())
-                    {
-                        if(fields.getEventProviders().contains(provider)
-                            && !providers.containsKey(provider))
-                        {
-                            buff.append("\r\n");
-                            buff.append(eventTemplates.get(provider));
-                        }
-                    }
+                    buff.append("\r\n");
+                    buff.append(getContents("events-webinars.yml"));
                 }
             }
         }

@@ -16,9 +16,6 @@
 
 package com.opsmatters.media.model.content.event;
 
-import java.util.List;
-import java.util.ArrayList;
-
 /**
  * Represents an event provider.
  * 
@@ -26,25 +23,27 @@ import java.util.ArrayList;
  */
 public enum EventProvider
 {
-    WEBINARS("webinars", "Webinars"),
-    ZOOM("zoom", "Zoom"),
-    BRIGHTTALK("brighttalk", "BrightTALK"),
-    GOTOWEBINAR("gotowebinar", "GoToWebinar"),
-    ON24("on24", "on24"),
-    LIVESTORM("livestorm", "Livestorm"); 
+    ZOOM("zoom", "Zoom", "zoom.us"),
+    BRIGHTTALK("brighttalk", "BrightTALK", "brighttalk.com"),
+    GOTOWEBINAR("gotowebinar", "GoToWebinar", "gotowebinar.com"),
+    ON24("on24", "on24", "on24.com"),
+    LIVESTORM("livestorm", "Livestorm", "livestorm.co");
 
     private String code;
     private String value;
+    private String domain;
 
     /**
      * Constructor that takes the provider value.
      * @param code The code for the provider
      * @param value The value for the provider
+     * @param domain The domain for the provider
      */
-    EventProvider(String code, String value)
+    EventProvider(String code, String value, String domain)
     {
         this.code = code;
         this.value = value;
+        this.domain = domain;
     }
 
     /**
@@ -66,6 +65,15 @@ public enum EventProvider
     }
 
     /**
+     * Returns the domain of the provider.
+     * @return The domain of the provider.
+     */
+    public String domain()
+    {
+        return domain;
+    }
+
+    /**
      * Returns the type for the given code.
      * @param code The type code
      * @return The type for the given code
@@ -78,6 +86,7 @@ public enum EventProvider
             if(type.code().equals(code))
                 return type;
         }
+
         return null;
     }
 
@@ -94,6 +103,24 @@ public enum EventProvider
             if(type.value().equals(value))
                 return type;
         }
+
+        return null;
+    }
+
+    /**
+     * Returns the type for the given url.
+     * @param url The type url
+     * @return The type for the given url
+     */
+    public static EventProvider fromUrl(String url)
+    {
+        EventProvider[] types = values();
+        for(EventProvider type : types)
+        {
+            if(url.indexOf(type.domain()) != -1)
+                return type;
+        }
+
         return null;
     }
 
@@ -105,22 +132,5 @@ public enum EventProvider
     public static boolean contains(String value)
     {
         return valueOf(value) != null;
-    }
-
-    /**
-     * Returns a list of the providers.
-     */
-    public static List<EventProvider> toList()
-    {
-        List<EventProvider> ret = new ArrayList<EventProvider>();
-
-        ret.add(WEBINARS);
-        ret.add(ZOOM);
-        ret.add(BRIGHTTALK);
-        ret.add(GOTOWEBINAR);
-        ret.add(ON24);
-        ret.add(LIVESTORM);
-
-        return ret;
     }
 }

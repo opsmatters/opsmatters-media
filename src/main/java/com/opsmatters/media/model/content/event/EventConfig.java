@@ -188,6 +188,7 @@ public class EventConfig extends ContentConfig<Event>
                 break;
             }
         }
+
         return ret;
     }
 
@@ -252,18 +253,8 @@ public class EventConfig extends ContentConfig<Event>
                 {
                     for(Map.Entry<String,Object> entry : page.entrySet())
                     {
-                        CrawlerWebPage config = CrawlerWebPage.builder(entry.getKey())
-                            .parse((Map<String,Object>)entry.getValue()).build();
-
-                        CrawlerWebPage provider = ret.getProvider(config.getProvider());
-                        if(provider != null)
-                        {
-                            config.setBrowser(provider.getBrowser());
-                            config.setTeasers(provider.getTeasers());
-                            config.setArticles(provider.getArticles());
-                        }
-
-                        ret.addPage(config);
+                        ret.addPage(CrawlerWebPage.builder(entry.getKey())
+                            .parse((Map<String,Object>)entry.getValue()).build());
                     }
                 }
             }

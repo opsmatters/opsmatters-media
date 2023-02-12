@@ -25,8 +25,6 @@ import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.video.VideoConfig;
 import com.opsmatters.media.model.content.video.VideoProvider;
-import com.opsmatters.media.model.content.event.EventConfig;
-import com.opsmatters.media.model.content.event.EventProvider;
 import com.opsmatters.media.model.content.post.PostConfig;
 import com.opsmatters.media.model.content.post.RoundupPostConfig;
 import com.opsmatters.media.model.content.project.ProjectConfig;
@@ -40,7 +38,6 @@ import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.video.VideoProvider.*;
-import static com.opsmatters.media.model.content.event.EventProvider.*;
 
 /**
  * Class that represents the set of field used to generate a config file.
@@ -60,7 +57,6 @@ public class ConfigGeneratorFields implements java.io.Serializable
 
     Map<ContentType,Boolean> types = new HashMap<ContentType,Boolean>();
     Map<VideoProvider,Boolean> videos = new HashMap<VideoProvider,Boolean>();
-    Map<EventProvider,Boolean> events = new HashMap<EventProvider,Boolean>();
 
     /**
      * Default constructor.
@@ -104,8 +100,6 @@ public class ConfigGeneratorFields implements java.io.Serializable
                 setChannelId(vimeo.substring(vimeo.lastIndexOf("/")+1));
                 setVimeo(true);
             }
-
-            setWebinars(getEvents());
         }
         else
         {
@@ -177,21 +171,6 @@ public class ConfigGeneratorFields implements java.io.Serializable
             {
                 CrawlerWebPage page = roundups.getPage(0);
                 blogUrl = page.getUrl(0);
-            }
-        }
-
-        if(config.hasEvents())
-        {
-            EventConfig events = config.getEvents();
-
-            if(events.numPages() > 0)
-            {
-                setWebinars(events.hasPage(WEBINARS.value()));
-                setZoom(events.hasPage(ZOOM.value()));
-                setBrighttalk(events.hasPage(BRIGHTTALK.value()));
-                setGotowebinar(events.hasPage(GOTOWEBINAR.value()));
-                setOn24(events.hasPage(ON24.value()));
-                setLivestorm(events.hasPage(LIVESTORM.value()));
             }
         }
 
@@ -556,129 +535,6 @@ public class ConfigGeneratorFields implements java.io.Serializable
     public void setJobs(Boolean jobs)
     {
         setType(jobs, ContentType.JOB);
-    }
-
-    /**
-     * Returns the list of event providers.
-     */
-    public List<EventProvider> getEventProviders()
-    {
-        return new ArrayList<EventProvider>(events.keySet());
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the given event provider is enabled.
-     */
-    private Boolean hasProvider(EventProvider provider)
-    {
-        return events.containsKey(provider);
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the given event provider is enabled.
-     */
-    private void setProvider(boolean enabled, EventProvider provider)
-    {
-        if(enabled)
-            events.put(provider, Boolean.TRUE);
-        else
-            events.remove(provider);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if webinar events are enabled.
-     */
-    public Boolean getWebinars()
-    {
-        return hasProvider(WEBINARS);
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if webinar events are enabled.
-     */
-    public void setWebinars(Boolean webinars)
-    {
-        setProvider(webinars, WEBINARS);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if Zoom events are enabled.
-     */
-    public Boolean getZoom()
-    {
-        return hasProvider(ZOOM);
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if Zoom events are enabled.
-     */
-    public void setZoom(Boolean zoom)
-    {
-        setProvider(zoom, ZOOM);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if BrightTalk events are enabled.
-     */
-    public Boolean getBrighttalk()
-    {
-        return hasProvider(BRIGHTTALK);
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if BrightTalk events are enabled.
-     */
-    public void setBrighttalk(Boolean brightTalk)
-    {
-        setProvider(brightTalk, BRIGHTTALK);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if GoToWebinar events are enabled.
-     */
-    public Boolean getGotowebinar()
-    {
-        return hasProvider(GOTOWEBINAR);
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if GoToWebinar events are enabled.
-     */
-    public void setGotowebinar(Boolean goToWebinar)
-    {
-        setProvider(goToWebinar, GOTOWEBINAR);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if on24 events are enabled.
-     */
-    public Boolean getOn24()
-    {
-        return hasProvider(ON24);
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if on24 events are enabled.
-     */
-    public void setOn24(Boolean on24)
-    {
-        setProvider(on24, ON24);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if Livestorm events are enabled.
-     */
-    public Boolean getLivestorm()
-    {
-        return hasProvider(LIVESTORM);
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if Livestorm events are enabled.
-     */
-    public void setLivestorm(Boolean livestorm)
-    {
-        setProvider(livestorm, LIVESTORM);
     }
 
     /**
