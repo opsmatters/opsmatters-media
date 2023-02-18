@@ -198,11 +198,6 @@ public class ConfigGenerator
                         }
                     }
                 }
-                else if(type == ContentType.EVENT)
-                {
-                    buff.append("\r\n");
-                    buff.append(getContents("events-webinars.yml"));
-                }
             }
         }
 

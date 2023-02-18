@@ -189,6 +189,15 @@ public class OrganisationSites
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given organisation already exists.
+     */
+    public static boolean exists(OrganisationSite organisationSite)
+    {
+        OrganisationSite existing = get(organisationSite.getSiteId(), organisationSite.getCode());
+        return existing != null ? !existing.getId().equals(organisationSite.getId()) : false;
+    }
+
+    /**
      * Returns the content type for the given organisation site and content type.
      */
     public static OrganisationContentType getContentType(String siteId, String code, ContentType type)

@@ -36,6 +36,8 @@ import static com.opsmatters.media.model.content.FieldName.*;
  */
 public class Organisation extends OwnedEntity implements FieldSource
 {
+    public static final String DEFAULT_CODE = "???";
+
     private String code = "";
     private String name = "";
     private String website = "";
@@ -150,7 +152,7 @@ public class Organisation extends OwnedEntity implements FieldSource
         Organisation organisation = new Organisation();
 
         organisation.setId(StringUtils.getUUID(null));
-        organisation.setCode("TBD");
+        organisation.setCode(DEFAULT_CODE);
         organisation.setName("New Organisation");
         organisation.setCreatedDate(Instant.now());
 

@@ -139,7 +139,7 @@ public class OrganisationSite extends OwnedEntity implements FieldSource
 
         organisation.setId(StringUtils.getUUID(null));
         organisation.setSiteId(site.getId());
-        organisation.setCode("TBD");
+        organisation.setCode(Organisation.DEFAULT_CODE);
         organisation.setCreatedDate(Instant.now());
         organisation.setSocial(true);
 

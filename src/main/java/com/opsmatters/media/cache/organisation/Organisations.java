@@ -116,6 +116,15 @@ public class Organisations
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given organisation already exists.
+     */
+    public static boolean exists(Organisation organisation)
+    {
+        Organisation existing = get(organisation.getCode());
+        return existing != null ? !existing.getId().equals(organisation.getId()) : false;
+    }
+
+    /**
      * Sets the organisation.
      */
     public static void set(Organisation organisation)
