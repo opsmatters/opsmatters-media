@@ -16,6 +16,8 @@
 
 package com.opsmatters.media.model.platform;
 
+import static com.opsmatters.media.model.platform.EnvironmentType.*;
+
 /**
  * Represents the environments for a platform.
  * 
@@ -23,30 +25,30 @@ package com.opsmatters.media.model.platform;
  */
 public enum EnvironmentName
 {
-    APP_PROD("app-prod", "App Prod", true),
-    APP_STAGE("app-stage", "App Stage", true),
-    IMAGE("image", "Image", true),
-    DIRECTOR("director", "Director", true),
-    PUBLISHER("publisher", "Publisher", true),
-    LOCAL("local", "Local", true),
-    STAGE("stage", "Stage", false),
-    PROD("prod", "Production", false);
+    DIRECTOR("director", "Director", APP),
+    PUBLISHER("publisher", "Publisher", APP),
+    IMAGE("image", "Image", APP),
+    LOCAL("local", "Local", APP),
+    STAGE_DB("app-stage", "Stage", APP),
+    PROD_DB("app-prod", "Production", APP),
+    STAGE("stage", "Stage", SITE),
+    PROD("prod", "Production", SITE);
 
     private String code;
     private String value;
-    private boolean internal;
+    private EnvironmentType type;
 
     /**
      * Constructor that takes the environment code and value.
      * @param code The code for the environment
      * @param value The value for the environment
-     * @param internal <CODE>true</CODE> if this is an internal environment
+     * @param type The type of the environment
      */
-    EnvironmentName(String code, String value, boolean internal)
+    EnvironmentName(String code, String value, EnvironmentType type)
     {
         this.code = code;
         this.value = value;
-        this.internal = internal;
+        this.type = type;
     }
 
     /**
@@ -77,27 +79,36 @@ public enum EnvironmentName
     }
 
     /**
-     * Returns <CODE>true</CODE> if this is an internal environment.
-     * @return <CODE>true</CODE> if this is an internal environment.
+     * Returns The type of the environment.
+     * @return The type of the environment.
      */
-    public boolean internal()
+    public EnvironmentType type()
     {
-        return internal;
+        return type;
     }
 
     /**
-     * Returns <CODE>true</CODE> if this is a drupal environment.
-     * @return <CODE>true</CODE> if this is a drupal environment.
+     * Returns <CODE>true</CODE> if this is a APP environment.
+     * @return <CODE>true</CODE> if this is a APP environment.
      */
-    public boolean drupal()
+    public boolean app()
     {
-        return !internal;
+        return type == APP;
     }
 
     /**
-     * Returns the type for the given value.
-     * @param value The type value
-     * @return The type for the given value
+     * Returns <CODE>true</CODE> if this is a SITE environment.
+     * @return <CODE>true</CODE> if this is a SITE environment.
+     */
+    public boolean site()
+    {
+        return type == SITE;
+    }
+
+    /**
+     * Returns the environment name for the given value.
+     * @param value The environment value
+     * @return The environment name for the given value
      */
     public static EnvironmentName fromValue(String value)
     {
@@ -107,13 +118,14 @@ public enum EnvironmentName
             if(type.value().equals(value))
                 return type;
         }
+
         return null;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given value is contained in the list of types.
-     * @param value The type value
-     * @return <CODE>true</CODE> if the given value is contained in the list of types
+     * Returns <CODE>true</CODE> if the given value is contained in the list of environment names.
+     * @param value The environment value
+     * @return <CODE>true</CODE> if the given value is contained in the list of environment names
      */
     public static boolean contains(String value)
     {

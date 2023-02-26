@@ -45,7 +45,7 @@ public class Site implements ConfigElement
     /**
      * Constructor that takes an id.
      */
-    protected Site(String id)
+    public Site(String id)
     {
         setId(id);
     }

@@ -43,7 +43,7 @@ public class Environment implements ConfigElement
     /**
      * Constructor that takes a name.
      */
-    protected Environment(String name)
+    protected Environment(EnvironmentName name)
     {
         setEnvironmentName(name);
     }
@@ -268,7 +268,7 @@ public class Environment implements ConfigElement
      */
     public static Builder builder(String name, Site site)
     {
-        return new Builder(name, site);
+        return new Builder(EnvironmentName.valueOf(name), site);
     }
 
     /**
@@ -277,7 +277,6 @@ public class Environment implements ConfigElement
     public static class Builder implements ConfigParser<Environment>
     {
         // The config attribute names
-        private static final String NAME = "name";
         private static final String URL = "url";
         private static final String PING = "ping";
         private static final String PATH = "path";
@@ -294,15 +293,19 @@ public class Environment implements ConfigElement
          * @param name The name for the environment
          * @param site The site for the environment
          */
-        public Builder(String name, Site site)
+        public Builder(EnvironmentName name, Site site)
         {
             ret = new Environment(name);
 
             // Generate environment key
-            String key = name;
+            String key = name.code();
             if(site != null)
-                key = String.format("%s-%s", site.getId(), name);
-            ret.setKey(key.replace("_", "-").toLowerCase());
+            {
+                key = String.format("%s-%s",
+                    site.getId().toLowerCase(), name.code());
+            }
+
+            ret.setKey(key);
         }
 
         /**

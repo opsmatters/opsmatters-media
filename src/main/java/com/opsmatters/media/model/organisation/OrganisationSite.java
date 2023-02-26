@@ -17,6 +17,8 @@ package com.opsmatters.media.model.organisation;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 import java.time.Instant;
 import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.Organisations;
@@ -411,6 +413,14 @@ public class OrganisationSite extends OwnedEntity implements FieldSource
     public Map<ContentType,OrganisationContentType> getContentTypes()
     {
         return contentTypes;
+    }
+
+    /**
+     * Returns a list of the content types.
+     */
+    public List<OrganisationContentType> getContentTypesList()
+    {
+        return new ArrayList<OrganisationContentType>(contentTypes.values());
     }
 
     /**

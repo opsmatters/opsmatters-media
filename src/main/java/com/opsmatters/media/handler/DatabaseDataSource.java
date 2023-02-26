@@ -114,10 +114,20 @@ public class DatabaseDataSource<E extends Serializable> implements DataSource<E>
                                     str = Integer.toString(SessionId.get());
 
                                 if(str == null || str.length() == 0)
-                                    sql = sql.replaceAll(String.format("=[ ]?:%s", parameter.name()), "LIKE '%'");
+                                {
+                                    // Replace expression "COL = :SITE" with "COL LIKE '%'"
+                                    sql = sql.replaceAll(String.format("=[ ]?:%s", parameter.name()),
+                                        "LIKE '%'");
+
+                                    // Replace expression "INSTR(COL,:SITE) > 0" with "COL LIKE '%'"
+                                    sql = sql.replaceAll(String.format("INSTR\\((.+?),[ ]?:%s\\)[ ]?>[ ]?0", parameter.name()),
+                                        "$1 LIKE '%'");
+                                }
                                 else
+                                {
                                     sql = sql.replaceAll(String.format(":%s", parameter.name()),
                                         String.format("'%s'", str));
+                                }
                             }
                             else if(obj instanceof LocalDateTime)
                             {

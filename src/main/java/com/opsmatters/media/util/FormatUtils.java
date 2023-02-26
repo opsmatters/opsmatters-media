@@ -127,11 +127,11 @@ public class FormatUtils
 
             // Remove "combining" accent characters
             ret = ret.replaceAll("[\\u0300-\\u036F]", "");
-            ret = ret.replaceAll("%C[CD23]%[89ab][0-9a-f]", "");
+            ret = ret.replaceAll("%[CcEe][CcDd23]%[89AaBb][0-9A-Fa-f]", "");
 
             // Remove "cyrillic" characters
             ret = ret.replaceAll("[\\u0400-\\u0467]", "");
-            ret = ret.replaceAll("%D[01]%[89ab][0-9a-f]", "");
+            ret = ret.replaceAll("%[Dd][01]%[89AaBb][0-9A-Fa-f]", "");
 
             // Remove quotes, dashes etc
             ret = ret.replaceAll("'|‘|’|‚|‛|“|”|„|′|″|®|™", "");

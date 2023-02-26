@@ -247,7 +247,10 @@ public enum ContentType
         if(blank != null)
             ret.add(blank);
         for(ContentType type : ContentType.values())
-            ret.add(type.value());
+        {
+            if(type.code().length() > 0)
+                ret.add(type.value());
+        }
 
         return ret;
     }
