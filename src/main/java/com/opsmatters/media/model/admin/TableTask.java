@@ -17,6 +17,7 @@ package com.opsmatters.media.model.admin;
 
 import java.time.Instant;
 import com.opsmatters.media.util.StringUtils;
+import com.opsmatters.media.util.Formats;
 
 /**
  * Class representing a database table task to be executed.
@@ -115,5 +116,24 @@ public class TableTask extends Task
     public boolean hasUpdateQuery()
     {
         return updateQuery != null && updateQuery.length() > 0;
+    }
+
+    /**
+     * Returns the email for a task with an error.
+     */
+    public Email getAlertEmail(String description)
+    {
+        String subject = String.format("Task ERROR: %s", getName());
+        EmailBody body = new EmailBody()
+            .addParagraph("The following task has an error:")
+            .addTable(new String[][]
+            {
+                {"ID", getId()},
+                {"Name", getName()},
+                {"Status", getStatus().name()},
+                {"Executed", getExecutedDateAsString(Formats.CONTENT_DATE_FORMAT)},
+                {"Description", description},
+            });
+        return new Email(subject, body);
     }
 }

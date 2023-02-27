@@ -112,7 +112,8 @@ public enum FieldName
     TRACKING("tracking"),
     TEMPLATE("template"),
     LISTING("listing"),
-    FOOTER("footer");
+    FOOTER("footer"),
+    ALERT("alert");
 
     private String value;
 

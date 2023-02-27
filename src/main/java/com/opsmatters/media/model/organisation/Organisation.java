@@ -48,6 +48,7 @@ public class Organisation extends OwnedEntity implements FieldSource
     private String filePrefix = "";
     private String imagePrefix = "";
     private String imageText = "";
+    private boolean alert = false;
 
     /**
      * Default constructor.
@@ -90,6 +91,7 @@ public class Organisation extends OwnedEntity implements FieldSource
             setFilePrefix(new String(obj.getFilePrefix() != null ? obj.getFilePrefix() : ""));
             setImagePrefix(new String(obj.getImagePrefix() != null ? obj.getImagePrefix() : ""));
             setImageText(new String(obj.getImageText() != null ? obj.getImageText() : ""));
+            setAlert(obj.hasAlert());
         }
     }
 
@@ -108,6 +110,7 @@ public class Organisation extends OwnedEntity implements FieldSource
         ret.putOpt(FILE_PREFIX.value(), getFilePrefix());
         ret.putOpt(IMAGE_PREFIX.value(), getImagePrefix());
         ret.putOpt(IMAGE_TEXT.value(), getImageText());
+        ret.put(ALERT.value(), hasAlert());
 
         return ret;
     }
@@ -125,6 +128,7 @@ public class Organisation extends OwnedEntity implements FieldSource
         setFilePrefix(obj.optString(FILE_PREFIX.value()));
         setImagePrefix(obj.optString(IMAGE_PREFIX.value()));
         setImageText(obj.optString(IMAGE_TEXT.value()));
+        setAlert(obj.optBoolean(ALERT.value(), false));
     }
 
     /**
@@ -140,6 +144,7 @@ public class Organisation extends OwnedEntity implements FieldSource
         ret.put(HASHTAG, getHashtag());
         ret.put(TRACKING, getTracking());
         ret.put(IMAGE_TEXT, getImageText());
+        ret.put(ALERT, hasAlert() ? "1" : "0");
 
         return ret;
     }
@@ -155,6 +160,7 @@ public class Organisation extends OwnedEntity implements FieldSource
         organisation.setCode(DEFAULT_CODE);
         organisation.setName("New Organisation");
         organisation.setCreatedDate(Instant.now());
+        organisation.setAlert(true);
 
         return organisation;
     }
@@ -373,5 +379,37 @@ public class Organisation extends OwnedEntity implements FieldSource
     public void setImageText(String imageText)
     {
         this.imageText = imageText;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this organisation has content alerts.
+     */
+    public boolean hasAlert()
+    {
+        return alert;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this organisation has content alerts.
+     */
+    public Boolean getAlertObject()
+    {
+        return Boolean.valueOf(hasAlert());
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this organisation has content alerts.
+     */
+    public void setAlert(boolean alert)
+    {
+        this.alert = alert;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this organisation has content alerts.
+     */
+    public void setAlertObject(Boolean alert)
+    {
+        setAlert(alert != null && alert.booleanValue());
     }
 }

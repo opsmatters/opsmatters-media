@@ -34,6 +34,7 @@ public enum NotificationType
     FEED_ALERT,
     FEED_ERROR_COUNT,
     FEED_SUBMITTED,
+    TASK_ALERT,
     TASK_ERROR_COUNT,
     TASK_PENDING,
     TASK_UPDATED,
