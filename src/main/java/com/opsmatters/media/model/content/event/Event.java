@@ -208,8 +208,8 @@ public class Event extends Resource<EventTeaser,EventDetails>
         event.init();
         event.setSiteId(site.getId());
         event.setTitle(config.getName()+": New Event");
-        event.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
-        event.setStartDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        event.setPublishedDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
+        event.setStartDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
         event.addStartTime(config);
         event.setEventType("Webinar");
 
@@ -254,7 +254,7 @@ public class Event extends Resource<EventTeaser,EventDetails>
      */
     public void prepare(EventConfig config, CrawlerWebPage page, boolean debug)
     {
-        setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
+        setPublishedDateAsString(getPublishedDateAsString(config.getField(PUBLISHED_DATE)));
 
         BodyParser parser = new BodyParser(getDescription(), page.getArticles().getFilters(), debug);
         if(parser.converted())

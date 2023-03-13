@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.ArrayList;
 import com.opsmatters.media.model.ConfigElement;
 import com.opsmatters.media.model.ConfigParser;
+import com.opsmatters.media.model.content.FieldName;
 import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.model.content.crawler.field.Fields;
 import com.opsmatters.media.model.content.crawler.field.FieldFilter;
@@ -31,6 +32,7 @@ import com.opsmatters.media.model.content.crawler.field.FieldFilter;
  */
 public class CrawlerContent implements ConfigElement
 {
+    private ContentRequest request = new ContentRequest();
     private ContentLoading loading = new ContentLoading();
     private List<Fields> fields = new ArrayList<Fields>();
 
@@ -56,6 +58,8 @@ public class CrawlerContent implements ConfigElement
     {
         if(obj != null)
         {
+            if(obj.getRequest() != null)
+                setRequest(new ContentRequest(obj.getRequest()));
             if(obj.getLoading() != null)
                 setLoading(new ContentLoading(obj.getLoading()));
 
@@ -66,6 +70,22 @@ public class CrawlerContent implements ConfigElement
                     addFields(new Fields(fields));
             }
         }
+    }
+
+    /**
+     * Returns the request configuration.
+     */
+    public ContentRequest getRequest()
+    {
+        return request;
+    }
+
+    /**
+     * Sets the request configuration.
+     */
+    public void setRequest(ContentRequest request)
+    {
+        this.request = request;
     }
 
     /**
@@ -134,6 +154,34 @@ public class CrawlerContent implements ConfigElement
     }
 
     /**
+     * Returns the first field with the given name.
+     */
+    public Field getField(FieldName name)
+    {
+        Field ret = null;
+        if(hasFields())
+        {
+            for(Fields fields : getFields())
+            {
+                ret = fields.getField(name);
+                if(ret != null)
+                    break;
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given field should have a trailing slash.
+     */
+    public boolean hasTrailingSlash(FieldName name)
+    {
+        Field field = getField(name);
+        return field != null ? field.hasTrailingSlash() : false;
+    }
+
+    /**
      * Returns the filters for this configuration.
      */
     public List<FieldFilter> getFilters()
@@ -153,6 +201,38 @@ public class CrawlerContent implements ConfigElement
     }
 
     /**
+     * Returns the first url for this configuration.
+     */
+    public String getUrl()
+    {
+        return getRequest().getUrl(0);
+    }
+
+    /**
+     * Returns the urls for this configuration.
+     */
+    public List<String> getUrls()
+    {
+        return getRequest().getUrls();
+    }
+
+    /**
+     * Returns the number of urls for this configuration.
+     */
+    public int numUrls()
+    {
+        return getRequest().numUrls();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if parameters should be removed from the URL.
+     */
+    public boolean removeParameters()
+    {
+        return getRequest().removeParameters();
+    }
+
+    /**
      * Returns a builder for the configuration.
      * @return The builder instance.
      */
@@ -167,6 +247,7 @@ public class CrawlerContent implements ConfigElement
     public static class Builder implements ConfigParser<CrawlerContent>
     {
         // The config attribute names
+        private static final String REQUEST = "request";
         private static final String LOADING = "loading";
         private static final String FIELDS = "fields";
 
@@ -180,6 +261,12 @@ public class CrawlerContent implements ConfigElement
         @Override
         public Builder parse(Map<String, Object> map)
         {
+            if(map.containsKey(REQUEST))
+            {
+                ret.setRequest(ContentRequest.builder()
+                    .parse((Map<String,Object>)map.get(REQUEST)).build());
+            }
+
             if(map.containsKey(LOADING))
             {
                 ret.setLoading(ContentLoading.builder()

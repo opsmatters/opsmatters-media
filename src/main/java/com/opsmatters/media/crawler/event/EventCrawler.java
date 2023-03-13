@@ -99,7 +99,7 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
     public EventDetails getDetails(String url)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        return getDetails(new EventTeaser(url, removeParameters()));
+        return getDetails(new EventTeaser(url, getArticles().removeParameters()));
     }
 
     /**
@@ -229,7 +229,7 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
         if(root == null)
             throw new IllegalArgumentException("Root not found for event content");
 
-        Teasers.update(getPage().getUrls(), content);
+        Teasers.update(getPage().getTeasers().getUrls(), content);
 
         return content;
     }

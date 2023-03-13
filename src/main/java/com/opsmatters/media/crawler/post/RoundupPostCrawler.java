@@ -82,12 +82,8 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostTeaser,Roundup
             populateTeaserFields(root, fields, teaser, "teaser");
             if(fields.hasUrl())
             {
-                String url = null;
                 Field field = fields.getUrl();
-                if(field.generate())
-                    url = FormatUtils.generateUrl(getBasePath(), getElements(field, root, "teaser"));
-                else
-                    url = getAnchor(field, root, "teaser", field.removeParameters());
+                String url = getAnchor(field, root, "teaser", field.removeParameters());
                 if(url != null)
                     teaser.setUrl(url, field.removeParameters());
             }
@@ -102,7 +98,7 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostTeaser,Roundup
     public RoundupPostDetails getDetails(String url)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        return getDetails(new RoundupPostTeaser(url, removeParameters()));
+        return getDetails(new RoundupPostTeaser(url, getArticles().removeParameters()));
     }
 
     /**
@@ -162,7 +158,7 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostTeaser,Roundup
         if(root == null)
             throw new IllegalArgumentException("Root not found for roundup content");
 
-        Teasers.update(getPage().getUrls(), content);
+        Teasers.update(getPage().getTeasers().getUrls(), content);
 
         return content;
     }

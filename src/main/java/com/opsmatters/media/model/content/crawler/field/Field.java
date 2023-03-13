@@ -38,7 +38,7 @@ public class Field implements ConfigElement
     private List<String> datePatterns;
     private List<FieldFilter> filters;
     private boolean removeParameters = true;
-    private boolean generate = false;
+    private boolean trailingSlash = false;
 
     /**
      * Constructor that takes a name.
@@ -99,7 +99,7 @@ public class Field implements ConfigElement
 
             setTextCase(obj.getTextCase());
             setRemoveParameters(obj.removeParameters());
-            setGenerate(obj.generate());
+            setTrailingSlash(obj.hasTrailingSlash());
         }
     }
 
@@ -304,19 +304,19 @@ public class Field implements ConfigElement
     }
 
     /**
-     * Returns <CODE>true</CODE> if the field should be generated.
+     * Returns <CODE>true</CODE> if the URL should have a trailing slash.
      */
-    public boolean generate()
+    public boolean hasTrailingSlash()
     {
-        return generate;
+        return trailingSlash;
     }
 
     /**
-     * Set to <CODE>true</CODE> if the field should be generated.
+     * Set to <CODE>true</CODE> if the URL should have a trailing slash.
      */
-    public void setGenerate(boolean generate)
+    public void setTrailingSlash(boolean trailingSlash)
     {
-        this.generate = generate;
+        this.trailingSlash = trailingSlash;
     }
 
     /**
@@ -384,7 +384,7 @@ public class Field implements ConfigElement
         private static final String FILTER = "filter";
         private static final String FILTERS = "filters";
         private static final String REMOVE_PARAMETERS = "remove-parameters";
-        private static final String GENERATE = "generate";
+        private static final String TRAILING_SLASH = "trailing-slash";
 
         private Field ret = null;
 
@@ -411,8 +411,8 @@ public class Field implements ConfigElement
                 ret.setTextCase((String)map.get(TEXT_CASE));
             if(map.containsKey(REMOVE_PARAMETERS))
                 ret.setRemoveParameters((Boolean)map.get(REMOVE_PARAMETERS));
-            if(map.containsKey(GENERATE))
-                ret.setGenerate((Boolean)map.get(GENERATE));
+            if(map.containsKey(TRAILING_SLASH))
+                ret.setTrailingSlash((Boolean)map.get(TRAILING_SLASH));
 
             if(map.containsKey(SELECTOR))
             {

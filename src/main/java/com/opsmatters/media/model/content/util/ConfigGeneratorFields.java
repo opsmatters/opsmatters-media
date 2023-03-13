@@ -170,7 +170,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
             if(roundups.numPages() > 0)
             {
                 CrawlerWebPage page = roundups.getPage(0);
-                blogUrl = page.getUrl(0);
+                blogUrl = page.getTeasers().getUrl();
             }
         }
 
@@ -303,6 +303,14 @@ public class ConfigGeneratorFields implements java.io.Serializable
     }
 
     /**
+     * Returns <CODE>true</CODE> if the channel id has been set.
+     */
+    public boolean hasChannelId()
+    {
+        return channelId != null && channelId.length() > 0;
+    }
+
+    /**
      * Returns the user id.
      */
     public String getUserId()
@@ -316,6 +324,14 @@ public class ConfigGeneratorFields implements java.io.Serializable
     public void setUserId(String userId)
     {
         this.userId = userId;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the user id has been set.
+     */
+    public boolean hasUserId()
+    {
+        return userId != null && userId.length() > 0;
     }
 
     /**

@@ -61,7 +61,7 @@ public class EventDAO extends ContentDAO<Event>
      * The query to use to update a event in the EVENTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE EVENTS SET PUBLISHED_DATE=?, START_DATE=?, UUID=?, TITLE=?, URL=?, EVENT_TYPE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=?, SESSION_ID=? "
+      "UPDATE EVENTS SET PUBLISHED_DATE=?, START_DATE=?, UUID=?, TITLE=?, URL=?, EVENT_TYPE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -242,10 +242,9 @@ public class EventDAO extends ContentDAO<Event>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(9, reader, attributes.length());
-            updateStmt.setInt(10, SessionId.get());
-            updateStmt.setString(11, content.getSiteId());
-            updateStmt.setString(12, content.getCode());
-            updateStmt.setInt(13, content.getId());
+            updateStmt.setString(10, content.getSiteId());
+            updateStmt.setString(11, content.getCode());
+            updateStmt.setInt(12, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 

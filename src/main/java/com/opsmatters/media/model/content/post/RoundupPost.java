@@ -17,6 +17,7 @@ package com.opsmatters.media.model.content.post;
 
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
+import com.opsmatters.media.cache.organisation.OrganisationSites;
 import com.opsmatters.media.cache.content.util.ContentImages;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
@@ -225,7 +226,7 @@ public class RoundupPost extends Article<RoundupPostTeaser,RoundupPostDetails> i
         post.setSiteId(organisationSite.getSiteId());
         post.setTitle("New Roundup");
         post.setSummary(StringUtils.EMPTY);
-        post.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        post.setPublishedDateAsString(TimeUtils.toStringUTC(config.getPublishedDateField(organisationSite.isSponsor())));
         post.setSocial(organisationSite.hasSocial());
 
         return post;
@@ -264,7 +265,8 @@ public class RoundupPost extends Article<RoundupPostTeaser,RoundupPostDetails> i
     public void prepare(RoundupPostConfig config, CrawlerWebPage page, boolean debug)
         throws DateTimeParseException
     {
-        setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
+        OrganisationSite organisationSite = OrganisationSites.get(config.getCode());
+        setPublishedDateAsString(getPublishedDateAsString(config.getPublishedDateField(organisationSite.isSponsor())));
 
         // Use the default author if a content author wasn't found
         if(getAuthor().length() == 0)

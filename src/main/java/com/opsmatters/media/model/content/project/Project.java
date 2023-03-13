@@ -205,7 +205,7 @@ public class Project extends Resource<ProjectTeaser,ProjectDetails>
         project.setSiteId(organisationSite.getSiteId());
         project.setTitle("New Project");
         project.setDescription(StringUtils.EMPTY);
-        project.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        project.setPublishedDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
         project.setFounded(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
 
         return project;
@@ -227,7 +227,7 @@ public class Project extends Resource<ProjectTeaser,ProjectDetails>
      */
     public void prepare(ProjectConfig config, boolean debug) throws DateTimeParseException
     {
-        setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
+        setPublishedDateAsString(getPublishedDateAsString(config.getField(PUBLISHED_DATE)));
 
         BodyParser parser = new BodyParser(getDescription(), debug);
         if(parser.converted())

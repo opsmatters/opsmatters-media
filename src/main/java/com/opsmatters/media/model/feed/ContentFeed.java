@@ -148,10 +148,10 @@ public class ContentFeed extends Feed
     /**
      * Returns the email for a feed with an error.
      */
-    public Email getAlertEmail(String description)
+    public Email getAlertEmail(Site site, String description)
     {
-        String subject = String.format("Feed ERROR: %s %s",
-            getEnvironment().name(), getName());
+        String subject = String.format("Feed ERROR: %s %s %s",
+            site.getId(), getEnvironment().name(), getName());
         EmailBody body = new EmailBody()
             .addParagraph("The following feed has an error:")
             .addTable(new String[][]
@@ -159,6 +159,7 @@ public class ContentFeed extends Feed
                 {"ID", getId()},
                 {"Name", getName()},
                 {"Type", getContentType().value()},
+                {"Site", site.getId()},
                 {"Environment", getEnvironment().name()},
                 {"Status", getStatus().name()},
                 {"Executed", getExecutedDateAsString(Formats.CONTENT_DATE_FORMAT)},

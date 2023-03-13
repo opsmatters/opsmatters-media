@@ -52,7 +52,7 @@ public class JobDAO extends ContentDAO<Job>
      * The query to use to update a job in the JOBS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE JOBS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=?, SESSION_ID=? "
+      "UPDATE JOBS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -170,10 +170,9 @@ public class JobDAO extends ContentDAO<Job>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(6, reader, attributes.length());
-            updateStmt.setInt(7, SessionId.get());
-            updateStmt.setString(8, content.getSiteId());
-            updateStmt.setString(9, content.getCode());
-            updateStmt.setInt(10, content.getId());
+            updateStmt.setString(7, content.getSiteId());
+            updateStmt.setString(8, content.getCode());
+            updateStmt.setInt(9, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 

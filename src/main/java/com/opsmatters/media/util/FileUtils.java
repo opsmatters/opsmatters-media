@@ -32,6 +32,7 @@ import java.net.URLConnection;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Enumeration;
@@ -48,6 +49,8 @@ import com.google.common.hash.Hashing;
 import com.google.common.hash.HashCode;
 import com.opsmatters.media.file.CommonFiles;
 
+import static com.google.common.net.HttpHeaders.*;
+
 /**
  * A set of utility methods to perform miscellaneous tasks related to files.
  * 
@@ -60,9 +63,9 @@ public class FileUtils
     private static final String SUCCESS_RESPONSE = "HTTP\\/1\\.1 20\\d .*";
 
     /**
-     * The user agent to use with URLConnections to avoid 403 rejection errors
+     * The default user agent to use with URLConnections to avoid 403 rejection errors
      */
-    private static final String USER_AGENT = "Mozilla/5.0";
+    private static final String DEFAULT_USER_AGENT = "Mozilla/5.0";
 
     /**
      * The timeout for a HTTP connection
@@ -156,22 +159,25 @@ public class FileUtils
     }
 
     /**
-     * Downloads the given file from the given URL.
+     * Downloads the given file from the given URL and headers.
      */
-    public static void downloadFile(URL url, File file, String userAgent) 
+    public static void downloadFile(URL url, File file, Map<String,String> headers) 
         throws IOException
     {
-        downloadFile(url, file, userAgent, null, -1); 
+        downloadFile(url, file, headers, null, -1); 
     }
 
     /**
-     * Downloads the given file from the given URL.
+     * Downloads the given file from the given URL and headers.
      */
-    public static void downloadFile(URL url, File file, String userAgent, String md5, int size) 
+    public static void downloadFile(URL url, File file, Map<String,String> headers, String md5, int size) 
         throws IOException
     {
-        if(userAgent == null || userAgent.length() == 0)
-            userAgent = USER_AGENT;
+        // Create default headers if none provided
+        if(headers == null)
+            headers = new HashMap<String,String>();
+        if(headers.get(USER_AGENT) == null)
+            headers.put(USER_AGENT, DEFAULT_USER_AGENT);
 
         boolean addingFile = false;
         int fileSize = -1;
@@ -221,7 +227,8 @@ public class FileUtils
             try
             {
                 conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestProperty("User-Agent", userAgent);
+                for(Map.Entry<String,String> entry : headers.entrySet())
+                    conn.setRequestProperty(entry.getKey(), entry.getValue());
                 conn.setReadTimeout(READ_TIMEOUT);
                 conn.setConnectTimeout(CONNECT_TIMEOUT);
                 TrustAnyTrustManager.setTrustManager(conn);
@@ -519,7 +526,8 @@ public class FileUtils
      */
     public static boolean isRelativePath(String url)
     {
-        return url != null && url.length() > 0 && !url.startsWith("http") && !url.startsWith("//");
+        return url != null && url.length() > 0
+            && !url.startsWith("http") && !url.startsWith("//");
     }
 
     /**
@@ -541,15 +549,19 @@ public class FileUtils
     }
 
     /**
-     * Returns the size of the file using the given URL.
+     * Returns the size of the file using the given URL and headers.
      */
-    public static long getFileSize(URL url, String userAgent) throws IOException
+    public static long getFileSize(URL url, Map<String,String> headers)
+        throws IOException
     {
         HttpURLConnection httpConn = null;
         long ret = -1L;
 
-        if(userAgent == null || userAgent.length() == 0)
-            userAgent = USER_AGENT;
+        // Create default headers if none provided
+        if(headers == null)
+            headers = new HashMap<String,String>();
+        if(headers.get(USER_AGENT) == null)
+            headers.put(USER_AGENT, DEFAULT_USER_AGENT);
 
         try
         {
@@ -558,7 +570,8 @@ public class FileUtils
             if(conn instanceof HttpURLConnection)
             {
                 httpConn = (HttpURLConnection)conn;
-                httpConn.setRequestProperty("User-Agent", userAgent);
+                for(Map.Entry<String,String> entry : headers.entrySet())
+                    httpConn.setRequestProperty(entry.getKey(), entry.getValue());
                 httpConn.setRequestMethod("HEAD");
                 httpConn.setReadTimeout(READ_TIMEOUT);
                 httpConn.setConnectTimeout(CONNECT_TIMEOUT);
@@ -595,16 +608,16 @@ public class FileUtils
     }
 
     /**
-     * Returns the size of the file using the given URL.
+     * Returns the size of the file using the given URL and headers.
      */
-    public static long getFileSize(String url, String userAgent)
+    public static long getFileSize(String url, Map<String,String> headers)
     {
         long ret = -1L;
 
         try
         {
             if(url != null)
-                ret = getFileSize(new URL(encodeUrl(url)), userAgent);
+                ret = getFileSize(new URL(encodeUrl(url)), headers);
         }
         catch(IOException e)
         {
@@ -615,21 +628,26 @@ public class FileUtils
     }
 
     /**
-     * Returns the response to a request to the given HTTP URL.
+     * Returns the response to a request to the given HTTP URL and headers.
      */
-    public static String getResponse(URL url, String method, String message, String userAgent) throws IOException
+    public static String getResponse(URL url, String method, String message, Map<String,String> headers)
+        throws IOException
     {
         HttpURLConnection conn = null;
         String ret = null;
 
-        if(userAgent == null || userAgent.length() == 0)
-            userAgent = USER_AGENT;
+        // Create default headers if none provided
+        if(headers == null)
+            headers = new HashMap<String,String>();
+        if(headers.get(USER_AGENT) == null)
+            headers.put(USER_AGENT, DEFAULT_USER_AGENT);
 
         try
         {
             conn = (HttpURLConnection)url.openConnection();
             conn.setRequestMethod(method);
-            conn.setRequestProperty("User-Agent", userAgent);
+            for(Map.Entry<String,String> entry : headers.entrySet())
+                conn.setRequestProperty(entry.getKey(), entry.getValue());
             conn.setReadTimeout(READ_TIMEOUT);
             conn.setConnectTimeout(CONNECT_TIMEOUT);
 
@@ -666,11 +684,12 @@ public class FileUtils
     }
 
     /**
-     * Returns the response to a request to the given HTTP URL.
+     * Returns the response to a request to the given HTTP URL and headers.
      */
-    public static String getResponse(URL url, String method, String userAgent) throws IOException
+    public static String getResponse(URL url, String method, Map<String,String> headers)
+        throws IOException
     {
-        return getResponse(url, method, null, userAgent);
+        return getResponse(url, method, null, headers);
     }
 
     /**

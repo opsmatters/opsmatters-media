@@ -58,7 +58,7 @@ public class ProjectDAO extends ContentDAO<Project>
      * The query to use to update a project in the PROJECTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE PROJECTS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, URL=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=?, SESSION_ID=? "
+      "UPDATE PROJECTS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, URL=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -228,10 +228,9 @@ public class ProjectDAO extends ContentDAO<Project>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(7, reader, attributes.length());
-            updateStmt.setInt(8, SessionId.get());
-            updateStmt.setString(9, content.getSiteId());
-            updateStmt.setString(10, content.getCode());
-            updateStmt.setInt(11, content.getId());
+            updateStmt.setString(8, content.getSiteId());
+            updateStmt.setString(9, content.getCode());
+            updateStmt.setInt(10, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 

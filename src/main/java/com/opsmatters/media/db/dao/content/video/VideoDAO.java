@@ -67,7 +67,7 @@ public class VideoDAO extends ContentDAO<Video>
      * The query to use to update a video in the VIDEOS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE VIDEOS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, VIDEO_ID=?, VIDEO_TYPE=?, PROVIDER=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=?, SESSION_ID=? "
+      "UPDATE VIDEOS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, VIDEO_ID=?, VIDEO_TYPE=?, PROVIDER=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -295,10 +295,9 @@ public class VideoDAO extends ContentDAO<Video>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(9, reader, attributes.length());
-            updateStmt.setInt(10, SessionId.get());
-            updateStmt.setString(11, content.getSiteId());
-            updateStmt.setString(12, content.getCode());
-            updateStmt.setInt(13, content.getId());
+            updateStmt.setString(10, content.getSiteId());
+            updateStmt.setString(11, content.getCode());
+            updateStmt.setInt(12, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 

@@ -238,7 +238,7 @@ public class Post extends Article<PostTeaser,PostDetails>
 
         post.init();
         post.setSiteId(organisationSite.getSiteId());
-        post.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        post.setPublishedDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
         post.setSocial(organisationSite.hasSocial());
 
         return post;
@@ -270,7 +270,7 @@ public class Post extends Article<PostTeaser,PostDetails>
      */
     public void prepare(PostConfig config, boolean debug) throws DateTimeParseException
     {
-        setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
+        setPublishedDateAsString(getPublishedDateAsString(config.getField(PUBLISHED_DATE)));
 
         // Use the default author if a content author wasn't found
         if(config.hasField(AUTHOR) && getAuthor().length() == 0)

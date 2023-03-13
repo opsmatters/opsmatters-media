@@ -96,7 +96,7 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
     public PublicationDetails getDetails(String url)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        return getDetails(new PublicationTeaser(url, removeParameters()));
+        return getDetails(new PublicationTeaser(url, getArticles().removeParameters()));
     }
 
     /**
@@ -164,7 +164,7 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
         if(root == null)
             throw new IllegalArgumentException("Root not found for publication content");
 
-        Teasers.update(getPage().getUrls(), content);
+        Teasers.update(getPage().getTeasers().getUrls(), content);
 
         return content;
     }

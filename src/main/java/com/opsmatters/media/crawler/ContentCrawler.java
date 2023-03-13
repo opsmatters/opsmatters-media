@@ -32,6 +32,7 @@ import org.apache.commons.text.WordUtils;
 import com.opsmatters.media.model.content.ContentTeaser;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerTarget;
+import com.opsmatters.media.model.content.crawler.CrawlerContent;
 import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.model.content.crawler.field.Fields;
 import com.opsmatters.media.model.content.crawler.field.FieldMatch;
@@ -190,11 +191,11 @@ public abstract class ContentCrawler<T extends ContentTeaser, D extends ContentT
     }
 
     /**
-     * Returns <CODE>true</CODE> if parameters should be removed from the URL.
+     * Returns the articles for the crawler.
      */
-    public boolean removeParameters()
+    public CrawlerContent getArticles()
     {
-        return target.getArticles().getLoading().removeParameters();
+        return target.getArticles();
     }
 
     /**

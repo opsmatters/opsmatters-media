@@ -234,7 +234,7 @@ public class Video extends Article<VideoTeaser,VideoDetails>
         video.init();
         video.setSiteId(site.getId());
         video.setTitle("New Video");
-        video.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        video.setPublishedDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
 
         return video;
     }
@@ -261,7 +261,7 @@ public class Video extends Article<VideoTeaser,VideoDetails>
      */
     public void prepare(VideoConfig config, CrawlerVideoChannel channel, boolean debug) throws DateTimeParseException
     {
-        setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
+        setPublishedDateAsString(getPublishedDateAsString(config.getField(PUBLISHED_DATE)));
 
         BodyParser parser = new BodyParser(getDescription(), channel.getArticles().getFilters(), debug);
         if(parser.converted())

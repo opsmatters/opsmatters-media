@@ -40,7 +40,7 @@ public class FormatUtils
      * @param bytes The bytes to be converted
      * @return The given bytes number formatted as KBytes, MBytes or GBytes as appropriate
      */
-    static public String getFormattedBytes(long bytes)
+    public static String getFormattedBytes(long bytes)
     {
         return getFormattedBytes(bytes, "Bytes", "0.0#");
     }
@@ -51,7 +51,7 @@ public class FormatUtils
      * @param units The units to be displayed with the converted bytes
      * @return The given bytes number formatted as KBytes, MBytes or GBytes as appropriate
      */
-    static public String getFormattedBytes(long bytes, String units)
+    public static String getFormattedBytes(long bytes, String units)
     {
         return getFormattedBytes(bytes, units, "0.0#");
     }
@@ -63,7 +63,7 @@ public class FormatUtils
      * @param format The format to use to display the bytes
      * @return The given bytes number formatted as KBytes, MBytes or GBytes as appropriate
      */
-    static public String getFormattedBytes(long bytes, String units, String format)
+    public static String getFormattedBytes(long bytes, String units, String format)
     {
         double num = bytes;
         String[] prefix = {"", "K", "M", "G", "T"};
@@ -84,7 +84,7 @@ public class FormatUtils
      * @param t The percentage to be formatted
      * @return The given fractional percentage formatted as "0.0#%"
      */
-    static public String getFormattedPercentage(double t)
+    public static String getFormattedPercentage(double t)
     {
         DecimalFormat f = new DecimalFormat("0.0#");
         return f.format(t)+"%";
@@ -95,7 +95,7 @@ public class FormatUtils
      * @param image The image name to be formatted
      * @return The formatted image
      */
-    static public String getFormattedImageFilename(String image)
+    public static String getFormattedImageFilename(String image)
     {
         String ret = image;
 
@@ -125,6 +125,11 @@ public class FormatUtils
             // Remove other special characters
             ret = ret.replaceAll("%22|%23|%25|%27|%2[Cc]|%3[Bb]|%3[Ff]|%7[Cc]", "");
 
+            // Remove escape sequences
+            ret = ret.replaceAll("%[Ee]2%80%[0-9a-fA-F]{2}", ""); // %E2%80%xx
+            ret = ret.replaceAll("%F0%9F%[0-9a-fA-F]{2}%[0-9a-fA-F]{2}", ""); // %F0%9F%xx%xx - emojis
+            ret = ret.replaceAll("%C2%AE", ""); //®
+
             // Remove "combining" accent characters
             ret = ret.replaceAll("[\\u0300-\\u036F]", "");
             ret = ret.replaceAll("%[CcEe][CcDd23]%[89AaBb][0-9A-Fa-f]", "");
@@ -138,11 +143,6 @@ public class FormatUtils
             ret = ret.replaceAll("‐|‑|‒|–|—|―|‖|‗|‾	", "-");
             ret = ret.replaceAll("…", "-");
             ret = ret.replaceAll("-+", "-");
-
-            // Remove escape sequences
-            ret = ret.replaceAll("%[Ee]2%80%[0-9a-fA-F]{2}", ""); // %E2%80%xx
-            ret = ret.replaceAll("%F0%9F%[0-9a-fA-F]{2}%[0-9a-fA-F]{2}", ""); // %F0%9F%xx%xx - emojis
-            ret = ret.replaceAll("%C2%AE", ""); //®
 
             // Remove illegal characters
             ret = ret.replaceAll("\\*", "");
@@ -177,7 +177,7 @@ public class FormatUtils
     /**
      * Returns the given url parts formatted using a base and relative path.
      */
-    static public String getFormattedUrl(String basePath, String url, boolean removeParameters)
+    public static String getFormattedUrl(String basePath, String url, boolean removeParameters)
     {
         StringBuilder ret = new StringBuilder();
 
@@ -219,32 +219,9 @@ public class FormatUtils
     }
 
     /**
-     * Returns the given string formatted as a url using a base and relative path.
-     */
-    static public String generateUrl(String basePath, String str)
-    {
-        String url = str;
-
-        // Look for an illegal character to truncate on
-        int pos = -1;
-        for(int i = 0; i < url.length() && pos == -1; i++)
-        {
-            char c = url.charAt(i);
-            if(c == ':' || c == ',')
-                pos = i;
-        }
-
-        if(pos != -1)
-            url = url.substring(0, pos);
-
-        url = url.toLowerCase().replaceAll("[ ‘'’]", "-");
-        return getFormattedUrl(basePath, url, false);
-    }
-
-    /**
      * Appends a timestamp parameter to the given URL to prevent caching.
      */
-    static public String addAntiCacheParameter(String url)
+    public static String addAntiCacheParameter(String url)
     {
         return new StringBuilder(url)
             .append(url.indexOf("?") == -1 ? "?" : "&")

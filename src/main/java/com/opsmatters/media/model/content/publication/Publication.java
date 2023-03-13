@@ -230,7 +230,7 @@ public class Publication extends Resource<PublicationTeaser,PublicationDetails>
         publication.setTitle("New Publication");
         publication.setDescription(StringUtils.EMPTY);
         publication.setLinkText(LinkText.GET_WHITE_PAPER);
-        publication.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        publication.setPublishedDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
 
         return publication;
     }
@@ -266,7 +266,7 @@ public class Publication extends Resource<PublicationTeaser,PublicationDetails>
      */
     public void prepare(PublicationConfig config, CrawlerWebPage page, boolean debug) throws DateTimeParseException
     {
-        setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
+        setPublishedDateAsString(getPublishedDateAsString(config.getField(PUBLISHED_DATE)));
 
         BodyParser parser = new BodyParser(getDescription(), page.getArticles().getFilters(), debug);
         if(parser.converted())

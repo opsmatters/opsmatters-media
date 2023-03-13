@@ -203,7 +203,7 @@ public class Tool extends Resource<ToolTeaser,ToolDetails>
         tool.setSiteId(organisationSite.getSiteId());
         tool.setTitle("New Tool");
         tool.setDescription(StringUtils.EMPTY);
-        tool.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        tool.setPublishedDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
         tool.setSocial(organisationSite.hasSocial());
 
         return tool;
@@ -233,7 +233,7 @@ public class Tool extends Resource<ToolTeaser,ToolDetails>
      */
     public void prepare(ToolConfig config, boolean debug) throws DateTimeParseException
     {
-        setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
+        setPublishedDateAsString(getPublishedDateAsString(config.getField(PUBLISHED_DATE)));
 
         BodyParser parser = new BodyParser(getDescription(), debug);
         if(parser.converted())

@@ -43,6 +43,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import com.opsmatters.media.cache.content.Teasers;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.SummaryConfig;
+import com.opsmatters.media.model.content.crawler.ContentRequest;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.MoreLink;
@@ -66,6 +67,8 @@ import com.opsmatters.media.util.StringUtils;
 public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentTeaser> extends ContentCrawler<T,D>
 {
     private static final Logger logger = Logger.getLogger(WebPageCrawler.class.getName());
+
+    private static final String WEBCACHE_PREFIX = "https://webcache.googleusercontent.com/search?q=cache:";
 
     public static final String ANCHOR = "a";
     public static final String DIV = "div";
@@ -94,12 +97,17 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
         super(page);
         this.config = config;
         this.page = page;
+    }
 
-        // Create the web driver
-        WebDriverPool.setDebug(debug());
+    /**
+     * Initialise the web driver.
+     */
+    private void initWebDriver(ContentRequest request)
+    {
         if(driver == null)
-            driver = WebDriverPool.getDriver(page.getBrowser(), page.isHeadless());
-        this.browser = page.getBrowser();
+            driver = WebDriverPool.getDriver(request.getBrowser(), request.isHeadless());
+        this.browser = request.getBrowser();
+        WebDriverPool.setDebug(debug());
     }
 
     /**
@@ -107,7 +115,8 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
      */
     public void close()
     {
-        WebDriverPool.releaseDriver(driver);
+        if(driver != null)
+            WebDriverPool.releaseDriver(driver);
         driver = null;
     }
 
@@ -217,10 +226,12 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
      */
     public String getBasePath()
     {
-        String ret = page.getBasePath();
+        ContentRequest request = page.getTeasers().getRequest();
+
+        String ret = request.getBasePath();
         if(ret == null || ret.length() == 0)
         {
-            ret = page.getUrl(0);
+            ret = request.getUrl(0);
             int pos = ret.indexOf("//");
             if(pos != -1)
             {
@@ -231,6 +242,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                 }
             }
         }
+
         return ret;
     }
 
@@ -246,15 +258,14 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
     /**
      * Loads the given page.
      */
-    protected void loadPage(String url, ContentLoading loading) throws IOException
+    protected void loadPage(String url, ContentRequest request) throws IOException
     {
-        if(loading != null)
-        {
-            if(loading.isAntiCache())
-                url = FormatUtils.addAntiCacheParameter(url);
-            if(loading.hasTrailingSlash())
-                url += "/";
-        }
+        if(request.useWebcache())
+            url = WEBCACHE_PREFIX+url;
+        if(request.isAntiCache())
+            url = FormatUtils.addAntiCacheParameter(url);
+        if(request.hasTrailingSlash())
+            url += "/";
 
         driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
 
@@ -271,21 +282,23 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
     private void loadTeaserPage(String url) throws IOException
     {
         long now = System.currentTimeMillis();
+        ContentRequest request = page.getTeasers().getRequest();
         ContentLoading loading = page.getTeasers().getLoading();
 
+        initWebDriver(request);
         configureImplicitWait(loading);
-        loadPage(url, loading);
+        loadPage(url, request);
         configureExplicitWait(loading);
 
         // Click a "Load More" button if configured
-        if(page.hasMoreLink())
+        if(loading.hasMoreLink())
         {
-            int count = page.getMoreLink().getCount();
+            int count = loading.getMoreLink().getCount();
             for(int i = 0; i < count; i++)
             {
                 if(debug())
                     logger.info("More link click "+(i+1)+" of "+count);
-                clickMoreLink(page.getMoreLink());
+                clickMoreLink(loading.getMoreLink());
             }
         }
 
@@ -311,10 +324,13 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
     protected void loadArticlePage(String url) throws IOException
     {
         long now = System.currentTimeMillis();
+        ContentRequest request = page.getArticles().getRequest();
         ContentLoading loading = getPage().getArticles().getLoading();
 
+        initWebDriver(request);
+
         configureImplicitWait(loading);
-        loadPage(url, loading);
+        loadPage(url, request);
         configureExplicitWait(loading);
 
         // Scroll the page if configured
@@ -467,10 +483,12 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
     public int processTeasers(boolean cache) throws IOException, DateTimeParseException
     {
         int ret = 0;
-        ContentLoading loading = page.getTeasers().getLoading();
 
+        ContentRequest request = page.getTeasers().getRequest();
+        ContentLoading loading = page.getTeasers().getLoading();
         Map<String,String> map = new HashMap<String,String>();
-        for(String url : page.getUrls())
+
+        for(String url : request.getUrls())
         {
             if(url.length() == 0)
                 throw new IllegalArgumentException("Root empty for teasers");

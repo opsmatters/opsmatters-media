@@ -222,7 +222,7 @@ public class OrganisationListing extends Content
         listing.setSiteId(organisationSite.getSiteId());
         listing.setCode(organisation.getCode());
         listing.setTitle(organisation.getName());
-        listing.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        listing.setPublishedDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
         listing.setFounded(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
         listing.setFeedProvider(SocialProvider.TWITTER);
 
@@ -254,7 +254,7 @@ public class OrganisationListing extends Content
     public void prepare(OrganisationListingConfig config, boolean debug)
         throws DateTimeParseException
     {
-        setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
+        setPublishedDateAsString(getPublishedDateAsString(config.getField(PUBLISHED_DATE)));
     }
 
     /**

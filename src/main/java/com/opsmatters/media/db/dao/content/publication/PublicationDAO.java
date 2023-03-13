@@ -67,7 +67,7 @@ public class PublicationDAO extends ContentDAO<Publication>
      * The query to use to update a publication in the PUBLICATIONS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE PUBLICATIONS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, URL=?, PUBLICATION_TYPE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=?, SESSION_ID=? "
+      "UPDATE PUBLICATIONS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, URL=?, PUBLICATION_TYPE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -292,10 +292,9 @@ public class PublicationDAO extends ContentDAO<Publication>
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(8, reader, attributes.length());
-            updateStmt.setInt(9, SessionId.get());
-            updateStmt.setString(10, content.getSiteId());
-            updateStmt.setString(11, content.getCode());
-            updateStmt.setInt(12, content.getId());
+            updateStmt.setString(9, content.getSiteId());
+            updateStmt.setString(10, content.getCode());
+            updateStmt.setInt(11, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 

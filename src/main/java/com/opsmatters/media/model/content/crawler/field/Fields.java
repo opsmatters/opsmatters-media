@@ -18,6 +18,9 @@ package com.opsmatters.media.model.content.crawler.field;
 import java.util.Map;
 import com.opsmatters.media.model.ConfigElement;
 import com.opsmatters.media.model.ConfigParser;
+import com.opsmatters.media.model.content.FieldName;
+
+import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
  * Class that represents a set of field selectors for a content item.
@@ -94,6 +97,43 @@ public class Fields implements ConfigElement
             if(obj.getBackgroundImage() != null)
                 setBackgroundImage(new Field(obj.getBackgroundImage()));
         }
+    }
+
+    /**
+     * Returns the field for the given name.
+     */
+    public Field getField(FieldName name)
+    {
+        Field ret = null;
+
+        if(name == URL)
+            ret = url;
+        else if(name == TITLE)
+            ret = title;
+        else if(name == AUTHOR)
+            ret = author;
+        else if(name == AUTHOR_LINK)
+            ret = authorLink;
+        else if(name == PUBLISHED_DATE)
+            ret = publishedDate;
+        else if(name == START_DATE)
+            ret = startDate;
+        else if(name == START_TIME)
+            ret = startTime;
+        else if(name == END_DATE)
+            ret = endDate;
+        else if(name == END_TIME)
+            ret = endTime;
+        else if(name == TIMEZONE)
+            ret = timezone;
+        else if(name == DESCRIPTION)
+            ret = body;
+        else if(name == IMAGE)
+            ret = image;
+        else if(name == BACKGROUND_IMAGE)
+            ret = backgroundImage;
+
+        return ret;
     }
 
     /**

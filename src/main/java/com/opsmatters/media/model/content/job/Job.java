@@ -208,7 +208,7 @@ public class Job extends Resource<JobTeaser,JobDetails>
         job.setSiteId(organisationSite.getSiteId());
         job.setTitle("New Job");
         job.setDescription(StringUtils.EMPTY);
-        job.setPublishedDateAsString(TimeUtils.toStringUTC(config.getDefaultDatePattern()));
+        job.setPublishedDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
         job.setSocial(organisationSite.hasSocial());
 
         return job;
@@ -243,7 +243,7 @@ public class Job extends Resource<JobTeaser,JobDetails>
      */
     public void prepare(JobConfig config, boolean debug) throws DateTimeParseException
     {
-        setPublishedDateAsString(getPublishedDateAsString(config.getDefaultDatePattern()));
+        setPublishedDateAsString(getPublishedDateAsString(config.getField(PUBLISHED_DATE)));
 
         BodyParser parser = new BodyParser(getDescription(), debug);
         if(parser.converted())

@@ -57,8 +57,6 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     private String name = "";
     private String sheet = "";
     private ContentSource source = ContentSource.STORE;
-    private String defaultDatePattern = "";
-    private boolean trailingSlash = false;
     private SummaryConfig summary; 
     private FieldMap fields = new FieldMap();
     private Map<String,String> output;
@@ -88,8 +86,6 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
         {
             setSheet(obj.getSheet());
             setSource(obj.getSource());
-            setDefaultDatePattern(obj.getDefaultDatePattern());
-            setTrailingSlash(obj.hasTrailingSlash());
             if(obj.getSummary() != null)
                 setSummary(new SummaryConfig(obj.getSummary()));
             setFields(new FieldMap(obj.getFields()));
@@ -155,38 +151,6 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     public void setSheet(String sheet)
     {
         this.sheet = sheet;
-    }
-
-    /**
-     * Returns the default date pattern for this configuration.
-     */
-    public String getDefaultDatePattern()
-    {
-        return defaultDatePattern;
-    }
-
-    /**
-     * Sets the default date pattern for this configuration.
-     */
-    public void setDefaultDatePattern(String defaultDatePattern)
-    {
-        this.defaultDatePattern = defaultDatePattern;
-    }
-
-    /*
-     * Returns <CODE>true</CODE> if the content URL should have a trailing slash.
-     */
-    public boolean hasTrailingSlash()
-    {
-        return trailingSlash;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the content URL should have a trailing slash.
-     */
-    public void setTrailingSlash(boolean trailingSlash)
-    {
-        this.trailingSlash = trailingSlash;
     }
 
     /**
@@ -270,6 +234,14 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     public String getField(FieldName name, String fallback)
     {
         return fields != null ? fields.get(name, fallback) : null;
+    }
+
+    /**
+     * Returns the name of the field to use for the content published date.
+     */
+    public String getPublishedDateField(boolean sponsor)
+    {
+        return getField(sponsor ? SPONSOR_PUBLISHED_DATE : PUBLISHED_DATE);
     }
 
     /**
@@ -408,13 +380,8 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
                     fields.put(IMAGE_TEXT, "");
                 }
 
-                // Check if the URL needs a trailing slash (to avoid redirects)
-                if(hasTrailingSlash() && fields.containsKey(URL))
-                {
-                    String url = fields.get(URL);
-                    if(url != null && url.length() > 0 && !url.endsWith("/"))
-                        fields.put(URL, url+"/");
-                }
+                // Further processing of the fields list from super-class
+                processContentFields(fields);
             }
 
             fields.add(organisation, organisationSite);
@@ -461,6 +428,15 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     }
 
     /**
+     * Process the fields for the content to be deployed.
+     * <p>
+     * Implemented by super-class.
+     */
+    protected void processContentFields(FieldMap fields)
+    {
+    }
+
+    /**
      * Builder to make configuration construction easier.
      */
     protected abstract static class Builder<T extends ContentConfig, B extends Builder<T,B>>
@@ -468,8 +444,6 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     {
         // The config attribute names
         private static final String SOURCE = "source";
-        private static final String DEFAULT_DATE_PATTERN = "default-date-pattern";
-        private static final String TRAILING_SLASH = "trailing-slash";
         private static final String SUMMARY = "summary";
         private static final String FIELDS = "fields";
         private static final String OUTPUT = "output";
@@ -493,10 +467,6 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
         @Override
         public B parse(Map<String, Object> map)
         {
-            if(map.containsKey(DEFAULT_DATE_PATTERN))
-                ret.setDefaultDatePattern((String)map.get(DEFAULT_DATE_PATTERN));
-            if(map.containsKey(TRAILING_SLASH))
-                ret.setTrailingSlash((Boolean)map.get(TRAILING_SLASH));
             if(map.containsKey(SOURCE))
                 ret.setSource(ContentSource.fromCode((String)map.get(SOURCE)));
             if(map.containsKey(FIELDS))

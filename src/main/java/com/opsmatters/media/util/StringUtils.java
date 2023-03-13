@@ -552,6 +552,7 @@ public class StringUtils
         {
             int c = (int)s.charAt(i);
             if((c >= 32 && c < 127) // basic ASCII
+                || c == 9           // Tab
                 || c == 10)         // LF
             {
                 buff.append((char)c);

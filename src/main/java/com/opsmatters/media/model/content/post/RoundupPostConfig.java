@@ -20,9 +20,14 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import com.opsmatters.media.model.content.FieldName;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
+import com.opsmatters.media.model.content.crawler.field.Field;
+import com.opsmatters.media.model.content.FieldMap;
+
+import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
  * Class that represents the configuration for roundup content items.
@@ -137,6 +142,21 @@ public class RoundupPostConfig extends ContentConfig<RoundupPost>
     public boolean hasPage(String name)
     {
         return getPage(name) != null;
+    }
+
+    /**
+     * Process the fields for the content to be deployed.
+     */
+    @Override
+    protected void processContentFields(FieldMap fields)
+    {
+        // Check if the URL needs a trailing slash (to avoid redirects)
+        if(numPages() > 0 && getPage(0).getTeasers().hasTrailingSlash(URL))
+        {
+            String url = fields.get(URL);
+            if(url != null && url.length() > 0 && !url.endsWith("/"))
+                fields.put(URL, url+"/");
+        }
     }
 
     /**

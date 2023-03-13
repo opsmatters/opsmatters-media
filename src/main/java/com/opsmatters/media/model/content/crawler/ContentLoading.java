@@ -33,14 +33,12 @@ public class ContentLoading implements ConfigElement
     private String selector = "";
     private long interval = 0L;
     private long maxWait = 0L;
-    private boolean removeParameters = true;
-    private boolean trailingSlash = false;
-    private boolean antiCache = false;
     private String keywords = "";
     private List<String> keywordList;
     private int scrollX = 0;
     private int scrollY = 0;
     private String moveTo = "";
+    private MoreLink moreLink;
 
     /**
      * Default constructor.
@@ -69,13 +67,12 @@ public class ContentLoading implements ConfigElement
             setSleep(obj.getSleep());
             setWait(obj.getWait());
             setMaxWait(obj.getMaxWait());
-            setRemoveParameters(obj.removeParameters());
-            setTrailingSlash(obj.hasTrailingSlash());
-            setAntiCache(obj.isAntiCache());
             setKeywords(obj.getKeywords());
             setScrollX(obj.getScrollX());
             setScrollY(obj.getScrollY());
             setMoveTo(obj.getMoveTo());
+            if(obj.getMoreLink() != null)
+                setMoreLink(new MoreLink(obj.getMoreLink()));
         }
     }
 
@@ -157,54 +154,6 @@ public class ContentLoading implements ConfigElement
     public void setMaxWait(long maxWait)
     {
         this.maxWait = maxWait;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if query parameters should be removed from the URL.
-     */
-    public boolean removeParameters()
-    {
-        return removeParameters;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if query parameters should be removed from the URL.
-     */
-    public void setRemoveParameters(boolean removeParameters)
-    {
-        this.removeParameters = removeParameters;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the URL should have a trailing slash.
-     */
-    public boolean hasTrailingSlash()
-    {
-        return trailingSlash;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the URL should have a trailing slash.
-     */
-    public void setTrailingSlash(boolean trailingSlash)
-    {
-        this.trailingSlash = trailingSlash;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if a timestamp parameter should be appended to the URL to prevent caching.
-     */
-    public boolean isAntiCache()
-    {
-        return antiCache;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if a timestamp parameter should be appended to the URL to prevent caching.
-     */
-    public void setAntiCache(boolean antiCache)
-    {
-        this.antiCache = antiCache;
     }
 
     /**
@@ -303,6 +252,30 @@ public class ContentLoading implements ConfigElement
     }
 
     /**
+     * Returns the link to get more items.
+     */
+    public MoreLink getMoreLink()
+    {
+        return moreLink;
+    }
+
+    /**
+     * Sets the link to get more items.
+     */
+    public void setMoreLink(MoreLink moreLink)
+    {
+        this.moreLink = moreLink;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the link to get more items has been set for this configuration.
+     */
+    public boolean hasMoreLink()
+    {
+        return getMoreLink() != null;
+    }
+
+    /**
      * Returns a builder for the configuration.
      * @return The builder instance.
      */
@@ -322,13 +295,11 @@ public class ContentLoading implements ConfigElement
         private static final String SELECTOR = "selector";
         private static final String INTERVAL = "interval";
         private static final String MAX_WAIT = "max-wait";
-        private static final String REMOVE_PARAMETERS = "remove-parameters";
-        private static final String TRAILING_SLASH = "trailing-slash";
-        private static final String ANTI_CACHE = "anti-cache";
         private static final String KEYWORDS = "keywords";
         private static final String SCROLL_X = "scroll-x";
         private static final String SCROLL_Y = "scroll-y";
         private static final String MOVE_TO = "move-to";
+        private static final String MORE_LINK = "more-link";
 
         private ContentLoading ret = new ContentLoading();
 
@@ -350,12 +321,6 @@ public class ContentLoading implements ConfigElement
                 ret.setInterval((Integer)map.get(INTERVAL));
             if(map.containsKey(MAX_WAIT))
                 ret.setMaxWait((Integer)map.get(MAX_WAIT));
-            if(map.containsKey(REMOVE_PARAMETERS))
-                ret.setRemoveParameters((Boolean)map.get(REMOVE_PARAMETERS));
-            if(map.containsKey(TRAILING_SLASH))
-                ret.setTrailingSlash((Boolean)map.get(TRAILING_SLASH));
-            if(map.containsKey(ANTI_CACHE))
-                ret.setAntiCache((Boolean)map.get(ANTI_CACHE));
             if(map.containsKey(KEYWORDS))
                 ret.setKeywords((String)map.get(KEYWORDS));
             if(map.containsKey(SCROLL_X))
@@ -364,8 +329,23 @@ public class ContentLoading implements ConfigElement
                 ret.setScrollY((Integer)map.get(SCROLL_Y));
             if(map.containsKey(MOVE_TO))
                 ret.setMoveTo((String)map.get(MOVE_TO));
+            if(map.containsKey(MORE_LINK))
+                ret.setMoreLink(createMoreLink(MORE_LINK, map.get(MORE_LINK)));
 
             return this;
+        }
+
+        /**
+         * Create a More link object for the given value.
+         */
+        private MoreLink createMoreLink(String name, Object value)
+        {
+            MoreLink.Builder builder = MoreLink.builder();
+            if(value instanceof String)
+                builder = builder.selector((String)value);
+            else if(value instanceof Map)
+                builder = builder.parse((Map<String,Object>)value);
+            return builder.build();
         }
 
         /**
