@@ -38,6 +38,7 @@ public class SocialChannel implements ConfigElement
     private SocialProvider provider;
     private String sites = "";
     private Map<String,String> siteMap = new HashMap<String,String>();
+    private int delay = -1;
     private boolean enabled = false;
 
     /**
@@ -61,6 +62,7 @@ public class SocialChannel implements ConfigElement
             setIcon(obj.getIcon());
             setProvider(obj.getProvider());
             setSites(obj.getSites());
+            setDelay(obj.getDelay());
             setEnabled(obj.isEnabled());
         }
     }
@@ -191,6 +193,22 @@ public class SocialChannel implements ConfigElement
     }
 
     /**
+     * Returns the delay between social posts for this channel.
+     */
+    public int getDelay()
+    {
+        return delay;
+    }
+
+    /**
+     * Sets the delay between social posts for this channel.
+     */
+    public void setDelay(int delay)
+    {
+        this.delay = delay;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if this channel is enabled to send messages.
      */
     public boolean isEnabled()
@@ -227,6 +245,7 @@ public class SocialChannel implements ConfigElement
         private static final String ICON = "icon";
         private static final String PROVIDER = "provider";
         private static final String SITES = "sites";
+        private static final String DELAY = "delay";
         private static final String ENABLED = "enabled";
 
         private SocialChannel ret = null;
@@ -258,6 +277,8 @@ public class SocialChannel implements ConfigElement
                 ret.setProvider((String)map.get(PROVIDER));
             if(map.containsKey(SITES))
                 ret.setSites((String)map.get(SITES));
+            if(map.containsKey(DELAY))
+                ret.setDelay((Integer)map.get(DELAY));
             if(map.containsKey(ENABLED))
                 ret.setEnabled((Boolean)map.get(ENABLED));
 

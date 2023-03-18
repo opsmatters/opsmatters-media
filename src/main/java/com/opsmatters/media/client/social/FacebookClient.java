@@ -45,7 +45,7 @@ public class FacebookClient extends Client implements SocialClient
 {
     private static final Logger logger = Logger.getLogger(FacebookClient.class.getName());
 
-    public static final String SUFFIX = ".facebook";
+    public static final String SUFFIX = ".social";
 
     private Facebook client;
     private AccessToken accessToken;

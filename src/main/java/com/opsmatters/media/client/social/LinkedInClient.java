@@ -52,7 +52,8 @@ public class LinkedInClient extends Client implements SocialClient
 {
     private static final Logger logger = Logger.getLogger(LinkedInClient.class.getName());
 
-    public static final String SUFFIX = ".linkedin";
+    public static final String SUFFIX = ".social";
+    public static final String OAUTH_SUFFIX = ".linkedin";
 
     private Organization organization;
     private OrganizationConnection organizationConnection;
@@ -108,7 +109,7 @@ public class LinkedInClient extends Client implements SocialClient
 
         String directory = System.getProperty("app.auth", ".");
 
-        File file = new File(directory, SUFFIX);
+        File file = new File(directory, OAUTH_SUFFIX);
         JSONObject obj = null;
         try
         {

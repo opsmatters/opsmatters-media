@@ -41,7 +41,7 @@ public class TwitterClient extends Client implements SocialClient
 {
     private static final Logger logger = Logger.getLogger(TwitterClient.class.getName());
 
-    public static final String SUFFIX = ".twitter";
+    public static final String SUFFIX = ".social";
 
     private Twitter client;
     private AccessToken accessToken;
