@@ -56,7 +56,9 @@ import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import com.google.common.collect.Lists;
 import org.json.JSONObject;
+import org.json.JSONArray;
 import com.opsmatters.media.client.Client;
+import com.opsmatters.media.client.ApiClient;
 import com.opsmatters.media.model.content.video.VideoProvider;
 import com.opsmatters.media.util.StringUtils;
 
@@ -70,6 +72,8 @@ import static com.opsmatters.media.model.content.FieldName.*;
 public class YouTubeClient extends Client implements VideoClient
 {
     private static final Logger logger = Logger.getLogger(YouTubeClient.class.getName());
+
+    private static final String YT_URL = "https://yt.lemnoslife.com";
 
     public static final String SUFFIX = ".youtube";
     public static final String CREDENTIALS = ".oauth";
@@ -299,7 +303,7 @@ public class YouTubeClient extends Client implements VideoClient
      * @param maxResults The maximum number of results to retrieve
      * @return The list of summary videos retrieved
      */
-    public List<JSONObject> listVideos(String channelId, String userId, int maxResults) throws IOException
+    public List<JSONObject> listVideos(String channelId, int maxResults) throws IOException
     {
         List<JSONObject> list = new ArrayList<JSONObject>();
 
@@ -424,5 +428,47 @@ public class YouTubeClient extends Client implements VideoClient
         }
 
         return list;
+    }
+
+    /**
+     * Returns the channel ID for the given user ID.
+     *
+     * @param userId The ID of the user
+     * @return The channel ID
+     */
+    public String userIdToChannelId(String userId) throws IOException
+    {
+        return getChannelId(String.format("%s/channels?forUsername=%s",
+            YT_URL, userId));
+    }
+
+    /**
+     * Returns the channel ID for the given handle.
+     *
+     * @param handle The handle of the channel
+     * @return The channel ID
+     */
+    public String handleToChannelId(String handle) throws IOException
+    {
+        return getChannelId(String.format("%s/channels?handle=@%s",
+            YT_URL, handle));
+    }
+
+    /**
+     * Extracts the channel ID from the given response to the given URL.
+     *
+     * @param url The url for the request
+     * @return The channel ID
+     */
+    private String getChannelId(String url) throws IOException
+    {
+        String ret = null;
+        ApiClient client = ApiClient.newClient();
+        JSONObject response = new JSONObject(client.get(url));
+        JSONArray array = response.getJSONArray("items");
+        if(array.length() > 0)
+            ret = array.getJSONObject(0).optString("id");
+        client.close();
+        return ret;
     }
 }

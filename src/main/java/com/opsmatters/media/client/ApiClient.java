@@ -24,6 +24,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -221,6 +222,14 @@ public class ApiClient extends Client
     public void setUsername(String username) 
     {
         this.username = username;
+    }
+
+    /**
+     * Executes a GET operation.
+     */
+    public String get(String url) throws IOException
+    {
+        return execute(new HttpGet(url));
     }
 
     /**

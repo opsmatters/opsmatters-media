@@ -246,12 +246,6 @@ public class ConfigGenerator
                                 buff = startBuffer(line);
                                 currentVideo = name;
                             }
-                            else if(currentType == ContentType.EVENT)
-                            {
-                                closeBuffer(buff);
-                                buff = startBuffer(line);
-                                currentEvent = name;
-                            }
                             else // Other types don't have provider
                             {
                                 buff.append("\r\n");

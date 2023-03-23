@@ -184,19 +184,18 @@ public class VimeoClient extends Client implements VideoClient
     /**
      * Returns the list of most recent videos for the given channel ID.
      *
-     * @param channelId The ID of the channel for the videos
      * @param userId The ID of the user for the videos
      * @param maxResults The maximum number of results to retrieve
      * @return The list of summary videos retrieved
      */
-    public List<JSONObject> listVideos(String channelId, String userId, int maxResults) throws IOException
+    public List<JSONObject> listVideos(String userId, int maxResults) throws IOException
     {
         List<JSONObject> list = new ArrayList<JSONObject>();
 
         try
         {
             if(debug())
-                logger.info("Search for vimeo videos for channel: "+channelId);
+                logger.info("Search for vimeo videos for user: "+userId);
 
             String endpoint = String.format("/users/%s/videos?fields=%s&sort=date&direction=desc&per_page=%d",
                 userId, LIST_FIELDS, maxResults);
@@ -206,7 +205,7 @@ public class VimeoClient extends Client implements VideoClient
             if(data != null && data.length() > 0)
             {
                 if(debug())
-                    logger.info("Found "+data.length()+" vimeo videos for channel: "+channelId);
+                    logger.info("Found "+data.length()+" vimeo videos for user: "+userId);
                 for(int i = 0; i < data.length(); i++)
                 {
                     JSONObject item = data.getJSONObject(i);
@@ -224,7 +223,7 @@ public class VimeoClient extends Client implements VideoClient
             else
             {
                 if(debug())
-                    logger.info("No vimeo videos found for channel: "+channelId);
+                    logger.info("No vimeo videos found for user: "+userId);
             }
 
         }

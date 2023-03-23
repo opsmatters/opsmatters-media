@@ -16,8 +16,12 @@
 
 package com.opsmatters.media.model.content.video;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.Logger;
+import com.opsmatters.media.client.video.YouTubeClient;
+import com.opsmatters.media.util.StringUtils;
 
 /**
  * Represents a video provider.
@@ -38,6 +42,8 @@ public enum VideoProvider
         "https://fast.wistia.com/projects/%s",
         "https://fast.wistia.com/medias/%s",
         "<iframe src=\"//fast.wistia.net/embed/iframe/%s?autoplay=%s\" allowtransparency=\"true\" frameborder=\"0\" scrolling=\"no\" class=\"wistia_embed\" name=\"wistia_embed\" allowfullscreen mozallowfullscreen webkitallowfullscreen oallowfullscreen msallowfullscreen width=\"%d\" height=\"%d\"></iframe>");
+
+    private static final Logger logger = Logger.getLogger(VideoProvider.class.getName());
 
     private String code;
     private String value;
@@ -108,30 +114,75 @@ public enum VideoProvider
     }
 
     /**
-     * Returns the video id from the given video URL.
+     * Returns the video id from the given URL.
      * @return The video id.
      */
-    public String getVideoId(String videoUrl)
+    public String getVideoId(String url)
     {
         String ret = null;
-        if(videoUrl != null)
+        if(url != null)
         {
-            ret = videoUrl.substring(videoUrl.lastIndexOf("/")+1);
+            ret = url.substring(url.lastIndexOf("/")+1);
             if(this == YOUTUBE)
                 ret = ret.substring(ret.lastIndexOf("=")+1);
         }
+
         return ret;
     }
 
     /**
-     * Returns the channel id from the given channel URL.
+     * Returns the channel id from the given URL.
      * @return The channel id.
      */
-    public String getChannelId(String channelUrl)
+    public String getChannelId(String url)
     {
         String ret = null;
-        if(channelUrl != null)
-            ret = channelUrl.substring(channelUrl.lastIndexOf("/")+1);
+        if(url != null)
+        {
+            if(this == YOUTUBE)
+            {
+                String id = url.substring(url.lastIndexOf("/")+1);
+                if(id.startsWith("UC")) // channel id
+                {
+                    ret = id;
+                }
+                else
+                {
+                    YouTubeClient client = null;
+
+                    try
+                    {
+                        client = YouTubeClient.newClient();
+
+                        if(url.indexOf("/user") != -1) // user id
+                        {
+                            ret = client.userIdToChannelId(id);
+                        }
+                        else // handle
+                        {
+                            if(id.startsWith("@"))
+                                id = id.substring(1);
+                            ret = client.handleToChannelId(id);
+                        }
+                    }
+                    catch(IOException e)
+                    {
+                        ret = "UNKNOWN";
+                        logger.severe(StringUtils.serialize(e));
+                    }
+                    finally
+                    {
+                        if(client != null)
+                            client.close();
+                    }
+                }
+            }
+            else
+            {
+                ret = url.substring(url.lastIndexOf("/")+1);
+            }
+        }
+
         return ret;
     }
 
@@ -148,6 +199,7 @@ public enum VideoProvider
             if(type.code().equals(code))
                 return type;
         }
+
         return null;
     }
 
@@ -164,6 +216,7 @@ public enum VideoProvider
             if(type.value().equals(value))
                 return type;
         }
+
         return null;
     }
 
@@ -180,6 +233,7 @@ public enum VideoProvider
             if(videoUrl.indexOf(type.code()) != -1)
                 return type;
         }
+
         return null;
     }
 

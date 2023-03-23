@@ -46,6 +46,8 @@ import static com.opsmatters.media.model.content.video.VideoProvider.*;
  */
 public class ConfigGeneratorFields implements java.io.Serializable
 {
+    private Organisation organisation;
+    private OrganisationSite organisationSite;
     private String code = "";
     private String name = "";
     private String tags = "";
@@ -59,16 +61,35 @@ public class ConfigGeneratorFields implements java.io.Serializable
     Map<VideoProvider,Boolean> videos = new HashMap<VideoProvider,Boolean>();
 
     /**
-     * Default constructor.
+     * Constructor that takes an organisation and organisation site.
      */
-    public ConfigGeneratorFields()
+    public ConfigGeneratorFields(Organisation organisation, OrganisationSite organisationSite)
     {
+        this.organisation = organisation;
+        this.organisationSite = organisationSite;
     }
 
     /**
-     * Sets the fields from an organisation, site and listing.
+     * Clears the fields.
      */
-    public void set(Organisation organisation, OrganisationSite organisationSite, OrganisationListing listing)
+    public void clear()
+    {
+        code = "";
+        name = "";
+        tags = "";
+        channelId = "";
+        userId = "";
+        website = "";
+        blogUrl = "";
+        features = "";
+        types.clear();
+        videos.clear();
+    }
+
+    /**
+     * Sets the fields from an organisation, site and listing and optional config.
+     */
+    public void set(OrganisationListing listing, OrganisationContentConfig config)
     {
         setCode(organisation.getCode());
         setName(organisation.getName());
@@ -77,28 +98,47 @@ public class ConfigGeneratorFields implements java.io.Serializable
         if(organisationSite.hasListing())
         {
             OrganisationTabs tabs = listing.getTabs();
-            setVideos(tabs.contains(ContentType.VIDEO));
-            setRoundups(tabs.contains(ContentType.ROUNDUP));
-            setPosts(tabs.contains(ContentType.POST));
-            setEvents(tabs.contains(ContentType.EVENT));
-            setPublications(tabs.contains(ContentType.PUBLICATION));
 
-            setProjects(listing.hasProjects());
-            setTools(listing.hasTools());
-            setJobs(listing.hasJobs());
-
-            String youtube = listing.getYouTube();
-            if(youtube != null && youtube.length() > 0)
+            if(config != null)
             {
-                setChannelId(youtube.substring(youtube.lastIndexOf("/")+1));
-                setYoutube(true);
+                setVideos(config.hasVideos());
+                setRoundups(config.hasRoundups());
+                setPosts(config.hasPosts());
+                setEvents(config.hasEvents());
+                setPublications(config.hasPublications());
+                setProjects(config.hasProjects());
+                setTools(config.hasTools());
+                setJobs(config.hasJobs());
+                setFields(config, tabs);
+            }
+            else
+            {
+                setVideos(tabs.contains(ContentType.VIDEO));
+                setRoundups(tabs.contains(ContentType.ROUNDUP));
+                setPosts(tabs.contains(ContentType.POST));
+                setEvents(tabs.contains(ContentType.EVENT));
+                setPublications(tabs.contains(ContentType.PUBLICATION));
+                setProjects(listing.hasProjects());
+                setTools(listing.hasTools());
+                setJobs(listing.hasJobs());
             }
 
-            String vimeo = listing.getVimeo();
-            if(vimeo != null && vimeo.length() > 0)
+            // Set the video channel from the listing
+            if(getVideos() && !hasChannelId())
             {
-                setChannelId(vimeo.substring(vimeo.lastIndexOf("/")+1));
-                setVimeo(true);
+                String youtube = listing.getYouTube();
+                if(youtube != null && youtube.length() > 0)
+                {
+                    setChannelId(YOUTUBE.getChannelId(youtube));
+                    setYoutube(true);
+                }
+
+                String vimeo = listing.getVimeo();
+                if(vimeo != null && vimeo.length() > 0)
+                {
+                    setChannelId(VIMEO.getChannelId(vimeo));
+                    setVimeo(true);
+                }
             }
         }
         else
@@ -108,25 +148,11 @@ public class ConfigGeneratorFields implements java.io.Serializable
     }
 
     /**
-     * Sets the fields from an organisation config.
+     * Set the fields from the given organisation config.
      */
-    public void set(Organisation organisation, OrganisationSite organisationSite, OrganisationContentConfig config)
+    private void setFields(OrganisationContentConfig config, OrganisationTabs tabs)
     {
         String siteId = organisationSite.getSiteId();
-
-        setCode(organisation.getCode());
-        setName(organisation.getName());
-        setWebsite(organisation.getWebsite());
-
-        setVideos(config.hasVideos());
-        setRoundups(config.hasRoundups());
-        setPosts(config.hasPosts());
-        setEvents(config.hasEvents());
-        setPublications(config.hasPublications());
-        setProjects(config.hasProjects());
-        setTools(config.hasTools());
-        setJobs(config.hasJobs());
-
         String channelId = null;
         String userId = null;
         String blogUrl = null;
@@ -154,6 +180,10 @@ public class ConfigGeneratorFields implements java.io.Serializable
                 setVimeo(videos.hasChannel(VIMEO.value()));
                 setWistia(videos.hasChannel(WISTIA.value()));
             }
+        }
+        else // Adding videos to existing config
+        {
+            setVideos(tabs.contains(ContentType.VIDEO));
         }
 
         if(config.hasRoundups())

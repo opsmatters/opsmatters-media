@@ -158,7 +158,8 @@ public class VideoCrawler extends ContentCrawler<VideoTeaser,VideoDetails>
             ContentLoading loading = channel.getTeasers().getLoading();
             for(Fields fields : channel.getTeasers().getFields())
             {
-                List<JSONObject> results = client.listVideos(channelId, userId, getMaxResults());
+                String id = userId != null && userId.length() > 0 ? userId : channelId;
+                List<JSONObject> results = client.listVideos(id, getMaxResults());
                 if(debug())
                     logger.info("Found "+results.size()+" teasers for channel: "+channelId);
                 ret += results.size();

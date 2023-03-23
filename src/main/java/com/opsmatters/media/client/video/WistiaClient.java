@@ -181,11 +181,10 @@ public class WistiaClient extends Client implements VideoClient
      * Returns the list of most recent videos for the given channel ID.
      *
      * @param channelId The ID of the channel for the videos
-     * @param userId The ID of the user for the videos
      * @param maxResults The maximum number of results to retrieve
      * @return The list of summary videos retrieved
      */
-    public List<JSONObject> listVideos(String channelId, String userId, int maxResults) throws IOException
+    public List<JSONObject> listVideos(String channelId, int maxResults) throws IOException
     {
         List<JSONObject> list = new ArrayList<JSONObject>();
 
