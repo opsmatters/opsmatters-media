@@ -555,7 +555,15 @@ public class StringUtils
                 || c == 9           // Tab
                 || c == 10)         // LF
             {
-                buff.append((char)c);
+                if(isHtml && c == 38 // ampersand followed by space
+                    && ((i == s.length()-1) || (int)s.charAt(i+1) == ' '))
+                {
+                    buff.append("&amp;");
+                }
+                else
+                {
+                    buff.append((char)c);
+                }
             }
             else if(c >= 128)
             {

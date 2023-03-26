@@ -70,6 +70,15 @@ public class OrganisationListingConfig extends ContentConfig<OrganisationListing
     }
 
     /**
+     * Returns the list of HTML fields that need to be escaped.
+     */
+    @Override
+    public String[] getHtmlFields()
+    {
+        return new String[] {"summary", "body"};
+    }
+
+    /**
      * Returns a builder for the configuration.
      * @param name The name for the configuration
      * @return The builder instance.
