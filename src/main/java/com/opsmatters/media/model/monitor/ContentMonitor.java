@@ -62,6 +62,7 @@ public class ContentMonitor extends BaseEntity
     public static final String SITES = "sites";
     public static final String TITLE = "title";
     public static final String KEYWORDS = "keywords";
+    public static final String ALERTS = "alerts";
 
     private String code = "";
     private String organisation = "";
@@ -83,6 +84,7 @@ public class ContentMonitor extends BaseEntity
     private String sites = "";
     private String title = "";
     private String keywords = "";
+    private boolean alerts = false;
 
     private List<ContentTeaser> subscribed = new ArrayList<ContentTeaser>();
     private Map<String,String> siteMap = new HashMap<String,String>();
@@ -108,6 +110,7 @@ public class ContentMonitor extends BaseEntity
         setSnapshot(new ContentSnapshot(content.getType()));
         setInterval(DEFAULT_INTERVAL);
         setSites(config.getSites());
+        setAlerts(true);
     }
 
     /**
@@ -146,6 +149,7 @@ public class ContentMonitor extends BaseEntity
             setSites(obj.getSites());
             setTitle(obj.getTitle());
             setKeywords(obj.getKeywords());
+            setAlerts(obj.hasAlerts());
         }
     }
 
@@ -167,6 +171,7 @@ public class ContentMonitor extends BaseEntity
         ret.putOpt(SUBSCRIBED_DATE, getSubscribedDateMillis());
         ret.putOpt(SITES, getSites());
         ret.putOpt(TITLE, getTitle());
+        ret.putOpt(ALERTS, hasAlerts());
 
         return ret;
     }
@@ -187,6 +192,7 @@ public class ContentMonitor extends BaseEntity
         setSubscribedDateMillis(obj.optLong(SUBSCRIBED_DATE));
         setSites(obj.optString(SITES));
         setTitle(obj.optString(TITLE));
+        setAlerts(obj.optBoolean(ALERTS, false));
     }
 
     /**
@@ -1016,6 +1022,38 @@ public class ContentMonitor extends BaseEntity
     public boolean hasKeywords()
     {
         return keywords != null && keywords.length() > 0;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this monitor has content alerts.
+     */
+    public boolean hasAlerts()
+    {
+        return alerts;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this monitor has content alerts.
+     */
+    public Boolean getAlertsObject()
+    {
+        return Boolean.valueOf(hasAlerts());
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this monitor has content alerts.
+     */
+    public void setAlerts(boolean alerts)
+    {
+        this.alerts = alerts;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this monitor has content alerts.
+     */
+    public void setAlertsObject(Boolean alerts)
+    {
+        setAlerts(alerts != null && alerts.booleanValue());
     }
 
     /**

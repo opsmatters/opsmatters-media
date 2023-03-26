@@ -116,7 +116,7 @@ public enum FieldName
     TEMPLATE("template"),
     LISTING("listing"),
     FOOTER("footer"),
-    ALERT("alert");
+    ALERTS("alerts");
 
     private String value;
 
