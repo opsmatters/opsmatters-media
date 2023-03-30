@@ -341,4 +341,25 @@ public abstract class ContentTeaser implements java.io.Serializable
         setImage(path);
         setImage(FormatUtils.getFormattedImageFilename(getImage()));
     }
+
+    /**
+     * Returns <CODE>true</CODE> if the given content has a published date field.
+     */
+    public static boolean hasPublishedDate(List<? extends ContentTeaser> content)
+    {
+        boolean ret = false;
+        if(content.size() > 0)
+        {
+            for(ContentTeaser item : content)
+            {
+                if(item.getPublishedDate() != null)
+                {
+                    ret = true;
+                    break;
+                }
+            }
+        }
+
+        return ret;
+    }
 }

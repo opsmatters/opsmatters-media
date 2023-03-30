@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentStatus;
+import com.opsmatters.media.model.content.ContentLookup;
 import com.opsmatters.media.model.content.post.RoundupPost;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
@@ -304,6 +305,29 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
             if(reader != null)
                 reader.close();
         }
+    }
+
+    /**
+     * Returns a class to look up an organisation's content by title or id.
+     */
+    public ContentLookup<RoundupPost> newLookup()
+    {
+        return new ContentLookup<RoundupPost>()
+        {
+            @Override
+            protected RoundupPost getByTitle(String siteId, String code, String title)
+                throws SQLException
+            {
+                return RoundupPostDAO.this.getByTitle(siteId, code, title);
+            }
+
+            @Override
+            protected RoundupPost getById(String siteId, String code, String id)
+                throws SQLException
+            {
+                return RoundupPostDAO.this.getByUrl(siteId, code, id);
+            }
+        };
     }
 
     /**

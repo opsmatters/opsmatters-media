@@ -41,12 +41,16 @@ public class VideoClientFactory
      */
     public static VideoClient newClient(VideoProvider provider) throws IOException
     {
-        if(provider == VideoProvider.YOUTUBE)
-            return YouTubeClient.newClient();
-        else if(provider == VideoProvider.VIMEO)
-            return VimeoClient.newClient();
-        else if(provider == VideoProvider.WISTIA)
-            return WistiaClient.newClient();
+        switch(provider)
+        {
+            case YOUTUBE:
+                return YouTubeClient.newClient();
+            case VIMEO:
+                return VimeoClient.newClient();
+            case WISTIA:
+                return WistiaClient.newClient();
+        }
+
         throw new IllegalArgumentException("Video provider not found: "+provider);
     }
 }

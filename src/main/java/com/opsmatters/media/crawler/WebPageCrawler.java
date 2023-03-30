@@ -252,7 +252,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
     @Override
     public String getTitle()
     {
-        return driver.getTitle();
+        return driver != null ? driver.getTitle() : null;
     }
 
     /**

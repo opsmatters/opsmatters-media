@@ -43,8 +43,12 @@ public class EmailClientFactory
      */
     public static EmailClient newClient(EmailProvider provider, SesConfig config) throws IOException
     {
-        if(provider == EmailProvider.SES)
-            return AwsSesClient.newClient(config);
+        switch(provider)
+        {
+            case SES:
+                return AwsSesClient.newClient(config);
+        }
+
         throw new IllegalArgumentException("Email provider not found: "+provider);
     }
 }

@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentStatus;
+import com.opsmatters.media.model.content.ContentLookup;
 import com.opsmatters.media.model.content.publication.Publication;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
@@ -305,6 +306,29 @@ public class PublicationDAO extends ContentDAO<Publication>
             if(reader != null)
                 reader.close();
         }
+    }
+
+    /**
+     * Returns a class to look up an organisation's content by title or id.
+     */
+    public ContentLookup<Publication> newLookup()
+    {
+        return new ContentLookup<Publication>()
+        {
+            @Override
+            protected Publication getByTitle(String siteId, String code, String title)
+                throws SQLException
+            {
+                return PublicationDAO.this.getByTitle(siteId, code, title);
+            }
+
+            @Override
+            protected Publication getById(String siteId, String code, String id)
+                throws SQLException
+            {
+                return PublicationDAO.this.getByUrl(siteId, code, id);
+            }
+        };
     }
 
     /**

@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentStatus;
+import com.opsmatters.media.model.content.ContentLookup;
 import com.opsmatters.media.model.content.video.Video;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
@@ -308,6 +309,29 @@ public class VideoDAO extends ContentDAO<Video>
             if(reader != null)
                 reader.close();
         }
+    }
+
+    /**
+     * Returns a class to look up an organisation's content by title or id.
+     */
+    public ContentLookup<Video> newLookup()
+    {
+        return new ContentLookup<Video>()
+        {
+            @Override
+            protected Video getByTitle(String siteId, String code, String title)
+                throws SQLException
+            {
+                return VideoDAO.this.getByTitle(siteId, code, title);
+            }
+
+            @Override
+            protected Video getById(String siteId, String code, String id)
+                throws SQLException
+            {
+                return VideoDAO.this.getByVideoId(siteId, code, id);
+            }
+        };
     }
 
     /**

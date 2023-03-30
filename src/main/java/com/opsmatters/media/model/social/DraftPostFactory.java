@@ -39,10 +39,14 @@ public class DraftPostFactory
      */
     public static DraftPost newInstance(PostType type)
     {
-        if(type == PostType.CONTENT)
-            return new DraftContentPost();
-        else if(type == PostType.STANDARD)
-            return new DraftStandardPost();
+        switch(type)
+        {
+            case CONTENT:
+                return new DraftContentPost();
+            case STANDARD:
+                return new DraftStandardPost();
+        }
+
         throw new IllegalArgumentException("Post type not found: "+type);
     }
 }

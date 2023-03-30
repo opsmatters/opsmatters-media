@@ -28,6 +28,7 @@ import org.json.JSONArray;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentTeaser;
+import com.opsmatters.media.model.content.ContentLookup;
 import com.opsmatters.media.model.content.post.RoundupPostTeaser;
 import com.opsmatters.media.model.content.video.VideoTeaser;
 import com.opsmatters.media.model.content.video.Video;
@@ -37,6 +38,7 @@ import com.opsmatters.media.model.content.LinkedContent;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 
+
 /**
  * Class representing a snapshot of content monitor content.
  * 
@@ -45,8 +47,6 @@ import static com.opsmatters.media.model.content.FieldName.*;
 public class ContentSnapshot extends JSONObject
 {
     private static final Logger logger = Logger.getLogger(ContentSnapshot.class.getName());
-
-    private ContentLookup lookup;
 
     /**
      * Constructor that takes a content type and list of teasers.
@@ -154,22 +154,6 @@ public class ContentSnapshot extends JSONObject
     }
 
     /**
-     * Returns the object used to lookup content items.
-     */
-    public ContentLookup getLookup()
-    {
-        return lookup;
-    }
-
-    /**
-     * Sets the object used to lookup content items.
-     */
-    public void setLookup(ContentLookup lookup)
-    {
-        this.lookup = lookup;
-    }
-
-    /**
      * Create an object for the teaser.
      */
     private JSONObject createObject(ContentType type, ContentTeaser teaser)
@@ -245,7 +229,7 @@ public class ContentSnapshot extends JSONObject
      * Returns the difference between the two snapshots (or null if they are the same).
      */
     public static ContentSnapshot compare(String code, ContentSnapshot current,
-        ContentSnapshot latest, boolean checkDecrease)
+        ContentSnapshot latest, ContentLookup lookup, boolean checkDecrease)
         throws SQLException
     {
         int currentCount = current.getCount();
@@ -259,8 +243,6 @@ public class ContentSnapshot extends JSONObject
         if(checkDecrease && decrease > 50.0f)
             throw new IllegalStateException(String.format("Detected abnormal decrease in items: %.2f%%", decrease));
 
-
-        ContentLookup lookup = current.getLookup();
         ContentType type = current.getContentType();
         Map<String,JSONObject> titles = new HashMap<String,JSONObject>();
         Map<String,JSONObject> ids = new HashMap<String,JSONObject>();

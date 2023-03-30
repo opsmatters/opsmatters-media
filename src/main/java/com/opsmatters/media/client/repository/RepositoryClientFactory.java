@@ -42,8 +42,12 @@ public class RepositoryClientFactory
      */
     public static RepositoryClient newClient(RepositoryProvider provider, ProjectConfig config) throws IOException
     {
-        if(provider == RepositoryProvider.GITHUB)
-            return GitHubClient.newClient(config);
+        switch(provider)
+        {
+            case GITHUB:
+                return GitHubClient.newClient(config);
+        }
+
         throw new IllegalArgumentException("Repository provider not found: "+provider);
     }
 }

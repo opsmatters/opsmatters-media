@@ -15,17 +15,19 @@
  */
 package com.opsmatters.media.model.monitor;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.logging.Logger;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.Duration;
 import java.time.format.DateTimeParseException;
 import java.sql.SQLException;
 import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.Organisations;
+import com.opsmatters.media.cache.organisation.OrganisationSites;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.admin.Email;
@@ -34,6 +36,7 @@ import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentTeaser;
 import com.opsmatters.media.model.content.ContentConfig;
+import com.opsmatters.media.model.content.ContentLookup;
 import com.opsmatters.media.model.content.crawler.CrawlerTarget;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
@@ -44,7 +47,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentMonitor extends BaseEntity
+public class ContentMonitor<T extends ContentTeaser> extends BaseEntity
 {
     private static final Logger logger = Logger.getLogger(ContentMonitor.class.getName());
 
@@ -52,7 +55,6 @@ public class ContentMonitor extends BaseEntity
 
     public static final String CONTENT_TYPE = "content-type";
     public static final String URL = "url";
-    public static final String CHANNEL_ID = "channel-id";
     public static final String INTERVAL = "interval";
     public static final String SUCCESS_DATE = "success-date";
     public static final String EXECUTION_TIME = "execution-time";
@@ -73,7 +75,6 @@ public class ContentMonitor extends BaseEntity
     private long executionTime = -1L;
     private MonitorStatus status;
     private String url = "";
-    private String channelId = "";
     private String snapshot = "";
     private EventType eventType;
     private String eventId = "";
@@ -86,7 +87,6 @@ public class ContentMonitor extends BaseEntity
     private String keywords = "";
     private boolean alerts = false;
 
-    private List<ContentTeaser> subscribed = new ArrayList<ContentTeaser>();
     private Map<String,String> siteMap = new HashMap<String,String>();
 
     /**
@@ -94,23 +94,6 @@ public class ContentMonitor extends BaseEntity
      */
     public ContentMonitor()
     {
-    }
-
-    /**
-     * Constructor that takes content and field configurations.
-     */
-    public ContentMonitor(ContentConfig content, CrawlerTarget config)
-    {
-        setId(StringUtils.getUUID(null));
-        setCreatedDate(Instant.now());
-        setCode(content.getCode());
-        setContentType(content.getType());
-        setName(config.getName());
-        setStatus(MonitorStatus.NEW);
-        setSnapshot(new ContentSnapshot(content.getType()));
-        setInterval(DEFAULT_INTERVAL);
-        setSites(config.getSites());
-        setAlerts(true);
     }
 
     /**
@@ -138,7 +121,6 @@ public class ContentMonitor extends BaseEntity
             setSuccessDate(obj.getSuccessDate());
             setExecutionTime(obj.getExecutionTime());
             setUrl(obj.getUrl());
-            setChannelId(obj.getChannelId());
             setSnapshot(obj.getSnapshot());
             setEventType(obj.getEventType());
             setEventId(obj.getEventId());
@@ -154,6 +136,59 @@ public class ContentMonitor extends BaseEntity
     }
 
     /**
+     * Initialise the monitor using a config and target.
+     */
+    public void init(ContentConfig config, CrawlerTarget target)
+    {
+        setId(StringUtils.getUUID(null));
+        setCreatedDate(Instant.now());
+        setCode(config.getCode());
+        setContentType(config.getType());
+        setName(target.getName());
+        setStatus(MonitorStatus.NEW);
+        setSnapshot(new ContentSnapshot(config.getType()));
+        setInterval(DEFAULT_INTERVAL);
+        setSites(target.getSites());
+        setAlerts(true);
+    }
+
+    /**
+     * Executes a check using this monitor.
+     */
+    public ContentSnapshot check(int maxResults, boolean debug)
+        throws IOException
+    {
+        return null;
+    }
+
+    /**
+     * Update the last snapshot for the given change.
+     */
+    public boolean updateChange(ContentChange change, ContentLookup lookup, int maxResults)
+        throws SQLException, IOException
+    {
+        boolean ret = false;
+        Instant now = Instant.now();
+        ContentSnapshot snapshot = check(maxResults, false);
+        if(snapshot != null && !change.getSnapshotAfter().equals(snapshot.toString()))
+        {
+            Instant then = Instant.now();
+            ContentSnapshot diff = compareSnapshot(snapshot, lookup);
+            change.setSnapshotDiff(diff);
+            change.setSnapshotAfter(snapshot);
+            change.setUpdatedDate(now);
+
+            setExecutedDate(then);
+            setSuccessDate(then);
+            setExecutionTime(Duration.between(now, then).toMillis());
+
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the attributes as a JSON object.
      */
     public JSONObject getAttributes()
@@ -162,7 +197,6 @@ public class ContentMonitor extends BaseEntity
 
         ret.putOpt(CONTENT_TYPE, getContentType().name());
         ret.putOpt(URL, getUrl());
-        ret.putOpt(CHANNEL_ID, getChannelId());
         ret.putOpt(INTERVAL, getInterval());
         ret.putOpt(SUCCESS_DATE, getSuccessDateMillis());
         ret.putOpt(EXECUTION_TIME, getExecutionTime());
@@ -182,7 +216,6 @@ public class ContentMonitor extends BaseEntity
     public void setAttributes(JSONObject obj)
     {
         setContentType(obj.optString(CONTENT_TYPE));
-        setChannelId(obj.optString(CHANNEL_ID));
         setUrl(obj.optString(URL));
         setInterval(obj.optInt(INTERVAL));
         setSuccessDateMillis(obj.optLong(SUCCESS_DATE));
@@ -365,6 +398,7 @@ public class ContentMonitor extends BaseEntity
             if(getStatus() == MonitorStatus.CHANGE)
             {
                 setStatus(MonitorStatus.RESUMING);
+                setSnapshot(change.getSnapshotAfter());
                 setUpdatedDate(Instant.now());
                 clearEvent();
             }
@@ -641,30 +675,6 @@ public class ContentMonitor extends BaseEntity
     }
 
     /**
-     * Returns the monitor channel id.
-     */
-    public String getChannelId()
-    {
-        return channelId;
-    }
-
-    /**
-     * Sets the monitor channel id.
-     */
-    public void setChannelId(String channelId)
-    {
-        this.channelId = channelId;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the monitor channel id has been set.
-     */
-    public boolean hasChannelId()
-    {
-        return channelId != null && channelId.length() > 0;
-    }
-
-    /**
      * Returns the last monitor snapshot.
      */
     public String getSnapshot()
@@ -702,18 +712,6 @@ public class ContentMonitor extends BaseEntity
     public void setPrettySnapshot(String snapshot)
     {
         setSnapshot(new ContentSnapshot(snapshot));
-    }
-
-    /**
-     * Compare the given snapshot with the current one.
-     */
-    public ContentSnapshot compareSnapshot(ContentSnapshot snapshot) throws SQLException
-    {
-        ContentSnapshot current = new ContentSnapshot(getSnapshot());
-        ContentSnapshot latest = new ContentSnapshot(snapshot);
-        current.setLookup(snapshot.getLookup());
-        return ContentSnapshot.compare(getCode(), current, latest, 
-            getContentType() != ContentType.VIDEO);
     }
 
     /**
@@ -860,7 +858,7 @@ public class ContentMonitor extends BaseEntity
      */
     public String getSubscribedDateAsString(String pattern)
     {
-        return TimeUtils.toStringUTC(subscribedDate, pattern);
+        return TimeUtils.toStringUTC(getSubscribedDate(), pattern);
     }
 
     /**
@@ -868,7 +866,7 @@ public class ContentMonitor extends BaseEntity
      */
     public String getSubscribedDateAsString(String pattern, String timezone)
     {
-        return TimeUtils.toString(subscribedDate, pattern, timezone);
+        return TimeUtils.toString(getSubscribedDate(), pattern, timezone);
     }
 
     /**
@@ -893,7 +891,7 @@ public class ContentMonitor extends BaseEntity
     public void setSubscribedDateMillis(long millis)
     {
         if(millis > 0L)
-            this.subscribedDate = Instant.ofEpochMilli(millis);
+            setSubscribedDate(Instant.ofEpochMilli(millis));
     }
 
     /**
@@ -910,38 +908,6 @@ public class ContentMonitor extends BaseEntity
     public void setSubscribedDateAsString(String str) throws DateTimeParseException
     {
         setSubscribedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
-    }
-
-    /**
-     * Adds a subscribed content item to the monitor.
-     */
-    public void addSubscribedContent(ContentTeaser content)
-    {
-        subscribed.add(content);
-    }
-
-    /**
-     * Returns the subscribed content items for the monitor.
-     */
-    public List<ContentTeaser> getSubscribedContent()
-    {
-        return subscribed;
-    }
-
-    /**
-     * Clears the subscribed content items for the monitor.
-     */
-    public void clearSubscribedContent()
-    {
-        subscribed.clear();
-    }
-
-    /**
-     * Returns the number of subscribed content items for the monitor.
-     */
-    public int getSubscribedContentCount()
-    {
-        return subscribed.size();
     }
 
     /**
@@ -1054,6 +1020,22 @@ public class ContentMonitor extends BaseEntity
     public void setAlertsObject(Boolean alerts)
     {
         setAlerts(alerts != null && alerts.booleanValue());
+    }
+
+    /**
+     * Compare the given snapshot with the current one.
+     */
+    public ContentSnapshot compareSnapshot(ContentSnapshot snapshot, ContentLookup lookup)
+        throws SQLException
+    {
+        ContentSnapshot current = new ContentSnapshot(getSnapshot());
+        ContentSnapshot latest = new ContentSnapshot(snapshot);
+
+        if(lookup != null)
+            lookup.setOrganisations(OrganisationSites.list(getCode()));
+
+        return ContentSnapshot.compare(getCode(),
+            current, latest, lookup, getContentType() != ContentType.VIDEO);
     }
 
     /**

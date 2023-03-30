@@ -42,12 +42,17 @@ public class SocialClientFactory
     public static SocialClient newClient(SocialChannel channel) throws Exception
     {
         SocialProvider provider = channel.getProvider();
-        if(provider == SocialProvider.TWITTER)
-            return TwitterClient.newClient(channel);
-        else if(provider == SocialProvider.FACEBOOK)
-            return FacebookClient.newClient(channel);
-        else if(provider == SocialProvider.LINKEDIN)
-            return LinkedInClient.newClient(channel);
+
+        switch(provider)
+        {
+            case TWITTER:
+                return TwitterClient.newClient(channel);
+            case FACEBOOK:
+                return FacebookClient.newClient(channel);
+            case LINKEDIN:
+                return LinkedInClient.newClient(channel);
+        }
+
         throw new IllegalArgumentException("Social provider not found: "+provider);
     }
 }

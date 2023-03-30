@@ -39,10 +39,14 @@ public class SavedPostFactory
      */
     public static SavedPost newInstance(PostType type)
     {
-        if(type == PostType.CONTENT)
-            return new SavedContentPost();
-        else if(type == PostType.STANDARD)
-            return new SavedStandardPost();
+        switch(type)
+        {
+            case CONTENT:
+                return new SavedContentPost();
+            case STANDARD:
+                return new SavedStandardPost();
+        }
+
         throw new IllegalArgumentException("Post type not found: "+type);
     }
 }

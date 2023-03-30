@@ -25,9 +25,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
+import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.monitor.ContentMonitor;
 import com.opsmatters.media.model.monitor.MonitorStatus;
-import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.monitor.ContentMonitorFactory;
 
 /**
  * DAO that provides operations on the CONTENT_MONITORS table in the database.
@@ -143,7 +144,8 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
             rs = getByIdStmt.executeQuery();
             while(rs.next())
             {
-                ContentMonitor monitor = new ContentMonitor();
+                ContentType type = ContentType.valueOf(rs.getString(7));
+                ContentMonitor monitor = ContentMonitorFactory.newInstance(type);
                 monitor.setId(rs.getString(1));
                 monitor.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 monitor.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
@@ -332,7 +334,8 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
             ret = new ArrayList<ContentMonitor>();
             while(rs.next())
             {
-                ContentMonitor monitor = new ContentMonitor();
+                ContentType type = ContentType.valueOf(rs.getString(7));
+                ContentMonitor monitor = ContentMonitorFactory.newInstance(type);
                 monitor.setId(rs.getString(1));
                 monitor.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 monitor.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
@@ -390,7 +393,8 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
             ret = new ArrayList<ContentMonitor>();
             while(rs.next())
             {
-                ContentMonitor monitor = new ContentMonitor();
+                ContentType type = ContentType.valueOf(rs.getString(7));
+                ContentMonitor monitor = ContentMonitorFactory.newInstance(type);
                 monitor.setId(rs.getString(1));
                 monitor.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 monitor.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);

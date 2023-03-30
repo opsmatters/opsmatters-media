@@ -15,6 +15,7 @@
  */
 package com.opsmatters.media.model.content.event;
 
+import java.util.List;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -206,5 +207,26 @@ public class EventTeaser extends ResourceTeaser
     public void setEndDateAsString(String str) throws DateTimeParseException
     {
         setEndDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given content has a start date field.
+     */
+    public static boolean hasStartDate(List<EventTeaser> content)
+    {
+        boolean ret = false;
+        if(content.size() > 0)
+        {
+            for(EventTeaser item : content)
+            {
+                if(item.getStartDate() != null)
+                {
+                    ret = true;
+                    break;
+                }
+            }
+        }
+
+        return ret;
     }
 }

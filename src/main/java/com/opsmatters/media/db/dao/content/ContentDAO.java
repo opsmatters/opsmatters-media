@@ -32,6 +32,7 @@ import com.opsmatters.media.db.dao.DAOFactory;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentStatus;
+import com.opsmatters.media.model.content.ContentLookup;
 import com.opsmatters.media.util.ClassUtils;
 import com.opsmatters.media.util.StringUtils;
 
@@ -746,6 +747,14 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
         ParameterizedType superClass = (ParameterizedType)getClass().getGenericSuperclass();
         Class<T> contentClass = (Class<T>)superClass.getActualTypeArguments()[0];
         return (T)ClassUtils.newInstance(contentClass, parameterTypes, parameters);
+    }
+
+    /**
+     * Returns a class to look up an organisation's content by title or id.
+     */
+    public ContentLookup<T> newLookup()
+    {
+        return null;
     }
 
     /**

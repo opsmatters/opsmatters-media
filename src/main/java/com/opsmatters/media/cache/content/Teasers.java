@@ -35,10 +35,10 @@ public class Teasers
 {
     private static Map<String,TeaserList> teaserMap = Collections.synchronizedMap(new HashMap<String,TeaserList>());
 
+    public static final long EXPIRY = 300000L; // 5 mins
+
     static class TeaserList extends ArrayList<ContentTeaser>
     {
-        static final long EXPIRY = 300000L; // 5 mins
-
         String code;
         ContentType type;
         long tm = 0L;

@@ -21,8 +21,9 @@ import java.util.TreeMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.monitor.ContentMonitor;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.monitor.ContentMonitor;
+import com.opsmatters.media.model.monitor.video.VideoMonitor;
 
 /**
  * Class representing the set of content monitors.
@@ -169,16 +170,17 @@ public class ContentMonitors
     /**
      * Returns the video monitors with the given channel id.
      */
-    public static List<ContentMonitor> listByChannelId(String channelId)
+    public static List<VideoMonitor> listByChannelId(String channelId)
     {
-        List<ContentMonitor> ret = new ArrayList<ContentMonitor>();
+        List<VideoMonitor> ret = new ArrayList<VideoMonitor>();
 
         for(ContentMonitor monitor : monitorList)
         {
-            if(monitor.getContentType() == ContentType.VIDEO
-                && monitor.getChannelId().equals(channelId))
+            if(monitor instanceof VideoMonitor)
             {
-                ret.add(monitor);
+                VideoMonitor videoMonitor = (VideoMonitor)monitor;
+                if(videoMonitor.getChannelId().equals(channelId))
+                    ret.add(videoMonitor);
             }
         }
 

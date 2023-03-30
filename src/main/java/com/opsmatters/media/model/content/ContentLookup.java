@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.monitor;
+package com.opsmatters.media.model.content;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -33,11 +33,10 @@ public abstract class ContentLookup<T extends Content>
     private List<OrganisationSite> organisations;
 
     /**
-     * Constructor that takes a list of organisations.
+     * Default constructor.
      */
-    public ContentLookup(List<OrganisationSite> organisations)
+    public ContentLookup()
     {
-        this.organisations = organisations;
     }
 
     /**
@@ -46,6 +45,14 @@ public abstract class ContentLookup<T extends Content>
     public List<OrganisationSite> getOrganisations()
     {
         return organisations;
+    }
+
+    /**
+     * Sets the lookup organisations.
+     */
+    public void setOrganisations(List<OrganisationSite> organisations)
+    {
+        this.organisations = organisations;
     }
 
     /**
