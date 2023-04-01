@@ -156,7 +156,7 @@ public class VideoMonitor extends ContentMonitor<VideoTeaser>
      * Executes a check using this monitor.
      */
     @Override
-    public ContentSnapshot check(int maxResults, boolean debug)
+    public ContentSnapshot check(int maxResults, boolean cache, boolean debug)
         throws IOException
     {
         ContentSnapshot ret = null;
@@ -169,7 +169,7 @@ public class VideoMonitor extends ContentMonitor<VideoTeaser>
             crawler = new VideoCrawler(config, channel);
             crawler.setDebug(debug);
             crawler.setMaxResults(maxResults);
-            int count = crawler.processTeasers(false);
+            int count = crawler.processTeasers(cache);
 
             List<VideoTeaser> teasers = crawler.getTeasers();
 

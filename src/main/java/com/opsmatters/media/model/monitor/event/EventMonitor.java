@@ -76,7 +76,7 @@ public class EventMonitor extends ContentMonitor<EventTeaser>
      * Executes a check using this monitor.
      */
     @Override
-    public ContentSnapshot check(int maxResults, boolean debug)
+    public ContentSnapshot check(int maxResults, boolean cache, boolean debug)
         throws IOException
     {
         ContentSnapshot ret = null;
@@ -92,7 +92,7 @@ public class EventMonitor extends ContentMonitor<EventTeaser>
             crawler = new EventCrawler(config, page);
             crawler.setDebug(debug);
             crawler.setMaxResults(maxResults);
-            int count = crawler.processTeasers(false);
+            int count = crawler.processTeasers(cache);
 
             List<EventTeaser> teasers = crawler.getTeasers();
             if(EventTeaser.hasStartDate(teasers))

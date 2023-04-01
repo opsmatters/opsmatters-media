@@ -76,7 +76,7 @@ public class RoundupPostMonitor extends ContentMonitor<RoundupPostTeaser>
      * Executes a check using this monitor.
      */
     @Override
-    public ContentSnapshot check(int maxResults, boolean debug)
+    public ContentSnapshot check(int maxResults, boolean cache, boolean debug)
         throws IOException
     {
         ContentSnapshot ret = null;
@@ -92,7 +92,7 @@ public class RoundupPostMonitor extends ContentMonitor<RoundupPostTeaser>
             crawler = new RoundupPostCrawler(config, page);
             crawler.setDebug(debug);
             crawler.setMaxResults(maxResults);
-            int count = crawler.processTeasers(false);
+            int count = crawler.processTeasers(cache);
 
             List<RoundupPostTeaser> teasers = crawler.getTeasers();
             if(RoundupPostTeaser.hasPublishedDate(teasers))

@@ -155,7 +155,7 @@ public class ContentMonitor<T extends ContentTeaser> extends BaseEntity
     /**
      * Executes a check using this monitor.
      */
-    public ContentSnapshot check(int maxResults, boolean debug)
+    public ContentSnapshot check(int maxResults, boolean cache, boolean debug)
         throws IOException
     {
         return null;
@@ -164,26 +164,27 @@ public class ContentMonitor<T extends ContentTeaser> extends BaseEntity
     /**
      * Update the last snapshot for the given change.
      */
-    public boolean updateChange(ContentChange change, ContentLookup lookup, int maxResults)
+    public boolean updateChange(ContentChange change, ContentLookup lookup, int maxResults, boolean cache)
         throws SQLException, IOException
     {
         boolean ret = false;
+
         Instant now = Instant.now();
-        ContentSnapshot snapshot = check(maxResults, false);
+        ContentSnapshot snapshot = check(maxResults, cache, false);
+        change.setUpdatedDate(now);
+
         if(snapshot != null && !change.getSnapshotAfter().equals(snapshot.toString()))
         {
-            Instant then = Instant.now();
             ContentSnapshot diff = compareSnapshot(snapshot, lookup);
             change.setSnapshotDiff(diff);
             change.setSnapshotAfter(snapshot);
-            change.setUpdatedDate(now);
-
-            setExecutedDate(then);
-            setSuccessDate(then);
-            setExecutionTime(Duration.between(now, then).toMillis());
-
             ret = true;
         }
+
+        Instant then = Instant.now();
+        setExecutedDate(then);
+        setSuccessDate(then);
+        setExecutionTime(Duration.between(now, then).toMillis());
 
         return ret;
     }

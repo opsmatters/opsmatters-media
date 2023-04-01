@@ -58,7 +58,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
      * The query to use to update a change in the CONTENT_CHANGES table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTENT_CHANGES SET UPDATED_DATE=?, STATUS=?, SITES=?, CREATED_BY=?, SESSION_ID=? "
+      "UPDATE CONTENT_CHANGES SET UPDATED_DATE=?, SNAPSHOT_AFTER=?, SNAPSHOT_DIFF=?, STATUS=?, SITES=?, CREATED_BY=?, SESSION_ID=? "
       + "WHERE ID=?";
 
     /**
@@ -266,16 +266,33 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
         clearParameters(updateStmt);
 
+        StringReader reader = null, reader2 = null;
 
-        updateStmt.setTimestamp(1, new Timestamp(change.getUpdatedDateMillis()), UTC);
-        updateStmt.setString(2, change.getStatus().name());
-        updateStmt.setString(3, change.getSites());
-        updateStmt.setString(4, change.getCreatedBy());
-        updateStmt.setInt(5, SessionId.get());
-        updateStmt.setString(6, change.getId());
-        updateStmt.executeUpdate();
+        try
+        {
+            updateStmt.setTimestamp(1, new Timestamp(change.getUpdatedDateMillis()), UTC);
+            String snapshotAfter = change.getSnapshotAfter();
+            reader = new StringReader(snapshotAfter);
+            updateStmt.setCharacterStream(2, reader, snapshotAfter.length());
+            String snapshotDiff = change.getSnapshotDiff();
+            reader2 = new StringReader(snapshotDiff);
+            updateStmt.setCharacterStream(3, reader2, snapshotDiff.length());
+            updateStmt.setString(4, change.getStatus().name());
+            updateStmt.setString(5, change.getSites());
+            updateStmt.setString(6, change.getCreatedBy());
+            updateStmt.setInt(7, SessionId.get());
+            updateStmt.setString(8, change.getId());
+            updateStmt.executeUpdate();
 
-        logger.info("Updated change '"+change.getId()+"' in CONTENT_CHANGES");
+            logger.info("Updated change '"+change.getId()+"' in CONTENT_CHANGES");
+        }
+        finally
+        {
+            if(reader != null)
+                reader.close();
+            if(reader2 != null)
+                reader2.close();
+        }
     }
 
     /**
