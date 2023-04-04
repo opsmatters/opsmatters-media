@@ -226,10 +226,8 @@ public class Publication extends Resource<PublicationTeaser,PublicationDetails>
 
         publication.init();
         publication.setSiteId(site.getId());
-        publication.setPublicationType(PublicationType.WHITE_PAPER);
         publication.setTitle("New Publication");
         publication.setDescription(StringUtils.EMPTY);
-        publication.setLinkText(LinkText.GET_WHITE_PAPER);
         publication.setPublishedDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
 
         return publication;
@@ -255,6 +253,7 @@ public class Publication extends Resource<PublicationTeaser,PublicationDetails>
         if(page.hasField(TAGS))
             setTags(page.getField(TAGS, ""));
 
+        setPublicationType(config.getField(PUBLICATION_TYPE, ""));
         setLinkText(config.getField(LINK_TEXT, ""));
 
         String promote = config.getField(PROMOTE);
@@ -272,6 +271,15 @@ public class Publication extends Resource<PublicationTeaser,PublicationDetails>
         if(parser.converted())
             setDescription(parser.formatBody());
         setSummary(parser.formatSummary(config.getSummary()));
+
+        // Attempt to guess the publication type from the text
+        String[] texts = new String[] { getTitle(), getDescription(), getUrl() };
+        PublicationType guessed = PublicationType.guess(texts);
+        if(guessed != null)
+            setPublicationType(guessed);
+        String linkText = PublicationType.getLinkText(getPublicationType());
+        if(linkText != null)
+            setLinkText(linkText);
     }
 
     /**

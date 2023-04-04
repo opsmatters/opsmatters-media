@@ -252,6 +252,8 @@ public class Video extends Article<VideoTeaser,VideoDetails>
         if(channel.hasField(NEWSLETTER))
             setNewsletter(channel.getField(NEWSLETTER, "0").equals("0") ? false : true);
 
+        setVideoType(config.getField(VIDEO_TYPE, ""));
+
         String promote = config.getField(PROMOTE);
         setPromoted(promote == null || promote.equals("0") ? false : true);
     }
@@ -268,8 +270,11 @@ public class Video extends Article<VideoTeaser,VideoDetails>
             setDescription(parser.formatBody());
         setSummary(parser.formatSummary(config.getSummary()));
 
-        String text = String.format("%s %s", getTitle(), getDescription());
-        setVideoType(VideoType.guess(text, getDuration()));
+        // Attempt to guess the video type from the text
+        String[] texts = new String[] { getTitle(), getDescription() };
+        VideoType guessed = VideoType.guess(texts, getDuration());
+        if(guessed != null)
+            setVideoType(guessed);
 
         // Clear social flag if the content is old
         if(hasSocial())

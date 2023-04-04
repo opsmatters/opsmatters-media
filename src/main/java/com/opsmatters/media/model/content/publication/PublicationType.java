@@ -18,6 +18,8 @@ package com.opsmatters.media.model.content.publication;
 
 import java.util.List;
 import java.util.ArrayList;
+import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.LinkText;
 
 /**
  * Represents a publication type.
@@ -81,6 +83,69 @@ public enum PublicationType
     public static boolean contains(String value)
     {
         return valueOf(value) != null;
+    }
+
+    /**
+     * Guesses the publication type from the given texts.
+     */
+    public static PublicationType guess(String[] texts)
+    {
+        PublicationType ret = null;
+        for(String text : texts)
+        {
+            text = text.toLowerCase();
+            if(ret == null)
+                ret = test(text, WHITE_PAPER);
+            if(ret == null)
+                ret = test(text, EBOOK);
+            if(ret == null)
+                ret = test(text, SOLUTION_BRIEF);
+            if(ret == null)
+                ret = test(text, DATASHEET);
+            if(ret == null)
+                ret = test(text, HANDBOOK);
+            if(ret == null)
+                ret = test(text, CHEAT_SHEET);
+            if(ret == null)
+                ret = test(text, CASE_STUDY);
+            if(ret == null)
+                ret = test(text, GUIDE);
+            if(ret == null)
+                ret = test(text, REPORT);
+
+            if(ret != null)
+                break;
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the type for the given text.
+     */
+    private static PublicationType test(String text, PublicationType type)
+    {
+        if(text.indexOf(type.value().toLowerCase()) != -1)
+            return type;
+        return null;
+    }
+
+    /**
+     * Returns the link text for the given type value.
+     */
+    public static String getLinkText(String value)
+    {
+        String ret = null;
+        for(String linkText : LinkText.toList(ContentType.PUBLICATION))
+        {
+            if(linkText.indexOf(value) != -1)
+            {
+                ret = linkText;
+                break;
+            }
+        }
+
+        return ret;
     }
 
     /**

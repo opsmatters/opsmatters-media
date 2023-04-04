@@ -21,11 +21,13 @@ import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.logging.Logger;
+import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.cache.content.organisation.OrganisationContentConfigs;
 import com.opsmatters.media.crawler.post.RoundupPostCrawler;
 import com.opsmatters.media.model.content.post.RoundupPostConfig;
 import com.opsmatters.media.model.content.post.RoundupPostTeaser;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
+import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.monitor.ContentMonitor;
 import com.opsmatters.media.model.monitor.ContentSnapshot;
 
@@ -82,6 +84,7 @@ public class RoundupPostMonitor extends ContentMonitor<RoundupPostTeaser>
         ContentSnapshot ret = null;
         RoundupPostCrawler crawler = null;
         RoundupPostConfig config = OrganisationContentConfigs.get(getCode()).getRoundups();
+        Organisation organisation = Organisations.get(getCode());
 
         try
         {
@@ -90,6 +93,7 @@ public class RoundupPostMonitor extends ContentMonitor<RoundupPostTeaser>
                 throw new IllegalStateException("Roundup page '"+getName()
                     +"' does not exist for monitor "+getCode());
             crawler = new RoundupPostCrawler(config, page);
+            crawler.setImagePrefix(organisation.getImagePrefix());
             crawler.setDebug(debug);
             crawler.setMaxResults(maxResults);
             int count = crawler.processTeasers(cache);

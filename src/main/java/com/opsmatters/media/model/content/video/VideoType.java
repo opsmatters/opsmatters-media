@@ -97,38 +97,46 @@ public enum VideoType
     }
 
     /**
-     * Guesses the video type from the given description and duration.
+     * Guesses the video type from the given texts and duration.
      */
-    public static VideoType guess(String text, long duration)
+    public static VideoType guess(String[] texts, long duration)
     {
-        text = text.toLowerCase();
-        VideoType ret = test(text, WEBINAR);
-        if(ret == null)
-            ret = test(text, WEBCAST);
-        if(ret == null)
-            ret = test(text, PODCAST);
-        if(ret == null)
-            ret = test(text, CONFERENCE);
-        if(ret == null)
-            ret = test(text, MEETUP);
-        if(ret == null)
-            ret = test(text, SEMINAR);
-        if(ret == null)
-            ret = test(text, USER_GROUP);
-        if(ret == null)
-            ret = test(text, PANEL);
-        if(ret == null)
-            ret = test(text, INTERVIEW);
-        if(ret == null)
-            ret = test(text, HOW_TO);
-        if(ret == null)
-            ret = test(text, DEMO);
+        VideoType ret = null;
+        for(String text : texts)
+        {
+            text = text.toLowerCase();
+            if(ret == null)
+                ret = test(text, WEBINAR);
+            if(ret == null)
+                ret = test(text, WEBCAST);
+            if(ret == null)
+                ret = test(text, PODCAST);
+            if(ret == null)
+                ret = test(text, CONFERENCE);
+            if(ret == null)
+                ret = test(text, MEETUP);
+            if(ret == null)
+                ret = test(text, SEMINAR);
+            if(ret == null)
+                ret = test(text, USER_GROUP);
+            if(ret == null)
+                ret = test(text, PANEL);
+            if(ret == null)
+                ret = test(text, INTERVIEW);
+            if(ret == null)
+                ret = test(text, HOW_TO);
+            if(ret == null)
+                ret = test(text, DEMO);
+
+            if(ret != null)
+                break;
+        }
 
         long min = Parameters.get(UI, MIN_WEBINAR_DURATION).getValueAsLong();
         if((ret == null || ret == DEMO || ret == HOW_TO) && duration > min)
             ret = WEBINAR;
 
-        return ret != null ? ret : DEMO;
+        return ret;
     }
 
     /**

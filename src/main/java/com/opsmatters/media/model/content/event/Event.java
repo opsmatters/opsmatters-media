@@ -211,7 +211,6 @@ public class Event extends Resource<EventTeaser,EventDetails>
         event.setPublishedDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
         event.setStartDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
         event.addStartTime(config);
-        event.setEventType("Webinar");
 
         return event;
     }
@@ -245,7 +244,7 @@ public class Event extends Resource<EventTeaser,EventDetails>
     {
         super.init(organisation, organisationSite, config);
 
-        setEventType("Webinar");
+        setEventType(config.getField(EVENT_TYPE, ""));
         setLinkText(config.getField(LINK_TEXT, ""));
     }
 

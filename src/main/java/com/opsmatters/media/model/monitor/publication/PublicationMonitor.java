@@ -21,11 +21,13 @@ import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.logging.Logger;
+import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.cache.content.organisation.OrganisationContentConfigs;
 import com.opsmatters.media.crawler.publication.PublicationCrawler;
 import com.opsmatters.media.model.content.publication.PublicationConfig;
 import com.opsmatters.media.model.content.publication.PublicationTeaser;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
+import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.monitor.ContentMonitor;
 import com.opsmatters.media.model.monitor.ContentSnapshot;
 
@@ -82,6 +84,7 @@ public class PublicationMonitor extends ContentMonitor<PublicationTeaser>
         ContentSnapshot ret = null;
         PublicationCrawler crawler = null;
         PublicationConfig config = OrganisationContentConfigs.get(getCode()).getPublications();
+        Organisation organisation = Organisations.get(getCode());
 
         try
         {
@@ -90,6 +93,7 @@ public class PublicationMonitor extends ContentMonitor<PublicationTeaser>
                 throw new IllegalStateException("Publication page '"+getName()
                     +"' does not exist for monitor "+getCode());
             crawler = new PublicationCrawler(config, page);
+            crawler.setImagePrefix(organisation.getImagePrefix());
             crawler.setDebug(debug);
             crawler.setMaxResults(maxResults);
             int count = crawler.processTeasers(cache);
