@@ -41,6 +41,7 @@ import com.opsmatters.media.model.content.crawler.CrawlerTarget;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
+import com.opsmatters.media.util.SnapshotDiff;
 
 /**
  * Class representing a content monitor.
@@ -173,18 +174,21 @@ public class ContentMonitor<T extends ContentTeaser> extends BaseEntity
         ContentSnapshot snapshot = check(maxResults, cache, false);
         change.setUpdatedDate(now);
 
+        Instant then = Instant.now();
         if(snapshot != null && !change.getSnapshotAfter().equals(snapshot.toString()))
         {
             ContentSnapshot diff = compareSnapshot(snapshot, lookup);
             change.setSnapshotDiff(diff);
             change.setSnapshotAfter(snapshot);
+            change.setDifference(SnapshotDiff.getDifferencePercent(change.getSnapshotBefore(),
+                change.getSnapshotAfter()));
+            change.setExecutionTime(Duration.between(now, then).toMillis());
             ret = true;
         }
 
-        Instant then = Instant.now();
         setExecutedDate(then);
         setSuccessDate(then);
-        setExecutionTime(Duration.between(now, then).toMillis());
+        setExecutionTime(change.getExecutionTime());
 
         return ret;
     }

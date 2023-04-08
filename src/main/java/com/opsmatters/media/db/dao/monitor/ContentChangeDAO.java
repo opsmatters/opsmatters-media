@@ -58,7 +58,7 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
      * The query to use to update a change in the CONTENT_CHANGES table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTENT_CHANGES SET UPDATED_DATE=?, SNAPSHOT_AFTER=?, SNAPSHOT_DIFF=?, STATUS=?, SITES=?, CREATED_BY=?, SESSION_ID=? "
+      "UPDATE CONTENT_CHANGES SET UPDATED_DATE=?, SNAPSHOT_AFTER=?, SNAPSHOT_DIFF=?, STATUS=?, EXECUTION_TIME=?, DIFFERENCE=?, SITES=?, CREATED_BY=?, SESSION_ID=? "
       + "WHERE ID=?";
 
     /**
@@ -278,10 +278,12 @@ public class ContentChangeDAO extends MonitorDAO<ContentChange>
             reader2 = new StringReader(snapshotDiff);
             updateStmt.setCharacterStream(3, reader2, snapshotDiff.length());
             updateStmt.setString(4, change.getStatus().name());
-            updateStmt.setString(5, change.getSites());
-            updateStmt.setString(6, change.getCreatedBy());
-            updateStmt.setInt(7, SessionId.get());
-            updateStmt.setString(8, change.getId());
+            updateStmt.setLong(5, change.getExecutionTime());
+            updateStmt.setInt(6, change.getDifference());
+            updateStmt.setString(7, change.getSites());
+            updateStmt.setString(8, change.getCreatedBy());
+            updateStmt.setInt(9, SessionId.get());
+            updateStmt.setString(10, change.getId());
             updateStmt.executeUpdate();
 
             logger.info("Updated change '"+change.getId()+"' in CONTENT_CHANGES");
