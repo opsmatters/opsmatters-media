@@ -23,6 +23,8 @@ import java.util.logging.Logger;
 import com.opsmatters.media.client.video.YouTubeClient;
 import com.opsmatters.media.util.StringUtils;
 
+import static com.opsmatters.media.model.UserMessage.*;
+
 /**
  * Represents a video provider.
  * 
@@ -167,7 +169,7 @@ public enum VideoProvider
                     }
                     catch(IOException e)
                     {
-                        ret = "UNKNOWN";
+                        ret = UNKNOWN.value();
                         logger.severe(StringUtils.serialize(e));
                     }
                     finally

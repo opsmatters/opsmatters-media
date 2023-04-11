@@ -24,11 +24,6 @@ package com.opsmatters.media.util;
 public class Formats
 {
     /**
-     * The string when the result is unknown.
-     */
-    public static final String UNKNOWN = "Unknown";
-
-    /**
      * The default date time format.
      */
     public static final String DATETIME_FORMAT = "dd-MM-yyyy HH:mm:ss";
