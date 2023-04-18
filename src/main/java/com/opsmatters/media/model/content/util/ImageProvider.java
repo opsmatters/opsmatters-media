@@ -18,7 +18,7 @@ package com.opsmatters.media.model.content.util;
 
 import java.util.List;
 import java.util.ArrayList;
-import com.opsmatters.media.file.CommonFiles;
+import com.opsmatters.media.file.FileFormat;
 import com.opsmatters.media.util.FileUtils;
 
 /**
@@ -100,7 +100,7 @@ public enum ImageProvider
             String name = FileUtils.getName(filename);
             String ext = FileUtils.getExtension(filename);
             if(ext.length() == 0)
-                ext = CommonFiles.JPG_EXT;
+                ext = FileFormat.JPG.value();
             ret = String.format("%s-%s.%s", name, code, ext);
         }
 

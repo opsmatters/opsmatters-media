@@ -38,11 +38,11 @@ import com.opsmatters.media.model.ConfigParser;
 import com.opsmatters.media.model.content.organisation.OrganisationListing;
 import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
-import com.opsmatters.media.file.CommonFiles;
 import com.opsmatters.media.handler.ContentHandler;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.util.FileUtils;
 
+import static com.opsmatters.media.file.FileFormat.*;
 import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
@@ -133,7 +133,8 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
         String ret = "";
         Organisation organisation = Organisations.get(getCode());
         if(organisation != null)
-            ret = String.format("%s-%s.%s", organisation.getFilePrefix(), getType().tag(), CommonFiles.XLSX_EXT);
+            ret = String.format("%s-%s.%s",
+                organisation.getFilePrefix(), getType().tag(), XLSX.value());
         return ret;
     }
 

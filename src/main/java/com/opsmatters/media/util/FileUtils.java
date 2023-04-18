@@ -19,13 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.Reader;
-import java.io.InputStream;
-import java.io.BufferedInputStream;
-import java.io.InputStreamReader;
 import java.io.FileReader;
 import java.io.Writer;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
@@ -35,19 +30,13 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
-import java.util.Enumeration;
 import java.util.zip.Inflater;
 import java.util.zip.Deflater;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipEntry;
 import java.util.zip.DataFormatException;
-import java.util.jar.Manifest;
-import java.util.jar.JarFile;
 import java.util.logging.Logger;
 import com.google.common.io.Files;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashCode;
-import com.opsmatters.media.file.CommonFiles;
 
 import static com.google.common.net.HttpHeaders.*;
 
@@ -276,72 +265,6 @@ public class FileUtils
     }
 
     /**
-     * Returns the contents of a resource file containing text.
-     */
-    public static String getResourceFileContents(String resourceName)
-    {
-        String ret = null;
-
-        try
-        {
-            String path = System.getProperty("java.class.path");
-            StringTokenizer st = new StringTokenizer(path, 
-                System.getProperty("path.separator"));
-            while(st.hasMoreTokens())
-            {
-                String fileName = st.nextToken();
-                if(fileName.endsWith(CommonFiles.JAR_EXT))
-                {
-                    try
-                    {
-                        ZipFile zip = new ZipFile(fileName);
-
-                        // Check that this is the opsmatters-content jar
-                        if(zip.getEntry("com/opsmatters/content/util/FileUtils.class") != null)
-                        {
-                            Enumeration en = zip.entries();
-                            while(en.hasMoreElements())
-                            {
-                                ZipEntry entry = (ZipEntry)en.nextElement();
-                                String name = entry.getName();
-                                if(name.endsWith(resourceName))
-                                {
-                                    InputStream stream = ClassLoader.getSystemResourceAsStream(name);
-                                    Reader reader = new InputStreamReader(stream);
-                                    StringBuffer buff = new StringBuffer();
-                                    int c = reader.read();
-                                    while(c != -1)
-                                    {
-                                        buff.append((char)c);
-                                        c = reader.read();
-                                    }
-                                    ret = buff.toString();
-                                    reader.close();
-                                }
-                            }
-                            break;
-                        }
-                        zip.close();
-                    }
-                    catch(FileNotFoundException e)
-                    {
-                    }
-                    catch(Exception e)
-                    {
-                        logger.severe(StringUtils.serialize(e));
-                    }
-                }
-            }
-        }
-        catch(Exception e) 
-        {
-            logger.severe(StringUtils.serialize(e));
-        }
-
-        return ret;
-    }
-
-    /**
      * Returns the directory containing the given file name below the given directory.
      */
     public static File findFile(String root, String name)
@@ -461,59 +384,6 @@ public class FileUtils
             }
         }
         catch(IOException e)
-        {
-            logger.severe(StringUtils.serialize(e));
-        }
-
-        return ret;
-    }
-
-    /**
-     * Returns the manifest for a jar file containing the given class.
-     */
-    public static Manifest getManifestForClass(Class cl)
-    {
-        Manifest ret = (Manifest)manifests.get(cl);
-
-        try
-        {
-            if(ret == null)
-            {
-                String className = cl.getName().replaceAll("\\.","/")+".class";
-                String path = System.getProperty("java.class.path");
-                StringTokenizer st = new StringTokenizer(path, 
-                    System.getProperty("path.separator"));
-                while(st.hasMoreTokens() && ret == null)
-                {
-                    String fileName = st.nextToken();
-                    if(fileName.endsWith(CommonFiles.JAR_EXT))
-                    {
-                        try
-                        {
-                            JarFile jar = new JarFile(fileName);
-
-                            // Check that this is the correct jar
-                            if(jar.getEntry(className) != null)
-                            {
-                                Manifest manifest = jar.getManifest();
-                                manifests.put(cl, manifest);
-                                ret = manifest;
-                            }
-
-                            jar.close();
-                        }
-                        catch(FileNotFoundException e)
-                        {
-                        }
-                        catch(Exception e)
-                        {
-                            logger.severe(StringUtils.serialize(e));
-                        }
-                    }
-                }
-            }
-        }
-        catch(Exception e) 
         {
             logger.severe(StringUtils.serialize(e));
         }

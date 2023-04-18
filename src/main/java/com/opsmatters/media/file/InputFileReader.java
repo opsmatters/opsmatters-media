@@ -29,6 +29,8 @@ import java.text.SimpleDateFormat;
 import com.opencsv.CSVReader;
 import com.opsmatters.media.util.Formats;
 
+import static com.opsmatters.media.file.FileFormat.*;
+
 /**
  * Defines the methods to parse and reference an input file in a CSV, XLS or XLSX format.
  * 
@@ -279,8 +281,10 @@ public class InputFileReader
         List<String[]> lines = new ArrayList<String[]>();
         rows.clear();
 
+        FileFormat format = FileFormat.fromFilename(name, CSV);
+
         // Excel spreadsheet
-        if(CommonFiles.isExcelFile(name))
+        if(format.isExcel())
         {
             SimpleDateFormat df = new SimpleDateFormat(dateFormat);
             df.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -313,7 +317,7 @@ public class InputFileReader
 
             workbook.close();
         }
-        else if(CommonFiles.isCsvFile(name))
+        else if(format == CSV)
         {
             Reader reader = new InputStreamReader(stream);
             CSVReader csv = new CSVReader(reader, delimiter.separator().charAt(0));

@@ -508,7 +508,7 @@ public class ContentHandler
      */
     public String getCsvFilename(String filename)
     {
-        return FileUtils.getName(filename)+FileFormat.CSV.extension();
+        return FileUtils.getName(filename)+FileFormat.CSV.ext();
     }
 
     /**

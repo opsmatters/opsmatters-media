@@ -15,8 +15,6 @@
  */
 package com.opsmatters.media.model.content;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.util.List;
 import java.time.Instant;
 import java.time.Duration;
@@ -24,15 +22,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
-import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.organisation.OrganisationContentType;
-import com.opsmatters.media.file.CommonFiles;
+import com.opsmatters.media.file.FileFormat;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 
+import static com.opsmatters.media.file.FileFormat.*;
 import static com.opsmatters.media.model.content.ContentStatus.*;
 
 /**
@@ -533,8 +531,8 @@ public abstract class Content<T extends ContentTeaser, D extends ContentTeaser>
      */
     public boolean isJpgImage()
     {
-        String image = getImage() != null ? getImage().toLowerCase() : "";
-        return image.endsWith("."+CommonFiles.JPG_EXT) || image.endsWith("."+CommonFiles.JPEG_EXT);
+        FileFormat format = FileFormat.fromFilename(getImage());
+        return format != null && format.isJPEG();
     }
 
     /**
@@ -542,8 +540,7 @@ public abstract class Content<T extends ContentTeaser, D extends ContentTeaser>
      */
     public boolean isPngImage()
     {
-        String image = getImage() != null ? getImage().toLowerCase() : "";
-        return image.endsWith("."+CommonFiles.PNG_EXT);
+        return FileFormat.fromFilename(getImage()) == PNG;
     }
 
     /**
@@ -551,8 +548,7 @@ public abstract class Content<T extends ContentTeaser, D extends ContentTeaser>
      */
     public boolean isGifImage()
     {
-        String image = getImage() != null ? getImage().toLowerCase() : "";
-        return image.endsWith("."+CommonFiles.GIF_EXT);
+        return FileFormat.fromFilename(getImage()) == GIF;
     }
 
     /**

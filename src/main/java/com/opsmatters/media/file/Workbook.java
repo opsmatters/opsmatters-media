@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import com.opsmatters.media.util.TimeUtils;
 
+import static com.opsmatters.media.file.FileFormat.*;
+
 /**
  * Base class for an Excel XLS or XLSX workbook.
  * 
@@ -42,16 +44,17 @@ public abstract class Workbook
     public static Workbook getWorkbook(File file) throws IOException
     {
         Workbook ret = null;
-        String lowerFilename = file.getName().toLowerCase();
-        if(lowerFilename.endsWith("."+CommonFiles.XLS_EXT))
+        FileFormat format = FileFormat.fromFilename(file.getName());
+        if(format == XLS)
         {
             ret = XlsWorkbook.getWorkbook(file);
         }
-        else if(lowerFilename.endsWith("."+CommonFiles.XLSX_EXT))
+        else if(format == XLSX)
         {
             XlsxWorkbook.initJaxbContexts();
             ret = XlsxWorkbook.getWorkbook(file);
         }
+
         return ret;
     }
 
@@ -66,16 +69,17 @@ public abstract class Workbook
         throws IOException
     {
         Workbook ret = null;
-        String lowerFilename = filename.toLowerCase();
-        if(lowerFilename.endsWith("."+CommonFiles.XLS_EXT))
+        FileFormat format = FileFormat.fromFilename(filename);
+        if(format == XLS)
         {
             ret = XlsWorkbook.getWorkbook(stream);
         }
-        else if(lowerFilename.endsWith("."+CommonFiles.XLSX_EXT))
+        else if(format == XLSX)
         {
             XlsxWorkbook.initJaxbContexts();
             ret = XlsxWorkbook.getWorkbook(stream);
         }
+
         return ret;
     }
 

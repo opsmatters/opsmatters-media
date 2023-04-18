@@ -43,7 +43,7 @@ import org.apache.batik.bridge.ViewBox;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
-import com.opsmatters.media.file.CommonFiles;
+import com.opsmatters.media.file.FileFormat;
 
 import static com.opsmatters.media.util.ImageAlignment.*;
 
@@ -167,7 +167,7 @@ public class ImageUtils
             {
                 reader.setInput(stream, true, true);
                 ImageReadParam param = reader.getDefaultReadParam();
-                if(reader.getFormatName().equals(CommonFiles.SVG_EXT))
+                if(reader.getFormatName().equals(FileFormat.SVG.value()))
                     param.setSourceRegion(getSvgBounds(file));
                 ret = reader.read(0, param);
                 exception = null;
@@ -414,19 +414,7 @@ public class ImageUtils
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given suffix is JPEG format.
-     * @param suffix The suffix of the image file (JPG, PNG, GIF)
-     * @return <CODE>true</CODE> if the given suffix is JPEG format
-     */
-    public static boolean isJPEG(String suffix)
-    {
-        return suffix != null 
-            && (suffix.equalsIgnoreCase(CommonFiles.JPG_EXT)
-                || suffix.equalsIgnoreCase(CommonFiles.JPEG_EXT));
-    }
-
-    /**
-     * Write the given image file to a file in the current suffix.
+     * Write the given image file to a file in the specified suffix.
      * @param image The image bytes
      * @param file The output image file
      * @param removeAlpha <CODE>true</CODE> if the transparency should be removed
@@ -435,23 +423,12 @@ public class ImageUtils
     public static void writeImage(BufferedImage image, File file, boolean removeAlpha)
         throws IOException
     {
-        writeImage(image, file, FileUtils.getExtension(file.getName()), removeAlpha);
-    }
+        FileFormat format = FileFormat.fromFilename(file.getName());
 
-    /**
-     * Write the given image file to a file in the specified suffix.
-     * @param image The image bytes
-     * @param file The output image file
-     * @param suffix The suffix of the image file (JPG, PNG, GIF)
-     * @param removeAlpha <CODE>true</CODE> if the transparency should be removed
-     * @throws IOException
-     */
-    public static void writeImage(BufferedImage image, File file, String suffix, boolean removeAlpha)
-        throws IOException
-    {
         // Remove the alpha channel when converting JPEGs otherwise
         //   this screws up the colours because JPEG doesn't have transparency
-        if(isJPEG(suffix) && image != null && image.getColorModel().hasAlpha())
+        if(format != null && format.isJPEG()
+            && image != null && image.getColorModel().hasAlpha())
         {
             logger.info(String.format("Removing alpha from image of type %d: file=%s", 
                 image.getType(), file.getName()));
@@ -464,7 +441,7 @@ public class ImageUtils
             image = fixImageType(image, removeAlpha);
         }
 
-        ImageIO.write(image, suffix, file);
+        ImageIO.write(image, format.value(), file);
         image.flush();
     }
 

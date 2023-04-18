@@ -24,6 +24,9 @@ import java.util.List;
 import com.opencsv.CSVWriter;
 import java.util.logging.Logger;
 
+import static com.opsmatters.media.file.FileFormat.*;
+import static com.opsmatters.media.file.FileDelimiter.*;
+
 /**
  * Object that encapsulates an output file in XLS, XLSX or CSV format.
  * 
@@ -34,8 +37,8 @@ public class OutputFileWriter
     private static final Logger logger = Logger.getLogger(OutputFileWriter.class.getName());
 
     private String name = "";
-    private FileFormat format = FileFormat.CSV;
-    private FileDelimiter delimiter = FileDelimiter.COMMA;
+    private FileFormat format = CSV;
+    private FileDelimiter delimiter = COMMA;
     private String worksheet = "";
     private boolean append = true;
     private boolean headers = true;
@@ -60,7 +63,7 @@ public class OutputFileWriter
     public void setName(String name)
     {
         this.name = name;
-        this.format = FileFormat.getFileFormat(name);
+        this.format = FileFormat.fromFilename(name, CSV);
     }
 
     /**

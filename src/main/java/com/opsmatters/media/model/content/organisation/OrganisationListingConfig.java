@@ -23,7 +23,8 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentConfig;
-import com.opsmatters.media.file.CommonFiles;
+
+import static com.opsmatters.media.file.FileFormat.*;
 
 /**
  * Class that represents the configuration for an organisation's listing.
@@ -57,7 +58,8 @@ public class OrganisationListingConfig extends ContentConfig<OrganisationListing
     @Override
     public String getFilename()
     {
-        return String.format("%s.%s", getType().tag(), CommonFiles.XLSX_EXT);
+        return String.format("%s.%s",
+            getType().tag(), XLSX.value());
     }
 
     /**

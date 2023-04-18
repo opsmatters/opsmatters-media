@@ -23,40 +23,54 @@ package com.opsmatters.media.file;
  */
 public enum FileFormat
 {
-    CSV(".csv"),
-    XLS(".xls"),
-    XLSX(".xlsx");
+    CSV("csv"),
+    XLS("xls"),
+    XLSX("xlsx"),
+    JPG("jpg"),
+    JPEG("jpeg"),
+    PNG("png"),
+    GIF("gif"),
+    WEBP("webp"),
+    SVG("svg");
 
-    FileFormat(String extension)
-    {
-        this.extension = extension;
-    }
+    private String value;
+    private String ext;
 
-    public String extension()
+    /**
+     * Constructor that takes the format value.
+     * @param value The value for the format
+     */
+    FileFormat(String value)
     {
-        return extension;
+        this.value = value;
+        this.ext = "."+value;
     }
 
     /**
-     * Returns the file format for the given filename.
-     * @param filename The filename to check
-     * @return The file format from the filename
+     * Returns the value of the format.
+     * @return The value of the format.
      */
-    public static FileFormat getFileFormat(String filename)
+    public String toString()
     {
-        FileFormat ret = CSV;
-        filename = filename.toLowerCase();
-        FileFormat[] formats = values();
-        for(FileFormat format : formats)
-        {
-            if(filename.endsWith(XLS.extension()))
-                ret = XLS;
-            else if(filename.endsWith(XLSX.extension()))
-                ret = XLSX;
-            else if(filename.endsWith(CSV.extension()))
-                ret = CSV;
-        }
-        return ret;
+        return value();
+    }
+
+    /**
+     * Returns the format value.
+     * @return The format value.
+     */
+    public String value()
+    {
+        return value;
+    }
+
+    /**
+     * Returns the format extension.
+     * @return The format extension.
+     */
+    public String ext()
+    {
+        return ext;
     }
 
     /**
@@ -68,5 +82,93 @@ public enum FileFormat
         return this == XLS || this == XLSX;
     }
 
-    private String extension;
+    /**
+     * Returns <CODE>true</CODE> if the file format is a JPEG image.
+     * @return <CODE>true</CODE> if the file format is a JPEG image
+     */
+    public boolean isJPEG()
+    {
+        return this == JPG || this == JPEG;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the file format is a supported image format.
+     * @return <CODE>true</CODE> if the file format is a supported image format
+     */
+    public boolean isSupportedImage()
+    {
+        return this == PNG || this.isJPEG() || this == GIF || this == WEBP || this == SVG;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the file format is a supported web image format.
+     * @return <CODE>true</CODE> if the file format is a supported web image format
+     */
+    public boolean isSupportedWebImage()
+    {
+        return this == PNG || this.isJPEG();
+    }
+
+    /**
+     * Returns the file format for the given filename.
+     * @param filename The filename to check
+     * @param dflt The default format to return if no match found
+     * @return The file format from the filename
+     */
+    public static FileFormat fromFilename(String filename, FileFormat dflt)
+    {
+        FileFormat ret = dflt;
+        if(filename != null)
+        {
+            // Remove any query string from the given filename
+            int pos = filename.indexOf("?");
+            if(pos != -1)
+                filename = filename.substring(0,pos);
+
+            filename = filename.toLowerCase();
+            FileFormat[] formats = values();
+            for(FileFormat format : formats)
+            {
+                if(filename.endsWith(format.ext()))
+                {
+                    ret = format;
+                    break;
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the file format for the given filename.
+     * @param filename The filename to check
+     * @return The file format from the filename
+     */
+    public static FileFormat fromFilename(String filename)
+    {
+        return fromFilename(filename, null);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given filename is a supported image file.
+     * @param filename The filename to be checked
+     * @return <CODE>true</CODE> if the given filename is a PNG, JPG, JPEG, GIF, WEBP or SVG file
+     */
+    public static boolean isSupportedImage(String filename)
+    {
+        FileFormat format = fromFilename(filename);
+        return format != null && format.isSupportedImage();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given filename is a supported web image file.
+     * @param filename The filename to be checked
+     * @return <CODE>true</CODE> if the given filename is a PNG, JPG or JPEG file
+     */
+    public static boolean isSupportedWebImage(String filename)
+    {
+        FileFormat format = fromFilename(filename);
+        return format != null && format.isSupportedWebImage();
+    }
 }
