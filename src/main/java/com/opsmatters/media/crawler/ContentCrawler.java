@@ -347,11 +347,13 @@ public abstract class ContentCrawler<T extends ContentTeaser, D extends ContentT
     protected String processValue(String value)
     {
         String ret = value;
-
-        ret = ret.replaceAll("&amp;", "&"); // Replace &amp; with &
-        ret = ret.replaceAll("&nbsp;", " "); // Replace &nbsp; with space
-        ret = ret.replaceAll("[\\u2000-\\u200b\\u202F]", " "); // Replace "thin" spaces with normal space
-        ret = ret.replaceAll("\\ufffc", ""); // Remove object replacement character
+        if(ret != null)
+        {
+            ret = ret.replaceAll("&amp;", "&"); // Replace &amp; with &
+            ret = ret.replaceAll("&nbsp;", " "); // Replace &nbsp; with space
+            ret = ret.replaceAll("[\\u2000-\\u200b\\u202F]", " "); // Replace "thin" spaces with normal space
+            ret = ret.replaceAll("\\ufffc", ""); // Remove object replacement character
+        }
 
         return ret;
     }

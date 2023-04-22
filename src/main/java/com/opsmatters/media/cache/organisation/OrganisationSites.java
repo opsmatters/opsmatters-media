@@ -146,7 +146,8 @@ public class OrganisationSites
      */
     public static OrganisationSite get(String siteId, String code)
     {
-        return code != null ? organisationMap.get(siteId).get(code) : null;
+        Map<String,OrganisationSite> map = organisationMap.get(siteId);
+        return map != null && code != null ? map.get(code) : null;
     }
 
     /**
