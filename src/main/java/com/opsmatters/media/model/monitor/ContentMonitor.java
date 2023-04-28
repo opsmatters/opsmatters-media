@@ -157,7 +157,7 @@ public class ContentMonitor<T extends ContentTeaser> extends BaseEntity
      * Executes a check using this monitor.
      */
     public ContentSnapshot check(int maxResults, boolean cache, boolean debug)
-        throws IOException
+        throws IOException, IllegalStateException
     {
         return null;
     }
@@ -166,7 +166,7 @@ public class ContentMonitor<T extends ContentTeaser> extends BaseEntity
      * Update the last snapshot for the given change.
      */
     public boolean updateChange(ContentChange change, ContentLookup lookup, int maxResults, boolean cache)
-        throws SQLException, IOException
+        throws SQLException, IOException, IllegalStateException
     {
         boolean ret = false;
 

@@ -79,7 +79,7 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
         if(teaser.isValid())
         {
             if(debug() && fields.hasValidator())
-                logger.info("Validated event content: "+fields.getValidator());
+                logger.info("Validated event teaser: "+fields.getValidator());
             populateTeaserFields(root, fields, teaser, "teaser");
             if(fields.hasUrl())
             {
@@ -116,7 +116,7 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
 
         // Trace to see the page
         if(trace(getDriver()))
-            logger.info("content-page="+getPageSource());
+            logger.info("article-page="+getPageSource());
 
         Element root = null;
         Document doc = Jsoup.parse(getPageSource("body"));
@@ -125,23 +125,24 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
         for(Fields fields : articles)
         {
             if(!fields.hasRoot())
-                throw new IllegalArgumentException("Root empty for event content");
+                throw new IllegalArgumentException("Root empty for event article");
 
             Elements elements = doc.select(fields.getRoot());
             if(elements.size() > 0)
             {
                 root = elements.get(0);
                 if(debug())
-                    logger.info("Root found for event content: "+fields.getRoot());
-                populateTeaserFields(root, fields, content, "content");
+                    logger.info("Root found for event article: "+fields.getRoot());
+                populateTeaserFields(root, fields, content, "article");
             }
             else
             {
-                logger.warning("Root not found for event content: "+fields.getRoot());
+                logger.warning("Root not found for event article: "+fields.getRoot());
+                log.warn("Root not found for event article: "+fields.getRoot());
                 continue;
             }
 
-            // Trace to see the content root node
+            // Trace to see the article root node
             if(trace(root))
                 logger.info("event-node="+root.html());
 
@@ -156,7 +157,7 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
             if(fields.hasStartTime())
             {
                 Field field = fields.getStartTime();
-                String start = getElements(field, root, "content");
+                String start = getElements(field, root, "article");
                 if(start != null)
                 {
                     try
@@ -187,6 +188,7 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
                     {
                         logger.severe(StringUtils.serialize(e));
                         logger.warning("Unparseable start time: "+start);
+                        log.warn("Unparseable start time: "+start);
                     }
                 }
             }
@@ -202,14 +204,14 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
 
             if(fields.hasTimeZone())
             {
-                String timezone = getElements(fields.getTimeZone(), root, "content");
+                String timezone = getElements(fields.getTimeZone(), root, "article");
                 if(timezone != null)
                     content.setTimeZone(timezone);
             }
 
             if(root != null && fields.hasBody())
             {
-                String body = getBody(fields.getBody(), root, "content", debug());
+                String body = getBody(fields.getBody(), root, "article", debug());
                 if(body != null)
                     content.setDescription(body);
             }
@@ -227,7 +229,7 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
         }
 
         if(root == null)
-            throw new IllegalArgumentException("Root not found for event content");
+            throw new IllegalArgumentException("Root not found for event article");
 
         Teasers.update(getPage().getTeasers().getUrls(), content);
 
@@ -296,6 +298,7 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
                 {
                     logger.severe(StringUtils.serialize(e));
                     logger.warning("Unparseable start date: "+startDate+" code="+config.getCode());
+                    log.warn("Unparseable start date: "+startDate);
                 }
             }
         }

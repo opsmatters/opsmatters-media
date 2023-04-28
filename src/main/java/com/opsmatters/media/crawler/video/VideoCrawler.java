@@ -142,7 +142,7 @@ public class VideoCrawler extends ContentCrawler<VideoTeaser,VideoDetails>
         String userId = channel.getUserId();
 
         // Try to get the teasers from the cache
-        List<ContentTeaser> teasers = Teasers.get(config.getCode(), channelId);
+        List<ContentTeaser> teasers = Teasers.getTeasers(config.getCode(), channelId);
         if(teasers != null)
         {
             for(ContentTeaser teaser : teasers)
@@ -187,7 +187,7 @@ public class VideoCrawler extends ContentCrawler<VideoTeaser,VideoDetails>
             }
 
             if(cache)
-                Teasers.set(channelId, getTeasers(), config);
+                Teasers.set(channelId, getTeasers(), config, null);
 
             if(debug())
                 logger.info("Found "+numTeasers()+" teasers");
@@ -219,7 +219,7 @@ public class VideoCrawler extends ContentCrawler<VideoTeaser,VideoDetails>
         List<Fields> articles = channel.getArticles().getFields(hasRootError());
         for(Fields fields : articles)
         {
-            populateTeaserFields(video, fields, content, "content");
+            populateTeaserFields(video, fields, content, "article");
 
             content.setChannelTitle(video.getString(CHANNEL_TITLE.value()));
             content.setChannelId(video.getString(CHANNEL_ID.value()));
@@ -227,7 +227,7 @@ public class VideoCrawler extends ContentCrawler<VideoTeaser,VideoDetails>
             if(fields.hasBody())
             {
                 Field field = fields.getBody();
-                String body = getBody(field, field.getSelector(0), video, "content");
+                String body = getBody(field, field.getSelector(0), video, "article");
                 if(body != null)
                     content.setDescription(body);
             }

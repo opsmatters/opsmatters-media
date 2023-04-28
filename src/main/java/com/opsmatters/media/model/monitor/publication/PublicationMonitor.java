@@ -79,7 +79,7 @@ public class PublicationMonitor extends ContentMonitor<PublicationTeaser>
      */
     @Override
     public ContentSnapshot check(int maxResults, boolean cache, boolean debug)
-        throws IOException
+        throws IOException, IllegalStateException
     {
         ContentSnapshot ret = null;
         PublicationCrawler crawler = null;

@@ -76,7 +76,7 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
         if(teaser.isValid())
         {
             if(debug() && fields.hasValidator())
-                logger.info("Validated publication content: "+fields.getValidator());
+                logger.info("Validated publication teaser: "+fields.getValidator());
             populateTeaserFields(root, fields, teaser, "teaser");
             if(fields.hasUrl())
             {
@@ -113,7 +113,7 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
 
         // Trace to see the page
         if(trace(getDriver()))
-            logger.info("content-page="+getPageSource());
+            logger.info("article-page="+getPageSource());
 
         Element root = null;
         Document doc = Jsoup.parse(getPageSource("body"));
@@ -122,23 +122,24 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
         for(Fields fields : articles)
         {
             if(!fields.hasRoot())
-                throw new IllegalArgumentException("Root empty for publication content");
+                throw new IllegalArgumentException("Root empty for publication article");
 
             Elements elements = doc.select(fields.getRoot());
             if(elements.size() > 0)
             {
                 root = elements.get(0);
                 if(debug())
-                    logger.info("Root found for publication content: "+fields.getRoot());
-                populateTeaserFields(root, fields, content, "content");
+                    logger.info("Root found for publication article: "+fields.getRoot());
+                populateTeaserFields(root, fields, content, "article");
             }
             else
             {
-                logger.warning("Root not found for publication content: "+fields.getRoot());
+                logger.warning("Root not found for publication article: "+fields.getRoot());
+                log.warn("Root not found for publication article: "+fields.getRoot());
                 continue;
             }
 
-            // Trace to see the content root node
+            // Trace to see the article root node
             if(trace(root))
                 logger.info("publication-node="+root.html());
 
@@ -152,7 +153,7 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
 
             if(root != null && fields.hasBody())
             {
-                String body = getBody(fields.getBody(), root, "content", debug());
+                String body = getBody(fields.getBody(), root, "article", debug());
                 if(body != null)
                     content.setDescription(body);
             }
@@ -162,7 +163,7 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
         }
 
         if(root == null)
-            throw new IllegalArgumentException("Root not found for publication content");
+            throw new IllegalArgumentException("Root not found for publication article");
 
         Teasers.update(getPage().getTeasers().getUrls(), content);
 
@@ -214,6 +215,7 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
                 {
                     logger.severe(StringUtils.serialize(e));
                     logger.warning("Unparseable published date: "+publishedDate);
+                    log.warn("Unparseable published date: "+publishedDate);
                 }
             }
         }

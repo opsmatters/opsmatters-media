@@ -52,6 +52,7 @@ import com.opsmatters.media.model.content.crawler.field.Fields;
 import com.opsmatters.media.model.content.crawler.field.FieldSelector;
 import com.opsmatters.media.model.content.crawler.field.FieldExclude;
 import com.opsmatters.media.model.content.crawler.field.FieldFilter;
+import com.opsmatters.media.model.logging.LogEntry;
 import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.crawler.parser.ElementType;
 import com.opsmatters.media.model.admin.TraceObject;
@@ -142,6 +143,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
         catch(RuntimeException e)
         {
             logger.severe("Unable to get page source for "+root);
+            log.error("Unable to get page source for "+root);
         }
 
         return ret;
@@ -375,6 +377,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
             else
             {
                 logger.warning("More link not found: "+selector);
+                log.warn("More link not found: "+selector);
             }
         }
     }
@@ -463,6 +466,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                 else
                 {
                     logger.severe("Unable to find move to element: "+moveTo);
+                    log.error("Unable to find move to element: "+moveTo);
                 }
             }
             catch(WebDriverException | InterruptedException e)
@@ -494,7 +498,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                 throw new IllegalArgumentException("Root empty for teasers");
 
             // Try to get the teasers from the cache
-            List<ContentTeaser> teasers = Teasers.get(config.getCode(), url);
+            List<ContentTeaser> teasers = Teasers.getTeasers(config.getCode(), url);
             if(teasers != null)
             {
                 for(ContentTeaser teaser : teasers)
@@ -502,6 +506,15 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                 ret += numTeasers();
                 if(debug())
                     logger.info("Retrieved "+numTeasers()+" teasers from cache");
+
+                List<LogEntry> entries = Teasers.getLogEntries(config.getCode(), url);
+                if(entries != null)
+                {
+                    for(LogEntry entry : entries)
+                        log.add(entry);
+                    if(debug())
+                        logger.info("Retrieved "+entries.size()+" log entries from cache");
+                }
             }
             else
             {
@@ -548,7 +561,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                 }
 
                 if(cache)
-                    Teasers.set(url, getTeasers(), config);
+                    Teasers.set(url, getTeasers(), config, log.list());
 
                 if(debug())
                     logger.info("Found "+numTeasers()+" teasers");
@@ -634,8 +647,8 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
         }
         else
         {
-            if(debug())
-                logger.warning("Validation failed for "+type+", skipping: "+field.getSelector(0).getExpr());
+            logger.info("Validation failed for "+type+", skipping: "+field.getSelector(0).getExpr());
+            log.info("Validation failed for "+type+", skipping: "+field.getSelector(0).getExpr());
         }
     }
 
@@ -683,9 +696,10 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
             }
         }
 
-        if(ret == null)
+        if(ret == null && !field.isOptional())
         {
             logger.warning("Elements not found for "+type+" field: "+field.getName());
+            log.warn("Elements not found for "+type+" field: "+field.getName());
         }
 
         return ret;
@@ -857,9 +871,10 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
             }
         }
 
-        if(ret == null)
+        if(ret == null && !field.isOptional())
         {
             logger.warning("Anchor not found for "+type+" field: "+field.getName());
+            log.warn("Anchor not found for "+type+" field: "+field.getName());
         }
 
         return ret;
@@ -954,9 +969,10 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
             }
         }
 
-        if(ret == null)
+        if(ret == null && !field.isOptional())
         {
             logger.warning("Body summary not found for "+type+" field: "+field.getName());
+            log.warn("Body summary not found for "+type+" field: "+field.getName());
         }
 
         return ret;
@@ -1032,9 +1048,10 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
             }
         }
 
-        if(ret == null)
+        if(ret == null && !field.isOptional())
         {
             logger.warning("Body not found for "+type+" field: "+field.getName());
+            log.warn("Body not found for "+type+" field: "+field.getName());
         }
 
         return ret;
@@ -1133,9 +1150,10 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
             // Remove any relative paths
             ret = ret.replaceAll("\\.\\./", "");
         }
-        else
+        else if(!field.isOptional())
         {
             logger.warning("Image not found for "+type+" field: "+field.getName());
+            log.warn("Image not found for "+type+" field: "+field.getName());
         }
 
         return ret;
@@ -1163,9 +1181,10 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
             }
         }
 
-        if(ret == null)
+        if(ret == null && !field.isOptional())
         {
             logger.warning("Style not found for "+type+" field: "+field.getName());
+            log.warn("Style not found for "+type+" field: "+field.getName());
         }
 
         return ret;
@@ -1174,7 +1193,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
     /**
      * Returns the background image from a style attribute.
      */
-    protected String getBackgroundImage(String style)
+    protected String getBackgroundImage(Field field, String style)
     {
         String ret = null;
         Matcher m = Pattern.compile("(?:.*)background-image:(.+?)(?:;|\\z)(?:.*)").matcher(style);
@@ -1202,12 +1221,14 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                 else
                 {
                     logger.warning(String.format("No url found for background image: %s", image));
+                    log.warn(String.format("No url found for background image: %s", image));
                 }
             }
         }
-        else
+        else if(!field.isOptional())
         {
             logger.warning(String.format("No background image found for style: %s", style));
+            log.warn(String.format("No background image found for style: %s", style));
         }
 
         return ret;

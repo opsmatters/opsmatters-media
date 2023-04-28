@@ -38,6 +38,8 @@ import com.opsmatters.media.model.content.crawler.field.Fields;
 import com.opsmatters.media.model.content.crawler.field.FieldMatch;
 import com.opsmatters.media.model.content.crawler.field.FieldCase;
 import com.opsmatters.media.model.content.crawler.field.FieldExtractor;
+import com.opsmatters.media.model.logging.Log;
+import com.opsmatters.media.model.logging.LogEntry;
 
 /**
  * Class representing a crawler for content items with fields.
@@ -61,6 +63,7 @@ public abstract class ContentCrawler<T extends ContentTeaser, D extends ContentT
     private boolean rootError = false;
 
     private Map<String, Object> properties = new HashMap<String, Object>();
+    protected Log log = new Log();
 
     /**
      * Constructor that takes a target.
@@ -106,6 +109,14 @@ public abstract class ContentCrawler<T extends ContentTeaser, D extends ContentT
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    /**
+     * Returns the list of log entries.
+     */
+    public List<LogEntry> getLogEntries()
+    {
+        return log.list();
     }
 
     /**
@@ -276,7 +287,9 @@ public abstract class ContentCrawler<T extends ContentTeaser, D extends ContentT
 
             if(ret == null)
             {
-                logger.warning(String.format("No match found for field %s: value=[%s]", 
+                logger.info(String.format("No match found for field %s: value=[%s]", 
+                    field.getName(), value));
+                log.info(String.format("No match found for field %s: value=[%s]", 
                     field.getName(), value));
 
                 // Use the default if none of the extractors matched

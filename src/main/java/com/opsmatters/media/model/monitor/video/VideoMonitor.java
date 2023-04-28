@@ -157,7 +157,7 @@ public class VideoMonitor extends ContentMonitor<VideoTeaser>
      */
     @Override
     public ContentSnapshot check(int maxResults, boolean cache, boolean debug)
-        throws IOException
+        throws IOException, IllegalStateException
     {
         ContentSnapshot ret = null;
         VideoCrawler crawler = null;

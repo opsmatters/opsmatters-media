@@ -39,6 +39,7 @@ public class Field implements ConfigElement
     private List<FieldFilter> filters;
     private boolean removeParameters = true;
     private boolean trailingSlash = false;
+    private boolean optional = false;
 
     /**
      * Constructor that takes a name.
@@ -100,6 +101,7 @@ public class Field implements ConfigElement
             setTextCase(obj.getTextCase());
             setRemoveParameters(obj.removeParameters());
             setTrailingSlash(obj.hasTrailingSlash());
+            setOptional(obj.isOptional());
         }
     }
 
@@ -320,6 +322,22 @@ public class Field implements ConfigElement
     }
 
     /**
+     * Returns <CODE>true</CODE> if the field is optional and should not raise warnings if missing.
+     */
+    public boolean isOptional()
+    {
+        return optional;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the field is optional and should not raise warnings if missing.
+     */
+    public void setOptional(boolean optional)
+    {
+        this.optional = optional;
+    }
+
+    /**
      * Add a selector object for the given field.
      */
     private void addSelector(String name, Object value)
@@ -385,6 +403,7 @@ public class Field implements ConfigElement
         private static final String FILTERS = "filters";
         private static final String REMOVE_PARAMETERS = "remove-parameters";
         private static final String TRAILING_SLASH = "trailing-slash";
+        private static final String OPTIONAL = "optional";
 
         private Field ret = null;
 
@@ -413,6 +432,8 @@ public class Field implements ConfigElement
                 ret.setRemoveParameters((Boolean)map.get(REMOVE_PARAMETERS));
             if(map.containsKey(TRAILING_SLASH))
                 ret.setTrailingSlash((Boolean)map.get(TRAILING_SLASH));
+            if(map.containsKey(OPTIONAL))
+                ret.setOptional((Boolean)map.get(OPTIONAL));
 
             if(map.containsKey(SELECTOR))
             {

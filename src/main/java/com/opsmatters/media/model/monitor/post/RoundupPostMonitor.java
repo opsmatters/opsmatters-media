@@ -79,7 +79,7 @@ public class RoundupPostMonitor extends ContentMonitor<RoundupPostTeaser>
      */
     @Override
     public ContentSnapshot check(int maxResults, boolean cache, boolean debug)
-        throws IOException
+        throws IOException, IllegalStateException
     {
         ContentSnapshot ret = null;
         RoundupPostCrawler crawler = null;

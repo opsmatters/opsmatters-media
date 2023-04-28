@@ -77,7 +77,7 @@ public class EventMonitor extends ContentMonitor<EventTeaser>
      */
     @Override
     public ContentSnapshot check(int maxResults, boolean cache, boolean debug)
-        throws IOException
+        throws IOException, IllegalStateException
     {
         ContentSnapshot ret = null;
         EventCrawler crawler = null;

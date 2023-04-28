@@ -11,7 +11,13 @@ public enum UserMessage
     UPDATING("Updating...", true),
     UNAVAILABLE("Unavailable", false),
     CHANGED("Changed", false),
-    NOT_CHANGED("Not Changed", false);
+    NOT_CHANGED("Not Changed", false),
+    CHANGE("Change", false),
+    ALERT("Alert", false),
+    ARCHIVED("Archived", false),
+    SYNC("Sync", false),
+    WEBCACHE("Webcache", false),
+    ERROR("Error", false);
 
     private String value;
     private boolean temporary;

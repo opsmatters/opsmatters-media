@@ -78,7 +78,7 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostTeaser,Roundup
         if(teaser.isValid())
         {
             if(debug() && fields.hasValidator())
-                logger.info("Validated roundup content: "+fields.getValidator());
+                logger.info("Validated roundup teaser: "+fields.getValidator());
             populateTeaserFields(root, fields, teaser, "teaser");
             if(fields.hasUrl())
             {
@@ -115,7 +115,7 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostTeaser,Roundup
 
         // Trace to see the page
         if(trace(getDriver()))
-            logger.info("content-page="+getPageSource());
+            logger.info("article-page="+getPageSource());
 
         Element root = null;
         Document doc = Jsoup.parse(getPageSource("body"));
@@ -124,29 +124,30 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostTeaser,Roundup
         for(Fields fields : articles)
         {
             if(!fields.hasRoot())
-                throw new IllegalArgumentException("Root empty for roundup content");
+                throw new IllegalArgumentException("Root empty for roundup article");
 
             Elements elements = doc.select(fields.getRoot());
             if(elements.size() > 0)
             {
                 root = elements.get(0);
                 if(debug())
-                    logger.info("Root found for roundup content: "+fields.getRoot());
-                populateTeaserFields(root, fields, content, "content");
+                    logger.info("Root found for roundup article: "+fields.getRoot());
+                populateTeaserFields(root, fields, content, "article");
             }
             else
             {
-                logger.warning("Root not found for roundup content: "+fields.getRoot());
+                logger.warning("Root not found for roundup article: "+fields.getRoot());
+                log.warn("Root not found for roundup article: "+fields.getRoot());
                 continue;
             }
 
-            // Trace to see the content root node
+            // Trace to see the article root node
             if(trace(root))
                 logger.info("roundup-node="+root.html());
 
             if(root != null && fields.hasBody())
             {
-                String body = getBodySummary(fields.getBody(), root, "content", config.getSummary(), debug());
+                String body = getBodySummary(fields.getBody(), root, "article", config.getSummary(), debug());
                 if(body != null)
                     content.setSummary(body);
             }
@@ -156,7 +157,7 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostTeaser,Roundup
         }
 
         if(root == null)
-            throw new IllegalArgumentException("Root not found for roundup content");
+            throw new IllegalArgumentException("Root not found for roundup article");
 
         Teasers.update(getPage().getTeasers().getUrls(), content);
 
@@ -208,6 +209,7 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostTeaser,Roundup
                 {
                     logger.severe(StringUtils.serialize(e));
                     logger.warning("Unparseable published date: "+publishedDate+" code="+config.getCode());
+                    log.warn("Unparseable published date: "+publishedDate);
                 }
             }
         }
@@ -252,7 +254,7 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostTeaser,Roundup
             String style = getStyle(field, root, type);
             if(style != null && style.length() > 0)
             {
-                String src = getBackgroundImage(style);
+                String src = getBackgroundImage(field, style);
                 teaser.setImageFromPath(getImagePrefix(), src);
                 teaser.setImageSource(getBasePath(), encodeUrl(src), field.removeParameters());
 
