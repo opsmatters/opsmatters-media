@@ -165,7 +165,8 @@ public class ContentMonitor<T extends ContentTeaser> extends BaseEntity
     /**
      * Update the last snapshot for the given change.
      */
-    public boolean updateChange(ContentChange change, ContentLookup lookup, int maxResults, boolean cache)
+    public boolean updateChange(ContentChange change, ContentLookup lookup,
+        int maxResults, boolean cache, boolean debug)
         throws SQLException, IOException, IllegalStateException
     {
         boolean ret = false;
@@ -177,7 +178,7 @@ public class ContentMonitor<T extends ContentTeaser> extends BaseEntity
         Instant then = Instant.now();
         if(snapshot != null && !change.getSnapshotAfter().equals(snapshot.toString()))
         {
-            ContentSnapshot diff = compareSnapshot(snapshot, lookup);
+            ContentSnapshot diff = compareSnapshot(snapshot, lookup, debug);
             change.setSnapshotDiff(diff);
             change.setSnapshotAfter(snapshot);
             change.setDifference(SnapshotDiff.getDifferencePercent(change.getSnapshotBefore(),
@@ -1030,7 +1031,7 @@ public class ContentMonitor<T extends ContentTeaser> extends BaseEntity
     /**
      * Compare the given snapshot with the current one.
      */
-    public ContentSnapshot compareSnapshot(ContentSnapshot snapshot, ContentLookup lookup)
+    public ContentSnapshot compareSnapshot(ContentSnapshot snapshot, ContentLookup lookup, boolean debug)
         throws SQLException
     {
         ContentSnapshot current = new ContentSnapshot(getSnapshot());
@@ -1040,7 +1041,7 @@ public class ContentMonitor<T extends ContentTeaser> extends BaseEntity
             lookup.setOrganisations(OrganisationSites.list(getCode()));
 
         return ContentSnapshot.compare(getCode(),
-            current, latest, lookup, getContentType() != ContentType.VIDEO);
+            current, latest, lookup, getContentType() != ContentType.VIDEO, debug);
     }
 
     /**

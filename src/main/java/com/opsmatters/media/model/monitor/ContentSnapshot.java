@@ -229,7 +229,7 @@ public class ContentSnapshot extends JSONObject
      * Returns the difference between the two snapshots (or null if they are the same).
      */
     public static ContentSnapshot compare(String code, ContentSnapshot current,
-        ContentSnapshot latest, ContentLookup lookup, boolean checkDecrease)
+        ContentSnapshot latest, ContentLookup lookup, boolean checkDecrease, boolean debug)
         throws SQLException
     {
         int currentCount = current.getCount();
@@ -259,7 +259,7 @@ public class ContentSnapshot extends JSONObject
             ids.put(id, item);
         }
 
-        if(lookup != null)
+        if(lookup != null && debug)
             logger.info(String.format("Before compare snapshot for %s: titles=%d ids=%d",
                 code, titles.size(), ids.size()));
 
@@ -275,7 +275,7 @@ public class ContentSnapshot extends JSONObject
             ids.remove(id);
         }
 
-        if(lookup != null)
+        if(lookup != null && debug)
             logger.info(String.format("After compare with current for %s: titles=%d ids=%d",
                 code, titles.size(), ids.size()));
 
@@ -329,8 +329,10 @@ public class ContentSnapshot extends JSONObject
                     }
 
                     iterator.remove();
-                    logger.info(String.format("Found stored title for %s: title='%s' titles=%d",
-                        code, title, titles.size()));
+
+                    if(debug)
+                        logger.info(String.format("Found stored title for %s: title='%s' titles=%d",
+                            code, title, titles.size()));
                 }
                 else
                 {
@@ -386,8 +388,10 @@ public class ContentSnapshot extends JSONObject
                     }
 
                     iterator.remove();
-                    logger.info(String.format("Found stored id for %s: id=%s ids=%d",
-                        code, id, ids.size()));
+
+                    if(debug)
+                        logger.info(String.format("Found stored id for %s: id=%s ids=%d",
+                            code, id, ids.size()));
                 }
                 else
                 {
@@ -426,7 +430,7 @@ public class ContentSnapshot extends JSONObject
             }
         }
 
-        if(lookup != null)
+        if(lookup != null && debug)
             logger.info(String.format("After compare with stored for %s: titles=%d ids=%d",
                 code, titles.size(), ids.size()));
 
@@ -446,8 +450,9 @@ public class ContentSnapshot extends JSONObject
                 if(type == ContentType.VIDEO)
                     id = item.optString(VIDEO_ID.value());
                 String publishedDate = item.optString(PUBLISHED_DATE.value());
-                logger.info(String.format("Unable to find item with title for %s: id=%s, published=%s, title=%s",
-                    code, id, publishedDate, title));
+                if(debug)
+                    logger.info(String.format("Unable to find item with title for %s: id=%s, published=%s, title=%s",
+                        code, id, publishedDate, title));
                 if(!items.contains(item))
                     items.add(item);
             }
@@ -464,8 +469,9 @@ public class ContentSnapshot extends JSONObject
                 JSONObject item = entry.getValue();
                 String title = item.optString(TITLE.value());
                 String publishedDate = item.optString(PUBLISHED_DATE.value());
-                logger.info(String.format("Unable to find item with id for %s: id=%s, published=%s, title=%s",
-                    code, id, publishedDate, title));
+                if(debug)
+                    logger.info(String.format("Unable to find item with id for %s: id=%s, published=%s, title=%s",
+                        code, id, publishedDate, title));
                 if(!items.contains(item))
                     items.add(item);
             }
