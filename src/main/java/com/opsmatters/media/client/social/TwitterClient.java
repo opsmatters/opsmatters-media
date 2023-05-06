@@ -22,18 +22,27 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
-import twitter4j.Status;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
-import twitter4j.auth.AccessToken;
+import com.twitter.clientlib.ApiClient;
+import com.twitter.clientlib.ApiException;
+import com.twitter.clientlib.ApiClientCallback;
+import com.twitter.clientlib.api.TweetsApi;
+import com.twitter.clientlib.api.UsersApi;
+import com.twitter.clientlib.TwitterCredentialsOAuth2;
+import com.twitter.clientlib.model.User;
+import com.twitter.clientlib.model.Tweet;
+import com.twitter.clientlib.model.Get2UsersMeResponse;
+import com.twitter.clientlib.model.Get2UsersIdTweetsResponse;
+import com.twitter.clientlib.model.TweetCreateRequest;
+import com.twitter.clientlib.model.TweetCreateResponse;
+import com.twitter.clientlib.model.TweetDeleteResponse;
+import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.PreparedPost;
 
 /**
- * Class that represents a connection to Twitter for social media posts.
+ * Class that represents a connection to the Twitter v2 API for social media posts.
  * 
  * @author Gerald Curley (opsmatters)
  */
@@ -43,13 +52,17 @@ public class TwitterClient extends Client implements SocialClient
 
     public static final String SUFFIX = ".social";
 
-    private Twitter client;
-    private AccessToken accessToken;
-    private String consumerKey = "";
-    private String consumerSecret = "";
-    private String token = "";
-    private String tokenSecret = "";
+    private ApiClient client;
+    private TwitterCredentialsOAuth2 credentials;
+    private final TweetsApi tweets = new TweetsApi();
+    private final UsersApi users = new UsersApi();
+    private String clientId = "";
+    private String clientSecret = "";
+    private String accessToken = "";
+    private String refreshToken = "";
     private SocialChannel channel;
+
+    private static User me;
 
     /**
      * Private constructor.
@@ -62,7 +75,7 @@ public class TwitterClient extends Client implements SocialClient
     /**
      * Returns a new twitter client using the given channel.
      */
-    static public TwitterClient newClient(SocialChannel channel) throws IOException, TwitterException
+    static public TwitterClient newClient(SocialChannel channel) throws IOException, ApiException
     {
         TwitterClient ret = new TwitterClient(channel);
 
@@ -98,18 +111,20 @@ public class TwitterClient extends Client implements SocialClient
         {
             // Read file from auth directory
             JSONObject obj = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
-            setConsumerKey(obj.optString("consumerKey"));
-            setConsumerSecret(obj.optString("consumerSecret"));
+            setClientId(obj.optString("clientId"));
+            setClientSecret(obj.optString("clientSecret"));
             setAccessToken(obj.optString("accessToken"));
-            setAccessTokenSecret(obj.optString("accessTokenSecret"));
+            setRefreshToken(obj.optString("refreshToken"));
         }
         catch(IOException e)
         {
-            logger.severe("Unable to read twitter auth file: "+e.getClass().getName()+": "+e.getMessage());
+            logger.severe("Unable to read twitter auth file: "
+                +e.getClass().getName()+": "+e.getMessage());
         }
 
-        if(getAccessToken() != null && getAccessToken().length() > 0)
-            accessToken = new AccessToken(getAccessToken(), getAccessTokenSecret());
+
+        credentials = new TwitterCredentialsOAuth2(getClientId(), getClientSecret(),
+            getAccessToken(), getRefreshToken(), true);
 
         if(debug())
             logger.info("Configured twitter client successfully: "+channel.getId());
@@ -119,27 +134,25 @@ public class TwitterClient extends Client implements SocialClient
      * Create the client using the configured credentials.
      */
     @Override
-    public boolean create() throws IOException, TwitterException
+    public boolean create() throws IOException, ApiException
     {
         if(debug())
             logger.info("Creating twitter client: "+channel.getId());
 
-        TwitterFactory factory = new TwitterFactory();
-
         // Create the client
-        Twitter twitter = factory.getInstance();
-        twitter.setOAuthConsumer(consumerKey, consumerSecret);
-        twitter.setOAuthAccessToken(accessToken);
-
-        // Issue command to test connectivity
-        long id = twitter.getId();
+        ApiClient twitter = new ApiClient();
+        twitter.setTwitterCredentials(credentials);
+        twitter.setBasePath("https://api.twitter.com");
+        twitter.addCallback(new TokenUpdater());
+        tweets.setClient(twitter);
+        users.setClient(twitter);
 
         client = twitter;
 
         if(debug())
             logger.info("Created twitter client successfully: "+channel.getId());
 
-        return id > 0L;
+        return client != null;
     }
 
     /**
@@ -152,35 +165,35 @@ public class TwitterClient extends Client implements SocialClient
     }
 
     /**
-     * Returns the consumer key for the client.
+     * Returns the client id for the client.
      */
-    public String getConsumerKey() 
+    public String getClientId() 
     {
-        return consumerKey;
+        return clientId;
     }
 
     /**
-     * Sets the consumer key for the client.
+     * Sets the client id for the client.
      */
-    public void setConsumerKey(String consumerKey) 
+    public void setClientId(String clientId) 
     {
-        this.consumerKey = consumerKey;
+        this.clientId = clientId;
     }
 
     /**
-     * Returns the consumer secret for the client.
+     * Returns the client secret for the client.
      */
-    public String getConsumerSecret() 
+    public String getClientSecret() 
     {
-        return consumerSecret;
+        return clientSecret;
     }
 
     /**
-     * Sets the consumer secret for the client.
+     * Sets the client secret for the client.
      */
-    public void setConsumerSecret(String consumerSecret) 
+    public void setClientSecret(String clientSecret) 
     {
-        this.consumerSecret = consumerSecret;
+        this.clientSecret = clientSecret;
     }
 
     /**
@@ -188,7 +201,7 @@ public class TwitterClient extends Client implements SocialClient
      */
     public String getAccessToken() 
     {
-        return token;
+        return accessToken;
     }
 
     /**
@@ -196,23 +209,23 @@ public class TwitterClient extends Client implements SocialClient
      */
     public void setAccessToken(String accessToken) 
     {
-        this.token = accessToken;
+        this.accessToken = accessToken;
     }
 
     /**
-     * Returns the access token secret for the client.
+     * Returns the refresh token for the client.
      */
-    public String getAccessTokenSecret() 
+    public String getRefreshToken() 
     {
-        return tokenSecret;
+        return refreshToken;
     }
 
     /**
-     * Sets the access token secret for the client.
+     * Sets the refresh token for the client.
      */
-    public void setAccessTokenSecret(String accessTokenSecret) 
+    public void setRefreshToken(String refreshToken) 
     {
-        this.tokenSecret = accessTokenSecret;
+        this.refreshToken = refreshToken;
     }
 
     /**
@@ -232,11 +245,53 @@ public class TwitterClient extends Client implements SocialClient
     }
 
     /**
-     * Returns the screen name of the current account.
+     * Sets the current user.
      */
-    public String getName() throws IOException, TwitterException
+    public void setMe() throws ApiException
     {
-        return client.getScreenName();
+        if(me == null)
+        {
+            Get2UsersMeResponse result = users.findMyUser().execute();
+            if(result != null)
+                me = result.getData();
+        }
+    }
+
+    /**
+     * Returns the user name of the current account.
+     */
+    public String getName() throws ApiException
+    {
+        setMe();
+        return me != null ? me.getUsername() : null;
+    }
+
+    class TokenUpdater implements ApiClientCallback
+    {
+        @Override
+        public void onAfterRefreshToken(OAuth2AccessToken accessToken)
+        {
+            setAccessToken(accessToken.getAccessToken());
+            setRefreshToken(accessToken.getRefreshToken());
+
+            String directory = System.getProperty("app.auth", ".");
+            File file = new File(directory, channel.getId().toLowerCase()+SUFFIX);
+            try
+            {
+                // Read file from auth directory
+                JSONObject obj = new JSONObject();
+                obj.put("clientId", getClientId());
+                obj.put("clientSecret", getClientSecret());
+                obj.put("accessToken", getAccessToken());
+                obj.put("refreshToken", getRefreshToken());
+                FileUtils.writeStringToFile(file, obj.toString(), "UTF-8");
+            }
+            catch(IOException e)
+            {
+                logger.severe("Unable to write twitter auth file: "
+                    +e.getClass().getName()+": "+e.getMessage());
+            }
+        }
     }
 
     /**
@@ -244,10 +299,18 @@ public class TwitterClient extends Client implements SocialClient
      *
      * @param text The text of the post to be sent.
      */
-    public PreparedPost sendPost(String text) throws IOException, TwitterException
+    public PreparedPost sendPost(String text) throws IOException, ApiException
     {
-        Status status = client.updateStatus(text);
-        return status != null ? new PreparedPost(status, channel) : null;
+        PreparedPost ret = null;
+        TweetCreateRequest request = new TweetCreateRequest().text(text);
+        TweetCreateResponse result = tweets.createTweet(request).execute();
+        if(result != null)
+        {
+            ret = new PreparedPost(result.getData().getId(), channel);
+            ret.setMessage(result.getData().getText());
+        }
+
+        return ret;
     }
 
     /**
@@ -255,19 +318,20 @@ public class TwitterClient extends Client implements SocialClient
      *
      * @param id The id of the post to be deleted.
      */
-    public PreparedPost deletePost(String id) throws IOException, TwitterException
+    public PreparedPost deletePost(String id) throws IOException, ApiException
     {
         PreparedPost ret = null;
 
         try
         {
-            Status status = client.destroyStatus(Long.parseLong(id));
-            ret = new PreparedPost(status, channel);
+            TweetDeleteResponse result = tweets.deleteTweetById(id).execute();
+            if(result != null)
+                ret = new PreparedPost(id, channel);
         }
-        catch(TwitterException e)
+        catch(ApiException e)
         {
             // Post already deleted
-            if(e.getStatusCode() == 404)
+            if(e.getCode() == 404)
                 ret = new PreparedPost(id, channel);
             else
                 throw e;
@@ -279,12 +343,21 @@ public class TwitterClient extends Client implements SocialClient
     /**
      * Returns the posts for the current user.
      */
-    public List<PreparedPost> getPosts() throws IOException, TwitterException
+    public List<PreparedPost> getPosts() throws IOException, ApiException
     {
         List<PreparedPost> ret = new ArrayList<PreparedPost>();
-        List<Status> statuses = client.getUserTimeline();
-        for(Status status : statuses)
-            ret.add(new PreparedPost(status, channel));
+
+        setMe();
+        if(me != null)
+        {
+            Get2UsersIdTweetsResponse result = tweets.usersIdTweets(me.getId()).execute();
+            if(result != null)
+            {
+                for(Tweet tweet : result.getData())
+                    ret.add(new PreparedPost(tweet, channel));
+            }
+        }
+
         return ret;
     }
 
@@ -307,11 +380,10 @@ public class TwitterClient extends Client implements SocialClient
     public int getErrorCode(Exception e)
     {
         int ret = -1;
-
-        if(e instanceof TwitterException)
+        if(e instanceof ApiException)
         {
-            TwitterException ex = (TwitterException)e;
-            ret = ex.getErrorCode();
+            ApiException ex = (ApiException)e;
+            ret = ex.getCode();
         }
 
         return ret;
@@ -323,11 +395,10 @@ public class TwitterClient extends Client implements SocialClient
     public String getErrorMessage(Exception e)
     {
         String ret = "";
-
-        if(e instanceof TwitterException)
+        if(e instanceof ApiException)
         {
-            TwitterException ex = (TwitterException)e;
-            ret = ex.getErrorMessage();
+            ApiException ex = (ApiException)e;
+            ret = ex.getMessage();
         }
 
         return ret;

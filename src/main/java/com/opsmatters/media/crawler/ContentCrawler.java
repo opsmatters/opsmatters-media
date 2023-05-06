@@ -287,8 +287,9 @@ public abstract class ContentCrawler<T extends ContentTeaser, D extends ContentT
 
             if(ret == null)
             {
-                logger.info(String.format("No match found for field %s: value=[%s]", 
-                    field.getName(), value));
+                if(debug())
+                    logger.info(String.format("No match found for field %s: value=[%s]", 
+                        field.getName(), value));
                 log.info(String.format("No match found for field %s: value=[%s]", 
                     field.getName(), value));
 

@@ -157,6 +157,9 @@ public class FormatUtils
             // Remove ?00x multipler
             ret = ret.replaceAll("-\\d00x", "");
 
+            // Remove 2D00
+            ret = ret.replaceAll("_2[dD]00_", "_");
+
             // Remove #protocol after extension
             ret = ret.replaceAll("(.+)\\.(\\w+)#(.+)", "$1\\.$2");
 

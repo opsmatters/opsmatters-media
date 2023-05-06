@@ -249,24 +249,5 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostTeaser,Roundup
                 }
             }
         }
-
-        if(fields.hasBackgroundImage())
-        {
-            Field field = fields.getBackgroundImage();
-            String style = getStyle(field, root, type);
-            if(style != null && style.length() > 0)
-            {
-                String src = getBackgroundImage(field, style);
-                teaser.setImageFromPath(getImagePrefix(), src);
-                teaser.setImageSource(getBasePath(), encodeUrl(src), field.removeParameters());
-
-                if(debug())
-                {
-                    String name = fields.getBackgroundImage().getName();
-                    logger.info("Background Image source for "+name+": "+teaser.getImageSource());
-                    logger.info("Background Image for "+name+": "+teaser.getImage());
-                }
-            }
-        }
     }
 }

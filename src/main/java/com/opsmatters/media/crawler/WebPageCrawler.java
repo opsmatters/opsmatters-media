@@ -647,7 +647,8 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
         }
         else
         {
-            logger.info("Validation failed for "+type+", skipping: "+field.getSelector(0).getExpr());
+            if(debug())
+                logger.info("Validation failed for "+type+", skipping: "+field.getSelector(0).getExpr());
             log.info("Validation failed for "+type+", skipping: "+field.getSelector(0).getExpr());
         }
     }
@@ -1071,61 +1072,98 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
         {
             if(selector.getSource().isPage())
             {
-                Element image = root.select(selector.getExpr()).first();
-                if(image != null)
+                Element element = root.select(selector.getExpr()).first();
+                if(element != null)
                 {
-                    if(selector.getAttribute() != null && selector.getAttribute().length() > 0)
+                    if(selector.isBackground())
                     {
-                        ret = getValue(field, image.attr(selector.getAttribute()));
+                        String style = getValue(field, element.attr("style"));
                         if(debug())
-                            logger.info("Found image "+selector.getAttribute()+" for "+type+" field "+field.getName()+": "+ret);
-                        break;
-                    }
-                    else if(image.hasAttr("srcset"))
-                    {
-                        String srcset = getValue(field, image.attr("srcset"));
-                        String[] items = srcset.split(", ");
-
-                        // Process each srcset item to extract the url and size
-                        Map<String,String> map = new HashMap<String,String>();
-                        List<String> list = new ArrayList<String>();
-                        for(String item : items)
+                            logger.info("Found style for "+type+" field "+field.getName()+": "+style);
+                        if(style != null && style.length() > 0)
                         {
-                            item = item.trim();
-                            String size = null;
-                            String url = item;
-
-                            int pos = item.indexOf(" "); // separator
-                            if(pos != -1)
+                            Matcher m = Pattern.compile("(?:.*)background-image:(.+?)(?:;|\\z)(?:.*)").matcher(style);
+                            if(m.find())
                             {
-                                size = item.substring(pos+1).trim();
-                                url = item.substring(0, pos);
+                                String image = m.group(1);
+                                if(debug())
+                                    logger.info(String.format("Background image found for style: %s", image));
+                                if(image != null && image.length() > 0)
+                                {
+                                    Matcher m2 = Pattern.compile("(?:.*)url\\((.+)\\)(?:.*)").matcher(style);
+                                    if(m2.find())
+                                    {
+                                        ret = m2.group(1);
+                                        ret = ret.replaceAll("[\"']", ""); // Remove quotes
+                                        if(debug())
+                                            logger.info(String.format("Url found for background image: %s", ret));
+                                    }
+                                    else
+                                    {
+                                        logger.warning(String.format("No url found for background image: %s", image));
+                                        log.warn(String.format("No url found for background image: %s", image));
+                                    }
+                                }
                             }
 
-                            list.add(url);
-                            if(size != null)
-                                map.put(size, url);
+                            break;
                         }
-
-                        // Try to look up the item by its size
-                        if(selector.hasSize())
-                            ret = map.get(selector.getSize());
-
-                        // Default to first url if size not found
-                        if(ret == null)
-                            ret = list.get(0);
-
-                        if(debug())
-                            logger.info("Found image srcset for "+type+" field "+field.getName()
-                                +" size="+selector.getSize()+": "+ret);
-                        break;
                     }
-                    else if(image.hasAttr("src"))
+                    else // Image src
                     {
-                        ret = getValue(field, image.attr("src"));
-                        if(debug())
-                            logger.info("Found image src for "+type+" field "+field.getName()+": "+ret);
-                        break;
+                        if(selector.getAttribute() != null && selector.getAttribute().length() > 0)
+                        {
+                            ret = getValue(field, element.attr(selector.getAttribute()));
+                            if(debug())
+                                logger.info("Found image "+selector.getAttribute()+" for "+type+" field "+field.getName()+": "+ret);
+                            break;
+                        }
+                        else if(element.hasAttr("srcset"))
+                        {
+                            String srcset = getValue(field, element.attr("srcset"));
+                            String[] items = srcset.split(", ");
+
+                            // Process each srcset item to extract the url and size
+                            Map<String,String> map = new HashMap<String,String>();
+                            List<String> list = new ArrayList<String>();
+                            for(String item : items)
+                            {
+                                item = item.trim();
+                                String size = null;
+                                String url = item;
+
+                                int pos = item.indexOf(" "); // separator
+                                if(pos != -1)
+                                {
+                                    size = item.substring(pos+1).trim();
+                                    url = item.substring(0, pos);
+                                }
+
+                                list.add(url);
+                                if(size != null)
+                                    map.put(size, url);
+                            }
+
+                            // Try to look up the item by its size
+                            if(selector.hasSize())
+                                ret = map.get(selector.getSize());
+
+                            // Default to first url if size not found
+                            if(ret == null)
+                                ret = list.get(0);
+
+                            if(debug())
+                                logger.info("Found image srcset for "+type+" field "+field.getName()
+                                    +" size="+selector.getSize()+": "+ret);
+                            break;
+                        }
+                        else if(element.hasAttr("src"))
+                        {
+                            ret = getValue(field, element.attr("src"));
+                            if(debug())
+                                logger.info("Found image src for "+type+" field "+field.getName()+": "+ret);
+                            break;
+                        }
                     }
                 }
             }
@@ -1154,81 +1192,6 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
         {
             logger.warning("Image not found for "+type+" field: "+field.getName());
             log.warn("Image not found for "+type+" field: "+field.getName());
-        }
-
-        return ret;
-    }
-
-    /**
-     * Returns the style attribute of an element.
-     */
-    protected String getStyle(Field field, Element root, String type)
-    {
-        String ret = null;
-
-        if(debug())
-            logger.info("Looking for style for "+type+" field: "+field.getName());
-
-        for(FieldSelector selector : field.getSelectors())
-        {
-            Element element = root.select(selector.getExpr()).first();
-            if(element != null)
-            {
-                ret = getValue(field, element.attr("style"));
-                if(debug())
-                    logger.info("Found style for "+type+" field "+field.getName()+": "+ret);
-                break;
-            }
-        }
-
-        if(ret == null && !field.isOptional())
-        {
-            logger.warning("Style not found for "+type+" field: "+field.getName());
-            log.warn("Style not found for "+type+" field: "+field.getName());
-        }
-
-        return ret;
-    }
-
-    /**
-     * Returns the background image from a style attribute.
-     */
-    protected String getBackgroundImage(Field field, String style)
-    {
-        String ret = null;
-        Matcher m = Pattern.compile("(?:.*)background-image:(.+?)(?:;|\\z)(?:.*)").matcher(style);
-
-        if(m.find())
-        {
-            String image = m.group(1);
-
-            if(debug())
-                logger.info(String.format("Background image found for style: %s", image));
-
-            if(image != null && image.length() > 0)
-            {
-                Matcher m2 = Pattern.compile("(?:.*)url\\((.+)\\)(?:.*)").matcher(style);
-                if(m2.find())
-                {
-                    ret = m2.group(1);
-
-                    // Remove quotes
-                    ret = ret.replaceAll("[\"']", "");
-
-                    if(debug())
-                        logger.info(String.format("Url found for background image: %s", ret));
-                }
-                else
-                {
-                    logger.warning(String.format("No url found for background image: %s", image));
-                    log.warn(String.format("No url found for background image: %s", image));
-                }
-            }
-        }
-        else if(!field.isOptional())
-        {
-            logger.warning(String.format("No background image found for style: %s", style));
-            log.warn(String.format("No background image found for style: %s", style));
         }
 
         return ret;

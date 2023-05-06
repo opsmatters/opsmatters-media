@@ -18,9 +18,9 @@ package com.opsmatters.media.model.social;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-import twitter4j.Status;
 import facebook4j.Post;
 import com.echobox.api.linkedin.types.ugc.UGCShare;
+import com.twitter.clientlib.model.Tweet;
 import com.opsmatters.media.client.social.SocialClient;
 import com.opsmatters.media.client.social.SocialClientFactory;
 import com.opsmatters.media.cache.organisation.Organisations;
@@ -83,31 +83,13 @@ public class PreparedPost extends SocialPost
     }
 
     /**
-     * Constructor that takes a Twitter status and a channel.
-     */
-    public PreparedPost(Status status, SocialChannel channel)
-    {
-        setId(Long.toString(status.getId()));
-        setCreatedDateMillis(status.getCreatedAt().getTime());
-        setUpdatedDate(Instant.now());
-        setMessage(status.getText());
-        setChannel(channel);
-        setType(PostType.EXTERNAL);
-        setStatus(DeliveryStatus.RECEIVED);
-    }
-
-    /**
      * Constructor that takes a Facebook post and a channel.
      */
     public PreparedPost(Post post, SocialChannel channel)
     {
-        setId(post.getId());
+        this(post.getId(), channel);
         setCreatedDateMillis(post.getCreatedTime().getTime());
-        setUpdatedDate(Instant.now());
         setMessage(post.getMessage());
-        setChannel(channel);
-        setType(PostType.EXTERNAL);
-        setStatus(DeliveryStatus.RECEIVED);
     }
 
     /**
@@ -115,26 +97,30 @@ public class PreparedPost extends SocialPost
      */
     public PreparedPost(UGCShare share, SocialChannel channel)
     {
-        setId(share.getId().getId());
+        this(share.getId().getId(), channel);
         if(share.getCreated() != null)
             setCreatedDateMillis(share.getCreated().getTime());
-        else
-            setCreatedDate(Instant.now());
-        setUpdatedDate(Instant.now());
         if(share.getSpecificContent() != null)
             setMessage(share.getSpecificContent().getShareContent().getShareCommentary().getText());
-        setChannel(channel);
-        setType(PostType.EXTERNAL);
-        setStatus(DeliveryStatus.RECEIVED);
     }
 
     /**
-     * Constructor that takes an external id and a channel.
+     * Constructor that takes a Twitter tweet and a channel.
      */
-    public PreparedPost(String externalId, SocialChannel channel)
+    public PreparedPost(Tweet tweet, SocialChannel channel)
     {
-        setId(externalId);
+        this(tweet.getId(), channel);
+        setMessage(tweet.getText());
+    }
+
+    /**
+     * Constructor that takes an id and a channel.
+     */
+    public PreparedPost(String id, SocialChannel channel)
+    {
+        setId(id);
         setCreatedDate(Instant.now());
+        setUpdatedDate(Instant.now());
         setChannel(channel);
         setType(PostType.EXTERNAL);
         setStatus(DeliveryStatus.RECEIVED);
@@ -564,6 +550,16 @@ public class PreparedPost extends SocialPost
             if(client != null)
                 client.close();
         }
+    }
+
+    /**
+     * Mark the post as PAUSED if the limit has been exceeded.
+     */
+    public void pause() throws Exception
+    {
+        setStatus(DeliveryStatus.PAUSED);
+        setErrorCode(0);
+        setErrorMessage("");
     }
 
     /**

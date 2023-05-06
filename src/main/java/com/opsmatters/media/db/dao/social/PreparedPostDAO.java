@@ -29,6 +29,7 @@ import com.opsmatters.media.model.DeliveryStatus;
 import com.opsmatters.media.model.social.PreparedPost;
 import com.opsmatters.media.model.social.DraftPost;
 import com.opsmatters.media.model.social.MessageFormat;
+import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.util.SessionId;
 
 /**
@@ -107,6 +108,14 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, SITE_ID, DRAFT_ID, CODE, "
       + "TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, ERROR_CODE, ERROR_MESSAGE, CREATED_BY "
       + "FROM PREPARED_POSTS WHERE DRAFT_ID=?";
+
+    /**
+     * The query to use to select the posts from the PREPARED_POSTS table by channel and status for the current session.
+     */
+    private static final String LIST_BY_CHANNEL_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, SITE_ID, DRAFT_ID, CODE, "
+      + "TITLE, MESSAGE, CHANNEL, STATUS, EXTERNAL_ID, ERROR_CODE, ERROR_MESSAGE, CREATED_BY "
+      + "FROM PREPARED_POSTS WHERE CHANNEL=? AND STATUS=? AND SESSION_ID=?";
 
     /**
      * The query to use to get the count of posts from the PREPARED_POSTS table.
@@ -613,6 +622,70 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     }
 
     /**
+     * Returns the posts from the PREPARED_POSTS table by channel and status for the current session.
+     */
+    public synchronized List<PreparedPost> list(SocialChannel channel, DeliveryStatus status) throws SQLException
+    {
+        List<PreparedPost> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByChannelStmt == null)
+            listByChannelStmt = prepareStatement(getConnection(), LIST_BY_CHANNEL_SQL);
+        clearParameters(listByChannelStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByChannelStmt.setString(1, channel.getId());
+            listByChannelStmt.setString(2, status != null ? status.name() : "");
+            listByChannelStmt.setInt(3, SessionId.get());
+            listByChannelStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByChannelStmt.executeQuery();
+            ret = new ArrayList<PreparedPost>();
+            while(rs.next())
+            {
+                PreparedPost post = new PreparedPost();
+                post.setId(rs.getString(1));
+                post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                post.setScheduledDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                post.setType(rs.getString(5));
+                post.setSiteId(rs.getString(6));
+                post.setDraftId(rs.getString(7));
+                post.setCode(rs.getString(8));
+                post.setTitle(rs.getString(9));
+                post.setMessage(rs.getString(10));
+                post.setChannel(SocialChannels.getChannel(rs.getString(11)));
+                post.setStatus(rs.getString(12));
+                post.setExternalId(rs.getString(13));
+                post.setErrorCode(rs.getInt(14));
+                post.setErrorMessage(rs.getString(15));
+                post.setCreatedBy(rs.getString(16));
+                ret.add(post);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the count of posts from the table.
      */
     public int count() throws SQLException
@@ -670,6 +743,8 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
         listByCodeStmt = null;
         closeStatement(listByDraftStmt);
         listByDraftStmt = null;
+        closeStatement(listByChannelStmt);
+        listByChannelStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -684,6 +759,7 @@ public class PreparedPostDAO extends SocialDAO<PreparedPost>
     private PreparedStatement listBySiteStmt;
     private PreparedStatement listByCodeStmt;
     private PreparedStatement listByDraftStmt;
+    private PreparedStatement listByChannelStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }

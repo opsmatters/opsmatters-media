@@ -39,6 +39,7 @@ public class SocialChannel implements ConfigElement
     private String sites = "";
     private Map<String,String> siteMap = new HashMap<String,String>();
     private int delay = -1;
+    private int maxPosts = -1;
     private boolean enabled = false;
 
     /**
@@ -63,6 +64,7 @@ public class SocialChannel implements ConfigElement
             setProvider(obj.getProvider());
             setSites(obj.getSites());
             setDelay(obj.getDelay());
+            setMaxPosts(obj.getMaxPosts());
             setEnabled(obj.isEnabled());
         }
     }
@@ -209,6 +211,22 @@ public class SocialChannel implements ConfigElement
     }
 
     /**
+     * Returns the maximum social posts per session for this channel.
+     */
+    public int getMaxPosts()
+    {
+        return maxPosts;
+    }
+
+    /**
+     * Sets the maximum social posts per session for this channel.
+     */
+    public void setMaxPosts(int maxPosts)
+    {
+        this.maxPosts = maxPosts;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if this channel is enabled to send messages.
      */
     public boolean isEnabled()
@@ -246,6 +264,7 @@ public class SocialChannel implements ConfigElement
         private static final String PROVIDER = "provider";
         private static final String SITES = "sites";
         private static final String DELAY = "delay";
+        private static final String MAX_POSTS = "max-posts";
         private static final String ENABLED = "enabled";
 
         private SocialChannel ret = null;
@@ -277,6 +296,8 @@ public class SocialChannel implements ConfigElement
                 ret.setProvider((String)map.get(PROVIDER));
             if(map.containsKey(SITES))
                 ret.setSites((String)map.get(SITES));
+            if(map.containsKey(MAX_POSTS))
+                ret.setMaxPosts((Integer)map.get(MAX_POSTS));
             if(map.containsKey(DELAY))
                 ret.setDelay((Integer)map.get(DELAY));
             if(map.containsKey(ENABLED))

@@ -42,7 +42,6 @@ public class Fields implements ConfigElement
     private Field timezone;
     private Field body;
     private Field image;
-    private Field backgroundImage;
     private Field url;
 
     /**
@@ -94,8 +93,6 @@ public class Fields implements ConfigElement
                 setUrl(new Field(obj.getUrl()));
             if(obj.getImage() != null)
                 setImage(new Field(obj.getImage()));
-            if(obj.getBackgroundImage() != null)
-                setBackgroundImage(new Field(obj.getBackgroundImage()));
         }
     }
 
@@ -130,8 +127,6 @@ public class Fields implements ConfigElement
             ret = body;
         else if(name == IMAGE)
             ret = image;
-        else if(name == BACKGROUND_IMAGE)
-            ret = backgroundImage;
 
         return ret;
     }
@@ -449,30 +444,6 @@ public class Fields implements ConfigElement
     }
 
     /**
-     * Returns the background image for this configuration.
-     */
-    public Field getBackgroundImage()
-    {
-        return backgroundImage;
-    }
-
-    /**
-     * Sets the background image for this configuration.
-     */
-    public void setBackgroundImage(Field backgroundImage)
-    {
-        this.backgroundImage = backgroundImage;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the background image has been set.
-     */
-    public boolean hasBackgroundImage()
-    {
-        return backgroundImage != null && backgroundImage.hasSelectors();
-    }
-
-    /**
      * Returns the url for this configuration.
      */
     public Field getUrl()
@@ -524,7 +495,6 @@ public class Fields implements ConfigElement
         private static final String TIMEZONE = "timezone";
         public static final String BODY = "body";
         private static final String IMAGE = "image";
-        private static final String BACKGROUND_IMAGE = "background-image";
         private static final String URL = "url";
 
         private Fields ret = new Fields();
@@ -565,8 +535,6 @@ public class Fields implements ConfigElement
                 ret.setUrl(createField(URL, map.get(URL)));
             if(map.containsKey(IMAGE))
                 ret.setImage(createField(IMAGE, map.get(IMAGE)));
-            if(map.containsKey(BACKGROUND_IMAGE))
-                ret.setBackgroundImage(createField(BACKGROUND_IMAGE, map.get(BACKGROUND_IMAGE)));
 
             return this;
         }

@@ -39,6 +39,7 @@ public class FieldSelector implements ConfigElement
     private String separator = "";
     private List<FieldExclude> excludes;
     private String size = "";
+    private boolean background = false;
 
     /**
      * Constructor that takes a name.
@@ -81,6 +82,7 @@ public class FieldSelector implements ConfigElement
             setMultiple(obj.isMultiple());
             setSeparator(obj.getSeparator());
             setSize(obj.getSize());
+            setBackground(obj.isBackground());
 
             if(obj.getExcludes() != null)
             {
@@ -257,6 +259,23 @@ public class FieldSelector implements ConfigElement
     {
         return size != null && size.length() > 0;
     }
+
+    /**
+     * Returns <CODE>true</CODE> if the image should use a background url.
+     */
+    public boolean isBackground()
+    {
+        return background;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the image should use a background url.
+     */
+    public void setBackground(boolean background)
+    {
+        this.background = background;
+    }
+
     /**
      * Returns the classes to exclude for this configuration.
      */
@@ -323,6 +342,7 @@ public class FieldSelector implements ConfigElement
         private static final String EXCLUDE = "exclude";
         private static final String EXCLUDES = "excludes";
         private static final String SIZE = "size";
+        private static final String BACKGROUND = "background";
 
         private FieldSelector ret = null;
 
@@ -357,6 +377,8 @@ public class FieldSelector implements ConfigElement
                 ret.setSeparator((String)map.get(SEPARATOR));
             if(map.containsKey(SIZE))
                 ret.setSize((String)map.get(SIZE));
+            if(map.containsKey(BACKGROUND))
+                ret.setBackground((Boolean)map.get(BACKGROUND));
 
             if(map.containsKey(EXCLUDE))
             {
