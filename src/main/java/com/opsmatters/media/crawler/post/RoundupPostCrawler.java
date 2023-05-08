@@ -136,8 +136,9 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostTeaser,Roundup
             }
             else
             {
-                logger.warning("Root not found for roundup article: "+fields.getRoot());
-                log.warn("Root not found for roundup article: "+fields.getRoot());
+                if(debug())
+                    logger.info("Root not found for roundup article: "+fields.getRoot());
+                log.info("Root not found for roundup article: "+fields.getRoot());
                 continue;
             }
 
