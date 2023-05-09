@@ -40,6 +40,7 @@ import com.opsmatters.media.model.content.crawler.field.FieldCase;
 import com.opsmatters.media.model.content.crawler.field.FieldExtractor;
 import com.opsmatters.media.model.logging.Log;
 import com.opsmatters.media.model.logging.LogEntry;
+import com.opsmatters.media.model.logging.LogCategory;
 
 /**
  * Class representing a crawler for content items with fields.
@@ -259,15 +260,15 @@ public abstract class ContentCrawler<T extends ContentTeaser, D extends ContentT
     /**
      * Apply the configured regular expression to the given field value.
      */
-    public String getValue(Field field, String value)
+    public String getValue(Field field, String value, LogCategory category)
     {
-        return getValue(field, value, value);
+        return getValue(field, value, value, category);
     }
 
     /**
      * Apply the configured regular expression to the given field value.
      */
-    public String getValue(Field field, String value, String dflt)
+    public String getValue(Field field, String value, String dflt, LogCategory category)
     {
         // Remove special characters before processing
         value = processValue(value);
@@ -288,10 +289,10 @@ public abstract class ContentCrawler<T extends ContentTeaser, D extends ContentT
             if(ret == null)
             {
                 if(debug())
-                    logger.info(String.format("No match found for field %s: value=[%s]", 
-                        field.getName(), value));
-                log.info(String.format("No match found for field %s: value=[%s]", 
-                    field.getName(), value));
+                    logger.info(String.format("No match found for %s field %s: value=[%s]", 
+                        category.value(), field.getName(), value));
+                log.info(category, String.format("No match found for %s field %s: value=[%s]", 
+                    category.value(), field.getName(), value));
 
                 // Use the default if none of the extractors matched
                 ret = dflt;

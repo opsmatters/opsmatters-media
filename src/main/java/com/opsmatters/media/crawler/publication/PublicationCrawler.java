@@ -32,8 +32,11 @@ import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.model.content.crawler.field.Fields;
+import com.opsmatters.media.model.logging.LogCategory;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
+
+import static com.opsmatters.media.model.logging.LogCategory.*;
 
 /**
  * Class representing a crawler for publications.
@@ -72,16 +75,16 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
     {
         PublicationTeaser teaser = new PublicationTeaser();
         if(fields.hasValidator())
-            validateContent(teaser, fields.getValidator(), root, "teaser");
+            validateContent(teaser, fields.getValidator(), root, TEASER);
         if(teaser.isValid())
         {
             if(debug() && fields.hasValidator())
                 logger.info("Validated publication teaser: "+fields.getValidator());
-            populateTeaserFields(root, fields, teaser, "teaser");
+            populateTeaserFields(root, fields, teaser, TEASER);
             if(fields.hasUrl())
             {
                 Field field = fields.getUrl();
-                String url = getAnchor(field, root, "teaser", field.removeParameters());
+                String url = getAnchor(field, root, TEASER, field.removeParameters());
                 if(url != null)
                     teaser.setUrl(url, field.removeParameters());
             }
@@ -113,10 +116,10 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
 
         // Trace to see the page
         if(trace(getDriver()))
-            logger.info("article-page="+getPageSource());
+            logger.info("article-page="+getPageSource(ARTICLE));
 
         Element root = null;
-        Document doc = Jsoup.parse(getPageSource("body"));
+        Document doc = Jsoup.parse(getPageSource("body", ARTICLE));
         doc.outputSettings().prettyPrint(false);
 
         for(Fields fields : articles)
@@ -130,13 +133,13 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
                 root = elements.get(0);
                 if(debug())
                     logger.info("Root found for publication article: "+fields.getRoot());
-                populateTeaserFields(root, fields, content, "article");
+                populateTeaserFields(root, fields, content, ARTICLE);
             }
             else
             {
                 if(debug())
                     logger.info("Root not found for publication article: "+fields.getRoot());
-                log.info("Root not found for publication article: "+fields.getRoot());
+                log.info(ARTICLE, "Root not found for publication article: "+fields.getRoot());
                 continue;
             }
 
@@ -154,7 +157,7 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
 
             if(root != null && fields.hasBody())
             {
-                String body = getBody(fields.getBody(), root, "article", debug());
+                String body = getBody(fields.getBody(), root, ARTICLE, debug());
                 if(body != null)
                     content.setDescription(body);
             }
@@ -174,13 +177,13 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
     /**
      * Populate the teaser fields from the given element.
      */
-    private void populateTeaserFields(Element root, Fields fields, PublicationTeaser teaser, String type)
+    private void populateTeaserFields(Element root, Fields fields, PublicationTeaser teaser, LogCategory category)
         throws DateTimeParseException
     {
         if(fields.hasTitle())
         {
             Field field = fields.getTitle();
-            String title = getElements(field, root, type);
+            String title = getElements(field, root, category);
             if(title != null && title.length() > 0)
                 teaser.setTitle(title);
         }
@@ -188,7 +191,7 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
         if(fields.hasPublishedDate())
         {
             Field field = fields.getPublishedDate();
-            String publishedDate = getElements(field, root, type);
+            String publishedDate = getElements(field, root, category);
             if(publishedDate != null)
             {
                 try
@@ -216,9 +219,9 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
                 {
                     logger.severe(StringUtils.serialize(e));
                     logger.severe(String.format("Unparseable %s published date: %s code=%s",
-                        type, publishedDate, config.getCode()));
-                    log.error(String.format("Unparseable %s published date: %s",
-                        type, publishedDate));
+                        category.value(), publishedDate, config.getCode()));
+                    log.error(category, String.format("Unparseable %s published date: %s",
+                        category.value(), publishedDate));
                 }
             }
         }
@@ -226,7 +229,7 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
         if(fields.hasImage())
         {
             Field field = fields.getImage();
-            String src = getImageSrc(field, root, type);
+            String src = getImageSrc(field, root, category);
             if(src != null && src.length() > 0)
             {
                 teaser.setImageFromPath(getImagePrefix(), src);

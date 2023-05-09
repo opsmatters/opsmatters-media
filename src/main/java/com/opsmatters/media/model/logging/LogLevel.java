@@ -34,7 +34,7 @@ public enum LogLevel
     private String css;
 
     /**
-     * Constructor that takes the level value and precedence.
+     * Constructor that takes the level value, precedence, icon and css.
      * @param value The value for the level
      * @param precedence The precedence for the level
      * @param icon The glyphicon for the level
@@ -49,7 +49,7 @@ public enum LogLevel
     }
 
     /**
-     * Returns the value of the level.mvn
+     * Returns the value of the level.
      * @return The value of the level.
      */
     public String toString()

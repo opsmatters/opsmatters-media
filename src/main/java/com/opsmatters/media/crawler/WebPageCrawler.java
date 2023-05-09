@@ -41,6 +41,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import com.opsmatters.media.cache.content.Teasers;
+import com.opsmatters.media.model.admin.TraceObject;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.SummaryConfig;
 import com.opsmatters.media.model.content.crawler.ContentRequest;
@@ -52,13 +53,15 @@ import com.opsmatters.media.model.content.crawler.field.Fields;
 import com.opsmatters.media.model.content.crawler.field.FieldSelector;
 import com.opsmatters.media.model.content.crawler.field.FieldExclude;
 import com.opsmatters.media.model.content.crawler.field.FieldFilter;
-import com.opsmatters.media.model.logging.LogEntry;
+import com.opsmatters.media.model.content.ContentTeaser;
 import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.crawler.parser.ElementType;
-import com.opsmatters.media.model.admin.TraceObject;
-import com.opsmatters.media.model.content.ContentTeaser;
+import com.opsmatters.media.model.logging.LogEntry;
+import com.opsmatters.media.model.logging.LogCategory;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.StringUtils;
+
+import static com.opsmatters.media.model.logging.LogCategory.*;
 
 /**
  * Class representing a crawler for content items from a web page.
@@ -132,7 +135,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
     /**
      * Returns the current page source.
      */
-    protected String getPageSource(String root)
+    protected String getPageSource(String root, LogCategory category)
     {
         String ret = "";
 
@@ -143,7 +146,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
         catch(RuntimeException e)
         {
             logger.severe("Unable to get page source for "+root);
-            log.error("Unable to get page source for "+root);
+            log.error(category, "Unable to get page source for "+root);
         }
 
         return ret;
@@ -153,9 +156,9 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
     /**
      * Returns the current page source.
      */
-    protected String getPageSource()
+    protected String getPageSource(LogCategory category)
     {
-        return getPageSource("html");
+        return getPageSource("html", category);
     }
 
     /**
@@ -300,16 +303,16 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
             {
                 if(debug())
                     logger.info("More link click "+(i+1)+" of "+count);
-                clickMoreLink(loading.getMoreLink());
+                clickMoreLink(loading.getMoreLink(), TEASER);
             }
         }
 
         // Trace to see the teaser page
         if(trace(getDriver()))
-            logger.info("teaser-page="+getPageSource());
+            logger.info("teaser-page="+getPageSource(TEASER));
 
         // Scroll the page if configured
-        configureMovement(loading);
+        configureMovement(loading, TEASER);
 
         // Wait for the page to load
         configureSleep(loading);
@@ -336,7 +339,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
         configureExplicitWait(loading);
 
         // Scroll the page if configured
-        configureMovement(loading);
+        configureMovement(loading, ARTICLE);
 
         // Wait for the page to load
         configureSleep(loading);
@@ -345,7 +348,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
     /**
      * Click a Load More button after the initial page load.
      */
-    protected void clickMoreLink(MoreLink moreLink) throws IOException
+    protected void clickMoreLink(MoreLink moreLink, LogCategory category) throws IOException
     {
         String selector = moreLink.getSelector();
         if(selector.length() > 0)
@@ -377,7 +380,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
             else
             {
                 logger.warning("More link not found: "+selector);
-                log.warn("More link not found: "+selector);
+                log.warn(category, "More link not found: "+selector);
             }
         }
     }
@@ -432,7 +435,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
         }
     }
 
-    protected void configureMovement(ContentLoading loading)
+    protected void configureMovement(ContentLoading loading, LogCategory category)
     {
         if(loading == null)
             return;
@@ -466,7 +469,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                 else
                 {
                     logger.severe("Unable to find move to element: "+moveTo);
-                    log.error("Unable to find move to element: "+moveTo);
+                    log.error(category, "Unable to find move to element: "+moveTo);
                 }
             }
             catch(WebDriverException | InterruptedException e)
@@ -521,7 +524,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                 if(lastUrl == null || !lastUrl.equals(url))
                     loadTeaserPage(url);
 
-                Document doc = Jsoup.parse(getPageSource("body"));
+                Document doc = Jsoup.parse(getPageSource("body", TEASER));
                 doc.outputSettings().prettyPrint(false);
 
                 // Process the teaser selections
@@ -574,10 +577,10 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
     /**
      * Returns a list of the metatags for the given attribute name and value.
      */
-    protected List<Element> getMetatags(String name, String value)
+    protected List<Element> getMetatags(String name, String value, LogCategory category)
     {
         List<Element> ret = new ArrayList<Element>();
-        Document doc = Jsoup.parse(getPageSource());
+        Document doc = Jsoup.parse(getPageSource(category));
         doc.outputSettings().prettyPrint(false);
         List<Element> tags = doc.getElementsByTag("meta");
 
@@ -595,11 +598,11 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
         return ret;
     }
 
-    protected String getPropertyMetatag(String value)
+    protected String getPropertyMetatag(String value, LogCategory category)
     {
-        List<Element> tags = getMetatags("property", value);
+        List<Element> tags = getMetatags("property", value, category);
         if(tags.size() == 0)
-            tags = getMetatags("name", value); // Sometimes og tags called "name" instead of "property"
+            tags = getMetatags("name", value, category); // Sometimes og tags called "name" instead of "property"
         if(tags.size() > 0)
             return tags.get(0).attr("content");
         return null;
@@ -608,7 +611,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
     /**
      * Returns <CODE>true</CODE> if the content validator is found.
      */
-    protected void validateContent(T content, Field field, Element root, String type)
+    protected void validateContent(T content, Field field, Element root, LogCategory category)
     {
         boolean valid = false;
 
@@ -643,25 +646,29 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
         if(content.isValid())
         {
             if(debug())
-                logger.info("Validation successful for "+type+": "+field.getSelector(0).getExpr());
+                logger.info(String.format("Validation successful for %s: %s",
+                    category.value(), field.getSelector(0).getExpr()));
         }
         else
         {
             if(debug())
-                logger.info("Validation failed for "+type+", skipping: "+field.getSelector(0).getExpr());
-            log.info("Validation failed for "+type+", skipping: "+field.getSelector(0).getExpr());
+                logger.info(String.format("Validation failed for %s, skipping: %s",
+                    category.value(), field.getSelector(0).getExpr()));
+            log.info(category, String.format("Validation failed for %s, skipping: %s",
+                    category.value(), field.getSelector(0).getExpr()));
         }
     }
 
     /**
      * Process an element field returning multiple results.
      */
-    protected String getElements(Field field, Element root, String type)
+    protected String getElements(Field field, Element root, LogCategory category)
     {
         String ret = null;
 
         if(debug())
-            logger.info("Looking for elements for "+type+" field: "+field.getName());
+            logger.info(String.format("Looking for elements for %s field: %s",
+                category.value(), field.getName()));
 
         Elements nodes = null;
         for(FieldSelector selector : field.getSelectors())
@@ -672,25 +679,27 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                 nodes = root.select(selector.getExpr());
                 if(nodes != null && nodes.size() > 0)
                 {
-                    ret = getValue(field, select(selector, nodes));
+                    ret = getValue(field, select(selector, nodes), category);
                     if(ret.length() > 0)
                     {
                         if(debug())
-                            logger.info("Found elements for "+type+" field "+field.getName()+": "+ret);
+                            logger.info(String.format("Found elements for %s field %s: %s",
+                                category.value(), field.getName(), ret));
                         break;
                     }
                 }
             }
             else if(selector.getSource().isMeta())
             {
-                String tag = getPropertyMetatag(selector.getExpr());
+                String tag = getPropertyMetatag(selector.getExpr(), category);
                 if(tag != null)
                 {
-                    ret = getValue(field, tag);
+                    ret = getValue(field, tag, category);
                     if(ret.length() > 0)
                     {
                         if(debug())
-                            logger.info("Found element metatag for "+type+" field "+field.getName()+": "+ret);
+                            logger.info(String.format("Found element metatag for %s field %s: %s",
+                                category.value(), field.getName(), ret));
                         break;
                     }
                 }
@@ -699,8 +708,10 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
 
         if(ret == null && !field.isOptional())
         {
-            logger.warning("Elements not found for "+type+" field: "+field.getName());
-            log.warn("Elements not found for "+type+" field: "+field.getName());
+            logger.warning(String.format("Elements not found for %s field: %s",
+                category.value(), field.getName()));
+            log.warn(category, String.format("Elements not found for %s field: %s",
+                category.value(), field.getName()));
         }
 
         return ret;
@@ -765,12 +776,13 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
     /**
      * Process an anchor field.
      */
-    protected String getAnchor(Field field, Element root, String type, boolean removeParameters)
+    protected String getAnchor(Field field, Element root, LogCategory category, boolean removeParameters)
     {
         String ret = null;
 
         if(debug())
-            logger.info("Looking for anchor for "+type+" field: "+field.getName());
+            logger.info(String.format("Looking for anchor for %s field: %s",
+                category.value(), field.getName()));
 
         for(FieldSelector selector : field.getSelectors())
         {
@@ -817,7 +829,8 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                         value = value.trim();
                     ret = FormatUtils.getFormattedUrl(getBasePath(), value, removeParameters);
                     if(debug())
-                        logger.info("Found anchor for "+type+" field "+field.getName()+": "+ret);
+                        logger.info(String.format("Found anchor for %s field %s: %s",
+                            category.value(), field.getName(), ret));
                     break;
                 }
                 else if(div != null) // Sometimes the link is a div with a href attribute
@@ -827,7 +840,8 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                         value = value.trim();
                     ret = FormatUtils.getFormattedUrl(getBasePath(), value, removeParameters);
                     if(debug())
-                        logger.info("Found anchor div for "+type+" field "+field.getName()+": "+ret);
+                        logger.info(String.format("Found anchor div for %s field %s: %s",
+                            category.value(), field.getName(), ret));
                     break;
                 }
                 else if(section != null) // Sometimes the link is a section with a custom attribute
@@ -837,7 +851,8 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                         value = value.trim();
                     ret = FormatUtils.getFormattedUrl(getBasePath(), value, removeParameters);
                     if(debug())
-                        logger.info("Found anchor section for "+type+" field "+field.getName()+": "+ret);
+                        logger.info(String.format("Found anchor section for %s field %s: %s",
+                            category.value(), field.getName(), ret));
                     break;
                 }
                 else if(elem != null)
@@ -855,18 +870,20 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
 
                     ret = FormatUtils.getFormattedUrl(getBasePath(), value, removeParameters);
                     if(debug())
-                        logger.info("Found anchor element for "+type+" field "+field.getName()+": "+ret);
+                        logger.info(String.format("Found anchor element for %s field %s: %s",
+                            category.value(), field.getName(), ret));
                     break;
                 }
             }
             else if(selector.getSource().isMeta())
             {
-                String tag = getPropertyMetatag(selector.getExpr());
+                String tag = getPropertyMetatag(selector.getExpr(), category);
                 if(tag != null)
                 {
-                    ret = getValue(field, tag);
+                    ret = getValue(field, tag, category);
                     if(debug())
-                        logger.info("Found anchor metatag for "+type+" field "+field.getName()+": "+ret);
+                        logger.info(String.format("Found anchor metatag for %s field %s: %s",
+                            category.value(), field.getName(), ret));
                     break;
                 }
             }
@@ -874,8 +891,10 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
 
         if(ret == null && !field.isOptional())
         {
-            logger.warning("Anchor not found for "+type+" field: "+field.getName());
-            log.warn("Anchor not found for "+type+" field: "+field.getName());
+            logger.warning(String.format("Anchor not found for %s field: %s",
+                category.value(), field.getName()));
+            log.warn(category, String.format("Anchor not found for %s field: %s",
+                category.value(), field.getName()));
         }
 
         return ret;
@@ -933,13 +952,14 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
     /**
      * Process the body field to produce a summary.
      */
-    protected String getBodySummary(Field field, Element root, String type,
+    protected String getBodySummary(Field field, Element root, LogCategory category,
         SummaryConfig summary, boolean debug)
     {
         String ret = null;
 
         if(debug())
-            logger.info("Looking for body summary for "+type+" field: "+field.getName());
+            logger.info(String.format("Looking for body summary for %s field: %s",
+                category.value(), field.getName()));
 
         for(FieldSelector selector : field.getSelectors())
         {
@@ -950,21 +970,23 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                 if(body.length() > 0)
                 {
                     // Apply any extractors to the selection
-                    body = getValue(field, body);
+                    body = getValue(field, body, category);
                     ret = String.format("<p>%s</p>", body.trim());
                     if(debug())
-                        logger.info("Found body summary for "+type+" field "+field.getName()+": "+ret);
+                        logger.info(String.format("Found body summary for %s field %s: %s",
+                            category.value(), field.getName(), ret));
                     break;
                 }
             }
             else if(selector.getSource().isMeta())
             {
-                String tag = getPropertyMetatag(selector.getExpr());
+                String tag = getPropertyMetatag(selector.getExpr(), category);
                 if(tag != null)
                 {
-                    ret = String.format("<p>%s</p>", getValue(field, tag));
+                    ret = String.format("<p>%s</p>", getValue(field, tag, category));
                     if(debug())
-                        logger.info("Found body summary metatag for "+type+" field "+field.getName()+": "+ret);
+                        logger.info(String.format("Found body summary metatag for %s field %s: %s",
+                            category.value(), field.getName(), ret));
                     break;
                 }
             }
@@ -972,8 +994,10 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
 
         if(ret == null && !field.isOptional())
         {
-            logger.warning("Body summary not found for "+type+" field: "+field.getName());
-            log.warn("Body summary not found for "+type+" field: "+field.getName());
+            logger.warning(String.format("Body summary not found for %s field: %s",
+                category.value(), field.getName()));
+            log.warn(category, String.format("Body summary not found for %s field: %s",
+                category.value(), field.getName()));
         }
 
         return ret;
@@ -1015,12 +1039,13 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
     /**
      * Process the body field.
      */
-    protected String getBody(Field field, Element root, String type, boolean debug)
+    protected String getBody(Field field, Element root, LogCategory category, boolean debug)
     {
         String ret = null;
 
         if(debug())
-            logger.info("Looking for body for "+type+" field: "+field.getName());
+            logger.info(String.format("Looking for body for %s field: %s",
+                category.value(), field.getName()));
 
         for(FieldSelector selector : field.getSelectors())
         {
@@ -1032,18 +1057,20 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                 {
                     ret = body;
                     if(debug())
-                        logger.info("Found body for "+type+" field "+field.getName()+": "+ret);
+                        logger.info(String.format("Found body for %s field %s: %s",
+                            category.value(), field.getName(), ret));
                     break;
                 }
             }
             else if(selector.getSource().isMeta())
             {
-                String tag = getPropertyMetatag(selector.getExpr());
+                String tag = getPropertyMetatag(selector.getExpr(), category);
                 if(tag != null)
                 {
-                    ret = getValue(field, tag);
+                    ret = getValue(field, tag, category);
                     if(debug())
-                        logger.info("Found body metatag for "+type+" field "+field.getName()+": "+ret);
+                        logger.info(String.format("Found body metatag for %s field %s: %s",
+                            category.value(), field.getName(), ret));
                     break;
                 }
             }
@@ -1051,8 +1078,10 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
 
         if(ret == null && !field.isOptional())
         {
-            logger.warning("Body not found for "+type+" field: "+field.getName());
-            log.warn("Body not found for "+type+" field: "+field.getName());
+            logger.warning(String.format("Body not found for %s field: %s",
+                category.value(), field.getName()));
+            log.warn(category, String.format("Body not found for %s field: %s",
+                category.value(), field.getName()));
         }
 
         return ret;
@@ -1061,12 +1090,13 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
     /**
      * Process an image field.
      */
-    protected String getImageSrc(Field field, Element root, String type)
+    protected String getImageSrc(Field field, Element root, LogCategory category)
     {
         String ret = null;
 
         if(debug())
-            logger.info("Looking for image for "+type+" field: "+field.getName());
+            logger.info(String.format("Looking for image for %s field: %s",
+                category.value(), field.getName()));
 
         for(FieldSelector selector : field.getSelectors())
         {
@@ -1077,9 +1107,10 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                 {
                     if(selector.isBackground())
                     {
-                        String style = getValue(field, element.attr("style"));
+                        String style = getValue(field, element.attr("style"), category);
                         if(debug())
-                            logger.info("Found style for "+type+" field "+field.getName()+": "+style);
+                            logger.info(String.format("Found style for %s field %s: %s",
+                                category.value(), field.getName(), style));
                         if(style != null && style.length() > 0)
                         {
                             Matcher m = Pattern.compile("(?:.*)background-image:(.+?)(?:;|\\z)(?:.*)").matcher(style);
@@ -1101,7 +1132,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                                     else
                                     {
                                         logger.warning(String.format("No url found for background image: %s", image));
-                                        log.warn(String.format("No url found for background image: %s", image));
+                                        log.warn(category, String.format("No url found for background image: %s", image));
                                     }
                                 }
                             }
@@ -1113,14 +1144,15 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                     {
                         if(selector.getAttribute() != null && selector.getAttribute().length() > 0)
                         {
-                            ret = getValue(field, element.attr(selector.getAttribute()));
+                            ret = getValue(field, element.attr(selector.getAttribute()), category);
                             if(debug())
-                                logger.info("Found image "+selector.getAttribute()+" for "+type+" field "+field.getName()+": "+ret);
+                                logger.info(String.format("Found image %s for %s field %s: %s",
+                                    selector.getAttribute(), category.value(), field.getName(), ret));
                             break;
                         }
                         else if(element.hasAttr("srcset"))
                         {
-                            String srcset = getValue(field, element.attr("srcset"));
+                            String srcset = getValue(field, element.attr("srcset"), category);
                             String[] items = srcset.split(", ");
 
                             // Process each srcset item to extract the url and size
@@ -1153,15 +1185,16 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                                 ret = list.get(0);
 
                             if(debug())
-                                logger.info("Found image srcset for "+type+" field "+field.getName()
-                                    +" size="+selector.getSize()+": "+ret);
+                                logger.info(String.format("Found image srcset for %s field %s size=%d: %s",
+                                    category.value(), field.getName(), selector.getSize(), ret));
                             break;
                         }
                         else if(element.hasAttr("src"))
                         {
-                            ret = getValue(field, element.attr("src"));
+                            ret = getValue(field, element.attr("src"), category);
                             if(debug())
-                                logger.info("Found image src for "+type+" field "+field.getName()+": "+ret);
+                                logger.info(String.format("Found image src for %s field %s: %s",
+                                    category.value(), field.getName(), ret));
                             break;
                         }
                     }
@@ -1169,14 +1202,15 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
             }
             else if(selector.getSource().isMeta())
             {
-                String tag = getPropertyMetatag(selector.getExpr());
+                String tag = getPropertyMetatag(selector.getExpr(), category);
                 if(tag != null)
                 {
-                    ret = getValue(field, tag);
+                    ret = getValue(field, tag, category);
                     if(ret.length() > 0)
                     {
                         if(debug())
-                            logger.info("Found image metatag for "+type+" field "+field.getName()+": "+ret);
+                            logger.info(String.format("Found image metatag for %s field %s: %s",
+                                category.value(), field.getName(), ret));
                         break;
                     }
                 }
@@ -1190,8 +1224,10 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
         }
         else if(!field.isOptional())
         {
-            logger.warning("Image not found for "+type+" field: "+field.getName());
-            log.warn("Image not found for "+type+" field: "+field.getName());
+            logger.warning(String.format("Image not found for %s field: %s",
+                category.value(), field.getName()));
+            log.warn(category, String.format("Image not found for %s field: %s",
+                category.value(), field.getName()));
         }
 
         return ret;

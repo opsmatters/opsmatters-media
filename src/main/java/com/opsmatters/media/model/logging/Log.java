@@ -56,41 +56,41 @@ public class Log
     /**
      * Appends an entry.
      */
-    public void add(LogLevel level, String text)
+    public void add(LogLevel level, LogCategory category, String text)
     {
-        add(new LogEntry(level, text));
+        add(new LogEntry(level, category, text));
     }
 
     /**
      * Appends an DEBUG entry.
      */
-    public void debug(String text)
+    public void debug(LogCategory category, String text)
     {
-        add(DEBUG, text);
+        add(DEBUG, category, text);
     }
 
     /**
      * Appends an INFO entry.
      */
-    public void info(String text)
+    public void info(LogCategory category, String text)
     {
-        add(INFO, text);
+        add(INFO, category, text);
     }
 
     /**
      * Appends an WARN entry.
      */
-    public void warn(String text)
+    public void warn(LogCategory category, String text)
     {
-        add(WARN, text);
+        add(WARN, category, text);
     }
 
     /**
      * Appends an ERROR entry.
      */
-    public void error(String text)
+    public void error(LogCategory category, String text)
     {
-        add(ERROR, text);
+        add(ERROR, category, text);
     }
 
     /**

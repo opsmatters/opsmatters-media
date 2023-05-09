@@ -44,6 +44,7 @@ import com.opsmatters.media.client.video.VideoClientFactory;
 import static com.opsmatters.media.model.content.crawler.field.FilterScope.*;
 import static com.opsmatters.media.model.content.crawler.field.FilterResult.*;
 import static com.opsmatters.media.model.content.FieldName.*;
+import static com.opsmatters.media.model.logging.LogCategory.*;
 
 /**
  * Class representing a crawler for videos.
@@ -251,7 +252,7 @@ public class VideoCrawler extends ContentCrawler<VideoTeaser,VideoDetails>
         if(fields.hasTitle())
         {
             Field field = fields.getTitle();
-            String title = getValue(field, video.getString(field.getSelector(0).getExpr()));
+            String title = getValue(field, video.getString(field.getSelector(0).getExpr()), TEASER);
             if(title != null && title.length() > 0)
                 teaser.setTitle(EmojiParser.removeAllEmojis(title));
         }
@@ -259,7 +260,7 @@ public class VideoCrawler extends ContentCrawler<VideoTeaser,VideoDetails>
         if(fields.hasPublishedDate())
         {
             Field field = fields.getPublishedDate();
-            String publishedDate = getValue(field, video.getString(field.getSelector(0).getExpr()));
+            String publishedDate = getValue(field, video.getString(field.getSelector(0).getExpr()), TEASER);
             if(publishedDate != null)
                 teaser.setPublishedDateAsString(publishedDate, field.getDatePattern());
         }

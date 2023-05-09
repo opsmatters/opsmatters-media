@@ -32,11 +32,13 @@ import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.model.content.crawler.field.Fields;
+import com.opsmatters.media.model.logging.LogCategory;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;
+import static com.opsmatters.media.model.logging.LogCategory.*;
 
 /**
  * Class representing a crawler for events.
@@ -75,16 +77,16 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
     {
         EventTeaser teaser = new EventTeaser();
         if(fields.hasValidator())
-            validateContent(teaser, fields.getValidator(), root, "teaser");
+            validateContent(teaser, fields.getValidator(), root, TEASER);
         if(teaser.isValid())
         {
             if(debug() && fields.hasValidator())
                 logger.info("Validated event teaser: "+fields.getValidator());
-            populateTeaserFields(root, fields, teaser, "teaser");
+            populateTeaserFields(root, fields, teaser, TEASER);
             if(fields.hasUrl())
             {
                 Field field = fields.getUrl();
-                String url = getAnchor(field, root, "teaser", field.removeParameters());
+                String url = getAnchor(field, root, TEASER, field.removeParameters());
                 if(url != null)
                     teaser.setUrl(url, field.removeParameters());
             }
@@ -116,10 +118,10 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
 
         // Trace to see the page
         if(trace(getDriver()))
-            logger.info("article-page="+getPageSource());
+            logger.info("article-page="+getPageSource(ARTICLE));
 
         Element root = null;
-        Document doc = Jsoup.parse(getPageSource("body"));
+        Document doc = Jsoup.parse(getPageSource("body", ARTICLE));
         doc.outputSettings().prettyPrint(false);
 
         for(Fields fields : articles)
@@ -133,13 +135,13 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
                 root = elements.get(0);
                 if(debug())
                     logger.info("Root found for event article: "+fields.getRoot());
-                populateTeaserFields(root, fields, content, "article");
+                populateTeaserFields(root, fields, content, ARTICLE);
             }
             else
             {
                 if(debug())
                     logger.info("Root not found for event article: "+fields.getRoot());
-                log.info("Root not found for event article: "+fields.getRoot());
+                log.info(ARTICLE, "Root not found for event article: "+fields.getRoot());
                 continue;
             }
 
@@ -158,7 +160,7 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
             if(fields.hasStartTime())
             {
                 Field field = fields.getStartTime();
-                String start = getElements(field, root, "article");
+                String start = getElements(field, root, ARTICLE);
                 if(start != null)
                 {
                     try
@@ -189,7 +191,7 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
                     {
                         logger.severe(StringUtils.serialize(e));
                         logger.warning("Unparseable start time: "+start);
-                        log.warn("Unparseable start time: "+start);
+                        log.warn(ARTICLE, "Unparseable start time: "+start);
                     }
                 }
             }
@@ -205,14 +207,14 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
 
             if(fields.hasTimeZone())
             {
-                String timezone = getElements(fields.getTimeZone(), root, "article");
+                String timezone = getElements(fields.getTimeZone(), root, ARTICLE);
                 if(timezone != null)
                     content.setTimeZone(timezone);
             }
 
             if(root != null && fields.hasBody())
             {
-                String body = getBody(fields.getBody(), root, "article", debug());
+                String body = getBody(fields.getBody(), root, ARTICLE, debug());
                 if(body != null)
                     content.setDescription(body);
             }
@@ -240,13 +242,13 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
     /**
      * Populate the teaser fields from the given element.
      */
-    private void populateTeaserFields(Element root,  Fields fields, EventTeaser teaser, String type)
+    private void populateTeaserFields(Element root,  Fields fields, EventTeaser teaser, LogCategory category)
         throws DateTimeParseException
     {
         if(fields.hasTitle())
         {
             Field field = fields.getTitle();
-            String title = getElements(field, root, type);
+            String title = getElements(field, root, category);
             if(title != null && title.length() > 0)
             {
                 // Event title should always start with the organisation name
@@ -268,7 +270,7 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
         if(fields.hasStartDate())
         {
             Field field = fields.getStartDate();
-            String startDate = getElements(field, root, type);
+            String startDate = getElements(field, root, category);
             if(startDate != null)
             {
                 // Remove whitespace from date
@@ -298,10 +300,10 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
                 catch(DateTimeParseException e)
                 {
                     logger.severe(StringUtils.serialize(e));
-                    logger.severe(String.format("Unparseable %s start date: %s code=%s",
-                        type, startDate, config.getCode()));
-                    log.error(String.format("Unparseable %s start date: %s",
-                        type, startDate));
+                    logger.severe(String.format("Unparseable %s starte date: %s code=%s",
+                        category.value(), startDate, config.getCode()));
+                    log.error(category, String.format("Unparseable %s start date: %s",
+                        category.value(), startDate));
                 }
             }
         }
