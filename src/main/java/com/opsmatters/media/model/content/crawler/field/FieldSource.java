@@ -17,11 +17,11 @@
 package com.opsmatters.media.model.content.crawler.field;
 
 /**
- * Represents a selector source.
+ * Represents a field source.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum FieldSelectorSource
+public enum FieldSource
 {
     PAGE("page"),
     META("meta"),
@@ -33,7 +33,7 @@ public enum FieldSelectorSource
      * Constructor that takes the source value.
      * @param value The value for the source
      */
-    FieldSelectorSource(String value)
+    FieldSource(String value)
     {
         this.value = value;
     }
@@ -79,10 +79,10 @@ public enum FieldSelectorSource
      * @param value The type value
      * @return The type for the given value
      */
-    public static FieldSelectorSource fromValue(String value)
+    public static FieldSource fromValue(String value)
     {
-        FieldSelectorSource[] types = values();
-        for(FieldSelectorSource type : types)
+        FieldSource[] types = values();
+        for(FieldSource type : types)
         {
             if(type.value().equals(value))
                 return type;

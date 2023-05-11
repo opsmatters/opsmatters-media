@@ -53,6 +53,7 @@ import com.opsmatters.media.model.content.crawler.field.Fields;
 import com.opsmatters.media.model.content.crawler.field.FieldSelector;
 import com.opsmatters.media.model.content.crawler.field.FieldExclude;
 import com.opsmatters.media.model.content.crawler.field.FieldFilter;
+import com.opsmatters.media.model.content.crawler.field.ElementOutput;
 import com.opsmatters.media.model.content.ContentTeaser;
 import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.crawler.parser.ElementType;
@@ -61,6 +62,7 @@ import com.opsmatters.media.model.logging.LogCategory;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.StringUtils;
 
+import static com.opsmatters.media.model.content.crawler.field.ElementOutput.*;
 import static com.opsmatters.media.model.logging.LogCategory.*;
 
 /**
@@ -504,19 +506,31 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
             List<ContentTeaser> teasers = Teasers.getTeasers(config.getCode(), url);
             if(teasers != null)
             {
+                int count = 0;
                 for(ContentTeaser teaser : teasers)
-                    addTeaser((T)teaser);
-                ret += numTeasers();
-                if(debug())
-                    logger.info("Retrieved "+numTeasers()+" teasers from cache");
-
-                List<LogEntry> entries = Teasers.getLogEntries(config.getCode(), url);
-                if(entries != null)
                 {
-                    for(LogEntry entry : entries)
-                        log.add(entry);
+                    if(teaser.isValid() && !map.containsKey(teaser.getUniqueId()))
+                    {
+                        addTeaser((T)teaser);
+                        map.put(teaser.getUniqueId(), teaser.getUniqueId());
+                        ++count;
+                    }
+                }
+
+                if(count > 0)
+                {
+                    ret += count;
                     if(debug())
-                        logger.info("Retrieved "+entries.size()+" log entries from cache");
+                        logger.info("Retrieved "+count+" teasers from cache");
+
+                    List<LogEntry> entries = Teasers.getLogEntries(config.getCode(), url);
+                    if(entries != null)
+                    {
+                        for(LogEntry entry : entries)
+                            log.add(entry);
+                        if(debug())
+                            logger.info("Retrieved "+entries.size()+" log entries from cache");
+                    }
                 }
             }
             else
@@ -625,7 +639,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                 {
                     if(field.hasExtractors())
                     {
-                        String result = getValue(field, select(selector, nodes), null);
+                        String result = getValue(field, select(selector, nodes), null, category);
                         valid = result != null && result.length() > 0;
                     }
                     else
@@ -734,7 +748,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
             else
             {
                 // Get the node text
-                value = getText(node);
+                value = getText(node, selector.getOutput());
             }
 
             if(value.length() > 0)
@@ -755,21 +769,15 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
     /**
      * Extract the text from the given element.
      */
-    protected String getText(Element element)
+    protected String getText(Element element, ElementOutput output)
     {
         String ret = "";
-
-        if(browser == CrawlerBrowser.CHROME || browser == CrawlerBrowser.FIREFOX)
-        {
+        if(output == HTML)
             ret = element.html();
-            if(ret.indexOf("<") != -1) // Remove any markup
-                ret = ret.replaceAll("<.+?>","").trim();
-        }
-        else // HtmlUnit
-        {
-            ret = element.text().trim();
-        }
-
+        else if(output == OWN_TEXT)
+            ret = element.ownText();
+        else // "text"
+            ret = element.text();
         return ret;
     }
 

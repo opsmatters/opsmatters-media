@@ -31,10 +31,11 @@ public class FieldSelector implements ConfigElement
 {
     private static final Logger logger = Logger.getLogger(FieldSelector.class.getName());
 
-    private FieldSelectorSource source = FieldSelectorSource.PAGE;
+    private FieldSource source = FieldSource.PAGE;
     private String name = "";
     private String expr = "";
     private String attribute = "";
+    private ElementOutput output = ElementOutput.TEXT;
     private boolean multiple = false;
     private String separator = "";
     private List<FieldExclude> excludes;
@@ -66,7 +67,7 @@ public class FieldSelector implements ConfigElement
         setName(name);
         setExpr(expr);
         setMultiple(getMultipleDefault());
-        setSource(FieldSelectorSource.PAGE);
+        setSource(FieldSource.PAGE);
     }
 
     /**
@@ -79,6 +80,7 @@ public class FieldSelector implements ConfigElement
             setSource(obj.getSource());
             setExpr(obj.getExpr());
             setAttribute(obj.getAttribute());
+            setOutput(obj.getOutput());
             setMultiple(obj.isMultiple());
             setSeparator(obj.getSeparator());
             setSize(obj.getSize());
@@ -119,7 +121,7 @@ public class FieldSelector implements ConfigElement
     /**
      * Returns the source for this configuration.
      */
-    public FieldSelectorSource getSource()
+    public FieldSource getSource()
     {
         return source;
     }
@@ -127,7 +129,7 @@ public class FieldSelector implements ConfigElement
     /**
      * Sets the source for this configuration.
      */
-    public void setSource(FieldSelectorSource source)
+    public void setSource(FieldSource source)
     {
         this.source = source;
     }
@@ -137,7 +139,7 @@ public class FieldSelector implements ConfigElement
      */
     public void setSource(String source)
     {
-        setSource(FieldSelectorSource.fromValue(source));
+        setSource(FieldSource.fromValue(source));
     }
 
     /**
@@ -186,6 +188,30 @@ public class FieldSelector implements ConfigElement
     public boolean hasAttribute()
     {
         return attribute != null && attribute.length() > 0;
+    }
+
+    /**
+     * Returns the output for this configuration.
+     */
+    public ElementOutput getOutput()
+    {
+        return output;
+    }
+
+    /**
+     * Sets the output for this configuration.
+     */
+    public void setOutput(ElementOutput output)
+    {
+        this.output = output;
+    }
+
+    /**
+     * Sets the output for this configuration.
+     */
+    public void setOutput(String output)
+    {
+        setOutput(ElementOutput.fromValue(output));
     }
 
     /**
@@ -337,6 +363,7 @@ public class FieldSelector implements ConfigElement
         private static final String SOURCE = "source";
         private static final String EXPR = "expr";
         private static final String ATTRIBUTE = "attribute";
+        private static final String OUTPUT = "output";
         private static final String MULTIPLE = "multiple";
         private static final String SEPARATOR = "separator";
         private static final String EXCLUDE = "exclude";
@@ -371,6 +398,8 @@ public class FieldSelector implements ConfigElement
                 ret.setExpr((String)map.get(EXPR));
             if(map.containsKey(ATTRIBUTE))
                 ret.setAttribute((String)map.get(ATTRIBUTE));
+            if(map.containsKey(OUTPUT))
+                ret.setOutput((String)map.get(OUTPUT));
             if(map.containsKey(MULTIPLE))
                 ret.setMultiple((Boolean)map.get(MULTIPLE));
             if(map.containsKey(SEPARATOR))
@@ -404,7 +433,7 @@ public class FieldSelector implements ConfigElement
         {
             ret.setExpr(expr);
             ret.setMultiple(ret.getMultipleDefault());
-            ret.setSource(FieldSelectorSource.PAGE);
+            ret.setSource(FieldSource.PAGE);
 
             return this;
         }
