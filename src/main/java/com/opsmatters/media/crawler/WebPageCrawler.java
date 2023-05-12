@@ -1193,7 +1193,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                                 ret = list.get(0);
 
                             if(debug())
-                                logger.info(String.format("Found image srcset for %s field %s size=%d: %s",
+                                logger.info(String.format("Found image srcset for %s field %s size=%s: %s",
                                     category.value(), field.getName(), selector.getSize(), ret));
                             break;
                         }

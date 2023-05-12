@@ -7,6 +7,7 @@ package com.opsmatters.media.model;
  */
 public enum UserMessage
 {
+    NONE("", true),
     UNKNOWN("Unknown", false),
     UPDATING("Updating...", true),
     UNAVAILABLE("Unavailable", false),
