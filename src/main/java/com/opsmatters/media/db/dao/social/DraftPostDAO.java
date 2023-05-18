@@ -61,6 +61,13 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
       + "FROM DRAFT_POSTS WHERE TYPE=? AND STATUS='NEW'";
 
     /**
+     * The query to use to select processed content posts from the DRAFT_POSTS table for the current session.
+     */
+    private static final String GET_PROCESSED_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SCHEDULED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, MESSAGE, STATUS, CREATED_BY "
+      + "FROM DRAFT_POSTS WHERE TYPE=? AND STATUS='PROCESSED' AND SESSION_ID=?";
+
+    /**
      * The query to use to insert a post into the DRAFT_POSTS table.
      */
     private static final String INSERT_SQL =  
@@ -270,6 +277,64 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     }
 
     /**
+     * Returns the processed posts from the DRAFT_POSTS table for the given type.
+     */
+    public synchronized List<DraftPost> getProcessedPosts(PostType type) throws SQLException
+    {
+        List<DraftPost> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(getProcessedStmt == null)
+            getProcessedStmt = prepareStatement(getConnection(), GET_PROCESSED_SQL);
+        clearParameters(getProcessedStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            getProcessedStmt.setString(1, type.name());
+            getProcessedStmt.setInt(2, SessionId.get());
+            getProcessedStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = getProcessedStmt.executeQuery();
+            ret = new ArrayList<DraftPost>();
+            while(rs.next())
+            {
+                DraftPost post = DraftPostFactory.newInstance(PostType.valueOf(rs.getString(5)));
+                post.setId(rs.getString(1));
+                post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                post.setScheduledDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                post.setSiteId(rs.getString(6));
+                post.setSourceId(rs.getString(7));
+                post.setProperties(new JSONObject(getClob(rs, 8)));
+                post.setAttributes(new JSONObject(getClob(rs, 9)));
+                post.setMessage(rs.getString(10));
+                post.setStatus(rs.getString(11));
+                post.setCreatedBy(rs.getString(12));
+                ret.add(post);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the pending posts for the given content in the DRAFT_POSTS table.
      */
     public List<DraftPost> getPending(Content content) throws SQLException
@@ -332,6 +397,41 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     public boolean hasPending(OrganisationSite organisation) throws SQLException
     {
         return getPending(organisation).size() > 0;
+    }
+
+    /**
+     * Returns the processed posts for the given content in the DRAFT_POSTS table for the current session.
+     */
+    public List<DraftPost> getProcessed(Content content) throws SQLException
+    {
+        List<DraftPost> ret = new ArrayList<DraftPost>();
+
+        List<DraftPost> posts = getProcessedPosts(PostType.CONTENT);
+        for(DraftPost draft : posts)
+        {
+            DraftContentPost post = (DraftContentPost)draft;
+            if(post.getSiteId().equals(content.getSiteId())
+                && post.getCode().equals(content.getCode())
+                && post.getContentType() == content.getType())
+            {
+                // Roundups don't have a content id
+                if(content.getType() == ContentType.ROUNDUP 
+                    || post.getContentId() == content.getId())
+                {
+                    ret.add(post);
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given content has a processed post in the DRAFT_POSTS table.
+     */
+    public boolean hasProcessed(Content content) throws SQLException
+    {
+        return getProcessed(content).size() > 0;
     }
 
     /**
@@ -800,6 +900,8 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
         getByIdStmt = null;
         closeStatement(getPendingStmt);
         getPendingStmt = null;
+        closeStatement(getProcessedStmt);
+        getProcessedStmt = null;
         closeStatement(insertStmt);
         insertStmt = null;
         closeStatement(updateStmt);
@@ -822,6 +924,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
 
     private PreparedStatement getByIdStmt;
     private PreparedStatement getPendingStmt;
+    private PreparedStatement getProcessedStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listByTypeStmt;

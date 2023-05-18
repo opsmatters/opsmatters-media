@@ -245,7 +245,7 @@ public abstract class ContentTeaser implements java.io.Serializable
      */
     public void setSummary(String summary)
     {
-        this.summary = summary;
+        this.summary = FormatUtils.formatSummary(summary);
     }
 
     /**

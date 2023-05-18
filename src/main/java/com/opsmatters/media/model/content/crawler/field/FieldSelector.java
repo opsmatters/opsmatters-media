@@ -41,6 +41,7 @@ public class FieldSelector implements ConfigElement
     private List<FieldExclude> excludes;
     private String size = "";
     private boolean background = false;
+    private boolean secure = false;
 
     /**
      * Constructor that takes a name.
@@ -85,6 +86,7 @@ public class FieldSelector implements ConfigElement
             setSeparator(obj.getSeparator());
             setSize(obj.getSize());
             setBackground(obj.isBackground());
+            setSecure(obj.useSecure());
 
             if(obj.getExcludes() != null)
             {
@@ -303,6 +305,22 @@ public class FieldSelector implements ConfigElement
     }
 
     /**
+     * Returns <CODE>true</CODE> if the image URL should use https.
+     */
+    public boolean useSecure()
+    {
+        return secure;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the image URL should use https.
+     */
+    public void setSecure(boolean secure)
+    {
+        this.secure = secure;
+    }
+
+    /**
      * Returns the classes to exclude for this configuration.
      */
     public List<FieldExclude> getExcludes()
@@ -370,6 +388,7 @@ public class FieldSelector implements ConfigElement
         private static final String EXCLUDES = "excludes";
         private static final String SIZE = "size";
         private static final String BACKGROUND = "background";
+        private static final String SECURE = "secure";
 
         private FieldSelector ret = null;
 
@@ -408,6 +427,8 @@ public class FieldSelector implements ConfigElement
                 ret.setSize((String)map.get(SIZE));
             if(map.containsKey(BACKGROUND))
                 ret.setBackground((Boolean)map.get(BACKGROUND));
+            if(map.containsKey(SECURE))
+                ret.setSecure((Boolean)map.get(SECURE));
 
             if(map.containsKey(EXCLUDE))
             {

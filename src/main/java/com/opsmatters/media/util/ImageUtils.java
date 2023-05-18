@@ -153,10 +153,10 @@ public class ImageUtils
         BufferedImage ret = null;
         ImageInputStream stream = ImageIO.createImageInputStream(file);
         if(stream == null)
-            throw new IllegalArgumentException("stream null!");
+            throw new IllegalArgumentException("Image stream null");
         Iterator<ImageReader> readers = ImageIO.getImageReaders(stream);
         if(!readers.hasNext())
-            throw new IllegalArgumentException("image reader null!");
+            throw new IllegalArgumentException("No readers found for image format");
 
         // Try all the readers for the format
         IOException exception = null;

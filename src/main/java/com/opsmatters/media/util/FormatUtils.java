@@ -231,4 +231,40 @@ public class FormatUtils
             .append("ts=").append(System.currentTimeMillis())
             .toString();
     }
+
+    /**
+     * Returns the given summary formatted for an article.
+     */
+    public static String formatSummary(String summary)
+    {
+        String ret = summary;
+        if(ret != null)
+        {
+            ret = ret.trim();
+            if(ret.length() > 0)
+            {
+                boolean stripped = false;
+                if(ret.startsWith("<p>"))
+                {
+                    ret = ret.replaceAll("<p>(.*)</p>", "$1").trim();
+                    stripped = true;
+                }
+
+                if(ret.length() > 0)
+                {
+                    ret = ret.replaceAll("[\r\n]+", " "); // remove LFs
+                    ret = ret.replaceAll("[ ]+", " "); // coallesce spaces
+
+                    char last = ret.charAt(ret.length()-1);
+                    if(Character.isLetterOrDigit(last))
+                        ret += "."; // add full stop
+                }
+
+                if(stripped)
+                    ret = String.format("<p>%s</p>", ret);
+            }
+        }
+
+        return ret;
+    }
 }

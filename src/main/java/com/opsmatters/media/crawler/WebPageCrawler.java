@@ -687,6 +687,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
         Elements nodes = null;
         for(FieldSelector selector : field.getSelectors())
         {
+            boolean found = false;
             if(selector.getSource().isPage())
             {
                 // Try each selector
@@ -699,7 +700,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                         if(debug())
                             logger.info(String.format("Found elements for %s field %s: %s",
                                 category.value(), field.getName(), ret));
-                        break;
+                        found = true;
                     }
                 }
             }
@@ -714,10 +715,13 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                         if(debug())
                             logger.info(String.format("Found element metatag for %s field %s: %s",
                                 category.value(), field.getName(), ret));
-                        break;
+                        found = true;
                     }
                 }
             }
+
+            if(found)
+                break;
         }
 
         if(ret == null && !field.isOptional())
@@ -794,6 +798,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
 
         for(FieldSelector selector : field.getSelectors())
         {
+            boolean found = false;
             if(selector.getSource().isPage())
             {
                 Element anchor = null;
@@ -839,7 +844,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                     if(debug())
                         logger.info(String.format("Found anchor for %s field %s: %s",
                             category.value(), field.getName(), ret));
-                    break;
+                    found = true;
                 }
                 else if(div != null) // Sometimes the link is a div with a href attribute
                 {
@@ -850,7 +855,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                     if(debug())
                         logger.info(String.format("Found anchor div for %s field %s: %s",
                             category.value(), field.getName(), ret));
-                    break;
+                    found = true;
                 }
                 else if(section != null) // Sometimes the link is a section with a custom attribute
                 {
@@ -861,7 +866,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                     if(debug())
                         logger.info(String.format("Found anchor section for %s field %s: %s",
                             category.value(), field.getName(), ret));
-                    break;
+                    found = true;
                 }
                 else if(elem != null)
                 {
@@ -880,7 +885,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                     if(debug())
                         logger.info(String.format("Found anchor element for %s field %s: %s",
                             category.value(), field.getName(), ret));
-                    break;
+                    found = true;
                 }
             }
             else if(selector.getSource().isMeta())
@@ -892,9 +897,12 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                     if(debug())
                         logger.info(String.format("Found anchor metatag for %s field %s: %s",
                             category.value(), field.getName(), ret));
-                    break;
+                    found = true;
                 }
             }
+
+            if(found)
+                break;
         }
 
         if(ret == null && !field.isOptional())
@@ -971,6 +979,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
 
         for(FieldSelector selector : field.getSelectors())
         {
+            boolean found = false;
             if(selector.getSource().isPage())
             {
                 String body = getFormattedSummary(selector.getExpr(), selector.isMultiple(),
@@ -983,7 +992,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                     if(debug())
                         logger.info(String.format("Found body summary for %s field %s: %s",
                             category.value(), field.getName(), ret));
-                    break;
+                    found = true;
                 }
             }
             else if(selector.getSource().isMeta())
@@ -995,9 +1004,12 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                     if(debug())
                         logger.info(String.format("Found body summary metatag for %s field %s: %s",
                             category.value(), field.getName(), ret));
-                    break;
+                    found = true;
                 }
             }
+
+            if(found)
+                break;
         }
 
         if(ret == null && !field.isOptional())
@@ -1057,6 +1069,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
 
         for(FieldSelector selector : field.getSelectors())
         {
+            boolean found = false;
             if(selector.getSource().isPage())
             {
                 String body = getFormattedBody(selector.getExpr(), root,
@@ -1067,7 +1080,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                     if(debug())
                         logger.info(String.format("Found body for %s field %s: %s",
                             category.value(), field.getName(), ret));
-                    break;
+                    found = true;
                 }
             }
             else if(selector.getSource().isMeta())
@@ -1079,9 +1092,12 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                     if(debug())
                         logger.info(String.format("Found body metatag for %s field %s: %s",
                             category.value(), field.getName(), ret));
-                    break;
+                    found = true;
                 }
             }
+
+            if(found)
+                break;
         }
 
         if(ret == null && !field.isOptional())
@@ -1108,6 +1124,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
 
         for(FieldSelector selector : field.getSelectors())
         {
+            boolean found = false;
             if(selector.getSource().isPage())
             {
                 Element element = root.select(selector.getExpr()).first();
@@ -1145,7 +1162,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                                 }
                             }
 
-                            break;
+                            found = true;
                         }
                     }
                     else // Image src
@@ -1156,7 +1173,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                             if(debug())
                                 logger.info(String.format("Found image %s for %s field %s: %s",
                                     selector.getAttribute(), category.value(), field.getName(), ret));
-                            break;
+                            found = true;
                         }
                         else if(element.hasAttr("srcset"))
                         {
@@ -1195,7 +1212,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                             if(debug())
                                 logger.info(String.format("Found image srcset for %s field %s size=%s: %s",
                                     category.value(), field.getName(), selector.getSize(), ret));
-                            break;
+                            found = true;
                         }
                         else if(element.hasAttr("src"))
                         {
@@ -1203,7 +1220,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                             if(debug())
                                 logger.info(String.format("Found image src for %s field %s: %s",
                                     category.value(), field.getName(), ret));
-                            break;
+                            found = true;
                         }
                     }
                 }
@@ -1219,9 +1236,23 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                         if(debug())
                             logger.info(String.format("Found image metatag for %s field %s: %s",
                                 category.value(), field.getName(), ret));
-                        break;
+                        found = true;
                     }
                 }
+            }
+
+            if(found)
+            {
+                // Replace https:// with https:// if secure selected
+                if(ret != null && ret.startsWith("http://") && selector.useSecure())
+                {
+                    ret = ret.replace("http://", "https://");
+                    if(debug())
+                        logger.info(String.format("Changed image src URL to https for %s field %s: %s",
+                            category.value(), field.getName(), ret));
+                }
+
+                break;
             }
         }
 
