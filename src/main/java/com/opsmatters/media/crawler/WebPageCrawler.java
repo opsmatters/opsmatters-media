@@ -695,7 +695,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                 if(nodes != null && nodes.size() > 0)
                 {
                     ret = getValue(field, select(selector, nodes), category);
-                    if(ret.length() > 0)
+                    if(ret != null && ret.length() > 0)
                     {
                         if(debug())
                             logger.info(String.format("Found elements for %s field %s: %s",
@@ -710,7 +710,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                 if(tag != null)
                 {
                     ret = getValue(field, tag, category);
-                    if(ret.length() > 0)
+                    if(ret != null && ret.length() > 0)
                     {
                         if(debug())
                             logger.info(String.format("Found element metatag for %s field %s: %s",
@@ -1231,7 +1231,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                 if(tag != null)
                 {
                     ret = getValue(field, tag, category);
-                    if(ret.length() > 0)
+                    if(ret != null && ret.length() > 0)
                     {
                         if(debug())
                             logger.info(String.format("Found image metatag for %s field %s: %s",

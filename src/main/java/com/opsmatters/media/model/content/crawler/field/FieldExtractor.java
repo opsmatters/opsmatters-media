@@ -30,10 +30,14 @@ public class FieldExtractor implements ConfigElement
 {
     private static final Logger logger = Logger.getLogger(FieldExtractor.class.getName());
 
+    public static final String DEFAULT_FORMAT = "$1";
+
     private String name = "";
+    private String validator = "";
+    private Pattern validatorPattern;
     private String expr = "";
     private Pattern exprPattern;
-    private String format = "";
+    private String format = DEFAULT_FORMAT;
     private FieldMatch match = FieldMatch.FIRST;
 
     /**
@@ -60,7 +64,6 @@ public class FieldExtractor implements ConfigElement
     {
         setName(name);
         setExpr(expr);
-        setFormat("$1");
     }
 
     /**
@@ -70,6 +73,7 @@ public class FieldExtractor implements ConfigElement
     {
         if(obj != null)
         {
+            setValidator(obj.getValidator());
             setExpr(obj.getExpr());
             setFormat(obj.getFormat());
             setMatch(obj.getMatch());
@@ -98,6 +102,39 @@ public class FieldExtractor implements ConfigElement
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    /**
+     * Returns the validator for this configuration.
+     */
+    public String getValidator()
+    {
+        return validator;
+    }
+
+    /**
+     * Returns the validator regular expression pattern for this configuration.
+     */
+    public Pattern getValidatorPattern()
+    {
+        return validatorPattern;
+    }
+
+    /**
+     * Sets the validator regular expression for this configuration.
+     */
+    public void setValidator(String validator)
+    {
+        this.validator = validator;
+        this.validatorPattern = hasValidator() ? Pattern.compile(validator, Pattern.DOTALL) : null;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the validatorregular expression has been set.
+     */
+    public boolean hasValidator()
+    {
+        return validator != null && validator.length() > 0;
     }
 
     /**
@@ -205,6 +242,7 @@ public class FieldExtractor implements ConfigElement
     public static class Builder implements ConfigParser<FieldExtractor>
     {
         // The config attribute names
+        private static final String VALIDATOR = "validator";
         private static final String EXPR = "expr";
         private static final String FORMAT = "format";
         private static final String MATCH = "match";
@@ -228,6 +266,8 @@ public class FieldExtractor implements ConfigElement
         @Override
         public Builder parse(Map<String, Object> map)
         {
+            if(map.containsKey(VALIDATOR))
+                ret.setValidator((String)map.get(VALIDATOR));
             if(map.containsKey(EXPR))
                 ret.setExpr((String)map.get(EXPR));
             if(map.containsKey(FORMAT))
@@ -246,8 +286,6 @@ public class FieldExtractor implements ConfigElement
         public Builder expr(String expr)
         {
             ret.setExpr(expr);
-            ret.setFormat("$1");
-
             return this;
         }
 

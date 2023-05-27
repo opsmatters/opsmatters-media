@@ -295,6 +295,14 @@ public class TwitterClient extends Client implements SocialClient
     }
 
     /**
+     * Returns a prepared post for the given tweet.
+     */
+    private PreparedPost newPreparedPost(Tweet tweet, SocialChannel channel)
+    {
+        return new PreparedPost(tweet.getId(), tweet.getText(), channel);
+    }
+
+    /**
      * Sends the given post.
      *
      * @param text The text of the post to be sent.
@@ -306,8 +314,8 @@ public class TwitterClient extends Client implements SocialClient
         TweetCreateResponse result = tweets.createTweet(request).execute();
         if(result != null)
         {
-            ret = new PreparedPost(result.getData().getId(), channel);
-            ret.setMessage(result.getData().getText());
+            ret = new PreparedPost(result.getData().getId(),
+                result.getData().getText(), channel);
         }
 
         return ret;
@@ -354,7 +362,9 @@ public class TwitterClient extends Client implements SocialClient
             if(result != null)
             {
                 for(Tweet tweet : result.getData())
-                    ret.add(new PreparedPost(tweet, channel));
+                {
+                    ret.add(newPreparedPost(tweet, channel));
+                }
             }
         }
 

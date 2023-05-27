@@ -27,7 +27,8 @@ public enum EventProvider
     BRIGHTTALK("brighttalk", "BrightTALK", "brighttalk.com"),
     GOTOWEBINAR("gotowebinar", "GoToWebinar", "gotowebinar.com"),
     ON24("on24", "on24", "on24.com"),
-    LIVESTORM("livestorm", "Livestorm", "livestorm.co");
+    LIVESTORM("livestorm", "Livestorm", "livestorm.co"),
+    HOPIN("hopin", "Hopin", "hopin.com");
 
     private String code;
     private String value;

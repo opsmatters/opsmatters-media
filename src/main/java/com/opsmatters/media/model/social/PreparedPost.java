@@ -18,9 +18,6 @@ package com.opsmatters.media.model.social;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-import facebook4j.Post;
-import com.echobox.api.linkedin.types.ugc.UGCShare;
-import com.twitter.clientlib.model.Tweet;
 import com.opsmatters.media.client.social.SocialClient;
 import com.opsmatters.media.client.social.SocialClientFactory;
 import com.opsmatters.media.cache.organisation.Organisations;
@@ -83,34 +80,17 @@ public class PreparedPost extends SocialPost
     }
 
     /**
-     * Constructor that takes a Facebook post and a channel.
+     * Constructor that takes an id, message and a channel.
      */
-    public PreparedPost(Post post, SocialChannel channel)
+    public PreparedPost(String id, String message, SocialChannel channel)
     {
-        this(post.getId(), channel);
-        setCreatedDateMillis(post.getCreatedTime().getTime());
-        setMessage(post.getMessage());
-    }
-
-    /**
-     * Constructor that takes a LinkedIn share and a channel.
-     */
-    public PreparedPost(UGCShare share, SocialChannel channel)
-    {
-        this(share.getId().getId(), channel);
-        if(share.getCreated() != null)
-            setCreatedDateMillis(share.getCreated().getTime());
-        if(share.getSpecificContent() != null)
-            setMessage(share.getSpecificContent().getShareContent().getShareCommentary().getText());
-    }
-
-    /**
-     * Constructor that takes a Twitter tweet and a channel.
-     */
-    public PreparedPost(Tweet tweet, SocialChannel channel)
-    {
-        this(tweet.getId(), channel);
-        setMessage(tweet.getText());
+        setId(id);
+        setCreatedDate(Instant.now());
+        setUpdatedDate(Instant.now());
+        setMessage(message);
+        setChannel(channel);
+        setType(PostType.EXTERNAL);
+        setStatus(DeliveryStatus.RECEIVED);
     }
 
     /**
@@ -118,12 +98,7 @@ public class PreparedPost extends SocialPost
      */
     public PreparedPost(String id, SocialChannel channel)
     {
-        setId(id);
-        setCreatedDate(Instant.now());
-        setUpdatedDate(Instant.now());
-        setChannel(channel);
-        setType(PostType.EXTERNAL);
-        setStatus(DeliveryStatus.RECEIVED);
+        this(id, "", channel);
     }
 
     /**

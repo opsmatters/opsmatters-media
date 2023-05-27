@@ -279,14 +279,31 @@ public abstract class ContentCrawler<T extends ContentTeaser, D extends ContentT
         // Try each extractor in turn
         if(field.hasExtractors())
         {
+            boolean validated = true;
             for(FieldExtractor extractor : field.getExtractors())
             {
-                ret = extract(extractor, value);
-                if(ret != null && ret.length() > 0)
-                    break;
+                validated = validate(extractor, value);
+                if(validated)
+                {
+                    ret = extract(extractor, value);
+                    if(ret != null && ret.length() > 0)
+                        break;
+                }
+
+                validated = false;
             }
 
-            if(ret == null)
+            if(!validated)
+            {
+                if(debug())
+                    logger.info(String.format("Validation failed for %s field %s: value=[%s]", 
+                        category.value(), field.getName(), value));
+                log.info(category, String.format("Validation failed for %s field %s: value=[%s]", 
+                    category.value(), field.getName(), value));
+
+                ret = null; // Don't use the default if the expr didn't validate
+            }
+            else if(ret == null) // Validated
             {
                 if(debug())
                     logger.info(String.format("No match found for %s field %s: value=[%s]", 
@@ -315,6 +332,30 @@ public abstract class ContentCrawler<T extends ContentTeaser, D extends ContentT
             if(debug())
                 logger.info(String.format("Changed case for field %s: ret=[%s], case=[%s]", 
                         field.getName(), ret, field.getTextCase()));
+        }
+
+        return ret;
+    }
+
+    /**
+     * Validates the value using the given extractor.
+     */
+    private boolean validate(FieldExtractor extractor, String value)
+    {
+        boolean ret = true;
+
+        Pattern pattern = extractor.getValidatorPattern();
+        if(pattern != null)
+        {
+            if(debug())
+                logger.info(String.format("Validating field extractor %s: pattern=[%s] value=[%s]", 
+                    extractor.getName(), pattern.pattern(), value));
+
+            ret = pattern.matcher(value).matches();
+
+            if(debug())
+                logger.info(String.format("Validated field extractor %s: ret=%b", 
+                    extractor.getName(), ret));
         }
 
         return ret;

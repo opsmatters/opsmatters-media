@@ -649,13 +649,19 @@ media.built.on=${TODAY}
   <dependency>
     <groupId>com.echobox</groupId>
     <artifactId>ebx-linkedin-sdk</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>4.4.2</version>
     <exclusions>
       <exclusion>
-        <groupId>ch.qos.logback.contrib</groupId>
-        <artifactId>logback-json-classic</artifactId>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
       </exclusion>
     </exclusions>
+  </dependency>
+
+  <dependency>
+    <groupId>com.google.http-client</groupId>
+    <artifactId>google-http-client-gson</artifactId>
+    <version>1.43.2</version>
   </dependency>
 
   <dependency>

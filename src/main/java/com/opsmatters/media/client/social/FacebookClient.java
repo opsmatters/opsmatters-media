@@ -246,6 +246,16 @@ public class FacebookClient extends Client implements SocialClient
     }
 
     /**
+     * Returns a prepared post for the given post.
+     */
+    private PreparedPost newPreparedPost(Post post, SocialChannel channel)
+    {
+        PreparedPost ret = new PreparedPost(post.getId(), post.getMessage(), channel);
+        ret.setCreatedDateMillis(post.getCreatedTime().getTime());
+        return ret;
+    }
+
+    /**
      * Sends the given post.
      *
      * @param text The text of the post to be sent.
@@ -259,7 +269,7 @@ public class FacebookClient extends Client implements SocialClient
         else
             id = client.postStatusMessage(text);
         Post post = client.getPost(id);
-        return post != null ? new PreparedPost(post, channel) : null;
+        return post != null ? newPreparedPost(post, channel) : null;
     }
 
     /**
@@ -274,7 +284,7 @@ public class FacebookClient extends Client implements SocialClient
         try
         {
             Post post = client.getPost(id);
-            ret = new PreparedPost(post, channel);
+            ret = newPreparedPost(post, channel);
         }
         catch(FacebookException e)
         {
@@ -296,7 +306,10 @@ public class FacebookClient extends Client implements SocialClient
         List<PreparedPost> ret = new ArrayList<PreparedPost>();
         ResponseList<Post> posts = client.getPosts();
         for(Post post : posts)
-            ret.add(new PreparedPost(post, channel));
+        {
+            ret.add(newPreparedPost(post, channel));
+        }
+
         return ret;
     }
 

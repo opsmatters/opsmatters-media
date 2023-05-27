@@ -23,20 +23,21 @@ import java.util.logging.Logger;
 import java.security.GeneralSecurityException;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
-import com.echobox.api.linkedin.client.DefaultLinkedInClient;
+import com.echobox.api.linkedin.client.VersionedLinkedInClient;
+import com.echobox.api.linkedin.client.DefaultVersionedLinkedInClient;
 import com.echobox.api.linkedin.version.Version;
 import com.echobox.api.linkedin.types.urn.URN;
 import com.echobox.api.linkedin.types.urn.URNEntityType;
-import com.echobox.api.linkedin.types.ugc.UGCShare;
-import com.echobox.api.linkedin.types.ugc.ShareContent;
-import com.echobox.api.linkedin.types.ugc.ShareMedia;
-import com.echobox.api.linkedin.types.ugc.Commentary;
-import com.echobox.api.linkedin.types.ugc.ViewContext;
 import com.echobox.api.linkedin.types.organization.Organization;
-import com.echobox.api.linkedin.connection.v2.OrganizationConnection;
-import com.echobox.api.linkedin.connection.v2.UGCShareConnection;
-import com.echobox.api.linkedin.exception.LinkedInResourceNotFoundException;
+import com.echobox.api.linkedin.types.posts.Post;
+import com.echobox.api.linkedin.types.posts.Distribution;
+import com.echobox.api.linkedin.types.posts.ViewContext;
+import com.echobox.api.linkedin.connection.versioned.VersionedOrganizationConnection;
+import com.echobox.api.linkedin.connection.versioned.VersionedPostConnection;
 import com.echobox.api.linkedin.exception.LinkedInAPIException;
+import com.echobox.api.linkedin.exception.LinkedInQueryParseException;
+import com.echobox.api.linkedin.exception.LinkedInResourceNotFoundException;
+import com.echobox.api.linkedin.util.PostUtils;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.model.social.SocialChannel;
@@ -56,10 +57,10 @@ public class LinkedInClient extends Client implements SocialClient
     public static final String OAUTH_SUFFIX = ".linkedin";
 
     private Organization organization;
-    private OrganizationConnection organizationConnection;
+    private VersionedOrganizationConnection organizationConnection;
     private String organizationId;
     private URN organizationURN;
-    private UGCShareConnection ugcConnection;
+    private VersionedPostConnection postConnection;
     private String appId = "";
     private String appSecret = "";
     private String redirectUri = "";
@@ -146,7 +147,7 @@ public class LinkedInClient extends Client implements SocialClient
         if(getAppId() != null && getAppId().length() > 0
             && (getAccessToken() == null || getAccessToken().length() == 0))
         {
-            DefaultLinkedInClient client = new DefaultLinkedInClient(Version.DEFAULT_VERSION);
+            VersionedLinkedInClient client = new DefaultVersionedLinkedInClient(Version.DEFAULT_VERSION);
             com.echobox.api.linkedin.client.LinkedInClient.AccessToken token = client.obtainUserAccessToken(getAppId(),
                 getAppSecret(), getRedirectUri(), getVerificationCode());
             setAccessToken(token.getAccessToken());
@@ -168,10 +169,10 @@ public class LinkedInClient extends Client implements SocialClient
         if(debug())
             logger.info("Creating linkedin client: "+channel.getId());
 
-        // Create the client
-        DefaultLinkedInClient linkedin = new DefaultLinkedInClient(getAccessToken(), Version.DEFAULT_VERSION);
-        organizationConnection = new OrganizationConnection(linkedin);
-        ugcConnection = new UGCShareConnection(linkedin);
+        // Create the client and connections
+        VersionedLinkedInClient linkedin = new DefaultVersionedLinkedInClient(getAccessToken(), Version.DEFAULT_VERSION);
+        organizationConnection = new VersionedOrganizationConnection(linkedin);
+        postConnection = new VersionedPostConnection(linkedin);
 
         // Issue command to test connectivity
         organizationURN = new URN(URNEntityType.ORGANIZATION, organizationId);
@@ -189,7 +190,8 @@ public class LinkedInClient extends Client implements SocialClient
     @Override
     public void close() 
     {
-        ugcConnection = null;
+        postConnection = null;
+        organizationConnection = null;
     }
 
     /**
@@ -313,43 +315,31 @@ public class LinkedInClient extends Client implements SocialClient
     }
 
     /**
+     * Returns a prepared post for the given post.
+     */
+    private PreparedPost newPreparedPost(Post post, SocialChannel channel)
+    {
+        return new PreparedPost(post.getId().getId(), post.getCommentary(), channel);
+    }
+
+    /**
      * Sends the given post.
      *
      * @param text The text of the post to be sent.
      */
     public PreparedPost sendPost(String text) throws IOException
     {
+        // Fix the message text
+        text = text.replaceAll("\\[", "(").replaceAll("\\]", ")"); // causes "input string format is invalid" error
+
         String url = StringUtils.extractUrl(text);
-
-        ShareContent.ShareContentBody body = new ShareContent.ShareContentBody();
-        Commentary commentary = new Commentary();
-        commentary.setText(text);
-        body.setShareCommentary(commentary);
-
-        if(url != null)
-        {
-            body.setShareMediaCategory("ARTICLE");
-            List<ShareMedia> mediaList = new ArrayList<ShareMedia>();
-            ShareMedia media = new ShareMedia();
-            media.setOriginalUrl(url);
-            media.setStatus("READY");
-            mediaList.add(media);
-            body.setMedia(mediaList);
-        }
-        else
-        {
-            body.setShareMediaCategory("NONE");
-        }
-
-        UGCShare share = new UGCShare(organizationURN);
-        ShareContent shareContent = new ShareContent();
-        shareContent.setShareContent(body);
-        share.setSpecificContent(shareContent);
-        share.setVisibility(new UGCShare.Visibility("PUBLIC"));
-        share.setLifecycleState("PUBLISHED");
-        UGCShare ugc = ugcConnection.createUGCPost(share);
-
-        return new PreparedPost(ugc, channel);
+        Distribution distribution = new Distribution(Distribution.FeedDistribution.MAIN_FEED);
+        Post post = new Post(organizationURN, text, distribution,
+            Post.LifecycleState.PUBLISHED, Post.Visibility.PUBLIC);
+        PostUtils.fillArticleContent(post, url, null, "", "");
+        URN postURN = postConnection.createPost(post);
+        post.setId(postURN);
+        return newPreparedPost(post, channel);
     }
 
     /**
@@ -360,13 +350,13 @@ public class LinkedInClient extends Client implements SocialClient
     public PreparedPost deletePost(String id) throws IOException
     {
         PreparedPost ret = null;
-        URN urn = new URN(URNEntityType.SHARE, id);
+        URN postURN = new URN(URNEntityType.SHARE, id);
 
         try
         {
-            UGCShare share = ugcConnection.retrieveUGCPost(urn, ViewContext.AUTHOR);
-            ugcConnection.deleteUGCPost(urn);
-            ret = new PreparedPost(share, channel);
+            Post post = postConnection.retrievePost(postURN, ViewContext.AUTHOR);
+            postConnection.deletePost(postURN);
+            ret = newPreparedPost(post, channel);
         }
         catch(LinkedInResourceNotFoundException e)
         {
@@ -383,9 +373,9 @@ public class LinkedInClient extends Client implements SocialClient
     public List<PreparedPost> getPosts() throws IOException
     {
         List<PreparedPost> ret = new ArrayList<PreparedPost>();
-        List<UGCShare> shares = ugcConnection.retrieveUGCPostsByAuthors(organizationURN, 30).getData();
-        for(UGCShare share : shares)
-            ret.add(new PreparedPost(share, channel));
+        List<Post> posts = postConnection.retrievePostsByAuthor(organizationURN, 30).getData();
+        for(Post post : posts)
+            ret.add(newPreparedPost(post, channel));
         return ret;
     }
 
@@ -394,8 +384,18 @@ public class LinkedInClient extends Client implements SocialClient
      */
     public boolean isRecoverable(Exception e)
     {
-        int errorCode = getErrorCode(e);
-        return errorCode != 409; // Content is a duplicate
+        boolean ret = true;
+        if(e instanceof LinkedInQueryParseException)
+        {
+            ret = false;
+        }
+        else
+        {
+            int errorCode = getErrorCode(e);
+            return errorCode != 409; // Content is a duplicate
+        }
+
+        return ret;
     }
 
     /**
@@ -408,7 +408,9 @@ public class LinkedInClient extends Client implements SocialClient
         if(e instanceof LinkedInAPIException)
         {
             LinkedInAPIException ex = (LinkedInAPIException)e;
-            ret = ex.getErrorCode();
+            Integer code = ex.getErrorCode();
+            if(code != null)
+                ret = code.intValue();
         }
 
         return ret;
