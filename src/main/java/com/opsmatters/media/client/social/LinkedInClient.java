@@ -17,12 +17,16 @@ package com.opsmatters.media.client.social;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.security.GeneralSecurityException;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Document;
 import com.echobox.api.linkedin.client.VersionedLinkedInClient;
 import com.echobox.api.linkedin.client.DefaultVersionedLinkedInClient;
 import com.echobox.api.linkedin.version.Version;
@@ -32,8 +36,10 @@ import com.echobox.api.linkedin.types.organization.Organization;
 import com.echobox.api.linkedin.types.posts.Post;
 import com.echobox.api.linkedin.types.posts.Distribution;
 import com.echobox.api.linkedin.types.posts.ViewContext;
+import com.echobox.api.linkedin.types.images.InitializeUploadRequestBody;
 import com.echobox.api.linkedin.connection.versioned.VersionedOrganizationConnection;
 import com.echobox.api.linkedin.connection.versioned.VersionedPostConnection;
+import com.echobox.api.linkedin.connection.versioned.VersionedImageConnection;
 import com.echobox.api.linkedin.exception.LinkedInAPIException;
 import com.echobox.api.linkedin.exception.LinkedInQueryParseException;
 import com.echobox.api.linkedin.exception.LinkedInResourceNotFoundException;
@@ -43,6 +49,8 @@ import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.PreparedPost;
 import com.opsmatters.media.util.StringUtils;
+
+import static com.echobox.api.linkedin.types.images.InitializeUploadRequestBody.*;
 
 /**
  * Class that represents a connection to LinkedIn for social media posts.
@@ -56,11 +64,15 @@ public class LinkedInClient extends Client implements SocialClient
     public static final String SUFFIX = ".social";
     public static final String OAUTH_SUFFIX = ".linkedin";
 
+    private static final int READ_TIMEOUT = 10000;
+    private static final int CONNECT_TIMEOUT = 5000;
+
     private Organization organization;
     private VersionedOrganizationConnection organizationConnection;
     private String organizationId;
     private URN organizationURN;
     private VersionedPostConnection postConnection;
+    private VersionedImageConnection imageConnection;
     private String appId = "";
     private String appSecret = "";
     private String redirectUri = "";
@@ -173,6 +185,7 @@ public class LinkedInClient extends Client implements SocialClient
         VersionedLinkedInClient linkedin = new DefaultVersionedLinkedInClient(getAccessToken(), Version.DEFAULT_VERSION);
         organizationConnection = new VersionedOrganizationConnection(linkedin);
         postConnection = new VersionedPostConnection(linkedin);
+        imageConnection = new VersionedImageConnection(linkedin);
 
         // Issue command to test connectivity
         organizationURN = new URN(URNEntityType.ORGANIZATION, organizationId);
@@ -190,8 +203,9 @@ public class LinkedInClient extends Client implements SocialClient
     @Override
     public void close() 
     {
-        postConnection = null;
         organizationConnection = null;
+        postConnection = null;
+        imageConnection = null;
     }
 
     /**
@@ -332,14 +346,56 @@ public class LinkedInClient extends Client implements SocialClient
         // Fix the message text
         text = text.replaceAll("\\[", "(").replaceAll("\\]", ")"); // causes "input string format is invalid" error
 
-        String url = StringUtils.extractUrl(text);
+        String link = StringUtils.extractUrl(text);
+
+        // Crawl the link's page to get the metatags
+        URL url = new URL(link);
+        Document doc = Jsoup.parse(url, READ_TIMEOUT);
+        List<Element> tags = doc.getElementsByTag("meta");
+        String title = getMetatag(tags, "og:title");
+        String description = getMetatag(tags, "og:description");
+        String image = getMetatag(tags, "og:image");
+
+        // Download the image file
+        String filename = image.substring(image.lastIndexOf("/")+1);
+        File file = File.createTempFile("image-", null);
+        FileUtils.copyURLToFile(new URL(image), file, CONNECT_TIMEOUT, READ_TIMEOUT);
+
+        // Upload the image file and delete the downloaded file
+        InitializeUploadRequest request = new InitializeUploadRequest(organizationURN);
+        URN imageURN = imageConnection.uploadImage(new InitializeUploadRequestBody(request), filename, file);
+        file.delete();
+
         Distribution distribution = new Distribution(Distribution.FeedDistribution.MAIN_FEED);
         Post post = new Post(organizationURN, text, distribution,
             Post.LifecycleState.PUBLISHED, Post.Visibility.PUBLIC);
-        PostUtils.fillArticleContent(post, url, null, "", "");
+        PostUtils.fillArticleContent(post, link, imageURN, title, description);
         URN postURN = postConnection.createPost(post);
         post.setId(postURN);
         return newPreparedPost(post, channel);
+    }
+
+    /**
+     * Get the content of the given metatag.
+     *
+     * @param tags The list of metatags.
+     * @param name The name of the metatag.
+     * @return The content of the metatag.
+     */
+    private String getMetatag(List<Element> tags, String name)
+    {
+        String ret = null;
+        for(Element tag : tags)
+        {
+            String attr = tag.attr("property");
+            if(attr != null && attr.equals(name))
+            {
+                ret = tag.attr("content");
+                break;
+            }
+        }
+
+        return ret;
     }
 
     /**

@@ -130,7 +130,7 @@ public class FieldExtractor implements ConfigElement
     }
 
     /**
-     * Returns <CODE>true</CODE> if the validatorregular expression has been set.
+     * Returns <CODE>true</CODE> if the validator regular expression has been set.
      */
     public boolean hasValidator()
     {

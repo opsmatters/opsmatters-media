@@ -289,8 +289,6 @@ public abstract class ContentCrawler<T extends ContentTeaser, D extends ContentT
                     if(ret != null && ret.length() > 0)
                         break;
                 }
-
-                validated = false;
             }
 
             if(!validated)
