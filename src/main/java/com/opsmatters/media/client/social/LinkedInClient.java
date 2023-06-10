@@ -343,9 +343,6 @@ public class LinkedInClient extends Client implements SocialClient
      */
     public PreparedPost sendPost(String text) throws IOException
     {
-        // Fix the message text
-        text = text.replaceAll("\\[", "(").replaceAll("\\]", ")"); // causes "input string format is invalid" error
-
         String link = StringUtils.extractUrl(text);
 
         // Crawl the link's page to get the metatags

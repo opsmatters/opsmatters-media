@@ -222,20 +222,9 @@ public class FormatUtils
     }
 
     /**
-     * Appends a timestamp parameter to the given URL to prevent caching.
-     */
-    public static String addAntiCacheParameter(String url)
-    {
-        return new StringBuilder(url)
-            .append(url.indexOf("?") == -1 ? "?" : "&")
-            .append("ts=").append(System.currentTimeMillis())
-            .toString();
-    }
-
-    /**
      * Returns the given summary formatted for an article.
      */
-    public static String formatSummary(String summary)
+    public static String getFormattedSummary(String summary)
     {
         String ret = summary;
         if(ret != null)
@@ -256,8 +245,11 @@ public class FormatUtils
                     ret = ret.replaceAll("[ ]+", " "); // coallesce spaces
 
                     char last = ret.charAt(ret.length()-1);
-                    if(Character.isLetterOrDigit(last))
+                    if(Character.isLetterOrDigit(last) // ends in letter or digit
+                        || "\"'".indexOf(last) != -1)  // ends in quote
+                    {
                         ret += "."; // add full stop
+                    }
                 }
 
                 if(stripped)

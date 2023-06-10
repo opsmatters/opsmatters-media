@@ -23,7 +23,6 @@ import java.util.Collection;
 import org.apache.commons.text.StringSubstitutor;
 import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.cache.social.Hashtags;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.model.social.SocialPost;
@@ -38,11 +37,11 @@ public class SocialPostHandler
 {
     private List<Token> tokens = new ArrayList<Token>();
     private String hashtags = null;
-    private Map<String,HashtagItem> postHashtagMap = new LinkedHashMap<String,HashtagItem>();
-    private Map<String,HashtagItem> siteHashtagMap = new LinkedHashMap<String,HashtagItem>();
+    private List<Hashtag> hashtagList = null;
+    private Map<String,HashtagItem> hashtagMap = new LinkedHashMap<String,HashtagItem>();
     private Map<String,String> properties = new LinkedHashMap<String,String>();
-    private String siteId = null;
-    private SocialChannel channel;
+    private String message = null;
+    private String markupMessage = null;
     private int messageLength = -1;
 
     /**
@@ -53,35 +52,21 @@ public class SocialPostHandler
     }
 
     /**
-     * Returns the site for the handler.
+     * Sets the list of hashtags.
      */
-    public String getSiteId()
+    private void setHashtags(String hashtags)
     {
-        return siteId;
+        this.hashtags = hashtags;
     }
 
     /**
-     * Sets the site for the handler.
+     * Adds a list of hashtags.
      */
-    public void setSiteId(String siteId)
+    private void addHashtags(List<Hashtag> hashtagList)
     {
-        this.siteId = siteId;
-    }
-
-    /**
-     * Returns the social channel for the handler.
-     */
-    public SocialChannel getChannel()
-    {
-        return channel;
-    }
-
-    /**
-     * Sets the social channel for the handler.
-     */
-    public void setChannel(SocialChannel channel)
-    {
-        this.channel = channel;
+        if(this.hashtagList == null)
+            this.hashtagList = new ArrayList<Hashtag>();
+        this.hashtagList.addAll(hashtagList);
     }
 
     /**
@@ -109,7 +94,7 @@ public class SocialPostHandler
         String key;
         String value;
         boolean optional = false;
-        boolean ignore = false;
+        boolean ignored = false;
 
         /**
          * Constructor that takes a hashtag with format: #value[?]
@@ -123,7 +108,7 @@ public class SocialPostHandler
             }
             else if(str.endsWith("!"))
             {
-                ignore = true;
+                ignored = true;
                 str = str.substring(0, str.length()-1); // Remove trailing "!"
             }
 
@@ -164,20 +149,28 @@ public class SocialPostHandler
         }
 
         /**
+         * Set to <CODE>true</CODE> if the hashtag is optional.
+         */
+        void setOptional(boolean optional)
+        {
+            this.optional = optional;
+        }
+
+        /**
          * Returns <CODE>true</CODE> if the hashtag should be ignored.
          */
         boolean isIgnored()
         {
-            return ignore;
+            return ignored;
         }
-    }
 
-    /**
-     * Sets the hashtag list.
-     */
-    private void setHashtags(String hashtags)
-    {
-        this.hashtags = hashtags;
+        /**
+         * Set to <CODE>true</CODE> if the hashtag should be ignored.
+         */
+        void setIgnored(boolean ignored)
+        {
+            this.ignored = ignored;
+        }
     }
 
     /**
@@ -185,8 +178,18 @@ public class SocialPostHandler
      */
     private void parseHashtags()
     {
-        postHashtagMap.clear();
-        siteHashtagMap.clear();
+        hashtagMap.clear();
+
+        // Add the site hashtags
+        if(hashtagList != null)
+        {
+            for(Hashtag hashtag : hashtagList)
+            {
+                HashtagItem item = new HashtagItem(hashtag.getValue());
+                item.setOptional(true);
+                hashtagMap.put(item.getKey(), item);
+            }
+        }
 
         // Add the organisation hashtags
         if(hashtags != null && hashtags.length() > 0)
@@ -196,18 +199,8 @@ public class SocialPostHandler
                 if(str.startsWith("#") && str.length() > 2)
                 {
                     HashtagItem item = new HashtagItem(str);
-                    postHashtagMap.put(item.getKey(), item);
+                    hashtagMap.put(item.getKey(), item);
                 }
-            }
-        }
-
-        // Add the site hashtags
-        if(siteId != null && siteId.length() > 0)
-        {
-            for(Hashtag hashtag : Hashtags.list(siteId))
-            {
-                HashtagItem item = new HashtagItem(hashtag.getValue());
-                siteHashtagMap.put(item.getKey(), item);
             }
         }
     }
@@ -218,7 +211,7 @@ public class SocialPostHandler
     private String getHashtags()
     {
         StringBuilder builder = new StringBuilder();
-        Collection<HashtagItem> items = postHashtagMap.values();
+        Collection<HashtagItem> items = hashtagMap.values();
         for(HashtagItem item : items)
         {
             if(!item.isOptional())
@@ -251,12 +244,12 @@ public class SocialPostHandler
             //   to resolve the HASHTAGS property with the new value
             if(hashtags != null)
                 properties.put(SocialPost.HASHTAGS, getHashtags());
-            parseTokens(new StringSubstitutor(properties).replace(createMessage(false)));
+            parseTokens(new StringSubstitutor(properties).replace(getMessage()));
         }
     }
 
     /**
-     * Returns the plain message constructed from the tokens.
+     * Parses the given message into tokens.
      */
     private void parseTokens(String message)
     {
@@ -351,93 +344,19 @@ public class SocialPostHandler
         Token lastToken = null;
         for(Token token : tokens)
         {
-            if(postHashtagMap.containsKey(token.getKey()))
+            if(hashtagMap.containsKey(token.getKey()))
             {
-                HashtagItem item = postHashtagMap.get(token.getKey());
+                HashtagItem item = hashtagMap.get(token.getKey());
                 if(!item.isIgnored())
                 {
-                    postHashtagMap.remove(token.getKey());
-                    siteHashtagMap.remove(token.getKey());
+                    hashtagMap.remove(token.getKey());
                     if(token.getType() == TokenType.STRING)
                         tokens.set(tokens.indexOf(token), new HashtagToken(token.getValue()));
                 }
             }
-            else if(siteHashtagMap != null && siteHashtagMap.containsKey(token.getKey()))
-            {
-                postHashtagMap.remove(token.getKey());
-                siteHashtagMap.remove(token.getKey());
-                if(token.getType() == TokenType.STRING)
-                    tokens.set(tokens.indexOf(token), new HashtagToken(token.getValue()));
-            }
 
             lastToken = token;
         }
-    }
-
-    /**
-     * Returns the plain message constructed from the tokens.
-     */
-    public String createMessage(boolean markup)
-    {
-        StringBuilder builder = new StringBuilder();
-        if(markup) // Message with HTML markup
-        {
-            for(Token token : tokens)
-            {
-                if(token instanceof StringToken)
-                {
-                    builder.append(token.toString());
-                }
-                else if(token instanceof PropertyToken)
-                {
-                    String str = properties.getOrDefault(token.getValue(), token.toString());
-                    if(str == null)
-                        str = token.toString();
-                    builder.append(str);
-                }
-                else if(token instanceof EmojiToken)
-                {
-                    builder.append(EmojiParser.parseToHtmlDecimal(token.toString()));
-                }
-                else // URLs, Hashtags, Handles, Emojis
-                {
-                    builder.append(token.getMarkup());
-                }
-            }
-        }
-        else // Message to be sent
-        {
-            int count = 0;
-            for(Token token : tokens)
-            {
-                if(token instanceof StringToken)
-                {
-                    builder.append(token.toString());
-                    count += token.length();
-                }
-                else if(token instanceof PropertyToken)
-                {
-                    String str = properties.getOrDefault(token.getValue(), token.toString());
-                    if(str == null)
-                        str = token.toString();
-                    builder.append(str);
-                    count += str.length();
-                }
-                else if(token instanceof EmojiToken)
-                {
-                    builder.append(EmojiParser.parseToUnicode(token.toString()));
-                    count += token.length();
-                }
-                else // URLs, Hashtags, Handles
-                {
-                    builder.append(token.toString());
-                    count += token.length();
-                }
-            }
-            messageLength = count;
-        }
-
-        return builder.toString();
     }
 
     /**
@@ -462,14 +381,6 @@ public class SocialPostHandler
             else if(!token.equals("\r")) // Throw away CRs
                 tokens.add(new StringToken(token));
         }
-    }
-
-    /**
-     * Returns the length of the message.
-     */
-    public int getMessageLength()
-    {
-        return messageLength;
     }
 
     /**
@@ -526,7 +437,7 @@ public class SocialPostHandler
         /**
          * Returns the length of the token value.
          */
-        public int length()
+        public int length(SocialChannel channel)
         {
             return value.length();
         }
@@ -550,7 +461,7 @@ public class SocialPostHandler
         /**
          * Returns the token markup.
          */
-        String getMarkup() 
+        String getMarkup(SocialChannel channel) 
         {
             return toString();
         }
@@ -605,7 +516,7 @@ public class SocialPostHandler
          * Returns the length of the token value.
          */
         @Override
-        public int length()
+        public int length(SocialChannel channel)
         {
             return 2;
         }
@@ -640,15 +551,6 @@ public class SocialPostHandler
         public TokenType getType()
         {
             return TokenType.PROPERTY;
-        }
-
-        /**
-         * Returns the length of the token value.
-         */
-        @Override
-        public int length()
-        {
-            return -1;
         }
 
         /**
@@ -687,7 +589,7 @@ public class SocialPostHandler
          * Returns the length of the token value.
          */
         @Override
-        public int length()
+        public int length(SocialChannel channel)
         {
             return value.length()+1;
         }
@@ -705,7 +607,7 @@ public class SocialPostHandler
          * Returns the token markup.
          */
         @Override
-        String getMarkup() 
+        String getMarkup(SocialChannel channel)
         {
             String url = String.format(channel.getProvider().hashtagUrl(), getValue());
             return String.format("<a class=\"link\" target=\"_blank\" href=\"%s\">%s</a>", url, toString());
@@ -738,7 +640,7 @@ public class SocialPostHandler
          * Returns the length of the token value.
          */
         @Override
-        public int length()
+        public int length(SocialChannel channel)
         {
             return value.length()+1;
         }
@@ -756,7 +658,7 @@ public class SocialPostHandler
          * Returns the token markup.
          */
         @Override
-        String getMarkup() 
+        String getMarkup(SocialChannel channel)
         {
             String url = String.format(channel.getProvider().handleUrl(), getValue());
             return String.format("<a class=\"link\" target=\"_blank\" href=\"%s\">%s</a>", url, toString());
@@ -789,22 +691,137 @@ public class SocialPostHandler
          * Returns the length of the token value.
          */
         @Override
-        public int length()
+        public int length(SocialChannel channel)
         {
             if(channel != null && channel.getProvider().urlLength() != -1)
                 return channel.getProvider().urlLength();
             else
-                return super.length();
+                return super.length(channel);
         }
 
         /**
          * Returns the token markup.
          */
         @Override
-        String getMarkup() 
+        String getMarkup(SocialChannel channel) 
         {
             return String.format("<a class=\"link\" target=\"_blank\" href=\"%s\">%s</a>", toString(), toString());
         }
+    }
+
+    /**
+     * Creates the messages from the tokens.
+     */
+    public void createMessages(SocialChannel channel)
+    {
+        int count = 0;
+        StringBuilder message = new StringBuilder();
+        StringBuilder markup = new StringBuilder();
+        for(Token token : tokens)
+        {
+            if(token instanceof StringToken)
+            {
+                message.append(token.toString());
+                count += token.length(channel);
+                if(channel != null)
+                    markup.append(token.toString());
+            }
+            else if(token instanceof PropertyToken)
+            {
+                String str = properties.getOrDefault(token.getValue(), token.toString());
+                if(str == null)
+                    str = token.toString();
+                message.append(str);
+                count += str.length();
+                if(channel != null)
+                    markup.append(str);
+            }
+            else if(token instanceof EmojiToken)
+            {
+                String emoji = EmojiParser.parseToUnicode(token.toString());
+                message.append(emoji);
+                count += token.length(channel);
+                if(channel != null)
+                    markup.append(emoji);
+            }
+            else if(token instanceof HandleToken)
+            {
+                // Exclude @mentions for LinkedIn
+                if(channel == null
+                    || channel.getProvider() != SocialProvider.LINKEDIN)
+                {
+                    message.append(token.toString());
+                    count += token.length(channel);
+                    if(channel != null)
+                        markup.append(token.getMarkup(channel));
+                }
+            }
+            else // URLs, Hashtags
+            {
+                message.append(token.toString());
+                count += token.length(channel);
+                if(channel != null)
+                    markup.append(token.getMarkup(channel));
+            }
+        }
+
+        this.message = adjust(channel, message.toString());
+        this.markupMessage = adjust(channel, markup.toString());
+        this.messageLength = count;
+    }
+
+    /**
+     * Adjust the given message depending on the channel.
+     */
+    private String adjust(SocialChannel channel, String message)
+    {
+        String ret = message;
+
+        if(channel != null && ret != null)
+        {
+            if(channel.getProvider() == SocialProvider.LINKEDIN)
+            {
+                // Fix the message text for "input string format is invalid" errors
+                ret = ret.replaceAll("\\[", "(").replaceAll("\\]", ")"); // replace square brackets
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the plain message.
+     */
+    public String getMessage()
+    {
+        if(message == null)
+            createMessages(null);
+        return message;
+    }
+
+    /**
+     * Returns the plain message for the given channel.
+     */
+    public String getMessage(SocialChannel channel)
+    {
+        createMessages(channel);
+        return message;
+    }
+
+    /**
+     * Returns the length of the plain message.
+     */
+    public int getMessageLength()
+    {
+        return messageLength;
+    }
+
+    /**
+     * Returns the marked up message.
+     */
+    public String getMarkupMessage()
+    {
+        return markupMessage;
     }
 
     /**
@@ -835,24 +852,13 @@ public class SocialPostHandler
         }
 
         /**
-         * Sets the site for the handler.
-         * @param siteId The site for the handler
+         * Sets the hashtag list for the handler.
+         * @param hashtags The hashtag list for the handler
          * @return This object
          */
-        public Builder withSiteId(String siteId)
+        public Builder withHashtags(List<Hashtag> hashtags)
         {
-            handler.setSiteId(siteId);
-            return this;
-        }
-
-        /**
-         * Sets the social channel for the handler.
-         * @param channel The social channel for the handler
-         * @return This object
-         */
-        public Builder withChannel(SocialChannel channel)
-        {
-            handler.setChannel(channel);
+            handler.addHashtags(hashtags);
             return this;
         }
 

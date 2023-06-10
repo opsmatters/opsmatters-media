@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import org.apache.commons.codec.binary.Base64;
-import org.commonmark.node.*;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 
@@ -60,6 +59,12 @@ public class StringUtils
     // Pattern to detect emojis in strings
     private static final String EMOJI_REGEX = "\\:[\\w\\+]+\\:";
     private static final Pattern emojiPattern = Pattern.compile(EMOJI_REGEX);
+
+    // Patterns to detect email address in string
+    private static final String STRICT_EMAIL_REGEX = "[A-Z0-9a-z.'_%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,7}";
+    private static Pattern strictEmailPattern = Pattern.compile(STRICT_EMAIL_REGEX);
+    private static final String LAX_EMAIL_REGEX = ".+@.+\\.[A-Za-z]{2}[A-Za-z]*";
+    private static Pattern laxEmailPattern = Pattern.compile(LAX_EMAIL_REGEX);
 
     /**
      * The default depth for stack traces.
@@ -671,12 +676,6 @@ public class StringUtils
         return ret;
     }
 
-    private static final String STRICT_EMAIL_REGEX = "[A-Z0-9a-z.'_%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,7}";
-    private static final String LAX_EMAIL_REGEX = ".+@.+\\.[A-Za-z]{2}[A-Za-z]*";
-
-    private static Pattern strictEmailPattern = Pattern.compile(STRICT_EMAIL_REGEX);
-    private static Pattern laxEmailPattern = Pattern.compile(LAX_EMAIL_REGEX);
-
     /**
      * Returns <CODE>true</CODE> if the given string is a valid email address.
      * @param email The email address to be checked
@@ -767,7 +766,7 @@ public class StringUtils
     /**
      * Returns the given error message with special characters removed or replaced.
      */
-    public static String formatErrorMessage(String str)
+    public static String getCleanMessage(String str)
     {
         String ret = str;
         if(ret != null)
@@ -776,6 +775,12 @@ public class StringUtils
             ret = ret.replaceAll("\\\\", "/"); // Replace backslashes
         }
         return ret;
+    }
+
+    public static String getCleanMessage(Throwable e)
+    {
+        return getCleanMessage(String.format("%s: %s",
+            e.getClass().getName(), e.getMessage()));
     }
 
     /**
@@ -967,27 +972,19 @@ public class StringUtils
      */
     public static String markdownToHtml(String text)
     {
-        Parser parser = Parser.builder().build();
-        Node document = parser.parse(text);
         HtmlRenderer renderer = HtmlRenderer.builder().build();
-        return renderer.render(document);
+        Parser parser = Parser.builder().build();
+        return renderer.render(parser.parse(text));
     }
 
     /**
-     * Returns the name normalized for a URL context.
+     * Appends a timestamp parameter to the given URL to prevent caching.
      */
-    public static String getNormalisedName(String name)
+    public static String addAntiCacheParameter(String url)
     {
-        String ret = name;
-
-        if(ret != null)
-        {
-            ret = ret.toLowerCase()
-                .replaceAll(" ","-")
-                .replaceAll("\\.","-")
-                .replaceAll("&","");
-        }
-
-        return ret;
+        return new StringBuilder(url)
+            .append(url.indexOf("?") == -1 ? "?" : "&")
+            .append("ts=").append(System.currentTimeMillis())
+            .toString();
     }
 }

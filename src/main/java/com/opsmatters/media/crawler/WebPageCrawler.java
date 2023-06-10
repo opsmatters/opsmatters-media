@@ -270,7 +270,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
         if(request.useWebcache())
             url = WEBCACHE_PREFIX+url;
         if(request.isAntiCache())
-            url = FormatUtils.addAntiCacheParameter(url);
+            url = StringUtils.addAntiCacheParameter(url);
         if(request.hasTrailingSlash())
             url += "/";
 

@@ -192,6 +192,23 @@ public class Organisation extends OwnedEntity implements FieldSource
     }
 
     /**
+     * Returns the name normalized for a URL context.
+     */
+    public String getNormalisedName()
+    {
+        String ret = getName();
+        if(ret != null)
+        {
+            ret = ret.toLowerCase()
+                .replaceAll(" ","-")
+                .replaceAll("\\.","-")
+                .replaceAll("&","");
+        }
+
+        return ret;
+    }
+
+    /**
      * Sets the organisation name.
      */
     public void setName(String name)
@@ -212,7 +229,8 @@ public class Organisation extends OwnedEntity implements FieldSource
      */
     public String getUrl(String basePath)
     {
-        return String.format("%s/organisations/%s", basePath, StringUtils.getNormalisedName(getName()));
+        return String.format("%s/organisations/%s",
+            basePath, getNormalisedName());
     }
 
     /**
