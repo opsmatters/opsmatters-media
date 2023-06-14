@@ -147,12 +147,17 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
+//GERALD: remove?
         table.addColumn("SCHEDULED_DATE", Types.TIMESTAMP, false);
         table.addColumn("TYPE", Types.VARCHAR, 15, true);
         table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
+//GERALD: add CODE?
+//GERALD: remove?
         table.addColumn("SOURCE_ID", Types.VARCHAR, 36, false);
+//GERALD: add CONTENT_TYPE?
         table.addColumn("PROPERTIES", Types.LONGVARCHAR, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
+//GERALD: remove?
         table.addColumn("MESSAGE", Types.VARCHAR, 512, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);

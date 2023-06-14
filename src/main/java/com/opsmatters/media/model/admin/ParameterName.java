@@ -23,8 +23,6 @@ package com.opsmatters.media.model.admin;
  */
 public enum ParameterName
 {
-    DRAFT_POST_INTERVAL("draft-post-interval"),
-    PREPARED_POST_INTERVAL("prepared-post-interval"),
     INIT_DELAY("init-delay"),
     BATCH_DELAY("batch-delay"),
     ITEM_DELAY("item-delay"),
@@ -55,6 +53,8 @@ public enum ParameterName
     CHANGE_COUNT_ERROR("change-count-error"),
     ALERT_COUNT_ERROR("alert-count-error"),
     STALLED_ERROR("stalled-error"),
+    MAX_DRAFT_POST_AGE("max_draft-post-age"),
+    MAX_CHANNEL_POST_AGE("max-channel-post-age"),
     MIN_WEBINAR_DURATION("min-webinar-duration");
 
     private String value;

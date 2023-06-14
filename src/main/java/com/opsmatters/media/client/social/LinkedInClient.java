@@ -47,7 +47,7 @@ import com.echobox.api.linkedin.util.PostUtils;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.model.social.SocialChannel;
-import com.opsmatters.media.model.social.PreparedPost;
+import com.opsmatters.media.model.social.ChannelPost;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.echobox.api.linkedin.types.images.InitializeUploadRequestBody.*;
@@ -329,11 +329,11 @@ public class LinkedInClient extends Client implements SocialClient
     }
 
     /**
-     * Returns a prepared post for the given post.
+     * Returns a channel post for the given post.
      */
-    private PreparedPost newPreparedPost(Post post, SocialChannel channel)
+    private ChannelPost newChannelPost(Post post, SocialChannel channel)
     {
-        return new PreparedPost(post.getId().getId(), post.getCommentary(), channel);
+        return new ChannelPost(post.getId().getId(), channel, post.getCommentary());
     }
 
     /**
@@ -341,7 +341,7 @@ public class LinkedInClient extends Client implements SocialClient
      *
      * @param text The text of the post to be sent.
      */
-    public PreparedPost sendPost(String text) throws IOException
+    public ChannelPost sendPost(String text) throws IOException
     {
         String link = StringUtils.extractUrl(text);
 
@@ -369,7 +369,7 @@ public class LinkedInClient extends Client implements SocialClient
         PostUtils.fillArticleContent(post, link, imageURN, title, description);
         URN postURN = postConnection.createPost(post);
         post.setId(postURN);
-        return newPreparedPost(post, channel);
+        return newChannelPost(post, channel);
     }
 
     /**
@@ -400,21 +400,21 @@ public class LinkedInClient extends Client implements SocialClient
      *
      * @param id The id of the post to be deleted.
      */
-    public PreparedPost deletePost(String id) throws IOException
+    public ChannelPost deletePost(String id) throws IOException
     {
-        PreparedPost ret = null;
+        ChannelPost ret = null;
         URN postURN = new URN(URNEntityType.SHARE, id);
 
         try
         {
             Post post = postConnection.retrievePost(postURN, ViewContext.AUTHOR);
             postConnection.deletePost(postURN);
-            ret = newPreparedPost(post, channel);
+            ret = newChannelPost(post, channel);
         }
         catch(LinkedInResourceNotFoundException e)
         {
             // Post already deleted
-            ret = new PreparedPost(id, channel);
+            ret = new ChannelPost(id, channel);
         }
 
         return ret;
@@ -423,12 +423,12 @@ public class LinkedInClient extends Client implements SocialClient
     /**
      * Returns the posts for the current user.
      */
-    public List<PreparedPost> getPosts() throws IOException
+    public List<ChannelPost> getPosts() throws IOException
     {
-        List<PreparedPost> ret = new ArrayList<PreparedPost>();
+        List<ChannelPost> ret = new ArrayList<ChannelPost>();
         List<Post> posts = postConnection.retrievePostsByAuthor(organizationURN, 30).getData();
         for(Post post : posts)
-            ret.add(newPreparedPost(post, channel));
+            ret.add(newChannelPost(post, channel));
         return ret;
     }
 

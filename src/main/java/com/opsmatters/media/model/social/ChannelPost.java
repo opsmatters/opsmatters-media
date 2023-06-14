@@ -18,6 +18,7 @@ package com.opsmatters.media.model.social;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import org.json.JSONObject;
 import com.opsmatters.media.client.social.SocialClient;
 import com.opsmatters.media.client.social.SocialClientFactory;
 import com.opsmatters.media.cache.organisation.Organisations;
@@ -25,17 +26,19 @@ import com.opsmatters.media.model.DeliveryStatus;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailBody;
+import com.opsmatters.media.model.content.FieldName;
+import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
 
 /**
- * Class representing a social media post that has been prepared and assigned to a channel.
+ * Class representing a social media post that has been prepared for a channel.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PreparedPost extends SocialPost
+public class ChannelPost extends SocialPost
 {
     private String siteId = "";
     private String draftId = "";
@@ -44,6 +47,8 @@ public class PreparedPost extends SocialPost
     private String title = "";
     private SocialChannel channel;
     private PostType type;
+    private ContentType contentType;
+    private int contentId = -1;
     private DeliveryStatus status;
     private String externalId = "";
     private Instant scheduledDate;
@@ -53,42 +58,45 @@ public class PreparedPost extends SocialPost
     /**
      * Default constructor.
      */
-    public PreparedPost()
+    public ChannelPost()
     {
     }
 
     /**
-     * Constructor that takes a type, channel and message.
+     * Constructor that takes a draft post, channel and a message.
      */
-    /**
-     * Constructor that takes a draft post, a message and a channel.
-     */
-    public PreparedPost(DraftPost post, String message, SocialChannel channel)
+    public ChannelPost(DraftPost post, SocialChannel channel, String message)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setSiteId(post.getSiteId());
         setScheduledDate(post.getScheduledDate());
         setDraftId(post.getId());
-        if(post.getType() == PostType.CONTENT)
-            setCode(((DraftContentPost)post).getCode());
         setTitle(post.getTitle());
-        setMessage(message);
         setChannel(channel);
+        setMessage(message);
         setType(post.getType());
         setStatus(DeliveryStatus.NEW);
+
+        if(post.getType() == PostType.CONTENT)
+        {
+            DraftContentPost contentPost = (DraftContentPost)post;
+            setCode(contentPost.getCode());
+            setContentType(contentPost.getContentType());
+            setContentId(contentPost.getContentId());
+        }
     }
 
     /**
-     * Constructor that takes an id, message and a channel.
+     * Constructor that takes an id, channel and a message.
      */
-    public PreparedPost(String id, String message, SocialChannel channel)
+    public ChannelPost(String id, SocialChannel channel, String message)
     {
         setId(id);
         setCreatedDate(Instant.now());
         setUpdatedDate(Instant.now());
-        setMessage(message);
         setChannel(channel);
+        setMessage(message);
         setType(PostType.EXTERNAL);
         setStatus(DeliveryStatus.RECEIVED);
     }
@@ -96,15 +104,15 @@ public class PreparedPost extends SocialPost
     /**
      * Constructor that takes an id and a channel.
      */
-    public PreparedPost(String id, SocialChannel channel)
+    public ChannelPost(String id, SocialChannel channel)
     {
-        this(id, "", channel);
+        this(id, channel, "");
     }
 
     /**
      * Copy constructor.
      */
-    public PreparedPost(PreparedPost obj)
+    public ChannelPost(ChannelPost obj)
     {
         copyAttributes(obj);
     }
@@ -112,7 +120,7 @@ public class PreparedPost extends SocialPost
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(PreparedPost obj)
+    public void copyAttributes(ChannelPost obj)
     {
         if(obj != null)
         {
@@ -123,11 +131,62 @@ public class PreparedPost extends SocialPost
             setOrganisation(obj.getOrganisation() != null ? obj.getOrganisation() : "");
             setTitle(obj.getTitle());
             setChannel(obj.getChannel());
+            setContentType(obj.getContentType());
+            setContentId(obj.getContentId());
             setStatus(obj.getStatus());
             setExternalId(obj.getExternalId());
             setScheduledDate(obj.getScheduledDate());
             setErrorCode(obj.getErrorCode());
             setErrorMessage(obj.getErrorMessage());
+        }
+    }
+
+    /**
+     * Returns the attributes as a JSON object.
+     */
+    public JSONObject getAttributes()
+    {
+        JSONObject ret = new JSONObject();
+
+        ret.putOpt(FieldName.TITLE.value(), getTitle());
+        ret.putOpt(FieldName.MESSAGE.value(), getMessage());
+        ret.putOpt(FieldName.EXTERNAL_ID.value(), getExternalId());
+        if(getScheduledDate() != null)
+            ret.put(FieldName.SCHEDULED_DATE.value(), getScheduledDateMillis());
+        ret.putOpt(FieldName.ERROR_CODE.value(), getErrorCode());
+        ret.putOpt(FieldName.ERROR_MESSAGE.value(), getErrorMessage());
+
+        if(getType() == PostType.CONTENT)
+        {
+            ret.putOpt(FieldName.ORGANISATION.value(), getCode());
+            if(getContentType() != null)
+                ret.putOpt(FieldName.CONTENT_TYPE.value(), getContentType().name());
+            if(getContentId() > 0)
+                ret.putOpt(FieldName.CONTENT_ID.value(), getContentId());
+        }
+
+        return ret;
+    }
+
+    /**
+     * Initialise the attributes using a JSON object.
+     */
+    public void setAttributes(JSONObject obj)
+    {
+        setTitle(obj.optString(FieldName.TITLE.value()));
+        setMessage(obj.optString(FieldName.MESSAGE.value()));
+        setExternalId(obj.optString(FieldName.EXTERNAL_ID.value()));
+        long scheduledDateMillis = obj.optLong(FieldName.SCHEDULED_DATE.value());
+        if(scheduledDateMillis > 0L)
+            setScheduledDateMillis(scheduledDateMillis);
+        setErrorCode(obj.optInt(FieldName.ERROR_CODE.value()));
+        setErrorMessage(obj.optString(FieldName.ERROR_MESSAGE.value()));
+
+        if(getType() == PostType.CONTENT)
+        {
+            setCode(obj.optString(FieldName.ORGANISATION.value()));
+            setContentType(obj.optString(FieldName.CONTENT_TYPE.value()));
+            setContentId(obj.optInt(FieldName.CONTENT_ID.value()));
         }
     }
 
@@ -285,6 +344,46 @@ public class PreparedPost extends SocialPost
     public void setType(PostType type)
     {
         this.type = type;
+    }
+
+    /**
+     * Returns the post content type.
+     */
+    public ContentType getContentType()
+    {
+        return contentType;
+    }
+
+    /**
+     * Sets the post content type.
+     */
+    public void setContentType(String contentType)
+    {
+        setContentType(contentType != null && contentType.length() > 0 ? ContentType.valueOf(contentType) : null);
+    }
+
+    /**
+     * Sets the post content type.
+     */
+    public void setContentType(ContentType contentType)
+    {
+        this.contentType = contentType;
+    }
+
+    /**
+     * Returns the post content id.
+     */
+    public int getContentId()
+    {
+        return contentId;
+    }
+
+    /**
+     * Sets the post content id.
+     */
+    public void setContentId(int contentId)
+    {
+        this.contentId = contentId;
     }
 
     /**
@@ -494,7 +593,7 @@ public class PreparedPost extends SocialPost
             if(client == null)
                 throw new IllegalArgumentException("unknown channel provider: "+getChannel());
             setStatus(DeliveryStatus.SENDING);
-            PreparedPost sent = client.sendPost(getMessage(MessageFormat.DECODED));
+            ChannelPost sent = client.sendPost(getMessage(MessageFormat.DECODED));
             if(sent != null)
             {
                 setExternalId(sent.getId());
@@ -545,7 +644,7 @@ public class PreparedPost extends SocialPost
         String subject = String.format("Post %s: %s",
             getStatus().name(), getId());
         EmailBody body = new EmailBody()
-            .addParagraph("The status of the following monitor has changed:")
+            .addParagraph("The status of the following post has changed:")
             .addTable(new String[][]
             {
                 {"ID", getId()},

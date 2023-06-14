@@ -116,7 +116,14 @@ public enum FieldName
     TEMPLATE("template"),
     LISTING("listing"),
     FOOTER("footer"),
-    ALERTS("alerts");
+    ALERTS("alerts"),
+    MESSAGE("message"),
+    CONTENT_TYPE("content-type"),
+    CONTENT_ID("content-id"),
+    SCHEDULED_DATE("scheduled-date"),
+    EXTERNAL_ID("external-id"),
+    ERROR_CODE("error-code"),
+    ERROR_MESSAGE("error-message");
 
     private String value;
 

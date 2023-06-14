@@ -57,7 +57,7 @@ public class DraftContentPost extends DraftPost
         setContentType(ContentType.ORGANISATION);
         setStatus(DraftStatus.NEW);
 
-        getProperties().put(HANDLE, "@"+organisation.getHandle());
+        getProperties().put(HANDLE, organisation.hasHandle() ? "@"+organisation.getHandle() : "");
         getProperties().put(HASHTAG, organisation.getHashtag());
         getProperties().put(URL, organisation.getUrl(site.getEnvironment(EnvironmentName.PROD).getUrl()));
     }
@@ -76,7 +76,7 @@ public class DraftContentPost extends DraftPost
         setContentType(content.getType());
         setStatus(DraftStatus.NEW);
 
-        getProperties().put(HANDLE, "@"+organisation.getHandle());
+        getProperties().put(HANDLE, organisation.hasHandle() ? "@"+organisation.getHandle() : "");
         getProperties().put(HASHTAG, organisation.getHashtag());
         if(content.getType() == ContentType.ROUNDUP)
             getProperties().put(URL, organisation.getUrl(site.getEnvironment(EnvironmentName.PROD).getUrl()));
@@ -95,7 +95,7 @@ public class DraftContentPost extends DraftPost
         setContentType(post.getContentType());
         setStatus(DraftStatus.NEW);
 
-        getProperties().put(HANDLE, "@"+organisation.getHandle());
+        getProperties().put(HANDLE, organisation.hasHandle() ? "@"+organisation.getHandle() : "");
         getProperties().put(HASHTAG, organisation.getHashtag());
         setTitle(post.getName());
         setHashtags(post.getHashtags());

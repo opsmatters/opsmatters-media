@@ -33,7 +33,7 @@ import facebook4j.auth.AccessToken;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.model.social.SocialChannel;
-import com.opsmatters.media.model.social.PreparedPost;
+import com.opsmatters.media.model.social.ChannelPost;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -246,11 +246,11 @@ public class FacebookClient extends Client implements SocialClient
     }
 
     /**
-     * Returns a prepared post for the given post.
+     * Returns a channel post for the given post.
      */
-    private PreparedPost newPreparedPost(Post post, SocialChannel channel)
+    private ChannelPost newChannelPost(Post post, SocialChannel channel)
     {
-        PreparedPost ret = new PreparedPost(post.getId(), post.getMessage(), channel);
+        ChannelPost ret = new ChannelPost(post.getId(), channel, post.getMessage());
         ret.setCreatedDateMillis(post.getCreatedTime().getTime());
         return ret;
     }
@@ -260,7 +260,7 @@ public class FacebookClient extends Client implements SocialClient
      *
      * @param text The text of the post to be sent.
      */
-    public PreparedPost sendPost(String text) throws IOException, FacebookException
+    public ChannelPost sendPost(String text) throws IOException, FacebookException
     {
         String id = null;
         String url = StringUtils.extractUrl(text);
@@ -269,7 +269,7 @@ public class FacebookClient extends Client implements SocialClient
         else
             id = client.postStatusMessage(text);
         Post post = client.getPost(id);
-        return post != null ? newPreparedPost(post, channel) : null;
+        return post != null ? newChannelPost(post, channel) : null;
     }
 
     /**
@@ -277,20 +277,20 @@ public class FacebookClient extends Client implements SocialClient
      *
      * @param id The id of the post to be deleted.
      */
-    public PreparedPost deletePost(String id) throws IOException, FacebookException
+    public ChannelPost deletePost(String id) throws IOException, FacebookException
     {
-        PreparedPost ret = null;
+        ChannelPost ret = null;
 
         try
         {
             Post post = client.getPost(id);
-            ret = newPreparedPost(post, channel);
+            ret = newChannelPost(post, channel);
         }
         catch(FacebookException e)
         {
             // Post already deleted
             if(e.getStatusCode() == 400)
-                ret = new PreparedPost(id, channel);
+                ret = new ChannelPost(id, channel);
             else
                 throw e;
         }
@@ -301,13 +301,13 @@ public class FacebookClient extends Client implements SocialClient
     /**
      * Returns the posts for the current user.
      */
-    public List<PreparedPost> getPosts() throws IOException, FacebookException
+    public List<ChannelPost> getPosts() throws IOException, FacebookException
     {
-        List<PreparedPost> ret = new ArrayList<PreparedPost>();
+        List<ChannelPost> ret = new ArrayList<ChannelPost>();
         ResponseList<Post> posts = client.getPosts();
         for(Post post : posts)
         {
-            ret.add(newPreparedPost(post, channel));
+            ret.add(newChannelPost(post, channel));
         }
 
         return ret;

@@ -36,7 +36,7 @@ public class SocialDAOFactory extends DAOFactory
         getPostTemplateDAO();
         getSavedPostDAO();
         getDraftPostDAO();
-        getPreparedPostDAO();
+        getChannelPostDAO();
         getHashtagDAO();
     }
 
@@ -71,13 +71,13 @@ public class SocialDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the prepared post DAO.
+     * Returns the channel post DAO.
      */
-    public PreparedPostDAO getPreparedPostDAO()
+    public ChannelPostDAO getChannelPostDAO()
     {
-        if(preparedPostDAO == null)
-            preparedPostDAO = new PreparedPostDAO(this);
-        return preparedPostDAO;
+        if(channelPostDAO == null)
+            channelPostDAO = new ChannelPostDAO(this);
+        return channelPostDAO;
     }
 
     /**
@@ -100,13 +100,13 @@ public class SocialDAOFactory extends DAOFactory
         postTemplateDAO = null;
         savedPostDAO = null;
         draftPostDAO = null;
-        preparedPostDAO = null;
+        channelPostDAO = null;
         hashtagDAO = null;
     }
 
     private PostTemplateDAO postTemplateDAO;
     private SavedPostDAO savedPostDAO;
     private DraftPostDAO draftPostDAO;
-    private PreparedPostDAO preparedPostDAO;
+    private ChannelPostDAO channelPostDAO;
     private HashtagDAO hashtagDAO;
 }

@@ -290,6 +290,14 @@ public class Organisation extends OwnedEntity implements FieldSource
     }
 
     /**
+     * Set to <CODE>true</CODE> if this organisation has a social handle.
+     */
+    public boolean hasHandle()
+    {
+        return handle != null && handle.length() > 0;
+    }
+
+    /**
      * Returns the organisation's social hashtag.
      */
     public String getHashtag()

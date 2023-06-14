@@ -39,7 +39,7 @@ import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.model.social.SocialChannel;
-import com.opsmatters.media.model.social.PreparedPost;
+import com.opsmatters.media.model.social.ChannelPost;
 
 /**
  * Class that represents a connection to the Twitter v2 API for social media posts.
@@ -295,11 +295,11 @@ public class TwitterClient extends Client implements SocialClient
     }
 
     /**
-     * Returns a prepared post for the given tweet.
+     * Returns a channel post for the given tweet.
      */
-    private PreparedPost newPreparedPost(Tweet tweet, SocialChannel channel)
+    private ChannelPost newChannelPost(Tweet tweet, SocialChannel channel)
     {
-        return new PreparedPost(tweet.getId(), tweet.getText(), channel);
+        return new ChannelPost(tweet.getId(), channel, tweet.getText());
     }
 
     /**
@@ -307,15 +307,15 @@ public class TwitterClient extends Client implements SocialClient
      *
      * @param text The text of the post to be sent.
      */
-    public PreparedPost sendPost(String text) throws IOException, ApiException
+    public ChannelPost sendPost(String text) throws IOException, ApiException
     {
-        PreparedPost ret = null;
+        ChannelPost ret = null;
         TweetCreateRequest request = new TweetCreateRequest().text(text);
         TweetCreateResponse result = tweets.createTweet(request).execute();
         if(result != null)
         {
-            ret = new PreparedPost(result.getData().getId(),
-                result.getData().getText(), channel);
+            ret = new ChannelPost(result.getData().getId(),
+                channel, result.getData().getText());
         }
 
         return ret;
@@ -326,21 +326,21 @@ public class TwitterClient extends Client implements SocialClient
      *
      * @param id The id of the post to be deleted.
      */
-    public PreparedPost deletePost(String id) throws IOException, ApiException
+    public ChannelPost deletePost(String id) throws IOException, ApiException
     {
-        PreparedPost ret = null;
+        ChannelPost ret = null;
 
         try
         {
             TweetDeleteResponse result = tweets.deleteTweetById(id).execute();
             if(result != null)
-                ret = new PreparedPost(id, channel);
+                ret = new ChannelPost(id, channel);
         }
         catch(ApiException e)
         {
             // Post already deleted
             if(e.getCode() == 404)
-                ret = new PreparedPost(id, channel);
+                ret = new ChannelPost(id, channel);
             else
                 throw e;
         }
@@ -351,9 +351,9 @@ public class TwitterClient extends Client implements SocialClient
     /**
      * Returns the posts for the current user.
      */
-    public List<PreparedPost> getPosts() throws IOException, ApiException
+    public List<ChannelPost> getPosts() throws IOException, ApiException
     {
-        List<PreparedPost> ret = new ArrayList<PreparedPost>();
+        List<ChannelPost> ret = new ArrayList<ChannelPost>();
 
         setMe();
         if(me != null)
@@ -363,7 +363,7 @@ public class TwitterClient extends Client implements SocialClient
             {
                 for(Tweet tweet : result.getData())
                 {
-                    ret.add(newPreparedPost(tweet, channel));
+                    ret.add(newChannelPost(tweet, channel));
                 }
             }
         }

@@ -465,10 +465,26 @@ public class YouTubeClient extends Client implements VideoClient
         String ret = null;
         ApiClient client = ApiClient.newClient();
         JSONObject response = new JSONObject(client.get(url));
-        JSONArray array = response.getJSONArray("items");
-        if(array.length() > 0)
-            ret = array.getJSONObject(0).optString("id");
         client.close();
+
+        // Process the lookup response
+        if(response.has("error"))
+        {
+            JSONObject error = response.getJSONObject("error");
+            throw new IllegalStateException(String.format("YouTube channel lookup failed with error %d: %s",
+                error.optInt("code"), error.optString("message")));
+        }
+        else if(response.has("items"))
+        {
+            JSONArray array = response.getJSONArray("items");
+            if(array.length() > 0)
+                ret = array.getJSONObject(0).optString("id");
+        }
+        else
+        {
+            throw new IllegalStateException("Invalid YouTube channel lookup response");
+        }
+
         return ret;
     }
 }
