@@ -71,6 +71,11 @@ public class StringUtils
      */
     public static final int DEFAULT_DEPTH    = 20;
 
+    /**
+     * The maximum length for error messages.
+     */
+    public static final int MAX_ERROR_MESSAGE    = 140;
+
     static
     {
     }
@@ -773,6 +778,8 @@ public class StringUtils
         {
             ret = ret.replaceAll("\r|\n", ""); // Remove LFs
             ret = ret.replaceAll("\\\\", "/"); // Replace backslashes
+            if(ret.length() > MAX_ERROR_MESSAGE)
+                ret = ret.substring(0, MAX_ERROR_MESSAGE-1);
         }
         return ret;
     }

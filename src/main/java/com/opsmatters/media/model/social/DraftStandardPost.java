@@ -98,7 +98,7 @@ public class DraftStandardPost extends DraftPost
     @Override
     public JSONObject getAttributes()
     {
-        JSONObject ret = new JSONObject();
+        JSONObject ret = super.getAttributes();
 
         ret.putOpt(TITLE, getTitle());
 

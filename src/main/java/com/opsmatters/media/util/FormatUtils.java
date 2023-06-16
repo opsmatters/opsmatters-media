@@ -243,6 +243,7 @@ public class FormatUtils
                 {
                     ret = ret.replaceAll("[\r\n]+", " "); // remove LFs
                     ret = ret.replaceAll("[ ]+", " "); // coallesce spaces
+                    ret = ret.replaceAll("(.+):$", "$1"); // remove trailing colon
 
                     char last = ret.charAt(ret.length()-1);
                     if(Character.isLetterOrDigit(last) // ends in letter or digit

@@ -140,7 +140,7 @@ public class DraftContentPost extends DraftPost
     @Override
     public JSONObject getAttributes()
     {
-        JSONObject ret = new JSONObject();
+        JSONObject ret = super.getAttributes();
 
         ret.putOpt(ORGANISATION, getCode());
         ret.putOpt(CONTENT_TYPE, getContentType().name());

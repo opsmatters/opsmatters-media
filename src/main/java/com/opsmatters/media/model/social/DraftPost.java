@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.content.FieldName;
 import com.opsmatters.media.client.BitlyClient;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
@@ -66,12 +67,27 @@ public abstract class DraftPost extends SocialPost
     /**
      * Returns the attributes as a JSON object.
      */
-    public abstract JSONObject getAttributes();
+    public JSONObject getAttributes()
+    {
+        JSONObject ret = new JSONObject();
+
+        ret.putOpt(FieldName.MESSAGE.value(), getMessage());
+        if(getScheduledDate() != null)
+            ret.put(FieldName.SCHEDULED_DATE.value(), getScheduledDateMillis());
+
+        return ret;
+    }
 
     /**
      * Initialise the attributes using a JSON object.
      */
-    public abstract void setAttributes(JSONObject obj);
+    public void setAttributes(JSONObject obj)
+    {
+        setMessage(obj.optString(FieldName.MESSAGE.value()));
+        long scheduledDateMillis = obj.optLong(FieldName.SCHEDULED_DATE.value());
+        if(scheduledDateMillis > 0L)
+            setScheduledDateMillis(scheduledDateMillis);
+    }
 
     /**
      * Returns the site id.
