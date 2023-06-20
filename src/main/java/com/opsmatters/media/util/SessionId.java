@@ -27,16 +27,22 @@ import static java.time.temporal.ChronoUnit.*;
  */
 public class SessionId
 {
-    private int id = -1;
+    private static final int START_HOUR = 8;
 
     private static SessionId _session = new SessionId();
+
+    private int id = -1;
 
     /**
      * Private constructor as this class shouldn't be instantiated.
      */
     private SessionId()
     {
-        setId(Integer.parseInt(TimeUtils.toStringUTC(Formats.SESSION_FORMAT)));
+        Instant dt = Instant.now();
+        int hour = TimeUtils.toDateTimeUTC(dt).getHour();
+        if(hour < START_HOUR)
+            dt = dt.minus(1, DAYS); // Go back to yesterday if before session start hour
+        setId(Integer.parseInt(TimeUtils.toStringUTC(dt, Formats.SESSION_FORMAT)));
     }
 
     /**
