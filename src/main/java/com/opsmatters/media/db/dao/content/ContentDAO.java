@@ -70,6 +70,12 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
       "SELECT ATTRIBUTES, SITE_ID FROM %s WHERE SITE_ID=? AND CODE=? ORDER BY ID";
 
     /**
+     * The query to use to select the content from the table by organisation code and interval.
+     */
+    private static final String LIST_BY_CODE_INTERVAL_SQL =  
+      "SELECT ATTRIBUTES, SITE_ID FROM %s WHERE SITE_ID=? AND CODE=? AND PUBLISHED_DATE >= (NOW() + INTERVAL -? DAY) ORDER BY ID";
+
+    /**
      * The query to use to select the content from the table by published date.
      */
     private static final String LIST_BY_DATE_SQL =  
@@ -351,6 +357,60 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
     }
 
     /**
+     * Returns the content items from the table by organisation code and interval.
+     */
+    public synchronized List<T> list(Site site, String code, int interval) throws SQLException
+    {
+        List<T> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByCodeIntervalStmt == null)
+            listByCodeIntervalStmt = prepareStatement(getConnection(), String.format(LIST_BY_CODE_INTERVAL_SQL, getTableName()));
+        clearParameters(listByCodeIntervalStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByCodeIntervalStmt.setString(1, site.getId());
+            listByCodeIntervalStmt.setString(2, code);
+            listByCodeIntervalStmt.setInt(3, interval);
+            listByCodeIntervalStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByCodeIntervalStmt.executeQuery();
+            ret = new ArrayList<T>();
+            while(rs.next())
+            {
+                JSONObject attributes = new JSONObject(getClob(rs, 1));
+                T content = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
+                content.setSiteId(rs.getString(2));
+                ret.add(content);
+            }
+        }
+        catch(IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
+        {
+            logger.severe(StringUtils.serialize(e));
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the content items from the table by published date.
      */
     public synchronized List<T> list(Site site, Instant date) throws SQLException
@@ -578,7 +638,7 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
                 {
                     long diff = ChronoUnit.DAYS.between(duplicate.getPublishedDate(),
                         content.getPublishedDate());
-                    if(diff >= 90) // more than 90 days older
+                    if(diff >= 90) // not a duplicate if more than 90 days older
                         continue;
                 }
 
@@ -771,6 +831,8 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
         getByTitleStmt = null;
         closeStatement(listByCodeStmt);
         listByCodeStmt = null;
+        closeStatement(listByCodeIntervalStmt);
+        listByCodeIntervalStmt = null;
         closeStatement(listByDateStmt);
         listByDateStmt = null;
         closeStatement(listByStatusStmt);
@@ -795,6 +857,7 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
     private PreparedStatement getByIdStmt;
     private PreparedStatement getByTitleStmt;
     private PreparedStatement listByCodeStmt;
+    private PreparedStatement listByCodeIntervalStmt;
     private PreparedStatement listByDateStmt;
     private PreparedStatement listByStatusStmt;
     private PreparedStatement listBySiteStmt;

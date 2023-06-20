@@ -96,7 +96,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
      */
     private static final String LIST_BY_STATUS_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
-      + "FROM DRAFT_POSTS WHERE TYPE=? AND STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS IN ('NEW','REPOSTED')) ORDER BY CREATED_DATE";
+      + "FROM DRAFT_POSTS WHERE STATUS=? ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the DRAFT_POSTS table by source id.
@@ -490,9 +490,9 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     }
 
     /**
-     * Returns the posts from the DRAFT_POSTS table by type and status.
+     * Returns the posts from the DRAFT_POSTS table by status.
      */
-    public synchronized List<DraftPost> list(PostType type, DraftStatus status, int interval) throws SQLException
+    public synchronized List<DraftPost> list(DraftStatus status) throws SQLException
     {
         List<DraftPost> ret = null;
 
@@ -508,9 +508,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
 
         try
         {
-            listByStatusStmt.setString(1, type.name());
-            listByStatusStmt.setString(2, status != null ? status.name() : "");
-            listByStatusStmt.setInt(3, interval);
+            listByStatusStmt.setString(1, status != null ? status.name() : "");
             listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByStatusStmt.executeQuery();
             ret = new ArrayList<DraftPost>();
