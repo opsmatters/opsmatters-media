@@ -43,8 +43,6 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
 {
     private static final Logger logger = Logger.getLogger(ChannelPostDAO.class.getName());
 
-    private static final int MAX_ERROR_MESSAGE = 256;
-
     /**
      * The query to use to select a post from the CHANNEL_POSTS table by id.
      */
@@ -76,7 +74,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
       + "CODE, CONTENT_TYPE, ATTRIBUTES, STATUS, CREATED_BY "
-      + "FROM CHANNEL_POSTS WHERE (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS IN ('NEW','WAITING','ERROR','PAUSED')) ORDER BY CREATED_DATE";
+      + "FROM CHANNEL_POSTS WHERE CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR UPDATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS IN ('NEW','WAITING','ERROR','PAUSED') ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the CHANNEL_POSTS table by status.
@@ -92,7 +90,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
     private static final String LIST_BY_STATUS_INTERVAL_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
       + "CODE, CONTENT_TYPE, ATTRIBUTES, STATUS, CREATED_BY "
-      + "FROM CHANNEL_POSTS WHERE STATUS=? AND CREATED_DATE >= (NOW() + INTERVAL -? DAY) ORDER BY CREATED_DATE";
+      + "FROM CHANNEL_POSTS WHERE STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR UPDATED_DATE >= (NOW() + INTERVAL -? DAY)) ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the CHANNEL_POSTS table by site.
@@ -100,7 +98,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
     private static final String LIST_BY_SITE_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
       + "CODE, CONTENT_TYPE, ATTRIBUTES, STATUS, CREATED_BY "
-      + "FROM CHANNEL_POSTS WHERE SITE_ID=? AND CREATED_DATE >= (NOW() + INTERVAL -? DAY) ORDER BY CREATED_DATE";
+      + "FROM CHANNEL_POSTS WHERE SITE_ID=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR UPDATED_DATE >= (NOW() + INTERVAL -? DAY)) ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the CHANNEL_POSTS table by organisation.
@@ -333,6 +331,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
         try
         {
             listStmt.setInt(1, interval);
+            listStmt.setInt(2, interval);
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
             ret = new ArrayList<ChannelPost>();
@@ -450,6 +449,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
         {
             listByStatusIntervalStmt.setString(1, status != null ? status.name() : "");
             listByStatusIntervalStmt.setInt(2, interval);
+            listByStatusIntervalStmt.setInt(3, interval);
             listByStatusIntervalStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByStatusIntervalStmt.executeQuery();
             ret = new ArrayList<ChannelPost>();
@@ -509,6 +509,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
         {
             listBySiteStmt.setString(1, site.getId());
             listBySiteStmt.setInt(2, interval);
+            listBySiteStmt.setInt(3, interval);
             listBySiteStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listBySiteStmt.executeQuery();
             ret = new ArrayList<ChannelPost>();
