@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.apache.commons.text.StringSubstitutor;
 import com.vdurmont.emoji.EmojiParser;
+import com.twitter.twittertext.TwitterTextParser;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.SocialProvider;
@@ -768,6 +769,10 @@ public class SocialPostHandler
         this.message = adjust(channel, message.toString());
         this.markupMessage = adjust(channel, markup.toString());
         this.messageLength = count;
+
+        // Use the official parser to get the tweet length
+        if(channel != null && channel.getProvider() == SocialProvider.TWITTER)
+            this.messageLength = TwitterTextParser.parseTweet(this.message).weightedLength;
     }
 
     /**
