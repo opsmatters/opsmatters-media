@@ -322,6 +322,7 @@ public class FacebookClient extends Client implements SocialClient
         return errorCode != 1     // Unknown Error
             && errorCode != 506   // Duplicate Post
             && errorCode != 200   // Permission Error
+            && errorCode != 368   // Temporarily Blocked
             && errorCode != 1500; // Invalid URL
     }
 

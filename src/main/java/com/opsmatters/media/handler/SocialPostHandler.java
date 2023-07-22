@@ -200,6 +200,8 @@ public class SocialPostHandler
                 if(str.startsWith("#") && str.length() > 2)
                 {
                     HashtagItem item = new HashtagItem(str);
+                    if(hashtagMap.containsKey(item.getKey()))
+                        hashtagMap.remove(item.getKey());
                     hashtagMap.put(item.getKey(), item);
                 }
             }

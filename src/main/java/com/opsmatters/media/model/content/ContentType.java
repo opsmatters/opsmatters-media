@@ -142,8 +142,8 @@ public enum ContentType
     {
         return this == VIDEO
             || this == ROUNDUP
-            || this == PUBLICATION
-            || this == POST;
+            || this == POST
+            || this == PUBLICATION;
     }
 
     /**
@@ -161,6 +161,7 @@ public enum ContentType
     {
         return this == VIDEO
             || this == ROUNDUP
+            || this == POST
             || this == EVENT
             || this == PUBLICATION
             || this == TOOL;

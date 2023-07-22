@@ -63,6 +63,7 @@ import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.crawler.field.ElementOutput.*;
+import static com.opsmatters.media.model.content.crawler.field.FieldProtocol.*;
 import static com.opsmatters.media.model.logging.LogCategory.*;
 
 /**
@@ -1243,13 +1244,24 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
 
             if(found)
             {
-                // Replace https:// with https:// if secure selected
-                if(ret != null && ret.startsWith("http://") && selector.useSecure())
+                if(ret != null)
                 {
-                    ret = ret.replace("http://", "https://");
-                    if(debug())
-                        logger.info(String.format("Changed image src URL to https for %s field %s: %s",
-                            category.value(), field.getName(), ret));
+                    if(ret.startsWith("http://") && selector.getForceProtocol() == SECURE)
+                    {
+                        // Replace http:// with https:// if secure selected
+                        ret = ret.replace("http://", "https://");
+                        if(debug())
+                            logger.info(String.format("Changed image src URL to https for %s field %s: %s",
+                                category.value(), field.getName(), ret));
+                    }
+                    else if(ret.startsWith("https://") && selector.getForceProtocol() == INSECURE)
+                    {
+                        // Replace https:// with http:// if insecure selected
+                        ret = ret.replace("https://", "http://");
+                        if(debug())
+                            logger.info(String.format("Changed image src URL to http for %s field %s: %s",
+                                category.value(), field.getName(), ret));
+                    }
                 }
 
                 break;

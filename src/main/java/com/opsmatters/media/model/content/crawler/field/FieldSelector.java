@@ -41,7 +41,7 @@ public class FieldSelector implements ConfigElement
     private List<FieldExclude> excludes;
     private String size = "";
     private boolean background = false;
-    private boolean secure = false;
+    private FieldProtocol forceProtocol = FieldProtocol.ALL;
 
     /**
      * Constructor that takes a name.
@@ -86,7 +86,7 @@ public class FieldSelector implements ConfigElement
             setSeparator(obj.getSeparator());
             setSize(obj.getSize());
             setBackground(obj.isBackground());
-            setSecure(obj.useSecure());
+            setForceProtocol(obj.getForceProtocol());
 
             if(obj.getExcludes() != null)
             {
@@ -305,19 +305,27 @@ public class FieldSelector implements ConfigElement
     }
 
     /**
-     * Returns <CODE>true</CODE> if the image URL should use https.
+     * Returns the protocol to force for a URL.
      */
-    public boolean useSecure()
+    public FieldProtocol getForceProtocol()
     {
-        return secure;
+        return forceProtocol;
     }
 
     /**
-     * Set to <CODE>true</CODE> if the image URL should use https.
+     * Sets the protocol to force for a URL.
      */
-    public void setSecure(boolean secure)
+    public void setForceProtocol(FieldProtocol forceProtocol)
     {
-        this.secure = secure;
+        this.forceProtocol = forceProtocol;
+    }
+
+    /**
+     * Sets the protocol to force for a URL.
+     */
+    public void setForceProtocol(String forceProtocol)
+    {
+        setForceProtocol(FieldProtocol.fromValue(forceProtocol));
     }
 
     /**
@@ -388,7 +396,7 @@ public class FieldSelector implements ConfigElement
         private static final String EXCLUDES = "excludes";
         private static final String SIZE = "size";
         private static final String BACKGROUND = "background";
-        private static final String SECURE = "secure";
+        private static final String FORCE_PROTOCOL = "force-protocol";
 
         private FieldSelector ret = null;
 
@@ -427,8 +435,8 @@ public class FieldSelector implements ConfigElement
                 ret.setSize((String)map.get(SIZE));
             if(map.containsKey(BACKGROUND))
                 ret.setBackground((Boolean)map.get(BACKGROUND));
-            if(map.containsKey(SECURE))
-                ret.setSecure((Boolean)map.get(SECURE));
+            if(map.containsKey(FORCE_PROTOCOL))
+                ret.setForceProtocol((String)map.get(FORCE_PROTOCOL));
 
             if(map.containsKey(EXCLUDE))
             {
