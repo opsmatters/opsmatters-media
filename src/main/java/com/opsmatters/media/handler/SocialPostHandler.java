@@ -790,6 +790,8 @@ public class SocialPostHandler
             {
                 // Fix the message text for "input string format is invalid" errors
                 ret = ret.replaceAll("\\[", "(").replaceAll("\\]", ")"); // replace square brackets
+                ret = ret.replaceAll("C#", "C Sharp"); // replace C#
+                ret = ret.replaceAll("_", " "); // replace underscores
             }
         }
 

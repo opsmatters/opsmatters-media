@@ -15,9 +15,11 @@
  */
 package com.opsmatters.media.model.social;
 
+import java.net.SocketTimeoutException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.client.social.SocialClient;
 import com.opsmatters.media.client.social.SocialClientFactory;
@@ -40,6 +42,8 @@ import com.opsmatters.media.util.StringUtils;
  */
 public class ChannelPost extends SocialPost
 {
+    private static final Logger logger = Logger.getLogger(ChannelPost.class.getName());
+
     private String siteId = "";
     private String draftId = "";
     private String code = "";
@@ -601,6 +605,12 @@ public class ChannelPost extends SocialPost
                 setErrorCode(0);
                 setErrorMessage("");
             }
+        }
+        catch(SocketTimeoutException e)
+        {
+            setStatus(DeliveryStatus.ERROR);
+            setErrorMessage(e.getMessage());
+            logger.severe(StringUtils.serialize(e));
         }
         catch(Exception e)
         {
