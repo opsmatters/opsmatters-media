@@ -103,6 +103,14 @@ public abstract class CrawlerTarget implements ConfigElement
     }
 
     /**
+     * Returns <CODE>true</CODE> if the teasers have been configured for this configuration.
+     */
+    public boolean hasTeasers()
+    {
+        return teasers != null;
+    }
+
+    /**
      * Sets the teasers for this configuration.
      */
     public void setTeasers(CrawlerContent teasers)
@@ -116,6 +124,14 @@ public abstract class CrawlerTarget implements ConfigElement
     public CrawlerContent getArticles()
     {
         return articles;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the articles have been configured for this configuration.
+     */
+    public boolean hasArticles()
+    {
+        return articles != null;
     }
 
     /**

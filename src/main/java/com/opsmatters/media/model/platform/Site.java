@@ -34,8 +34,7 @@ public class Site implements ConfigElement
     private String id = "";
     private String name = "";
     private String title = "";
-    private String favicon = "";
-    private String thumbnail = "";
+    private String icon = "";
     private String shortDomain = "";
     private boolean enabled = false;
     private S3Config s3;
@@ -68,8 +67,7 @@ public class Site implements ConfigElement
             setId(obj.getId());
             setName(obj.getName());
             setTitle(obj.getTitle());
-            setFavicon(obj.getFavicon());
-            setThumbnail(obj.getThumbnail());
+            setIcon(obj.getIcon());
             setShortDomain(obj.getShortDomain());
             setEnabled(obj.isEnabled());
             setNewsletterConfig(new NewsletterConfig(obj.getNewsletterConfig()));
@@ -136,35 +134,19 @@ public class Site implements ConfigElement
     }
 
     /**
-     * Returns the site favicon.
+     * Returns the site icon.
      */
-    public String getFavicon()
+    public String getIcon()
     {
-        return favicon;
+        return icon;
     }
 
     /**
-     * Sets the site favicon.
+     * Sets the site icon.
      */
-    public void setFavicon(String favicon)
+    public void setIcon(String icon)
     {
-        this.favicon = favicon;
-    }
-
-    /**
-     * Returns the site thumbnail.
-     */
-    public String getThumbnail()
-    {
-        return thumbnail;
-    }
-
-    /**
-     * Sets the site thumbnail.
-     */
-    public void setThumbnail(String thumbnail)
-    {
-        this.thumbnail = thumbnail;
+        this.icon = icon;
     }
 
     /**
@@ -282,8 +264,7 @@ public class Site implements ConfigElement
         private static final String ID = "id";
         private static final String NAME = "name";
         private static final String TITLE = "title";
-        private static final String FAVICON = "favicon";
-        private static final String THUMBNAIL = "thumbnail";
+        private static final String ICON = "icon";
         private static final String SHORT_DOMAIN = "short-domain";
         private static final String ENABLED = "enabled";
         private static final String S3 = "s3";
@@ -313,10 +294,8 @@ public class Site implements ConfigElement
                 ret.setName((String)map.get(NAME));
             if(map.containsKey(TITLE))
                 ret.setTitle((String)map.get(TITLE));
-            if(map.containsKey(FAVICON))
-                ret.setFavicon((String)map.get(FAVICON));
-            if(map.containsKey(THUMBNAIL))
-                ret.setThumbnail((String)map.get(THUMBNAIL));
+            if(map.containsKey(ICON))
+                ret.setIcon((String)map.get(ICON));
             if(map.containsKey(SHORT_DOMAIN))
                 ret.setShortDomain((String)map.get(SHORT_DOMAIN));
             if(map.containsKey(ENABLED))

@@ -202,7 +202,7 @@ public class Organisation extends OwnedEntity implements FieldSource
             ret = ret.toLowerCase()
                 .replaceAll(" ","-")
                 .replaceAll("\\.","-")
-                .replaceAll("&","");
+                .replaceAll("&|:","");
         }
 
         return ret;

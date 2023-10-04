@@ -260,10 +260,13 @@ public class AwsEc2Client extends Client
                 ret = EnvironmentStatus.STARTING;
             else if(state == 16)
                 ret = EnvironmentStatus.RUNNING;
-            else if(state == 64)
+            else if(state == 64 || state == 32) // stopping or shutting-down
                 ret = EnvironmentStatus.STOPPING;
-            else
+            else if(state == 80 || state == 48) // stopped or terminated
                 ret = EnvironmentStatus.STOPPED;
+
+            if(ret == EnvironmentStatus.UNKNOWN)
+                logger.warning("EC2 instance has unknown state: "+state);
         }
 
         return ret;

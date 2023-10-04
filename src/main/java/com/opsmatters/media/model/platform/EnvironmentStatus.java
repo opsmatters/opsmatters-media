@@ -27,5 +27,6 @@ public enum EnvironmentStatus
     STARTING,
     RUNNING,
     STOPPING,
-    STOPPED;
+    STOPPED,
+    BACKING_UP;
 }

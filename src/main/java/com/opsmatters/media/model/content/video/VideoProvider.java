@@ -141,6 +141,9 @@ public enum VideoProvider
         String ret = null;
         if(url != null)
         {
+            if(url.endsWith("/")) // strip trailing slash
+                url = url.substring(0, url.length()-1);
+
             if(this == YOUTUBE)
             {
                 String id = url.substring(url.lastIndexOf("/")+1);
