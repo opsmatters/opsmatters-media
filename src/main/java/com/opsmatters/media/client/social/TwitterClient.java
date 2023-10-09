@@ -82,7 +82,7 @@ public class TwitterClient extends Client implements SocialClient
         // Configure and create the twitter client
         ret.configure();
         if(!ret.create())
-            logger.severe("Unable to create twitter client: "+channel.getId());
+            logger.severe("Unable to create twitter client: "+channel.getCode());
 
         return ret;
     }
@@ -102,11 +102,11 @@ public class TwitterClient extends Client implements SocialClient
     public void configure() throws IOException
     {
         if(debug())
-            logger.info("Configuring twitter client: "+channel.getId());
+            logger.info("Configuring twitter client: "+channel.getCode());
 
         String directory = System.getProperty("app.auth", ".");
 
-        File file = new File(directory, channel.getId().toLowerCase()+SUFFIX);
+        File file = new File(directory, channel.getCode().toLowerCase()+SUFFIX);
         try
         {
             // Read file from auth directory
@@ -127,7 +127,7 @@ public class TwitterClient extends Client implements SocialClient
             getAccessToken(), getRefreshToken(), true);
 
         if(debug())
-            logger.info("Configured twitter client successfully: "+channel.getId());
+            logger.info("Configured twitter client successfully: "+channel.getCode());
     }
 
     /**
@@ -137,7 +137,7 @@ public class TwitterClient extends Client implements SocialClient
     public boolean create() throws IOException, ApiException
     {
         if(debug())
-            logger.info("Creating twitter client: "+channel.getId());
+            logger.info("Creating twitter client: "+channel.getCode());
 
         // Create the client
         ApiClient twitter = new ApiClient();
@@ -150,7 +150,7 @@ public class TwitterClient extends Client implements SocialClient
         client = twitter;
 
         if(debug())
-            logger.info("Created twitter client successfully: "+channel.getId());
+            logger.info("Created twitter client successfully: "+channel.getCode());
 
         return client != null;
     }
@@ -275,7 +275,7 @@ public class TwitterClient extends Client implements SocialClient
             setRefreshToken(accessToken.getRefreshToken());
 
             String directory = System.getProperty("app.auth", ".");
-            File file = new File(directory, channel.getId().toLowerCase()+SUFFIX);
+            File file = new File(directory, channel.getCode().toLowerCase()+SUFFIX);
             try
             {
                 // Read file from auth directory

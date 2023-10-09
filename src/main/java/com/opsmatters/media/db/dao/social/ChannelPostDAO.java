@@ -249,7 +249,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
             insertStmt.setString(4, post.getType().name());
             insertStmt.setString(5, post.getSiteId());
             insertStmt.setString(6, post.getDraftId());
-            insertStmt.setString(7, post.getChannel().getId());
+            insertStmt.setString(7, post.getChannel().getCode());
             insertStmt.setString(8, post.getCode());
             insertStmt.setString(9, post.getContentType() != null ? post.getContentType().name() : "");
             String attributes = post.getAttributes().toString();
@@ -684,7 +684,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
 
         try
         {
-            listByChannelStmt.setString(1, channel.getId());
+            listByChannelStmt.setString(1, channel.getCode());
             listByChannelStmt.setString(2, status != null ? status.name() : "");
             listByChannelStmt.setInt(3, SessionId.get());
             listByChannelStmt.setQueryTimeout(QUERY_TIMEOUT);

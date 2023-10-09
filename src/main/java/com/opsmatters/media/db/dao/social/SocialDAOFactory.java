@@ -33,11 +33,22 @@ public class SocialDAOFactory extends DAOFactory
     {
         super(driver, conn);
 
+        getSocialChannelDAO();
         getPostTemplateDAO();
         getSavedPostDAO();
         getDraftPostDAO();
         getChannelPostDAO();
         getHashtagDAO();
+    }
+
+    /**
+     * Returns the social channel DAO.
+     */
+    public SocialChannelDAO getSocialChannelDAO()
+    {
+        if(socialChannelDAO == null)
+            socialChannelDAO = new SocialChannelDAO(this);
+        return socialChannelDAO;
     }
 
     /**
@@ -97,6 +108,7 @@ public class SocialDAOFactory extends DAOFactory
     public void close()
     {
         super.close();
+        socialChannelDAO = null;
         postTemplateDAO = null;
         savedPostDAO = null;
         draftPostDAO = null;
@@ -104,6 +116,7 @@ public class SocialDAOFactory extends DAOFactory
         hashtagDAO = null;
     }
 
+    private SocialChannelDAO socialChannelDAO;
     private PostTemplateDAO postTemplateDAO;
     private SavedPostDAO savedPostDAO;
     private DraftPostDAO draftPostDAO;

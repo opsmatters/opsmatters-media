@@ -98,7 +98,7 @@ public class LinkedInClient extends Client implements SocialClient
         // Configure and create the linkedin client
         ret.configure();
         if(!ret.create())
-            logger.severe("Unable to create linkedin client: "+channel.getId());
+            logger.severe("Unable to create linkedin client: "+channel.getCode());
 
         return ret;
     }
@@ -118,7 +118,7 @@ public class LinkedInClient extends Client implements SocialClient
     public void configure() throws IOException
     {
         if(debug())
-            logger.info("Configuring linkedin client: "+channel.getId());
+            logger.info("Configuring linkedin client: "+channel.getCode());
 
         String directory = System.getProperty("app.auth", ".");
 
@@ -138,7 +138,7 @@ public class LinkedInClient extends Client implements SocialClient
             logger.severe("Unable to read default linkedin auth file: "+e.getClass().getName()+": "+e.getMessage());
         }
 
-        file = new File(directory, channel.getId().toLowerCase()+SUFFIX);
+        file = new File(directory, channel.getCode().toLowerCase()+SUFFIX);
         try
         {
             // Read file from auth directory
@@ -169,7 +169,7 @@ public class LinkedInClient extends Client implements SocialClient
         }
 
         if(debug())
-            logger.info("Configured linkedin client successfully: "+channel.getId());
+            logger.info("Configured linkedin client successfully: "+channel.getCode());
     }
 
     /**
@@ -179,7 +179,7 @@ public class LinkedInClient extends Client implements SocialClient
     public boolean create() throws IOException, GeneralSecurityException
     {
         if(debug())
-            logger.info("Creating linkedin client: "+channel.getId());
+            logger.info("Creating linkedin client: "+channel.getCode());
 
         // Create the client and connections
         VersionedLinkedInClient linkedin = new DefaultVersionedLinkedInClient(getAccessToken(), Version.DEFAULT_VERSION);
@@ -192,7 +192,7 @@ public class LinkedInClient extends Client implements SocialClient
         organization = organizationConnection.retrieveOrganization(organizationURN, null);
 
         if(debug())
-            logger.info("Created linkedin client successfully: "+channel.getId());
+            logger.info("Created linkedin client successfully: "+channel.getCode());
 
         return organization != null && organization.getId() > 0L;
     }

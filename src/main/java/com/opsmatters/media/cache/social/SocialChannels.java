@@ -79,11 +79,11 @@ public class SocialChannels implements java.io.Serializable
     }
 
     /**
-     * Returns the social channel with the given id.
+     * Returns the social channel with the given code.
      */
-    public static SocialChannel getChannel(String id)
+    public static SocialChannel getChannel(String code)
     {
-        return channelMap.get(id);
+        return channelMap.get(code);
     }
 
     /**
@@ -91,7 +91,7 @@ public class SocialChannels implements java.io.Serializable
      */
     public static void add(SocialChannel channel)
     {
-        channelMap.put(channel.getId(), channel);
+        channelMap.put(channel.getCode(), channel);
     }
 
     /**

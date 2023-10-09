@@ -15,11 +15,10 @@
  */
 package com.opsmatters.media.model.social;
 
-import java.util.Map;
-import java.util.HashMap;
+import java.time.Instant;
 import java.util.List;
-import com.opsmatters.media.model.ConfigElement;
-import com.opsmatters.media.model.ConfigParser;
+import java.util.ArrayList;
+import com.opsmatters.media.model.OwnedEntity;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.util.StringUtils;
 
@@ -28,26 +27,34 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-//public class SocialChannel implements java.io.Serializable
-public class SocialChannel implements ConfigElement
+public class SocialChannel extends OwnedEntity
 {
-    private String id = "";
+    private String code = "";
     private String name = "";
+    private SocialProvider provider;
     private String handle = "";
     private String icon = "";
-    private SocialProvider provider;
     private String sites = "";
-    private Map<String,String> siteMap = new HashMap<String,String>();
+    private List<String> siteList = new ArrayList<String>();
     private int delay = -1;
     private int maxPosts = -1;
-    private boolean enabled = false;
+    private SocialChannelStatus status = SocialChannelStatus.DISABLED;
 
     /**
-     * Constructor that takes an id.
+     * Default constructor.
      */
-    public SocialChannel(String id)
+    public SocialChannel()
     {
-        setId(id);
+    }
+
+    /**
+     * Constructor that takes a code.
+     */
+    public SocialChannel(String code)
+    {
+        setId(StringUtils.getUUID(null));
+        setCreatedDate(Instant.now());
+        setCode(code);
     }
 
     /**
@@ -57,7 +64,8 @@ public class SocialChannel implements ConfigElement
     {
         if(obj != null)
         {
-            setId(obj.getId());
+            super.copyAttributes(obj);
+            setCode(obj.getCode());
             setName(obj.getName());
             setHandle(obj.getHandle());
             setIcon(obj.getIcon());
@@ -65,32 +73,52 @@ public class SocialChannel implements ConfigElement
             setSites(obj.getSites());
             setDelay(obj.getDelay());
             setMaxPosts(obj.getMaxPosts());
-            setEnabled(obj.isEnabled());
+            setStatus(obj.getStatus());
         }
     }
 
     /**
-     * Returns the id.
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(SocialChannel obj)
+    {
+        if(obj != null)
+        {
+            super.copyAttributes(obj);
+            setCode(obj.getCode());
+            setName(obj.getName());
+            setHandle(obj.getHandle());
+            setIcon(obj.getIcon());
+            setProvider(obj.getProvider());
+            setSites(obj.getSites());
+            setDelay(obj.getDelay());
+            setMaxPosts(obj.getMaxPosts());
+            setStatus(obj.getStatus());
+        }
+    }
+
+    /**
+     * Returns the channel code.
      */
     public String toString()
     {
-        return getId();
+        return getCode();
     }
 
     /**
-     * Returns the channel id.
+     * Returns the channel code.
      */
-    public String getId()
+    public String getCode()
     {
-        return id;
+        return code;
     }
 
     /**
-     * Sets the channel id.
+     * Sets the channel code.
      */
-    public void setId(String id)
+    public void setCode(String code)
     {
-        this.id = id;
+        this.code = code;
     }
 
     /**
@@ -174,16 +202,43 @@ public class SocialChannel implements ConfigElement
     }
 
     /**
+     * Returns the list of channel sites.
+     */
+    public List<String> getSiteList()
+    {
+        // Return a copy of the list to stop external modification
+        return new ArrayList<String>(siteList);
+    }
+
+    /**
      * Sets the channel sites.
      */
     public void setSites(String sites)
     {
         this.sites = sites;
 
-        siteMap.clear();
-        List<String> siteList = StringUtils.toList(sites);
+        siteList.clear();
+        for(String site : StringUtils.toList(sites))
+            siteList.add(site);
+    }
+
+    /**
+     * Sets the list of channel sites.
+     */
+    public void setSiteList(List<String> siteList)
+    {
+        this.siteList.clear();
         for(String site : siteList)
-            siteMap.put(site, site);
+            this.siteList.add(site);
+        this.sites = StringUtils.fromList(siteList);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this channel is configured for the given site.
+     */
+    public boolean hasSite(String siteId)
+    {
+        return siteList.contains(siteId);
     }
 
     /**
@@ -191,7 +246,27 @@ public class SocialChannel implements ConfigElement
      */
     public boolean hasSite(Site site)
     {
-        return siteMap.get(site.getId()) != null;
+        return hasSite(site.getId());
+    }
+
+    /**
+     * Adds the given site to the list of configured sites.
+     */
+    public void addSite(String siteId)
+    {
+        if(!siteList.contains(siteId))
+        {
+            siteList.add(siteId);
+            setSites(StringUtils.fromList(siteList));
+        }
+    }
+
+    /**
+     * Adds the given site to the list of configured sites.
+     */
+    public void addSite(Site site)
+    {
+        addSite(site.getId());
     }
 
     /**
@@ -227,92 +302,34 @@ public class SocialChannel implements ConfigElement
     }
 
     /**
-     * Returns <CODE>true</CODE> if this channel is enabled to send messages.
+     * Returns the channel status.
      */
-    public boolean isEnabled()
+    public SocialChannelStatus getStatus()
     {
-        return enabled;
+        return status;
     }
 
     /**
-     * Set to <CODE>true</CODE> if this channel is enabled to send messages.
+     * Returns <CODE>true</CODE> if the channel status is ACTIVE.
      */
-    public void setEnabled(boolean enabled)
+    public boolean isActive()
     {
-        this.enabled = enabled;
+        return status == SocialChannelStatus.ACTIVE;
     }
 
     /**
-     * Returns a builder for the social channel.
-     * @param id The id of the social channel
-     * @return The builder instance.
+     * Sets the channel status.
      */
-    public static Builder builder(String id)
+    public void setStatus(SocialChannelStatus status)
     {
-        return new Builder(id);
+        this.status = status;
     }
 
     /**
-     * Builder to make social channel construction easier.
+     * Sets the channel status.
      */
-    public static class Builder implements ConfigParser<SocialChannel>
+    public void setStatus(String status)
     {
-        // The config attribute names
-        private static final String NAME = "name";
-        private static final String HANDLE = "handle";
-        private static final String ICON = "icon";
-        private static final String PROVIDER = "provider";
-        private static final String SITES = "sites";
-        private static final String DELAY = "delay";
-        private static final String MAX_POSTS = "max-posts";
-        private static final String ENABLED = "enabled";
-
-        private SocialChannel ret = null;
-
-        /**
-         * Constructor that takes an id.
-         * @param id The id for the configuration
-         */
-        public Builder(String id)
-        {
-            ret = new SocialChannel(id);
-        }
-
-        /**
-         * Parse the configuration using the given attribute map.
-         * @param map The map of attributes
-         * @return This object
-         */
-        @Override
-        public Builder parse(Map<String, Object> map)
-        {
-            if(map.containsKey(NAME))
-                ret.setName((String)map.get(NAME));
-            if(map.containsKey(HANDLE))
-                ret.setHandle((String)map.get(HANDLE));
-            if(map.containsKey(ICON))
-                ret.setIcon((String)map.get(ICON));
-            if(map.containsKey(PROVIDER))
-                ret.setProvider((String)map.get(PROVIDER));
-            if(map.containsKey(SITES))
-                ret.setSites((String)map.get(SITES));
-            if(map.containsKey(MAX_POSTS))
-                ret.setMaxPosts((Integer)map.get(MAX_POSTS));
-            if(map.containsKey(DELAY))
-                ret.setDelay((Integer)map.get(DELAY));
-            if(map.containsKey(ENABLED))
-                ret.setEnabled((Boolean)map.get(ENABLED));
-
-            return this;
-        }
-
-        /**
-         * Returns the configured social channel instance
-         * @return The social channel instance
-         */
-        public SocialChannel build()
-        {
-            return ret;
-        }
+        setStatus(SocialChannelStatus.valueOf(status));
     }
 }

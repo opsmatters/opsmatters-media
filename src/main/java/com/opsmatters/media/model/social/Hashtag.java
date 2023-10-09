@@ -129,6 +129,7 @@ public class Hashtag extends BaseEntity
     public void setSites(String sites)
     {
         this.sites = sites;
+
         siteList.clear();
         for(String site : StringUtils.toList(sites))
             siteList.add(site);
