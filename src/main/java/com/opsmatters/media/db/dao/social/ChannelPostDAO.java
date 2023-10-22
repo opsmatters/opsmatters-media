@@ -25,7 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
-import com.opsmatters.media.cache.social.SocialChannels;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.DeliveryStatus;
 import com.opsmatters.media.model.social.ChannelPost;
@@ -201,7 +200,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setType(rs.getString(4));
                 post.setSiteId(rs.getString(5));
                 post.setDraftId(rs.getString(6));
-                post.setChannel(SocialChannels.getChannel(rs.getString(7)));
+                post.setChannel(rs.getString(7));
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
                 post.setAttributes(new JSONObject(getClob(rs, 10)));
@@ -249,7 +248,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
             insertStmt.setString(4, post.getType().name());
             insertStmt.setString(5, post.getSiteId());
             insertStmt.setString(6, post.getDraftId());
-            insertStmt.setString(7, post.getChannel().getCode());
+            insertStmt.setString(7, post.getChannel());
             insertStmt.setString(8, post.getCode());
             insertStmt.setString(9, post.getContentType() != null ? post.getContentType().name() : "");
             String attributes = post.getAttributes().toString();
@@ -344,7 +343,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setType(rs.getString(4));
                 post.setSiteId(rs.getString(5));
                 post.setDraftId(rs.getString(6));
-                post.setChannel(SocialChannels.getChannel(rs.getString(7)));
+                post.setChannel(rs.getString(7));
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
                 post.setAttributes(new JSONObject(getClob(rs, 10)));
@@ -402,7 +401,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setType(rs.getString(4));
                 post.setSiteId(rs.getString(5));
                 post.setDraftId(rs.getString(6));
-                post.setChannel(SocialChannels.getChannel(rs.getString(7)));
+                post.setChannel(rs.getString(7));
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
                 post.setAttributes(new JSONObject(getClob(rs, 10)));
@@ -462,7 +461,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setType(rs.getString(4));
                 post.setSiteId(rs.getString(5));
                 post.setDraftId(rs.getString(6));
-                post.setChannel(SocialChannels.getChannel(rs.getString(7)));
+                post.setChannel(rs.getString(7));
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
                 post.setAttributes(new JSONObject(getClob(rs, 10)));
@@ -522,7 +521,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setType(rs.getString(4));
                 post.setSiteId(rs.getString(5));
                 post.setDraftId(rs.getString(6));
-                post.setChannel(SocialChannels.getChannel(rs.getString(7)));
+                post.setChannel(rs.getString(7));
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
                 post.setAttributes(new JSONObject(getClob(rs, 10)));
@@ -581,7 +580,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setType(rs.getString(4));
                 post.setSiteId(rs.getString(5));
                 post.setDraftId(rs.getString(6));
-                post.setChannel(SocialChannels.getChannel(rs.getString(7)));
+                post.setChannel(rs.getString(7));
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
                 post.setAttributes(new JSONObject(getClob(rs, 10)));
@@ -639,7 +638,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setType(rs.getString(4));
                 post.setSiteId(rs.getString(5));
                 post.setDraftId(rs.getString(6));
-                post.setChannel(SocialChannels.getChannel(rs.getString(7)));
+                post.setChannel(rs.getString(7));
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
                 post.setAttributes(new JSONObject(getClob(rs, 10)));
@@ -699,7 +698,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setType(rs.getString(4));
                 post.setSiteId(rs.getString(5));
                 post.setDraftId(rs.getString(6));
-                post.setChannel(SocialChannels.getChannel(rs.getString(7)));
+                post.setChannel(rs.getString(7));
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
                 post.setAttributes(new JSONObject(getClob(rs, 10)));

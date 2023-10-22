@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
+import com.opsmatters.media.cache.social.SocialChannels;
 import com.opsmatters.media.client.social.SocialClient;
 import com.opsmatters.media.client.social.SocialClientFactory;
 import com.opsmatters.media.cache.organisation.Organisations;
@@ -49,7 +50,7 @@ public class ChannelPost extends SocialPost
     private String code = "";
     private String organisation = "";
     private String title = "";
-    private SocialChannel channel;
+    private String channel;
     private PostType type;
     private ContentType contentType;
     private int contentId = -1;
@@ -77,7 +78,7 @@ public class ChannelPost extends SocialPost
         setScheduledDate(post.getScheduledDate());
         setDraftId(post.getId());
         setTitle(post.getTitle());
-        setChannel(channel);
+        setChannel(channel.getCode());
         setMessage(message);
         setType(post.getType());
         setStatus(DeliveryStatus.NEW);
@@ -99,7 +100,7 @@ public class ChannelPost extends SocialPost
         setId(id);
         setCreatedDate(Instant.now());
         setUpdatedDate(Instant.now());
-        setChannel(channel);
+        setChannel(channel.getCode());
         setMessage(message);
         setType(PostType.EXTERNAL);
         setStatus(DeliveryStatus.RECEIVED);
@@ -310,17 +311,17 @@ public class ChannelPost extends SocialPost
     }
 
     /**
-     * Returns the social channel.
+     * Returns the social channel code.
      */
-    public SocialChannel getChannel()
+    public String getChannel()
     {
         return channel;
     }
 
     /**
-     * Sets the social channel.
+     * Sets the social channel code.
      */
-    public void setChannel(SocialChannel channel)
+    public void setChannel(String channel)
     {
         this.channel = channel;
     }
@@ -593,7 +594,7 @@ public class ChannelPost extends SocialPost
 
         try
         {
-            client = SocialClientFactory.newClient(getChannel());
+            client = SocialClientFactory.newClient(SocialChannels.getChannel(getChannel()));
             if(client == null)
                 throw new IllegalArgumentException("unknown channel provider: "+getChannel());
             setStatus(DeliveryStatus.SENDING);
@@ -659,6 +660,7 @@ public class ChannelPost extends SocialPost
             {
                 {"ID", getId()},
                 {"Organisation", getOrganisation()},
+                {"Channel", getChannel()},
                 {"Title", getTitle()},
                 {"Status", getStatus().name()},
                 {"Updated", getUpdatedDateAsString(Formats.CONTENT_DATE_FORMAT)},

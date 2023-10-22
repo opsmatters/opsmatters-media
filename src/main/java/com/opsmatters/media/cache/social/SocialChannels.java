@@ -87,11 +87,19 @@ public class SocialChannels implements java.io.Serializable
     }
 
     /**
-     * Adds the social channel with the given name.
+     * Adds the social channel with the given code.
      */
     public static void add(SocialChannel channel)
     {
         channelMap.put(channel.getCode(), channel);
+    }
+
+    /**
+     * Removes the social channel with the given code.
+     */
+    public static void remove(SocialChannel channel)
+    {
+        channelMap.remove(channel.getCode());
     }
 
     /**

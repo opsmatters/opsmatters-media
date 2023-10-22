@@ -42,6 +42,13 @@ public class SocialChannelDAO extends SocialDAO<SocialChannel>
       + "FROM SOCIAL_CHANNELS WHERE ID=?";
 
     /**
+     * The query to use to select a channel from the SOCIAL_CHANNELS table by code.
+     */
+    private static final String GET_BY_CODE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, PROVIDER, HANDLE, ICON, SITES, DELAY, MAX_POSTS, STATUS, CREATED_BY "
+      + "FROM SOCIAL_CHANNELS WHERE CODE=?";
+
+    /**
      * The query to use to insert a channel into the SOCIAL_CHANNELS table.
      */
     private static final String INSERT_SQL =  
@@ -130,6 +137,64 @@ public class SocialChannelDAO extends SocialDAO<SocialChannel>
             getByIdStmt.setString(1, id);
             getByIdStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByIdStmt.executeQuery();
+            while(rs.next())
+            {
+                SocialChannel channel = new SocialChannel();
+                channel.setId(rs.getString(1));
+                channel.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                channel.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                channel.setCode(rs.getString(4));
+                channel.setName(rs.getString(5));
+                channel.setProvider(rs.getString(6));
+                channel.setHandle(rs.getString(7));
+                channel.setIcon(rs.getString(8));
+                channel.setSites(rs.getString(9));
+                channel.setDelay(rs.getInt(10));
+                channel.setMaxPosts(rs.getInt(11));
+                channel.setStatus(rs.getString(12));
+                channel.setCreatedBy(rs.getString(13));
+                ret = channel;
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns a channel from the SOCIAL_CHANNELS table by code.
+     */
+    public synchronized SocialChannel getByCode(String code) throws SQLException
+    {
+        SocialChannel ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(getByCodeStmt == null)
+            getByCodeStmt = prepareStatement(getConnection(), GET_BY_CODE_SQL);
+        clearParameters(getByCodeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            getByCodeStmt.setString(1, code);
+            getByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = getByCodeStmt.executeQuery();
             while(rs.next())
             {
                 SocialChannel channel = new SocialChannel();
@@ -342,6 +407,8 @@ public class SocialChannelDAO extends SocialDAO<SocialChannel>
     {
         closeStatement(getByIdStmt);
         getByIdStmt = null;
+        closeStatement(getByCodeStmt);
+        getByCodeStmt = null;
         closeStatement(insertStmt);
         insertStmt = null;
         closeStatement(updateStmt);
@@ -355,6 +422,7 @@ public class SocialChannelDAO extends SocialDAO<SocialChannel>
     }
 
     private PreparedStatement getByIdStmt;
+    private PreparedStatement getByCodeStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
