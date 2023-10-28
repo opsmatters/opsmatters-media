@@ -21,12 +21,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.Iterator;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.cache.content.organisation.OrganisationContentConfigs;
 import com.opsmatters.media.crawler.video.VideoCrawler;
 import com.opsmatters.media.model.content.video.VideoConfig;
 import com.opsmatters.media.model.content.video.VideoTeaser;
+import com.opsmatters.media.model.content.video.VideoDetails;
 import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
 import com.opsmatters.media.model.monitor.ContentMonitor;
 import com.opsmatters.media.model.monitor.ContentSnapshot;
@@ -193,12 +195,30 @@ public class VideoMonitor extends ContentMonitor<VideoTeaser>
                         teasers.add(0, video);
 
                         if(debug)
-                            logger.info("VideoMonitor.check: adding subscribed video="+getGuid()
+                            logger.info("VideoMonitor.check: adding subscribed monitor="+getGuid()
                                 +" video="+video.getVideoId());
                     }
                 }
 
                 clearSubscribedContent();
+            }
+
+            // Remove any future videos from the change list
+            if(cache && teasers.size() > 0)
+            {
+                Iterator it = teasers.iterator();
+                while(it.hasNext())
+                {
+                    VideoTeaser teaser = (VideoTeaser)it.next(); 
+                    VideoDetails video = crawler.getDetails(teaser.getVideoId());
+                    if(video != null && video.getDuration() == 0)
+                    {
+                        it.remove();
+                        if(debug)
+                            logger.info("VideoMonitor.check: removed future video: monitor="+getGuid()
+                                +" video="+video.getVideoId());
+                    }
+                }
             }
 
             ret = new ContentSnapshot(getContentType(), teasers);
