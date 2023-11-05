@@ -98,17 +98,6 @@ public class Dashboards
     }
 
     /**
-     * Returns the dashboard for the given parameter.
-     */
-    public static Dashboard get(ParameterName name)
-    {
-        Dashboard ret = get(Parameters.get(ParameterType.DASHBOARD, name).getValue());
-        if(ret == null && size() > 0)
-            ret = dashboardList.get(0); // default to the 1st dashboard
-        return ret;
-    }
-
-    /**
      * Returns the list of dashboards.
      */
     public static List<Dashboard> list()

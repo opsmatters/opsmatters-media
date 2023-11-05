@@ -23,6 +23,9 @@ package com.opsmatters.media.model.admin;
  */
 public enum ParameterName
 {
+    SESSION("session"),
+    DASHBOARD("dashboard"),
+    STATUS("status"),
     INIT_DELAY("init-delay"),
     BATCH_DELAY("batch-delay"),
     ITEM_DELAY("item-delay"),
@@ -39,10 +42,6 @@ public enum ParameterName
     MAX_INACTIVE("max-inactive"),
     SUB_LEASE("sub-lease"),
     SUB_EXPIRY("sub-expiry"),
-    PUBLISHER_DASHBOARD("publisher-dashboard"),
-    DIRECTOR_DASHBOARD("director-dashboard"),
-    STATUS("status"),
-    SESSION("session"),
     CONFIG_CHANGED("config-changed"),
     CONFIG_UPDATED("config-updated"),
     ORGANISATION_CHANGED("organisation-changed"),

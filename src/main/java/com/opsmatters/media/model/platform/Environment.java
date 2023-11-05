@@ -39,6 +39,8 @@ public class Environment implements ConfigElement
     private Ec2Config ec2;
     private RdsConfig rds;
     private SshConfig ssh;
+    private String status = "";
+    private String dashboard = "";
 
     /**
      * Constructor that takes a name.
@@ -73,6 +75,8 @@ public class Environment implements ConfigElement
             setEc2Config(new Ec2Config(obj.getEc2Config()));
             setRdsConfig(new RdsConfig(obj.getRdsConfig()));
             setSshConfig(new SshConfig(obj.getSshConfig()));
+            setStatus(obj.getStatus());
+            setDashboard(obj.getDashboard());
         }
     }
 
@@ -261,6 +265,38 @@ public class Environment implements ConfigElement
     }
 
     /**
+     * Returns the status dashboard of the environment.
+     */
+    public String getStatus()
+    {
+        return status;
+    }
+
+    /**
+     * Sets the status dashboard for the environment.
+     */
+    public void setStatus(String status)
+    {
+        this.status = status;
+    }
+
+    /**
+     * Returns the default dashboard of the environment.
+     */
+    public String getDashboard()
+    {
+        return dashboard;
+    }
+
+    /**
+     * Sets the default dashboard for the environment.
+     */
+    public void setDashboard(String dashboard)
+    {
+        this.dashboard = dashboard;
+    }
+
+    /**
      * Returns a builder for the environment.
      * @param name The name of the environment
      * @param site The site of the environment
@@ -285,6 +321,8 @@ public class Environment implements ConfigElement
         private static final String EC2 = "ec2";
         private static final String RDS = "rds";
         private static final String SSH = "ssh";
+        private static final String STATUS = "status";
+        private static final String DASHBOARD = "dashboard";
 
         private Environment ret = null;
 
@@ -322,6 +360,10 @@ public class Environment implements ConfigElement
                 ret.setPing((String)map.get(PING));
             if(map.containsKey(PATH))
                 ret.setPath((String)map.get(PATH));
+            if(map.containsKey(STATUS))
+                ret.setStatus((String)map.get(STATUS));
+            if(map.containsKey(DASHBOARD))
+                ret.setDashboard((String)map.get(DASHBOARD));
 
             String name = ret.getName();
 
