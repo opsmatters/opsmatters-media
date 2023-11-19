@@ -71,11 +71,25 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
       + "WHERE ID=?";
 
     /**
-     * The query to use to select the posts from the DRAFT_POSTS table by type.
+     * The query to use to select the posts from the DRAFT_POSTS table by type and interval.
      */
-    private static final String LIST_BY_TYPE_SQL =  
+    private static final String LIST_BY_TYPE_INTERVAL_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
-      + "FROM DRAFT_POSTS WHERE TYPE=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS IN ('NEW','REPOSTED')) ORDER BY CREATED_DATE";
+      + "FROM DRAFT_POSTS WHERE TYPE=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS != 'PROCESSED') ORDER BY CREATED_DATE";
+
+    /**
+     * The query to use to select the posts from the DRAFT_POSTS table by type, status and interval.
+     */
+    private static final String LIST_BY_TYPE_STATUS_INTERVAL_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM DRAFT_POSTS WHERE TYPE=? AND STATUS=? AND CREATED_DATE >= (NOW() + INTERVAL -? DAY) ORDER BY CREATED_DATE";
+
+    /**
+     * The query to use to select the posts from the DRAFT_POSTS table by type and status.
+     */
+    private static final String LIST_BY_TYPE_STATUS_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM DRAFT_POSTS WHERE TYPE=? AND STATUS=? ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the DRAFT_POSTS table by site.
@@ -322,7 +336,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     }
 
     /**
-     * Returns the posts from the DRAFT_POSTS table by type.
+     * Returns the posts from the DRAFT_POSTS table by type and interval.
      */
     public synchronized List<DraftPost> list(PostType type, int interval) throws SQLException
     {
@@ -332,18 +346,131 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
             return ret;
 
         preQuery();
-        if(listByTypeStmt == null)
-            listByTypeStmt = prepareStatement(getConnection(), LIST_BY_TYPE_SQL);
-        clearParameters(listByTypeStmt);
+        if(listByTypeIntervalStmt == null)
+            listByTypeIntervalStmt = prepareStatement(getConnection(), LIST_BY_TYPE_INTERVAL_SQL);
+        clearParameters(listByTypeIntervalStmt);
 
         ResultSet rs = null;
 
         try
         {
-            listByTypeStmt.setString(1, type.name());
-            listByTypeStmt.setInt(2, interval);
-            listByTypeStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = listByTypeStmt.executeQuery();
+            listByTypeIntervalStmt.setString(1, type.name());
+            listByTypeIntervalStmt.setInt(2, interval);
+            listByTypeIntervalStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByTypeIntervalStmt.executeQuery();
+            ret = new ArrayList<DraftPost>();
+            while(rs.next())
+            {
+                DraftPost post = DraftPostFactory.newInstance(PostType.valueOf(rs.getString(4)));
+                post.setId(rs.getString(1));
+                post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                post.setSiteId(rs.getString(5));
+                post.setSourceId(rs.getString(6));
+                post.setProperties(new JSONObject(getClob(rs, 7)));
+                post.setAttributes(new JSONObject(getClob(rs, 8)));
+                post.setStatus(rs.getString(9));
+                post.setCreatedBy(rs.getString(10));
+                ret.add(post);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the posts from the DRAFT_POSTS table by type, status and interval.
+     */
+    public synchronized List<DraftPost> list(PostType type, DraftStatus status, int interval) throws SQLException
+    {
+        List<DraftPost> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByTypeStatusIntervalStmt == null)
+            listByTypeStatusIntervalStmt = prepareStatement(getConnection(), LIST_BY_TYPE_STATUS_INTERVAL_SQL);
+        clearParameters(listByTypeStatusIntervalStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByTypeStatusIntervalStmt.setString(1, type.name());
+            listByTypeStatusIntervalStmt.setString(2, status != null ? status.name() : "");
+            listByTypeStatusIntervalStmt.setInt(3, interval);
+            listByTypeStatusIntervalStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByTypeStatusIntervalStmt.executeQuery();
+            ret = new ArrayList<DraftPost>();
+            while(rs.next())
+            {
+                DraftPost post = DraftPostFactory.newInstance(PostType.valueOf(rs.getString(4)));
+                post.setId(rs.getString(1));
+                post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                post.setSiteId(rs.getString(5));
+                post.setSourceId(rs.getString(6));
+                post.setProperties(new JSONObject(getClob(rs, 7)));
+                post.setAttributes(new JSONObject(getClob(rs, 8)));
+                post.setStatus(rs.getString(9));
+                post.setCreatedBy(rs.getString(10));
+                ret.add(post);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the posts from the DRAFT_POSTS table by type and status.
+     */
+    public synchronized List<DraftPost> list(PostType type, DraftStatus status) throws SQLException
+    {
+        List<DraftPost> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByTypeStatusStmt == null)
+            listByTypeStatusStmt = prepareStatement(getConnection(), LIST_BY_TYPE_STATUS_SQL);
+        clearParameters(listByTypeStatusStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByTypeStatusStmt.setString(1, type.name());
+            listByTypeStatusStmt.setString(2, status != null ? status.name() : "");
+            listByTypeStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByTypeStatusStmt.executeQuery();
             ret = new ArrayList<DraftPost>();
             while(rs.next())
             {
@@ -794,8 +921,12 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
         insertStmt = null;
         closeStatement(updateStmt);
         updateStmt = null;
-        closeStatement(listByTypeStmt);
-        listByTypeStmt = null;
+        closeStatement(listByTypeIntervalStmt);
+        listByTypeIntervalStmt = null;
+        closeStatement(listByTypeStatusIntervalStmt);
+        listByTypeStatusIntervalStmt = null;
+        closeStatement(listByTypeStatusStmt);
+        listByTypeStatusStmt = null;
         closeStatement(listBySiteStmt);
         listBySiteStmt = null;
         closeStatement(listBySiteTypeStmt);
@@ -815,7 +946,9 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     private PreparedStatement getByIdStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
-    private PreparedStatement listByTypeStmt;
+    private PreparedStatement listByTypeIntervalStmt;
+    private PreparedStatement listByTypeStatusIntervalStmt;
+    private PreparedStatement listByTypeStatusStmt;
     private PreparedStatement listBySiteStmt;
     private PreparedStatement listBySiteTypeStmt;
     private PreparedStatement listByStatusStmt;

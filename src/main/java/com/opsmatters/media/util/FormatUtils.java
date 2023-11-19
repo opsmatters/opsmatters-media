@@ -18,6 +18,7 @@ package com.opsmatters.media.util;
 
 import java.text.DecimalFormat;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * A set of utility methods to perform miscellaneous tasks related to formatting.
@@ -235,7 +236,7 @@ public class FormatUtils
                 boolean stripped = false;
                 if(ret.startsWith("<p>"))
                 {
-                    ret = ret.replaceAll("<p>(.*)</p>", "$1").trim();
+                    ret = Pattern.compile("<p>(.*)</p>", Pattern.DOTALL).matcher(ret).replaceAll("$1").trim();
                     stripped = true;
                 }
 

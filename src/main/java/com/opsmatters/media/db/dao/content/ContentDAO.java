@@ -94,10 +94,10 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
       "SELECT ATTRIBUTES, SITE_ID FROM %s WHERE SITE_ID=? ORDER BY CODE";
 
     /**
-     * The query to use to select the content from the table by title.
+     * The query to use to select the content from the table by site, code and title.
      */
     private static final String LIST_BY_TITLE_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM %s WHERE CODE=? AND TITLE=? ORDER BY PUBLISHED_DATE DESC";
+      "SELECT ATTRIBUTES, SITE_ID FROM %s WHERE SITE_ID=? AND CODE=? AND TITLE=? ORDER BY PUBLISHED_DATE DESC";
 
     /**
      * The query to use to get the count of content items from the table.
@@ -252,7 +252,15 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
     }
 
     /**
-     * Returns a content item from the table by title.
+     * Returns a content item from the table by id.
+     */
+    public synchronized T getById(T content) throws SQLException
+    {
+        return getById(content.getSiteId(), content.getCode(), content.getId());
+    }
+
+    /**
+     * Returns a content item from the table by soce and title.
      */
     public synchronized T getByTitle(String siteId, String code, String title) throws SQLException
     {
@@ -569,9 +577,9 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
     }
 
     /**
-     * Returns a list of content items from the table by title.
+     * Returns a list of content items from the table by site, code and title.
      */
-    public synchronized List<T> listByTitle(String code, String title) throws SQLException
+    public synchronized List<T> listByTitle(String siteId, String code, String title) throws SQLException
     {
         List<T> ret = null;
 
@@ -587,8 +595,9 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
 
         try
         {
-            listByTitleStmt.setString(1, code);
-            listByTitleStmt.setString(2, title);
+            listByTitleStmt.setString(1, siteId);
+            listByTitleStmt.setString(2, code);
+            listByTitleStmt.setString(3, title);
             listByTitleStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByTitleStmt.executeQuery();
             ret = new ArrayList<T>();
@@ -627,12 +636,11 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
     public int getDuplicateCount(T content) throws SQLException
     {
         int ret = 0;
-        List<T> duplicates = listByTitle(content.getCode(),
-            content.getTitle());
+        List<T> duplicates = listByTitle(content.getSiteId(),
+            content.getCode(), content.getTitle());
         for(T duplicate : duplicates)
         {
-            if(duplicate.getSiteId().equals(content.getSiteId())
-                && duplicate.getId() != content.getId())
+            if(duplicate.getId() != content.getId())
             {
                 if(content.getPublishedDate() != null)
                 {

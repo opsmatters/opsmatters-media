@@ -68,12 +68,12 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
       + "WHERE ID=?";
 
     /**
-     * The query to use to select the posts from the CHANNEL_POSTS table.
+     * The query to use to select the posts from the CHANNEL_POSTS table by interval.
      */
-    private static final String LIST_SQL =  
+    private static final String LIST_BY_INTERVAL_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
       + "CODE, CONTENT_TYPE, ATTRIBUTES, STATUS, CREATED_BY "
-      + "FROM CHANNEL_POSTS WHERE CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR UPDATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS IN ('NEW','WAITING','ERROR','PAUSED') ORDER BY CREATED_DATE";
+      + "FROM CHANNEL_POSTS WHERE CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR UPDATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS != 'SENT' ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the CHANNEL_POSTS table by status.
@@ -321,18 +321,18 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
             return ret;
 
         preQuery();
-        if(listStmt == null)
-            listStmt = prepareStatement(getConnection(), LIST_SQL);
-        clearParameters(listStmt);
+        if(listByIntervalStmt == null)
+            listByIntervalStmt = prepareStatement(getConnection(), LIST_BY_INTERVAL_SQL);
+        clearParameters(listByIntervalStmt);
 
         ResultSet rs = null;
 
         try
         {
-            listStmt.setInt(1, interval);
-            listStmt.setInt(2, interval);
-            listStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = listStmt.executeQuery();
+            listByIntervalStmt.setInt(1, interval);
+            listByIntervalStmt.setInt(2, interval);
+            listByIntervalStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByIntervalStmt.executeQuery();
             ret = new ArrayList<ChannelPost>();
             while(rs.next())
             {
@@ -772,8 +772,8 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
         insertStmt = null;
         closeStatement(updateStmt);
         updateStmt = null;
-        closeStatement(listStmt);
-        listStmt = null;
+        closeStatement(listByIntervalStmt);
+        listByIntervalStmt = null;
         closeStatement(listByStatusStmt);
         listByStatusStmt = null;
         closeStatement(listByStatusIntervalStmt);
@@ -795,7 +795,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
     private PreparedStatement getByIdStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
-    private PreparedStatement listStmt;
+    private PreparedStatement listByIntervalStmt;
     private PreparedStatement listByStatusStmt;
     private PreparedStatement listByStatusIntervalStmt;
     private PreparedStatement listBySiteStmt;

@@ -244,6 +244,8 @@ public class AwsRdsClient extends Client
                 ret = EnvironmentStatus.STOPPED;
             else if(status.equals("backing-up"))
                 ret = EnvironmentStatus.BACKING_UP;
+            else if(status.equals("upgrading"))
+                ret = EnvironmentStatus.UPGRADING;
 
             if(ret == EnvironmentStatus.UNKNOWN)
                 logger.warning("RDS cluster has unknown status: "+status);
