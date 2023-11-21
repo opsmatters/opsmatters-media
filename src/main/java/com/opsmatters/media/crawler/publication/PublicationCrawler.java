@@ -25,7 +25,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import com.opsmatters.media.crawler.WebPageCrawler;
 import com.opsmatters.media.cache.content.Teasers;
-import com.opsmatters.media.model.content.publication.PublicationTeaser;
 import com.opsmatters.media.model.content.publication.PublicationDetails;
 import com.opsmatters.media.model.content.publication.PublicationConfig;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
@@ -43,7 +42,7 @@ import static com.opsmatters.media.model.logging.LogCategory.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,PublicationDetails>
+public class PublicationCrawler extends WebPageCrawler<PublicationDetails>
 {
     private static final Logger logger = Logger.getLogger(PublicationCrawler.class.getName());
 
@@ -70,10 +69,10 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
      * Create the publication teaser from the given element.
      */
     @Override
-    protected PublicationTeaser getTeaser(Element root, Fields fields)
+    protected PublicationDetails getTeaser(Element root, Fields fields)
         throws DateTimeParseException
     {
-        PublicationTeaser teaser = new PublicationTeaser();
+        PublicationDetails teaser = new PublicationDetails();
         if(fields.hasValidator())
             validateContent(teaser, fields.getValidator(), root, TEASER);
         if(teaser.isValid())
@@ -99,14 +98,14 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
     public PublicationDetails getDetails(String url)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        return getDetails(new PublicationTeaser(url, getArticles().removeParameters()));
+        return getDetails(new PublicationDetails(url, getArticles().removeParameters()));
     }
 
     /**
      * Returns the processed publication derived from the given teaser.
      */
     @Override
-    public PublicationDetails getDetails(PublicationTeaser teaser)
+    public PublicationDetails getDetails(PublicationDetails teaser)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
         PublicationDetails content = new PublicationDetails(teaser);
@@ -177,7 +176,7 @@ public class PublicationCrawler extends WebPageCrawler<PublicationTeaser,Publica
     /**
      * Populate the teaser fields from the given element.
      */
-    private void populateTeaserFields(Element root, Fields fields, PublicationTeaser teaser, LogCategory category)
+    private void populateTeaserFields(Element root, Fields fields, PublicationDetails teaser, LogCategory category)
         throws DateTimeParseException
     {
         if(fields.hasTitle())

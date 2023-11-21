@@ -27,17 +27,16 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.ContentTeaser;
+import com.opsmatters.media.model.content.ContentDetails;
 import com.opsmatters.media.model.content.ContentLookup;
-import com.opsmatters.media.model.content.post.RoundupPostTeaser;
-import com.opsmatters.media.model.content.video.VideoTeaser;
+import com.opsmatters.media.model.content.post.RoundupPostDetails;
+import com.opsmatters.media.model.content.video.VideoDetails;
 import com.opsmatters.media.model.content.video.Video;
-import com.opsmatters.media.model.content.event.EventTeaser;
-import com.opsmatters.media.model.content.publication.PublicationTeaser;
+import com.opsmatters.media.model.content.event.EventDetails;
+import com.opsmatters.media.model.content.publication.PublicationDetails;
 import com.opsmatters.media.model.content.LinkedContent;
 
 import static com.opsmatters.media.model.content.FieldName.*;
-
 
 /**
  * Class representing a snapshot of content monitor content.
@@ -51,12 +50,12 @@ public class ContentSnapshot extends JSONObject
     /**
      * Constructor that takes a content type and list of teasers.
      */
-    public ContentSnapshot(ContentType type, List<? extends ContentTeaser> teasers)
+    public ContentSnapshot(ContentType type, List<? extends ContentDetails> teasers)
     {
         JSONArray array = new JSONArray();
         if(teasers != null)
         {
-            for(ContentTeaser teaser : teasers)
+            for(ContentDetails teaser : teasers)
                 array.put(createObject(type, teaser));
         }
 
@@ -85,7 +84,7 @@ public class ContentSnapshot extends JSONObject
      */
     public ContentSnapshot(ContentType type)
     {
-        this(type, (List<? extends ContentTeaser>)null);
+        this(type, (List<? extends ContentDetails>)null);
     }
 
     /**
@@ -156,18 +155,18 @@ public class ContentSnapshot extends JSONObject
     /**
      * Create an object for the teaser.
      */
-    private JSONObject createObject(ContentType type, ContentTeaser teaser)
+    private JSONObject createObject(ContentType type, ContentDetails teaser)
     {
         switch(type)
         {
             case ROUNDUP:
-                return createObject((RoundupPostTeaser)teaser);
+                return createObject((RoundupPostDetails)teaser);
             case VIDEO:
-                return createObject((VideoTeaser)teaser);
+                return createObject((VideoDetails)teaser);
             case EVENT:
-                return createObject((EventTeaser)teaser);
+                return createObject((EventDetails)teaser);
             case PUBLICATION:
-                return createObject((PublicationTeaser)teaser);
+                return createObject((PublicationDetails)teaser);
             default:
                 return null;
         }
@@ -176,7 +175,7 @@ public class ContentSnapshot extends JSONObject
     /**
      * Create an object for the roundup teaser.
      */
-    private JSONObject createObject(RoundupPostTeaser teaser)
+    private JSONObject createObject(RoundupPostDetails teaser)
     {
         JSONObject ret = new JSONObject();
         ret.put(TITLE.value(), teaser.getTitle());
@@ -189,7 +188,7 @@ public class ContentSnapshot extends JSONObject
     /**
      * Create an object for the video teaser.
      */
-    private JSONObject createObject(VideoTeaser teaser)
+    private JSONObject createObject(VideoDetails teaser)
     {
         JSONObject ret = new JSONObject();
         ret.put(TITLE.value(), teaser.getTitle());
@@ -202,7 +201,7 @@ public class ContentSnapshot extends JSONObject
     /**
      * Create an object for the event teaser.
      */
-    private JSONObject createObject(EventTeaser teaser)
+    private JSONObject createObject(EventDetails teaser)
     {
         JSONObject ret = new JSONObject();
         ret.put(TITLE.value(), teaser.getTitle());
@@ -215,7 +214,7 @@ public class ContentSnapshot extends JSONObject
     /**
      * Create an object for the publication teaser.
      */
-    private JSONObject createObject(PublicationTeaser teaser)
+    private JSONObject createObject(PublicationDetails teaser)
     {
         JSONObject ret = new JSONObject();
         ret.put(TITLE.value(), teaser.getTitle());

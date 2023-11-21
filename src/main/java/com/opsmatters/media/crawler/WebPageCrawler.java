@@ -54,7 +54,7 @@ import com.opsmatters.media.model.content.crawler.field.FieldSelector;
 import com.opsmatters.media.model.content.crawler.field.FieldExclude;
 import com.opsmatters.media.model.content.crawler.field.FieldFilter;
 import com.opsmatters.media.model.content.crawler.field.ElementOutput;
-import com.opsmatters.media.model.content.ContentTeaser;
+import com.opsmatters.media.model.content.ContentDetails;
 import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.crawler.parser.ElementType;
 import com.opsmatters.media.model.logging.LogEntry;
@@ -71,7 +71,7 @@ import static com.opsmatters.media.model.logging.LogCategory.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentTeaser> extends ContentCrawler<T,D>
+public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCrawler<D>
 {
     private static final Logger logger = Logger.getLogger(WebPageCrawler.class.getName());
 
@@ -484,7 +484,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
     /**
      * Create a teaser from the given element.
      */
-    protected abstract T getTeaser(Element result, Fields fields) throws DateTimeParseException;
+    protected abstract D getTeaser(Element result, Fields fields) throws DateTimeParseException;
 
     /**
      * Process the configured teasers.
@@ -504,15 +504,15 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                 throw new IllegalArgumentException("Root empty for teasers");
 
             // Try to get the teasers from the cache
-            List<ContentTeaser> teasers = Teasers.getTeasers(config.getCode(), url);
+            List<ContentDetails> teasers = Teasers.getTeasers(config.getCode(), url);
             if(teasers != null)
             {
                 int count = 0;
-                for(ContentTeaser teaser : teasers)
+                for(ContentDetails teaser : teasers)
                 {
                     if(teaser.isValid() && !map.containsKey(teaser.getUniqueId()))
                     {
-                        addTeaser((T)teaser);
+                        addTeaser((D)teaser);
                         map.put(teaser.getUniqueId(), teaser.getUniqueId());
                         ++count;
                     }
@@ -557,7 +557,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
                         if(trace(result))
                             logger.info("teaser-node="+result.html());
 
-                        T teaser = getTeaser(result, fields);
+                        D teaser = getTeaser(result, fields);
                         if(teaser.isValid() && !map.containsKey(teaser.getUniqueId()))
                         {
                             // Check that the teaser matches the configured keywords
@@ -626,7 +626,7 @@ public abstract class WebPageCrawler<T extends ContentTeaser, D extends ContentT
     /**
      * Returns <CODE>true</CODE> if the content validator is found.
      */
-    protected void validateContent(T content, Field field, Element root, LogCategory category)
+    protected void validateContent(D content, Field field, Element root, LogCategory category)
     {
         boolean valid = false;
 

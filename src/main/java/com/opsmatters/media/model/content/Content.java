@@ -38,7 +38,7 @@ import static com.opsmatters.media.model.content.ContentStatus.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class Content<T extends ContentTeaser, D extends ContentTeaser>
+public abstract class Content<D extends ContentDetails>
     implements java.io.Serializable
 {
     public static final String EMPTY = "-";
@@ -206,7 +206,7 @@ public abstract class Content<T extends ContentTeaser, D extends ContentTeaser>
     /**
      * Sets the details from a teaser.
      */
-    public void setTeaserDetails(T obj)
+    public void setTeaserDetails(D obj)
     {
         if(obj != null)
         {

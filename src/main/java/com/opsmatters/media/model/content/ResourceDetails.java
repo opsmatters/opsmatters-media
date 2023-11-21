@@ -18,11 +18,11 @@ package com.opsmatters.media.model.content;
 import com.opsmatters.media.util.FormatUtils;
 
 /**
- * Class representing a resource teaser.
+ * Class representing a resource details.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ResourceTeaser extends ContentTeaser implements LinkedContent
+public class ResourceDetails extends ContentDetails implements LinkedContent
 {
     private String description = "";
     private String url = "";
@@ -30,14 +30,14 @@ public class ResourceTeaser extends ContentTeaser implements LinkedContent
     /**
      * Default constructor.
      */
-    public ResourceTeaser()
+    public ResourceDetails()
     {
     }
 
     /**
      * Constructor that takes a url.
      */
-    public ResourceTeaser(String url, boolean removeParameters)
+    public ResourceDetails(String url, boolean removeParameters)
     {
         setUrl(url, removeParameters);
     }
@@ -45,7 +45,7 @@ public class ResourceTeaser extends ContentTeaser implements LinkedContent
     /**
      * Copy constructor.
      */
-    public ResourceTeaser(ResourceTeaser obj)
+    public ResourceDetails(ResourceDetails obj)
     {
         copyAttributes(obj);
     }
@@ -53,7 +53,7 @@ public class ResourceTeaser extends ContentTeaser implements LinkedContent
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ResourceTeaser obj)
+    public void copyAttributes(ResourceDetails obj)
     {
         if(obj != null)
         {

@@ -15,13 +15,17 @@
  */
 package com.opsmatters.media.model.content.job;
 
+import com.opsmatters.media.model.content.ResourceDetails;
+
 /**
  * Class representing a job.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class JobDetails extends JobTeaser
+public class JobDetails extends ResourceDetails
 {
+    private String package_ = "";
+    private String location = "";
     private String website = "";
     private String contact = "";
 
@@ -48,17 +52,68 @@ public class JobDetails extends JobTeaser
         if(obj != null)
         {
             super.copyAttributes(obj);
+            setUrl(obj.getUrl());
+            setPackage(obj.getPackage());
+            setLocation(obj.getLocation());
             setWebsite(obj.getWebsite());
             setContact(obj.getContact());
         }
     }
 
     /**
-     * Constructor that takes a teaser.
+     * Sets the job url.
      */
-    public JobDetails(JobTeaser obj)
+    public void setUrl(String url)
     {
-        super(obj);
+        setUrl("", url, true);
+    }
+
+    /**
+     * Returns the job package.
+     */
+    public String getPackage()
+    {
+        return package_;
+    }
+
+    /**
+     * Sets the job package.
+     */
+    public void setPackage(String package_)
+    {
+        this.package_ = package_;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the job package has been set.
+     */
+    public boolean hasPackage()
+    {
+        return package_ != null && package_.length() > 0;
+    }
+
+    /**
+     * Returns the job location.
+     */
+    public String getLocation()
+    {
+        return location;
+    }
+
+    /**
+     * Sets the job location.
+     */
+    public void setLocation(String location)
+    {
+        this.location = location;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the job location has been set.
+     */
+    public boolean hasLocation()
+    {
+        return location != null && location.length() > 0;
     }
 
     /**

@@ -15,13 +15,16 @@
  */
 package com.opsmatters.media.model.content.tool;
 
+import com.opsmatters.media.model.content.ResourceDetails;
+
 /**
  * Class representing a tool.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ToolDetails extends ToolTeaser
+public class ToolDetails extends ResourceDetails
 {
+    private String pricing = "";
     private String website = "";
     private String download = "";
 
@@ -48,17 +51,35 @@ public class ToolDetails extends ToolTeaser
         if(obj != null)
         {
             super.copyAttributes(obj);
+            setUrl(obj.getUrl());
+            setPricing(obj.getPricing());
             setWebsite(obj.getWebsite());
             setDownload(obj.getDownload());
         }
     }
 
     /**
-     * Constructor that takes a teaser.
+     * Sets the tool url.
      */
-    public ToolDetails(ToolTeaser obj)
+    public void setUrl(String url)
     {
-        super(obj);
+        setUrl("", url, true);
+    }
+
+    /**
+     * Returns the tool pricing.
+     */
+    public String getPricing()
+    {
+        return pricing;
+    }
+
+    /**
+     * Sets the tool pricing.
+     */
+    public void setPricing(String pricing)
+    {
+        this.pricing = pricing;
     }
 
     /**

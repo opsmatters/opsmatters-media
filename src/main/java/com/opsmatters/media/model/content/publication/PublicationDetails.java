@@ -15,12 +15,14 @@
  */
 package com.opsmatters.media.model.content.publication;
 
+import com.opsmatters.media.model.content.ResourceDetails;
+
 /**
  * Class representing a publication.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PublicationDetails extends PublicationTeaser
+public class PublicationDetails extends ResourceDetails
 {
     /**
      * Default constructor.
@@ -30,18 +32,27 @@ public class PublicationDetails extends PublicationTeaser
     }
 
     /**
+     * Constructor that takes a url.
+     */
+    public PublicationDetails(String url, boolean removeParameters)
+    {
+        setUrl(url, removeParameters);
+    }
+
+    /**
      * Copy constructor.
      */
     public PublicationDetails(PublicationDetails obj)
     {
-        super(obj);
+        copyAttributes(obj);
     }
 
     /**
-     * Constructor that takes a teaser.
+     * Returns the publication url.
      */
-    public PublicationDetails(PublicationTeaser obj)
+    @Override
+    public String getUniqueId()
     {
-        super(obj);
+        return getUrl();
     }
 }

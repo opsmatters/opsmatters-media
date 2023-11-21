@@ -39,7 +39,7 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Publication extends Resource<PublicationTeaser,PublicationDetails>
+public class Publication extends Resource<PublicationDetails>
 {
     private String publicationType = "";
     private String tags = "";
@@ -63,27 +63,14 @@ public class Publication extends Resource<PublicationTeaser,PublicationDetails>
     }
 
     /**
-     * Constructor that takes a publication.
+     * Constructor that takes a site and code.
      */
-    public Publication(Site site, String code, PublicationDetails obj)
+    public Publication(Site site, String code)
     {
         this();
         init();
         setSiteId(site.getId());
         setCode(code);
-        setContentDetails(obj);
-    }
-
-    /**
-     * Constructor that takes a publication teaser.
-     */
-    public Publication(Site site, String code, PublicationTeaser obj)
-    {
-        this();
-        init();
-        setSiteId(site.getId());
-        setCode(code);
-        setTeaserDetails(obj);
     }
 
     /**
@@ -286,7 +273,7 @@ public class Publication extends Resource<PublicationTeaser,PublicationDetails>
      * Sets the publication details from a teaser.
      */
     @Override
-    public void setTeaserDetails(PublicationTeaser obj)
+    public void setTeaserDetails(PublicationDetails obj)
     {
         super.setTeaserDetails(obj);
 
@@ -304,8 +291,11 @@ public class Publication extends Resource<PublicationTeaser,PublicationDetails>
     @Override
     public void setContentDetails(PublicationDetails obj)
     {
-        setTeaserDetails(obj);
-        setConfigured(true);
+        if(obj != null)
+        {
+            setTeaserDetails(obj);
+            setConfigured(true);
+        }
     }
 
     /**

@@ -25,7 +25,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import com.opsmatters.media.crawler.WebPageCrawler;
 import com.opsmatters.media.cache.content.Teasers;
-import com.opsmatters.media.model.content.event.EventTeaser;
 import com.opsmatters.media.model.content.event.EventDetails;
 import com.opsmatters.media.model.content.event.EventConfig;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
@@ -45,7 +44,7 @@ import static com.opsmatters.media.model.logging.LogCategory.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
+public class EventCrawler extends WebPageCrawler<EventDetails>
 {
     private static final Logger logger = Logger.getLogger(EventCrawler.class.getName());
 
@@ -72,10 +71,10 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
      * Create an event teaser from the given element.
      */
     @Override
-    protected EventTeaser getTeaser(Element root, Fields fields)
+    protected EventDetails getTeaser(Element root, Fields fields)
         throws DateTimeParseException
     {
-        EventTeaser teaser = new EventTeaser();
+        EventDetails teaser = new EventDetails();
         if(fields.hasValidator())
             validateContent(teaser, fields.getValidator(), root, TEASER);
         if(teaser.isValid())
@@ -101,14 +100,14 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
     public EventDetails getDetails(String url)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        return getDetails(new EventTeaser(url, getArticles().removeParameters()));
+        return getDetails(new EventDetails(url, getArticles().removeParameters()));
     }
 
     /**
      * Returns the processed event derived from the given teaser.
      */
     @Override
-    public EventDetails getDetails(EventTeaser teaser)
+    public EventDetails getDetails(EventDetails teaser)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
         EventDetails content = new EventDetails(teaser);
@@ -242,7 +241,7 @@ public class EventCrawler extends WebPageCrawler<EventTeaser,EventDetails>
     /**
      * Populate the teaser fields from the given element.
      */
-    private void populateTeaserFields(Element root,  Fields fields, EventTeaser teaser, LogCategory category)
+    private void populateTeaserFields(Element root, Fields fields, EventDetails teaser, LogCategory category)
         throws DateTimeParseException
     {
         if(fields.hasTitle())

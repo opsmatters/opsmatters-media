@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 import com.opsmatters.media.cache.content.organisation.OrganisationContentConfigs;
 import com.opsmatters.media.crawler.event.EventCrawler;
 import com.opsmatters.media.model.content.event.EventConfig;
-import com.opsmatters.media.model.content.event.EventTeaser;
+import com.opsmatters.media.model.content.event.EventDetails;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.monitor.ContentMonitor;
 import com.opsmatters.media.model.monitor.ContentSnapshot;
@@ -34,13 +34,13 @@ import com.opsmatters.media.model.monitor.ContentSnapshot;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EventMonitor extends ContentMonitor<EventTeaser>
+public class EventMonitor extends ContentMonitor<EventDetails>
 {
     private static final Logger logger = Logger.getLogger(EventMonitor.class.getName());
 
-    private static Comparator comparator = new Comparator<EventTeaser>()
+    private static Comparator comparator = new Comparator<EventDetails>()
       {
-          public int compare(EventTeaser arg1, EventTeaser arg2)
+          public int compare(EventDetails arg1, EventDetails arg2)
           {
               long l1 = arg2.getStartDateMillis();
               long l2 = arg1.getStartDateMillis();
@@ -94,8 +94,8 @@ public class EventMonitor extends ContentMonitor<EventTeaser>
             crawler.setMaxResults(maxResults);
             int count = crawler.processTeasers(cache);
 
-            List<EventTeaser> teasers = crawler.getTeasers();
-            if(EventTeaser.hasStartDate(teasers))
+            List<EventDetails> teasers = crawler.getTeasers();
+            if(EventDetails.hasStartDate(teasers))
                 Collections.sort(teasers, comparator);
             ret = new ContentSnapshot(getContentType(), teasers);
 

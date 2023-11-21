@@ -38,7 +38,7 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Event extends Resource<EventTeaser,EventDetails>
+public class Event extends Resource<EventDetails>
 {
     private String eventType = "";
 
@@ -60,27 +60,14 @@ public class Event extends Resource<EventTeaser,EventDetails>
     }
 
     /**
-     * Constructor that takes an event.
+     * Constructor that takes a site and code.
      */
-    public Event(Site site, String code, EventDetails obj)
+    public Event(Site site, String code)
     {
         this();
         init();
         setSiteId(site.getId());
         setCode(code);
-        setContentDetails(obj);
-    }
-
-    /**
-     * Constructor that takes an event teaser.
-     */
-    public Event(Site site, String code, EventTeaser obj)
-    {
-        this();
-        init();
-        setSiteId(site.getId());
-        setCode(code);
-        setTeaserDetails(obj);
     }
 
     /**
@@ -282,7 +269,7 @@ public class Event extends Resource<EventTeaser,EventDetails>
      * Sets the event details from a teaser.
      */
     @Override
-    public void setTeaserDetails(EventTeaser obj)
+    public void setTeaserDetails(EventDetails obj)
     {
         super.setTeaserDetails(obj);
 

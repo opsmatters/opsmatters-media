@@ -26,7 +26,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import com.opsmatters.media.crawler.WebPageCrawler;
 import com.opsmatters.media.cache.content.Teasers;
-import com.opsmatters.media.model.content.post.RoundupPostTeaser;
 import com.opsmatters.media.model.content.post.RoundupPostDetails;
 import com.opsmatters.media.model.content.post.RoundupPostConfig;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
@@ -44,7 +43,7 @@ import static com.opsmatters.media.model.logging.LogCategory.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupPostCrawler extends WebPageCrawler<RoundupPostTeaser,RoundupPostDetails>
+public class RoundupPostCrawler extends WebPageCrawler<RoundupPostDetails>
 {
     private static final Logger logger = Logger.getLogger(RoundupPostCrawler.class.getName());
 
@@ -71,10 +70,10 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostTeaser,Roundup
      * Create a roundup teaser from the given element.
      */
     @Override
-    protected RoundupPostTeaser getTeaser(Element root, Fields fields)
+    protected RoundupPostDetails getTeaser(Element root, Fields fields)
         throws DateTimeParseException
     {
-        RoundupPostTeaser teaser = new RoundupPostTeaser();
+        RoundupPostDetails teaser = new RoundupPostDetails();
         if(fields.hasValidator())
             validateContent(teaser, fields.getValidator(), root, TEASER);
         if(teaser.isValid())
@@ -100,14 +99,14 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostTeaser,Roundup
     public RoundupPostDetails getDetails(String url)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
-        return getDetails(new RoundupPostTeaser(url, getArticles().removeParameters()));
+        return getDetails(new RoundupPostDetails(url, getArticles().removeParameters()));
     }
 
     /**
      * Returns the processed roundup post derived from the given teaser.
      */
     @Override
-    public RoundupPostDetails getDetails(RoundupPostTeaser teaser)
+    public RoundupPostDetails getDetails(RoundupPostDetails teaser)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
         RoundupPostDetails content = new RoundupPostDetails(teaser);
@@ -170,7 +169,7 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostTeaser,Roundup
     /**
      * Populate the teaser fields from the given element.
      */
-    private void populateTeaserFields(Element root, Fields fields, RoundupPostTeaser teaser, LogCategory category)
+    private void populateTeaserFields(Element root, Fields fields, RoundupPostDetails teaser, LogCategory category)
         throws DateTimeParseException
     {
         if(fields.hasTitle())

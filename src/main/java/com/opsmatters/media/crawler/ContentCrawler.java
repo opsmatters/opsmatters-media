@@ -29,7 +29,7 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.WordUtils;
-import com.opsmatters.media.model.content.ContentTeaser;
+import com.opsmatters.media.model.content.ContentDetails;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerTarget;
 import com.opsmatters.media.model.content.crawler.CrawlerContent;
@@ -47,7 +47,7 @@ import com.opsmatters.media.model.logging.LogCategory;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ContentCrawler<T extends ContentTeaser, D extends ContentTeaser>
+public abstract class ContentCrawler<D extends ContentDetails>
 {
     private static final Logger logger = Logger.getLogger(ContentCrawler.class.getName());
 
@@ -60,7 +60,7 @@ public abstract class ContentCrawler<T extends ContentTeaser, D extends ContentT
     private boolean debug = false;
     private int maxResults = 0;
     private CrawlerTarget target;
-    private List<T> teasers = new ArrayList<T>();
+    private List<D> teasers = new ArrayList<D>();
     private boolean rootError = false;
 
     private Map<String, Object> properties = new HashMap<String, Object>();
@@ -144,7 +144,7 @@ public abstract class ContentCrawler<T extends ContentTeaser, D extends ContentT
     /**
      * Returns the teasers found by the crawler.
      */
-    public List<T> getTeasers()
+    public List<D> getTeasers()
     {
         return teasers;
     }
@@ -160,7 +160,7 @@ public abstract class ContentCrawler<T extends ContentTeaser, D extends ContentT
     /**
      * Adds a selected found by the crawler.
      */
-    public void addTeaser(T teaser)
+    public void addTeaser(D teaser)
     {
         this.teasers.add(teaser);
     }
@@ -168,7 +168,7 @@ public abstract class ContentCrawler<T extends ContentTeaser, D extends ContentT
     /**
      * Returns the processed content details from the given teaser.
      */
-    public abstract D getDetails(T teaser) throws IOException;
+    public abstract D getDetails(D teaser) throws IOException;
 
     /**
      * Returns <CODE>true</CODE> if the root needs to be replaced following an error.

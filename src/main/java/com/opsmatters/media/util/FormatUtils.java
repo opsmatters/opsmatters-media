@@ -111,7 +111,7 @@ public class FormatUtils
             ret = ret.replaceAll(" |%20|%2[Ff]", "-");
 
             // Remove "thin" spaces
-            ret = ret.replaceAll("[\\u2000-\\u200b\\u202F]", "");
+            ret = ret.replaceAll("[\\u2000-\\u200b\\u2028\\u202F]", "");
 
             // Replace escaped plus, ampersand with plus
             ret = ret.replaceAll("%2[Bb]|%26", "+");

@@ -18,11 +18,11 @@ package com.opsmatters.media.model.content;
 import com.opsmatters.media.util.FormatUtils;
 
 /**
- * Class representing an article teaser.
+ * Class representing an article details.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ArticleTeaser extends ContentTeaser
+public abstract class ArticleDetails extends ContentDetails
 {
     private String author = "";
     private String authorLink = "";
@@ -30,14 +30,14 @@ public abstract class ArticleTeaser extends ContentTeaser
     /**
      * Default constructor.
      */
-    public ArticleTeaser()
+    public ArticleDetails()
     {
     }
 
     /**
      * Copy constructor.
      */
-    public ArticleTeaser(ArticleTeaser obj)
+    public ArticleDetails(ArticleDetails obj)
     {
         copyAttributes(obj);
     }
@@ -45,7 +45,7 @@ public abstract class ArticleTeaser extends ContentTeaser
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ArticleTeaser obj)
+    public void copyAttributes(ArticleDetails obj)
     {
         if(obj != null)
         {

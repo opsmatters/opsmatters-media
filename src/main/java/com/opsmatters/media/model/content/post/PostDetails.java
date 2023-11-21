@@ -15,12 +15,14 @@
  */
 package com.opsmatters.media.model.content.post;
 
+import com.opsmatters.media.model.content.ArticleDetails;
+
 /**
  * Class representing a post.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PostDetails extends PostTeaser
+public class PostDetails extends ArticleDetails
 {
     private String description = "";
 
@@ -49,14 +51,6 @@ public class PostDetails extends PostTeaser
             super.copyAttributes(obj);
             setDescription(obj.getDescription());
         }
-    }
-
-    /**
-     * Constructor that takes a teaser.
-     */
-    public PostDetails(PostTeaser obj)
-    {
-        super(obj);
     }
 
     /**

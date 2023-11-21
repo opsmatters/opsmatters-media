@@ -25,7 +25,7 @@ import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.cache.content.organisation.OrganisationContentConfigs;
 import com.opsmatters.media.crawler.publication.PublicationCrawler;
 import com.opsmatters.media.model.content.publication.PublicationConfig;
-import com.opsmatters.media.model.content.publication.PublicationTeaser;
+import com.opsmatters.media.model.content.publication.PublicationDetails;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.monitor.ContentMonitor;
@@ -36,13 +36,13 @@ import com.opsmatters.media.model.monitor.ContentSnapshot;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PublicationMonitor extends ContentMonitor<PublicationTeaser>
+public class PublicationMonitor extends ContentMonitor<PublicationDetails>
 {
     private static final Logger logger = Logger.getLogger(PublicationMonitor.class.getName());
 
-    private static Comparator comparator = new Comparator<PublicationTeaser>()
+    private static Comparator comparator = new Comparator<PublicationDetails>()
       {
-          public int compare(PublicationTeaser arg1, PublicationTeaser arg2)
+          public int compare(PublicationDetails arg1, PublicationDetails arg2)
           {
               long l1 = arg2.getPublishedDateMillis();
               long l2 = arg1.getPublishedDateMillis();
@@ -98,8 +98,8 @@ public class PublicationMonitor extends ContentMonitor<PublicationTeaser>
             crawler.setMaxResults(maxResults);
             int count = crawler.processTeasers(cache);
 
-            List<PublicationTeaser> teasers = crawler.getTeasers();
-            if(PublicationTeaser.hasPublishedDate(teasers))
+            List<PublicationDetails> teasers = crawler.getTeasers();
+            if(PublicationDetails.hasPublishedDate(teasers))
                 Collections.sort(teasers, comparator);
             ret = new ContentSnapshot(getContentType(), teasers);
 

@@ -34,7 +34,7 @@ import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailBody;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.ContentTeaser;
+import com.opsmatters.media.model.content.ContentDetails;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.ContentLookup;
 import com.opsmatters.media.model.content.crawler.CrawlerTarget;
@@ -48,7 +48,7 @@ import com.opsmatters.media.util.SnapshotDiff;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentMonitor<T extends ContentTeaser> extends BaseEntity
+public class ContentMonitor<T extends ContentDetails> extends BaseEntity
 {
     private static final Logger logger = Logger.getLogger(ContentMonitor.class.getName());
 

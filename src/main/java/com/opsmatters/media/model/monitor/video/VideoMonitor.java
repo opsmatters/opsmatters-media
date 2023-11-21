@@ -27,7 +27,6 @@ import org.json.JSONObject;
 import com.opsmatters.media.cache.content.organisation.OrganisationContentConfigs;
 import com.opsmatters.media.crawler.video.VideoCrawler;
 import com.opsmatters.media.model.content.video.VideoConfig;
-import com.opsmatters.media.model.content.video.VideoTeaser;
 import com.opsmatters.media.model.content.video.VideoDetails;
 import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
 import com.opsmatters.media.model.monitor.ContentMonitor;
@@ -38,7 +37,7 @@ import com.opsmatters.media.model.monitor.ContentSnapshot;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class VideoMonitor extends ContentMonitor<VideoTeaser>
+public class VideoMonitor extends ContentMonitor<VideoDetails>
 {
     private static final Logger logger = Logger.getLogger(VideoMonitor.class.getName());
 
@@ -46,7 +45,7 @@ public class VideoMonitor extends ContentMonitor<VideoTeaser>
 
     private String channelId = "";
 
-    private List<VideoTeaser> subscribed = new ArrayList<VideoTeaser>();
+    private List<VideoDetails> subscribed = new ArrayList<VideoDetails>();
 
     /**
      * Default constructor.
@@ -102,7 +101,7 @@ public class VideoMonitor extends ContentMonitor<VideoTeaser>
     /**
      * Adds a subscribed content item to the monitor.
      */
-    public void addSubscribedContent(VideoTeaser content)
+    public void addSubscribedContent(VideoDetails content)
     {
         subscribed.add(content);
     }
@@ -110,7 +109,7 @@ public class VideoMonitor extends ContentMonitor<VideoTeaser>
     /**
      * Returns the subscribed content items for the monitor.
      */
-    public List<VideoTeaser> getSubscribedContent()
+    public List<VideoDetails> getSubscribedContent()
     {
         return subscribed;
     }
@@ -173,7 +172,7 @@ public class VideoMonitor extends ContentMonitor<VideoTeaser>
             crawler.setMaxResults(maxResults);
             int count = crawler.processTeasers(cache);
 
-            List<VideoTeaser> teasers = crawler.getTeasers();
+            List<VideoDetails> teasers = crawler.getTeasers();
 
             if(debug)
                 logger.info("VideoMonitor.check: found content: monitor="+getGuid()
@@ -182,13 +181,13 @@ public class VideoMonitor extends ContentMonitor<VideoTeaser>
 
             if(getSubscribedContent().size() > 0)
             {
-                Map<String,VideoTeaser> teaserMap = new LinkedHashMap<String,VideoTeaser>();
-                for(VideoTeaser video : teasers)
+                Map<String,VideoDetails> teaserMap = new LinkedHashMap<String,VideoDetails>();
+                for(VideoDetails video : teasers)
                     teaserMap.put(video.getVideoId(), video);
 
-                for(VideoTeaser item : getSubscribedContent())
+                for(VideoDetails item : getSubscribedContent())
                 {
-                    VideoTeaser video = (VideoTeaser)item;
+                    VideoDetails video = (VideoDetails)item;
                     if(teaserMap.get(video.getVideoId()) == null)
                     {
                         video.setTitle(video.getTitle()+" **UNLISTED**");
@@ -209,7 +208,7 @@ public class VideoMonitor extends ContentMonitor<VideoTeaser>
                 Iterator it = teasers.iterator();
                 while(it.hasNext())
                 {
-                    VideoTeaser teaser = (VideoTeaser)it.next(); 
+                    VideoDetails teaser = (VideoDetails)it.next(); 
                     VideoDetails video = crawler.getDetails(teaser.getVideoId());
                     if(video != null && video.getDuration() == 0)
                     {

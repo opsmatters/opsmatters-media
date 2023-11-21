@@ -15,13 +15,17 @@
  */
 package com.opsmatters.media.model.content.project;
 
+import com.opsmatters.media.model.content.ResourceDetails;
+
 /**
  * Class representing a project.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ProjectDetails extends ProjectTeaser
+public class ProjectDetails extends ResourceDetails
 {
+    private String founded = "";
+    private String license = "";
     private String badges = "";
     private String links = "";
     private String website = "";
@@ -49,6 +53,8 @@ public class ProjectDetails extends ProjectTeaser
         if(obj != null)
         {
             super.copyAttributes(obj);
+            setFounded(obj.getFounded());
+            setLicense(obj.getLicense());
             setBadges(obj.getBadges());
             setLinks(obj.getLinks());
             setWebsite(obj.getWebsite());
@@ -56,11 +62,35 @@ public class ProjectDetails extends ProjectTeaser
     }
 
     /**
-     * Constructor that takes a teaser.
+     * Returns the project license.
      */
-    public ProjectDetails(ProjectTeaser obj)
+    public String getLicense()
     {
-        super(obj);
+        return license;
+    }
+
+    /**
+     * Sets the project license.
+     */
+    public void setLicense(String license)
+    {
+        this.license = license;
+    }
+
+    /**
+     * Returns the project founded year.
+     */
+    public String getFounded()
+    {
+        return founded;
+    }
+
+    /**
+     * Sets the project founded year.
+     */
+    public void setFounded(String founded)
+    {
+        this.founded = founded;
     }
 
     /**

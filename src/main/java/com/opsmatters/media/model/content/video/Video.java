@@ -38,7 +38,7 @@ import static com.opsmatters.media.model.content.video.VideoType.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Video extends Article<VideoTeaser,VideoDetails>
+public class Video extends Article<VideoDetails>
 {
     private String videoType = "";
 
@@ -60,27 +60,14 @@ public class Video extends Article<VideoTeaser,VideoDetails>
     }
 
     /**
-     * Constructor that takes a video.
+     * Constructor that takes a site and code.
      */
-    public Video(Site site, String code, VideoDetails obj)
+    public Video(Site site, String code)
     {
         this();
         init();
         setSiteId(site.getId());
         setCode(code);
-        setContentDetails(obj);
-    }
-
-    /**
-     * Constructor that takes a video teaser.
-     */
-    public Video(Site site, String code, VideoTeaser obj)
-    {
-        this();
-        init();
-        setSiteId(site.getId());
-        setCode(code);
-        setTeaserDetails(obj);
     }
 
     /**
@@ -294,7 +281,7 @@ public class Video extends Article<VideoTeaser,VideoDetails>
      * Sets the video details from a teaser.
      */
     @Override
-    public void setTeaserDetails(VideoTeaser obj)
+    public void setTeaserDetails(VideoDetails obj)
     {
         super.setTeaserDetails(obj);
 

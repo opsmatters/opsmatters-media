@@ -30,8 +30,7 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class Resource<T extends ResourceTeaser, D extends ResourceTeaser> extends Content<T,D>
-    implements LinkedContent
+public abstract class Resource<D extends ResourceDetails> extends Content<D> implements LinkedContent
 {
     private String features = "";
     private String linkText = "";
@@ -123,7 +122,7 @@ public abstract class Resource<T extends ResourceTeaser, D extends ResourceTease
      * Sets the details from a teaser.
      */
     @Override
-    public void setTeaserDetails(T obj)
+    public void setTeaserDetails(D obj)
     {
         super.setTeaserDetails(obj);
 
@@ -131,6 +130,15 @@ public abstract class Resource<T extends ResourceTeaser, D extends ResourceTease
         {
             setDescription(new String(obj.getDescription()));
         }
+    }
+
+    /**
+     * Sets the resource details.
+     */
+    @Override
+    public void setContentDetails(D obj)
+    {
+        super.setContentDetails(obj);
     }
 
     /**

@@ -35,7 +35,7 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Tool extends Resource<ToolTeaser,ToolDetails>
+public class Tool extends Resource<ToolDetails>
 {
     private String downloadText = "";
 
@@ -57,27 +57,14 @@ public class Tool extends Resource<ToolTeaser,ToolDetails>
     }
 
     /**
-     * Constructor that takes a tool.
+     * Constructor that takes a site and code.
      */
-    public Tool(Site site, String code, ToolDetails obj)
+    public Tool(Site site, String code)
     {
         this();
         init();
         setSiteId(site.getId());
         setCode(code);
-        setContentDetails(obj);
-    }
-
-    /**
-     * Constructor that takes a tool summary.
-     */
-    public Tool(Site site, String code, ToolTeaser obj)
-    {
-        this();
-        init();
-        setSiteId(site.getId());
-        setCode(code);
-        setTeaserDetails(obj);
     }
 
     /**
@@ -254,7 +241,7 @@ public class Tool extends Resource<ToolTeaser,ToolDetails>
      * Sets the tool details from a teaser.
      */
     @Override
-    public void setTeaserDetails(ToolTeaser obj)
+    public void setTeaserDetails(ToolDetails obj)
     {
         super.setTeaserDetails(obj);
 

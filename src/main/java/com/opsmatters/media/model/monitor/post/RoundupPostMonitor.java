@@ -25,7 +25,7 @@ import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.cache.content.organisation.OrganisationContentConfigs;
 import com.opsmatters.media.crawler.post.RoundupPostCrawler;
 import com.opsmatters.media.model.content.post.RoundupPostConfig;
-import com.opsmatters.media.model.content.post.RoundupPostTeaser;
+import com.opsmatters.media.model.content.post.RoundupPostDetails;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.monitor.ContentMonitor;
@@ -36,13 +36,13 @@ import com.opsmatters.media.model.monitor.ContentSnapshot;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupPostMonitor extends ContentMonitor<RoundupPostTeaser>
+public class RoundupPostMonitor extends ContentMonitor<RoundupPostDetails>
 {
     private static final Logger logger = Logger.getLogger(RoundupPostMonitor.class.getName());
 
-    private static Comparator comparator = new Comparator<RoundupPostTeaser>()
+    private static Comparator comparator = new Comparator<RoundupPostDetails>()
       {
-          public int compare(RoundupPostTeaser arg1, RoundupPostTeaser arg2)
+          public int compare(RoundupPostDetails arg1, RoundupPostDetails arg2)
           {
               long l1 = arg2.getPublishedDateMillis();
               long l2 = arg1.getPublishedDateMillis();
@@ -98,8 +98,8 @@ public class RoundupPostMonitor extends ContentMonitor<RoundupPostTeaser>
             crawler.setMaxResults(maxResults);
             int count = crawler.processTeasers(cache);
 
-            List<RoundupPostTeaser> teasers = crawler.getTeasers();
-            if(RoundupPostTeaser.hasPublishedDate(teasers))
+            List<RoundupPostDetails> teasers = crawler.getTeasers();
+            if(RoundupPostDetails.hasPublishedDate(teasers))
                 Collections.sort(teasers, comparator);
             ret = new ContentSnapshot(getContentType(), teasers);
 

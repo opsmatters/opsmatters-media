@@ -24,8 +24,7 @@ import java.util.regex.Pattern;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.cache.content.Teasers;
-import com.opsmatters.media.model.content.ContentTeaser;
-import com.opsmatters.media.model.content.video.VideoTeaser;
+import com.opsmatters.media.model.content.ContentDetails;
 import com.opsmatters.media.model.content.video.VideoDetails;
 import com.opsmatters.media.model.content.video.VideoConfig;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
@@ -51,7 +50,7 @@ import static com.opsmatters.media.model.logging.LogCategory.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class VideoCrawler extends ContentCrawler<VideoTeaser,VideoDetails>
+public class VideoCrawler extends ContentCrawler<VideoDetails>
 {
     private static final Logger logger = Logger.getLogger(VideoCrawler.class.getName());
 
@@ -121,9 +120,9 @@ public class VideoCrawler extends ContentCrawler<VideoTeaser,VideoDetails>
     /**
      * Create the video teaser from a selected node.
      */
-    protected VideoTeaser getTeaser(JSONObject video, Fields fields)
+    protected VideoDetails getTeaser(JSONObject video, Fields fields)
     {
-        VideoTeaser teaser = new VideoTeaser();
+        VideoDetails teaser = new VideoDetails();
 
         populateTeaserFields(video, fields, teaser, "teaser");
 
@@ -143,11 +142,11 @@ public class VideoCrawler extends ContentCrawler<VideoTeaser,VideoDetails>
         String userId = channel.getUserId();
 
         // Try to get the teasers from the cache
-        List<ContentTeaser> teasers = Teasers.getTeasers(config.getCode(), channelId);
+        List<ContentDetails> teasers = Teasers.getTeasers(config.getCode(), channelId);
         if(teasers != null)
         {
-            for(ContentTeaser teaser : teasers)
-                addTeaser((VideoTeaser)teaser);
+            for(ContentDetails teaser : teasers)
+                addTeaser((VideoDetails)teaser);
             ret += numTeasers();
             if(debug())
                 logger.info("Retrieved "+numTeasers()+" teasers from cache");
@@ -166,7 +165,7 @@ public class VideoCrawler extends ContentCrawler<VideoTeaser,VideoDetails>
                 ret += results.size();
                 for(JSONObject result : results)
                 {
-                    VideoTeaser teaser = getTeaser(result, fields);
+                    VideoDetails teaser = getTeaser(result, fields);
                     if(teaser.isValid() && !map.containsKey(teaser.getUniqueId()))
                     {
                         // Check that the teaser matches the configured keywords
@@ -202,14 +201,14 @@ public class VideoCrawler extends ContentCrawler<VideoTeaser,VideoDetails>
      */
     public VideoDetails getDetails(String videoId) throws IOException
     {
-        return getDetails(new VideoTeaser(videoId));
+        return getDetails(new VideoDetails(videoId));
     }
 
     /**
      * Populate the video details.
      */
     @Override
-    public VideoDetails getDetails(VideoTeaser teaser) throws IOException
+    public VideoDetails getDetails(VideoDetails teaser) throws IOException
     {
         JSONObject video = client.getVideo(teaser.getVideoId());
 
@@ -242,7 +241,7 @@ public class VideoCrawler extends ContentCrawler<VideoTeaser,VideoDetails>
     /**
      * Populate the teaser fields from the given video.
      */
-    private void populateTeaserFields(JSONObject video, Fields fields, VideoTeaser teaser, String type)
+    private void populateTeaserFields(JSONObject video, Fields fields, VideoDetails teaser, String type)
     {
         teaser.setVideoId(video.getString(VIDEO_ID.value()));
         teaser.setProvider(video.getString(PROVIDER.value()));

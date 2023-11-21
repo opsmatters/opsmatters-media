@@ -36,7 +36,7 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Project extends Resource<ProjectTeaser,ProjectDetails>
+public class Project extends Resource<ProjectDetails>
 {
     /**
      * Default constructor.
@@ -56,27 +56,14 @@ public class Project extends Resource<ProjectTeaser,ProjectDetails>
     }
 
     /**
-     * Constructor that takes a project.
+     * Constructor that takes a site and code.
      */
-    public Project(Site site, String code, ProjectDetails obj)
+    public Project(Site site, String code)
     {
         this();
         init();
         setSiteId(site.getId());
         setCode(code);
-        setContentDetails(obj);
-    }
-
-    /**
-     * Constructor that takes a project summary.
-     */
-    public Project(Site site, String code, ProjectTeaser obj)
-    {
-        this();
-        init();
-        setSiteId(site.getId());
-        setCode(code);
-        setTeaserDetails(obj);
     }
 
     /**
@@ -249,7 +236,7 @@ public class Project extends Resource<ProjectTeaser,ProjectDetails>
      * Sets the project details from a teaser.
      */
     @Override
-    public void setTeaserDetails(ProjectTeaser obj)
+    public void setTeaserDetails(ProjectDetails obj)
     {
         super.setTeaserDetails(obj);
 

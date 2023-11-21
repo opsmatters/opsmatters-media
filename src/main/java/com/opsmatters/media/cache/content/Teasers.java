@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import com.opsmatters.media.model.content.ContentTeaser;
+import com.opsmatters.media.model.content.ContentDetails;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.logging.LogEntry;
@@ -38,14 +38,14 @@ public class Teasers
 
     public static final long EXPIRY = 300000L; // 5 mins
 
-    static class TeaserList extends ArrayList<ContentTeaser>
+    static class TeaserList extends ArrayList<ContentDetails>
     {
         String code;
         ContentType type;
         long tm = 0L;
         List<LogEntry> entries;
 
-        TeaserList(ContentConfig config, List<? extends ContentTeaser> teasers, List<LogEntry> entries)
+        TeaserList(ContentConfig config, List<? extends ContentDetails> teasers, List<LogEntry> entries)
         {
             this.code = config.getCode();
             this.type = config.getType();
@@ -69,19 +69,19 @@ public class Teasers
             return (System.currentTimeMillis() - tm) > EXPIRY;
         }
 
-        void addTeasers(List<? extends ContentTeaser> teasers)
+        void addTeasers(List<? extends ContentDetails> teasers)
         {
             if(teasers != null && teasers.size() > 0)
             {
-                for(ContentTeaser teaser : teasers)
+                for(ContentDetails teaser : teasers)
                     add(teaser);
             }
         }
 
-        void update(ContentTeaser teaser)
+        void update(ContentDetails teaser)
         {
             int idx = 0;
-            for(ContentTeaser item : this)
+            for(ContentDetails item : this)
             {
                 if(teaser.hasSameUniqueId(item))
                 {
@@ -119,7 +119,7 @@ public class Teasers
     /**
      * Sets the teaser list for the given id.
      */
-    public static void set(String id, List<? extends ContentTeaser> teasers,
+    public static void set(String id, List<? extends ContentDetails> teasers,
         ContentConfig config, List<LogEntry> entries)
     {
         synchronized(teaserMap)
@@ -133,7 +133,7 @@ public class Teasers
     /**
      * Sets the teaser list for the given id.
      */
-    public static void update(String id, ContentTeaser teaser)
+    public static void update(String id, ContentDetails teaser)
     {
         synchronized(teaserMap)
         {
@@ -146,7 +146,7 @@ public class Teasers
     /**
      * Sets the teaser list for the given ids.
      */
-    public static void update(List<String> ids, ContentTeaser teaser)
+    public static void update(List<String> ids, ContentDetails teaser)
     {
         for(String id : ids)
             update(id, teaser);
@@ -155,7 +155,7 @@ public class Teasers
     /**
      * Returns the teaser list for the given organisation and id.
      */
-    public static List<ContentTeaser> getTeasers(String code, String id)
+    public static List<ContentDetails> getTeasers(String code, String id)
     {
         TeaserList ret = teaserMap.get(id);
         return ret != null && ret.getCode().equals(code) ? ret : null;

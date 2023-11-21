@@ -40,7 +40,7 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RoundupPost extends Article<RoundupPostTeaser,RoundupPostDetails> implements LinkedContent
+public class RoundupPost extends Article<RoundupPostDetails> implements LinkedContent
 {
     /**
      * Default constructor.
@@ -60,27 +60,14 @@ public class RoundupPost extends Article<RoundupPostTeaser,RoundupPostDetails> i
     }
 
     /**
-     * Constructor that takes a roundup.
+     * Constructor that takes a site and code.
      */
-    public RoundupPost(Site site, String code, RoundupPostDetails obj)
+    public RoundupPost(Site site, String code)
     {
         this();
         init();
         setSiteId(site.getId());
         setCode(code);
-        setContentDetails(obj);
-    }
-
-    /**
-     * Constructor that takes a roundup teaser.
-     */
-    public RoundupPost(Site site, String code, RoundupPostTeaser obj)
-    {
-        this();
-        init();
-        setSiteId(site.getId());
-        setCode(code);
-        setTeaserDetails(obj);
     }
 
     /**
@@ -309,7 +296,7 @@ public class RoundupPost extends Article<RoundupPostTeaser,RoundupPostDetails> i
      * Sets the roundup details from a teaser.
      */
     @Override
-    public void setTeaserDetails(RoundupPostTeaser obj)
+    public void setTeaserDetails(RoundupPostDetails obj)
     {
         super.setTeaserDetails(obj);
 
@@ -329,8 +316,11 @@ public class RoundupPost extends Article<RoundupPostTeaser,RoundupPostDetails> i
     @Override
     public void setContentDetails(RoundupPostDetails obj)
     {
-        setTeaserDetails(obj);
-        setConfigured(true);
+        if(obj != null)
+        {
+            setTeaserDetails(obj);
+            setConfigured(true);
+        }
     }
 
     /**

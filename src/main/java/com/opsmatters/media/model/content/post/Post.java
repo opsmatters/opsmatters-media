@@ -37,7 +37,7 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Post extends Article<PostTeaser,PostDetails>
+public class Post extends Article<PostDetails>
 {
     private String urlAlias = "";
     private String basePath = "";
@@ -60,27 +60,14 @@ public class Post extends Article<PostTeaser,PostDetails>
     }
 
     /**
-     * Constructor that takes a post.
+     * Constructor that takes a site and code.
      */
-    public Post(Site site, String code, PostDetails obj)
+    public Post(Site site, String code)
     {
         this();
         init();
         setSiteId(site.getId());
         setCode(code);
-        setContentDetails(obj);
-    }
-
-    /**
-     * Constructor that takes a post summary.
-     */
-    public Post(Site site, String code, PostTeaser obj)
-    {
-        this();
-        init();
-        setSiteId(site.getId());
-        setCode(code);
-        setTeaserDetails(obj);
     }
 
     /**
@@ -303,7 +290,7 @@ public class Post extends Article<PostTeaser,PostDetails>
      * Sets the post details from a teaser.
      */
     @Override
-    public void setTeaserDetails(PostTeaser obj)
+    public void setTeaserDetails(PostDetails obj)
     {
         super.setTeaserDetails(obj);
 

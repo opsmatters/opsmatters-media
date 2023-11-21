@@ -23,11 +23,11 @@ import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.FormatUtils;
 
 /**
- * Class representing a content teaser.
+ * Class representing a content details.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ContentTeaser implements java.io.Serializable
+public abstract class ContentDetails implements java.io.Serializable
 {
     private String uuid = "";
     private String title = "";
@@ -40,14 +40,14 @@ public abstract class ContentTeaser implements java.io.Serializable
     /**
      * Default constructor.
      */
-    public ContentTeaser()
+    public ContentDetails()
     {
     }
 
     /**
      * Copy constructor.
      */
-    public ContentTeaser(ContentTeaser obj)
+    public ContentDetails(ContentDetails obj)
     {
         copyAttributes(obj);
     }
@@ -55,7 +55,7 @@ public abstract class ContentTeaser implements java.io.Serializable
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ContentTeaser obj)
+    public void copyAttributes(ContentDetails obj)
     {
         if(obj != null)
         {
@@ -85,11 +85,11 @@ public abstract class ContentTeaser implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if this teaser has the same unique id as the given teaser.
+     * Returns <CODE>true</CODE> if this details has the same unique id as the given details.
      */
-    public boolean hasSameUniqueId(ContentTeaser teaser)
+    public boolean hasSameUniqueId(ContentDetails details)
     {
-        return getUniqueId().equals(teaser.getUniqueId());
+        return getUniqueId().equals(details.getUniqueId());
     }
 
     /**
@@ -345,12 +345,12 @@ public abstract class ContentTeaser implements java.io.Serializable
     /**
      * Returns <CODE>true</CODE> if the given content has a published date field.
      */
-    public static boolean hasPublishedDate(List<? extends ContentTeaser> content)
+    public static boolean hasPublishedDate(List<? extends ContentDetails> content)
     {
         boolean ret = false;
         if(content.size() > 0)
         {
-            for(ContentTeaser item : content)
+            for(ContentDetails item : content)
             {
                 if(item.getPublishedDate() != null)
                 {

@@ -37,7 +37,7 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Job extends Resource<JobTeaser,JobDetails>
+public class Job extends Resource<JobDetails>
 {
     private String technologies = "";
 
@@ -59,27 +59,14 @@ public class Job extends Resource<JobTeaser,JobDetails>
     }
 
     /**
-     * Constructor that takes a job.
+     * Constructor that takes a site and code.
      */
-    public Job(Site site, String code, JobDetails obj)
+    public Job(Site site, String code)
     {
         this();
         init();
         setSiteId(site.getId());
         setCode(code);
-        setContentDetails(obj);
-    }
-
-    /**
-     * Constructor that takes a job summary.
-     */
-    public Job(Site site, String code, JobTeaser obj)
-    {
-        this();
-        init();
-        setSiteId(site.getId());
-        setCode(code);
-        setTeaserDetails(obj);
     }
 
     /**
@@ -268,7 +255,7 @@ public class Job extends Resource<JobTeaser,JobDetails>
      * Sets the job details from a teaser.
      */
     @Override
-    public void setTeaserDetails(JobTeaser obj)
+    public void setTeaserDetails(JobDetails obj)
     {
         super.setTeaserDetails(obj);
 
