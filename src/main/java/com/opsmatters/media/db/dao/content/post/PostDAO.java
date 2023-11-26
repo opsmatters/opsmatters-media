@@ -15,17 +15,21 @@
  */
 package com.opsmatters.media.db.dao.content.post;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.io.StringReader;
 import java.sql.Types;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.model.content.post.Post;
+import com.opsmatters.media.model.content.post.PostItem;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
 import com.opsmatters.media.util.SessionId;
@@ -44,16 +48,32 @@ public class PostDAO extends ContentDAO<Post>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO POSTS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
+      + "( SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, "
+      +   "AUTHOR, STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a post in the POSTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE POSTS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
+      "UPDATE POSTS SET UUID=?, PUBLISHED_DATE=?, TITLE=?, POST_TYPE=?, PUBLISHED=?, PROMOTE=?, NEWSLETTER=?, FEATURED=?, SPONSORED=?, "
+      + "AUTHOR=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
+
+    /**
+     * The query to use to select the post items from the table by organisation code.
+     */
+    private static final String LIST_ITEMS_BY_CODE_SQL =
+      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
+      + "FROM POSTS WHERE SITE_ID=? AND CODE=? ORDER BY ID";
+
+    /**
+     * The query to use to select the post items from the table by published date.
+     */
+    private static final String LIST_ITEMS_BY_DATE_SQL =  
+      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
+      + "FROM POSTS WHERE SITE_ID=? AND PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
 
     /**
      * Constructor that takes a DAO factory.
@@ -72,10 +92,16 @@ public class PostDAO extends ContentDAO<Post>
         table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
-        table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UUID", Types.VARCHAR, 36, true);
+        table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
         table.addColumn("TITLE", Types.VARCHAR, 256, true);
+        table.addColumn("POST_TYPE", Types.VARCHAR, 30, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
+        table.addColumn("PROMOTE", Types.BOOLEAN, true);
+        table.addColumn("NEWSLETTER", Types.BOOLEAN, true);
+        table.addColumn("FEATURED", Types.BOOLEAN, true);
+        table.addColumn("SPONSORED", Types.BOOLEAN, true);
+        table.addColumn("AUTHOR", Types.VARCHAR, 30, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
@@ -110,16 +136,22 @@ public class PostDAO extends ContentDAO<Post>
             insertStmt.setString(1, content.getSiteId());
             insertStmt.setString(2, content.getCode());
             insertStmt.setInt(3, content.getId());
-            insertStmt.setTimestamp(4, new Timestamp(content.getPublishedDateMillis()), UTC);
-            insertStmt.setString(5, content.getUuid());
+            insertStmt.setString(4, content.getUuid());
+            insertStmt.setTimestamp(5, new Timestamp(content.getPublishedDateMillis()), UTC);
             insertStmt.setString(6, content.getTitle());
-            insertStmt.setBoolean(7, content.isPublished());
-            insertStmt.setString(8, content.getStatus().name());
-            insertStmt.setString(9, content.getCreatedBy());
+            insertStmt.setString(7, content.getPostType());
+            insertStmt.setBoolean(8, content.isPublished());
+            insertStmt.setBoolean(9, content.isPromoted());
+            insertStmt.setBoolean(10, content.isNewsletter());
+            insertStmt.setBoolean(11, content.isFeatured());
+            insertStmt.setBoolean(12, content.isSponsored());
+            insertStmt.setString(13, content.getAuthor());
+            insertStmt.setString(14, content.getStatus().name());
+            insertStmt.setString(15, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(10, reader, attributes.length());
-            insertStmt.setInt(11, SessionId.get());
+            insertStmt.setCharacterStream(16, reader, attributes.length());
+            insertStmt.setInt(17, SessionId.get());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -164,17 +196,23 @@ public class PostDAO extends ContentDAO<Post>
 
         try
         {
-            updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
-            updateStmt.setString(2, content.getUuid());
+            updateStmt.setString(1, content.getUuid());
+            updateStmt.setTimestamp(2, new Timestamp(content.getPublishedDateMillis()), UTC);
             updateStmt.setString(3, content.getTitle());
-            updateStmt.setBoolean(4, content.isPublished());
-            updateStmt.setString(5, content.getStatus().name());
+            updateStmt.setString(4, content.getPostType());
+            updateStmt.setBoolean(5, content.isPublished());
+            updateStmt.setBoolean(6, content.isPromoted());
+            updateStmt.setBoolean(7, content.isNewsletter());
+            updateStmt.setBoolean(8, content.isFeatured());
+            updateStmt.setBoolean(9, content.isSponsored());
+            updateStmt.setString(10, content.getAuthor());
+            updateStmt.setString(11, content.getStatus().name());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(6, reader, attributes.length());
-            updateStmt.setString(7, content.getSiteId());
-            updateStmt.setString(8, content.getCode());
-            updateStmt.setInt(9, content.getId());
+            updateStmt.setCharacterStream(12, reader, attributes.length());
+            updateStmt.setString(13, content.getSiteId());
+            updateStmt.setString(14, content.getCode());
+            updateStmt.setInt(15, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 
@@ -188,6 +226,128 @@ public class PostDAO extends ContentDAO<Post>
     }
 
     /**
+     * Returns the post items from the table by organisation code.
+     */
+    public synchronized List<PostItem> listItems(Site site, String code) throws SQLException
+    {
+        List<PostItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByCodeStmt == null)
+            listByCodeStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_CODE_SQL);
+        clearParameters(listByCodeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByCodeStmt.setString(1, site.getId());
+            listByCodeStmt.setString(2, code);
+            listByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByCodeStmt.executeQuery();
+            ret = new ArrayList<PostItem>();
+            while(rs.next())
+            {
+                PostItem post = new PostItem();
+                post.setSiteId(rs.getString(1));
+                post.setCode(rs.getString(2));
+                post.setId(rs.getInt(3));
+                post.setUuid(rs.getString(4));
+                post.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                post.setTitle(rs.getString(6));
+                post.setPostType(rs.getString(7));
+                post.setPublished(rs.getBoolean(8));
+                post.setPromoted(rs.getBoolean(9));
+                post.setNewsletter(rs.getBoolean(10));
+                post.setFeatured(rs.getBoolean(11));
+                post.setSponsored(rs.getBoolean(12));
+                post.setAuthor(rs.getString(13));
+                post.setStatus(rs.getString(14));
+                ret.add(post);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the post items from the table by published date.
+     */
+    public synchronized List<PostItem> listItems(Site site, Instant date) throws SQLException
+    {
+        List<PostItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByDateStmt == null)
+            listByDateStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_DATE_SQL);
+        clearParameters(listByDateStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByDateStmt.setString(1, site.getId());
+            listByDateStmt.setTimestamp(2, new Timestamp(date.toEpochMilli()), UTC);
+            listByDateStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByDateStmt.executeQuery();
+            ret = new ArrayList<PostItem>();
+            while(rs.next())
+            {
+                PostItem post = new PostItem();
+                post.setSiteId(rs.getString(1));
+                post.setCode(rs.getString(2));
+                post.setId(rs.getInt(3));
+                post.setUuid(rs.getString(4));
+                post.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                post.setTitle(rs.getString(6));
+                post.setPostType(rs.getString(7));
+                post.setPublished(rs.getBoolean(8));
+                post.setPromoted(rs.getBoolean(9));
+                post.setNewsletter(rs.getBoolean(10));
+                post.setFeatured(rs.getBoolean(11));
+                post.setSponsored(rs.getBoolean(12));
+                post.setAuthor(rs.getString(13));
+                post.setStatus(rs.getString(14));
+                ret.add(post);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Close any resources associated with this DAO.
      */
     @Override
@@ -197,8 +357,14 @@ public class PostDAO extends ContentDAO<Post>
         insertStmt = null;
         closeStatement(updateStmt);
         updateStmt = null;
+        closeStatement(listByCodeStmt);
+        listByCodeStmt = null;
+        closeStatement(listByDateStmt);
+        listByDateStmt = null;
     }
 
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
+    private PreparedStatement listByCodeStmt;
+    private PreparedStatement listByDateStmt;
 }

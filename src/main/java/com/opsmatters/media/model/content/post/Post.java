@@ -31,6 +31,7 @@ import com.opsmatters.media.model.content.util.ImageType;
 import com.opsmatters.media.util.TimeUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;
+import static com.opsmatters.media.model.content.post.PostType.*;
 
 /**
  * Class representing a post.
@@ -39,6 +40,7 @@ import static com.opsmatters.media.model.content.FieldName.*;
  */
 public class Post extends Article<PostDetails>
 {
+    private String postType = "";
     private String urlAlias = "";
     private String basePath = "";
 
@@ -77,6 +79,7 @@ public class Post extends Article<PostDetails>
     {
         super.copyAttributes(obj);
         setContentDetails(obj.getDetails());
+        setPostType(new String(obj.getPostType() != null ? obj.getPostType() : ""));
         setBasePath(obj.getBasePath());
         setUrlAlias(new String(obj.getUrlAlias() != null ? obj.getUrlAlias() : ""));
     }
@@ -155,6 +158,7 @@ public class Post extends Article<PostDetails>
     {
         super.fromJson(obj);
 
+        setPostType(obj.optString(POST_TYPE.value()));
         setDescription(EmojiParser.parseToUnicode(obj.optString(DESCRIPTION.value())));
         setUrlAlias(obj.optString(URL.value()));
         setCanonicalUrl(obj.optString(CANONICAL_URL.value()));
@@ -171,6 +175,7 @@ public class Post extends Article<PostDetails>
     {
         JSONObject ret = super.toJson();
 
+        ret.putOpt(POST_TYPE.value(), getPostType());
         ret.putOpt(DESCRIPTION.value(), EmojiParser.parseToAliases(getDescription()));
         ret.putOpt(URL.value(), getUrlAlias());
         ret.putOpt(CANONICAL_URL.value(), getCanonicalUrl());
@@ -190,6 +195,7 @@ public class Post extends Article<PostDetails>
     {
         FieldMap ret = super.toFields();
 
+        ret.put(POST_TYPE, getPostType());
         ret.put(DESCRIPTION, EmojiParser.parseToHtmlDecimal(getDescription()));
         ret.put(AUTHOR, getAuthor());
         ret.put(AUTHOR_LINK, getAuthorLink());
@@ -249,6 +255,8 @@ public class Post extends Article<PostDetails>
         String sponsored = config.getField(SPONSORED);
         setSponsored(sponsored == null || sponsored.equals("0") ? false : true);
 
+        setPostType(config.getField(POST_TYPE, ""));
+
         setSocial(organisationSite.hasSocial());
     }
 
@@ -258,6 +266,10 @@ public class Post extends Article<PostDetails>
     public void prepare(PostConfig config, boolean debug) throws DateTimeParseException
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getField(PUBLISHED_DATE)));
+
+        PostType guessed = PostType.guess(getTagsList());
+        if(guessed != null)
+            setPostType(guessed);
 
         // Use the default author if a content author wasn't found
         if(config.hasField(AUTHOR) && getAuthor().length() == 0)
@@ -315,6 +327,30 @@ public class Post extends Article<PostDetails>
             setDescription(new String(obj.getDescription() != null ? obj.getDescription() : ""));
             setConfigured(true);
         }
+    }
+
+    /**
+     * Returns the post type.
+     */
+    public String getPostType()
+    {
+        return postType;
+    }
+
+    /**
+     * Sets the post type.
+     */
+    public void setPostType(String postType)
+    {
+        this.postType = postType;
+    }
+
+    /**
+     * Sets the post type.
+     */
+    public void setPostType(PostType postType)
+    {
+        setPostType(postType != null ? postType.value() : "");
     }
 
     /**

@@ -30,6 +30,7 @@ import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.model.content.ContentLookup;
 import com.opsmatters.media.model.content.publication.Publication;
+import com.opsmatters.media.model.content.publication.PublicationItem;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
 import com.opsmatters.media.util.SessionId;
@@ -50,26 +51,34 @@ public class PublicationDAO extends ContentDAO<Publication>
       "SELECT ATTRIBUTES, SITE_ID FROM PUBLICATIONS WHERE SITE_ID=? AND CODE=? AND URL=? ";
 
     /**
+     * The query to use to insert a publication into the PUBLICATIONS table.
+     */
+    private static final String INSERT_SQL =  
+      "INSERT INTO PUBLICATIONS"
+      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, URL, PUBLICATION_TYPE, PUBLISHED, PROMOTE, "
+      +   "STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
+      + "VALUES"
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+
+    /**
+     * The query to use to update a publication in the PUBLICATIONS table.
+     */
+    private static final String UPDATE_SQL =  
+      "UPDATE PUBLICATIONS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, URL=?, PUBLICATION_TYPE=?, PUBLISHED=?, PROMOTE=?, STATUS=?, ATTRIBUTES=? "
+      + "WHERE SITE_ID=? AND CODE=? AND ID=?";
+
+    /**
      * The query to use to select a list of publications from the PUBLICATIONS table by URL.
      */
     private static final String LIST_BY_URL_SQL =  
       "SELECT ATTRIBUTES, SITE_ID FROM PUBLICATIONS WHERE CODE=? AND URL=?";
 
     /**
-     * The query to use to insert a publication into the PUBLICATIONS table.
+     * The query to use to select the publication items from the table by organisation code.
      */
-    private static final String INSERT_SQL =  
-      "INSERT INTO PUBLICATIONS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, URL, PUBLICATION_TYPE, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
-      + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
-
-    /**
-     * The query to use to update a publication in the PUBLICATIONS table.
-     */
-    private static final String UPDATE_SQL =  
-      "UPDATE PUBLICATIONS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, URL=?, PUBLICATION_TYPE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
-      + "WHERE SITE_ID=? AND CODE=? AND ID=?";
+    private static final String LIST_ITEMS_BY_CODE_SQL =
+      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, URL, PUBLICATION_TYPE, PUBLISHED, PROMOTE, STATUS "
+      + "FROM PUBLICATIONS WHERE SITE_ID=? AND CODE=? ORDER BY ID";
 
     /**
      * Constructor that takes a DAO factory.
@@ -94,6 +103,7 @@ public class PublicationDAO extends ContentDAO<Publication>
         table.addColumn("URL", Types.VARCHAR, 256, true);
         table.addColumn("PUBLICATION_TYPE", Types.VARCHAR, 30, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
+        table.addColumn("PROMOTE", Types.BOOLEAN, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
@@ -233,12 +243,13 @@ public class PublicationDAO extends ContentDAO<Publication>
             insertStmt.setString(7, content.getUrl());
             insertStmt.setString(8, content.getPublicationType());
             insertStmt.setBoolean(9, content.isPublished());
-            insertStmt.setString(10, content.getStatus().name());
-            insertStmt.setString(11, content.getCreatedBy());
+            insertStmt.setBoolean(10, content.isPromoted());
+            insertStmt.setString(11, content.getStatus().name());
+            insertStmt.setString(12, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(12, reader, attributes.length());
-            insertStmt.setInt(13, SessionId.get());
+            insertStmt.setCharacterStream(13, reader, attributes.length());
+            insertStmt.setInt(14, SessionId.get());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -289,13 +300,14 @@ public class PublicationDAO extends ContentDAO<Publication>
             updateStmt.setString(4, content.getUrl());
             updateStmt.setString(5, content.getPublicationType());
             updateStmt.setBoolean(6, content.isPublished());
-            updateStmt.setString(7, content.getStatus().name());
+            updateStmt.setBoolean(7, content.isPromoted());
+            updateStmt.setString(8, content.getStatus().name());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(8, reader, attributes.length());
-            updateStmt.setString(9, content.getSiteId());
-            updateStmt.setString(10, content.getCode());
-            updateStmt.setInt(11, content.getId());
+            updateStmt.setCharacterStream(9, reader, attributes.length());
+            updateStmt.setString(10, content.getSiteId());
+            updateStmt.setString(11, content.getCode());
+            updateStmt.setInt(12, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 
@@ -332,6 +344,64 @@ public class PublicationDAO extends ContentDAO<Publication>
     }
 
     /**
+     * Returns the publication items from the table by organisation code.
+     */
+    public synchronized List<PublicationItem> listItems(Site site, String code) throws SQLException
+    {
+        List<PublicationItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByCodeStmt == null)
+            listByCodeStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_CODE_SQL);
+        clearParameters(listByCodeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByCodeStmt.setString(1, site.getId());
+            listByCodeStmt.setString(2, code);
+            listByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByCodeStmt.executeQuery();
+            ret = new ArrayList<PublicationItem>();
+            while(rs.next())
+            {
+                PublicationItem publication = new PublicationItem();
+                publication.setSiteId(rs.getString(1));
+                publication.setCode(rs.getString(2));
+                publication.setId(rs.getInt(3));
+                publication.setUuid(rs.getString(4));
+                publication.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                publication.setTitle(rs.getString(6));
+                publication.setUrl(rs.getString(7));
+                publication.setPublicationType(rs.getString(8));
+                publication.setPublished(rs.getBoolean(9));
+                publication.setPromoted(rs.getBoolean(10));
+                publication.setStatus(rs.getString(11));
+                ret.add(publication);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Close any resources associated with this DAO.
      */
     @Override
@@ -345,10 +415,13 @@ public class PublicationDAO extends ContentDAO<Publication>
         insertStmt = null;
         closeStatement(updateStmt);
         updateStmt = null;
+        closeStatement(listByCodeStmt);
+        listByCodeStmt = null;
     }
 
     private PreparedStatement getByUrlStmt;
     private PreparedStatement listByUrlStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
+    private PreparedStatement listByCodeStmt;
 }

@@ -51,6 +51,7 @@ public enum FieldName
     CHANNEL_ID("channel-id"),
     CHANNEL_URL("channel-url"),
     CHANNEL_TITLE("channel-title"),
+    POST_TYPE("post-type"),
     VIDEO_TYPE("video-type"),
     EVENT_TYPE("event-type"),
     PUBLICATION_TYPE("publication-type"),

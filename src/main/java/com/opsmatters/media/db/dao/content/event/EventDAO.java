@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.model.content.event.Event;
+import com.opsmatters.media.model.content.event.EventItem;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
 import com.opsmatters.media.util.SessionId;
@@ -43,26 +44,34 @@ public class EventDAO extends ContentDAO<Event>
     private static final Logger logger = Logger.getLogger(EventDAO.class.getName());
 
     /**
+     * The query to use to insert an event into the EVENTS table.
+     */
+    private static final String INSERT_SQL =  
+      "INSERT INTO EVENTS"
+      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, START_DATE, UUID, TITLE, URL, EVENT_TYPE, TIMEZONE, PUBLISHED, PROMOTE, "
+      +   "STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
+      + "VALUES"
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+
+    /**
+     * The query to use to update a event in the EVENTS table.
+     */
+    private static final String UPDATE_SQL =  
+      "UPDATE EVENTS SET PUBLISHED_DATE=?, START_DATE=?, UUID=?, TITLE=?, URL=?, EVENT_TYPE=?, TIMEZONE=?, PUBLISHED=?, PROMOTE=?, STATUS=?, ATTRIBUTES=? "
+      + "WHERE SITE_ID=? AND CODE=? AND ID=?";
+
+    /**
      * The query to use to select a list of events from the EVENTS table by URL.
      */
     private static final String LIST_BY_URL_SQL =  
       "SELECT ATTRIBUTES, SITE_ID FROM EVENTS WHERE CODE=? AND URL=? AND (?=0 OR ABS(TIMESTAMPDIFF(DAY, ?, START_DATE)) < 2)";
 
     /**
-     * The query to use to insert an event into the EVENTS table.
+     * The query to use to select the event items from the table by organisation code.
      */
-    private static final String INSERT_SQL =  
-      "INSERT INTO EVENTS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, START_DATE, UUID, TITLE, URL, EVENT_TYPE, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
-      + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
-
-    /**
-     * The query to use to update a event in the EVENTS table.
-     */
-    private static final String UPDATE_SQL =  
-      "UPDATE EVENTS SET PUBLISHED_DATE=?, START_DATE=?, UUID=?, TITLE=?, URL=?, EVENT_TYPE=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
-      + "WHERE SITE_ID=? AND CODE=? AND ID=?";
+    private static final String LIST_ITEMS_BY_CODE_SQL =
+      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, URL, EVENT_TYPE, TIMEZONE, PUBLISHED, PROMOTE, STATUS "
+      + "FROM EVENTS WHERE SITE_ID=? AND CODE=? ORDER BY ID";
 
     /**
      * Constructor that takes a DAO factory.
@@ -87,7 +96,9 @@ public class EventDAO extends ContentDAO<Event>
         table.addColumn("TITLE", Types.VARCHAR, 256, true);
         table.addColumn("URL", Types.VARCHAR, 512, true);
         table.addColumn("EVENT_TYPE", Types.VARCHAR, 30, true);
+        table.addColumn("TIMEZONE", Types.VARCHAR, 8, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
+        table.addColumn("PROMOTE", Types.BOOLEAN, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
@@ -180,13 +191,15 @@ public class EventDAO extends ContentDAO<Event>
             insertStmt.setString(7, content.getTitle());
             insertStmt.setString(8, content.getUrl());
             insertStmt.setString(9, content.getEventType());
-            insertStmt.setBoolean(10, content.isPublished());
-            insertStmt.setString(11, content.getStatus().name());
-            insertStmt.setString(12, content.getCreatedBy());
+            insertStmt.setString(10, content.getTimeZone());
+            insertStmt.setBoolean(11, content.isPublished());
+            insertStmt.setBoolean(12, content.isPromoted());
+            insertStmt.setString(13, content.getStatus().name());
+            insertStmt.setString(14, content.getCreatedBy());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(13, reader, attributes.length());
-            insertStmt.setInt(14, SessionId.get());
+            insertStmt.setCharacterStream(15, reader, attributes.length());
+            insertStmt.setInt(16, SessionId.get());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -237,14 +250,16 @@ public class EventDAO extends ContentDAO<Event>
             updateStmt.setString(4, content.getTitle());
             updateStmt.setString(5, content.getUrl());
             updateStmt.setString(6, content.getEventType());
-            updateStmt.setBoolean(7, content.isPublished());
-            updateStmt.setString(8, content.getStatus().name());
+            updateStmt.setString(7, content.getTimeZone());
+            updateStmt.setBoolean(8, content.isPublished());
+            updateStmt.setBoolean(9, content.isPromoted());
+            updateStmt.setString(10, content.getStatus().name());
             String attributes = content.toJson().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(9, reader, attributes.length());
-            updateStmt.setString(10, content.getSiteId());
-            updateStmt.setString(11, content.getCode());
-            updateStmt.setInt(12, content.getId());
+            updateStmt.setCharacterStream(11, reader, attributes.length());
+            updateStmt.setString(12, content.getSiteId());
+            updateStmt.setString(13, content.getCode());
+            updateStmt.setInt(14, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 
@@ -255,6 +270,65 @@ public class EventDAO extends ContentDAO<Event>
             if(reader != null)
                 reader.close();
         }
+    }
+
+    /**
+     * Returns the event items from the table by organisation code.
+     */
+    public synchronized List<EventItem> listItems(Site site, String code) throws SQLException
+    {
+        List<EventItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByCodeStmt == null)
+            listByCodeStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_CODE_SQL);
+        clearParameters(listByCodeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByCodeStmt.setString(1, site.getId());
+            listByCodeStmt.setString(2, code);
+            listByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByCodeStmt.executeQuery();
+            ret = new ArrayList<EventItem>();
+            while(rs.next())
+            {
+                EventItem event = new EventItem();
+                event.setSiteId(rs.getString(1));
+                event.setCode(rs.getString(2));
+                event.setId(rs.getInt(3));
+                event.setUuid(rs.getString(4));
+                event.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                event.setTitle(rs.getString(6));
+                event.setUrl(rs.getString(7));
+                event.setEventType(rs.getString(8));
+                event.setTimeZone(rs.getString(9));
+                event.setPublished(rs.getBoolean(10));
+                event.setPromoted(rs.getBoolean(11));
+                event.setStatus(rs.getString(12));
+                ret.add(event);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
     }
 
     /**
@@ -269,9 +343,12 @@ public class EventDAO extends ContentDAO<Event>
         insertStmt = null;
         closeStatement(updateStmt);
         updateStmt = null;
+        closeStatement(listByCodeStmt);
+        listByCodeStmt = null;
     }
 
     private PreparedStatement listByUrlStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
+    private PreparedStatement listByCodeStmt;
 }

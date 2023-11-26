@@ -16,7 +16,6 @@
 package com.opsmatters.media.model.content;
 
 import java.util.List;
-import java.util.Arrays;
 import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.model.organisation.Organisation;
@@ -235,27 +234,6 @@ public abstract class Article<D extends ArticleDetails> extends Content<D>
     public List<String> getTagsList()
     {
         return StringUtils.toList(getTags());
-    }
-
-    /**
-     * Returns the article type tag.
-     */
-    public String getTypeTag()
-    {
-        List<String> tags = getTagsList();
-        List<String> types = Arrays.asList("Blog", "Press Release");
-
-        String ret = null;
-        for(String type : types)
-        {
-            if(tags.contains(type))
-            {
-                ret = type;
-                break;
-            }
-        }
-
-        return ret != null ? ret : "";
     }
 
     /**

@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 import org.json.JSONObject;
@@ -30,6 +31,7 @@ import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.model.content.ContentLookup;
 import com.opsmatters.media.model.content.post.RoundupPost;
+import com.opsmatters.media.model.content.post.RoundupPostItem;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
 import com.opsmatters.media.util.SessionId;
@@ -50,26 +52,42 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
       "SELECT ATTRIBUTES, SITE_ID FROM ROUNDUPS WHERE SITE_ID=? AND CODE=? AND URL=? ";
 
     /**
+     * The query to use to insert a roundup into the ROUNDUPS table.
+     */
+    private static final String INSERT_SQL =  
+      "INSERT INTO ROUNDUPS"
+      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, URL, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, "
+      +   "AUTHOR, STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
+      + "VALUES"
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+
+    /**
+     * The query to use to update a roundup in the ROUNDUPS table.
+     */
+    private static final String UPDATE_SQL =  
+      "UPDATE ROUNDUPS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, URL=?, PUBLISHED=?, PROMOTE=?, NEWSLETTER=?, FEATURED=?, SPONSORED=?, "
+      + "AUTHOR=?, STATUS=?, ATTRIBUTES=? "
+      + "WHERE SITE_ID=? AND CODE=? AND ID=?";
+
+    /**
      * The query to use to select a list of roundup from the ROUNDUPS table by URL.
      */
     private static final String LIST_BY_URL_SQL =  
       "SELECT ATTRIBUTES, SITE_ID FROM ROUNDUPS WHERE CODE=? AND URL=? AND (?=0 OR ABS(TIMESTAMPDIFF(DAY, ?, PUBLISHED_DATE)) <= 7)";
 
     /**
-     * The query to use to insert a roundup into the ROUNDUPS table.
+     * The query to use to select the roundup items from the table by organisation code.
      */
-    private static final String INSERT_SQL =  
-      "INSERT INTO ROUNDUPS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, URL, PUBLISHED, STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
-      + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+    private static final String LIST_ITEMS_BY_CODE_SQL =
+      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, URL, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
+      + "FROM ROUNDUPS WHERE SITE_ID=? AND CODE=? ORDER BY ID";
 
     /**
-     * The query to use to update a roundup in the ROUNDUPS table.
+     * The query to use to select the roundup items from the table by published date.
      */
-    private static final String UPDATE_SQL =  
-      "UPDATE ROUNDUPS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, URL=?, PUBLISHED=?, STATUS=?, ATTRIBUTES=? "
-      + "WHERE SITE_ID=? AND CODE=? AND ID=?";
+    private static final String LIST_ITEMS_BY_DATE_SQL =  
+      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, URL, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
+      + "FROM ROUNDUPS WHERE SITE_ID=? AND PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
 
     /**
      * Constructor that takes a DAO factory.
@@ -93,6 +111,11 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
         table.addColumn("TITLE", Types.VARCHAR, 256, true);
         table.addColumn("URL", Types.VARCHAR, 256, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
+        table.addColumn("PROMOTE", Types.BOOLEAN, true);
+        table.addColumn("NEWSLETTER", Types.BOOLEAN, true);
+        table.addColumn("FEATURED", Types.BOOLEAN, true);
+        table.addColumn("SPONSORED", Types.BOOLEAN, true);
+        table.addColumn("AUTHOR", Types.VARCHAR, 30, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
@@ -156,6 +179,140 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
     }
 
     /**
+     * Stores the given roundup in the ROUNDUPS table.
+     */
+    public synchronized void add(RoundupPost content) throws SQLException
+    {
+        if(!hasConnection() || content == null)
+            return;
+
+        if(!content.hasUniqueId())
+            throw new IllegalArgumentException("roundup uuid null");
+
+        if(insertStmt == null)
+            insertStmt = prepareStatement(getConnection(), INSERT_SQL);
+        clearParameters(insertStmt);
+
+        StringReader reader = null;
+
+        try
+        {
+            insertStmt.setString(1, content.getSiteId());
+            insertStmt.setString(2, content.getCode());
+            insertStmt.setInt(3, content.getId());
+            insertStmt.setTimestamp(4, new Timestamp(content.getPublishedDateMillis()), UTC);
+            insertStmt.setString(5, content.getUuid());
+            insertStmt.setString(6, content.getTitle());
+            insertStmt.setString(7, content.getUrl());
+            insertStmt.setBoolean(8, content.isPublished());
+            insertStmt.setBoolean(9, content.isPromoted());
+            insertStmt.setBoolean(10, content.isNewsletter());
+            insertStmt.setBoolean(11, content.isFeatured());
+            insertStmt.setBoolean(12, content.isSponsored());
+            insertStmt.setString(13, content.getAuthor());
+            insertStmt.setString(14, content.getStatus().name());
+            insertStmt.setString(15, content.getCreatedBy());
+            String attributes = content.toJson().toString();
+            reader = new StringReader(attributes);
+            insertStmt.setCharacterStream(16, reader, attributes.length());
+            insertStmt.setInt(17, SessionId.get());
+            insertStmt.executeUpdate();
+
+            logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
+                content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
+        }
+        catch(SQLException ex)
+        {
+            // SQLite closes the statement on an exception
+            if(getDriver().closeOnException())
+            {
+                closeStatement(insertStmt);
+                insertStmt = null;
+            }
+
+            // Unique constraint violated means that the roundup already exists
+            if(!getDriver().isConstraintViolation(ex))
+                throw ex;
+        }
+        finally
+        {
+            if(reader != null)
+                reader.close();
+        }
+    }
+
+    /**
+     * Updates the given roundup in the ROUNDUPS table.
+     */
+    public synchronized void update(RoundupPost content) throws SQLException
+    {
+        if(!hasConnection() || content == null)
+            return;
+
+        if(!content.hasUniqueId())
+            throw new IllegalArgumentException("roundup uuid null");
+
+        if(updateStmt == null)
+            updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
+        clearParameters(updateStmt);
+
+        StringReader reader = null;
+
+        try
+        {
+            updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
+            updateStmt.setString(2, content.getUuid());
+            updateStmt.setString(3, content.getTitle());
+            updateStmt.setString(4, content.getUrl());
+            updateStmt.setBoolean(5, content.isPublished());
+            updateStmt.setBoolean(6, content.isPromoted());
+            updateStmt.setBoolean(7, content.isNewsletter());
+            updateStmt.setBoolean(8, content.isFeatured());
+            updateStmt.setBoolean(9, content.isSponsored());
+            updateStmt.setString(10, content.getAuthor());
+            updateStmt.setString(11, content.getStatus().name());
+            String attributes = content.toJson().toString();
+            reader = new StringReader(attributes);
+            updateStmt.setCharacterStream(12, reader, attributes.length());
+            updateStmt.setString(13, content.getSiteId());
+            updateStmt.setString(14, content.getCode());
+            updateStmt.setInt(15, content.getId());
+            updateStmt.executeUpdate();
+
+            logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 
+                content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
+        }
+        finally
+        {
+            if(reader != null)
+                reader.close();
+        }
+    }
+
+    /**
+     * Returns a class to look up an organisation's content by title or id.
+     */
+    public ContentLookup<RoundupPost> newLookup()
+    {
+        return new ContentLookup<RoundupPost>()
+        {
+            @Override
+            protected RoundupPost getByTitle(String siteId, String code, String title)
+                throws SQLException
+            {
+                return RoundupPostDAO.this.getByTitle(siteId, code, title);
+            }
+
+            @Override
+            protected RoundupPost getById(String siteId, String code, String id)
+                throws SQLException
+            {
+                return RoundupPostDAO.this.getByUrl(siteId, code, id);
+            }
+        };
+    }
+
+    /**
      * Returns a list of roundups from the ROUNDUPS table by URL.
      */
     public synchronized List<RoundupPost> listByUrl(String code, String url, long publishedDate) throws SQLException
@@ -207,127 +364,125 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
     }
 
     /**
-     * Stores the given roundup in the ROUNDUPS table.
+     * Returns the roundup items from the table by organisation code.
      */
-    public synchronized void add(RoundupPost content) throws SQLException
+    public synchronized List<RoundupPostItem> listItems(Site site, String code) throws SQLException
     {
-        if(!hasConnection() || content == null)
-            return;
+        List<RoundupPostItem> ret = null;
 
-        if(!content.hasUniqueId())
-            throw new IllegalArgumentException("roundup uuid null");
+        if(!hasConnection())
+            return ret;
 
-        if(insertStmt == null)
-            insertStmt = prepareStatement(getConnection(), INSERT_SQL);
-        clearParameters(insertStmt);
+        preQuery();
+        if(listByCodeStmt == null)
+            listByCodeStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_CODE_SQL);
+        clearParameters(listByCodeStmt);
 
-        StringReader reader = null;
+        ResultSet rs = null;
 
         try
         {
-            insertStmt.setString(1, content.getSiteId());
-            insertStmt.setString(2, content.getCode());
-            insertStmt.setInt(3, content.getId());
-            insertStmt.setTimestamp(4, new Timestamp(content.getPublishedDateMillis()), UTC);
-            insertStmt.setString(5, content.getUuid());
-            insertStmt.setString(6, content.getTitle());
-            insertStmt.setString(7, content.getUrl());
-            insertStmt.setBoolean(8, content.isPublished());
-            insertStmt.setString(9, content.getStatus().name());
-            insertStmt.setString(10, content.getCreatedBy());
-            String attributes = content.toJson().toString();
-            reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(11, reader, attributes.length());
-            insertStmt.setInt(12, SessionId.get());
-            insertStmt.executeUpdate();
-
-            logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
-                content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
-        }
-        catch(SQLException ex)
-        {
-            // SQLite closes the statement on an exception
-            if(getDriver().closeOnException())
+            listByCodeStmt.setString(1, site.getId());
+            listByCodeStmt.setString(2, code);
+            listByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByCodeStmt.executeQuery();
+            ret = new ArrayList<RoundupPostItem>();
+            while(rs.next())
             {
-                closeStatement(insertStmt);
-                insertStmt = null;
+                RoundupPostItem post = new RoundupPostItem();
+                post.setSiteId(rs.getString(1));
+                post.setCode(rs.getString(2));
+                post.setId(rs.getInt(3));
+                post.setUuid(rs.getString(4));
+                post.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                post.setTitle(rs.getString(6));
+                post.setUrl(rs.getString(7));
+                post.setPublished(rs.getBoolean(8));
+                post.setPromoted(rs.getBoolean(9));
+                post.setNewsletter(rs.getBoolean(10));
+                post.setFeatured(rs.getBoolean(11));
+                post.setSponsored(rs.getBoolean(12));
+                post.setAuthor(rs.getString(13));
+                post.setStatus(rs.getString(14));
+                ret.add(post);
             }
-
-            // Unique constraint violated means that the roundup already exists
-            if(!getDriver().isConstraintViolation(ex))
-                throw ex;
         }
         finally
         {
-            if(reader != null)
-                reader.close();
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
         }
+
+        postQuery();
+
+        return ret;
     }
 
     /**
-     * Updates the given roundup in the ROUNDUPS table.
+     * Returns the roundup items from the table by published date.
      */
-    public synchronized void update(RoundupPost content) throws SQLException
+    public synchronized List<RoundupPostItem> listItems(Site site, Instant date) throws SQLException
     {
-        if(!hasConnection() || content == null)
-            return;
+        List<RoundupPostItem> ret = null;
 
-        if(!content.hasUniqueId())
-            throw new IllegalArgumentException("roundup uuid null");
+        if(!hasConnection())
+            return ret;
 
-        if(updateStmt == null)
-            updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
-        clearParameters(updateStmt);
+        preQuery();
+        if(listByDateStmt == null)
+            listByDateStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_DATE_SQL);
+        clearParameters(listByDateStmt);
 
-        StringReader reader = null;
+        ResultSet rs = null;
 
         try
         {
-            updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
-            updateStmt.setString(2, content.getUuid());
-            updateStmt.setString(3, content.getTitle());
-            updateStmt.setString(4, content.getUrl());
-            updateStmt.setBoolean(5, content.isPublished());
-            updateStmt.setString(6, content.getStatus().name());
-            String attributes = content.toJson().toString();
-            reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(7, reader, attributes.length());
-            updateStmt.setString(8, content.getSiteId());
-            updateStmt.setString(9, content.getCode());
-            updateStmt.setInt(10, content.getId());
-            updateStmt.executeUpdate();
-
-            logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 
-                content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
+            listByDateStmt.setString(1, site.getId());
+            listByDateStmt.setTimestamp(2, new Timestamp(date.toEpochMilli()), UTC);
+            listByDateStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByDateStmt.executeQuery();
+            ret = new ArrayList<RoundupPostItem>();
+            while(rs.next())
+            {
+                RoundupPostItem post = new RoundupPostItem();
+                post.setSiteId(rs.getString(1));
+                post.setCode(rs.getString(2));
+                post.setId(rs.getInt(3));
+                post.setUuid(rs.getString(4));
+                post.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                post.setTitle(rs.getString(6));
+                post.setUrl(rs.getString(7));
+                post.setPublished(rs.getBoolean(8));
+                post.setPromoted(rs.getBoolean(9));
+                post.setNewsletter(rs.getBoolean(10));
+                post.setFeatured(rs.getBoolean(11));
+                post.setSponsored(rs.getBoolean(12));
+                post.setAuthor(rs.getString(13));
+                post.setStatus(rs.getString(14));
+                ret.add(post);
+            }
         }
         finally
         {
-            if(reader != null)
-                reader.close();
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
         }
-    }
 
-    /**
-     * Returns a class to look up an organisation's content by title or id.
-     */
-    public ContentLookup<RoundupPost> newLookup()
-    {
-        return new ContentLookup<RoundupPost>()
-        {
-            @Override
-            protected RoundupPost getByTitle(String siteId, String code, String title)
-                throws SQLException
-            {
-                return RoundupPostDAO.this.getByTitle(siteId, code, title);
-            }
+        postQuery();
 
-            @Override
-            protected RoundupPost getById(String siteId, String code, String id)
-                throws SQLException
-            {
-                return RoundupPostDAO.this.getByUrl(siteId, code, id);
-            }
-        };
+        return ret;
     }
 
     /**
@@ -344,10 +499,16 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
         insertStmt = null;
         closeStatement(updateStmt);
         updateStmt = null;
+        closeStatement(listByCodeStmt);
+        listByCodeStmt = null;
+        closeStatement(listByDateStmt);
+        listByDateStmt = null;
     }
 
     private PreparedStatement getByUrlStmt;
     private PreparedStatement listByUrlStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
+    private PreparedStatement listByCodeStmt;
+    private PreparedStatement listByDateStmt;
 }
