@@ -70,7 +70,7 @@ public class EventDAO extends ContentDAO<Event>
      * The query to use to select the event items from the table by organisation code.
      */
     private static final String LIST_ITEMS_BY_CODE_SQL =
-      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, URL, EVENT_TYPE, TIMEZONE, PUBLISHED, PROMOTE, STATUS "
+      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, START_DATE, TITLE, URL, EVENT_TYPE, TIMEZONE, PUBLISHED, PROMOTE, STATUS "
       + "FROM EVENTS WHERE SITE_ID=? AND CODE=? ORDER BY ID";
 
     /**
@@ -304,13 +304,14 @@ public class EventDAO extends ContentDAO<Event>
                 event.setId(rs.getInt(3));
                 event.setUuid(rs.getString(4));
                 event.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
-                event.setTitle(rs.getString(6));
-                event.setUrl(rs.getString(7));
-                event.setEventType(rs.getString(8));
-                event.setTimeZone(rs.getString(9));
-                event.setPublished(rs.getBoolean(10));
-                event.setPromoted(rs.getBoolean(11));
-                event.setStatus(rs.getString(12));
+                event.setStartDateMillis(rs.getTimestamp(6, UTC).getTime());
+                event.setTitle(rs.getString(7));
+                event.setUrl(rs.getString(8));
+                event.setEventType(rs.getString(9));
+                event.setTimeZone(rs.getString(10));
+                event.setPublished(rs.getBoolean(11));
+                event.setPromoted(rs.getBoolean(12));
+                event.setStatus(rs.getString(13));
                 ret.add(event);
             }
         }

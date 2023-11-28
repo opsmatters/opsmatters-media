@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.monitor.ContentMonitor;
+import com.opsmatters.media.model.monitor.ContentMonitorItem;
 import com.opsmatters.media.model.monitor.MonitorStatus;
 import com.opsmatters.media.model.monitor.ContentMonitorFactory;
 
@@ -43,7 +44,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
      * The query to use to select a monitor from the CONTENT_MONITORS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ALERTS, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID "
       + "FROM CONTENT_MONITORS WHERE ID=?";
 
     /**
@@ -51,29 +52,43 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTENT_MONITORS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ALERTS, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a monitor in the CONTENT_MONITORS table.
      */
-    private static final String UPDATE_SQL =  
-      "UPDATE CONTENT_MONITORS SET UPDATED_DATE=?, EXECUTED_DATE=?, NAME=?, SNAPSHOT=?, ATTRIBUTES=?, STATUS=?, EVENT_TYPE=?, EVENT_ID=? "
+    private static final String UPDATE_SQL =
+      "UPDATE CONTENT_MONITORS SET UPDATED_DATE=?, EXECUTED_DATE=?, NAME=?, SNAPSHOT=?, ALERTS=?, ATTRIBUTES=?, STATUS=?, EVENT_TYPE=?, EVENT_ID=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the monitors from the CONTENT_MONITORS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ALERTS, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID "
+      + "FROM CONTENT_MONITORS ORDER BY EXECUTED_DATE";
+
+    /**
+     * The query to use to select the monitor items from the table.
+     */
+    private static final String LIST_ITEMS_SQL =
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, ALERTS, STATUS "
       + "FROM CONTENT_MONITORS ORDER BY EXECUTED_DATE";
 
     /**
      * The query to use to select the monitors from the CONTENT_MONITORS table by organisation code.
      */
     private static final String LIST_BY_CODE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, SNAPSHOT, ALERTS, ATTRIBUTES, STATUS, EVENT_TYPE, EVENT_ID "
+      + "FROM CONTENT_MONITORS WHERE CODE=? ORDER BY CREATED_DATE";
+
+    /**
+     * The query to use to select the monitor items from the CONTENT_MONITORS table by organisation code.
+     */
+    private static final String LIST_ITEMS_BY_CODE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, EXECUTED_DATE, CODE, NAME, CONTENT_TYPE, ALERTS, STATUS "
       + "FROM CONTENT_MONITORS WHERE CODE=? ORDER BY CREATED_DATE";
 
     /**
@@ -114,6 +129,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("EVENT_TYPE", Types.VARCHAR, 15, false);
         table.addColumn("EVENT_ID", Types.VARCHAR, 36, false);
+        table.addColumn("ALERTS", Types.BOOLEAN, true);
         table.setPrimaryKey("CONTENT_MONITORS_PK", new String[] {"ID"});
         table.addIndex("CONTENT_MONITORS_CODE_IDX", new String[] {"CODE"});
         table.addIndex("CONTENT_MONITORS_STATUS_IDX", new String[] {"STATUS"});
@@ -154,10 +170,11 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
                 monitor.setName(rs.getString(6));
                 monitor.setContentType(rs.getString(7));
                 monitor.setSnapshot(getClob(rs, 8));
-                monitor.setAttributes(new JSONObject(getClob(rs, 9)));
-                monitor.setStatus(rs.getString(10));
-                monitor.setEventType(rs.getString(11));
-                monitor.setEventId(rs.getString(12));
+                monitor.setAlerts(rs.getBoolean(9));
+                monitor.setAttributes(new JSONObject(getClob(rs, 10)));
+                monitor.setStatus(rs.getString(11));
+                monitor.setEventType(rs.getString(12));
+                monitor.setEventId(rs.getString(13));
                 ret = monitor;
             }
         }
@@ -204,12 +221,13 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
             String snapshot = monitor.getSnapshot();
             reader = new StringReader(snapshot);
             insertStmt.setCharacterStream(8, reader, snapshot.length());
+            insertStmt.setBoolean(9, monitor.hasAlerts());
             String attributes = monitor.getAttributes().toString();
             reader2 = new StringReader(attributes);
-            insertStmt.setCharacterStream(9, reader2, attributes.length());
-            insertStmt.setString(10, monitor.getStatus().name());
-            insertStmt.setString(11, monitor.getEventType() != null ? monitor.getEventType().name() : "");
-            insertStmt.setString(12, monitor.getEventId());
+            insertStmt.setCharacterStream(10, reader2, attributes.length());
+            insertStmt.setString(11, monitor.getStatus().name());
+            insertStmt.setString(12, monitor.getEventType() != null ? monitor.getEventType().name() : "");
+            insertStmt.setString(13, monitor.getEventId());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created monitor %s/%s in CONTENT_MONITORS",
@@ -259,13 +277,14 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
             String snapshot = monitor.getSnapshot();
             reader = new StringReader(snapshot);
             updateStmt.setCharacterStream(4, reader, snapshot.length());
+            updateStmt.setBoolean(5, monitor.hasAlerts());
             String attributes = monitor.getAttributes().toString();
             reader2 = new StringReader(attributes);
-            updateStmt.setCharacterStream(5, reader2, attributes.length());
-            updateStmt.setString(6, monitor.getStatus().name());
-            updateStmt.setString(7, monitor.getEventType() != null ? monitor.getEventType().name() : "");
-            updateStmt.setString(8, monitor.getEventId());
-            updateStmt.setString(9, monitor.getId());
+            updateStmt.setCharacterStream(6, reader2, attributes.length());
+            updateStmt.setString(7, monitor.getStatus().name());
+            updateStmt.setString(8, monitor.getEventType() != null ? monitor.getEventType().name() : "");
+            updateStmt.setString(9, monitor.getEventId());
+            updateStmt.setString(10, monitor.getId());
             updateStmt.executeUpdate();
 
             if(log)
@@ -344,10 +363,66 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
                 monitor.setName(rs.getString(6));
                 monitor.setContentType(rs.getString(7));
                 monitor.setSnapshot(getClob(rs, 8));
-                monitor.setAttributes(new JSONObject(getClob(rs, 9)));
-                monitor.setStatus(rs.getString(10));
-                monitor.setEventType(rs.getString(11));
-                monitor.setEventId(rs.getString(12));
+                monitor.setAlerts(rs.getBoolean(9));
+                monitor.setAttributes(new JSONObject(getClob(rs, 10)));
+                monitor.setStatus(rs.getString(11));
+                monitor.setEventType(rs.getString(12));
+                monitor.setEventId(rs.getString(13));
+                ret.add(monitor);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the monitors from the CONTENT_MONITORS table.
+     */
+    public synchronized List<ContentMonitorItem> listItems() throws SQLException
+    {
+        List<ContentMonitorItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listItemsStmt == null)
+            listItemsStmt = prepareStatement(getConnection(), LIST_ITEMS_SQL);
+        clearParameters(listItemsStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listItemsStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listItemsStmt.executeQuery();
+            ret = new ArrayList<ContentMonitorItem>();
+            while(rs.next())
+            {
+                ContentType type = ContentType.valueOf(rs.getString(7));
+                ContentMonitorItem monitor = new ContentMonitorItem(ContentMonitorFactory.newInstance(type));
+                monitor.setId(rs.getString(1));
+                monitor.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                monitor.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                monitor.setExecutedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                monitor.setCode(rs.getString(5));
+                monitor.setName(rs.getString(6));
+                monitor.setContentType(rs.getString(7));
+                monitor.setAlerts(rs.getBoolean(8));
+                monitor.setStatus(rs.getString(9));
                 ret.add(monitor);
             }
         }
@@ -403,10 +478,67 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
                 monitor.setName(rs.getString(6));
                 monitor.setContentType(rs.getString(7));
                 monitor.setSnapshot(getClob(rs, 8));
-                monitor.setAttributes(new JSONObject(getClob(rs, 9)));
-                monitor.setStatus(rs.getString(10));
-                monitor.setEventType(rs.getString(11));
-                monitor.setEventId(rs.getString(12));
+                monitor.setAlerts(rs.getBoolean(9));
+                monitor.setAttributes(new JSONObject(getClob(rs, 10)));
+                monitor.setStatus(rs.getString(11));
+                monitor.setEventType(rs.getString(12));
+                monitor.setEventId(rs.getString(13));
+                ret.add(monitor);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the monitor items from the CONTENT_MONITORS table by organisation code.
+     */
+    public synchronized List<ContentMonitorItem> listItems(String code) throws SQLException
+    {
+        List<ContentMonitorItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listItemsByCodeStmt == null)
+            listItemsByCodeStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_CODE_SQL);
+        clearParameters(listItemsByCodeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listItemsByCodeStmt.setString(1, code);
+            listItemsByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listItemsByCodeStmt.executeQuery();
+            ret = new ArrayList<ContentMonitorItem>();
+            while(rs.next())
+            {
+                ContentType type = ContentType.valueOf(rs.getString(7));
+                ContentMonitorItem monitor = new ContentMonitorItem(ContentMonitorFactory.newInstance(type));
+                monitor.setId(rs.getString(1));
+                monitor.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                monitor.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                monitor.setExecutedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                monitor.setCode(rs.getString(5));
+                monitor.setName(rs.getString(6));
+                monitor.setContentType(rs.getString(7));
+                monitor.setAlerts(rs.getBoolean(8));
+                monitor.setStatus(rs.getString(9));
                 ret.add(monitor);
             }
         }
@@ -526,8 +658,12 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
+        closeStatement(listItemsStmt);
+        listItemsStmt = null;
         closeStatement(listByCodeStmt);
         listByCodeStmt = null;
+        closeStatement(listItemsByCodeStmt);
+        listItemsByCodeStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -538,7 +674,9 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
+    private PreparedStatement listItemsStmt;
     private PreparedStatement listByCodeStmt;
+    private PreparedStatement listItemsByCodeStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }

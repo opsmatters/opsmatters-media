@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.DeliveryStatus;
 import com.opsmatters.media.model.social.ChannelPost;
+import com.opsmatters.media.model.social.ChannelPostItem;
 import com.opsmatters.media.model.social.DraftPost;
 import com.opsmatters.media.model.social.MessageFormat;
 import com.opsmatters.media.model.social.SocialChannel;
@@ -47,7 +48,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
      */
     private static final String GET_BY_ID_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
-      + "CODE, CONTENT_TYPE, ATTRIBUTES, STATUS, CREATED_BY "
+      + "CODE, CONTENT_TYPE, TITLE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM CHANNEL_POSTS WHERE ID=?";
 
     /**
@@ -56,9 +57,9 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
     private static final String INSERT_SQL =  
       "INSERT INTO CHANNEL_POSTS"
       + "( ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
-      + "CODE, CONTENT_TYPE, ATTRIBUTES, STATUS, CREATED_BY, SESSION_ID )"
+      + "CODE, CONTENT_TYPE, TITLE, ATTRIBUTES, STATUS, CREATED_BY, SESSION_ID )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a post in the CHANNEL_POSTS table.
@@ -68,11 +69,10 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
       + "WHERE ID=?";
 
     /**
-     * The query to use to select the posts from the CHANNEL_POSTS table by interval.
+     * The query to use to select the post items from the CHANNEL_POSTS table by interval.
      */
-    private static final String LIST_BY_INTERVAL_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
-      + "CODE, CONTENT_TYPE, ATTRIBUTES, STATUS, CREATED_BY "
+    private static final String LIST_ITEMS_BY_INTERVAL_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, CHANNEL, CODE, TITLE, STATUS "
       + "FROM CHANNEL_POSTS WHERE CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR UPDATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS != 'SENT' ORDER BY CREATED_DATE";
 
     /**
@@ -80,15 +80,30 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
      */
     private static final String LIST_BY_STATUS_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
-      + "CODE, CONTENT_TYPE, ATTRIBUTES, STATUS, CREATED_BY "
+      + "CODE, CONTENT_TYPE, TITLE, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM CHANNEL_POSTS WHERE STATUS=? ORDER BY CREATED_DATE";
+
+    /**
+     * The query to use to select the post items from the CHANNEL_POSTS table by status.
+     */
+    private static final String LIST_ITEMS_BY_STATUS_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, CHANNEL, CODE, TITLE, STATUS "
       + "FROM CHANNEL_POSTS WHERE STATUS=? ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the CHANNEL_POSTS table by status and interval.
      */
+
     private static final String LIST_BY_STATUS_INTERVAL_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
-      + "CODE, CONTENT_TYPE, ATTRIBUTES, STATUS, CREATED_BY "
+      + "CODE, CONTENT_TYPE, TITLE, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM CHANNEL_POSTS WHERE STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR UPDATED_DATE >= (NOW() + INTERVAL -? DAY)) ORDER BY CREATED_DATE";
+
+    /**
+     * The query to use to select the post items from the CHANNEL_POSTS table by status and interval.
+     */
+    private static final String LIST_ITEMS_BY_STATUS_INTERVAL_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, CHANNEL, CODE, TITLE, STATUS "
       + "FROM CHANNEL_POSTS WHERE STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR UPDATED_DATE >= (NOW() + INTERVAL -? DAY)) ORDER BY CREATED_DATE";
 
     /**
@@ -96,7 +111,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
      */
     private static final String LIST_BY_SITE_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
-      + "CODE, CONTENT_TYPE, ATTRIBUTES, STATUS, CREATED_BY "
+      + "CODE, CONTENT_TYPE, TITLE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM CHANNEL_POSTS WHERE SITE_ID=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR UPDATED_DATE >= (NOW() + INTERVAL -? DAY)) ORDER BY CREATED_DATE";
 
     /**
@@ -104,7 +119,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
      */
     private static final String LIST_BY_CODE_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
-      + "CODE, CONTENT_TYPE, ATTRIBUTES, STATUS, CREATED_BY "
+      + "CODE, CONTENT_TYPE, TITLE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM CHANNEL_POSTS WHERE SITE_ID=? AND CODE=? ORDER BY CREATED_DATE";
 
     /**
@@ -112,7 +127,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
      */
     private static final String LIST_BY_DRAFT_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
-      + "CODE, CONTENT_TYPE, ATTRIBUTES, STATUS, CREATED_BY "
+      + "CODE, CONTENT_TYPE, TITLE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM CHANNEL_POSTS WHERE DRAFT_ID=?";
 
     /**
@@ -120,7 +135,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
      */
     private static final String LIST_BY_CHANNEL_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
-      + "CODE, CONTENT_TYPE, ATTRIBUTES, STATUS, CREATED_BY "
+      + "CODE, CONTENT_TYPE, TITLE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM CHANNEL_POSTS WHERE CHANNEL=? AND STATUS=? AND SESSION_ID=?";
 
     /**
@@ -158,6 +173,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
         table.addColumn("CHANNEL", Types.VARCHAR, 15, true);
         table.addColumn("CODE", Types.VARCHAR, 5, false);
         table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, false);
+        table.addColumn("TITLE", Types.VARCHAR, 256, false);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
@@ -203,9 +219,10 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setChannel(rs.getString(7));
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
-                post.setAttributes(new JSONObject(getClob(rs, 10)));
-                post.setStatus(rs.getString(11));
-                post.setCreatedBy(rs.getString(12));
+                post.setTitle(rs.getString(10));
+                post.setAttributes(new JSONObject(getClob(rs, 11)));
+                post.setStatus(rs.getString(12));
+                post.setCreatedBy(rs.getString(13));
                 ret = post;
             }
         }
@@ -251,12 +268,13 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
             insertStmt.setString(7, post.getChannel());
             insertStmt.setString(8, post.getCode());
             insertStmt.setString(9, post.getContentType() != null ? post.getContentType().name() : "");
+            insertStmt.setString(10, post.getTitle());
             String attributes = post.getAttributes().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(10, reader, attributes.length());
-            insertStmt.setString(11, post.getStatus().name());
-            insertStmt.setString(12, post.getCreatedBy());
-            insertStmt.setInt(13, SessionId.get());
+            insertStmt.setCharacterStream(11, reader, attributes.length());
+            insertStmt.setString(12, post.getStatus().name());
+            insertStmt.setString(13, post.getCreatedBy());
+            insertStmt.setInt(14, SessionId.get());
             insertStmt.executeUpdate();
 
             logger.info("Created post '"+post.getId()+"' in CHANNEL_POSTS");
@@ -311,44 +329,41 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
     }
 
     /**
-     * Returns the posts from the CHANNEL_POSTS table.
+     * Returns the post items from the CHANNEL_POSTS table.
      */
-    public synchronized List<ChannelPost> list(int interval) throws SQLException
+    public synchronized List<ChannelPostItem> listItems(int interval) throws SQLException
     {
-        List<ChannelPost> ret = null;
+        List<ChannelPostItem> ret = null;
 
         if(!hasConnection())
             return ret;
 
         preQuery();
-        if(listByIntervalStmt == null)
-            listByIntervalStmt = prepareStatement(getConnection(), LIST_BY_INTERVAL_SQL);
-        clearParameters(listByIntervalStmt);
+        if(listItemsByIntervalStmt == null)
+            listItemsByIntervalStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_INTERVAL_SQL);
+        clearParameters(listItemsByIntervalStmt);
 
         ResultSet rs = null;
 
         try
         {
-            listByIntervalStmt.setInt(1, interval);
-            listByIntervalStmt.setInt(2, interval);
-            listByIntervalStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = listByIntervalStmt.executeQuery();
-            ret = new ArrayList<ChannelPost>();
+            listItemsByIntervalStmt.setInt(1, interval);
+            listItemsByIntervalStmt.setInt(2, interval);
+            listItemsByIntervalStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listItemsByIntervalStmt.executeQuery();
+            ret = new ArrayList<ChannelPostItem>();
             while(rs.next())
             {
-                ChannelPost post = new ChannelPost();
+                ChannelPostItem post = new ChannelPostItem();
                 post.setId(rs.getString(1));
                 post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setType(rs.getString(4));
                 post.setSiteId(rs.getString(5));
-                post.setDraftId(rs.getString(6));
-                post.setChannel(rs.getString(7));
-                post.setCode(rs.getString(8));
-                post.setContentType(rs.getString(9));
-                post.setAttributes(new JSONObject(getClob(rs, 10)));
-                post.setStatus(rs.getString(11));
-                post.setCreatedBy(rs.getString(12));
+                post.setChannel(rs.getString(6));
+                post.setCode(rs.getString(7));
+                post.setTitle(rs.getString(8));
+                post.setStatus(rs.getString(9));
                 ret.add(post);
             }
         }
@@ -404,9 +419,65 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setChannel(rs.getString(7));
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
-                post.setAttributes(new JSONObject(getClob(rs, 10)));
-                post.setStatus(rs.getString(11));
-                post.setCreatedBy(rs.getString(12));
+                post.setTitle(rs.getString(10));
+                post.setAttributes(new JSONObject(getClob(rs, 11)));
+                post.setStatus(rs.getString(12));
+                post.setCreatedBy(rs.getString(13));
+                ret.add(post);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the post items from the CHANNEL_POSTS table by status.
+     */
+    public synchronized List<ChannelPostItem> listItems(DeliveryStatus status) throws SQLException
+    {
+        List<ChannelPostItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listItemsByStatusStmt == null)
+            listItemsByStatusStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_STATUS_SQL);
+        clearParameters(listItemsByStatusStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listItemsByStatusStmt.setString(1, status != null ? status.name() : "");
+            listItemsByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listItemsByStatusStmt.executeQuery();
+            ret = new ArrayList<ChannelPostItem>();
+            while(rs.next())
+            {
+                ChannelPostItem post = new ChannelPostItem();
+                post.setId(rs.getString(1));
+                post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                post.setType(rs.getString(4));
+                post.setSiteId(rs.getString(5));
+                post.setChannel(rs.getString(6));
+                post.setCode(rs.getString(7));
+                post.setTitle(rs.getString(8));
+                post.setStatus(rs.getString(9));
                 ret.add(post);
             }
         }
@@ -464,9 +535,67 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setChannel(rs.getString(7));
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
-                post.setAttributes(new JSONObject(getClob(rs, 10)));
-                post.setStatus(rs.getString(11));
-                post.setCreatedBy(rs.getString(12));
+                post.setTitle(rs.getString(10));
+                post.setAttributes(new JSONObject(getClob(rs, 11)));
+                post.setStatus(rs.getString(12));
+                post.setCreatedBy(rs.getString(13));
+                ret.add(post);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the post items from the CHANNEL_POSTS table by status and interval.
+     */
+    public synchronized List<ChannelPostItem> listItems(DeliveryStatus status, int interval) throws SQLException
+    {
+        List<ChannelPostItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listItemsByStatusIntervalStmt == null)
+            listItemsByStatusIntervalStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_STATUS_INTERVAL_SQL);
+        clearParameters(listItemsByStatusIntervalStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listItemsByStatusIntervalStmt.setString(1, status != null ? status.name() : "");
+            listItemsByStatusIntervalStmt.setInt(2, interval);
+            listItemsByStatusIntervalStmt.setInt(3, interval);
+            listItemsByStatusIntervalStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listItemsByStatusIntervalStmt.executeQuery();
+            ret = new ArrayList<ChannelPostItem>();
+            while(rs.next())
+            {
+                ChannelPostItem post = new ChannelPostItem();
+                post.setId(rs.getString(1));
+                post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                post.setType(rs.getString(4));
+                post.setSiteId(rs.getString(5));
+                post.setChannel(rs.getString(6));
+                post.setCode(rs.getString(7));
+                post.setTitle(rs.getString(8));
+                post.setStatus(rs.getString(9));
                 ret.add(post);
             }
         }
@@ -524,9 +653,10 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setChannel(rs.getString(7));
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
-                post.setAttributes(new JSONObject(getClob(rs, 10)));
-                post.setStatus(rs.getString(11));
-                post.setCreatedBy(rs.getString(12));
+                post.setTitle(rs.getString(10));
+                post.setAttributes(new JSONObject(getClob(rs, 11)));
+                post.setStatus(rs.getString(12));
+                post.setCreatedBy(rs.getString(13));
                 ret.add(post);
             }
         }
@@ -583,9 +713,10 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setChannel(rs.getString(7));
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
-                post.setAttributes(new JSONObject(getClob(rs, 10)));
-                post.setStatus(rs.getString(11));
-                post.setCreatedBy(rs.getString(12));
+                post.setTitle(rs.getString(10));
+                post.setAttributes(new JSONObject(getClob(rs, 11)));
+                post.setStatus(rs.getString(12));
+                post.setCreatedBy(rs.getString(13));
                 ret.add(post);
             }
         }
@@ -641,9 +772,10 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setChannel(rs.getString(7));
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
-                post.setAttributes(new JSONObject(getClob(rs, 10)));
-                post.setStatus(rs.getString(11));
-                post.setCreatedBy(rs.getString(12));
+                post.setTitle(rs.getString(10));
+                post.setAttributes(new JSONObject(getClob(rs, 11)));
+                post.setStatus(rs.getString(12));
+                post.setCreatedBy(rs.getString(13));
                 ret.add(post);
             }
         }
@@ -701,9 +833,10 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setChannel(rs.getString(7));
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
-                post.setAttributes(new JSONObject(getClob(rs, 10)));
-                post.setStatus(rs.getString(11));
-                post.setCreatedBy(rs.getString(12));
+                post.setTitle(rs.getString(10));
+                post.setAttributes(new JSONObject(getClob(rs, 11)));
+                post.setStatus(rs.getString(12));
+                post.setCreatedBy(rs.getString(13));
                 ret.add(post);
             }
         }
@@ -772,12 +905,16 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
         insertStmt = null;
         closeStatement(updateStmt);
         updateStmt = null;
-        closeStatement(listByIntervalStmt);
-        listByIntervalStmt = null;
+        closeStatement(listItemsByIntervalStmt);
+        listItemsByIntervalStmt = null;
         closeStatement(listByStatusStmt);
         listByStatusStmt = null;
+        closeStatement(listItemsByStatusStmt);
+        listItemsByStatusStmt = null;
         closeStatement(listByStatusIntervalStmt);
         listByStatusIntervalStmt = null;
+        closeStatement(listItemsByStatusIntervalStmt);
+        listItemsByStatusIntervalStmt = null;
         closeStatement(listBySiteStmt);
         listBySiteStmt = null;
         closeStatement(listByCodeStmt);
@@ -795,9 +932,11 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
     private PreparedStatement getByIdStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
-    private PreparedStatement listByIntervalStmt;
+    private PreparedStatement listItemsByIntervalStmt;
     private PreparedStatement listByStatusStmt;
+    private PreparedStatement listItemsByStatusStmt;
     private PreparedStatement listByStatusIntervalStmt;
+    private PreparedStatement listItemsByStatusIntervalStmt;
     private PreparedStatement listBySiteStmt;
     private PreparedStatement listByCodeStmt;
     private PreparedStatement listByDraftStmt;
