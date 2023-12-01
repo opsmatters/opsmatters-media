@@ -37,7 +37,6 @@ public abstract class DraftPost extends SocialPost
 {
     private static final String ENABLED = ".enabled";
 
-    private String siteId = "";
     private String sourceId = "";
     private Map<String,String> properties = new LinkedHashMap<String,String>();
     private DraftStatus status;
@@ -51,7 +50,6 @@ public abstract class DraftPost extends SocialPost
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setSiteId(obj.getSiteId());
             setSourceId(obj.getSourceId());
             setProperties(obj.getProperties());
             setStatus(obj.getStatus());
@@ -65,13 +63,17 @@ public abstract class DraftPost extends SocialPost
     public abstract String getTitle();
 
     /**
+     * Sets the post title.
+     */
+    public abstract void setTitle(String title);
+
+    /**
      * Returns the attributes as a JSON object.
      */
     public JSONObject getAttributes()
     {
         JSONObject ret = new JSONObject();
 
-        ret.putOpt(FieldName.MESSAGE.value(), getMessage());
         if(getScheduledDate() != null)
             ret.put(FieldName.SCHEDULED_DATE.value(), getScheduledDateMillis());
 
@@ -83,26 +85,9 @@ public abstract class DraftPost extends SocialPost
      */
     public void setAttributes(JSONObject obj)
     {
-        setMessage(obj.optString(FieldName.MESSAGE.value()));
         long scheduledDateMillis = obj.optLong(FieldName.SCHEDULED_DATE.value());
         if(scheduledDateMillis > 0L)
             setScheduledDateMillis(scheduledDateMillis);
-    }
-
-    /**
-     * Returns the site id.
-     */
-    public String getSiteId()
-    {
-        return siteId;
-    }
-
-    /**
-     * Sets the site id.
-     */
-    public void setSiteId(String siteId)
-    {
-        this.siteId = siteId;
     }
 
     /**

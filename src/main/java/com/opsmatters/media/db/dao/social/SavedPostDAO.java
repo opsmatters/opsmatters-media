@@ -30,6 +30,7 @@ import com.opsmatters.media.model.social.SavedPost;
 import com.opsmatters.media.model.social.SavedPostFactory;
 import com.opsmatters.media.model.social.PostType;
 import com.opsmatters.media.model.social.MessageFormat;
+import com.opsmatters.media.model.social.SavedContentPost;
 import com.opsmatters.media.model.content.ContentType;
 
 /**
@@ -45,7 +46,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
      * The query to use to select a saved post from the SAVED_POSTS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, TYPE, SITE_ID, NAME, MESSAGE, SHORTEN_URL, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, TYPE, SITE_ID, TITLE, CODE, CONTENT_TYPE, MESSAGE, SHORTEN_URL, PROPERTIES, STATUS, CREATED_BY "
       + "FROM SAVED_POSTS WHERE ID=?";
 
     /**
@@ -53,43 +54,43 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO SAVED_POSTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, TYPE, SITE_ID, NAME, MESSAGE, SHORTEN_URL, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, TYPE, SITE_ID, TITLE, CODE, CONTENT_TYPE, MESSAGE, SHORTEN_URL, PROPERTIES, STATUS, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a saved post in the SAVED_POSTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE SAVED_POSTS SET UPDATED_DATE=?, POSTED_DATE=?, SITE_ID=?, NAME=?, MESSAGE=?, SHORTEN_URL=?, PROPERTIES=?, ATTRIBUTES=?, STATUS=? "
+      "UPDATE SAVED_POSTS SET UPDATED_DATE=?, POSTED_DATE=?, SITE_ID=?, TITLE=?, CODE=?, CONTENT_TYPE=?, MESSAGE=?, SHORTEN_URL=?, PROPERTIES=?, STATUS=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the saved posts from the SAVED_POSTS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, TYPE, SITE_ID, NAME, MESSAGE, SHORTEN_URL, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, TYPE, SITE_ID, TITLE, CODE, CONTENT_TYPE, MESSAGE, SHORTEN_URL, PROPERTIES, STATUS, CREATED_BY "
       + "FROM SAVED_POSTS";
 
     /**
      * The query to use to select the saved posts from the SAVED_POSTS table by site.
      */
     private static final String LIST_BY_SITE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, TYPE, SITE_ID, NAME, MESSAGE, SHORTEN_URL, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, TYPE, SITE_ID, TITLE, CODE, CONTENT_TYPE, MESSAGE, SHORTEN_URL, PROPERTIES, STATUS, CREATED_BY "
       + "FROM SAVED_POSTS WHERE SITE_ID=?";
 
     /**
      * The query to use to select the saved posts from the SAVED_POSTS table by type.
      */
     private static final String LIST_BY_TYPE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, TYPE, SITE_ID, NAME, MESSAGE, SHORTEN_URL, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, TYPE, SITE_ID, TITLE, CODE, CONTENT_TYPE, MESSAGE, SHORTEN_URL, PROPERTIES, STATUS, CREATED_BY "
       + "FROM SAVED_POSTS WHERE TYPE=?";
 
     /**
      * The query to use to select the saved posts from the SAVED_POSTS table by content type.
      */
     private static final String LIST_BY_CONTENT_TYPE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, TYPE, SITE_ID, NAME, MESSAGE, SHORTEN_URL, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, TYPE, SITE_ID, TITLE, CODE, CONTENT_TYPE, MESSAGE, SHORTEN_URL, PROPERTIES, STATUS, CREATED_BY "
       + "FROM SAVED_POSTS WHERE SITE_ID=? AND TYPE=?";
 
     /**
@@ -124,11 +125,12 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
         table.addColumn("POSTED_DATE", Types.TIMESTAMP, false);
         table.addColumn("TYPE", Types.VARCHAR, 15, true);
         table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
-        table.addColumn("NAME", Types.VARCHAR, 128, true);
-        table.addColumn("MESSAGE", Types.VARCHAR, 512, true);
+        table.addColumn("TITLE", Types.VARCHAR, 128, true);
+        table.addColumn("CODE", Types.VARCHAR, 5, false);
+        table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, false);
+        table.addColumn("MESSAGE", Types.LONGVARCHAR, true);
         table.addColumn("SHORTEN_URL", Types.BOOLEAN, true);
         table.addColumn("PROPERTIES", Types.LONGVARCHAR, true);
-        table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("SAVED_POSTS_PK", new String[] {"ID"});
@@ -166,13 +168,20 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setPostedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 post.setSiteId(rs.getString(6));
-                post.setName(rs.getString(7));
-                post.setMessage(rs.getString(8));
-                post.setShortenUrl(rs.getBoolean(9));
-                post.setProperties(new JSONObject(getClob(rs, 10)));
-                post.setAttributes(new JSONObject(getClob(rs, 11)));
-                post.setStatus(rs.getString(12));
-                post.setCreatedBy(rs.getString(13));
+                post.setTitle(rs.getString(7));
+
+                if(post.getType() == PostType.CONTENT)
+                {
+                    SavedContentPost contentPost = (SavedContentPost)post;
+                    contentPost.setCode(rs.getString(8));
+                    contentPost.setContentType(rs.getString(9));
+                }
+
+                post.setMessage(rs.getString(10));
+                post.setShortenUrl(rs.getBoolean(11));
+                post.setProperties(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret = post;
             }
         }
@@ -205,7 +214,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
             insertStmt = prepareStatement(getConnection(), INSERT_SQL);
         clearParameters(insertStmt);
 
-        StringReader reader = null, reader2 = null;
+        StringReader reader = null;
 
         try
         {
@@ -215,17 +224,27 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
             insertStmt.setTimestamp(4, new Timestamp(post.getPostedDateMillis()), UTC);
             insertStmt.setString(5, post.getType().name());
             insertStmt.setString(6, post.getSiteId());
-            insertStmt.setString(7, post.getName());
-            insertStmt.setString(8, post.getMessage(MessageFormat.ENCODED));
-            insertStmt.setBoolean(9, post.isShortenUrl());
+            insertStmt.setString(7, post.getTitle());
+
+            String code = "";
+            String contentType = "";
+            if(post.getType() == PostType.CONTENT)
+            {
+                SavedContentPost contentPost = (SavedContentPost)post;
+                code = contentPost.getCode();
+                if(contentPost.getContentType() != null)
+                    contentType = contentPost.getContentType().name();
+            }
+            insertStmt.setString(8, code);
+            insertStmt.setString(9, contentType);
+
+            insertStmt.setString(10, post.getMessage(MessageFormat.ENCODED));
+            insertStmt.setBoolean(11, post.isShortenUrl());
             String properties = post.getPropertiesAsJson().toString();
             reader = new StringReader(properties);
-            insertStmt.setCharacterStream(10, reader, properties.length());
-            String attributes = post.getAttributes().toString();
-            reader2 = new StringReader(attributes);
-            insertStmt.setCharacterStream(11, reader2, attributes.length());
-            insertStmt.setString(12, post.getStatus().name());
-            insertStmt.setString(13, post.getCreatedBy());
+            insertStmt.setCharacterStream(12, reader, properties.length());
+            insertStmt.setString(13, post.getStatus().name());
+            insertStmt.setString(14, post.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created saved post '"+post.getId()+"' in SAVED_POSTS");
@@ -247,8 +266,6 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
         {
             if(reader != null)
                 reader.close();
-            if(reader2 != null)
-                reader2.close();
         }
     }
 
@@ -264,24 +281,34 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
         clearParameters(updateStmt);
 
-        StringReader reader = null, reader2 = null;
+        StringReader reader = null;
 
         try
         {
             updateStmt.setTimestamp(1, new Timestamp(post.getUpdatedDateMillis()), UTC);
             updateStmt.setTimestamp(2, new Timestamp(post.getPostedDateMillis()), UTC);
             updateStmt.setString(3, post.getSiteId());
-            updateStmt.setString(4, post.getName());
-            updateStmt.setString(5, post.getMessage(MessageFormat.ENCODED));
-            updateStmt.setBoolean(6, post.isShortenUrl());
+            updateStmt.setString(4, post.getTitle());
+
+            String code = "";
+            String contentType = "";
+            if(post.getType() == PostType.CONTENT)
+            {
+                SavedContentPost contentPost = (SavedContentPost)post;
+                code = contentPost.getCode();
+                if(contentPost.getContentType() != null)
+                    contentType = contentPost.getContentType().name();
+            }
+            updateStmt.setString(5, code);
+            updateStmt.setString(6, contentType);
+
+            updateStmt.setString(7, post.getMessage(MessageFormat.ENCODED));
+            updateStmt.setBoolean(8, post.isShortenUrl());
             String properties = post.getPropertiesAsJson().toString();
             reader = new StringReader(properties);
-            updateStmt.setCharacterStream(7, reader, properties.length());
-            String attributes = post.getAttributes().toString();
-            reader2 = new StringReader(attributes);
-            updateStmt.setCharacterStream(8, reader2, attributes.length());
-            updateStmt.setString(9, post.getStatus().name());
-            updateStmt.setString(10, post.getId());
+            updateStmt.setCharacterStream(9, reader, properties.length());
+            updateStmt.setString(10, post.getStatus().name());
+            updateStmt.setString(11, post.getId());
             updateStmt.executeUpdate();
 
             logger.info("Updated saved post '"+post.getId()+"' in SAVED_POSTS");
@@ -290,9 +317,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
         {
             if(reader != null)
                 reader.close();
-            if(reader2 != null)
-                reader2.close();
-        }
+          }
     }
 
     /**
@@ -325,13 +350,20 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setPostedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 post.setSiteId(rs.getString(6));
-                post.setName(rs.getString(7));
-                post.setMessage(rs.getString(8));
-                post.setShortenUrl(rs.getBoolean(9));
-                post.setProperties(new JSONObject(getClob(rs, 10)));
-                post.setAttributes(new JSONObject(getClob(rs, 11)));
-                post.setStatus(rs.getString(12));
-                post.setCreatedBy(rs.getString(13));
+                post.setTitle(rs.getString(7));
+
+                if(post.getType() == PostType.CONTENT)
+                {
+                    SavedContentPost contentPost = (SavedContentPost)post;
+                    contentPost.setCode(rs.getString(8));
+                    contentPost.setContentType(rs.getString(9));
+                }
+
+                post.setMessage(rs.getString(10));
+                post.setShortenUrl(rs.getBoolean(11));
+                post.setProperties(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret.add(post);
             }
         }
@@ -383,13 +415,20 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setPostedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 post.setSiteId(rs.getString(6));
-                post.setName(rs.getString(7));
-                post.setMessage(rs.getString(8));
-                post.setShortenUrl(rs.getBoolean(9));
-                post.setProperties(new JSONObject(getClob(rs, 10)));
-                post.setAttributes(new JSONObject(getClob(rs, 11)));
-                post.setStatus(rs.getString(12));
-                post.setCreatedBy(rs.getString(13));
+                post.setTitle(rs.getString(7));
+
+                if(post.getType() == PostType.CONTENT)
+                {
+                    SavedContentPost contentPost = (SavedContentPost)post;
+                    contentPost.setCode(rs.getString(8));
+                    contentPost.setContentType(rs.getString(9));
+                }
+
+                post.setMessage(rs.getString(10));
+                post.setShortenUrl(rs.getBoolean(11));
+                post.setProperties(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret.add(post);
             }
         }
@@ -441,13 +480,20 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setPostedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 post.setSiteId(rs.getString(6));
-                post.setName(rs.getString(7));
-                post.setMessage(rs.getString(8));
-                post.setShortenUrl(rs.getBoolean(9));
-                post.setProperties(new JSONObject(getClob(rs, 10)));
-                post.setAttributes(new JSONObject(getClob(rs, 11)));
-                post.setStatus(rs.getString(12));
-                post.setCreatedBy(rs.getString(13));
+                post.setTitle(rs.getString(7));
+
+                if(post.getType() == PostType.CONTENT)
+                {
+                    SavedContentPost contentPost = (SavedContentPost)post;
+                    contentPost.setCode(rs.getString(8));
+                    contentPost.setContentType(rs.getString(9));
+                }
+
+                post.setMessage(rs.getString(10));
+                post.setShortenUrl(rs.getBoolean(11));
+                post.setProperties(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret.add(post);
             }
         }
@@ -500,13 +546,20 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setPostedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 post.setSiteId(rs.getString(6));
-                post.setName(rs.getString(7));
-                post.setMessage(rs.getString(8));
-                post.setShortenUrl(rs.getBoolean(9));
-                post.setProperties(new JSONObject(getClob(rs, 10)));
-                post.setAttributes(new JSONObject(getClob(rs, 11)));
-                post.setStatus(rs.getString(12));
-                post.setCreatedBy(rs.getString(13));
+                post.setTitle(rs.getString(7));
+
+                if(post.getType() == PostType.CONTENT)
+                {
+                    SavedContentPost contentPost = (SavedContentPost)post;
+                    contentPost.setCode(rs.getString(8));
+                    contentPost.setContentType(rs.getString(9));
+                }
+
+                post.setMessage(rs.getString(10));
+                post.setShortenUrl(rs.getBoolean(11));
+                post.setProperties(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
 
                 if(contentType == null || post.getContentType() == contentType)
                     ret.add(post);

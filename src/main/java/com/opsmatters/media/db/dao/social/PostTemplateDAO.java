@@ -114,7 +114,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
         table.addColumn("POSTED_DATE", Types.TIMESTAMP, false);
         table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("NAME", Types.VARCHAR, 128, true);
-        table.addColumn("MESSAGE", Types.VARCHAR, 512, true);
+        table.addColumn("MESSAGE", Types.LONGVARCHAR, true);
         table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, false);
         table.addColumn("IS_DEFAULT", Types.BOOLEAN, true);
         table.addColumn("SHORTEN_URL", Types.BOOLEAN, true);

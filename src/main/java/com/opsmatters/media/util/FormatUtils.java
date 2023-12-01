@@ -124,7 +124,7 @@ public class FormatUtils
             ret = ret.replaceAll("%5[Dd]", "]");
 
             // Remove other special characters
-            ret = ret.replaceAll("%22|%23|%25|%27|%2[Cc]|%3[Bb]|%3[Ff]|%7[Cc]", "");
+            ret = ret.replaceAll("%22|%23|%25|%27|%2[Cc]|%3[Bb]|%3[Ff]|%3A|%7[Cc]", "");
 
             // Remove escape sequences
             ret = ret.replaceAll("%[Ee]2%80%[0-9a-fA-F]{2}", ""); // %E2%80%xx

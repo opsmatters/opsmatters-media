@@ -93,28 +93,6 @@ public class DraftStandardPost extends DraftPost
     }
 
     /**
-     * Returns the attributes as a JSON object.
-     */
-    @Override
-    public JSONObject getAttributes()
-    {
-        JSONObject ret = super.getAttributes();
-
-        ret.putOpt(TITLE, getTitle());
-
-        return ret;
-    }
-
-    /**
-     * Initialise the attributes using a JSON object.
-     */
-    @Override
-    public void setAttributes(JSONObject obj)
-    {
-        setTitle(obj.optString(TITLE));
-    }
-
-    /**
      * Returns the post title.
      */
     @Override
@@ -126,6 +104,7 @@ public class DraftStandardPost extends DraftPost
     /**
      * Sets the post title.
      */
+    @Override
     public void setTitle(String title)
     {
         this.title = title;

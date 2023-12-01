@@ -155,6 +155,7 @@ public class DraftContentPost extends DraftPost
     @Override
     public void setAttributes(JSONObject obj)
     {
+        super.setAttributes(obj);
         setCode(obj.optString(ORGANISATION));
         setContentType(obj.optString(CONTENT_TYPE));
         setContentId(obj.optInt(CONTENT_ID));
@@ -224,7 +225,7 @@ public class DraftContentPost extends DraftPost
      */
     public void setContentType(String contentType)
     {
-        setContentType(ContentType.valueOf(contentType));
+        setContentType(contentType != null ? ContentType.valueOf(contentType) : null);
     }
 
     /**
@@ -333,6 +334,7 @@ public class DraftContentPost extends DraftPost
     /**
      * Sets the post title.
      */
+    @Override
     public void setTitle(String title)
     {
         getProperties().put(TITLE, title);

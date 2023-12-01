@@ -15,7 +15,6 @@
  */
 package com.opsmatters.media.model.social;
 
-import com.opsmatters.media.model.BaseEntityItem;
 import com.opsmatters.media.model.DeliveryStatus;
 
 /**
@@ -23,7 +22,7 @@ import com.opsmatters.media.model.DeliveryStatus;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ChannelPostItem extends BaseEntityItem<ChannelPost>
+public class ChannelPostItem extends SocialPostItem<ChannelPost>
 {
     private ChannelPost content = new ChannelPost();
 
@@ -76,22 +75,6 @@ public class ChannelPostItem extends BaseEntityItem<ChannelPost>
     public ChannelPost get()
     {
         return content;
-    }
-
-    /**
-     * Returns the post organisation.
-     */
-    public String getSiteId()
-    {
-        return content.getSiteId();
-    }
-
-    /**
-     * Sets the post organisation.
-     */
-    public void setSiteId(String siteId)
-    {
-        content.setSiteId(siteId);
     }
 
     /**

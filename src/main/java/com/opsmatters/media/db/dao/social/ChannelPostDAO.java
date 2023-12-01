@@ -48,7 +48,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
      */
     private static final String GET_BY_ID_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
-      + "CODE, CONTENT_TYPE, TITLE, ATTRIBUTES, STATUS, CREATED_BY "
+      + "CODE, CONTENT_TYPE, TITLE, MESSAGE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM CHANNEL_POSTS WHERE ID=?";
 
     /**
@@ -57,15 +57,15 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
     private static final String INSERT_SQL =  
       "INSERT INTO CHANNEL_POSTS"
       + "( ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
-      + "CODE, CONTENT_TYPE, TITLE, ATTRIBUTES, STATUS, CREATED_BY, SESSION_ID )"
+      + "CODE, CONTENT_TYPE, TITLE, MESSAGE, ATTRIBUTES, STATUS, CREATED_BY, SESSION_ID )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a post in the CHANNEL_POSTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CHANNEL_POSTS SET UPDATED_DATE=?, ATTRIBUTES=?, STATUS=?, SESSION_ID=? "
+      "UPDATE CHANNEL_POSTS SET UPDATED_DATE=?, MESSAGE=?, ATTRIBUTES=?, STATUS=?, SESSION_ID=? "
       + "WHERE ID=?";
 
     /**
@@ -80,7 +80,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
      */
     private static final String LIST_BY_STATUS_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
-      + "CODE, CONTENT_TYPE, TITLE, ATTRIBUTES, STATUS, CREATED_BY "
+      + "CODE, CONTENT_TYPE, TITLE, MESSAGE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM CHANNEL_POSTS WHERE STATUS=? ORDER BY CREATED_DATE";
 
     /**
@@ -96,7 +96,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
 
     private static final String LIST_BY_STATUS_INTERVAL_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
-      + "CODE, CONTENT_TYPE, TITLE, ATTRIBUTES, STATUS, CREATED_BY "
+      + "CODE, CONTENT_TYPE, TITLE, MESSAGE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM CHANNEL_POSTS WHERE STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR UPDATED_DATE >= (NOW() + INTERVAL -? DAY)) ORDER BY CREATED_DATE";
 
     /**
@@ -111,7 +111,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
      */
     private static final String LIST_BY_SITE_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
-      + "CODE, CONTENT_TYPE, TITLE, ATTRIBUTES, STATUS, CREATED_BY "
+      + "CODE, CONTENT_TYPE, TITLE, MESSAGE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM CHANNEL_POSTS WHERE SITE_ID=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR UPDATED_DATE >= (NOW() + INTERVAL -? DAY)) ORDER BY CREATED_DATE";
 
     /**
@@ -119,7 +119,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
      */
     private static final String LIST_BY_CODE_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
-      + "CODE, CONTENT_TYPE, TITLE, ATTRIBUTES, STATUS, CREATED_BY "
+      + "CODE, CONTENT_TYPE, TITLE, MESSAGE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM CHANNEL_POSTS WHERE SITE_ID=? AND CODE=? ORDER BY CREATED_DATE";
 
     /**
@@ -127,7 +127,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
      */
     private static final String LIST_BY_DRAFT_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
-      + "CODE, CONTENT_TYPE, TITLE, ATTRIBUTES, STATUS, CREATED_BY "
+      + "CODE, CONTENT_TYPE, TITLE, MESSAGE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM CHANNEL_POSTS WHERE DRAFT_ID=?";
 
     /**
@@ -135,7 +135,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
      */
     private static final String LIST_BY_CHANNEL_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
-      + "CODE, CONTENT_TYPE, TITLE, ATTRIBUTES, STATUS, CREATED_BY "
+      + "CODE, CONTENT_TYPE, TITLE, MESSAGE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM CHANNEL_POSTS WHERE CHANNEL=? AND STATUS=? AND SESSION_ID=?";
 
     /**
@@ -174,6 +174,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
         table.addColumn("CODE", Types.VARCHAR, 5, false);
         table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, false);
         table.addColumn("TITLE", Types.VARCHAR, 256, false);
+        table.addColumn("MESSAGE", Types.LONGVARCHAR, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
@@ -220,9 +221,10 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
                 post.setTitle(rs.getString(10));
-                post.setAttributes(new JSONObject(getClob(rs, 11)));
-                post.setStatus(rs.getString(12));
-                post.setCreatedBy(rs.getString(13));
+                post.setMessage(rs.getString(11));
+                post.setAttributes(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret = post;
             }
         }
@@ -269,12 +271,13 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
             insertStmt.setString(8, post.getCode());
             insertStmt.setString(9, post.getContentType() != null ? post.getContentType().name() : "");
             insertStmt.setString(10, post.getTitle());
+            insertStmt.setString(11, post.getMessage());
             String attributes = post.getAttributes().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(11, reader, attributes.length());
-            insertStmt.setString(12, post.getStatus().name());
-            insertStmt.setString(13, post.getCreatedBy());
-            insertStmt.setInt(14, SessionId.get());
+            insertStmt.setCharacterStream(12, reader, attributes.length());
+            insertStmt.setString(13, post.getStatus().name());
+            insertStmt.setString(14, post.getCreatedBy());
+            insertStmt.setInt(15, SessionId.get());
             insertStmt.executeUpdate();
 
             logger.info("Created post '"+post.getId()+"' in CHANNEL_POSTS");
@@ -311,12 +314,13 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
         try
         {
             updateStmt.setTimestamp(1, new Timestamp(post.getUpdatedDateMillis()), UTC);
+            updateStmt.setString(2, post.getMessage());
             String attributes = post.getAttributes().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(2, reader, attributes.length());
-            updateStmt.setString(3, post.getStatus().name());
-            updateStmt.setInt(4, SessionId.get());
-            updateStmt.setString(5, post.getId());
+            updateStmt.setCharacterStream(3, reader, attributes.length());
+            updateStmt.setString(4, post.getStatus().name());
+            updateStmt.setInt(5, SessionId.get());
+            updateStmt.setString(6, post.getId());
             updateStmt.executeUpdate();
 
             logger.info("Updated post '"+post.getId()+"' in CHANNEL_POSTS");
@@ -420,9 +424,10 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
                 post.setTitle(rs.getString(10));
-                post.setAttributes(new JSONObject(getClob(rs, 11)));
-                post.setStatus(rs.getString(12));
-                post.setCreatedBy(rs.getString(13));
+                post.setMessage(rs.getString(11));
+                post.setAttributes(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret.add(post);
             }
         }
@@ -536,9 +541,10 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
                 post.setTitle(rs.getString(10));
-                post.setAttributes(new JSONObject(getClob(rs, 11)));
-                post.setStatus(rs.getString(12));
-                post.setCreatedBy(rs.getString(13));
+                post.setMessage(rs.getString(11));
+                post.setAttributes(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret.add(post);
             }
         }
@@ -654,9 +660,10 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
                 post.setTitle(rs.getString(10));
-                post.setAttributes(new JSONObject(getClob(rs, 11)));
-                post.setStatus(rs.getString(12));
-                post.setCreatedBy(rs.getString(13));
+                post.setMessage(rs.getString(11));
+                post.setAttributes(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret.add(post);
             }
         }
@@ -714,9 +721,10 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
                 post.setTitle(rs.getString(10));
-                post.setAttributes(new JSONObject(getClob(rs, 11)));
-                post.setStatus(rs.getString(12));
-                post.setCreatedBy(rs.getString(13));
+                post.setMessage(rs.getString(11));
+                post.setAttributes(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret.add(post);
             }
         }
@@ -773,9 +781,10 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
                 post.setTitle(rs.getString(10));
-                post.setAttributes(new JSONObject(getClob(rs, 11)));
-                post.setStatus(rs.getString(12));
-                post.setCreatedBy(rs.getString(13));
+                post.setMessage(rs.getString(11));
+                post.setAttributes(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret.add(post);
             }
         }
@@ -834,9 +843,10 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
                 post.setCode(rs.getString(8));
                 post.setContentType(rs.getString(9));
                 post.setTitle(rs.getString(10));
-                post.setAttributes(new JSONObject(getClob(rs, 11)));
-                post.setStatus(rs.getString(12));
-                post.setCreatedBy(rs.getString(13));
+                post.setMessage(rs.getString(11));
+                post.setAttributes(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret.add(post);
             }
         }

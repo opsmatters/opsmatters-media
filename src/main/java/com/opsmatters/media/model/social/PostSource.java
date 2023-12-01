@@ -28,8 +28,6 @@ import com.opsmatters.media.util.TimeUtils;
  */
 public abstract class PostSource extends SocialPost
 {
-    private String siteId = "";
-    private String name = "";
     private boolean shortenUrl = false;
     private Instant postedDate;
     private SourceStatus status;
@@ -42,8 +40,6 @@ public abstract class PostSource extends SocialPost
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setName(obj.getName());
-            setSiteId(obj.getSiteId());
             setShortenUrl(obj.isShortenUrl());
             setPostedDate(obj.getPostedDate());
             setStatus(obj.getStatus());
@@ -61,34 +57,7 @@ public abstract class PostSource extends SocialPost
     /**
      * Returns the post name.
      */
-    public String getName()
-    {
-        return name;
-    }
-
-    /**
-     * Sets the post name.
-     */
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    /**
-     * Returns the site id.
-     */
-    public String getSiteId()
-    {
-        return siteId;
-    }
-
-    /**
-     * Sets the site id.
-     */
-    public void setSiteId(String siteId)
-    {
-        this.siteId = siteId;
-    }
+    public abstract String getName();
 
     /**
      * Returns <CODE>true</CODE> if the post URL should be automatically shortened.

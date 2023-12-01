@@ -24,6 +24,7 @@ public abstract class PostTemplate extends PostSource
 {
     public static final String DEFAULT = "New Template";
 
+    private String name = "";
     private boolean isDefault = false;
 
     /**
@@ -34,8 +35,26 @@ public abstract class PostTemplate extends PostSource
         if(obj != null)
         {
             super.copyAttributes(obj);
+            setName(obj.getName());
             setDefault(obj.isDefault());
         }
+    }
+
+    /**
+     * Returns the post name.
+     */
+    @Override
+    public String getName()
+    {
+        return name;
+    }
+
+    /**
+     * Sets the post name.
+     */
+    public void setName(String name)
+    {
+        this.name = name;
     }
 
     /**

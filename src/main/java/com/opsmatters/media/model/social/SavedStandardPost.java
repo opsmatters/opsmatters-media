@@ -15,11 +15,7 @@
  */
 package com.opsmatters.media.model.social;
 
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.Iterator;
 import java.time.Instant;
-import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.util.StringUtils;
 
@@ -30,8 +26,6 @@ import com.opsmatters.media.util.StringUtils;
  */
 public class SavedStandardPost extends SavedPost
 {
-    private Map<String,String> properties = new LinkedHashMap<String,String>();
-
     /**
      * Default constructor.
      */
@@ -40,14 +34,14 @@ public class SavedStandardPost extends SavedPost
     }
 
     /**
-     * Constructor that takes a site and name.
+     * Constructor that takes a site and title.
      */
-    public SavedStandardPost(Site site, String name)
+    public SavedStandardPost(Site site, String title)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setSiteId(site.getId());
-        setName(name);
+        setTitle(title);
         setStatus(SourceStatus.NEW);
     }
 
@@ -67,7 +61,6 @@ public class SavedStandardPost extends SavedPost
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setProperties(obj.getProperties());
         }
     }
 
@@ -78,117 +71,5 @@ public class SavedStandardPost extends SavedPost
     public PostType getType()
     {
         return PostType.STANDARD;
-    }
-
-    /**
-     * Returns the attributes as a JSON object.
-     */
-    @Override
-    public JSONObject getAttributes()
-    {
-        return new JSONObject();
-    }
-
-    /**
-     * Initialise the attributes using a JSON object.
-     */
-    @Override
-    public void setAttributes(JSONObject obj)
-    {
-    }
-
-    /**
-     * Returns the post properties.
-     */
-    public Map<String,String> getProperties()
-    {
-        return properties;
-    }
-
-    /**
-     * Returns the post properties as a JSON object.
-     */
-    public JSONObject getPropertiesAsJson()
-    {
-        return new JSONObject(getProperties());
-    }
-
-    /**
-     * Sets the post properties.
-     */
-    public void setProperties(Map<String,String> properties)
-    {
-        this.properties.clear();
-        this.properties.putAll(properties);
-    }
-
-    /**
-     * Sets the post properties from a JSON object.
-     */
-    public void setProperties(JSONObject obj)
-    {
-        getProperties().clear();
-        Iterator<String> keys = obj.keys();
-        while(keys.hasNext())
-        {
-            String key = keys.next();
-            getProperties().put(key, obj.getString(key));
-        }
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the given post property has been set.
-     */
-    public boolean hasProperty(String key)
-    {
-        return getProperties().containsKey(key);
-    }
-
-    /**
-     * Returns the post hashtags.
-     */
-    public String getHashtags()
-    {
-        return getProperties().get(HASHTAGS);
-    }
-
-    /**
-     * Sets the post hashtags.
-     */
-    public void setHashtags(String hashtags)
-    {
-        getProperties().put(HASHTAGS, hashtags);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the post hashtags have been set.
-     */
-    public boolean hasHashtags()
-    {
-        return getHashtags() != null && getHashtags().length() > 0;
-    }
-
-    /**
-     * Returns the post URL.
-     */
-    public String getUrl()
-    {
-        return getProperties().get(URL);
-    }
-
-    /**
-     * Sets the post URL.
-     */
-    public void setUrl(String url)
-    {
-        getProperties().put(URL, url);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the post URL has been set.
-     */
-    public boolean hasUrl()
-    {
-        return getUrl() != null && getUrl().length() > 0;
     }
 }

@@ -15,11 +15,7 @@
  */
 package com.opsmatters.media.model.social;
 
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.Iterator;
 import java.time.Instant;
-import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
@@ -36,7 +32,6 @@ public class SavedContentPost extends SavedPost
     private String code = "";
     private String organisation = "";
     private ContentType contentType;
-    private Map<String,String> properties = new LinkedHashMap<String,String>();
 
     /**
      * Default constructor.
@@ -54,7 +49,7 @@ public class SavedContentPost extends SavedPost
         setCreatedDate(Instant.now());
         setPostedDate(post.getUpdatedDate());
         setSiteId(site.getId());
-        setName(post.getTitle());
+        setTitle(post.getTitle());
         setCode(post.getCode());
         setContentType(post.getContentType());
         setMessage(message);
@@ -86,7 +81,6 @@ public class SavedContentPost extends SavedPost
             setCode(obj.getCode());
             setOrganisation(obj.getOrganisation());
             setContentType(obj.getContentType());
-            setProperties(obj.getProperties());
         }
     }
 
@@ -97,30 +91,6 @@ public class SavedContentPost extends SavedPost
     public PostType getType()
     {
         return PostType.CONTENT;
-    }
-
-    /**
-     * Returns the attributes as a JSON object.
-     */
-    @Override
-    public JSONObject getAttributes()
-    {
-        JSONObject ret = new JSONObject();
-
-        ret.putOpt(ORGANISATION, getCode());
-        ret.putOpt(CONTENT_TYPE, getContentType().name());
-
-        return ret;
-    }
-
-    /**
-     * Initialise the attributes using a JSON object.
-     */
-    @Override
-    public void setAttributes(JSONObject obj)
-    {
-        setCode(obj.optString(ORGANISATION));
-        setContentType(obj.optString(CONTENT_TYPE));
     }
 
     /**
@@ -198,7 +168,7 @@ public class SavedContentPost extends SavedPost
     {
         try
         {
-            setContentType(ContentType.valueOf(contentType));
+            setContentType(contentType != null ? ContentType.valueOf(contentType) : null);
         }
         catch(IllegalArgumentException e)
         {
@@ -220,100 +190,5 @@ public class SavedContentPost extends SavedPost
     public void setContentTypeValue(String contentType)
     {
         setContentType(ContentType.fromValue(contentType));
-    }
-
-    /**
-     * Returns the post properties.
-     */
-    public Map<String,String> getProperties()
-    {
-        return properties;
-    }
-
-    /**
-     * Returns the post properties as a JSON object.
-     */
-    public JSONObject getPropertiesAsJson()
-    {
-        return new JSONObject(getProperties());
-    }
-
-    /**
-     * Sets the post properties.
-     */
-    public void setProperties(Map<String,String> properties)
-    {
-        this.properties.clear();
-        this.properties.putAll(properties);
-    }
-
-    /**
-     * Sets the post properties from a JSON object.
-     */
-    public void setProperties(JSONObject obj)
-    {
-        getProperties().clear();
-        Iterator<String> keys = obj.keys();
-        while(keys.hasNext())
-        {
-            String key = keys.next();
-            getProperties().put(key, obj.getString(key));
-        }
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the given post property has been set.
-     */
-    public boolean hasProperty(String key)
-    {
-        return getProperties().containsKey(key);
-    }
-
-    /**
-     * Returns the post hashtags.
-     */
-    public String getHashtags()
-    {
-        return getProperties().get(HASHTAGS);
-    }
-
-    /**
-     * Sets the post hashtags.
-     */
-    public void setHashtags(String hashtags)
-    {
-        getProperties().put(HASHTAGS, hashtags);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the post hashtags have been set.
-     */
-    public boolean hasHashtags()
-    {
-        return getHashtags() != null && getHashtags().length() > 0;
-    }
-
-    /**
-     * Returns the post URL.
-     */
-    public String getUrl()
-    {
-        return getProperties().get(URL);
-    }
-
-    /**
-     * Sets the post URL.
-     */
-    public void setUrl(String url)
-    {
-        getProperties().put(URL, url);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the post URL has been set.
-     */
-    public boolean hasUrl()
-    {
-        return getUrl() != null && getUrl().length() > 0;
     }
 }

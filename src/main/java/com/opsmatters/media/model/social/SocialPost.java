@@ -37,6 +37,7 @@ public abstract class SocialPost extends OwnedEntity
     public static final String CONTENT_TYPE = "content-type";
     public static final String CONTENT_ID = "content-id";
 
+    private String siteId = "";
     private String message = "";
 
     /**
@@ -47,6 +48,7 @@ public abstract class SocialPost extends OwnedEntity
         if(obj != null)
         {
             super.copyAttributes(obj);
+            setSiteId(obj.getSiteId());
             setMessage(obj.getMessage());
         }
     }
@@ -55,6 +57,22 @@ public abstract class SocialPost extends OwnedEntity
      * Returns the post type.
      */
     public abstract PostType getType();
+
+    /**
+     * Returns the site id.
+     */
+    public String getSiteId()
+    {
+        return siteId;
+    }
+
+    /**
+     * Sets the site id.
+     */
+    public void setSiteId(String siteId)
+    {
+        this.siteId = siteId;
+    }
 
     /**
      * Returns the post message.

@@ -45,7 +45,6 @@ public class ChannelPost extends SocialPost
 {
     private static final Logger logger = Logger.getLogger(ChannelPost.class.getName());
 
-    private String siteId = "";
     private String draftId = "";
     private String code = "";
     private String organisation = "";
@@ -130,7 +129,6 @@ public class ChannelPost extends SocialPost
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setSiteId(obj.getSiteId());
             setDraftId(obj.getDraftId());
             setCode(obj.getCode());
             setOrganisation(obj.getOrganisation() != null ? obj.getOrganisation() : "");
@@ -153,8 +151,6 @@ public class ChannelPost extends SocialPost
     {
         JSONObject ret = new JSONObject();
 
-        ret.putOpt(FieldName.TITLE.value(), getTitle());
-        ret.putOpt(FieldName.MESSAGE.value(), getMessage());
         ret.putOpt(FieldName.EXTERNAL_ID.value(), getExternalId());
         if(getScheduledDate() != null)
             ret.put(FieldName.SCHEDULED_DATE.value(), getScheduledDateMillis());
@@ -178,8 +174,6 @@ public class ChannelPost extends SocialPost
      */
     public void setAttributes(JSONObject obj)
     {
-        setTitle(obj.optString(FieldName.TITLE.value()));
-        setMessage(obj.optString(FieldName.MESSAGE.value()));
         setExternalId(obj.optString(FieldName.EXTERNAL_ID.value()));
         long scheduledDateMillis = obj.optLong(FieldName.SCHEDULED_DATE.value());
         if(scheduledDateMillis > 0L)
@@ -193,22 +187,6 @@ public class ChannelPost extends SocialPost
             setContentType(obj.optString(FieldName.CONTENT_TYPE.value()));
             setContentId(obj.optInt(FieldName.CONTENT_ID.value()));
         }
-    }
-
-    /**
-     * Returns the site id.
-     */
-    public String getSiteId()
-    {
-        return siteId;
-    }
-
-    /**
-     * Sets the site id.
-     */
-    public void setSiteId(String siteId)
-    {
-        this.siteId = siteId;
     }
 
     /**

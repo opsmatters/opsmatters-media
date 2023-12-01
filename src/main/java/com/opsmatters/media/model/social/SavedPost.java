@@ -30,6 +30,7 @@ public abstract class SavedPost extends PostSource
 {
     public static final String DEFAULT = "New Post";
 
+    private String title = "";
     private Map<String,String> properties = new LinkedHashMap<String,String>();
 
     /**
@@ -40,19 +41,43 @@ public abstract class SavedPost extends PostSource
         if(obj != null)
         {
             super.copyAttributes(obj);
+            setTitle(obj.getTitle());
             setProperties(obj.getProperties());
         }
     }
 
     /**
-     * Returns the attributes as a JSON object.
+     * Returns the title.
      */
-    public abstract JSONObject getAttributes();
+    public String toString()
+    {
+        return getTitle();
+    }
 
     /**
-     * Initialise the attributes using a JSON object.
+     * Returns the post title.
      */
-    public abstract void setAttributes(JSONObject obj);
+    @Override
+    public String getName()
+    {
+        return getTitle();
+    }
+
+    /**
+     * Returns the post title.
+     */
+    public String getTitle()
+    {
+        return title;
+    }
+
+    /**
+     * Sets the post title.
+     */
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
 
     /**
      * Returns the post content type.

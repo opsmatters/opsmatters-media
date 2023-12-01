@@ -50,7 +50,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
      * The query to use to select a post from the DRAFT_POSTS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, CODE, CONTENT_TYPE, TITLE, MESSAGE, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM DRAFT_POSTS WHERE ID=?";
 
 
@@ -59,71 +59,71 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO DRAFT_POSTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, CODE, CONTENT_TYPE, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY, SESSION_ID )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, CODE, CONTENT_TYPE, TITLE, MESSAGE, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY, SESSION_ID )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a post in the DRAFT_POSTS table.
      */
     private static final String UPDATE_SQL =
-      "UPDATE DRAFT_POSTS SET UPDATED_DATE=?, SITE_ID=?, SOURCE_ID=?, PROPERTIES=?, ATTRIBUTES=?, STATUS=?, SESSION_ID=? "
+      "UPDATE DRAFT_POSTS SET UPDATED_DATE=?, SITE_ID=?, SOURCE_ID=?, TITLE=?, MESSAGE=?, PROPERTIES=?, ATTRIBUTES=?, STATUS=?, SESSION_ID=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the posts from the DRAFT_POSTS table by type and interval.
      */
     private static final String LIST_BY_TYPE_INTERVAL_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, CODE, CONTENT_TYPE, TITLE, MESSAGE, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM DRAFT_POSTS WHERE TYPE=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS != 'PROCESSED') ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the DRAFT_POSTS table by type, status and interval.
      */
     private static final String LIST_BY_TYPE_STATUS_INTERVAL_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, CODE, CONTENT_TYPE, TITLE, MESSAGE, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM DRAFT_POSTS WHERE TYPE=? AND STATUS=? AND CREATED_DATE >= (NOW() + INTERVAL -? DAY) ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the DRAFT_POSTS table by type and status.
      */
     private static final String LIST_BY_TYPE_STATUS_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, CODE, CONTENT_TYPE, TITLE, MESSAGE, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM DRAFT_POSTS WHERE TYPE=? AND STATUS=? ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the DRAFT_POSTS table by site.
      */
     private static final String LIST_BY_SITE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, CODE, CONTENT_TYPE, TITLE, MESSAGE, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM DRAFT_POSTS WHERE SITE_ID=? ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the DRAFT_POSTS table by site and type.
      */
     private static final String LIST_BY_SITE_TYPE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, CODE, CONTENT_TYPE, TITLE, MESSAGE, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM DRAFT_POSTS WHERE SITE_ID=? AND TYPE=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS IN ('NEW','REPOSTED')) ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the DRAFT_POSTS table by status.
      */
     private static final String LIST_BY_STATUS_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, CODE, CONTENT_TYPE, TITLE, MESSAGE, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM DRAFT_POSTS WHERE STATUS=? ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the DRAFT_POSTS table by source id.
      */
     private static final String LIST_BY_SOURCE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, CODE, CONTENT_TYPE, TITLE, MESSAGE, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM DRAFT_POSTS WHERE TYPE=? AND SOURCE_ID=? ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the DRAFT_POSTS table by site, code and content type.
      */
     private static final String LIST_BY_CONTENT_TYPE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, CODE, CONTENT_TYPE, TITLE, MESSAGE, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM DRAFT_POSTS WHERE SITE_ID=? AND CODE=? AND CONTENT_TYPE=? AND (SESSION_ID=? OR STATUS IN ('NEW','REPOSTED')) ORDER BY CREATED_DATE";
 
     /**
@@ -160,6 +160,8 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
         table.addColumn("SOURCE_ID", Types.VARCHAR, 36, false);
         table.addColumn("CODE", Types.VARCHAR, 5, false);
         table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, false);
+        table.addColumn("TITLE", Types.VARCHAR, 256, false);
+        table.addColumn("MESSAGE", Types.LONGVARCHAR, true);
         table.addColumn("PROPERTIES", Types.LONGVARCHAR, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
@@ -201,10 +203,20 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setSiteId(rs.getString(5));
                 post.setSourceId(rs.getString(6));
-                post.setProperties(new JSONObject(getClob(rs, 7)));
-                post.setAttributes(new JSONObject(getClob(rs, 8)));
-                post.setStatus(rs.getString(9));
-                post.setCreatedBy(rs.getString(10));
+
+                if(post.getType() == PostType.CONTENT)
+                {
+                    DraftContentPost contentPost = (DraftContentPost)post;
+                    contentPost.setCode(rs.getString(7));
+                    contentPost.setContentType(rs.getString(8));
+                }
+
+                post.setTitle(rs.getString(9));
+                post.setMessage(rs.getString(10));
+                post.setProperties(new JSONObject(getClob(rs, 11)));
+                post.setAttributes(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret = post;
             }
         }
@@ -247,6 +259,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
             insertStmt.setString(4, post.getType().name());
             insertStmt.setString(5, post.getSiteId());
             insertStmt.setString(6, post.getSourceId());
+
             String code = "";
             String contentType = "";
             if(post.getType() == PostType.CONTENT)
@@ -256,18 +269,21 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
                 if(contentPost.getContentType() != null)
                     contentType = contentPost.getContentType().name();
             }
+
             insertStmt.setString(7, code);
             insertStmt.setString(8, contentType);
+            insertStmt.setString(9, post.getTitle());
+            insertStmt.setString(10, post.getMessage());
 
             String properties = post.getPropertiesAsJson().toString();
             reader = new StringReader(properties);
-            insertStmt.setCharacterStream(9, reader, properties.length());
+            insertStmt.setCharacterStream(11, reader, properties.length());
             String attributes = post.getAttributes().toString();
             reader2 = new StringReader(attributes);
-            insertStmt.setCharacterStream(10, reader2, attributes.length());
-            insertStmt.setString(11, post.getStatus().name());
-            insertStmt.setString(12, post.getCreatedBy());
-            insertStmt.setInt(13, SessionId.get());
+            insertStmt.setCharacterStream(12, reader2, attributes.length());
+            insertStmt.setString(13, post.getStatus().name());
+            insertStmt.setString(14, post.getCreatedBy());
+            insertStmt.setInt(15, SessionId.get());
             insertStmt.executeUpdate();
 
             logger.info("Created post '"+post.getId()+"' in DRAFT_POSTS");
@@ -313,15 +329,17 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
             updateStmt.setTimestamp(1, new Timestamp(post.getUpdatedDateMillis()), UTC);
             updateStmt.setString(2, post.getSiteId());
             updateStmt.setString(3, post.getSourceId());
+            updateStmt.setString(4, post.getTitle());
+            updateStmt.setString(5, post.getMessage());
             String properties = post.getPropertiesAsJson().toString();
             reader = new StringReader(properties);
-            updateStmt.setCharacterStream(4, reader, properties.length());
+            updateStmt.setCharacterStream(6, reader, properties.length());
             String attributes = post.getAttributes().toString();
             reader2 = new StringReader(attributes);
-            updateStmt.setCharacterStream(5, reader2, attributes.length());
-            updateStmt.setString(6, post.getStatus().name());
-            updateStmt.setInt(7, SessionId.get());
-            updateStmt.setString(8, post.getId());
+            updateStmt.setCharacterStream(7, reader2, attributes.length());
+            updateStmt.setString(8, post.getStatus().name());
+            updateStmt.setInt(9, SessionId.get());
+            updateStmt.setString(10, post.getId());
             updateStmt.executeUpdate();
 
             logger.info("Updated post '"+post.getId()+"' in DRAFT_POSTS");
@@ -367,10 +385,20 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setSiteId(rs.getString(5));
                 post.setSourceId(rs.getString(6));
-                post.setProperties(new JSONObject(getClob(rs, 7)));
-                post.setAttributes(new JSONObject(getClob(rs, 8)));
-                post.setStatus(rs.getString(9));
-                post.setCreatedBy(rs.getString(10));
+
+                if(post.getType() == PostType.CONTENT)
+                {
+                    DraftContentPost contentPost = (DraftContentPost)post;
+                    contentPost.setCode(rs.getString(7));
+                    contentPost.setContentType(rs.getString(8));
+                }
+
+                post.setTitle(rs.getString(9));
+                post.setMessage(rs.getString(10));
+                post.setProperties(new JSONObject(getClob(rs, 11)));
+                post.setAttributes(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret.add(post);
             }
         }
@@ -424,10 +452,20 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setSiteId(rs.getString(5));
                 post.setSourceId(rs.getString(6));
-                post.setProperties(new JSONObject(getClob(rs, 7)));
-                post.setAttributes(new JSONObject(getClob(rs, 8)));
-                post.setStatus(rs.getString(9));
-                post.setCreatedBy(rs.getString(10));
+
+                if(post.getType() == PostType.CONTENT)
+                {
+                    DraftContentPost contentPost = (DraftContentPost)post;
+                    contentPost.setCode(rs.getString(7));
+                    contentPost.setContentType(rs.getString(8));
+                }
+
+                post.setTitle(rs.getString(9));
+                post.setMessage(rs.getString(10));
+                post.setProperties(new JSONObject(getClob(rs, 11)));
+                post.setAttributes(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret.add(post);
             }
         }
@@ -480,10 +518,20 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setSiteId(rs.getString(5));
                 post.setSourceId(rs.getString(6));
-                post.setProperties(new JSONObject(getClob(rs, 7)));
-                post.setAttributes(new JSONObject(getClob(rs, 8)));
-                post.setStatus(rs.getString(9));
-                post.setCreatedBy(rs.getString(10));
+
+                if(post.getType() == PostType.CONTENT)
+                {
+                    DraftContentPost contentPost = (DraftContentPost)post;
+                    contentPost.setCode(rs.getString(7));
+                    contentPost.setContentType(rs.getString(8));
+                }
+
+                post.setTitle(rs.getString(9));
+                post.setMessage(rs.getString(10));
+                post.setProperties(new JSONObject(getClob(rs, 11)));
+                post.setAttributes(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret.add(post);
             }
         }
@@ -535,10 +583,20 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setSiteId(rs.getString(5));
                 post.setSourceId(rs.getString(6));
-                post.setProperties(new JSONObject(getClob(rs, 7)));
-                post.setAttributes(new JSONObject(getClob(rs, 8)));
-                post.setStatus(rs.getString(9));
-                post.setCreatedBy(rs.getString(10));
+
+                if(post.getType() == PostType.CONTENT)
+                {
+                    DraftContentPost contentPost = (DraftContentPost)post;
+                    contentPost.setCode(rs.getString(7));
+                    contentPost.setContentType(rs.getString(8));
+                }
+
+                post.setTitle(rs.getString(9));
+                post.setMessage(rs.getString(10));
+                post.setProperties(new JSONObject(getClob(rs, 11)));
+                post.setAttributes(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret.add(post);
             }
         }
@@ -592,10 +650,20 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setSiteId(rs.getString(5));
                 post.setSourceId(rs.getString(6));
-                post.setProperties(new JSONObject(getClob(rs, 7)));
-                post.setAttributes(new JSONObject(getClob(rs, 8)));
-                post.setStatus(rs.getString(9));
-                post.setCreatedBy(rs.getString(10));
+
+                if(post.getType() == PostType.CONTENT)
+                {
+                    DraftContentPost contentPost = (DraftContentPost)post;
+                    contentPost.setCode(rs.getString(7));
+                    contentPost.setContentType(rs.getString(8));
+                }
+
+                post.setTitle(rs.getString(9));
+                post.setMessage(rs.getString(10));
+                post.setProperties(new JSONObject(getClob(rs, 11)));
+                post.setAttributes(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret.add(post);
             }
         }
@@ -647,10 +715,20 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setSiteId(rs.getString(5));
                 post.setSourceId(rs.getString(6));
-                post.setProperties(new JSONObject(getClob(rs, 7)));
-                post.setAttributes(new JSONObject(getClob(rs, 8)));
-                post.setStatus(rs.getString(9));
-                post.setCreatedBy(rs.getString(10));
+
+                if(post.getType() == PostType.CONTENT)
+                {
+                    DraftContentPost contentPost = (DraftContentPost)post;
+                    contentPost.setCode(rs.getString(7));
+                    contentPost.setContentType(rs.getString(8));
+                }
+
+                post.setTitle(rs.getString(9));
+                post.setMessage(rs.getString(10));
+                post.setProperties(new JSONObject(getClob(rs, 11)));
+                post.setAttributes(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret.add(post);
             }
         }
@@ -703,10 +781,20 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setSiteId(rs.getString(5));
                 post.setSourceId(rs.getString(6));
-                post.setProperties(new JSONObject(getClob(rs, 7)));
-                post.setAttributes(new JSONObject(getClob(rs, 8)));
-                post.setStatus(rs.getString(9));
-                post.setCreatedBy(rs.getString(10));
+
+                if(post.getType() == PostType.CONTENT)
+                {
+                    DraftContentPost contentPost = (DraftContentPost)post;
+                    contentPost.setCode(rs.getString(7));
+                    contentPost.setContentType(rs.getString(8));
+                }
+
+                post.setTitle(rs.getString(9));
+                post.setMessage(rs.getString(10));
+                post.setProperties(new JSONObject(getClob(rs, 11)));
+                post.setAttributes(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret.add(post);
             }
         }
@@ -761,10 +849,20 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setSiteId(rs.getString(5));
                 post.setSourceId(rs.getString(6));
-                post.setProperties(new JSONObject(getClob(rs, 7)));
-                post.setAttributes(new JSONObject(getClob(rs, 8)));
-                post.setStatus(rs.getString(9));
-                post.setCreatedBy(rs.getString(10));
+
+                if(post.getType() == PostType.CONTENT)
+                {
+                    DraftContentPost contentPost = (DraftContentPost)post;
+                    contentPost.setCode(rs.getString(7));
+                    contentPost.setContentType(rs.getString(8));
+                }
+
+                post.setTitle(rs.getString(9));
+                post.setMessage(rs.getString(10));
+                post.setProperties(new JSONObject(getClob(rs, 11)));
+                post.setAttributes(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret.add(post);
             }
         }
