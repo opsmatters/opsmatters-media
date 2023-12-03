@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.monitor.ContentAlert;
+import com.opsmatters.media.model.monitor.ContentAlertItem;
 import com.opsmatters.media.model.monitor.AlertStatus;
 import com.opsmatters.media.util.SessionId;
 
@@ -70,6 +71,14 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
       + "WHERE CREATED_DATE >= (NOW() + INTERVAL -30 DAY) OR STATUS='NEW' ORDER BY CREATED_DATE";
 
     /**
+     * The query to use to select the alert items from the CONTENT_ALERTS table.
+     */
+    private static final String LIST_ITEMS_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, REASON, STATUS, MONITOR_ID "
+      + "FROM CONTENT_ALERTS "
+      + "WHERE CREATED_DATE >= (NOW() + INTERVAL -30 DAY) OR STATUS='NEW' ORDER BY CREATED_DATE";
+
+    /**
      * The query to use to select the alerts from the CONTENT_ALERTS table by organisation.
      */
     private static final String LIST_BY_CODE_SQL =  
@@ -78,10 +87,10 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
       + "WHERE CODE=? ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to select the alerts from the CONTENT_ALERTS table by status.
+     * The query to use to select the alert items from the CONTENT_ALERTS table by status.
      */
-    private static final String LIST_BY_STATUS_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, START_DATE, CODE, REASON, ATTRIBUTES, STATUS, MONITOR_ID, CREATED_BY "
+    private static final String LIST_ITEMS_BY_STATUS_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, REASON, STATUS, MONITOR_ID "
       + "FROM CONTENT_ALERTS "
       + "WHERE STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -30 DAY) OR STATUS='NEW') ORDER BY CREATED_DATE";
 
@@ -327,6 +336,58 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
     }
 
     /**
+     * Returns the alert items from the CONTENT_ALERTS table.
+     */
+    public synchronized List<ContentAlertItem> listItems() throws SQLException
+    {
+        List<ContentAlertItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listItemsStmt == null)
+            listItemsStmt = prepareStatement(getConnection(), LIST_ITEMS_SQL);
+        clearParameters(listItemsStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listItemsStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listItemsStmt.executeQuery();
+            ret = new ArrayList<ContentAlertItem>();
+            while(rs.next())
+            {
+                ContentAlertItem alert = new ContentAlertItem();
+                alert.setId(rs.getString(1));
+                alert.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                alert.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                alert.setCode(rs.getString(4));
+                alert.setReason(rs.getString(5));
+                alert.setStatus(rs.getString(6));
+                alert.setMonitorId(rs.getString(7));
+                ret.add(alert);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the alerts from the CONTENT_ALERTS table by organisation.
      */
     public synchronized List<ContentAlert> list(String code) throws SQLException
@@ -347,7 +408,7 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
         {
             listByCodeStmt.setString(1, code);
             listByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = listByStatusStmt.executeQuery();
+            rs = listByCodeStmt.executeQuery();
             ret = new ArrayList<ContentAlert>();
             while(rs.next())
             {
@@ -383,41 +444,38 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
     }
 
     /**
-     * Returns the alerts from the CONTENT_ALERTS table by status.
+     * Returns the alert items from the CONTENT_ALERTS table by status.
      */
-    public synchronized List<ContentAlert> list(AlertStatus status) throws SQLException
+    public synchronized List<ContentAlertItem> listItems(AlertStatus status) throws SQLException
     {
-        List<ContentAlert> ret = null;
+        List<ContentAlertItem> ret = null;
 
         if(!hasConnection())
             return ret;
 
         preQuery();
-        if(listByStatusStmt == null)
-            listByStatusStmt = prepareStatement(getConnection(), LIST_BY_STATUS_SQL);
-        clearParameters(listByStatusStmt);
+        if(listItemsByStatusStmt == null)
+            listItemsByStatusStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_STATUS_SQL);
+        clearParameters(listItemsByStatusStmt);
 
         ResultSet rs = null;
 
         try
         {
-            listByStatusStmt.setString(1, status.name());
-            listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = listByStatusStmt.executeQuery();
-            ret = new ArrayList<ContentAlert>();
+            listItemsByStatusStmt.setString(1, status.name());
+            listItemsByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listItemsByStatusStmt.executeQuery();
+            ret = new ArrayList<ContentAlertItem>();
             while(rs.next())
             {
-                ContentAlert alert = new ContentAlert();
+                ContentAlertItem alert = new ContentAlertItem();
                 alert.setId(rs.getString(1));
                 alert.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 alert.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                alert.setStartDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
-                alert.setCode(rs.getString(5));
-                alert.setReason(rs.getString(6));
-                alert.setAttributes(new JSONObject(getClob(rs, 7)));
-                alert.setStatus(rs.getString(8));
-                alert.setMonitorId(rs.getString(9));
-                alert.setCreatedBy(rs.getString(10));
+                alert.setCode(rs.getString(4));
+                alert.setReason(rs.getString(5));
+                alert.setStatus(rs.getString(6));
+                alert.setMonitorId(rs.getString(7));
                 ret.add(alert);
             }
         }
@@ -488,10 +546,12 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
+        closeStatement(listItemsStmt);
+        listItemsStmt = null;
         closeStatement(listByCodeStmt);
         listByCodeStmt = null;
-        closeStatement(listByStatusStmt);
-        listByStatusStmt = null;
+        closeStatement(listItemsByStatusStmt);
+        listItemsByStatusStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -502,8 +562,9 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
+    private PreparedStatement listItemsStmt;
     private PreparedStatement listByCodeStmt;
-    private PreparedStatement listByStatusStmt;
+    private PreparedStatement listItemsByStatusStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }

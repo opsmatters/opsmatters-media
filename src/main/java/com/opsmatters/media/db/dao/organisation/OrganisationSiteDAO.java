@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.OrganisationSite;
+import com.opsmatters.media.model.organisation.OrganisationSiteItem;
 import com.opsmatters.media.model.organisation.ArchiveReason;
 
 /**
@@ -81,6 +82,13 @@ public class OrganisationSiteDAO extends BaseDAO
      */
     private static final String LIST_BY_SITE_SQL =  
       "SELECT SITE_ID, ID, CREATED_DATE, UPDATED_DATE, CODE, ATTRIBUTES, SPONSOR, LISTING, STATUS, REASON, CREATED_BY "
+      + "FROM ORGANISATION_SITES WHERE SITE_ID=? ORDER BY CREATED_DATE";
+
+    /**
+     * The query to use to select the organisation items from the ORGANISATION_SITES table by site.
+     */
+    private static final String LIST_ITEMS_BY_SITE_SQL =  
+      "SELECT SITE_ID, ID, CREATED_DATE, UPDATED_DATE, CODE, SPONSOR, LISTING, STATUS, REASON "
       + "FROM ORGANISATION_SITES WHERE SITE_ID=? ORDER BY CREATED_DATE";
 
     /**
@@ -463,6 +471,61 @@ public class OrganisationSiteDAO extends BaseDAO
     }
 
     /**
+     * Returns the organisation items from the ORGANISATION_SITES table by site.
+     */
+    public synchronized List<OrganisationSiteItem> listItems(Site site) throws SQLException
+    {
+        List<OrganisationSiteItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listItemsBySiteStmt == null)
+            listItemsBySiteStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_SITE_SQL);
+        clearParameters(listItemsBySiteStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listItemsBySiteStmt.setString(1, site.getId());
+            listItemsBySiteStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listItemsBySiteStmt.executeQuery();
+            ret = new ArrayList<OrganisationSiteItem>();
+            while(rs.next())
+            {
+                OrganisationSiteItem organisation = new OrganisationSiteItem();
+                organisation.setSiteId(rs.getString(1));
+                organisation.setId(rs.getString(2));
+                organisation.setCreatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                organisation.setUpdatedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                organisation.setCode(rs.getString(5));
+                organisation.setSponsor(rs.getBoolean(6));
+                organisation.setListing(rs.getBoolean(7));
+                organisation.setStatus(rs.getString(8));
+                organisation.setReason(rs.getString(9));
+                ret.add(organisation);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the count of organisations from the table.
      */
     public int count() throws SQLException
@@ -516,6 +579,8 @@ public class OrganisationSiteDAO extends BaseDAO
         listStmt = null;
         closeStatement(listBySiteStmt);
         listBySiteStmt = null;
+        closeStatement(listItemsBySiteStmt);
+        listItemsBySiteStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -528,6 +593,7 @@ public class OrganisationSiteDAO extends BaseDAO
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
     private PreparedStatement listBySiteStmt;
+    private PreparedStatement listItemsBySiteStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }
