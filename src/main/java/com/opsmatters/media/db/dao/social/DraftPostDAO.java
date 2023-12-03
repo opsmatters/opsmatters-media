@@ -31,10 +31,14 @@ import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.social.DraftPost;
+import com.opsmatters.media.model.social.DraftPostItem;
 import com.opsmatters.media.model.social.DraftPostFactory;
+import com.opsmatters.media.model.social.DraftPostItemFactory;
 import com.opsmatters.media.model.social.DraftStatus;
 import com.opsmatters.media.model.social.PostType;
 import com.opsmatters.media.model.social.DraftContentPost;
+import com.opsmatters.media.model.social.DraftContentPostItem;
+import com.opsmatters.media.model.social.DraftStandardPostItem;
 import com.opsmatters.media.util.SessionId;
 
 /**
@@ -71,24 +75,24 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
       + "WHERE ID=?";
 
     /**
-     * The query to use to select the posts from the DRAFT_POSTS table by type and interval.
+     * The query to use to select the post items from the DRAFT_POSTS table by type and interval.
      */
-    private static final String LIST_BY_TYPE_INTERVAL_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, CODE, CONTENT_TYPE, TITLE, MESSAGE, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+    private static final String LIST_ITEMS_BY_TYPE_INTERVAL_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, TITLE, STATUS "
       + "FROM DRAFT_POSTS WHERE TYPE=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS != 'PROCESSED') ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to select the posts from the DRAFT_POSTS table by type, status and interval.
+     * The query to use to select the post items from the DRAFT_POSTS table by type, status and interval.
      */
-    private static final String LIST_BY_TYPE_STATUS_INTERVAL_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, CODE, CONTENT_TYPE, TITLE, MESSAGE, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+    private static final String LIST_ITEMS_BY_TYPE_STATUS_INTERVAL_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, TITLE, STATUS "
       + "FROM DRAFT_POSTS WHERE TYPE=? AND STATUS=? AND CREATED_DATE >= (NOW() + INTERVAL -? DAY) ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to select the posts from the DRAFT_POSTS table by type and status.
+     * The query to use to select the post items from the DRAFT_POSTS table by type and status.
      */
-    private static final String LIST_BY_TYPE_STATUS_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, CODE, CONTENT_TYPE, TITLE, MESSAGE, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+    private static final String LIST_ITEMS_BY_TYPE_STATUS_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, TITLE, STATUS "
       + "FROM DRAFT_POSTS WHERE TYPE=? AND STATUS=? ORDER BY CREATED_DATE";
 
     /**
@@ -113,10 +117,10 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
       + "FROM DRAFT_POSTS WHERE STATUS=? ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to select the posts from the DRAFT_POSTS table by source id.
+     * The query to use to select the post items from the DRAFT_POSTS table by source id.
      */
-    private static final String LIST_BY_SOURCE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, SOURCE_ID, CODE, CONTENT_TYPE, TITLE, MESSAGE, PROPERTIES, ATTRIBUTES, STATUS, CREATED_BY "
+    private static final String LIST_ITEMS_BY_SOURCE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, TITLE, STATUS "
       + "FROM DRAFT_POSTS WHERE TYPE=? AND SOURCE_ID=? ORDER BY CREATED_DATE";
 
     /**
@@ -354,51 +358,50 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     }
 
     /**
-     * Returns the posts from the DRAFT_POSTS table by type and interval.
+     * Returns the post items from the DRAFT_POSTS table by type and interval.
      */
-    public synchronized List<DraftPost> list(PostType type, int interval) throws SQLException
+    public synchronized List<DraftPostItem> listItems(PostType type, int interval) throws SQLException
     {
-        List<DraftPost> ret = null;
+        List<DraftPostItem> ret = null;
 
         if(!hasConnection())
             return ret;
 
         preQuery();
-        if(listByTypeIntervalStmt == null)
-            listByTypeIntervalStmt = prepareStatement(getConnection(), LIST_BY_TYPE_INTERVAL_SQL);
-        clearParameters(listByTypeIntervalStmt);
+        if(listItemsByTypeIntervalStmt == null)
+            listItemsByTypeIntervalStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_TYPE_INTERVAL_SQL);
+        clearParameters(listItemsByTypeIntervalStmt);
 
         ResultSet rs = null;
 
         try
         {
-            listByTypeIntervalStmt.setString(1, type.name());
-            listByTypeIntervalStmt.setInt(2, interval);
-            listByTypeIntervalStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = listByTypeIntervalStmt.executeQuery();
-            ret = new ArrayList<DraftPost>();
+            listItemsByTypeIntervalStmt.setString(1, type.name());
+            listItemsByTypeIntervalStmt.setInt(2, interval);
+            listItemsByTypeIntervalStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listItemsByTypeIntervalStmt.executeQuery();
+            ret = new ArrayList<DraftPostItem>();
             while(rs.next())
             {
-                DraftPost post = DraftPostFactory.newInstance(PostType.valueOf(rs.getString(4)));
+                DraftPostItem post = DraftPostItemFactory.newInstance(type);
                 post.setId(rs.getString(1));
                 post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                post.setSiteId(rs.getString(5));
-                post.setSourceId(rs.getString(6));
+                post.setSiteId(rs.getString(4));
 
                 if(post.getType() == PostType.CONTENT)
                 {
-                    DraftContentPost contentPost = (DraftContentPost)post;
-                    contentPost.setCode(rs.getString(7));
-                    contentPost.setContentType(rs.getString(8));
+                    DraftContentPostItem contentPost = (DraftContentPostItem)post;
+                    contentPost.setCode(rs.getString(5));
+                    contentPost.setContentType(rs.getString(6));
+                }
+                else if(post.getType() == PostType.STANDARD)
+                {
+                    DraftStandardPostItem standardPost = (DraftStandardPostItem)post;
+                    standardPost.setTitle(rs.getString(7));
                 }
 
-                post.setTitle(rs.getString(9));
-                post.setMessage(rs.getString(10));
-                post.setProperties(new JSONObject(getClob(rs, 11)));
-                post.setAttributes(new JSONObject(getClob(rs, 12)));
-                post.setStatus(rs.getString(13));
-                post.setCreatedBy(rs.getString(14));
+                post.setStatus(rs.getString(8));
                 ret.add(post);
             }
         }
@@ -420,52 +423,51 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     }
 
     /**
-     * Returns the posts from the DRAFT_POSTS table by type, status and interval.
+     * Returns the post items from the DRAFT_POSTS table by type, status and interval.
      */
-    public synchronized List<DraftPost> list(PostType type, DraftStatus status, int interval) throws SQLException
+    public synchronized List<DraftPostItem> listItems(PostType type, DraftStatus status, int interval) throws SQLException
     {
-        List<DraftPost> ret = null;
+        List<DraftPostItem> ret = null;
 
         if(!hasConnection())
             return ret;
 
         preQuery();
-        if(listByTypeStatusIntervalStmt == null)
-            listByTypeStatusIntervalStmt = prepareStatement(getConnection(), LIST_BY_TYPE_STATUS_INTERVAL_SQL);
-        clearParameters(listByTypeStatusIntervalStmt);
+        if(listItemsByTypeStatusIntervalStmt == null)
+            listItemsByTypeStatusIntervalStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_TYPE_STATUS_INTERVAL_SQL);
+        clearParameters(listItemsByTypeStatusIntervalStmt);
 
         ResultSet rs = null;
 
         try
         {
-            listByTypeStatusIntervalStmt.setString(1, type.name());
-            listByTypeStatusIntervalStmt.setString(2, status != null ? status.name() : "");
-            listByTypeStatusIntervalStmt.setInt(3, interval);
-            listByTypeStatusIntervalStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = listByTypeStatusIntervalStmt.executeQuery();
-            ret = new ArrayList<DraftPost>();
+            listItemsByTypeStatusIntervalStmt.setString(1, type.name());
+            listItemsByTypeStatusIntervalStmt.setString(2, status != null ? status.name() : "");
+            listItemsByTypeStatusIntervalStmt.setInt(3, interval);
+            listItemsByTypeStatusIntervalStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listItemsByTypeStatusIntervalStmt.executeQuery();
+            ret = new ArrayList<DraftPostItem>();
             while(rs.next())
             {
-                DraftPost post = DraftPostFactory.newInstance(PostType.valueOf(rs.getString(4)));
+                DraftPostItem post = DraftPostItemFactory.newInstance(type);
                 post.setId(rs.getString(1));
                 post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                post.setSiteId(rs.getString(5));
-                post.setSourceId(rs.getString(6));
+                post.setSiteId(rs.getString(4));
 
                 if(post.getType() == PostType.CONTENT)
                 {
-                    DraftContentPost contentPost = (DraftContentPost)post;
-                    contentPost.setCode(rs.getString(7));
-                    contentPost.setContentType(rs.getString(8));
+                    DraftContentPostItem contentPost = (DraftContentPostItem)post;
+                    contentPost.setCode(rs.getString(5));
+                    contentPost.setContentType(rs.getString(6));
+                }
+                else if(post.getType() == PostType.STANDARD)
+                {
+                    DraftStandardPostItem standardPost = (DraftStandardPostItem)post;
+                    standardPost.setTitle(rs.getString(7));
                 }
 
-                post.setTitle(rs.getString(9));
-                post.setMessage(rs.getString(10));
-                post.setProperties(new JSONObject(getClob(rs, 11)));
-                post.setAttributes(new JSONObject(getClob(rs, 12)));
-                post.setStatus(rs.getString(13));
-                post.setCreatedBy(rs.getString(14));
+                post.setStatus(rs.getString(8));
                 ret.add(post);
             }
         }
@@ -487,51 +489,50 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     }
 
     /**
-     * Returns the posts from the DRAFT_POSTS table by type and status.
+     * Returns the post items from the DRAFT_POSTS table by type and status.
      */
-    public synchronized List<DraftPost> list(PostType type, DraftStatus status) throws SQLException
+    public synchronized List<DraftPostItem> listItems(PostType type, DraftStatus status) throws SQLException
     {
-        List<DraftPost> ret = null;
+        List<DraftPostItem> ret = null;
 
         if(!hasConnection())
             return ret;
 
         preQuery();
-        if(listByTypeStatusStmt == null)
-            listByTypeStatusStmt = prepareStatement(getConnection(), LIST_BY_TYPE_STATUS_SQL);
-        clearParameters(listByTypeStatusStmt);
+        if(listItemsByTypeStatusStmt == null)
+            listItemsByTypeStatusStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_TYPE_STATUS_SQL);
+        clearParameters(listItemsByTypeStatusStmt);
 
         ResultSet rs = null;
 
         try
         {
-            listByTypeStatusStmt.setString(1, type.name());
-            listByTypeStatusStmt.setString(2, status != null ? status.name() : "");
-            listByTypeStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = listByTypeStatusStmt.executeQuery();
-            ret = new ArrayList<DraftPost>();
+            listItemsByTypeStatusStmt.setString(1, type.name());
+            listItemsByTypeStatusStmt.setString(2, status != null ? status.name() : "");
+            listItemsByTypeStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listItemsByTypeStatusStmt.executeQuery();
+            ret = new ArrayList<DraftPostItem>();
             while(rs.next())
             {
-                DraftPost post = DraftPostFactory.newInstance(PostType.valueOf(rs.getString(4)));
+                DraftPostItem post = DraftPostItemFactory.newInstance(type);
                 post.setId(rs.getString(1));
                 post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                post.setSiteId(rs.getString(5));
-                post.setSourceId(rs.getString(6));
+                post.setSiteId(rs.getString(4));
 
                 if(post.getType() == PostType.CONTENT)
                 {
-                    DraftContentPost contentPost = (DraftContentPost)post;
-                    contentPost.setCode(rs.getString(7));
-                    contentPost.setContentType(rs.getString(8));
+                    DraftContentPostItem contentPost = (DraftContentPostItem)post;
+                    contentPost.setCode(rs.getString(5));
+                    contentPost.setContentType(rs.getString(6));
+                }
+                else if(post.getType() == PostType.STANDARD)
+                {
+                    DraftStandardPostItem standardPost = (DraftStandardPostItem)post;
+                    standardPost.setTitle(rs.getString(7));
                 }
 
-                post.setTitle(rs.getString(9));
-                post.setMessage(rs.getString(10));
-                post.setProperties(new JSONObject(getClob(rs, 11)));
-                post.setAttributes(new JSONObject(getClob(rs, 12)));
-                post.setStatus(rs.getString(13));
-                post.setCreatedBy(rs.getString(14));
+                post.setStatus(rs.getString(8));
                 ret.add(post);
             }
         }
@@ -750,51 +751,50 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     }
 
     /**
-     * Returns the posts from the DRAFT_POSTS table by type and source id.
+     * Returns the post items from the DRAFT_POSTS table by type and source id.
      */
-    public synchronized List<DraftPost> list(PostType type, String sourceId) throws SQLException
+    public synchronized List<DraftPostItem> listItems(PostType type, String sourceId) throws SQLException
     {
-        List<DraftPost> ret = null;
+        List<DraftPostItem> ret = null;
 
         if(!hasConnection())
             return ret;
 
         preQuery();
-        if(listBySourceStmt == null)
-            listBySourceStmt = prepareStatement(getConnection(), LIST_BY_SOURCE_SQL);
-        clearParameters(listBySourceStmt);
+        if(listItemsBySourceStmt == null)
+            listItemsBySourceStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_SOURCE_SQL);
+        clearParameters(listItemsBySourceStmt);
 
         ResultSet rs = null;
 
         try
         {
-            listBySourceStmt.setString(1, type.name());
-            listBySourceStmt.setString(2, sourceId);
-            listBySourceStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = listBySourceStmt.executeQuery();
-            ret = new ArrayList<DraftPost>();
+            listItemsBySourceStmt.setString(1, type.name());
+            listItemsBySourceStmt.setString(2, sourceId);
+            listItemsBySourceStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listItemsBySourceStmt.executeQuery();
+            ret = new ArrayList<DraftPostItem>();
             while(rs.next())
             {
-                DraftPost post = DraftPostFactory.newInstance(PostType.valueOf(rs.getString(4)));
+                DraftPostItem post = DraftPostItemFactory.newInstance(type);
                 post.setId(rs.getString(1));
                 post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                post.setSiteId(rs.getString(5));
-                post.setSourceId(rs.getString(6));
+                post.setSiteId(rs.getString(4));
 
                 if(post.getType() == PostType.CONTENT)
                 {
-                    DraftContentPost contentPost = (DraftContentPost)post;
-                    contentPost.setCode(rs.getString(7));
-                    contentPost.setContentType(rs.getString(8));
+                    DraftContentPostItem contentPost = (DraftContentPostItem)post;
+                    contentPost.setCode(rs.getString(5));
+                    contentPost.setContentType(rs.getString(6));
+                }
+                else if(post.getType() == PostType.STANDARD)
+                {
+                    DraftStandardPostItem standardPost = (DraftStandardPostItem)post;
+                    standardPost.setTitle(rs.getString(7));
                 }
 
-                post.setTitle(rs.getString(9));
-                post.setMessage(rs.getString(10));
-                post.setProperties(new JSONObject(getClob(rs, 11)));
-                post.setAttributes(new JSONObject(getClob(rs, 12)));
-                post.setStatus(rs.getString(13));
-                post.setCreatedBy(rs.getString(14));
+                post.setStatus(rs.getString(8));
                 ret.add(post);
             }
         }
@@ -1019,20 +1019,20 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
         insertStmt = null;
         closeStatement(updateStmt);
         updateStmt = null;
-        closeStatement(listByTypeIntervalStmt);
-        listByTypeIntervalStmt = null;
-        closeStatement(listByTypeStatusIntervalStmt);
-        listByTypeStatusIntervalStmt = null;
-        closeStatement(listByTypeStatusStmt);
-        listByTypeStatusStmt = null;
+        closeStatement(listItemsByTypeIntervalStmt);
+        listItemsByTypeIntervalStmt = null;
+        closeStatement(listItemsByTypeStatusIntervalStmt);
+        listItemsByTypeStatusIntervalStmt = null;
+        closeStatement(listItemsByTypeStatusStmt);
+        listItemsByTypeStatusStmt = null;
         closeStatement(listBySiteStmt);
         listBySiteStmt = null;
         closeStatement(listBySiteTypeStmt);
         listBySiteTypeStmt = null;
         closeStatement(listByStatusStmt);
         listByStatusStmt = null;
-        closeStatement(listBySourceStmt);
-        listBySourceStmt = null;
+        closeStatement(listItemsBySourceStmt);
+        listItemsBySourceStmt = null;
         closeStatement(listByContentTypeStmt);
         listByContentTypeStmt = null;
         closeStatement(countStmt);
@@ -1044,13 +1044,13 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     private PreparedStatement getByIdStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
-    private PreparedStatement listByTypeIntervalStmt;
-    private PreparedStatement listByTypeStatusIntervalStmt;
-    private PreparedStatement listByTypeStatusStmt;
+    private PreparedStatement listItemsByTypeIntervalStmt;
+    private PreparedStatement listItemsByTypeStatusIntervalStmt;
+    private PreparedStatement listItemsByTypeStatusStmt;
     private PreparedStatement listBySiteStmt;
     private PreparedStatement listBySiteTypeStmt;
     private PreparedStatement listByStatusStmt;
-    private PreparedStatement listBySourceStmt;
+    private PreparedStatement listItemsBySourceStmt;
     private PreparedStatement listByContentTypeStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;

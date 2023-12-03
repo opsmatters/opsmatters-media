@@ -27,10 +27,13 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.social.SavedPost;
+import com.opsmatters.media.model.social.SavedPostItem;
 import com.opsmatters.media.model.social.SavedPostFactory;
+import com.opsmatters.media.model.social.SavedPostItemFactory;
 import com.opsmatters.media.model.social.PostType;
 import com.opsmatters.media.model.social.MessageFormat;
 import com.opsmatters.media.model.social.SavedContentPost;
+import com.opsmatters.media.model.social.SavedContentPostItem;
 import com.opsmatters.media.model.content.ContentType;
 
 /**
@@ -80,10 +83,10 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
       + "FROM SAVED_POSTS WHERE SITE_ID=?";
 
     /**
-     * The query to use to select the saved posts from the SAVED_POSTS table by type.
+     * The query to use to select the saved post items from the SAVED_POSTS table by type.
      */
-    private static final String LIST_BY_TYPE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, TYPE, SITE_ID, TITLE, CODE, CONTENT_TYPE, MESSAGE, SHORTEN_URL, PROPERTIES, STATUS, CREATED_BY "
+    private static final String LIST_ITEMS_BY_TYPE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, SITE_ID, CODE, CONTENT_TYPE, TITLE, STATUS "
       + "FROM SAVED_POSTS WHERE TYPE=?";
 
     /**
@@ -235,6 +238,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
                 if(contentPost.getContentType() != null)
                     contentType = contentPost.getContentType().name();
             }
+
             insertStmt.setString(8, code);
             insertStmt.setString(9, contentType);
 
@@ -450,50 +454,46 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
     }
 
     /**
-     * Returns the saved posts from the SAVED_POSTS table by post type.
+     * Returns the saved post items from the SAVED_POSTS table by post type.
      */
-    public synchronized List<SavedPost> list(PostType type) throws SQLException
+    public synchronized List<SavedPostItem> listItems(PostType type) throws SQLException
     {
-        List<SavedPost> ret = null;
+        List<SavedPostItem> ret = null;
 
         if(!hasConnection())
             return ret;
 
         preQuery();
-        if(listByTypeStmt == null)
-            listByTypeStmt = prepareStatement(getConnection(), LIST_BY_TYPE_SQL);
-        clearParameters(listByTypeStmt);
+        if(listItemsByTypeStmt == null)
+            listItemsByTypeStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_TYPE_SQL);
+        clearParameters(listItemsByTypeStmt);
 
         ResultSet rs = null;
 
         try
         {
-            listByTypeStmt.setString(1, type.name());
-            listByTypeStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = listByTypeStmt.executeQuery();
-            ret = new ArrayList<SavedPost>();
+            listItemsByTypeStmt.setString(1, type.name());
+            listItemsByTypeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listItemsByTypeStmt.executeQuery();
+            ret = new ArrayList<SavedPostItem>();
             while(rs.next())
             {
-                SavedPost post = SavedPostFactory.newInstance(PostType.valueOf(rs.getString(5)));
+                SavedPostItem post = SavedPostItemFactory.newInstance(type);
                 post.setId(rs.getString(1));
                 post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setPostedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
-                post.setSiteId(rs.getString(6));
-                post.setTitle(rs.getString(7));
+                post.setSiteId(rs.getString(5));
 
                 if(post.getType() == PostType.CONTENT)
                 {
-                    SavedContentPost contentPost = (SavedContentPost)post;
-                    contentPost.setCode(rs.getString(8));
-                    contentPost.setContentType(rs.getString(9));
+                    SavedContentPostItem contentPost = (SavedContentPostItem)post;
+                    contentPost.setCode(rs.getString(6));
+                    contentPost.setContentType(rs.getString(7));
                 }
 
-                post.setMessage(rs.getString(10));
-                post.setShortenUrl(rs.getBoolean(11));
-                post.setProperties(new JSONObject(getClob(rs, 12)));
-                post.setStatus(rs.getString(13));
-                post.setCreatedBy(rs.getString(14));
+                post.setTitle(rs.getString(8));
+                post.setStatus(rs.getString(9));
                 ret.add(post);
             }
         }
@@ -634,8 +634,8 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
         listStmt = null;
         closeStatement(listBySiteStmt);
         listBySiteStmt = null;
-        closeStatement(listByTypeStmt);
-        listByTypeStmt = null;
+        closeStatement(listItemsByTypeStmt);
+        listItemsByTypeStmt = null;
         closeStatement(listByContentTypeStmt);
         listByContentTypeStmt = null;
         closeStatement(countStmt);
@@ -649,7 +649,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
     private PreparedStatement listBySiteStmt;
-    private PreparedStatement listByTypeStmt;
+    private PreparedStatement listItemsByTypeStmt;
     private PreparedStatement listByContentTypeStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;

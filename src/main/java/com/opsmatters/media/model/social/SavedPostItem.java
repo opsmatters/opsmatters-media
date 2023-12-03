@@ -15,14 +15,12 @@
  */
 package com.opsmatters.media.model.social;
 
-import com.opsmatters.media.model.BaseEntityItem;
-
 /**
  * Class representing a social media post list item.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class SocialPostItem<T extends SocialPost> extends BaseEntityItem<T>
+public abstract class SavedPostItem<T extends SavedPost> extends PostSourceItem<T>
 {
     private T content;
 
@@ -44,26 +42,18 @@ public abstract class SocialPostItem<T extends SocialPost> extends BaseEntityIte
     }
 
     /**
-     * Returns the post type.
+     * Returns the post title.
      */
-    public PostType getType()
+    public String getTitle()
     {
-        return content.getType();
+        return content.getTitle();
     }
 
     /**
-     * Returns the post organisation.
+     * Sets the post title.
      */
-    public String getSiteId()
+    public void setTitle(String title)
     {
-        return content.getSiteId();
-    }
-
-    /**
-     * Sets the post organisation.
-     */
-    public void setSiteId(String siteId)
-    {
-        content.setSiteId(siteId);
+        content.setTitle(title);
     }
 }

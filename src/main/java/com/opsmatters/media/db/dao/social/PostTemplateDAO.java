@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.social.PostTemplate;
 import com.opsmatters.media.model.social.ContentPostTemplate;
+import com.opsmatters.media.model.social.ContentPostTemplateItem;
 import com.opsmatters.media.model.social.MessageFormat;
 import com.opsmatters.media.model.content.ContentType;
 
@@ -66,6 +67,13 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
      */
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, SITE_ID, NAME, MESSAGE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, STATUS, CREATED_BY "
+      + "FROM POST_TEMPLATES";
+
+    /**
+     * The query to use to select the post template items from the POST_TEMPLATES table.
+     */
+    private static final String LIST_ITEMS_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, SITE_ID, NAME, CONTENT_TYPE, IS_DEFAULT, STATUS "
       + "FROM POST_TEMPLATES";
 
     /**
@@ -312,6 +320,60 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
     }
 
     /**
+     * Returns the post template items from the POST_TEMPLATES table.
+     */
+    public synchronized List<ContentPostTemplateItem> listItems() throws SQLException
+    {
+        List<ContentPostTemplateItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listItemsStmt == null)
+            listItemsStmt = prepareStatement(getConnection(), LIST_ITEMS_SQL);
+        clearParameters(listItemsStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listItemsStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listItemsStmt.executeQuery();
+            ret = new ArrayList<ContentPostTemplateItem>();
+            while(rs.next())
+            {
+                ContentPostTemplateItem template = new ContentPostTemplateItem();
+                template.setId(rs.getString(1));
+                template.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                template.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                template.setPostedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                template.setSiteId(rs.getString(5));
+                template.setName(rs.getString(6));
+                template.setContentType(rs.getString(7));
+                template.setDefault(rs.getBoolean(8));
+                template.setStatus(rs.getString(9));
+                ret.add(template);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the post templates from the POST_TEMPLATES table by site.
      */
     public synchronized List<ContentPostTemplate> list(Site site) throws SQLException
@@ -478,6 +540,8 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
+        closeStatement(listItemsStmt);
+        listItemsStmt = null;
         closeStatement(listBySiteStmt);
         listBySiteStmt = null;
         closeStatement(listByTypeStmt);
@@ -492,6 +556,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
+    private PreparedStatement listItemsStmt;
     private PreparedStatement listBySiteStmt;
     private PreparedStatement listByTypeStmt;
     private PreparedStatement countStmt;

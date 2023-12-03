@@ -15,14 +15,14 @@
  */
 package com.opsmatters.media.model.social;
 
-import com.opsmatters.media.model.BaseEntityItem;
+import java.time.Instant;
 
 /**
  * Class representing a social media post list item.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class SocialPostItem<T extends SocialPost> extends BaseEntityItem<T>
+public abstract class PostSourceItem<T extends PostSource> extends SocialPostItem<T>
 {
     private T content;
 
@@ -44,26 +44,58 @@ public abstract class SocialPostItem<T extends SocialPost> extends BaseEntityIte
     }
 
     /**
-     * Returns the post type.
+     * Returns the posted date.
      */
-    public PostType getType()
+    public Instant getPostedDate()
     {
-        return content.getType();
+        return content.getPostedDate();
     }
 
     /**
-     * Returns the post organisation.
+     * Returns the posted date.
      */
-    public String getSiteId()
+    public long getPostedDateMillis()
     {
-        return content.getSiteId();
+        return content.getPostedDateMillis();
     }
 
     /**
-     * Sets the post organisation.
+     * Sets the posted date.
      */
-    public void setSiteId(String siteId)
+    public void setPostedDate(Instant postedDate)
     {
-        content.setSiteId(siteId);
+        content.setPostedDate(postedDate);
+    }
+
+    /**
+     * Sets the posted date.
+     */
+    public void setPostedDateMillis(long millis)
+    {
+        content.setPostedDateMillis(millis);
+    }
+
+    /**
+     * Returns the source status.
+     */
+    public SourceStatus getStatus()
+    {
+        return content.getStatus();
+    }
+
+    /**
+     * Sets the source status.
+     */
+    public void setStatus(String status)
+    {
+        content.setStatus(status);
+    }
+
+    /**
+     * Sets the source status.
+     */
+    public void setStatus(SourceStatus status)
+    {
+        content.setStatus(status);
     }
 }
