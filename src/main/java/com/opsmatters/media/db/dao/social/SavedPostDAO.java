@@ -59,7 +59,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
       "INSERT INTO SAVED_POSTS"
       + "( ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, TYPE, SITE_ID, TITLE, CODE, CONTENT_TYPE, MESSAGE, SHORTEN_URL, PROPERTIES, STATUS, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a saved post in the SAVED_POSTS table.

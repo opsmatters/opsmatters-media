@@ -54,7 +54,8 @@ public enum ParameterName
     STALLED_ERROR("stalled-error"),
     MAX_DRAFT_POST_AGE("max_draft-post-age"),
     MAX_CHANNEL_POST_AGE("max-channel-post-age"),
-    MIN_WEBINAR_DURATION("min-webinar-duration");
+    MIN_WEBINAR_DURATION("min-webinar-duration"),
+    SHUTDOWN("shutdown");
 
     private String value;
 

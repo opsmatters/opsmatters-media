@@ -37,7 +37,6 @@ public enum MonitorStatus
     ALERT("Alert", "glyphicon-exclamation-sign", "status-warn", 0),
     PENDING("Pending", "", "", 0), // Pseudo status
     RUNNING("Running", "", "", 1), // Pseudo status
-    STOPPED("Stopped", "", "", -1), // Pseudo status
     ALL("All", "", "", 0); // Pseudo status
 
     private String value;
@@ -112,15 +111,6 @@ public enum MonitorStatus
     public boolean isRunning()
     {
         return state > 0;
-    }
-
-    /**
-     * Returns <CODE>true<CODE> if the monitor state is STOPPED.
-     * @return <CODE>true<CODE> if the monitor state is STOPPED.
-     */
-    public boolean isStopped()
-    {
-        return state < 0;
     }
 
     /**

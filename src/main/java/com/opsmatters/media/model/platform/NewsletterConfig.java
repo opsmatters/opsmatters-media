@@ -16,6 +16,10 @@
 
 package com.opsmatters.media.model.platform;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
 import java.util.Map;
 import com.opsmatters.media.model.ConfigElement;
 import com.opsmatters.media.model.ConfigParser;
@@ -114,6 +118,20 @@ public class NewsletterConfig implements ConfigElement
     public void setHour(int hour)
     {
         this.hour = hour;
+    }
+
+    /**
+     * Returns the next from date for the newsletter settings.
+     */
+    public LocalDateTime getFromDate()
+    {
+        LocalDateTime ret = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC)
+            .withHour(hour).withMinute(0).withSecond(0);
+        LocalDateTime next = ret.with(ChronoField.DAY_OF_WEEK, day)
+            .withHour(hour).withMinute(0).withSecond(0);
+        if(next.equals(ret) || next.isAfter(ret))
+            ret = ret.minusDays(7); // If the from date is in the future, go back a week
+        return ret.with(ChronoField.DAY_OF_WEEK, day);
     }
 
     /**
