@@ -17,6 +17,9 @@ package com.opsmatters.media.model.monitor;
 
 import com.opsmatters.media.model.BaseEntityItem;
 
+import com.opsmatters.media.cache.monitor.ContentMonitors;
+import com.opsmatters.media.model.content.ContentType;
+
 /**
  * Class representing a content event post list item.
  * 
@@ -105,5 +108,14 @@ public abstract class ContentEventItem<T extends ContentEvent> extends BaseEntit
     public boolean hasMonitorId()
     {
         return content.hasMonitorId();
+    }
+
+    /**
+     * Returns the content type of the monitor.
+     */
+    public ContentType getContentType()
+    {
+        ContentMonitor monitor = ContentMonitors.get(getMonitorId());
+        return monitor != null ? monitor.getContentType() : null;
     }
 }
