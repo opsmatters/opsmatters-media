@@ -53,7 +53,6 @@ public abstract class Content<D extends ContentDetails>
     private boolean published = false;
     private String tracking = "";
     private String createdBy = "";
-    private boolean social = false;
     private String canonicalUrl = "";
     private ContentStatus status = NEW;
     private String otherSites = "";
@@ -96,7 +95,6 @@ public abstract class Content<D extends ContentDetails>
         setPublished(obj.isPublished());
         setTracking(new String(obj.getTracking() != null ? obj.getTracking() : ""));
         setCreatedBy(new String(obj.getCreatedBy() != null ? obj.getCreatedBy() : ""));
-        setSocial(obj.hasSocial());
         setCanonicalUrl(new String(obj.getCanonicalUrl() != null ? obj.getCanonicalUrl() : ""));
         setStatus(obj.getStatus());
         setOtherSites(obj.getOtherSites());
@@ -116,7 +114,6 @@ public abstract class Content<D extends ContentDetails>
         setPublished(obj.optBoolean(FieldName.PUBLISHED.value(), false));
         setTracking(obj.optString(FieldName.TRACKING.value()));
         setCreatedBy(obj.optString(FieldName.CREATED_BY.value()));
-        setSocial(obj.optBoolean(FieldName.SOCIAL.value(), false));
         setStatus(obj.optString(FieldName.STATUS.value()));
     }
 
@@ -137,7 +134,6 @@ public abstract class Content<D extends ContentDetails>
         ret.put(FieldName.PUBLISHED.value(), isPublished());
         ret.put(FieldName.TRACKING.value(), getTracking());
         ret.put(FieldName.CREATED_BY.value(), getCreatedBy());
-        ret.put(FieldName.SOCIAL.value(), hasSocial());
         ret.put(FieldName.STATUS.value(), getStatus().name());
 
         return ret;
@@ -688,38 +684,6 @@ public abstract class Content<D extends ContentDetails>
         }
 
         return ret;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if this content has social media.
-     */
-    public boolean hasSocial()
-    {
-        return social;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if this content has social media.
-     */
-    public Boolean getSocialObject()
-    {
-        return Boolean.valueOf(hasSocial());
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if this content has social media.
-     */
-    public void setSocial(boolean social)
-    {
-        this.social = social;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if this content has social media.
-     */
-    public void setSocialObject(Boolean social)
-    {
-        setSocial(social != null && social.booleanValue());
     }
 
     /**

@@ -214,7 +214,6 @@ public class RoundupPost extends Article<RoundupPostDetails> implements LinkedCo
         post.setTitle("New Roundup");
         post.setSummary(StringUtils.EMPTY);
         post.setPublishedDateAsString(TimeUtils.toStringUTC(config.getPublishedDateField(organisationSite.isSponsor())));
-        post.setSocial(organisationSite.hasSocial());
 
         return post;
     }
@@ -242,8 +241,6 @@ public class RoundupPost extends Article<RoundupPostDetails> implements LinkedCo
 
         String sponsored = config.getField(SPONSORED);
         setSponsored(sponsored == null || sponsored.equals("0") ? false : true);
-
-        setSocial(organisationSite.hasSocial());
     }
 
     /**
@@ -277,10 +274,6 @@ public class RoundupPost extends Article<RoundupPostDetails> implements LinkedCo
         ContentImage image = ContentImages.get(ImageType.BANNER, config.getCode());
         if(image != null && getImage().length() == 0)
             setImage(image.getFilename());
-
-        // Clear social flag if the content is old
-        if(hasSocial() && getPublishedDate() != null)
-            setSocial(isRecent());
     }
 
     /**

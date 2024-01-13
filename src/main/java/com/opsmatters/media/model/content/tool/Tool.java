@@ -191,7 +191,6 @@ public class Tool extends Resource<ToolDetails>
         tool.setTitle("New Tool");
         tool.setDescription(StringUtils.EMPTY);
         tool.setPublishedDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
-        tool.setSocial(organisationSite.hasSocial());
 
         return tool;
     }
@@ -211,8 +210,6 @@ public class Tool extends Resource<ToolDetails>
 
         String promote = config.getField(PROMOTE);
         setPromoted(promote == null || promote.equals("0") ? false : true);
-
-        setSocial(organisationSite.hasSocial());
     }
 
     /**

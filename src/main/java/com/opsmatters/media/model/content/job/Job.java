@@ -196,7 +196,6 @@ public class Job extends Resource<JobDetails>
         job.setTitle("New Job");
         job.setDescription(StringUtils.EMPTY);
         job.setPublishedDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
-        job.setSocial(organisationSite.hasSocial());
 
         return job;
     }
@@ -221,8 +220,6 @@ public class Job extends Resource<JobDetails>
 
         String promote = config.getField(PROMOTE);
         setPromoted(promote == null || promote.equals("0") ? false : true);
-
-        setSocial(organisationSite.hasSocial());
     }
 
     /**

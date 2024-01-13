@@ -262,10 +262,6 @@ public class Video extends Article<VideoDetails>
         VideoType guessed = VideoType.guess(texts, getDuration());
         if(guessed != null)
             setVideoType(guessed);
-
-        // Clear social flag if the content is old
-        if(hasSocial())
-            setSocial(isRecent());
     }
 
     /**

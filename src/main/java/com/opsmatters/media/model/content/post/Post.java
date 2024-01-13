@@ -232,7 +232,6 @@ public class Post extends Article<PostDetails>
         post.init();
         post.setSiteId(organisationSite.getSiteId());
         post.setPublishedDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
-        post.setSocial(organisationSite.hasSocial());
 
         return post;
     }
@@ -256,8 +255,6 @@ public class Post extends Article<PostDetails>
         setSponsored(sponsored == null || sponsored.equals("0") ? false : true);
 
         setPostType(config.getField(POST_TYPE, ""));
-
-        setSocial(organisationSite.hasSocial());
     }
 
     /**
@@ -283,10 +280,6 @@ public class Post extends Article<PostDetails>
         ContentImage image = ContentImages.get(ImageType.BANNER, config.getCode());
         if(image != null && getImage().length() == 0)
             setImage(image.getFilename());
-
-        // Clear social flag if the content is old
-        if(hasSocial())
-            setSocial(isRecent());
     }
 
     /**

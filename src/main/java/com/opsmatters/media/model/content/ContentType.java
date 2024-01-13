@@ -26,22 +26,23 @@ import java.util.ArrayList;
  */
 public enum ContentType
 {
-    ORGANISATION("ORG", "Organisation", "organisations", "glyphicon-th-list"),
-    VIDEO("VD", "Video", "videos", "glyphicon-film"),
-    ROUNDUP("RP", "Roundup", "roundups", "glyphicon-file"),
-    POST("PO", "Post", "posts", "glyphicon-file"),
-    EVENT("EV", "Event", "events", "glyphicon-calendar"),
-    PUBLICATION("PB", "Publication", "publications", "glyphicon-book"),
-    PROJECT("PR", "Project", "projects", "glyphicon-tasks"),
-    TOOL("TL", "Tool", "tools", "glyphicon-wrench"),
-    JOB("JB", "Job", "jobs", "glyphicon-briefcase"),
-    ARTICLE("", "Article", "", "glyphicon-file");
+    ORGANISATION("ORG", "Organisation", "organisations", "glyphicon-th-list", true),
+    VIDEO("VD", "Video", "videos", "glyphicon-film", false),
+    ROUNDUP("RP", "Roundup", "roundups", "glyphicon-file", true),
+    POST("PO", "Post", "posts", "glyphicon-file", true),
+    EVENT("EV", "Event", "events", "glyphicon-calendar", false),
+    PUBLICATION("PB", "Publication", "publications", "glyphicon-book", false),
+    PROJECT("PR", "Project", "projects", "glyphicon-tasks", false),
+    TOOL("TL", "Tool", "tools", "glyphicon-wrench", false),
+    JOB("JB", "Job", "jobs", "glyphicon-briefcase", false),
+    ARTICLE("", "Article", "", "glyphicon-file", false);
 
     private String code;
     private String value;
     private String tag;
     private String title;
     private String icon;
+    private boolean social;
 
     /**
      * Constructor that takes the type code, value and tag.
@@ -49,14 +50,16 @@ public enum ContentType
      * @param value The value for the type
      * @param tag The tag for the type
      * @param icon The glyphicon for the type
+     * @param social <CODE>true</CODE> if the type should have a social post
      */
-    ContentType(String code, String value, String tag, String icon)
+    ContentType(String code, String value, String tag, String icon, boolean social)
     {
         this.code = code;
         this.value = value;
         this.tag = tag;
         this.title = value+"s";
         this.icon = icon;
+        this.social = social;
     }
 
     /**
@@ -111,6 +114,15 @@ public enum ContentType
     public String icon()
     {
         return icon;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the type should have a social post.
+     * @return <CODE>true</CODE> if the type should have a social post
+     */
+    public boolean social()
+    {
+        return social;
     }
 
     /**
