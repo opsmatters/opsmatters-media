@@ -24,7 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.platform.Site;
-import com.opsmatters.media.model.platform.EnvironmentName;
+import com.opsmatters.media.model.platform.EnvironmentId;
 import com.opsmatters.media.model.feed.ContentFeed;
 import com.opsmatters.media.model.feed.FeedStatus;
 import com.opsmatters.media.model.content.ContentType;
@@ -508,7 +508,7 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     /**
      * Returns the feeds from the CONTENT_FEEDS table by external id and environment.
      */
-    public List<ContentFeed> list(String id, Site site, EnvironmentName environment) throws SQLException
+    public List<ContentFeed> list(String id, Site site, EnvironmentId environment) throws SQLException
     {
         List<ContentFeed> ret = new ArrayList<ContentFeed>();
         List<ContentFeed> feeds = list(site);
@@ -530,7 +530,7 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     /**
      * Returns the feed from the CONTENT_FEEDS table in the given environment.
      */
-    public ContentFeed getByEnvironment(Site site, ContentType type, EnvironmentName environment) throws SQLException
+    public ContentFeed getByEnvironment(Site site, ContentType type, EnvironmentId environment) throws SQLException
     {
         ContentFeed ret = null;
         for(ContentFeed feed : list(site, type))

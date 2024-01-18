@@ -29,8 +29,8 @@ import com.opsmatters.media.model.platform.aws.RdsConfig;
  */
 public class Environment implements ConfigElement
 {
-    private EnvironmentName name;
-    private String key = "";
+    private EnvironmentId id;
+    private Site site;
     private String url = "";
     private String ping = "";
     private String path = "";
@@ -43,11 +43,12 @@ public class Environment implements ConfigElement
     private String dashboard = "";
 
     /**
-     * Constructor that takes a name.
+     * Constructor that takes an id.
      */
-    protected Environment(EnvironmentName name)
+    protected Environment(EnvironmentId id, Site site)
     {
-        setEnvironmentName(name);
+        setId(id);
+        setSite(site);
     }
 
     /**
@@ -65,8 +66,8 @@ public class Environment implements ConfigElement
     {
         if(obj != null)
         {
-            setEnvironmentName(obj.getEnvironmentName());
-            setKey(obj.getKey());
+            setId(obj.getId());
+            setSite(obj.getSite());
             setUrl(obj.getUrl());
             setPing(obj.getPing());
             setPath(obj.getPath());
@@ -89,35 +90,51 @@ public class Environment implements ConfigElement
     }
 
     /**
-     * Returns the name of the environment.
+     * Returns the id of the environment.
      */
     public String getName()
     {
-        return getEnvironmentName().name();
+        return getId().name();
     }
 
     /**
-     * Returns the name of the environment.
+     * Returns the id of the environment.
      */
-    public EnvironmentName getEnvironmentName()
+    public EnvironmentId getId()
     {
-        return name;
+        return id;
     }
 
     /**
-     * Sets the name for the environment.
+     * Sets the id for the environment.
      */
-    public void setEnvironmentName(EnvironmentName name)
+    public void setId(EnvironmentId id)
     {
-        this.name = name;
+        this.id = id;
     }
 
     /**
-     * Sets the name for the environment.
+     * Sets the id for the environment.
      */
-    public void setEnvironmentName(String name)
+    public void setId(String id)
     {
-        setEnvironmentName(EnvironmentName.valueOf(name));
+        setId(EnvironmentId.valueOf(id));
+    }
+
+    /**
+     * Returns the site of the environment.
+     */
+    public Site getSite()
+    {
+        return site;
+    }
+
+    /**
+     * Sets the site of the environment.
+     */
+    public void setSite(Site site)
+    {
+        this.site = site;
     }
 
     /**
@@ -125,15 +142,10 @@ public class Environment implements ConfigElement
      */
     public String getKey()
     {
-        return key;
-    }
-
-    /**
-     * Sets the key for the environment.
-     */
-    public void setKey(String key)
-    {
-        this.key = key;
+        if(site != null)
+            return String.format("%s-%s",
+                getSite().getId().toLowerCase(), getId().code());
+        return getId().code();
     }
 
     /**
@@ -298,13 +310,13 @@ public class Environment implements ConfigElement
 
     /**
      * Returns a builder for the environment.
-     * @param name The name of the environment
+     * @param id The id of the environment
      * @param site The site of the environment
      * @return The builder instance.
      */
-    public static Builder builder(String name, Site site)
+    public static Builder builder(String id, Site site)
     {
-        return new Builder(EnvironmentName.valueOf(name), site);
+        return new Builder(EnvironmentId.valueOf(id), site);
     }
 
     /**
@@ -328,22 +340,12 @@ public class Environment implements ConfigElement
 
         /**
          * Constructor that takes a name.
-         * @param name The name for the environment
+         * @param id The id for the environment
          * @param site The site for the environment
          */
-        public Builder(EnvironmentName name, Site site)
+        public Builder(EnvironmentId id, Site site)
         {
-            ret = new Environment(name);
-
-            // Generate environment key
-            String key = name.code();
-            if(site != null)
-            {
-                key = String.format("%s-%s",
-                    site.getId().toLowerCase(), name.code());
-            }
-
-            ret.setKey(key);
+            ret = new Environment(id, site);
         }
 
         /**

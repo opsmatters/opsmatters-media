@@ -22,7 +22,9 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.platform.Environment;
-import com.opsmatters.media.model.platform.EnvironmentName;
+import com.opsmatters.media.model.platform.EnvironmentId;
+
+import static com.opsmatters.media.model.platform.EnvironmentId.*;
 
 /**
  * Class representing the set of environments.
@@ -33,7 +35,7 @@ public class Environments
 {
     private static final Logger logger = Logger.getLogger(Environments.class.getName());
 
-    private static Map<EnvironmentName,Environment> environmentMap = new HashMap<EnvironmentName,Environment>();
+    private static Map<EnvironmentId,Environment> environmentMap = new HashMap<EnvironmentId,Environment>();
 
     private static boolean initialised = false;
 
@@ -83,25 +85,25 @@ public class Environments
      */
     private static void add(Environment environment)
     {
-        environmentMap.put(environment.getEnvironmentName(), environment);
+        environmentMap.put(environment.getId(), environment);
     }
 
     /**
-     * Returns the environment for the given name.
+     * Returns the environment for the given id.
      */
-    public static Environment get(EnvironmentName name)
+    public static Environment get(EnvironmentId id)
     {
-        return environmentMap.get(name);
+        return environmentMap.get(id);
     }
 
     /**
-     * Returns the environment for the given name.
+     * Returns the environment for the given id.
      */
-    public static Environment get(String name)
+    public static Environment get(String id)
     {
-        EnvironmentName env = null;
-        if(name != null && name.length() > 0)
-            env = EnvironmentName.valueOf(name);
+        EnvironmentId env = null;
+        if(id != null && id.length() > 0)
+            env = EnvironmentId.valueOf(id);
         return get(env);
     }
 
@@ -114,7 +116,7 @@ public class Environments
         for(Site site : Sites.list())
         {
             if(site.isEnabled())
-                ret.add(site.getEnvironment(EnvironmentName.STAGE));
+                ret.add(site.getEnvironment(STAGE));
         }
 
         return ret;

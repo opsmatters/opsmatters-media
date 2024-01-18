@@ -16,39 +16,37 @@
 
 package com.opsmatters.media.model.platform;
 
-import static com.opsmatters.media.model.platform.EnvironmentType.*;
-
 /**
  * Represents the environments for a platform.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum EnvironmentName
+public enum EnvironmentId
 {
-    DIRECTOR("director", "Director", APP),
-    PUBLISHER("publisher", "Publisher", APP),
-    IMAGE("image", "Image", APP),
-    LOCAL("local", "Local", APP),
-    STAGE_DB("app-stage", "Stage", APP),
-    PROD_DB("app-prod", "Production", APP),
-    STAGE("stage", "Stage", SITE),
-    PROD("prod", "Production", SITE);
+    DIRECTOR("director", "Director", false),
+    PUBLISHER("publisher", "Publisher", false),
+    IMAGE("image", "Image", false),
+    LOCAL("local", "Local", false),
+    STAGE_DB("app-stage", "Stage", false),
+    PROD_DB("app-prod", "Production", false),
+    STAGE("stage", "Stage", true),
+    PROD("prod", "Production", true);
 
     private String code;
     private String value;
-    private EnvironmentType type;
+    private boolean site;
 
     /**
      * Constructor that takes the environment code and value.
      * @param code The code for the environment
      * @param value The value for the environment
-     * @param type The type of the environment
+     * @param site <CODE>true</CODE> if the environment is associated with a site
      */
-    EnvironmentName(String code, String value, EnvironmentType type)
+    EnvironmentId(String code, String value, boolean site)
     {
         this.code = code;
         this.value = value;
-        this.type = type;
+        this.site = site;
     }
 
     /**
@@ -79,30 +77,12 @@ public enum EnvironmentName
     }
 
     /**
-     * Returns The type of the environment.
-     * @return The type of the environment.
-     */
-    public EnvironmentType type()
-    {
-        return type;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if this is a APP environment.
-     * @return <CODE>true</CODE> if this is a APP environment.
-     */
-    public boolean app()
-    {
-        return type == APP;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if this is a SITE environment.
-     * @return <CODE>true</CODE> if this is a SITE environment.
+     * Returns <CODE>true</CODE> if the environment is associated with a site.
+     * @return <CODE>true</CODE> if the environment is associated with a site.
      */
     public boolean site()
     {
-        return type == SITE;
+        return site;
     }
 
     /**
@@ -110,10 +90,10 @@ public enum EnvironmentName
      * @param value The environment value
      * @return The environment name for the given value
      */
-    public static EnvironmentName fromValue(String value)
+    public static EnvironmentId fromValue(String value)
     {
-        EnvironmentName[] types = values();
-        for(EnvironmentName type : types)
+        EnvironmentId[] types = values();
+        for(EnvironmentId type : types)
         {
             if(type.value().equals(value))
                 return type;

@@ -29,7 +29,7 @@ import com.opsmatters.media.cache.content.util.ContentImages;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.platform.FeedsConfig;
 import com.opsmatters.media.model.platform.Environment;
-import com.opsmatters.media.model.platform.EnvironmentName;
+import com.opsmatters.media.model.platform.EnvironmentId;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.organisation.OrganisationStatus;
@@ -282,7 +282,7 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     /**
      * Extract the list of content items from the database and deploy using the given handler.
      */
-    public List<C> deployContent(Site site, EnvironmentName env, Environment images, ContentDAO contentDAO, ContentHandler handler)
+    public List<C> deployContent(Site site, EnvironmentId env, Environment images, ContentDAO contentDAO, ContentHandler handler)
         throws IOException, SQLException
     {
         int idx = 0;
@@ -314,7 +314,7 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
 
                 // Set the published flag based on the environment and status
                 boolean published = false;
-                if(env == EnvironmentName.PROD)
+                if(env == EnvironmentId.PROD)
                     published = organisationSite.isActive();
                 else
                     published = organisationSite.isReview() || organisationSite.isActive();
@@ -390,7 +390,7 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
 
             if(content.getStatus() != ContentStatus.DEPLOYED)
             {
-                if(env == EnvironmentName.STAGE)
+                if(env == EnvironmentId.STAGE)
                     content.setStatus(ContentStatus.STAGED);
                 else if(content.getStatus() == ContentStatus.STAGED)
                     content.setStatus(ContentStatus.DEPLOYED);

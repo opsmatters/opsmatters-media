@@ -19,11 +19,12 @@ import java.time.Instant;
 import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.model.platform.Site;
-import com.opsmatters.media.model.platform.EnvironmentName;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.StringUtils;
+
+import static com.opsmatters.media.model.platform.EnvironmentId.*;
 
 /**
  * Class representing a draft social media post for a content item.
@@ -59,7 +60,7 @@ public class DraftContentPost extends DraftPost
 
         getProperties().put(HANDLE, organisation.hasHandle() ? "@"+organisation.getHandle() : "");
         getProperties().put(HASHTAG, organisation.getHashtag());
-        getProperties().put(URL, organisation.getUrl(site.getEnvironment(EnvironmentName.PROD).getUrl()));
+        getProperties().put(URL, organisation.getUrl(site.getEnvironment(PROD).getUrl()));
     }
 
     /**
@@ -79,7 +80,7 @@ public class DraftContentPost extends DraftPost
         getProperties().put(HANDLE, organisation.hasHandle() ? "@"+organisation.getHandle() : "");
         getProperties().put(HASHTAG, organisation.getHashtag());
         if(content.getType() == ContentType.ROUNDUP)
-            getProperties().put(URL, organisation.getUrl(site.getEnvironment(EnvironmentName.PROD).getUrl()));
+            getProperties().put(URL, organisation.getUrl(site.getEnvironment(PROD).getUrl()));
     }
 
     /**

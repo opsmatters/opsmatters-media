@@ -21,6 +21,8 @@ import java.io.FileOutputStream;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.Duration;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -42,6 +44,7 @@ import software.amazon.awssdk.services.ec2.model.StopInstancesResponse;
 import software.amazon.awssdk.services.ec2.model.Reservation;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import com.opsmatters.media.client.Client;
+import com.opsmatters.media.model.platform.EnvironmentId;
 import com.opsmatters.media.model.platform.EnvironmentStatus;
 import com.opsmatters.media.model.platform.aws.Ec2Config;
 
@@ -55,6 +58,7 @@ public class AwsEc2Client extends Client
     private static final Logger logger = Logger.getLogger(AwsEc2Client.class.getName());
 
     public static final String SUFFIX = ".ec2";
+    public static final int MIN_UPTIME = 20000;
 
     private Ec2Client client = null;
     private String region;
@@ -257,13 +261,30 @@ public class AwsEc2Client extends Client
         {
             int state = instance.state().code();
             if(state == 0)
+            {
                 ret = EnvironmentStatus.STARTING;
+            }
             else if(state == 16)
-                ret = EnvironmentStatus.RUNNING;
+            {
+                long uptime = Duration.between(instance.launchTime(), Instant.now()).toMillis();
+                // Check the server has been up for at least 20s to prevent errors
+                if(uptime < MIN_UPTIME)
+                {
+                    ret = EnvironmentStatus.STARTING;
+                }
+                else
+                {
+                    ret = EnvironmentStatus.RUNNING;
+                }
+            }
             else if(state == 64 || state == 32) // stopping or shutting-down
+            {
                 ret = EnvironmentStatus.STOPPING;
+            }
             else if(state == 80 || state == 48) // stopped or terminated
+            {
                 ret = EnvironmentStatus.STOPPED;
+            }
 
             if(ret == EnvironmentStatus.UNKNOWN)
                 logger.warning("EC2 instance has unknown state: "+state);

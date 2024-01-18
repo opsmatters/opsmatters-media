@@ -39,7 +39,7 @@ public class Site implements ConfigElement
     private boolean enabled = false;
     private S3Config s3;
     private NewsletterConfig newsletter;
-    private Map<EnvironmentName,Environment> environments = new LinkedHashMap<EnvironmentName,Environment>();
+    private Map<EnvironmentId,Environment> environments = new LinkedHashMap<EnvironmentId,Environment>();
 
     /**
      * Constructor that takes an id.
@@ -216,7 +216,7 @@ public class Site implements ConfigElement
     /**
      * Adds a environment to the environments for the site.
      */
-    public Map<EnvironmentName,Environment> getEnvironments()
+    public Map<EnvironmentId,Environment> getEnvironments()
     {
         return this.environments;
     }
@@ -226,7 +226,7 @@ public class Site implements ConfigElement
      */
     public void addEnvironment(Environment environment)
     {
-        this.environments.put(environment.getEnvironmentName(), environment);
+        this.environments.put(environment.getId(), environment);
     }
 
     /**
@@ -240,9 +240,9 @@ public class Site implements ConfigElement
     /**
      * Returns the environment with the given name.
      */
-    public Environment getEnvironment(EnvironmentName name)
+    public Environment getEnvironment(EnvironmentId id)
     {
-        return environments.get(name);
+        return environments.get(id);
     }
 
     /**
