@@ -233,11 +233,9 @@ public class FormatUtils
             ret = ret.trim();
             if(ret.length() > 0)
             {
-                boolean stripped = false;
                 if(ret.startsWith("<p>"))
                 {
                     ret = Pattern.compile("<p>(.*)</p>", Pattern.DOTALL).matcher(ret).replaceAll("$1").trim();
-                    stripped = true;
                 }
 
                 if(ret.length() > 0)
@@ -253,9 +251,6 @@ public class FormatUtils
                         ret += "."; // add full stop
                     }
                 }
-
-                if(stripped)
-                    ret = String.format("<p>%s</p>", ret);
             }
         }
 

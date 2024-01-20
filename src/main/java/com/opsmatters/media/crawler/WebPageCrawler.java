@@ -989,7 +989,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                 {
                     // Apply any extractors to the selection
                     body = getValue(field, body, category);
-                    ret = String.format("<p>%s</p>", body.trim());
+                    ret = body.trim();
                     if(debug())
                         logger.info(String.format("Found body summary for %s field %s: %s",
                             category.value(), field.getName(), ret));
@@ -1001,7 +1001,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                 String tag = getPropertyMetatag(selector.getExpr(), category);
                 if(tag != null)
                 {
-                    ret = String.format("<p>%s</p>", getValue(field, tag, category));
+                    ret = getValue(field, tag, category);
                     if(debug())
                         logger.info(String.format("Found body summary metatag for %s field %s: %s",
                             category.value(), field.getName(), ret));
