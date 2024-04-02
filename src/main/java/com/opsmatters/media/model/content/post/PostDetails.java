@@ -68,4 +68,12 @@ public class PostDetails extends ArticleDetails
     {
         this.description = description;
     }
+
+    /**
+     * Returns <CODE>true</CODE> if the post description has been set.
+     */
+    public boolean hasDescription()
+    {
+        return description != null && description.length() > 0;
+    }
 }

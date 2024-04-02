@@ -363,6 +363,14 @@ public class Post extends Article<PostDetails>
     }
 
     /**
+     * Returns <CODE>true</CODE> if the post description has been set.
+     */
+    public boolean hasDescription()
+    {
+        return getDetails().hasDescription();
+    }
+
+    /**
      * Returns the image name.
      */
     @Override
