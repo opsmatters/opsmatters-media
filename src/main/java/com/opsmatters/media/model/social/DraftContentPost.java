@@ -25,6 +25,7 @@ import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.platform.EnvironmentId.*;
+import static com.opsmatters.media.model.social.SocialPostProperty.*;
 
 /**
  * Class representing a draft social media post for a content item.
@@ -58,9 +59,9 @@ public class DraftContentPost extends DraftPost
         setContentType(ContentType.ORGANISATION);
         setStatus(DraftStatus.NEW);
 
-        getProperties().put(HANDLE, organisation.hasHandle() ? "@"+organisation.getHandle() : "");
-        getProperties().put(HASHTAG, organisation.getHashtag());
-        getProperties().put(URL, organisation.getUrl(site.getEnvironment(PROD).getUrl()));
+        setProperty(HANDLE, organisation.hasHandle() ? "@"+organisation.getHandle() : "");
+        setProperty(HASHTAG, organisation.getHashtag());
+        setProperty(URL, organisation.getUrl(site.getEnvironment(PROD).getUrl()));
     }
 
     /**
@@ -77,10 +78,10 @@ public class DraftContentPost extends DraftPost
         setContentType(content.getType());
         setStatus(DraftStatus.NEW);
 
-        getProperties().put(HANDLE, organisation.hasHandle() ? "@"+organisation.getHandle() : "");
-        getProperties().put(HASHTAG, organisation.getHashtag());
+        setProperty(HANDLE, organisation.hasHandle() ? "@"+organisation.getHandle() : "");
+        setProperty(HASHTAG, organisation.getHashtag());
         if(content.getType() == ContentType.ROUNDUP)
-            getProperties().put(URL, organisation.getUrl(site.getEnvironment(PROD).getUrl()));
+            setProperty(URL, organisation.getUrl(site.getEnvironment(PROD).getUrl()));
     }
 
     /**
@@ -96,8 +97,8 @@ public class DraftContentPost extends DraftPost
         setContentType(post.getContentType());
         setStatus(DraftStatus.NEW);
 
-        getProperties().put(HANDLE, organisation.hasHandle() ? "@"+organisation.getHandle() : "");
-        getProperties().put(HASHTAG, organisation.getHashtag());
+        setProperty(HANDLE, organisation.hasHandle() ? "@"+organisation.getHandle() : "");
+        setProperty(HASHTAG, organisation.getHashtag());
         setTitle(post.getName());
         setHashtags(post.getHashtags());
         setUrl(post.getUrl());
@@ -143,9 +144,9 @@ public class DraftContentPost extends DraftPost
     {
         JSONObject ret = super.getAttributes();
 
-        ret.putOpt(ORGANISATION, getCode());
-        ret.putOpt(CONTENT_TYPE, getContentType().name());
-        ret.putOpt(CONTENT_ID, getContentId());
+        ret.putOpt(ORGANISATION.value(), getCode());
+        ret.putOpt(CONTENT_TYPE.value(), getContentType().name());
+        ret.putOpt(CONTENT_ID.value(), getContentId());
 
         return ret;
     }
@@ -157,9 +158,9 @@ public class DraftContentPost extends DraftPost
     public void setAttributes(JSONObject obj)
     {
         super.setAttributes(obj);
-        setCode(obj.optString(ORGANISATION));
-        setContentType(obj.optString(CONTENT_TYPE));
-        setContentId(obj.optInt(CONTENT_ID));
+        setCode(obj.optString(ORGANISATION.value()));
+        setContentType(obj.optString(CONTENT_TYPE.value()));
+        setContentId(obj.optInt(CONTENT_ID.value()));
     }
 
     /**
@@ -280,7 +281,7 @@ public class DraftContentPost extends DraftPost
      */
     public String getHandle()
     {
-        return getProperties().get(HANDLE);
+        return getProperties().get(HANDLE.value());
     }
 
     /**
@@ -288,7 +289,7 @@ public class DraftContentPost extends DraftPost
      */
     public void setHandle(String handle)
     {
-        getProperties().put(HANDLE, handle);
+        getProperties().put(HANDLE.value(), handle);
     }
 
     /**
@@ -304,7 +305,7 @@ public class DraftContentPost extends DraftPost
      */
     public String getHashtag()
     {
-        return getProperties().get(HASHTAG);
+        return getProperties().get(HASHTAG.value());
     }
 
     /**
@@ -312,7 +313,7 @@ public class DraftContentPost extends DraftPost
      */
     public void setHashtag(String hashtag)
     {
-        getProperties().put(HASHTAG, hashtag);
+        getProperties().put(HASHTAG.value(), hashtag);
     }
 
     /**
@@ -329,7 +330,7 @@ public class DraftContentPost extends DraftPost
     @Override
     public String getTitle()
     {
-        return getProperties().get(TITLE);
+        return getProperties().get(TITLE.value());
     }
 
     /**
@@ -338,7 +339,7 @@ public class DraftContentPost extends DraftPost
     @Override
     public void setTitle(String title)
     {
-        getProperties().put(TITLE, title);
+        getProperties().put(TITLE.value(), title);
     }
 
     /**
@@ -354,7 +355,7 @@ public class DraftContentPost extends DraftPost
      */
     public String getTitle1()
     {
-        return getProperties().get(TITLE1);
+        return getProperties().get(TITLE1.value());
     }
 
     /**
@@ -362,7 +363,7 @@ public class DraftContentPost extends DraftPost
      */
     public void setTitle1(String title1)
     {
-        getProperties().put(TITLE1, title1);
+        getProperties().put(TITLE1.value(), title1);
     }
 
     /**
@@ -378,7 +379,7 @@ public class DraftContentPost extends DraftPost
      */
     public String getTitle2()
     {
-        return getProperties().get(TITLE2);
+        return getProperties().get(TITLE2.value());
     }
 
     /**
@@ -386,7 +387,7 @@ public class DraftContentPost extends DraftPost
      */
     public void setTitle2(String title2)
     {
-        getProperties().put(TITLE2, title2);
+        getProperties().put(TITLE2.value(), title2);
     }
 
     /**

@@ -16,10 +16,10 @@
 package com.opsmatters.media.model.social;
 
 import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.Iterator;
 import org.json.JSONObject;
 import com.opsmatters.media.model.content.ContentType;
+
+import static com.opsmatters.media.model.social.SocialPostProperty.*;
 
 /**
  * Class representing a saved social media post.
@@ -31,7 +31,8 @@ public abstract class SavedPost extends PostSource
     public static final String DEFAULT = "New Post";
 
     private String title = "";
-    private Map<String,String> properties = new LinkedHashMap<String,String>();
+
+    private SocialPostProperties properties = new SocialPostProperties();
 
     /**
      * Copies the attributes of the given object.
@@ -90,7 +91,7 @@ public abstract class SavedPost extends PostSource
     /**
      * Returns the post properties.
      */
-    public Map<String,String> getProperties()
+    public SocialPostProperties getProperties()
     {
         return properties;
     }
@@ -100,7 +101,7 @@ public abstract class SavedPost extends PostSource
      */
     public JSONObject getPropertiesAsJson()
     {
-        return new JSONObject(getProperties());
+        return getProperties().toJson();
     }
 
     /**
@@ -108,8 +109,7 @@ public abstract class SavedPost extends PostSource
      */
     public void setProperties(Map<String,String> properties)
     {
-        this.properties.clear();
-        this.properties.putAll(properties);
+        getProperties().set(properties);
     }
 
     /**
@@ -117,21 +117,23 @@ public abstract class SavedPost extends PostSource
      */
     public void setProperties(JSONObject obj)
     {
-        getProperties().clear();
-        Iterator<String> keys = obj.keys();
-        while(keys.hasNext())
-        {
-            String key = keys.next();
-            getProperties().put(key, obj.getString(key));
-        }
+        getProperties().set(obj);
     }
 
     /**
      * Returns <CODE>true</CODE> if the given post property has been set.
      */
-    public boolean hasProperty(String key)
+    public boolean hasProperty(SocialPostProperty property)
     {
-        return getProperties().containsKey(key);
+        return getProperties().containsKey(property);
+    }
+
+    /**
+     * Sets the value of the given post property.
+     */
+    public void setProperty(SocialPostProperty property, String value)
+    {
+        getProperties().put(property, value);
     }
 
     /**

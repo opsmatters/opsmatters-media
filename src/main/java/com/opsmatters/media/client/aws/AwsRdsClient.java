@@ -254,6 +254,16 @@ public class AwsRdsClient extends Client
         return ret;
     }
 
+//GERALD: temp?
+    /**
+     * Returns the raw status of the given RDS cluster.
+     */
+    public String getRawStatus(String clusterId)
+    {
+        DBCluster cluster = describeCluster(clusterId);
+        return cluster != null ? cluster.status() : null;
+    }
+
     /**
      * Starts the given RDS cluster.
      */
