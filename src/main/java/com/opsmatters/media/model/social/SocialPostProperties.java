@@ -30,6 +30,13 @@ public class SocialPostProperties extends LinkedHashMap<String,String>
     private static final String ENABLED = ".enabled";
 
     /**
+     * Default constructor.
+     */
+    public SocialPostProperties()
+    {
+    }
+
+    /**
      * Constructor that takes a set of properties.
      */
     public SocialPostProperties(SocialPostProperties properties)

@@ -66,4 +66,12 @@ public abstract class SocialPostItem<T extends SocialPost> extends BaseEntityIte
     {
         content.setSiteId(siteId);
     }
+
+    /**
+     * Returns <CODE>true</CODE> if the site has been set.
+     */
+    public boolean hasSiteId()
+    {
+        return content.hasSiteId();
+    }
 }

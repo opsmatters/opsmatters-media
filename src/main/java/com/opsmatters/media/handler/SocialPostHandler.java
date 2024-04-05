@@ -26,7 +26,7 @@ import com.twitter.twittertext.TwitterTextParser;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.SocialProvider;
-import com.opsmatters.media.model.social.SocialPostProperty;
+import com.opsmatters.media.model.social.SocialPostProperties;
 import com.opsmatters.media.model.social.Hashtag;
 
 import static com.opsmatters.media.model.social.SocialPostProperty.*;
@@ -42,7 +42,7 @@ public class SocialPostHandler
     private String hashtags = null;
     private List<Hashtag> hashtagList = null;
     private Map<String,HashtagItem> hashtagMap = new LinkedHashMap<String,HashtagItem>();
-    private Map<String,String> properties = new LinkedHashMap<String,String>();
+    private SocialPostProperties properties = new SocialPostProperties();
     private String message = null;
     private String markupMessage = null;
     private int messageLength = -1;
@@ -75,7 +75,7 @@ public class SocialPostHandler
     /**
      * Returns the properties for the handler.
      */
-    public Map<String,String> getProperties()
+    public SocialPostProperties getProperties()
     {
         return properties;
     }
@@ -83,10 +83,9 @@ public class SocialPostHandler
     /**
      * Sets the properties for the handler.
      */
-    public void setProperties(Map<String,String> properties)
+    public void setProperties(SocialPostProperties properties)
     {
-        this.properties.clear();
-        this.properties.putAll(properties);
+        getProperties().set(properties);
     }
 
     /**
@@ -242,14 +241,14 @@ public class SocialPostHandler
 
             // Process the message to find any hashtags in the message
             //   that can be removed from the hashtag list
-            properties.remove(HASHTAGS.value());
-            parseTokens(new StringSubstitutor(properties).replace(message));
+            getProperties().remove(HASHTAGS);
+            parseTokens(new StringSubstitutor(getProperties()).replace(message));
 
             // Put back the amended hashtag list and process the message again
             //   to resolve the HASHTAGS property with the new value
             if(hashtags != null)
-                properties.put(HASHTAGS.value(), getHashtags());
-            parseTokens(new StringSubstitutor(properties).replace(getMessage()));
+                getProperties().put(HASHTAGS, getHashtags());
+            parseTokens(new StringSubstitutor(getProperties()).replace(getMessage()));
         }
     }
 
@@ -733,7 +732,7 @@ public class SocialPostHandler
             }
             else if(token instanceof PropertyToken)
             {
-                String str = properties.getOrDefault(token.getValue(), token.toString());
+                String str = getProperties().getOrDefault(token.getValue(), token.toString());
                 if(str == null)
                     str = token.toString();
                 message.append(str);
@@ -878,7 +877,7 @@ public class SocialPostHandler
          * @param properties The properties for the handler
          * @return This object
          */
-        public Builder withProperties(Map<String,String> properties)
+        public Builder withProperties(SocialPostProperties properties)
         {
             handler.setProperties(properties);
             return this;

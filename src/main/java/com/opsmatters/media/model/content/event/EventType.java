@@ -86,12 +86,12 @@ public enum EventType
     /**
      * Returns a list of the type values.
      */
-    public static List<String> toList(String blank)
+    public static List<String> toList(boolean blank)
     {
         List<String> ret = new ArrayList<String>();
 
-        if(blank != null)
-            ret.add(blank);
+        if(blank)
+            ret.add("");
         for(EventType type : EventType.values())
             ret.add(type.value());
 

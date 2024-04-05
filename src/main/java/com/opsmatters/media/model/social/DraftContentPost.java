@@ -281,7 +281,7 @@ public class DraftContentPost extends DraftPost
      */
     public String getHandle()
     {
-        return getProperties().get(HANDLE.value());
+        return getProperties().get(HANDLE);
     }
 
     /**
@@ -289,7 +289,7 @@ public class DraftContentPost extends DraftPost
      */
     public void setHandle(String handle)
     {
-        getProperties().put(HANDLE.value(), handle);
+        getProperties().put(HANDLE, handle);
     }
 
     /**
@@ -305,7 +305,7 @@ public class DraftContentPost extends DraftPost
      */
     public String getHashtag()
     {
-        return getProperties().get(HASHTAG.value());
+        return getProperties().get(HASHTAG);
     }
 
     /**
@@ -313,7 +313,7 @@ public class DraftContentPost extends DraftPost
      */
     public void setHashtag(String hashtag)
     {
-        getProperties().put(HASHTAG.value(), hashtag);
+        getProperties().put(HASHTAG, hashtag);
     }
 
     /**
@@ -330,7 +330,7 @@ public class DraftContentPost extends DraftPost
     @Override
     public String getTitle()
     {
-        return getProperties().get(TITLE.value());
+        return getProperties().get(TITLE);
     }
 
     /**
@@ -339,7 +339,7 @@ public class DraftContentPost extends DraftPost
     @Override
     public void setTitle(String title)
     {
-        getProperties().put(TITLE.value(), title);
+        getProperties().put(TITLE, title);
     }
 
     /**
@@ -355,7 +355,7 @@ public class DraftContentPost extends DraftPost
      */
     public String getTitle1()
     {
-        return getProperties().get(TITLE1.value());
+        return getProperties().get(TITLE1);
     }
 
     /**
@@ -363,7 +363,7 @@ public class DraftContentPost extends DraftPost
      */
     public void setTitle1(String title1)
     {
-        getProperties().put(TITLE1.value(), title1);
+        getProperties().put(TITLE1, title1);
     }
 
     /**
@@ -379,7 +379,7 @@ public class DraftContentPost extends DraftPost
      */
     public String getTitle2()
     {
-        return getProperties().get(TITLE2.value());
+        return getProperties().get(TITLE2);
     }
 
     /**
@@ -387,7 +387,7 @@ public class DraftContentPost extends DraftPost
      */
     public void setTitle2(String title2)
     {
-        getProperties().put(TITLE2.value(), title2);
+        getProperties().put(TITLE2, title2);
     }
 
     /**
@@ -396,5 +396,53 @@ public class DraftContentPost extends DraftPost
     public boolean hasTitle2()
     {
         return getTitle2() != null && getTitle2().length() > 0;
+    }
+
+    /**
+     * Returns the post preamble.
+     */
+    public String getPreamble()
+    {
+        return getProperties().get(PREAMBLE);
+    }
+
+    /**
+     * Sets the post preamble.
+     */
+    public void setPreamble(String preamble)
+    {
+        getProperties().put(PREAMBLE, preamble);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the post preamble has been set.
+     */
+    public boolean hasPreamble()
+    {
+        return getPreamble() != null && getPreamble().length() > 0;
+    }
+
+    /**
+     * Returns the post description.
+     */
+    public String getDescription()
+    {
+        return getProperties().get(DESCRIPTION);
+    }
+
+    /**
+     * Sets the post description.
+     */
+    public void setDescription(String description)
+    {
+        getProperties().put(DESCRIPTION, description);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the post description has been set.
+     */
+    public boolean hasDescription()
+    {
+        return getDescription() != null && getDescription().length() > 0;
     }
 }

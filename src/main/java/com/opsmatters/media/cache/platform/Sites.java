@@ -113,6 +113,18 @@ public class Sites
     }
 
     /**
+     * Returns the list of sites.
+     */
+    public static List<Site> list(boolean blank)
+    {
+        List<Site> ret = new ArrayList<Site>();
+        if(blank)
+            ret.add(null);
+        ret.addAll(siteList);
+        return ret;
+    }
+
+    /**
      * Returns the list of site ids.
      */
     public static List<String> listIds()

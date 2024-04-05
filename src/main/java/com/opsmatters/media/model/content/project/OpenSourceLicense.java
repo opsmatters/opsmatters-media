@@ -99,6 +99,7 @@ public enum OpenSourceLicense
             if(type.code().equals(code))
                 return type;
         }
+
         return null;
     }
 
@@ -115,12 +116,12 @@ public enum OpenSourceLicense
     /**
      * Returns a list of the license values.
      */
-    public static List<String> toList(String blank)
+    public static List<String> toList(boolean blank)
     {
         List<String> ret = new ArrayList<String>();
 
-        if(blank != null)
-            ret.add(blank);
+        if(blank)
+            ret.add("-");
         for(OpenSourceLicense license : OpenSourceLicense.values())
             ret.add(license.value());
 

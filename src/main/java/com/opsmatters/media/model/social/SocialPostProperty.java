@@ -33,7 +33,9 @@ public enum SocialPostProperty
     TITLE1("title1"),
     TITLE2("title2"),
     URL("url"),
-    ORIGINAL_URL("original-url");
+    ORIGINAL_URL("original-url"),
+    PREAMBLE("preamble"),
+    DESCRIPTION("description");
 
     private String value;
 

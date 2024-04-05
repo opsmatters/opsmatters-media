@@ -63,6 +63,14 @@ public abstract class SocialPost extends OwnedEntity
     }
 
     /**
+     * Returns <CODE>true</CODE> if the site has been set.
+     */
+    public boolean hasSiteId()
+    {
+        return siteId != null && siteId.length() > 0;
+    }
+
+    /**
      * Returns the post message.
      */
     public String getMessage()
@@ -97,5 +105,13 @@ public abstract class SocialPost extends OwnedEntity
     public boolean hasMessage()
     {
         return message != null && message.length() > 0;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the post message contains a reference to the given property.
+     */
+    public boolean hasReference(SocialPostProperty property)
+    {
+        return hasMessage() && getMessage().indexOf(String.format("${%s}", property.value())) != -1;
     }
 }

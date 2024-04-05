@@ -37,13 +37,12 @@ public class ContentPostTemplate extends PostTemplate
     }
 
     /**
-     * Constructor that takes a site and name.
+     * Constructor that takes a name.
      */
-    public ContentPostTemplate(Site site, String name)
+    public ContentPostTemplate(String name)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
-        setSiteId(site.getId());
         setName(name);
         setStatus(SourceStatus.NEW);
     }

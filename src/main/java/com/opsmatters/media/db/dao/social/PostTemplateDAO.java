@@ -88,7 +88,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
      */
     private static final String LIST_BY_TYPE_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, POSTED_DATE, SITE_ID, NAME, MESSAGE, CONTENT_TYPE, IS_DEFAULT, SHORTEN_URL, STATUS, CREATED_BY "
-      + "FROM POST_TEMPLATES WHERE SITE_ID=? AND CONTENT_TYPE=?";
+      + "FROM POST_TEMPLATES WHERE CONTENT_TYPE=?";
 
     /**
      * The query to use to get the count of post templates from the POST_TEMPLATES table.
@@ -434,7 +434,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
     /**
      * Returns the post templates from the POST_TEMPLATES table by content type.
      */
-    public synchronized List<ContentPostTemplate> list(Site site, ContentType contentType) throws SQLException
+    public synchronized List<ContentPostTemplate> list(ContentType contentType, Site site) throws SQLException
     {
         List<ContentPostTemplate> ret = null;
 
@@ -450,8 +450,7 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
 
         try
         {
-            listByTypeStmt.setString(1, site.getId());
-            listByTypeStmt.setString(2, contentType.name());
+            listByTypeStmt.setString(1, contentType.name());
             listByTypeStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByTypeStmt.executeQuery();
             ret = new ArrayList<ContentPostTemplate>();
@@ -470,7 +469,12 @@ public class PostTemplateDAO extends SocialDAO<PostTemplate>
                 template.setShortenUrl(rs.getBoolean(10));
                 template.setStatus(rs.getString(11));
                 template.setCreatedBy(rs.getString(12));
-                ret.add(template);
+
+                if(!template.hasSiteId()
+                    || template.getSiteId().equals(site.getId()))
+                {
+                    ret.add(template);
+                }
             }
         }
         finally
