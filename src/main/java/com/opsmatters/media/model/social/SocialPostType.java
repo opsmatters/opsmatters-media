@@ -21,7 +21,7 @@ package com.opsmatters.media.model.social;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum PostType
+public enum SocialPostType
 {
     CONTENT("Content"),
     STANDARD("Standard"),
@@ -34,7 +34,7 @@ public enum PostType
      * Constructor that takes the type value.
      * @param value The value for the type
      */
-    PostType(String value)
+    SocialPostType(String value)
     {
         this.value = value;
     }
@@ -62,10 +62,10 @@ public enum PostType
      * @param value The type value
      * @return The type for the given value
      */
-    public static PostType fromValue(String value)
+    public static SocialPostType fromValue(String value)
     {
-        PostType[] types = values();
-        for(PostType type : types)
+        SocialPostType[] types = values();
+        for(SocialPostType type : types)
         {
             if(type.value().equals(value))
                 return type;

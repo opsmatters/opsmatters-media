@@ -46,13 +46,13 @@ public abstract class SocialPostItem<T extends SocialPost> extends BaseEntityIte
     /**
      * Returns the post type.
      */
-    public PostType getType()
+    public SocialPostType getType()
     {
         return content.getType();
     }
 
     /**
-     * Returns the post organisation.
+     * Returns the post site.
      */
     public String getSiteId()
     {
@@ -60,7 +60,7 @@ public abstract class SocialPostItem<T extends SocialPost> extends BaseEntityIte
     }
 
     /**
-     * Sets the post organisation.
+     * Sets the post site.
      */
     public void setSiteId(String siteId)
     {

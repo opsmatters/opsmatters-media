@@ -35,11 +35,13 @@ import com.opsmatters.media.model.social.DraftPostItem;
 import com.opsmatters.media.model.social.DraftPostFactory;
 import com.opsmatters.media.model.social.DraftPostItemFactory;
 import com.opsmatters.media.model.social.DraftStatus;
-import com.opsmatters.media.model.social.PostType;
+import com.opsmatters.media.model.social.SocialPostType;
 import com.opsmatters.media.model.social.DraftContentPost;
 import com.opsmatters.media.model.social.DraftContentPostItem;
 import com.opsmatters.media.model.social.DraftStandardPostItem;
 import com.opsmatters.media.util.SessionId;
+
+import static com.opsmatters.media.model.social.SocialPostType.*;
 
 /**
  * DAO that provides operations on the DRAFT_POSTS table in the database.
@@ -201,14 +203,14 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
             rs = getByIdStmt.executeQuery();
             while(rs.next())
             {
-                DraftPost post = DraftPostFactory.newInstance(PostType.valueOf(rs.getString(4)));
+                DraftPost post = DraftPostFactory.newInstance(SocialPostType.valueOf(rs.getString(4)));
                 post.setId(rs.getString(1));
                 post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setSiteId(rs.getString(5));
                 post.setSourceId(rs.getString(6));
 
-                if(post.getType() == PostType.CONTENT)
+                if(post.getType() == CONTENT)
                 {
                     DraftContentPost contentPost = (DraftContentPost)post;
                     contentPost.setCode(rs.getString(7));
@@ -266,7 +268,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
 
             String code = "";
             String contentType = "";
-            if(post.getType() == PostType.CONTENT)
+            if(post.getType() == CONTENT)
             {
                 DraftContentPost contentPost = (DraftContentPost)post;
                 code = contentPost.getCode();
@@ -360,7 +362,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns the post items from the DRAFT_POSTS table by type and interval.
      */
-    public synchronized List<DraftPostItem> listItems(PostType type, int interval) throws SQLException
+    public synchronized List<DraftPostItem> listItems(SocialPostType type, int interval) throws SQLException
     {
         List<DraftPostItem> ret = null;
 
@@ -389,13 +391,13 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setSiteId(rs.getString(4));
 
-                if(post.getType() == PostType.CONTENT)
+                if(post.getType() == CONTENT)
                 {
                     DraftContentPostItem contentPost = (DraftContentPostItem)post;
                     contentPost.setCode(rs.getString(5));
                     contentPost.setContentType(rs.getString(6));
                 }
-                else if(post.getType() == PostType.STANDARD)
+                else if(post.getType() == STANDARD)
                 {
                     DraftStandardPostItem standardPost = (DraftStandardPostItem)post;
                     standardPost.setTitle(rs.getString(7));
@@ -425,7 +427,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns the post items from the DRAFT_POSTS table by type, status and interval.
      */
-    public synchronized List<DraftPostItem> listItems(PostType type, DraftStatus status, int interval) throws SQLException
+    public synchronized List<DraftPostItem> listItems(SocialPostType type, DraftStatus status, int interval) throws SQLException
     {
         List<DraftPostItem> ret = null;
 
@@ -455,13 +457,13 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setSiteId(rs.getString(4));
 
-                if(post.getType() == PostType.CONTENT)
+                if(post.getType() == CONTENT)
                 {
                     DraftContentPostItem contentPost = (DraftContentPostItem)post;
                     contentPost.setCode(rs.getString(5));
                     contentPost.setContentType(rs.getString(6));
                 }
-                else if(post.getType() == PostType.STANDARD)
+                else if(post.getType() == STANDARD)
                 {
                     DraftStandardPostItem standardPost = (DraftStandardPostItem)post;
                     standardPost.setTitle(rs.getString(7));
@@ -491,7 +493,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns the post items from the DRAFT_POSTS table by type and status.
      */
-    public synchronized List<DraftPostItem> listItems(PostType type, DraftStatus status) throws SQLException
+    public synchronized List<DraftPostItem> listItems(SocialPostType type, DraftStatus status) throws SQLException
     {
         List<DraftPostItem> ret = null;
 
@@ -520,13 +522,13 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setSiteId(rs.getString(4));
 
-                if(post.getType() == PostType.CONTENT)
+                if(post.getType() == CONTENT)
                 {
                     DraftContentPostItem contentPost = (DraftContentPostItem)post;
                     contentPost.setCode(rs.getString(5));
                     contentPost.setContentType(rs.getString(6));
                 }
-                else if(post.getType() == PostType.STANDARD)
+                else if(post.getType() == STANDARD)
                 {
                     DraftStandardPostItem standardPost = (DraftStandardPostItem)post;
                     standardPost.setTitle(rs.getString(7));
@@ -578,14 +580,14 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
             ret = new ArrayList<DraftPost>();
             while(rs.next())
             {
-                DraftPost post = DraftPostFactory.newInstance(PostType.valueOf(rs.getString(4)));
+                DraftPost post = DraftPostFactory.newInstance(SocialPostType.valueOf(rs.getString(4)));
                 post.setId(rs.getString(1));
                 post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setSiteId(rs.getString(5));
                 post.setSourceId(rs.getString(6));
 
-                if(post.getType() == PostType.CONTENT)
+                if(post.getType() == CONTENT)
                 {
                     DraftContentPost contentPost = (DraftContentPost)post;
                     contentPost.setCode(rs.getString(7));
@@ -621,7 +623,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns the posts from the DRAFT_POSTS table by site and type.
      */
-    public synchronized List<DraftPost> list(Site site, PostType type, int interval) throws SQLException
+    public synchronized List<DraftPost> list(Site site, SocialPostType type, int interval) throws SQLException
     {
         List<DraftPost> ret = null;
 
@@ -645,14 +647,14 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
             ret = new ArrayList<DraftPost>();
             while(rs.next())
             {
-                DraftPost post = DraftPostFactory.newInstance(PostType.valueOf(rs.getString(4)));
+                DraftPost post = DraftPostFactory.newInstance(SocialPostType.valueOf(rs.getString(4)));
                 post.setId(rs.getString(1));
                 post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setSiteId(rs.getString(5));
                 post.setSourceId(rs.getString(6));
 
-                if(post.getType() == PostType.CONTENT)
+                if(post.getType() == CONTENT)
                 {
                     DraftContentPost contentPost = (DraftContentPost)post;
                     contentPost.setCode(rs.getString(7));
@@ -710,14 +712,14 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
             ret = new ArrayList<DraftPost>();
             while(rs.next())
             {
-                DraftPost post = DraftPostFactory.newInstance(PostType.valueOf(rs.getString(4)));
+                DraftPost post = DraftPostFactory.newInstance(SocialPostType.valueOf(rs.getString(4)));
                 post.setId(rs.getString(1));
                 post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setSiteId(rs.getString(5));
                 post.setSourceId(rs.getString(6));
 
-                if(post.getType() == PostType.CONTENT)
+                if(post.getType() == CONTENT)
                 {
                     DraftContentPost contentPost = (DraftContentPost)post;
                     contentPost.setCode(rs.getString(7));
@@ -753,7 +755,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns the post items from the DRAFT_POSTS table by type and source id.
      */
-    public synchronized List<DraftPostItem> listItems(PostType type, String sourceId) throws SQLException
+    public synchronized List<DraftPostItem> listItems(SocialPostType type, String sourceId) throws SQLException
     {
         List<DraftPostItem> ret = null;
 
@@ -782,13 +784,13 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setSiteId(rs.getString(4));
 
-                if(post.getType() == PostType.CONTENT)
+                if(post.getType() == CONTENT)
                 {
                     DraftContentPostItem contentPost = (DraftContentPostItem)post;
                     contentPost.setCode(rs.getString(5));
                     contentPost.setContentType(rs.getString(6));
                 }
-                else if(post.getType() == PostType.STANDARD)
+                else if(post.getType() == STANDARD)
                 {
                     DraftStandardPostItem standardPost = (DraftStandardPostItem)post;
                     standardPost.setTitle(rs.getString(7));
@@ -843,14 +845,14 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
             ret = new ArrayList<DraftPost>();
             while(rs.next())
             {
-                DraftPost post = DraftPostFactory.newInstance(PostType.valueOf(rs.getString(4)));
+                DraftPost post = DraftPostFactory.newInstance(SocialPostType.valueOf(rs.getString(4)));
                 post.setId(rs.getString(1));
                 post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setSiteId(rs.getString(5));
                 post.setSourceId(rs.getString(6));
 
-                if(post.getType() == PostType.CONTENT)
+                if(post.getType() == CONTENT)
                 {
                     DraftContentPost contentPost = (DraftContentPost)post;
                     contentPost.setCode(rs.getString(7));

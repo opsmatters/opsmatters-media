@@ -37,7 +37,7 @@ public class SavedPostItemFactory
     /**
      * Returns a saved post for the given type.
      */
-    public static SavedPostItem newInstance(PostType type)
+    public static SavedPostItem newInstance(SocialPostType type)
     {
         switch(type)
         {

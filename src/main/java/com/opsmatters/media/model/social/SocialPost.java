@@ -44,7 +44,10 @@ public abstract class SocialPost extends OwnedEntity
     /**
      * Returns the post type.
      */
-    public abstract PostType getType();
+    public SocialPostType getType()
+    {
+        return null;
+    }
 
     /**
      * Returns the site id.

@@ -34,7 +34,7 @@ public class SocialDAOFactory extends DAOFactory
         super(driver, conn);
 
         getSocialChannelDAO();
-        getPostTemplateDAO();
+        getSocialTemplateDAO();
         getSavedPostDAO();
         getDraftPostDAO();
         getChannelPostDAO();
@@ -52,13 +52,13 @@ public class SocialDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the post template DAO.
+     * Returns the social template DAO.
      */
-    public PostTemplateDAO getPostTemplateDAO()
+    public SocialTemplateDAO getSocialTemplateDAO()
     {
-        if(postTemplateDAO == null)
-            postTemplateDAO = new PostTemplateDAO(this);
-        return postTemplateDAO;
+        if(socialTemplateDAO == null)
+            socialTemplateDAO = new SocialTemplateDAO(this);
+        return socialTemplateDAO;
     }
 
     /**
@@ -109,7 +109,7 @@ public class SocialDAOFactory extends DAOFactory
     {
         super.close();
         socialChannelDAO = null;
-        postTemplateDAO = null;
+        socialTemplateDAO = null;
         savedPostDAO = null;
         draftPostDAO = null;
         channelPostDAO = null;
@@ -117,7 +117,7 @@ public class SocialDAOFactory extends DAOFactory
     }
 
     private SocialChannelDAO socialChannelDAO;
-    private PostTemplateDAO postTemplateDAO;
+    private SocialTemplateDAO socialTemplateDAO;
     private SavedPostDAO savedPostDAO;
     private DraftPostDAO draftPostDAO;
     private ChannelPostDAO channelPostDAO;

@@ -58,7 +58,7 @@ public class DraftStandardPost extends DraftPost
         setSiteId(post.getSiteId());
         setSourceId(post.getId());
         setStatus(DraftStatus.NEW);
-        setTitle(post.getName());
+        setTitle(post.getTitle());
         setHashtags(post.getHashtags());
         setUrl(post.getUrl());
     }
@@ -87,9 +87,9 @@ public class DraftStandardPost extends DraftPost
      * Returns the post type.
      */
     @Override
-    public PostType getType()
+    public SocialPostType getType()
     {
-        return PostType.STANDARD;
+        return SocialPostType.STANDARD;
     }
 
     /**

@@ -15,6 +15,7 @@
  */
 package com.opsmatters.media.model.social;
 
+import java.util.List;
 import java.time.Instant;
 import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.Organisations;
@@ -22,6 +23,11 @@ import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.Article;
+import com.opsmatters.media.model.content.post.Post;
+import com.opsmatters.media.model.content.video.Video;
+import com.opsmatters.media.model.content.event.Event;
+import com.opsmatters.media.model.content.publication.Publication;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.platform.EnvironmentId.*;
@@ -38,6 +44,12 @@ public class DraftContentPost extends DraftPost
     private String organisation = "";
     private ContentType contentType;
     private int contentId = -1;
+    private String postType = "";
+    private String videoType = "";
+    private String eventType = "";
+    private String publicationType = "";
+    private String tags = "";
+    private boolean sponsored = false;
 
     /**
      * Default constructor.
@@ -59,9 +71,9 @@ public class DraftContentPost extends DraftPost
         setContentType(ContentType.ORGANISATION);
         setStatus(DraftStatus.NEW);
 
-        setProperty(HANDLE, organisation.hasHandle() ? "@"+organisation.getHandle() : "");
-        setProperty(HASHTAG, organisation.getHashtag());
-        setProperty(URL, organisation.getUrl(site.getEnvironment(PROD).getUrl()));
+        setHandle(organisation.hasHandle() ? "@"+organisation.getHandle() : "");
+        setHashtag(organisation.getHashtag());
+        setUrl(organisation.getUrl(site.getEnvironment(PROD).getUrl()));
     }
 
     /**
@@ -73,15 +85,44 @@ public class DraftContentPost extends DraftPost
         setCreatedDate(Instant.now());
         setSiteId(site.getId());
         setCode(organisation.getCode());
-        if(content.getType() != ContentType.ROUNDUP)
-            setContentId(content.getId());
         setContentType(content.getType());
         setStatus(DraftStatus.NEW);
 
-        setProperty(HANDLE, organisation.hasHandle() ? "@"+organisation.getHandle() : "");
-        setProperty(HASHTAG, organisation.getHashtag());
+        if(content.getType() != ContentType.ROUNDUP)
+            setContentId(content.getId());
+
+        if(content.getType() == ContentType.POST)
+        {
+            Post post = (Post)content;
+            setPostType(post.getPostType());
+        }
+        else if(content.getType() == ContentType.VIDEO)
+        {
+            Video video = (Video)content;
+            setVideoType(video.getVideoType());
+        }
+        else if(content.getType() == ContentType.EVENT)
+        {
+            Event event = (Event)content;
+            setEventType(event.getEventType());
+        }
+        else if(content.getType() == ContentType.PUBLICATION)
+        {
+            Publication publication = (Publication)content;
+            setPublicationType(publication.getPublicationType());
+        }
+
+        if(content instanceof Article)
+        {
+            Article article = (Article)content;
+            setTags(article.getTags());
+            setSponsored(article.isSponsored());
+        }
+
+        setHandle(organisation.hasHandle() ? "@"+organisation.getHandle() : "");
+        setHashtag(organisation.getHashtag());
         if(content.getType() == ContentType.ROUNDUP)
-            setProperty(URL, organisation.getUrl(site.getEnvironment(PROD).getUrl()));
+            setUrl(organisation.getUrl(site.getEnvironment(PROD).getUrl()));
     }
 
     /**
@@ -97,9 +138,9 @@ public class DraftContentPost extends DraftPost
         setContentType(post.getContentType());
         setStatus(DraftStatus.NEW);
 
-        setProperty(HANDLE, organisation.hasHandle() ? "@"+organisation.getHandle() : "");
-        setProperty(HASHTAG, organisation.getHashtag());
-        setTitle(post.getName());
+        setHandle(organisation.hasHandle() ? "@"+organisation.getHandle() : "");
+        setHashtag(organisation.getHashtag());
+        setTitle(post.getTitle());
         setHashtags(post.getHashtags());
         setUrl(post.getUrl());
     }
@@ -124,6 +165,12 @@ public class DraftContentPost extends DraftPost
             setOrganisation(obj.getOrganisation());
             setContentId(obj.getContentId());
             setContentType(obj.getContentType());
+            setPostType(obj.getPostType());
+            setVideoType(obj.getVideoType());
+            setEventType(obj.getEventType());
+            setPublicationType(obj.getPublicationType());
+            setTags(obj.getTags());
+            setSponsored(obj.isSponsored());
         }
     }
 
@@ -131,9 +178,9 @@ public class DraftContentPost extends DraftPost
      * Returns the post type.
      */
     @Override
-    public PostType getType()
+    public SocialPostType getType()
     {
-        return PostType.CONTENT;
+        return SocialPostType.CONTENT;
     }
 
     /**
@@ -147,6 +194,16 @@ public class DraftContentPost extends DraftPost
         ret.putOpt(ORGANISATION.value(), getCode());
         ret.putOpt(CONTENT_TYPE.value(), getContentType().name());
         ret.putOpt(CONTENT_ID.value(), getContentId());
+        if(getContentType() == ContentType.POST)
+            ret.putOpt(POST_TYPE.value(), getPostType());
+        if(getContentType() == ContentType.VIDEO)
+            ret.putOpt(VIDEO_TYPE.value(), getVideoType());
+        if(getContentType() == ContentType.EVENT)
+            ret.putOpt(EVENT_TYPE.value(), getEventType());
+        if(getContentType() == ContentType.PUBLICATION)
+            ret.putOpt(PUBLICATION_TYPE.value(), getPublicationType());
+        ret.putOpt(TAGS.value(), getTags());
+        ret.putOpt(SPONSORED.value(), isSponsored());
 
         return ret;
     }
@@ -161,6 +218,12 @@ public class DraftContentPost extends DraftPost
         setCode(obj.optString(ORGANISATION.value()));
         setContentType(obj.optString(CONTENT_TYPE.value()));
         setContentId(obj.optInt(CONTENT_ID.value()));
+        setPostType(obj.optString(POST_TYPE.value()));
+        setVideoType(obj.optString(VIDEO_TYPE.value()));
+        setEventType(obj.optString(EVENT_TYPE.value()));
+        setPublicationType(obj.optString(PUBLICATION_TYPE.value()));
+        setTags(obj.optString(TAGS.value()));
+        setSponsored(obj.optBoolean(SPONSORED.value(), false));
     }
 
     /**
@@ -444,5 +507,125 @@ public class DraftContentPost extends DraftPost
     public boolean hasDescription()
     {
         return getDescription() != null && getDescription().length() > 0;
+    }
+
+    /**
+     * Returns the post type.
+     */
+    public String getPostType()
+    {
+        return postType;
+    }
+
+    /**
+     * Sets the post type.
+     */
+    public void setPostType(String postType)
+    {
+        this.postType = postType;
+    }
+
+    /**
+     * Returns the video type.
+     */
+    public String getVideoType()
+    {
+        return videoType;
+    }
+
+    /**
+     * Sets the video type.
+     */
+    public void setVideoType(String videoType)
+    {
+        this.videoType = videoType;
+    }
+
+    /**
+     * Returns the event type.
+     */
+    public String getEventType()
+    {
+        return eventType;
+    }
+
+    /**
+     * Sets the event type.
+     */
+    public void setEventType(String eventType)
+    {
+        this.eventType = eventType;
+    }
+
+    /**
+     * Returns the publication type.
+     */
+    public String getPublicationType()
+    {
+        return publicationType;
+    }
+
+    /**
+     * Sets the publication type.
+     */
+    public void setPublicationType(String publicationType)
+    {
+        this.publicationType = publicationType;
+    }
+
+    /**
+     * Returns the post tags.
+     */
+    public String getTags()
+    {
+        return tags;
+    }
+
+    /**
+     * Returns the list of post tags.
+     */
+    public List<String> getTagsList()
+    {
+        return StringUtils.toList(getTags());
+    }
+
+    /**
+     * Sets the post tags.
+     */
+    public void setTags(String tags)
+    {
+        this.tags = tags;
+    }
+
+    /**
+     * Sets the list of post tags.
+     */
+    public void setTagsList(List<String> tags)
+    {
+        setTags(StringUtils.fromList(tags));
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the post tags has been set.
+     */
+    public boolean hasTags()
+    {
+        return getTags() != null && getTags().length() > 0;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the post is sponsored.
+     */
+    public boolean isSponsored()
+    {
+        return sponsored;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the post is sponsored.
+     */
+    public void setSponsored(boolean sponsored)
+    {
+        this.sponsored = sponsored;
     }
 }

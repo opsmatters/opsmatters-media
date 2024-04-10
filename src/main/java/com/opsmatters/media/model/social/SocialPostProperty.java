@@ -32,10 +32,16 @@ public enum SocialPostProperty
     TITLE("title"),
     TITLE1("title1"),
     TITLE2("title2"),
-    URL("url"),
-    ORIGINAL_URL("original-url"),
     PREAMBLE("preamble"),
-    DESCRIPTION("description");
+    DESCRIPTION("description"),
+    POST_TYPE("post-type"),
+    VIDEO_TYPE("video-type"),
+    EVENT_TYPE("event-type"),
+    PUBLICATION_TYPE("publication-type"),
+    TAGS("tags"),
+    SPONSORED("sponsored"),
+    URL("url"),
+    ORIGINAL_URL("original-url");
 
     private String value;
 

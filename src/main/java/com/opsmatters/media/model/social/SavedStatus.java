@@ -20,11 +20,11 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Represents the status of a post source.
+ * Represents the status of a saved social post.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum SourceStatus
+public enum SavedStatus
 {
     NEW("New", "glyphicon-unchecked", "", -1),
     ACTIVE("Active", "glyphicon-ok-circle", "status-success", 1),
@@ -44,7 +44,7 @@ public enum SourceStatus
      * @param css The css class for the status
      * @param state The state for the status
      */
-    SourceStatus(String value, String icon, String css, int state)
+    SavedStatus(String value, String icon, String css, int state)
     {
         this.value = value;
         this.icon = icon;
@@ -111,10 +111,10 @@ public enum SourceStatus
      * @param value The type value
      * @return The type for the given value
      */
-    public static SourceStatus fromValue(String value)
+    public static SavedStatus fromValue(String value)
     {
-        SourceStatus[] types = values();
-        for(SourceStatus type : types)
+        SavedStatus[] types = values();
+        for(SavedStatus type : types)
         {
             if(type.value().equals(value))
                 return type;
@@ -133,11 +133,11 @@ public enum SourceStatus
     }
 
     /**
-     * Returns a list of the source statuses.
+     * Returns a list of the post statuses.
      */
-    public static List<SourceStatus> toList()
+    public static List<SavedStatus> toList()
     {
-        List<SourceStatus> ret = new ArrayList<SourceStatus>();
+        List<SavedStatus> ret = new ArrayList<SavedStatus>();
 
         ret.add(NEW);
         ret.add(ACTIVE);

@@ -50,7 +50,7 @@ public class ChannelPost extends SocialPost
     private String organisation = "";
     private String title = "";
     private String channel;
-    private PostType type;
+    private SocialPostType type;
     private ContentType contentType;
     private int contentId = -1;
     private DeliveryStatus status;
@@ -82,7 +82,7 @@ public class ChannelPost extends SocialPost
         setType(post.getType());
         setStatus(DeliveryStatus.NEW);
 
-        if(post.getType() == PostType.CONTENT)
+        if(post.getType() == SocialPostType.CONTENT)
         {
             DraftContentPost contentPost = (DraftContentPost)post;
             setCode(contentPost.getCode());
@@ -101,7 +101,7 @@ public class ChannelPost extends SocialPost
         setUpdatedDate(Instant.now());
         setChannel(channel.getCode());
         setMessage(message);
-        setType(PostType.EXTERNAL);
+        setType(SocialPostType.EXTERNAL);
         setStatus(DeliveryStatus.RECEIVED);
     }
 
@@ -157,7 +157,7 @@ public class ChannelPost extends SocialPost
         ret.putOpt(FieldName.ERROR_CODE.value(), getErrorCode());
         ret.putOpt(FieldName.ERROR_MESSAGE.value(), getErrorMessage());
 
-        if(getType() == PostType.CONTENT)
+        if(getType() == SocialPostType.CONTENT)
         {
             ret.putOpt(FieldName.ORGANISATION.value(), getCode());
             if(getContentType() != null)
@@ -181,7 +181,7 @@ public class ChannelPost extends SocialPost
         setErrorCode(obj.optInt(FieldName.ERROR_CODE.value()));
         setErrorMessage(obj.optString(FieldName.ERROR_MESSAGE.value()));
 
-        if(getType() == PostType.CONTENT)
+        if(getType() == SocialPostType.CONTENT)
         {
             setCode(obj.optString(FieldName.ORGANISATION.value()));
             setContentType(obj.optString(FieldName.CONTENT_TYPE.value()));
@@ -308,7 +308,7 @@ public class ChannelPost extends SocialPost
      * Returns the post type.
      */
     @Override
-    public PostType getType()
+    public SocialPostType getType()
     {
         return type;
     }
@@ -318,13 +318,13 @@ public class ChannelPost extends SocialPost
      */
     public void setType(String type)
     {
-        setType(PostType.valueOf(type));
+        setType(SocialPostType.valueOf(type));
     }
 
     /**
      * Sets the post type.
      */
-    public void setType(PostType type)
+    public void setType(SocialPostType type)
     {
         this.type = type;
     }

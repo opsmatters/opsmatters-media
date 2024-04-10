@@ -120,7 +120,7 @@ public class ChannelPostItem extends SocialPostItem<ChannelPost>
     /**
      * Returns the post type.
      */
-    public PostType getType()
+    public SocialPostType getType()
     {
         return content.getType();
     }
@@ -136,7 +136,7 @@ public class ChannelPostItem extends SocialPostItem<ChannelPost>
     /**
      * Sets the post type.
      */
-    public void setType(PostType type)
+    public void setType(SocialPostType type)
     {
         content.setType(type);
     }

@@ -37,7 +37,7 @@ public class DraftPostItemFactory
     /**
      * Returns a draft post item for the given type.
      */
-    public static DraftPostItem newInstance(PostType type)
+    public static DraftPostItem newInstance(SocialPostType type)
     {
         switch(type)
         {

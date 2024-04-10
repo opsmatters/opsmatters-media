@@ -16,8 +16,13 @@
 package com.opsmatters.media.model.social;
 
 import java.util.Map;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.util.TimeUtils;
 
 import static com.opsmatters.media.model.social.SocialPostProperty.*;
 
@@ -26,11 +31,14 @@ import static com.opsmatters.media.model.social.SocialPostProperty.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class SavedPost extends PostSource
+public abstract class SavedPost extends SocialPost
 {
     public static final String DEFAULT = "New Post";
 
     private String title = "";
+    private boolean shortenUrl = false;
+    private Instant postedDate;
+    private SavedStatus status;
 
     private SocialPostProperties properties = new SocialPostProperties();
 
@@ -44,6 +52,9 @@ public abstract class SavedPost extends PostSource
             super.copyAttributes(obj);
             setTitle(obj.getTitle());
             setProperties(obj.getProperties());
+            setShortenUrl(obj.isShortenUrl());
+            setPostedDate(obj.getPostedDate());
+            setStatus(obj.getStatus());
         }
     }
 
@@ -51,15 +62,6 @@ public abstract class SavedPost extends PostSource
      * Returns the title.
      */
     public String toString()
-    {
-        return getTitle();
-    }
-
-    /**
-     * Returns the post title.
-     */
-    @Override
-    public String getName()
     {
         return getTitle();
     }
@@ -182,5 +184,151 @@ public abstract class SavedPost extends PostSource
     public boolean hasUrl()
     {
         return getUrl() != null && getUrl().length() > 0;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the post URL should be automatically shortened.
+     */
+    public boolean isShortenUrl()
+    {
+        return shortenUrl;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the post URL should be automatically shortened.
+     */
+    public Boolean getShortenUrlObject()
+    {
+        return Boolean.valueOf(isShortenUrl());
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the post URL should be automatically shortened.
+     */
+    public void setShortenUrl(boolean shortenUrl)
+    {
+        this.shortenUrl = shortenUrl;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the post URL should be automatically shortened.
+     */
+    public void setShortenUrlObject(Boolean shortenUrl)
+    {
+        setShortenUrl(shortenUrl != null && shortenUrl.booleanValue());
+    }
+
+    /**
+     * Returns the date a post was last created from the post.
+     */
+    public Instant getPostedDate()
+    {
+        return postedDate;
+    }
+
+    /**
+     * Returns the date a post was last created from the post.
+     */
+    public long getPostedDateMillis()
+    {
+        return getPostedDate() != null ? getPostedDate().toEpochMilli() : 0L;
+    }
+
+    /**
+     * Returns the date a post was last created from the post.
+     */
+    public LocalDateTime getPostedDateUTC()
+    {
+        return TimeUtils.toDateTimeUTC(getPostedDate());
+    }
+
+    /**
+     * Returns the date a post was last created from the post.
+     */
+    public String getPostedDateAsString(String pattern)
+    {
+        return TimeUtils.toStringUTC(postedDate, pattern);
+    }
+
+    /**
+     * Returns the date a post was last created from the post.
+     */
+    public String getPostedDateAsString(String pattern, String timezone)
+    {
+        return TimeUtils.toString(postedDate, pattern, timezone);
+    }
+
+    /**
+     * Returns the date a post was last created from the post.
+     */
+    public String getPostedDateAsString()
+    {
+        return getPostedDateAsString(Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Sets the date a post was last created from the post.
+     */
+    public void setPostedDate(Instant postedDate)
+    {
+        this.postedDate = postedDate;
+    }
+
+    /**
+     * Sets the date a post was last created from the post.
+     */
+    public void setPostedDateMillis(long millis)
+    {
+        if(millis > 0L)
+            this.postedDate = Instant.ofEpochMilli(millis);
+    }
+
+    /**
+     * Sets the date a post was last created from the post.
+     */
+    public void setPostedDateAsString(String str, String pattern) throws DateTimeParseException
+    {
+        setPostedDate(TimeUtils.toInstantUTC(str, pattern));
+    }
+
+    /**
+     * Sets the date a post was last created from the post.
+     */
+    public void setPostedDateAsString(String str) throws DateTimeParseException
+    {
+        setPostedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Sets the date a post was last created from the post.
+     */
+    public void setPostedDateUTC(LocalDateTime postedDate)
+    {
+        if(postedDate != null)
+            setPostedDate(TimeUtils.toInstantUTC(postedDate));
+    }
+
+    /**
+     * Returns the post status.
+     */
+    public SavedStatus getStatus()
+    {
+        return status;
+    }
+
+    /**
+     * Sets the post status.
+     */
+    public void setStatus(String status)
+    {
+        setStatus(SavedStatus.valueOf(status));
+    }
+
+    /**
+     * Sets the post status.
+     */
+    public void setStatus(SavedStatus status)
+    {
+        this.status = status;
     }
 }

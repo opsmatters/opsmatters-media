@@ -15,12 +15,14 @@
  */
 package com.opsmatters.media.model.social;
 
+import java.time.Instant;
+
 /**
  * Class representing a social media post list item.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class SavedPostItem<T extends SavedPost> extends PostSourceItem<T>
+public abstract class SavedPostItem<T extends SavedPost> extends SocialPostItem<T>
 {
     private T content;
 
@@ -55,5 +57,61 @@ public abstract class SavedPostItem<T extends SavedPost> extends PostSourceItem<
     public void setTitle(String title)
     {
         content.setTitle(title);
+    }
+
+    /**
+     * Returns the posted date.
+     */
+    public Instant getPostedDate()
+    {
+        return content.getPostedDate();
+    }
+
+    /**
+     * Returns the posted date.
+     */
+    public long getPostedDateMillis()
+    {
+        return content.getPostedDateMillis();
+    }
+
+    /**
+     * Sets the posted date.
+     */
+    public void setPostedDate(Instant postedDate)
+    {
+        content.setPostedDate(postedDate);
+    }
+
+    /**
+     * Sets the posted date.
+     */
+    public void setPostedDateMillis(long millis)
+    {
+        content.setPostedDateMillis(millis);
+    }
+
+    /**
+     * Returns the post status.
+     */
+    public SavedStatus getStatus()
+    {
+        return content.getStatus();
+    }
+
+    /**
+     * Sets the post status.
+     */
+    public void setStatus(String status)
+    {
+        content.setStatus(status);
+    }
+
+    /**
+     * Sets the post status.
+     */
+    public void setStatus(SavedStatus status)
+    {
+        content.setStatus(status);
     }
 }

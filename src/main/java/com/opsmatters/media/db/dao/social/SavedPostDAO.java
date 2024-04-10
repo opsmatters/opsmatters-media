@@ -30,11 +30,13 @@ import com.opsmatters.media.model.social.SavedPost;
 import com.opsmatters.media.model.social.SavedPostItem;
 import com.opsmatters.media.model.social.SavedPostFactory;
 import com.opsmatters.media.model.social.SavedPostItemFactory;
-import com.opsmatters.media.model.social.PostType;
+import com.opsmatters.media.model.social.SocialPostType;
 import com.opsmatters.media.model.social.MessageFormat;
 import com.opsmatters.media.model.social.SavedContentPost;
 import com.opsmatters.media.model.social.SavedContentPostItem;
 import com.opsmatters.media.model.content.ContentType;
+
+import static com.opsmatters.media.model.social.SocialPostType.*;
 
 /**
  * DAO that provides operations on the SAVED_POST table in the database.
@@ -165,7 +167,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
             rs = getByIdStmt.executeQuery();
             while(rs.next())
             {
-                SavedPost post = SavedPostFactory.newInstance(PostType.valueOf(rs.getString(5)));
+                SavedPost post = SavedPostFactory.newInstance(SocialPostType.valueOf(rs.getString(5)));
                 post.setId(rs.getString(1));
                 post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
@@ -173,7 +175,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
                 post.setSiteId(rs.getString(6));
                 post.setTitle(rs.getString(7));
 
-                if(post.getType() == PostType.CONTENT)
+                if(post.getType() == CONTENT)
                 {
                     SavedContentPost contentPost = (SavedContentPost)post;
                     contentPost.setCode(rs.getString(8));
@@ -231,7 +233,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
 
             String code = "";
             String contentType = "";
-            if(post.getType() == PostType.CONTENT)
+            if(post.getType() == CONTENT)
             {
                 SavedContentPost contentPost = (SavedContentPost)post;
                 code = contentPost.getCode();
@@ -296,7 +298,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
 
             String code = "";
             String contentType = "";
-            if(post.getType() == PostType.CONTENT)
+            if(post.getType() == CONTENT)
             {
                 SavedContentPost contentPost = (SavedContentPost)post;
                 code = contentPost.getCode();
@@ -348,7 +350,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
             ret = new ArrayList<SavedPost>();
             while(rs.next())
             {
-                SavedPost post = SavedPostFactory.newInstance(PostType.valueOf(rs.getString(5)));
+                SavedPost post = SavedPostFactory.newInstance(SocialPostType.valueOf(rs.getString(5)));
                 post.setId(rs.getString(1));
                 post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
@@ -356,7 +358,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
                 post.setSiteId(rs.getString(6));
                 post.setTitle(rs.getString(7));
 
-                if(post.getType() == PostType.CONTENT)
+                if(post.getType() == CONTENT)
                 {
                     SavedContentPost contentPost = (SavedContentPost)post;
                     contentPost.setCode(rs.getString(8));
@@ -413,7 +415,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
             ret = new ArrayList<SavedPost>();
             while(rs.next())
             {
-                SavedPost post = SavedPostFactory.newInstance(PostType.valueOf(rs.getString(5)));
+                SavedPost post = SavedPostFactory.newInstance(SocialPostType.valueOf(rs.getString(5)));
                 post.setId(rs.getString(1));
                 post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
@@ -421,7 +423,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
                 post.setSiteId(rs.getString(6));
                 post.setTitle(rs.getString(7));
 
-                if(post.getType() == PostType.CONTENT)
+                if(post.getType() == CONTENT)
                 {
                     SavedContentPost contentPost = (SavedContentPost)post;
                     contentPost.setCode(rs.getString(8));
@@ -456,7 +458,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
     /**
      * Returns the saved post items from the SAVED_POSTS table by post type.
      */
-    public synchronized List<SavedPostItem> listItems(PostType type) throws SQLException
+    public synchronized List<SavedPostItem> listItems(SocialPostType type) throws SQLException
     {
         List<SavedPostItem> ret = null;
 
@@ -485,7 +487,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
                 post.setPostedDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
                 post.setSiteId(rs.getString(5));
 
-                if(post.getType() == PostType.CONTENT)
+                if(post.getType() == CONTENT)
                 {
                     SavedContentPostItem contentPost = (SavedContentPostItem)post;
                     contentPost.setCode(rs.getString(6));
@@ -517,7 +519,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
     /**
      * Returns the saved posts from the SAVED_POSTS table by post type and content type.
      */
-    public synchronized List<SavedPost> list(Site site, PostType type, ContentType contentType) throws SQLException
+    public synchronized List<SavedPost> list(Site site, SocialPostType type, ContentType contentType) throws SQLException
     {
         List<SavedPost> ret = null;
 
@@ -540,7 +542,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
             ret = new ArrayList<SavedPost>();
             while(rs.next())
             {
-                SavedPost post = SavedPostFactory.newInstance(PostType.valueOf(rs.getString(5)));
+                SavedPost post = SavedPostFactory.newInstance(SocialPostType.valueOf(rs.getString(5)));
                 post.setId(rs.getString(1));
                 post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
@@ -548,7 +550,7 @@ public class SavedPostDAO extends SocialDAO<SavedPost>
                 post.setSiteId(rs.getString(6));
                 post.setTitle(rs.getString(7));
 
-                if(post.getType() == PostType.CONTENT)
+                if(post.getType() == CONTENT)
                 {
                     SavedContentPost contentPost = (SavedContentPost)post;
                     contentPost.setCode(rs.getString(8));

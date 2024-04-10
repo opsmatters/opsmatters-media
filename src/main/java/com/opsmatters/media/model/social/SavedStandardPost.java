@@ -42,7 +42,7 @@ public class SavedStandardPost extends SavedPost
         setCreatedDate(Instant.now());
         setSiteId(site.getId());
         setTitle(title);
-        setStatus(SourceStatus.NEW);
+        setStatus(SavedStatus.NEW);
     }
 
     /**
@@ -68,8 +68,8 @@ public class SavedStandardPost extends SavedPost
      * Returns the post type.
      */
     @Override
-    public PostType getType()
+    public SocialPostType getType()
     {
-        return PostType.STANDARD;
+        return SocialPostType.STANDARD;
     }
 }

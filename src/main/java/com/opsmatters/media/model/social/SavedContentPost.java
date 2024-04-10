@@ -59,7 +59,7 @@ public class SavedContentPost extends SavedPost
         else
             setUrl(post.getUrl());
         setShortenUrl(post.hasShortenedUrl(site.getShortDomain()));
-        setStatus(SourceStatus.ACTIVE);
+        setStatus(SavedStatus.ACTIVE);
     }
 
     /**
@@ -88,9 +88,9 @@ public class SavedContentPost extends SavedPost
      * Returns the post type.
      */
     @Override
-    public PostType getType()
+    public SocialPostType getType()
     {
-        return PostType.CONTENT;
+        return SocialPostType.CONTENT;
     }
 
     /**

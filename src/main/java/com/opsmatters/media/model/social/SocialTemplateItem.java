@@ -18,18 +18,18 @@ package com.opsmatters.media.model.social;
 import com.opsmatters.media.model.content.ContentType;
 
 /**
- * Class representing a content post template item.
+ * Class representing a social media template item.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentPostTemplateItem extends PostSourceItem<ContentPostTemplate>
+public class SocialTemplateItem extends SocialPostItem<SocialTemplate>
 {
-    private ContentPostTemplate content = new ContentPostTemplate();
+    private SocialTemplate content = new SocialTemplate();
 
     /**
      * Default constructor.
      */
-    public ContentPostTemplateItem()
+    public SocialTemplateItem()
     {
         super.set(content);
     }
@@ -37,16 +37,16 @@ public class ContentPostTemplateItem extends PostSourceItem<ContentPostTemplate>
     /**
      * Copy constructor.
      */
-    public ContentPostTemplateItem(ContentPostTemplateItem obj)
+    public SocialTemplateItem(SocialTemplateItem obj)
     {
         super.set(content);
         copyAttributes(obj);
     }
 
     /**
-     * Constructor that takes a post template.
+     * Constructor that takes a template.
      */
-    public ContentPostTemplateItem(ContentPostTemplate obj)
+    public SocialTemplateItem(SocialTemplate obj)
     {
         super.set(content);
         copyAttributes(obj);
@@ -55,7 +55,7 @@ public class ContentPostTemplateItem extends PostSourceItem<ContentPostTemplate>
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ContentPostTemplateItem obj)
+    public void copyAttributes(SocialTemplateItem obj)
     {
         copyAttributes(obj.get());
     }
@@ -64,7 +64,7 @@ public class ContentPostTemplateItem extends PostSourceItem<ContentPostTemplate>
      * Copies the attributes of the given object.
      */
     @Override
-    public void copyAttributes(ContentPostTemplate obj)
+    public void copyAttributes(SocialTemplate obj)
     {
         content.copyAttributes(obj);
     }
@@ -72,7 +72,7 @@ public class ContentPostTemplateItem extends PostSourceItem<ContentPostTemplate>
     /**
      * Returns the content object.
      */
-    public ContentPostTemplate get()
+    public SocialTemplate get()
     {
         return content;
     }
@@ -118,18 +118,42 @@ public class ContentPostTemplateItem extends PostSourceItem<ContentPostTemplate>
     }
 
     /**
-     * Returns <CODE>true</CODE> if this template is the default for the content type.
+     * Returns the weight of the template.
      */
-    public boolean isDefault()
+    public int getWeight()
     {
-        return content.isDefault();
+        return content.getWeight();
     }
 
     /**
-     * Set to <CODE>true</CODE> if this template is the default for the content type.
+     * Sets the weight of the template.
      */
-    public void setDefault(boolean isDefault)
+    public void setWeight(int weight)
     {
-        content.setDefault(isDefault);
+        content.setWeight(weight);
+    }
+
+    /**
+     * Returns the template status.
+     */
+    public TemplateStatus getStatus()
+    {
+        return content.getStatus();
+    }
+
+    /**
+     * Sets the template status.
+     */
+    public void setStatus(String status)
+    {
+        content.setStatus(status);
+    }
+
+    /**
+     * Sets the template status.
+     */
+    public void setStatus(TemplateStatus status)
+    {
+        content.setStatus(status);
     }
 }
