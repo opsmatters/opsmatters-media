@@ -69,7 +69,7 @@ public class DraftContentPost extends DraftPost
         setCode(organisation.getCode());
         setTitle(organisation.getName());
         setContentType(ContentType.ORGANISATION);
-        setStatus(DraftStatus.NEW);
+        setStatus(DraftPostStatus.NEW);
 
         setHandle(organisation.hasHandle() ? "@"+organisation.getHandle() : "");
         setHashtag(organisation.getHashtag());
@@ -86,7 +86,7 @@ public class DraftContentPost extends DraftPost
         setSiteId(site.getId());
         setCode(organisation.getCode());
         setContentType(content.getType());
-        setStatus(DraftStatus.NEW);
+        setStatus(DraftPostStatus.NEW);
 
         if(content.getType() != ContentType.ROUNDUP)
             setContentId(content.getId());
@@ -136,7 +136,7 @@ public class DraftContentPost extends DraftPost
         setSiteId(site.getId());
         setCode(organisation.getCode());
         setContentType(post.getContentType());
-        setStatus(DraftStatus.NEW);
+        setStatus(DraftPostStatus.NEW);
 
         setHandle(organisation.hasHandle() ? "@"+organisation.getHandle() : "");
         setHashtag(organisation.getHashtag());

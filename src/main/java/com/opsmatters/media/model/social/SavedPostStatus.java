@@ -24,7 +24,7 @@ import java.util.ArrayList;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum SavedStatus
+public enum SavedPostStatus
 {
     NEW("New", "glyphicon-unchecked", "", -1),
     ACTIVE("Active", "glyphicon-ok-circle", "status-success", 1),
@@ -44,7 +44,7 @@ public enum SavedStatus
      * @param css The css class for the status
      * @param state The state for the status
      */
-    SavedStatus(String value, String icon, String css, int state)
+    SavedPostStatus(String value, String icon, String css, int state)
     {
         this.value = value;
         this.icon = icon;
@@ -111,10 +111,10 @@ public enum SavedStatus
      * @param value The type value
      * @return The type for the given value
      */
-    public static SavedStatus fromValue(String value)
+    public static SavedPostStatus fromValue(String value)
     {
-        SavedStatus[] types = values();
-        for(SavedStatus type : types)
+        SavedPostStatus[] types = values();
+        for(SavedPostStatus type : types)
         {
             if(type.value().equals(value))
                 return type;
@@ -135,9 +135,9 @@ public enum SavedStatus
     /**
      * Returns a list of the post statuses.
      */
-    public static List<SavedStatus> toList()
+    public static List<SavedPostStatus> toList()
     {
-        List<SavedStatus> ret = new ArrayList<SavedStatus>();
+        List<SavedPostStatus> ret = new ArrayList<SavedPostStatus>();
 
         ret.add(NEW);
         ret.add(ACTIVE);

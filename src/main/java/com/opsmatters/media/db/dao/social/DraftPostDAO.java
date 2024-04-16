@@ -34,7 +34,7 @@ import com.opsmatters.media.model.social.DraftPost;
 import com.opsmatters.media.model.social.DraftPostItem;
 import com.opsmatters.media.model.social.DraftPostFactory;
 import com.opsmatters.media.model.social.DraftPostItemFactory;
-import com.opsmatters.media.model.social.DraftStatus;
+import com.opsmatters.media.model.social.DraftPostStatus;
 import com.opsmatters.media.model.social.SocialPostType;
 import com.opsmatters.media.model.social.DraftContentPost;
 import com.opsmatters.media.model.social.DraftContentPostItem;
@@ -427,7 +427,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns the post items from the DRAFT_POSTS table by type, status and interval.
      */
-    public synchronized List<DraftPostItem> listItems(SocialPostType type, DraftStatus status, int interval) throws SQLException
+    public synchronized List<DraftPostItem> listItems(SocialPostType type, DraftPostStatus status, int interval) throws SQLException
     {
         List<DraftPostItem> ret = null;
 
@@ -493,7 +493,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns the post items from the DRAFT_POSTS table by type and status.
      */
-    public synchronized List<DraftPostItem> listItems(SocialPostType type, DraftStatus status) throws SQLException
+    public synchronized List<DraftPostItem> listItems(SocialPostType type, DraftPostStatus status) throws SQLException
     {
         List<DraftPostItem> ret = null;
 
@@ -690,7 +690,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns the posts from the DRAFT_POSTS table by status.
      */
-    public synchronized List<DraftPost> list(DraftStatus status) throws SQLException
+    public synchronized List<DraftPost> list(DraftPostStatus status) throws SQLException
     {
         List<DraftPost> ret = null;
 
@@ -888,7 +888,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns the posts for the given organisation in the DRAFT_POSTS table by status.
      */
-    public List<DraftPost> list(OrganisationSite organisation, DraftStatus status) throws SQLException
+    public List<DraftPost> list(OrganisationSite organisation, DraftPostStatus status) throws SQLException
     {
         List<DraftPost> ret = new ArrayList<DraftPost>();
         List<DraftPost> posts = list(organisation.getSiteId(), organisation.getCode(), ContentType.ORGANISATION);
@@ -904,7 +904,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     /**
      * Returns the posts for the given content in the DRAFT_POSTS table by status.
      */
-    public List<DraftPost> list(Content content, DraftStatus status) throws SQLException
+    public List<DraftPost> list(Content content, DraftPostStatus status) throws SQLException
     {
         List<DraftPost> ret = new ArrayList<DraftPost>();
         List<DraftPost> posts = list(content.getSiteId(), content.getCode(), content.getType());
@@ -931,7 +931,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
      */
     public boolean hasPending(OrganisationSite organisation) throws SQLException
     {
-        return list(organisation, DraftStatus.NEW).size() > 0;
+        return list(organisation, DraftPostStatus.NEW).size() > 0;
     }
 
     /**
@@ -939,7 +939,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
      */
     public boolean hasPending(Content content) throws SQLException
     {
-        return list(content, DraftStatus.NEW).size() > 0;
+        return list(content, DraftPostStatus.NEW).size() > 0;
     }
 
     /**
@@ -947,7 +947,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
      */
     public boolean hasProcessed(Content content) throws SQLException
     {
-        return list(content, DraftStatus.PROCESSED).size() > 0;
+        return list(content, DraftPostStatus.PROCESSED).size() > 0;
     }
 
     /**

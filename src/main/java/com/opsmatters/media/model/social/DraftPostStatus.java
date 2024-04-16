@@ -21,7 +21,7 @@ package com.opsmatters.media.model.social;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum DraftStatus
+public enum DraftPostStatus
 {
     NEW("New", "glyphicon-unchecked", ""),
     REPOSTED("Reposted", "glyphicon-retweet", ""),
@@ -41,7 +41,7 @@ public enum DraftStatus
      * @param icon The glyphicon for the status
      * @param css The css class for the status
      */
-    DraftStatus(String value, String icon, String css)
+    DraftPostStatus(String value, String icon, String css)
     {
         this.value = value;
         this.icon = icon;
@@ -89,10 +89,10 @@ public enum DraftStatus
      * @param value The type value
      * @return The type for the given value
      */
-    public static DraftStatus fromValue(String value)
+    public static DraftPostStatus fromValue(String value)
     {
-        DraftStatus[] types = values();
-        for(DraftStatus type : types)
+        DraftPostStatus[] types = values();
+        for(DraftPostStatus type : types)
         {
             if(type.value().equals(value))
                 return type;

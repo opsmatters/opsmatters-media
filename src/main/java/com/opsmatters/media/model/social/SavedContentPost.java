@@ -59,7 +59,7 @@ public class SavedContentPost extends SavedPost
         else
             setUrl(post.getUrl());
         setShortenUrl(post.hasShortenedUrl(site.getShortDomain()));
-        setStatus(SavedStatus.ACTIVE);
+        setStatus(SavedPostStatus.ACTIVE);
     }
 
     /**

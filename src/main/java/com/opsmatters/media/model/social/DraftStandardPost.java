@@ -45,7 +45,7 @@ public class DraftStandardPost extends DraftPost
         setSiteId(site.getId());
         setTitle(title);
         setCreatedDate(Instant.now());
-        setStatus(DraftStatus.NEW);
+        setStatus(DraftPostStatus.NEW);
     }
 
     /**
@@ -57,7 +57,7 @@ public class DraftStandardPost extends DraftPost
         setCreatedDate(Instant.now());
         setSiteId(post.getSiteId());
         setSourceId(post.getId());
-        setStatus(DraftStatus.NEW);
+        setStatus(DraftPostStatus.NEW);
         setTitle(post.getTitle());
         setHashtags(post.getHashtags());
         setUrl(post.getUrl());

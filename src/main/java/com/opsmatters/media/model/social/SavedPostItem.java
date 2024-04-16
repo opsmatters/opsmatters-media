@@ -94,7 +94,7 @@ public abstract class SavedPostItem<T extends SavedPost> extends SocialPostItem<
     /**
      * Returns the post status.
      */
-    public SavedStatus getStatus()
+    public SavedPostStatus getStatus()
     {
         return content.getStatus();
     }
@@ -110,7 +110,7 @@ public abstract class SavedPostItem<T extends SavedPost> extends SocialPostItem<
     /**
      * Sets the post status.
      */
-    public void setStatus(SavedStatus status)
+    public void setStatus(SavedPostStatus status)
     {
         content.setStatus(status);
     }

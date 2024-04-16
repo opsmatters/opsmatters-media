@@ -42,15 +42,15 @@ public abstract class DraftPostItem<T extends DraftPost> extends SocialPostItem<
     }
 
     /**
-     * Returns the draft status.
+     * Returns the post status.
      */
-    public DraftStatus getStatus()
+    public DraftPostStatus getStatus()
     {
         return content.getStatus();
     }
 
     /**
-     * Sets the draft status.
+     * Sets the post status.
      */
     public void setStatus(String status)
     {
@@ -58,9 +58,9 @@ public abstract class DraftPostItem<T extends DraftPost> extends SocialPostItem<
     }
 
     /**
-     * Sets the draft status.
+     * Sets the post status.
      */
-    public void setStatus(DraftStatus status)
+    public void setStatus(DraftPostStatus status)
     {
         content.setStatus(status);
     }

@@ -15,11 +15,9 @@
  */
 package com.opsmatters.media.model.social;
 
-import java.util.Map;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-import org.json.JSONObject;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
@@ -31,16 +29,14 @@ import static com.opsmatters.media.model.social.SocialPostProperty.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class SavedPost extends SocialPost
+public abstract class SavedPost extends PropertyPost
 {
     public static final String DEFAULT = "New Post";
 
     private String title = "";
     private boolean shortenUrl = false;
     private Instant postedDate;
-    private SavedStatus status;
-
-    private SocialPostProperties properties = new SocialPostProperties();
+    private SavedPostStatus status;
 
     /**
      * Copies the attributes of the given object.
@@ -51,7 +47,6 @@ public abstract class SavedPost extends SocialPost
         {
             super.copyAttributes(obj);
             setTitle(obj.getTitle());
-            setProperties(obj.getProperties());
             setShortenUrl(obj.isShortenUrl());
             setPostedDate(obj.getPostedDate());
             setStatus(obj.getStatus());
@@ -88,54 +83,6 @@ public abstract class SavedPost extends SocialPost
     public ContentType getContentType()
     {
         return null;
-    }
-
-    /**
-     * Returns the post properties.
-     */
-    public SocialPostProperties getProperties()
-    {
-        return properties;
-    }
-
-    /**
-     * Returns the post properties as a JSON object.
-     */
-    public JSONObject getPropertiesAsJson()
-    {
-        return getProperties().toJson();
-    }
-
-    /**
-     * Sets the post properties.
-     */
-    public void setProperties(Map<String,String> properties)
-    {
-        getProperties().set(properties);
-    }
-
-    /**
-     * Sets the post properties from a JSON object.
-     */
-    public void setProperties(JSONObject obj)
-    {
-        getProperties().set(obj);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the given post property has been set.
-     */
-    public boolean hasProperty(SocialPostProperty property)
-    {
-        return getProperties().containsKey(property);
-    }
-
-    /**
-     * Sets the value of the given post property.
-     */
-    public void setProperty(SocialPostProperty property, String value)
-    {
-        getProperties().put(property, value);
     }
 
     /**
@@ -311,7 +258,7 @@ public abstract class SavedPost extends SocialPost
     /**
      * Returns the post status.
      */
-    public SavedStatus getStatus()
+    public SavedPostStatus getStatus()
     {
         return status;
     }
@@ -321,13 +268,13 @@ public abstract class SavedPost extends SocialPost
      */
     public void setStatus(String status)
     {
-        setStatus(SavedStatus.valueOf(status));
+        setStatus(SavedPostStatus.valueOf(status));
     }
 
     /**
      * Sets the post status.
      */
-    public void setStatus(SavedStatus status)
+    public void setStatus(SavedPostStatus status)
     {
         this.status = status;
     }

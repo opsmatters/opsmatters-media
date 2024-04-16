@@ -15,7 +15,6 @@
  */
 package com.opsmatters.media.model.social;
 
-import java.util.Map;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -25,19 +24,18 @@ import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
 import static com.opsmatters.media.model.social.SocialPostProperty.*;
+import static com.opsmatters.media.model.social.DraftPostStatus.*;
 
 /**
  * Class representing a social media post draft.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class DraftPost extends SocialPost
+public abstract class DraftPost extends PropertyPost
 {
     private String sourceId = "";
-    private DraftStatus status;
+    private DraftPostStatus status;
     private Instant scheduledDate;
-
-    private SocialPostProperties properties = new SocialPostProperties();
 
     /**
      * Copies the attributes of the given object.
@@ -48,7 +46,6 @@ public abstract class DraftPost extends SocialPost
         {
             super.copyAttributes(obj);
             setSourceId(obj.getSourceId());
-            setProperties(obj.getProperties());
             setStatus(obj.getStatus());
             setScheduledDate(obj.getScheduledDate());
         }
@@ -112,46 +109,6 @@ public abstract class DraftPost extends SocialPost
     }
 
     /**
-     * Returns the post properties.
-     */
-    public SocialPostProperties getProperties()
-    {
-        return properties;
-    }
-
-    /**
-     * Returns the post properties as a JSON object.
-     */
-    public JSONObject getPropertiesAsJson()
-    {
-        return getProperties().toJson();
-    }
-
-    /**
-     * Sets the post properties.
-     */
-    public void setProperties(Map<String,String> properties)
-    {
-        getProperties().set(properties);
-    }
-
-    /**
-     * Sets the post properties from a JSON object.
-     */
-    public void setProperties(JSONObject obj)
-    {
-        getProperties().set(obj);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the given post property has been set.
-     */
-    public boolean hasProperty(SocialPostProperty property)
-    {
-        return getProperties().containsKey(property);
-    }
-
-    /**
      * Returns <CODE>true</CODE> if the enabled property for given channel has been set.
      */
     public boolean hasEnabled(SocialChannel channel)
@@ -165,14 +122,6 @@ public abstract class DraftPost extends SocialPost
     public boolean isEnabled(SocialChannel channel)
     {
         return getProperties().isEnabled(channel);
-    }
-
-    /**
-     * Sets the value of the given post property.
-     */
-    public void setProperty(SocialPostProperty property, String value)
-    {
-        getProperties().put(property, value);
     }
 
     /**
@@ -264,25 +213,25 @@ public abstract class DraftPost extends SocialPost
     }
 
     /**
-     * Returns the draft status.
+     * Returns the post status.
      */
-    public DraftStatus getStatus()
+    public DraftPostStatus getStatus()
     {
         return status;
     }
 
     /**
-     * Sets the draft status.
+     * Sets the post status.
      */
     public void setStatus(String status)
     {
-        setStatus(DraftStatus.valueOf(status));
+        setStatus(DraftPostStatus.valueOf(status));
     }
 
     /**
-     * Sets the draft status.
+     * Sets the post status.
      */
-    public void setStatus(DraftStatus status)
+    public void setStatus(DraftPostStatus status)
     {
         this.status = status;
     }
@@ -292,7 +241,7 @@ public abstract class DraftPost extends SocialPost
      */
     public boolean isNew()
     {
-        return status == DraftStatus.NEW;
+        return status == NEW;
     }
 
     /**
@@ -300,7 +249,7 @@ public abstract class DraftPost extends SocialPost
      */
     public boolean isSubmitted()
     {
-        return status == DraftStatus.SUBMITTED;
+        return status == SUBMITTED;
     }
 
     /**
@@ -308,7 +257,7 @@ public abstract class DraftPost extends SocialPost
      */
     public boolean isProcessed()
     {
-        return status == DraftStatus.PROCESSED;
+        return status == PROCESSED;
     }
 
     /**
@@ -316,7 +265,7 @@ public abstract class DraftPost extends SocialPost
      */
     public boolean isError()
     {
-        return status == DraftStatus.ERROR;
+        return status == ERROR;
     }
 
     /**
@@ -324,7 +273,7 @@ public abstract class DraftPost extends SocialPost
      */
     public boolean isSkipped()
     {
-        return status == DraftStatus.SKIPPED;
+        return status == SKIPPED;
     }
 
     /**

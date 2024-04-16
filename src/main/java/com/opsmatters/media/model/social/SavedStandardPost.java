@@ -42,7 +42,7 @@ public class SavedStandardPost extends SavedPost
         setCreatedDate(Instant.now());
         setSiteId(site.getId());
         setTitle(title);
-        setStatus(SavedStatus.NEW);
+        setStatus(SavedPostStatus.NEW);
     }
 
     /**
