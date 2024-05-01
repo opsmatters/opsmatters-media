@@ -190,9 +190,9 @@ public class ImageUtils
 
                 // Create empty BufferedImage, sized to Image
                 BufferedImage buffImage = new BufferedImage(
-                  image.getWidth(null), 
-                  image.getHeight(null), 
-                  BufferedImage.TYPE_INT_ARGB);
+                    image.getWidth(null), 
+                    image.getHeight(null), 
+                    BufferedImage.TYPE_INT_ARGB);
 
                 // Draw Image into BufferedImage
                 Graphics g = buffImage.getGraphics();
