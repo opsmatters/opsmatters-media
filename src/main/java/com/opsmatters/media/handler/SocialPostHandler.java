@@ -39,6 +39,7 @@ import static com.opsmatters.media.model.social.SocialPostProperty.*;
 public class SocialPostHandler
 {
     private List<Token> tokens = new ArrayList<Token>();
+    private String hashtag = null;
     private String hashtags = null;
     private List<Hashtag> hashtagList = null;
     private Map<String,HashtagItem> hashtagMap = new LinkedHashMap<String,HashtagItem>();
@@ -52,6 +53,14 @@ public class SocialPostHandler
      */
     private SocialPostHandler()
     {
+    }
+
+    /**
+     * Sets the main organisation hashtag.
+     */
+    private void setHashtag(String hashtag)
+    {
+        this.hashtag = hashtag;
     }
 
     /**
@@ -181,6 +190,14 @@ public class SocialPostHandler
     private void parseHashtags()
     {
         hashtagMap.clear();
+
+        // Add the main organisation hashtag
+        if(hashtag != null && hashtag.length() > 0)
+        {
+            HashtagItem item = new HashtagItem(hashtag);
+            item.setOptional(true);
+            hashtagMap.put(item.getKey(), item);
+        }
 
         // Add the site hashtags
         if(hashtagList != null)
@@ -849,6 +866,17 @@ public class SocialPostHandler
     public static class Builder
     {
         private SocialPostHandler handler = new SocialPostHandler();
+
+        /**
+         * Sets the main organisation hashtag for the handler.
+         * @param hashtag The hashtag for the handler
+         * @return This object
+         */
+        public Builder withHashtag(String hashtag)
+        {
+            handler.setHashtag(hashtag);
+            return this;
+        }
 
         /**
          * Sets the hashtag list for the handler.

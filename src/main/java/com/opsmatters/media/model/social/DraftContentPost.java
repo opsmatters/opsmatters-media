@@ -115,6 +115,7 @@ public class DraftContentPost extends DraftPost
         if(content instanceof Article)
         {
             Article article = (Article)content;
+            setSummary(article.getSummary());
             setTags(article.getTags());
             setSponsored(article.isSponsored());
         }
@@ -171,6 +172,43 @@ public class DraftContentPost extends DraftPost
             setPublicationType(obj.getPublicationType());
             setTags(obj.getTags());
             setSponsored(obj.isSponsored());
+        }
+    }
+
+    /**
+     * Update the post using the given content item.
+     */
+    public void update(Content content)
+    {
+        setUpdatedDate(Instant.now());
+
+        if(content.getType() == ContentType.POST)
+        {
+            Post post = (Post)content;
+            setPostType(post.getPostType());
+        }
+        else if(content.getType() == ContentType.VIDEO)
+        {
+            Video video = (Video)content;
+            setVideoType(video.getVideoType());
+        }
+        else if(content.getType() == ContentType.EVENT)
+        {
+            Event event = (Event)content;
+            setEventType(event.getEventType());
+        }
+        else if(content.getType() == ContentType.PUBLICATION)
+        {
+            Publication publication = (Publication)content;
+            setPublicationType(publication.getPublicationType());
+        }
+
+        if(content instanceof Article)
+        {
+            Article article = (Article)content;
+            setSummary(article.getSummary());
+            setTags(article.getTags());
+            setSponsored(article.isSponsored());
         }
     }
 
@@ -366,6 +404,7 @@ public class DraftContentPost extends DraftPost
     /**
      * Returns the post hashtag.
      */
+    @Override
     public String getHashtag()
     {
         return getProperties().get(HASHTAG);
@@ -459,6 +498,30 @@ public class DraftContentPost extends DraftPost
     public boolean hasTitle2()
     {
         return getTitle2() != null && getTitle2().length() > 0;
+    }
+
+    /**
+     * Returns the post summary.
+     */
+    public String getSummary()
+    {
+        return getProperties().get(SUMMARY);
+    }
+
+    /**
+     * Sets the post summary.
+     */
+    public void setSummary(String summary)
+    {
+        getProperties().put(SUMMARY, summary);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the post summary has been set.
+     */
+    public boolean hasSummary()
+    {
+        return getSummary() != null && getSummary().length() > 0;
     }
 
     /**

@@ -201,7 +201,9 @@ public class HtmlUtils
      */
     public static boolean needsContentWrapperClass(String str)
     {
-        return str.indexOf("<table") != -1;
+        return str.indexOf("<table") != -1
+            || str.indexOf("<pre") != -1
+            || str.indexOf("<blockquote") != -1;
     }
 
     /**
@@ -228,16 +230,13 @@ public class HtmlUtils
         while(m.find() && !ret)
         {
             String contents = m.group(1).toLowerCase().trim();
-            if(contents.indexOf("<") == -1) // No markup, just text
+            if(contents.indexOf(IMAGE_SOURCE) != -1)
             {
-                if(contents.indexOf(IMAGE_SOURCE) != -1)
-                {
-                    ret = true;
-                }
-                else if(contents.startsWith("https://"))
-                {
-                    ret = true;
-                }
+                ret = true;
+            }
+            else if(contents.startsWith("https://") && contents.indexOf("<") == -1) // No markup, just text
+            {
+                ret = true;
             }
         }
 

@@ -32,6 +32,7 @@ public enum SocialPostProperty
     TITLE("title"),
     TITLE1("title1"),
     TITLE2("title2"),
+    SUMMARY("summary"),
     PREAMBLE("preamble"),
     DESCRIPTION("description"),
     POST_TYPE("post-type"),

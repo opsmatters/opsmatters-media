@@ -133,6 +133,16 @@ public abstract class DraftPost extends PropertyPost
     }
 
     /**
+     * Returns the post hashtag.
+     *
+     * <p>Implemented by super-class.</p>
+     */
+    public String getHashtag()
+    {
+        return null;
+    }
+
+    /**
      * Returns the post hashtags.
      */
     public String getHashtags()
