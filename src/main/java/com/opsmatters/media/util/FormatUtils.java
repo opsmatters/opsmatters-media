@@ -270,7 +270,7 @@ public class FormatUtils
             {
                 ret = ret.toLowerCase()
                     .replaceAll(" ","-")
-                    .replaceAll("&|:|\\.","");
+                    .replaceAll("&|:|\\.|\\?","");
             }
         }
 
