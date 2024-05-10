@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.json.JSONObject;
-import com.vdurmont.emoji.EmojiParser;
+import net.fellbaum.jemoji.EmojiManager;
 import com.opsmatters.media.cache.content.Teasers;
 import com.opsmatters.media.model.content.ContentDetails;
 import com.opsmatters.media.model.content.video.VideoDetails;
@@ -253,7 +253,7 @@ public class VideoCrawler extends ContentCrawler<VideoDetails>
             Field field = fields.getTitle();
             String title = getValue(field, video.getString(field.getSelector(0).getExpr()), TEASER);
             if(title != null && title.length() > 0)
-                teaser.setTitle(EmojiParser.removeAllEmojis(title));
+                teaser.setTitle(EmojiManager.removeAllEmojis(title));
         }
 
         if(fields.hasPublishedDate())

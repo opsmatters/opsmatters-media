@@ -35,14 +35,20 @@ import software.amazon.awssdk.services.rds.RdsClientBuilder;
 import software.amazon.awssdk.services.rds.model.RdsException;
 import software.amazon.awssdk.services.rds.model.DescribeDbClustersRequest;
 import software.amazon.awssdk.services.rds.model.DescribeDbClustersResponse;
+import software.amazon.awssdk.services.rds.model.DescribeDbInstancesRequest;
+import software.amazon.awssdk.services.rds.model.DescribeDbInstancesResponse;
 import software.amazon.awssdk.services.rds.model.StartDbClusterRequest;
 import software.amazon.awssdk.services.rds.model.StartDbClusterResponse;
 import software.amazon.awssdk.services.rds.model.StopDbClusterRequest;
 import software.amazon.awssdk.services.rds.model.StopDbClusterResponse;
 import software.amazon.awssdk.services.rds.model.DBCluster;
+import software.amazon.awssdk.services.rds.model.DBInstance;
+import software.amazon.awssdk.services.rds.model.Filter;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.platform.EnvironmentStatus;
 import com.opsmatters.media.model.platform.aws.RdsConfig;
+
+import static com.opsmatters.media.model.platform.EnvironmentStatus.*;
 
 /**
  * Class that represents a connection to AWS RDS databases.
@@ -225,45 +231,129 @@ public class AwsRdsClient extends Client
     }
 
     /**
+     * Returns the details of the given RDS cluster instances.
+     */
+    public DBInstance describeInstance(String clusterId)
+    {
+        DBInstance ret = null;
+
+        try
+        {
+            Filter filter = Filter.builder().name("db-cluster-id").values(clusterId).build();
+            DescribeDbInstancesRequest request = DescribeDbInstancesRequest.builder()
+                .filters(filter)
+                .build();
+            DescribeDbInstancesResponse response = client.describeDBInstances(request);
+            List<DBInstance> instances = response.dbInstances();
+            if(instances.size() > 0)
+                ret = instances.get(0);
+        }
+        catch(RdsException e)
+        {
+            if(e.statusCode() != 404) // Not Found
+                throw e;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the status of the given RDS cluster.
      */
-    public EnvironmentStatus getStatus(String clusterId)
+    public EnvironmentStatus getClusterStatus(String clusterId)
     {
-        EnvironmentStatus ret = EnvironmentStatus.UNKNOWN;
+        EnvironmentStatus ret = UNKNOWN;
         DBCluster cluster = describeCluster(clusterId);
         if(cluster != null)
         {
             String status = cluster.status();
             if(status.equals("starting"))
-                ret = EnvironmentStatus.STARTING;
+                ret = STARTING;
             else if(status.equals("available"))
-                ret = EnvironmentStatus.RUNNING;
+                ret = RUNNING;
             else if(status.equals("stopping"))
-                ret = EnvironmentStatus.STOPPING;
+                ret = STOPPING;
             else if(status.equals("stopped"))
-                ret = EnvironmentStatus.STOPPED;
+                ret = STOPPED;
             else if(status.equals("backing-up"))
-                ret = EnvironmentStatus.BACKING_UP;
+                ret = BACKING_UP;
             else if(status.equals("upgrading"))
-                ret = EnvironmentStatus.UPGRADING;
+                ret = UPGRADING;
 
-            if(ret == EnvironmentStatus.UNKNOWN)
+            if(ret == UNKNOWN)
                 logger.warning("RDS cluster has unknown status: "+status);
         }
 
         return ret;
     }
 
-//GERALD: temp?
     /**
      * Returns the raw status of the given RDS cluster.
      */
-    public String getRawStatus(String clusterId)
+    public String getRawClusterStatus(String clusterId)
     {
         DBCluster cluster = describeCluster(clusterId);
         return cluster != null ? cluster.status() : null;
     }
 
+    /**
+     * Returns the status of the first instance in the given RDS cluster.
+     */
+    public EnvironmentStatus getInstanceStatus(String clusterId)
+    {
+        EnvironmentStatus ret = UNKNOWN;
+        DBInstance instance = describeInstance(clusterId);
+        if(instance != null)
+        {
+            String status = instance.dbInstanceStatus();
+            if(status.equals("starting"))
+                ret = STARTING;
+            else if(status.equals("available"))
+                ret = RUNNING;
+            else if(status.equals("stopping"))
+                ret = STOPPING;
+            else if(status.equals("stopped"))
+                ret = STOPPED;
+            else if(status.equals("backing-up"))
+                ret = BACKING_UP;
+            else if(status.equals("upgrading"))
+                ret = UPGRADING;
+            else if(status.equals("rebooting"))
+                ret = REBOOTING;
+            else if(status.equals("configuring-enhanced-monitoring"))
+                ret = CONFIGURING;
+            else if(status.equals("modifying"))
+                ret = MODIFYING;
+
+            if(ret == UNKNOWN)
+                logger.warning("RDS instance has unknown status: "+status);
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the raw status of the first instance in the given RDS cluster.
+     */
+    public String getRawInstanceStatus(String clusterId)
+    {
+        DBInstance instance = describeInstance(clusterId);
+        return instance != null ? instance.dbInstanceStatus() : null;
+    }
+
+    /**
+     * Returns the status of the given RDS cluster.
+     */
+    public EnvironmentStatus getStatus(String clusterId)
+    {
+        EnvironmentStatus ret = getClusterStatus(clusterId);
+        if(ret == EnvironmentStatus.RUNNING)
+        {
+            ret = getInstanceStatus(clusterId);
+        }
+
+        return ret;
+    }
     /**
      * Starts the given RDS cluster.
      */

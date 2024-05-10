@@ -29,5 +29,22 @@ public enum EnvironmentStatus
     STOPPING,
     STOPPED,
     BACKING_UP,
-    UPGRADING;
+    UPGRADING,
+    REBOOTING,
+    CONFIGURING,
+    MODIFYING;
+
+    /**
+     * Returns <CODE>true</CODE> if the environment has a busy status.
+     * @return <CODE>true</CODE> if environment has a busy status
+     */
+    public boolean busy()
+    {
+        return this == STARTING
+            || this == BACKING_UP
+            || this == UPGRADING
+            || this == REBOOTING
+            || this == CONFIGURING
+            || this == MODIFYING;
+    }
 }

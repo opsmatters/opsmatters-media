@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 import java.time.format.DateTimeParseException;
-import com.vdurmont.emoji.EmojiParser;
+import net.fellbaum.jemoji.EmojiManager;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
@@ -151,7 +151,7 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostDetails>
             {
                 String body = getBodySummary(fields.getBody(), root, ARTICLE, config.getSummary(), debug());
                 if(body != null)
-                    content.setSummary(body);
+                    content.setSummary(EmojiManager.removeAllEmojis(body));
             }
 
             if(root != null)
@@ -177,7 +177,7 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostDetails>
             Field field = fields.getTitle();
             String title = getElements(field, root, category);
             if(title != null && title.length() > 0 && !title.equals("Please wait..."))
-                teaser.setTitle(EmojiParser.removeAllEmojis(title.trim()));
+                teaser.setTitle(EmojiManager.removeAllEmojis(title.trim()));
         }
 
         if(fields.hasPublishedDate())

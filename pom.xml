@@ -701,6 +701,12 @@ media.built.on=${TODAY}
   </dependency>
 
   <dependency>
+    <groupId>net.fellbaum</groupId>
+    <artifactId>jemoji</artifactId>
+    <version>1.4.0</version>
+  </dependency>
+
+  <dependency>
     <groupId>nl.crashdata.java-chartjs</groupId>
     <artifactId>java-chartjs-data</artifactId>
     <version>${chartjs.version}</version>

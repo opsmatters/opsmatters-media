@@ -48,6 +48,8 @@ import com.opsmatters.media.model.platform.EnvironmentId;
 import com.opsmatters.media.model.platform.EnvironmentStatus;
 import com.opsmatters.media.model.platform.aws.Ec2Config;
 
+import static com.opsmatters.media.model.platform.EnvironmentStatus.*;
+
 /**
  * Class that represents a connection to AWS EC2 servers.
  * 
@@ -255,14 +257,14 @@ public class AwsEc2Client extends Client
      */
     public EnvironmentStatus getStatus(String instanceId)
     {
-        EnvironmentStatus ret = EnvironmentStatus.UNKNOWN;
+        EnvironmentStatus ret = UNKNOWN;
         Instance instance = describeInstance(instanceId);
         if(instance != null)
         {
             int state = instance.state().code();
             if(state == 0)
             {
-                ret = EnvironmentStatus.STARTING;
+                ret = STARTING;
             }
             else if(state == 16)
             {
@@ -270,23 +272,23 @@ public class AwsEc2Client extends Client
                 // Check the server has been up for at least 20s to prevent errors
                 if(uptime < MIN_UPTIME)
                 {
-                    ret = EnvironmentStatus.STARTING;
+                    ret = STARTING;
                 }
                 else
                 {
-                    ret = EnvironmentStatus.RUNNING;
+                    ret = RUNNING;
                 }
             }
             else if(state == 64 || state == 32) // stopping or shutting-down
             {
-                ret = EnvironmentStatus.STOPPING;
+                ret = STOPPING;
             }
             else if(state == 80 || state == 48) // stopped or terminated
             {
-                ret = EnvironmentStatus.STOPPED;
+                ret = STOPPED;
             }
 
-            if(ret == EnvironmentStatus.UNKNOWN)
+            if(ret == UNKNOWN)
                 logger.warning("EC2 instance has unknown state: "+state);
         }
 

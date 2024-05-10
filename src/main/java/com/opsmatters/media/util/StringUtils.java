@@ -777,7 +777,7 @@ public class StringUtils
         if(ret != null)
         {
             ret = ret.replaceAll("\r|\n", ""); // Remove LFs
-            ret = ret.replaceAll("\\\\", "/"); // Replace backslashes
+            ret = ret.replaceAll("\\\\", ""); // Replace backslashes
             if(ret.length() > MAX_ERROR_MESSAGE)
                 ret = ret.substring(0, MAX_ERROR_MESSAGE-1);
         }

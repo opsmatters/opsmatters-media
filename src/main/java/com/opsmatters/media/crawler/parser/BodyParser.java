@@ -25,6 +25,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
+import net.fellbaum.jemoji.EmojiManager;
 import com.opsmatters.media.model.content.crawler.field.FieldExclude;
 import com.opsmatters.media.model.content.crawler.field.FieldFilter;
 import com.opsmatters.media.model.content.crawler.field.FilterResult;
@@ -584,7 +585,7 @@ if(text.startsWith("#")  // hashtags
                     ret, ret.length()));
         }
 
-        return ret.toString();
+        return EmojiManager.removeAllEmojis(ret.toString());
     }
 
     /**

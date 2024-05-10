@@ -494,6 +494,14 @@ public abstract class Content<D extends ContentDetails>
     }
 
     /**
+     * Returns <CODE>true</CODE> if the content summary has been set.
+     */
+    public boolean hasSummary()
+    {
+        return getSummary() != null && getSummary().length() > 0;
+    }
+
+    /**
      * Returns the content image name.
      * <P>
      * Always returns <CODE>null</CODE>.

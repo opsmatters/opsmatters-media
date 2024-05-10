@@ -29,6 +29,7 @@ import java.util.regex.Matcher;
 public class HtmlUtils
 {
     public static final String DATA_ATTR = " data-";
+    public static final String DIR_ATTR = " dir=\"ltr\"";
     public static final String NBSP = "\u00a0";
     public static final String NBSP_ENTITY = "&nbsp;";
     public static final String TEXT_CHARS = "\\w\\u2010-\\u2017";
@@ -49,7 +50,7 @@ public class HtmlUtils
      * @param str The string to search
      * @return <CODE>true</CODE> if the given string contains attributes prefixed by "data-".
      */
-    public static boolean hasDataAttribute(String str)
+    private static boolean hasDataAttribute(String str)
     {
         Pattern dataAttribute = Pattern.compile(String.format("%s[-\\w]+=", DATA_ATTR), Pattern.DOTALL);
         return dataAttribute.matcher(str).find();
@@ -60,12 +61,55 @@ public class HtmlUtils
      * @param str The string to amend
      * @return The amended string.
      */
-    public static String removeDataAttributes(String str)
+    private static String removeDataAttributes(String str)
     {
         // Remove data- attributes, with and without values
         str = str.replaceAll(String.format("%s[-\\w]+=\"[-\\w\\[\\]{}:,./\"]*\"", DATA_ATTR), "");
         // Removed as it also replaces valid text such as "data-driven"
         // str = str.replaceAll(String.format("%s[-\\w]+", DATA_ATTR), "");
+
+        return str;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given string contains a dir attribute.
+     * @param str The string to search
+     * @return <CODE>true</CODE> if the given string contains a dir attribute.
+     */
+    private static boolean hasDirAttribute(String str)
+    {
+        return str.indexOf(DIR_ATTR) != -1;
+    }
+
+    /**
+     * Removes dir attributes from the given string.
+     * @param str The string to amend
+     * @return The amended string.
+     */
+    private static String removeDirAttributes(String str)
+    {
+        return str.replaceAll(DIR_ATTR, "");
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given string contains unnecessary attributes.
+     * @param str The string to search
+     * @return <CODE>true</CODE> if the given string contains unnecessary attributes.
+     */
+    public static boolean hasAttributes(String str)
+    {
+        return hasDataAttribute(str) || hasDirAttribute(str);
+    }
+
+    /**
+     * Removes unnecessary attributes from the given string.
+     * @param str The string to amend
+     * @return The amended string.
+     */
+    public static String removeAttributes(String str)
+    {
+        str = removeDataAttributes(str);
+        str = removeDirAttributes(str);
 
         return str;
     }
