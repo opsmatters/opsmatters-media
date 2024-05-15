@@ -28,7 +28,6 @@ import com.opsmatters.media.model.ConfigParser;
 public class FeedsConfig implements ConfigElement
 {
     private String id = "";
-    private String path = "";
     private String username = "";
 
     /**
@@ -55,7 +54,6 @@ public class FeedsConfig implements ConfigElement
         if(obj != null)
         {
             setId(obj.getId());
-            setPath(obj.getPath());
             setUsername(obj.getUsername());
         }
     }
@@ -82,22 +80,6 @@ public class FeedsConfig implements ConfigElement
     public void setId(String id)
     {
         this.id = id;
-    }
-
-    /**
-     * Returns the path for the feeds settings.
-     */
-    public String getPath()
-    {
-        return path;
-    }
-
-    /**
-     * Sets the path for the feeds settings.
-     */
-    public void setPath(String path)
-    {
-        this.path = path;
     }
 
     /**
@@ -132,7 +114,6 @@ public class FeedsConfig implements ConfigElement
     public static class Builder implements ConfigParser<FeedsConfig>
     {
         // The config attribute names
-        private static final String PATH = "path";
         private static final String USERNAME = "username";
 
         private FeedsConfig ret = null;
@@ -154,8 +135,6 @@ public class FeedsConfig implements ConfigElement
         @Override
         public Builder parse(Map<String, Object> map)
         {
-            if(map.containsKey(PATH))
-                ret.setPath((String)map.get(PATH));
             if(map.containsKey(USERNAME))
                 ret.setUsername((String)map.get(USERNAME));
 

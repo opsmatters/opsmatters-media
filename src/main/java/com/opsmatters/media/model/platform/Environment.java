@@ -33,7 +33,7 @@ public class Environment implements ConfigElement
     private Site site;
     private String url = "";
     private String ping = "";
-    private String path = "";
+    private String base = "";
     private FeedsConfig feeds;
     private DatabaseConfig database;
     private Ec2Config ec2;
@@ -70,7 +70,7 @@ public class Environment implements ConfigElement
             setSite(obj.getSite());
             setUrl(obj.getUrl());
             setPing(obj.getPing());
-            setPath(obj.getPath());
+            setBase(obj.getBase());
             setFeedsConfig(new FeedsConfig(obj.getFeedsConfig()));
             setDatabaseConfig(new DatabaseConfig(obj.getDatabaseConfig()));
             setEc2Config(new Ec2Config(obj.getEc2Config()));
@@ -181,19 +181,19 @@ public class Environment implements ConfigElement
     }
 
     /**
-     * Returns the path of the environment.
+     * Returns the base path of the environment.
      */
-    public String getPath()
+    public String getBase()
     {
-        return path;
+        return base;
     }
 
     /**
-     * Sets the path for the environment.
+     * Sets the base path for the environment.
      */
-    public void setPath(String path)
+    public void setBase(String base)
     {
-        this.path = path;
+        this.base = base;
     }
 
     /**
@@ -327,7 +327,7 @@ public class Environment implements ConfigElement
         // The config attribute names
         private static final String URL = "url";
         private static final String PING = "ping";
-        private static final String PATH = "path";
+        private static final String BASE = "base";
         private static final String FEEDS = "feeds";
         private static final String DATABASE = "database";
         private static final String EC2 = "ec2";
@@ -360,8 +360,8 @@ public class Environment implements ConfigElement
                 ret.setUrl((String)map.get(URL));
             if(map.containsKey(PING))
                 ret.setPing((String)map.get(PING));
-            if(map.containsKey(PATH))
-                ret.setPath((String)map.get(PATH));
+            if(map.containsKey(BASE))
+                ret.setBase((String)map.get(BASE));
             if(map.containsKey(STATUS))
                 ret.setStatus((String)map.get(STATUS));
             if(map.containsKey(DASHBOARD))

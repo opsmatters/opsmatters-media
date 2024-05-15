@@ -288,6 +288,8 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
         int idx = 0;
         int startIdx = -1;
         List<C> items = contentDAO.list(site, getCode());
+//GERALD
+logger.info("ContentConfig.deployContent:1: site="+site.getId()+" code="+getCode()+" items="+items.size());
         for(C content : items)
         {
             if(content.isSkipped())
@@ -403,12 +405,16 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
                     startIdx = idx;
             }
         }
+//GERALD
+logger.info("ContentConfig.deployContent:2: site="+site.getId()+" code="+getCode()+" items="+items.size());
 
         // Process the import file
         handler.writeFile();
         handler.copyFileToBucket(site.getS3Config().getContentBucket());
         handler.deleteFile();
 
+//GERALD
+logger.info("ContentConfig.deployContent:3: site="+site.getId()+" code="+getCode());
         // Process the CSV file
         String type = getType().tag();
         handler.setFilename(handler.getCsvFilename());
@@ -419,12 +425,20 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
 
         // Upload the csv file to the environment
         Environment environment = site.getEnvironment(env);
-        String path = environment.getFeedsConfig().getPath()
-            +System.getProperty("app.files.feeds."+type);
+//GERALD: test
+logger.info("ContentConfig.deployContent:4: site="+site.getId()+" code="+getCode()
+  +" environment="+environment+" base="+environment.getBase());
+        String path = environment.getBase()+System.getProperty("app.path.files.feeds."+type);
+//GERALD
+logger.info("ContentConfig.deployContent:5: site="+site.getId()+" code="+getCode()+" path="+path);
         handler.copyFileToHost(path, environment);
 
+//GERALD
+logger.info("ContentConfig.deployContent:6: site="+site.getId()+" code="+getCode());
         handler.deleteFile();
 
+//GERALD
+logger.info("ContentConfig.deployContent:7: site="+site.getId()+" code="+getCode());
         return items;
     }
 

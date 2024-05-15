@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.logging.Logger;
 
 /**
  * A set of utility methods to perform miscellaneous tasks related to HTML documents.
@@ -28,6 +29,8 @@ import java.util.regex.Matcher;
  */
 public class HtmlUtils
 {
+    private static final Logger logger = Logger.getLogger(HtmlUtils.class.getName());
+
     public static final String DATA_ATTR = " data-";
     public static final String DIR_ATTR = " dir=\"ltr\"";
     public static final String NBSP = "\u00a0";
@@ -64,7 +67,7 @@ public class HtmlUtils
     private static String removeDataAttributes(String str)
     {
         // Remove data- attributes, with and without values
-        str = str.replaceAll(String.format("%s[-\\w]+=\"[-\\w\\[\\]{}:,./\"]*\"", DATA_ATTR), "");
+        str = str.replaceAll(String.format("%s[-\\w]+=\"[-\\w\\[\\]{}:,./\"\\u25cf]*\"", DATA_ATTR), "");
         // Removed as it also replaces valid text such as "data-driven"
         // str = str.replaceAll(String.format("%s[-\\w]+", DATA_ATTR), "");
 
@@ -295,16 +298,29 @@ public class HtmlUtils
     public static boolean hasMalformedLinks(String str)
     {
         boolean ret = false;
-        Pattern pattern = Pattern.compile("<a(.+?)>(.+?)</a>", Pattern.DOTALL);
-        Matcher m = pattern.matcher(str);
+        Pattern linkPattern = Pattern.compile("<a(.+?)>(.+?)</a>", Pattern.DOTALL);
+        Matcher linkMatcher = linkPattern.matcher(str);
 
-        while(m.find() && !ret)
+        while(linkMatcher.find() && !ret)
         {
-            String anchor = m.group(2);
+            String attr = linkMatcher.group(1);
+            String anchor = linkMatcher.group(2);
 
-            if(anchor.startsWith(" ") || anchor.endsWith(" "))
+            Pattern hrefPattern = Pattern.compile(" href=\"(.+?)\"", Pattern.DOTALL);
+            Matcher hrefMatcher = hrefPattern.matcher(attr);
+            String href = hrefMatcher.find() ? hrefMatcher.group(1) : "";
+
+            if(!href.startsWith("https://") && !href.startsWith("mailto:")) // Malformed URL
             {
                 ret = true;
+                logger.warning(String.format("Found malformed link with bad protocol: href=%s, anchor=%s",
+                    href, anchor));
+            }
+            else if(anchor.startsWith(" ") || anchor.endsWith(" "))
+            {
+                ret = true;
+                logger.warning(String.format("Found malformed link with spaces: href=%s, anchor=%s",
+                    href, anchor));
             }
         }
 
@@ -332,6 +348,8 @@ public class HtmlUtils
             if(links.containsKey(href)) // duplicate link
             {
                 ret = true;
+                logger.warning(String.format("Found duplicate link: href=%s, anchor=%s",
+                    href, anchor));
             }
 
             links.put(href, anchor);
