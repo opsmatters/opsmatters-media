@@ -253,15 +253,6 @@ public class ContentHandler
     }
 
     /**
-     * Trims the output lines to the given size by removing the first lines.
-     */
-    public void trimLines(int firstRow)
-    {
-        if(firstRow > 2 && getLineCount() > firstRow)
-            lines.subList(1, firstRow).clear();
-    }
-
-    /**
      * Process the input fields to add additional required fields.
      */
     private void processInputs(Map<String,String> input)

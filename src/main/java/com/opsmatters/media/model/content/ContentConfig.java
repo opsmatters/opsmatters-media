@@ -26,6 +26,7 @@ import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.cache.organisation.OrganisationSites;
 import com.opsmatters.media.cache.content.organisation.OrganisationContentConfigs;
 import com.opsmatters.media.cache.content.util.ContentImages;
+import com.opsmatters.media.cache.platform.Environments;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.platform.FeedsConfig;
 import com.opsmatters.media.model.platform.Environment;
@@ -38,6 +39,7 @@ import com.opsmatters.media.model.ConfigParser;
 import com.opsmatters.media.model.content.organisation.OrganisationListing;
 import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
+import com.opsmatters.media.model.feed.batch.FeedBatchOrganisation;
 import com.opsmatters.media.handler.ContentHandler;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.util.FileUtils;
@@ -282,20 +284,30 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     /**
      * Extract the list of content items from the database and deploy using the given handler.
      */
-    public List<C> deployContent(Site site, EnvironmentId env, Environment images, ContentDAO contentDAO, ContentHandler handler)
+    public void deployContent(FeedBatchOrganisation batchOrganisation, List<C> items, EnvironmentId env)
         throws IOException, SQLException
     {
-        int idx = 0;
-        int startIdx = -1;
-        List<C> items = contentDAO.list(site, getCode());
-//GERALD
-logger.info("ContentConfig.deployContent:1: site="+site.getId()+" code="+getCode()+" items="+items.size());
+        Site site = batchOrganisation.getSite();
+        ContentDAO contentDAO = batchOrganisation.getDAO();
+        Environment images = Environments.get(EnvironmentId.IMAGE);
+
+        ContentHandler s3Handler = ContentHandler.builder()
+            .useConfig(this)
+            .withWorkingDirectory(System.getProperty("app.working"))
+            .initFile()
+            .build();
+
+        ContentHandler csvHandler = ContentHandler.builder()
+            .useConfig(this)
+            .withWorkingDirectory(System.getProperty("app.working"))
+            .initFile()
+            .build();
+
         for(C content : items)
         {
             if(content.isSkipped())
                 continue;
 
-            ++idx;
             ContentStatus status = content.getStatus();
             FieldMap fields = content.toFields().add(this);
 
@@ -310,7 +322,6 @@ logger.info("ContentConfig.deployContent:1: site="+site.getId()+" code="+getCode
                 // Ignore missing and archived organisations
                 if(organisation == null || organisationSite.isArchived())
                 {
-                    --idx;
                     continue;
                 }
 
@@ -388,7 +399,7 @@ logger.info("ContentConfig.deployContent:1: site="+site.getId()+" code="+getCode
             }
 
             fields.add(organisation, organisationSite);
-            handler.appendLine(handler.getValues(fields));
+            s3Handler.appendLine(s3Handler.getValues(fields));
 
             if(content.getStatus() != ContentStatus.DEPLOYED)
             {
@@ -401,45 +412,32 @@ logger.info("ContentConfig.deployContent:1: site="+site.getId()+" code="+getCode
             if(content.getStatus() != status)
             {
                 contentDAO.update(content);
-                if(startIdx < 0)
-                    startIdx = idx;
+                csvHandler.appendLine(csvHandler.getValues(fields));
             }
         }
-//GERALD
-logger.info("ContentConfig.deployContent:2: site="+site.getId()+" code="+getCode()+" items="+items.size());
 
-        // Process the import file
-        handler.writeFile();
-        handler.copyFileToBucket(site.getS3Config().getContentBucket());
-        handler.deleteFile();
+        // Only copy the content to the S3 bucket once per organisation
+        if(batchOrganisation.getBucket() == null)
+        {
+            String bucket = site.getS3Config().getContentBucket();
+            s3Handler.writeFile();
+            s3Handler.copyFileToBucket(bucket);
+            s3Handler.deleteFile();
+            batchOrganisation.setBucket(bucket);
+        }
 
-//GERALD
-logger.info("ContentConfig.deployContent:3: site="+site.getId()+" code="+getCode());
         // Process the CSV file
         String type = getType().tag();
-        handler.setFilename(handler.getCsvFilename());
-        if(startIdx > 0)
-            handler.trimLines(startIdx);
-        handler.convertLinesToAscii(getHtmlFields());
-        handler.writeFile();
+        csvHandler.setFilename(csvHandler.getCsvFilename());
+        csvHandler.convertLinesToAscii(getHtmlFields());
+        csvHandler.writeFile();
 
         // Upload the csv file to the environment
         Environment environment = site.getEnvironment(env);
-//GERALD: test
-logger.info("ContentConfig.deployContent:4: site="+site.getId()+" code="+getCode()
-  +" environment="+environment+" base="+environment.getBase());
         String path = environment.getBase()+System.getProperty("app.path.files.feeds."+type);
-//GERALD
-logger.info("ContentConfig.deployContent:5: site="+site.getId()+" code="+getCode()+" path="+path);
-        handler.copyFileToHost(path, environment);
+        csvHandler.copyFileToHost(path, environment);
 
-//GERALD
-logger.info("ContentConfig.deployContent:6: site="+site.getId()+" code="+getCode());
-        handler.deleteFile();
-
-//GERALD
-logger.info("ContentConfig.deployContent:7: site="+site.getId()+" code="+getCode());
-        return items;
+        csvHandler.deleteFile();
     }
 
     /**

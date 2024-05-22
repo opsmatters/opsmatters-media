@@ -144,6 +144,17 @@ public class HtmlUtils
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given string contains extra line breaks.
+     * @param str The string to search
+     * @return <CODE>true</CODE> if the given string contains extra line breaks.
+     */
+    public static boolean hasExtraLineBreaks(String str)
+    {
+        Pattern pattern = Pattern.compile("<br[ /]*><br[ /]*>", Pattern.DOTALL);
+        return pattern.matcher(str).find();
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the given string contains links not surrounded by spaces.
      * @param str The string to search
      * @return <CODE>true</CODE> if the given string contains links not surrounded by spaces.
