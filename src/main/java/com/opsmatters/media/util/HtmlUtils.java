@@ -55,8 +55,8 @@ public class HtmlUtils
      */
     private static boolean hasDataAttribute(String str)
     {
-        Pattern dataAttribute = Pattern.compile(String.format("%s[-\\w]+=", DATA_ATTR), Pattern.DOTALL);
-        return dataAttribute.matcher(str).find();
+        Pattern pattern = Pattern.compile(String.format("%s[-\\w]+=", DATA_ATTR), Pattern.DOTALL);
+        return pattern.matcher(str).find();
     }
 
     /**
@@ -285,16 +285,20 @@ public class HtmlUtils
         boolean ret = false;
         Pattern pattern = Pattern.compile("<p>(.+?)</p>", Pattern.DOTALL);
         Matcher m = pattern.matcher(str);
-        while(m.find() && !ret)
+        while(m.find())
         {
             String contents = m.group(1).toLowerCase().trim();
             if(contents.indexOf(IMAGE_SOURCE) != -1)
             {
                 ret = true;
+                logger.warning(String.format("Found image source: contents=%s",
+                    contents));
             }
             else if(contents.startsWith("https://") && contents.indexOf("<") == -1) // No markup, just text
             {
                 ret = true;
+                logger.warning(String.format("Found image source: contents=%s",
+                    contents));
             }
         }
 
@@ -309,13 +313,13 @@ public class HtmlUtils
     public static boolean hasMalformedLinks(String str)
     {
         boolean ret = false;
-        Pattern linkPattern = Pattern.compile("<a(.+?)>(.+?)</a>", Pattern.DOTALL);
-        Matcher linkMatcher = linkPattern.matcher(str);
+        Pattern pattern = Pattern.compile("<a(.+?)>(.+?)</a>", Pattern.DOTALL);
+        Matcher m = pattern.matcher(str);
 
-        while(linkMatcher.find() && !ret)
+        while(m.find())
         {
-            String attr = linkMatcher.group(1);
-            String anchor = linkMatcher.group(2);
+            String attr = m.group(1);
+            String anchor = m.group(2);
 
             Pattern hrefPattern = Pattern.compile(" href=\"(.+?)\"", Pattern.DOTALL);
             Matcher hrefMatcher = hrefPattern.matcher(attr);
@@ -350,13 +354,14 @@ public class HtmlUtils
         Matcher m = pattern.matcher(str);
         Map<String,String> links = new HashMap<String,String>();
 
-        while(m.find() && !ret)
+        while(m.find())
         {
             String attributes = m.group(1);
             String anchor = m.group(2);
-
             String href = attributes.replaceAll(" href=\"(.+)\"", "$1");
-            if(links.containsKey(href)) // duplicate link
+
+            String value = links.get(href);
+            if(value != null && value.equals(anchor))      // duplicate link
             {
                 ret = true;
                 logger.warning(String.format("Found duplicate link: href=%s, anchor=%s",
