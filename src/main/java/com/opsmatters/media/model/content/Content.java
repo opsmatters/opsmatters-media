@@ -24,7 +24,7 @@ import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
-import com.opsmatters.media.model.content.organisation.OrganisationContentType;
+import com.opsmatters.media.model.content.ContentSettings;
 import com.opsmatters.media.file.FileFormat;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.StringUtils;
@@ -174,9 +174,9 @@ public abstract class Content<D extends ContentDetails>
     {
         if(organisationSite != null)
         {
-            OrganisationContentType type = organisationSite.getContentType(getType());
-            if(type != null)
-                setTracking(type.getTracking());
+            ContentSettings settings = organisationSite.getContentSettings(getType());
+            if(settings != null)
+                setTracking(settings.getTracking());
         }
 
         if(config.hasField(FieldName.CODE))

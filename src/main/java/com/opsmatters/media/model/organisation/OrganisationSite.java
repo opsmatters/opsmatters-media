@@ -28,7 +28,7 @@ import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.FieldName;
 import com.opsmatters.media.model.content.FieldSource;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.organisation.OrganisationContentType;
+import com.opsmatters.media.model.content.ContentSettings;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;
@@ -49,7 +49,7 @@ public class OrganisationSite extends OwnedEntity implements FieldSource
     private boolean social = false;
     private OrganisationStatus status = OrganisationStatus.NEW;
     private ArchiveReason reason = ArchiveReason.NONE;
-    private Map<ContentType, OrganisationContentType> contentTypes = new HashMap<ContentType, OrganisationContentType>();
+    private Map<ContentType, ContentSettings> contentSettings = new HashMap<ContentType, ContentSettings>();
 
 
     /**
@@ -408,92 +408,92 @@ public class OrganisationSite extends OwnedEntity implements FieldSource
     }
 
     /**
-     * Returns the content types.
+     * Returns the content settings.
      */
-    public Map<ContentType,OrganisationContentType> getContentTypes()
+    public Map<ContentType,ContentSettings> getContentSettings()
     {
-        return contentTypes;
+        return contentSettings;
     }
 
     /**
-     * Returns a list of the content types.
+     * Returns a list of the content settings.
      */
-    public List<OrganisationContentType> getContentTypesList()
+    public List<ContentSettings> getContentSettingsList()
     {
-        return new ArrayList<OrganisationContentType>(contentTypes.values());
+        return new ArrayList<ContentSettings>(contentSettings.values());
     }
 
     /**
-     * Returns <CODE>true</CODE>if the organisation has content types.
+     * Returns <CODE>true</CODE>if the organisation has content settings.
      */
-    public boolean hasContentTypes()
+    public boolean hasContentSettings()
     {
-        return contentTypes != null && contentTypes.size() > 0;
+        return contentSettings != null && contentSettings.size() > 0;
     }
 
     /**
-     * Returns the number of content types.
+     * Returns the number of content settings.
      */
-    public int numContentTypes()
+    public int numContentSettings()
     {
-        return contentTypes.size();
+        return contentSettings.size();
     }
 
     /**
-     * Returns the data for the given content type.
+     * Returns the settings for the given content type.
      */
-    public OrganisationContentType getContentType(ContentType type)
+    public ContentSettings getContentSettings(ContentType type)
     {
-        return contentTypes.get(type);
+        return contentSettings.get(type);
     }
 
     /**
-     * Adds the given content type.
+     * Adds the given content settings.
      */
-    public void setContentType(OrganisationContentType type)
+    public void setContentSettings(ContentSettings settings)
     {
-        contentTypes.put(type.getType(), type);
+        contentSettings.put(settings.getType(), settings);
     }
 
     /**
-     * Removes the given content type.
+     * Removes the given content settings.
      */
-    public void removeContentType(OrganisationContentType type)
+    public void removeContentSettings(ContentSettings settings)
     {
-        contentTypes.remove(type.getType());
+        contentSettings.remove(settings.getType());
     }
 
     /**
-     * Sets the content types.
+     * Sets the content settings.
      */
-    public void setContentTypes(Map<ContentType,OrganisationContentType> types)
+    public void setContentSettings(Map<ContentType,ContentSettings> map)
     {
-        contentTypes.clear();
-        for(OrganisationContentType type : types.values())
-            setContentType(type);
+        contentSettings.clear();
+        for(ContentSettings settings : map.values())
+            setContentSettings(settings);
     }
 
     /**
-     * Clears the content types.
+     * Clears the content settings.
      */
-    public void clearContentTypes()
+    public void clearContentSettings()
     {
-        contentTypes.clear();
+        contentSettings.clear();
     }
 
     /**
-     * Returns <CODE>true</CODE> if all of the content types have been deployed.
+     * Returns <CODE>true</CODE> if all of the content settings have been deployed.
      */
     public boolean isDeployed()
     {
         boolean ret = false;
 
-        if(contentTypes.size() > 0)
+        if(contentSettings.size() > 0)
         {
             ret = true;
-            for(OrganisationContentType type : contentTypes.values())
+            for(ContentSettings settings : contentSettings.values())
             {
-                if(type.getItemCount() > 0 && !type.isDeployed())
+                if(settings.getItemCount() > 0 && !settings.isDeployed())
                 {
                     ret = false;
                     break;

@@ -397,7 +397,7 @@ public class ContentMonitor<T extends ContentDetails> extends BaseEntity
     /**
      * Clear the monitor status after CHANGE.
      */
-    public void clearChange(ContentChange change)
+    public void clearChange(ContentChange change, boolean clearEvent)
     {
         if(change == null || getEventId().equals(change.getId()))
         {
@@ -406,7 +406,8 @@ public class ContentMonitor<T extends ContentDetails> extends BaseEntity
                 setStatus(MonitorStatus.RESUMING);
                 setSnapshot(change.getSnapshotAfter());
                 setUpdatedDate(Instant.now());
-                clearEvent();
+                if(clearEvent)
+                    clearEvent();
             }
         }
     }

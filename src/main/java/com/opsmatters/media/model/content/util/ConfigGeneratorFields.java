@@ -32,7 +32,7 @@ import com.opsmatters.media.model.content.tool.ToolConfig;
 import com.opsmatters.media.model.content.organisation.OrganisationListing;
 import com.opsmatters.media.model.content.organisation.OrganisationTabs;
 import com.opsmatters.media.model.content.organisation.OrganisationContentConfig;
-import com.opsmatters.media.model.content.organisation.OrganisationContentType;
+import com.opsmatters.media.model.content.ContentSettings;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
 import com.opsmatters.media.util.StringUtils;
@@ -163,11 +163,11 @@ public class ConfigGeneratorFields implements java.io.Serializable
         {
             VideoConfig videos = config.getVideos();
 
-            OrganisationContentType type = OrganisationSites.getContentType(siteId, videos);
-            if(type != null)
+            ContentSettings settings = OrganisationSites.getContentSettings(siteId, videos);
+            if(settings != null)
             {
                 if(tags == null)
-                    tags = type.getTags();
+                    tags = settings.getTags();
             }
 
             if(videos.numChannels() > 0)
@@ -190,11 +190,11 @@ public class ConfigGeneratorFields implements java.io.Serializable
         {
             RoundupPostConfig roundups = config.getRoundups();
 
-            OrganisationContentType type = OrganisationSites.getContentType(siteId, roundups);
-            if(type != null)
+            ContentSettings settings = OrganisationSites.getContentSettings(siteId, roundups);
+            if(settings != null)
             {
                 if(tags == null)
-                    tags = type.getTags();
+                    tags = settings.getTags();
             }
 
             if(roundups.numPages() > 0)
@@ -208,11 +208,11 @@ public class ConfigGeneratorFields implements java.io.Serializable
         {
             PostConfig posts = config.getPosts();
 
-            OrganisationContentType type = OrganisationSites.getContentType(siteId, posts);
-            if(type != null)
+            ContentSettings settings = OrganisationSites.getContentSettings(siteId, posts);
+            if(settings != null)
             {
                 if(tags == null)
-                    tags = type.getTags();
+                    tags = settings.getTags();
             }
         }
 
@@ -220,11 +220,11 @@ public class ConfigGeneratorFields implements java.io.Serializable
         {
             ProjectConfig projects = config.getProjects();
 
-            OrganisationContentType type = OrganisationSites.getContentType(siteId, projects);
-            if(type != null)
+            ContentSettings settings = OrganisationSites.getContentSettings(siteId, projects);
+            if(settings != null)
             {
                 if(features == null)
-                    features = type.getFeatures();
+                    features = settings.getFeatures();
             }
         }
 
@@ -232,11 +232,11 @@ public class ConfigGeneratorFields implements java.io.Serializable
         {
             ToolConfig tools = config.getTools();
 
-            OrganisationContentType type = OrganisationSites.getContentType(siteId, tools);
-            if(type != null)
+            ContentSettings settings = OrganisationSites.getContentSettings(siteId, tools);
+            if(settings != null)
             {
                 if(features == null)
-                    features = type.getFeatures();
+                    features = settings.getFeatures();
             }
         }
 

@@ -18,6 +18,8 @@ package com.opsmatters.media.util;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.logging.Logger;
@@ -33,6 +35,7 @@ public class HtmlUtils
 
     public static final String DATA_ATTR = " data-";
     public static final String DIR_ATTR = " dir=\"ltr\"";
+    public static final String LINE_BREAKS = "(<br[ /]*>){2,}";
     public static final String NBSP = "\u00a0";
     public static final String NBSP_ENTITY = "&nbsp;";
     public static final String TEXT_CHARS = "\\w\\u2010-\\u2017";
@@ -150,8 +153,18 @@ public class HtmlUtils
      */
     public static boolean hasExtraLineBreaks(String str)
     {
-        Pattern pattern = Pattern.compile("<br[ /]*><br[ /]*>", Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(LINE_BREAKS, Pattern.DOTALL);
         return pattern.matcher(str).find();
+    }
+
+    /**
+     * Removes extra line breaks from the given string.
+     * @param str The string to amend
+     * @return The amended string.
+     */
+    public static String removeExtraLineBreaks(String str)
+    {
+        return str.replaceAll(LINE_BREAKS, "");
     }
 
     /**
@@ -276,29 +289,45 @@ public class HtmlUtils
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given string contains an image URL as text.
+     * Returns the list of image source messages for the given string.
      * @param str The string to search
-     * @return <CODE>true</CODE> if the given string contains an image URL as text.
+     * @return the list of image source messages for the given string
      */
-    public static boolean hasImageSource(String str)
+    public static List<String> getImageSources(String str)
     {
-        boolean ret = false;
-        Pattern pattern = Pattern.compile("<p>(.+?)</p>", Pattern.DOTALL);
+        List<String> ret = new ArrayList<String>();
+        ret.addAll(getImageSources("p", str));
+        ret.addAll(getImageSources("h2", str));
+
+        return ret;
+    }
+
+    /**
+     * Returns the list of image source messages for the given string.
+     * @param tag The tag to look for
+     * @param str The string to search
+     * @return the list of image source messages for the given string
+     */
+    private static List<String> getImageSources(String tag, String str)
+    {
+        List<String> ret = new ArrayList<String>();
+        Pattern pattern = Pattern.compile(String.format("<%s>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(str);
         while(m.find())
         {
-            String contents = m.group(1).toLowerCase().trim();
-            if(contents.indexOf(IMAGE_SOURCE) != -1)
+            String contents = m.group(1);
+            String lower = contents.toLowerCase().trim();
+            if(lower.indexOf(IMAGE_SOURCE) != -1)
             {
-                ret = true;
-                logger.warning(String.format("Found image source: contents=%s",
-                    contents));
+                String message = String.format("image source: [%s]", contents);
+                ret.add(message);
+                logger.warning("Found "+message);
             }
-            else if(contents.startsWith("https://") && contents.indexOf("<") == -1) // No markup, just text
+            else if(lower.startsWith("https://") && lower.indexOf("<") == -1) // No markup, just text
             {
-                ret = true;
-                logger.warning(String.format("Found image source: contents=%s",
-                    contents));
+                String message = String.format("image source: [%s]", contents);
+                ret.add(message);
+                logger.warning("Found "+message);
             }
         }
 
@@ -306,13 +335,13 @@ public class HtmlUtils
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given string contains malformed links.
+     * Returns the list of malformed link messages for the given string.
      * @param str The string to search
-     * @return <CODE>true</CODE> if the given string contains malformed links.
+     * @return the list of malformed link messages for the given string
      */
-    public static boolean hasMalformedLinks(String str)
+    public static List<String> getMalformedLinks(String str)
     {
-        boolean ret = false;
+        List<String> ret = new ArrayList<String>();
         Pattern pattern = Pattern.compile("<a(.+?)>(.+?)</a>", Pattern.DOTALL);
         Matcher m = pattern.matcher(str);
 
@@ -327,15 +356,15 @@ public class HtmlUtils
 
             if(!href.startsWith("https://") && !href.startsWith("mailto:")) // Malformed URL
             {
-                ret = true;
-                logger.warning(String.format("Found malformed link with bad protocol: href=%s, anchor=%s",
-                    href, anchor));
+                String message = String.format("malformed link with bad protocol: href=%s, anchor=[%s]", href, anchor);
+                ret.add(message);
+                logger.warning("Found "+message);
             }
             else if(anchor.startsWith(" ") || anchor.endsWith(" "))
             {
-                ret = true;
-                logger.warning(String.format("Found malformed link with spaces: href=%s, anchor=%s",
-                    href, anchor));
+                String message = String.format("malformed link with spaces: href=%s, anchor=[%s]", href, anchor);
+                ret.add(message);
+                logger.warning("Found "+message);
             }
         }
 
@@ -343,13 +372,13 @@ public class HtmlUtils
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given string contains duplicate links.
+     * Returns the list of duplicate link messages for the given string.
      * @param str The string to search
-     * @return <CODE>true</CODE> if the given string contains duplicate links.
+     * @return the list of duplicate link messages for the given string
      */
-    public static boolean hasDuplicateLinks(String str)
+    public static List<String> getDuplicateLinks(String str)
     {
-        boolean ret = false;
+        List<String> ret = new ArrayList<String>();
         Pattern pattern = Pattern.compile("<a(.+?)>(.+?)</a>", Pattern.DOTALL);
         Matcher m = pattern.matcher(str);
         Map<String,String> links = new HashMap<String,String>();
@@ -363,9 +392,9 @@ public class HtmlUtils
             String value = links.get(href);
             if(value != null && value.equals(anchor))      // duplicate link
             {
-                ret = true;
-                logger.warning(String.format("Found duplicate link: href=%s, anchor=%s",
-                    href, anchor));
+                String message = String.format("duplicate link: href=%s, anchor=[%s]", href, anchor);
+                ret.add(message);
+                logger.warning("Found "+message);
             }
 
             links.put(href, anchor);

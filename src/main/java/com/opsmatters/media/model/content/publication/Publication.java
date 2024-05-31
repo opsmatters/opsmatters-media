@@ -26,7 +26,7 @@ import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.Resource;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.LinkText;
-import com.opsmatters.media.model.content.organisation.OrganisationContentType;
+import com.opsmatters.media.model.content.ContentSettings;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
@@ -232,9 +232,9 @@ public class Publication extends Resource<PublicationDetails>
 
         if(organisationSite != null)
         {
-            OrganisationContentType type = organisationSite.getContentType(getType());
-            if(type != null)
-                setTags(type.getTags());
+            ContentSettings settings = organisationSite.getContentSettings(getType());
+            if(settings != null)
+                setTags(settings.getTags());
         }
 
         if(page.hasField(TAGS))

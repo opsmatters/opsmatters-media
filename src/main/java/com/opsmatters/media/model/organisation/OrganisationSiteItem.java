@@ -18,7 +18,7 @@ package com.opsmatters.media.model.organisation;
 import java.util.Map;
 import com.opsmatters.media.model.BaseEntityItem;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.organisation.OrganisationContentType;
+import com.opsmatters.media.model.content.ContentSettings;
 
 /**
  * Class representing an organisation site item.
@@ -169,27 +169,27 @@ public class OrganisationSiteItem extends BaseEntityItem<OrganisationSite>
     }
 
     /**
-     * Returns the content types.
+     * Returns the content settings.
      */
-    public Map<ContentType,OrganisationContentType> getContentTypes()
+    public Map<ContentType,ContentSettings> getContentSettings()
     {
-        return content.getContentTypes();
+        return content.getContentSettings();
     }
 
     /**
-     * Sets the content types.
+     * Sets the content settings.
      */
-    public void setContentTypes(Map<ContentType,OrganisationContentType> types)
+    public void setContentSettings(Map<ContentType,ContentSettings> settings)
     {
-        content.setContentTypes(types);
+        content.setContentSettings(settings);
     }
 
     /**
-     * Adds the given content type.
+     * Adds the given content settings.
      */
-    public void setContentType(OrganisationContentType type)
+    public void setContentSettings(ContentSettings settings)
     {
-        content.setContentType(type);
+        content.setContentSettings(settings);
     }
 
     /**

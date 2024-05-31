@@ -13,26 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.content.organisation;
+package com.opsmatters.media.model.content;
 
 import java.time.Instant;
 import java.util.List;
 import org.json.JSONObject;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.platform.Site;
-import com.opsmatters.media.model.content.Content;
-import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
- * Class representing a the data for an organisation's content type.
+ * Class representing the settings of a content type for an organisation.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrganisationContentType extends BaseEntity
+public class ContentSettings extends BaseEntity
 {
     private String siteId = "";
     private String code = "";
@@ -49,14 +47,14 @@ public class OrganisationContentType extends BaseEntity
     /**
      * Default constructor.
      */
-    public OrganisationContentType()
+    public ContentSettings()
     {
     }
 
     /**
      * Copy constructor.
      */
-    public OrganisationContentType(OrganisationContentType obj)
+    public ContentSettings(ContentSettings obj)
     {
         copyAttributes(obj);
     }
@@ -64,7 +62,7 @@ public class OrganisationContentType extends BaseEntity
     /**
      * Constructor that takes an organisation and content type.
      */
-    public OrganisationContentType(OrganisationSite organisation, List<? extends Content> content)
+    public ContentSettings(OrganisationSite organisation, List<? extends Content> content)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(organisation.getCreatedDate());
@@ -76,7 +74,7 @@ public class OrganisationContentType extends BaseEntity
     /**
      * Constructor that takes new content.
      */
-    public OrganisationContentType(Content content)
+    public ContentSettings(Content content)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
@@ -90,7 +88,7 @@ public class OrganisationContentType extends BaseEntity
     /**
      * Constructor that takes an organisation and content type.
      */
-    public OrganisationContentType(OrganisationSite organisation, ContentType type)
+    public ContentSettings(OrganisationSite organisation, ContentType type)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(organisation.getCreatedDate());
@@ -103,7 +101,7 @@ public class OrganisationContentType extends BaseEntity
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(OrganisationContentType obj)
+    public void copyAttributes(ContentSettings obj)
     {
         if(obj != null)
         {

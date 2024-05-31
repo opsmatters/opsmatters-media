@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.db.dao.content.organisation;
+package com.opsmatters.media.db.dao.content;
 
 import java.io.StringReader;
 import java.util.List;
@@ -26,78 +26,78 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.platform.Site;
-import com.opsmatters.media.model.content.organisation.OrganisationContentType;
+import com.opsmatters.media.model.content.ContentSettings;
 import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
 
 /**
- * DAO that provides operations on the ORGANISATION_CONTENT_TYPES table in the database.
+ * DAO that provides operations on the CONTENT_SETTINGS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrganisationContentTypeDAO extends BaseDAO
+public class ContentSettingsDAO extends BaseDAO
 {
-    private static final Logger logger = Logger.getLogger(OrganisationContentTypeDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(ContentSettingsDAO.class.getName());
 
     /**
-     * The query to use to select a type from the ORGANISATION_CONTENT_TYPES table by id.
+     * The query to use to select settings from the CONTENT_SETTINGS table by id.
      */
     private static final String GET_BY_ID_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, ATTRIBUTES, ITEM_COUNT, DEPLOYED "
-      + "FROM ORGANISATION_CONTENT_TYPES WHERE ID=?";
+      + "FROM CONTENT_SETTINGS WHERE ID=?";
 
     /**
-     * The query to use to insert a type into the ORGANISATION_CONTENT_TYPES table.
+     * The query to use to insert settings into the CONTENT_SETTINGS table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO ORGANISATION_CONTENT_TYPES"
+      "INSERT INTO CONTENT_SETTINGS"
       + "( ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, ATTRIBUTES, ITEM_COUNT, DEPLOYED )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update a type in the ORGANISATION_CONTENT_TYPES table.
+     * The query to use to update settings in the CONTENT_SETTINGS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE ORGANISATION_CONTENT_TYPES SET UPDATED_DATE=?, ATTRIBUTES=?, ITEM_COUNT=?, DEPLOYED=? "
+      "UPDATE CONTENT_SETTINGS SET UPDATED_DATE=?, ATTRIBUTES=?, ITEM_COUNT=?, DEPLOYED=? "
       + "WHERE ID=?";
 
     /**
-     * The query to use to select the types from the ORGANISATION_CONTENT_TYPES table.
+     * The query to use to select the settings from the CONTENT_SETTINGS table.
      */
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, ATTRIBUTES, ITEM_COUNT, DEPLOYED "
-      + "FROM ORGANISATION_CONTENT_TYPES WHERE SITE_ID=? ORDER BY CREATED_DATE";
+      + "FROM CONTENT_SETTINGS WHERE SITE_ID=? ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to select the types from the ORGANISATION_CONTENT_TYPES table by organisation code.
+     * The query to use to select the settings from the CONTENT_SETTINGS table by organisation code.
      */
     private static final String LIST_BY_CODE_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, ATTRIBUTES, ITEM_COUNT, DEPLOYED "
-      + "FROM ORGANISATION_CONTENT_TYPES WHERE SITE_ID=? AND CODE=? ORDER BY CREATED_DATE";
+      + "FROM CONTENT_SETTINGS WHERE SITE_ID=? AND CODE=? ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to get the count of types from the ORGANISATION_CONTENT_TYPES table.
+     * The query to use to get the count of settings from the CONTENT_SETTINGS table.
      */
     private static final String COUNT_SQL =  
-      "SELECT COUNT(*) FROM ORGANISATION_CONTENT_TYPES";
+      "SELECT COUNT(*) FROM CONTENT_SETTINGS";
 
     /**
-     * The query to use to delete a type from the ORGANISATION_CONTENT_TYPES table.
+     * The query to use to delete settings from the CONTENT_SETTINGS table.
      */
     private static final String DELETE_SQL =  
-      "DELETE FROM ORGANISATION_CONTENT_TYPES WHERE ID=?";
+      "DELETE FROM CONTENT_SETTINGS WHERE ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public OrganisationContentTypeDAO(ContentDAOFactory factory)
+    public ContentSettingsDAO(ContentDAOFactory factory)
     {
-        super(factory, "ORGANISATION_CONTENT_TYPES");
+        super(factory, "CONTENT_SETTINGS");
     }
 
     /**
-     * Defines the columns and indices for the ORGANISATION_CONTENT_TYPES table.
+     * Defines the columns and indices for the CONTENT_SETTINGS table.
      */
     @Override
     protected void defineTable()
@@ -111,17 +111,17 @@ public class OrganisationContentTypeDAO extends BaseDAO
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("ITEM_COUNT", Types.INTEGER, true);
         table.addColumn("DEPLOYED", Types.BOOLEAN, true);
-        table.setPrimaryKey("ORG_CONTENT_TYPES_PK", new String[] {"ID"});
-        table.addIndex("ORG_CONTENT_TYPES_CODE_IDX", new String[] {"SITE_ID","CODE"});
+        table.setPrimaryKey("CONTENT_SETTINGS_PK", new String[] {"ID"});
+        table.addIndex("CONTENT_SETTINGS_CODE_IDX", new String[] {"SITE_ID","CODE"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns a type from the ORGANISATION_CONTENT_TYPES table by id.
+     * Returns settings from the CONTENT_SETTINGS table by id.
      */
-    public synchronized OrganisationContentType getById(String id) throws SQLException
+    public synchronized ContentSettings getById(String id) throws SQLException
     {
-        OrganisationContentType ret = null;
+        ContentSettings ret = null;
 
         if(!hasConnection())
             return ret;
@@ -140,17 +140,17 @@ public class OrganisationContentTypeDAO extends BaseDAO
             rs = getByIdStmt.executeQuery();
             while(rs.next())
             {
-                OrganisationContentType type = new OrganisationContentType();
-                type.setId(rs.getString(1));
-                type.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                type.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                type.setSiteId(rs.getString(4));
-                type.setCode(rs.getString(5));
-                type.setType(rs.getString(6));
-                type.setAttributes(new JSONObject(getClob(rs, 7)));
-                type.setItemCount(rs.getInt(8));
-                type.setDeployed(rs.getBoolean(9));
-                ret = type;
+                ContentSettings settings = new ContentSettings();
+                settings.setId(rs.getString(1));
+                settings.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                settings.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                settings.setSiteId(rs.getString(4));
+                settings.setCode(rs.getString(5));
+                settings.setType(rs.getString(6));
+                settings.setAttributes(new JSONObject(getClob(rs, 7)));
+                settings.setItemCount(rs.getInt(8));
+                settings.setDeployed(rs.getBoolean(9));
+                ret = settings;
             }
         }
         finally
@@ -171,11 +171,11 @@ public class OrganisationContentTypeDAO extends BaseDAO
     }
 
     /**
-     * Stores the given type in the ORGANISATION_CONTENT_TYPES table.
+     * Stores the given settings in the CONTENT_SETTINGS table.
      */
-    public synchronized void add(OrganisationContentType type) throws SQLException
+    public synchronized void add(ContentSettings settings) throws SQLException
     {
-        if(!hasConnection() || type == null)
+        if(!hasConnection() || settings == null)
             return;
 
         if(insertStmt == null)
@@ -186,20 +186,20 @@ public class OrganisationContentTypeDAO extends BaseDAO
 
         try
         {
-            insertStmt.setString(1, type.getId());
-            insertStmt.setTimestamp(2, new Timestamp(type.getCreatedDateMillis()), UTC);
-            insertStmt.setTimestamp(3, new Timestamp(type.getUpdatedDateMillis()), UTC);
-            insertStmt.setString(4, type.getSiteId());
-            insertStmt.setString(5, type.getCode());
-            insertStmt.setString(6, type.getType().name());
-            String attributes = type.getAttributes().toString();
+            insertStmt.setString(1, settings.getId());
+            insertStmt.setTimestamp(2, new Timestamp(settings.getCreatedDateMillis()), UTC);
+            insertStmt.setTimestamp(3, new Timestamp(settings.getUpdatedDateMillis()), UTC);
+            insertStmt.setString(4, settings.getSiteId());
+            insertStmt.setString(5, settings.getCode());
+            insertStmt.setString(6, settings.getType().name());
+            String attributes = settings.getAttributes().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(7, reader, attributes.length());
-            insertStmt.setLong(8, type.getItemCount());
-            insertStmt.setBoolean(9, type.isDeployed());
+            insertStmt.setLong(8, settings.getItemCount());
+            insertStmt.setBoolean(9, settings.isDeployed());
             insertStmt.executeUpdate();
 
-            logger.info("Created type '"+type.getId()+"' in ORGANISATION_CONTENT_TYPES");
+            logger.info("Created settings '"+settings.getId()+"' in CONTENT_SETTINGS");
         }
         catch(SQLException ex)
         {
@@ -210,7 +210,7 @@ public class OrganisationContentTypeDAO extends BaseDAO
                 insertStmt = null;
             }
 
-            // Unique constraint violated means that the type already exists
+            // Unique constraint violated means that the settings already exists
             if(!getDriver().isConstraintViolation(ex))
                 throw ex;
         }
@@ -222,11 +222,11 @@ public class OrganisationContentTypeDAO extends BaseDAO
     }
 
     /**
-     * Updates the given type in the ORGANISATION_CONTENT_TYPES table.
+     * Updates the given settings in the CONTENT_SETTINGS table.
      */
-    public synchronized void update(OrganisationContentType type) throws SQLException
+    public synchronized void update(ContentSettings settings) throws SQLException
     {
-        if(!hasConnection() || type == null)
+        if(!hasConnection() || settings == null)
             return;
 
         if(updateStmt == null)
@@ -237,16 +237,16 @@ public class OrganisationContentTypeDAO extends BaseDAO
 
         try
         {
-            updateStmt.setTimestamp(1, new Timestamp(type.getUpdatedDateMillis()), UTC);
-            String attributes = type.getAttributes().toString();
+            updateStmt.setTimestamp(1, new Timestamp(settings.getUpdatedDateMillis()), UTC);
+            String attributes = settings.getAttributes().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(2, reader, attributes.length());
-            updateStmt.setLong(3, type.getItemCount());
-            updateStmt.setBoolean(4, type.isDeployed());
-            updateStmt.setString(5, type.getId());
+            updateStmt.setLong(3, settings.getItemCount());
+            updateStmt.setBoolean(4, settings.isDeployed());
+            updateStmt.setString(5, settings.getId());
             updateStmt.executeUpdate();
 
-            logger.info("Updated type '"+type.getId()+"' in ORGANISATION_CONTENT_TYPES");
+            logger.info("Updated settings '"+settings.getId()+"' in CONTENT_SETTINGS");
         }
         finally
         {
@@ -256,11 +256,11 @@ public class OrganisationContentTypeDAO extends BaseDAO
     }
 
     /**
-     * Returns the types from the ORGANISATION_CONTENT_TYPES table.
+     * Returns the settings from the CONTENT_SETTINGS table.
      */
-    public synchronized List<OrganisationContentType> list(Site site) throws SQLException
+    public synchronized List<ContentSettings> list(Site site) throws SQLException
     {
-        List<OrganisationContentType> ret = null;
+        List<ContentSettings> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -277,20 +277,20 @@ public class OrganisationContentTypeDAO extends BaseDAO
             listStmt.setString(1, site.getId());
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
-            ret = new ArrayList<OrganisationContentType>();
+            ret = new ArrayList<ContentSettings>();
             while(rs.next())
             {
-                OrganisationContentType type = new OrganisationContentType();
-                type.setId(rs.getString(1));
-                type.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                type.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                type.setSiteId(rs.getString(4));
-                type.setCode(rs.getString(5));
-                type.setType(rs.getString(6));
-                type.setAttributes(new JSONObject(getClob(rs, 7)));
-                type.setItemCount(rs.getInt(8));
-                type.setDeployed(rs.getBoolean(9));
-                ret.add(type);
+                ContentSettings settings = new ContentSettings();
+                settings.setId(rs.getString(1));
+                settings.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                settings.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                settings.setSiteId(rs.getString(4));
+                settings.setCode(rs.getString(5));
+                settings.setType(rs.getString(6));
+                settings.setAttributes(new JSONObject(getClob(rs, 7)));
+                settings.setItemCount(rs.getInt(8));
+                settings.setDeployed(rs.getBoolean(9));
+                ret.add(settings);
             }
         }
         finally
@@ -311,11 +311,11 @@ public class OrganisationContentTypeDAO extends BaseDAO
     }
 
     /**
-     * Returns the types from the ORGANISATION_CONTENT_TYPES table by organisation code.
+     * Returns the settings from the CONTENT_SETTINGS table by organisation code.
      */
-    public synchronized List<OrganisationContentType> list(Site site, String code) throws SQLException
+    public synchronized List<ContentSettings> list(Site site, String code) throws SQLException
     {
-        List<OrganisationContentType> ret = null;
+        List<ContentSettings> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -333,20 +333,20 @@ public class OrganisationContentTypeDAO extends BaseDAO
             listByCodeStmt.setString(2, code);
             listByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByCodeStmt.executeQuery();
-            ret = new ArrayList<OrganisationContentType>();
+            ret = new ArrayList<ContentSettings>();
             while(rs.next())
             {
-                OrganisationContentType type = new OrganisationContentType();
-                type.setId(rs.getString(1));
-                type.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                type.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                type.setSiteId(rs.getString(4));
-                type.setCode(rs.getString(5));
-                type.setType(rs.getString(6));
-                type.setAttributes(new JSONObject(getClob(rs, 7)));
-                type.setItemCount(rs.getInt(8));
-                type.setDeployed(rs.getBoolean(9));
-                ret.add(type);
+                ContentSettings settings = new ContentSettings();
+                settings.setId(rs.getString(1));
+                settings.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                settings.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                settings.setSiteId(rs.getString(4));
+                settings.setCode(rs.getString(5));
+                settings.setType(rs.getString(6));
+                settings.setAttributes(new JSONObject(getClob(rs, 7)));
+                settings.setItemCount(rs.getInt(8));
+                settings.setDeployed(rs.getBoolean(9));
+                ret.add(settings);
             }
         }
         finally
@@ -367,7 +367,7 @@ public class OrganisationContentTypeDAO extends BaseDAO
     }
 
     /**
-     * Returns the count of types from the table.
+     * Returns the count of settings from the table.
      */
     public int count() throws SQLException
     {
@@ -385,21 +385,21 @@ public class OrganisationContentTypeDAO extends BaseDAO
     }
 
     /**
-     * Removes the given type from the ORGANISATION_CONTENT_TYPES table.
+     * Removes the given settings from the CONTENT_SETTINGS table.
      */
-    public synchronized void delete(OrganisationContentType type) throws SQLException
+    public synchronized void delete(ContentSettings settings) throws SQLException
     {
-        if(!hasConnection() || type == null)
+        if(!hasConnection() || settings == null)
             return;
 
         if(deleteStmt == null)
             deleteStmt = prepareStatement(getConnection(), DELETE_SQL);
         clearParameters(deleteStmt);
 
-        deleteStmt.setString(1, type.getId());
+        deleteStmt.setString(1, settings.getId());
         deleteStmt.executeUpdate();
 
-        logger.info("Deleted type '"+type.getId()+"' in ORGANISATION_CONTENT_TYPES");
+        logger.info("Deleted settings '"+settings.getId()+"' in CONTENT_SETTINGS");
     }
 
     /**

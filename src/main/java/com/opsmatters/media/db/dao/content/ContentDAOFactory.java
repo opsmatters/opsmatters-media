@@ -19,7 +19,7 @@ import com.opsmatters.media.db.JDBCDatabaseDriver;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.db.dao.DAOFactory;
 import com.opsmatters.media.db.dao.content.organisation.OrganisationListingDAO;
-import com.opsmatters.media.db.dao.content.organisation.OrganisationContentTypeDAO;
+import com.opsmatters.media.db.dao.content.ContentSettingsDAO;
 import com.opsmatters.media.db.dao.content.video.VideoDAO;
 import com.opsmatters.media.db.dao.content.event.EventDAO;
 import com.opsmatters.media.db.dao.content.publication.PublicationDAO;
@@ -45,7 +45,7 @@ public class ContentDAOFactory extends DAOFactory
         super(driver, conn);
 
         getOrganisationListingDAO();
-        getOrganisationContentTypeDAO();
+        getContentSettingsDAO();
         getVideoDAO();
         getPostDAO();
         getRoundupPostDAO();
@@ -67,13 +67,13 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the OrganisationContentType DAO.
+     * Returns the ContentSettings DAO.
      */
-    public OrganisationContentTypeDAO getOrganisationContentTypeDAO()
+    public ContentSettingsDAO getContentSettingsDAO()
     {
-        if(organisationContentTypeDAO == null)
-            organisationContentTypeDAO = new OrganisationContentTypeDAO(this);
-        return organisationContentTypeDAO;
+        if(contentSettingsDAO == null)
+            contentSettingsDAO = new ContentSettingsDAO(this);
+        return contentSettingsDAO;
     }
 
     /**
@@ -164,7 +164,7 @@ public class ContentDAOFactory extends DAOFactory
     {
         super.close();
         organisationListingDAO = null;
-        organisationContentTypeDAO = null;
+        contentSettingsDAO = null;
         videoDAO = null;
         roundupPostDAO = null;
         postDAO = null;
@@ -176,7 +176,7 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     private OrganisationListingDAO organisationListingDAO;
-    private OrganisationContentTypeDAO organisationContentTypeDAO;
+    private ContentSettingsDAO contentSettingsDAO;
     private VideoDAO videoDAO;
     private RoundupPostDAO roundupPostDAO;
     private PostDAO postDAO;

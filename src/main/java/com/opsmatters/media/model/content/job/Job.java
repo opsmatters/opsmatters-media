@@ -23,7 +23,7 @@ import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.Resource;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.organisation.OrganisationContentType;
+import com.opsmatters.media.model.content.ContentSettings;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.util.FormatUtils;
@@ -211,9 +211,9 @@ public class Job extends Resource<JobDetails>
 
         if(organisationSite != null)
         {
-            OrganisationContentType type = organisationSite.getContentType(getType());
-            if(type != null)
-                setTechnologies(type.getTechnologies());
+            ContentSettings settings = organisationSite.getContentSettings(getType());
+            if(settings != null)
+                setTechnologies(settings.getTechnologies());
         }
 
         setLinkText(config.getField(LINK_TEXT, ""));

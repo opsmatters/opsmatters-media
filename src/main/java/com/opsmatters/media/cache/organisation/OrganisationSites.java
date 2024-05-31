@@ -27,7 +27,7 @@ import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentConfig;
-import com.opsmatters.media.model.content.organisation.OrganisationContentType;
+import com.opsmatters.media.model.content.ContentSettings;
 
 /**
  * Class representing the set of organisation sites.
@@ -40,7 +40,7 @@ public class OrganisationSites
 
     private static Map<String,List<OrganisationSite>> organisationList = new HashMap<String,List<OrganisationSite>>();
     private static Map<String,Map<String,OrganisationSite>> organisationMap = new HashMap<String,Map<String,OrganisationSite>>();
-    private static List<OrganisationContentType> types = new ArrayList<OrganisationContentType>();
+    private static List<ContentSettings> contentSettings = new ArrayList<ContentSettings>();
 
     private static boolean initialised = false;
 
@@ -99,11 +99,11 @@ public class OrganisationSites
     }
 
     /**
-     * Load the set of organisation content types.
+     * Load the set of organisation content settings.
      */
-    public static void add(List<OrganisationContentType> types)
+    public static void add(List<ContentSettings> settings)
     {
-        OrganisationSites.types.addAll(types);
+        OrganisationSites.contentSettings.addAll(settings);
     }
 
     /**
@@ -113,7 +113,7 @@ public class OrganisationSites
     {
         organisationMap.clear();
         organisationList.clear();
-        types.clear();
+        contentSettings.clear();
     }
 
     /**
@@ -123,12 +123,12 @@ public class OrganisationSites
     {
         organisationMap.get(organisation.getSiteId()).put(organisation.getCode(), organisation);
         organisationList.get(organisation.getSiteId()).add(organisation);
-        for(OrganisationContentType type : types)
+        for(ContentSettings settings : contentSettings)
         {
-            if(type.getSiteId().equals(organisation.getSiteId())
-                && type.getCode().equals(organisation.getCode()))
+            if(settings.getSiteId().equals(organisation.getSiteId())
+                && settings.getCode().equals(organisation.getCode()))
             {
-                organisation.setContentType(type);
+                organisation.setContentSettings(settings);
             }
         }
     }
@@ -199,15 +199,15 @@ public class OrganisationSites
     }
 
     /**
-     * Returns the content type for the given organisation site and content type.
+     * Returns the content settings for the given organisation site and content type.
      */
-    public static OrganisationContentType getContentType(String siteId, String code, ContentType type)
+    public static ContentSettings getContentSettings(String siteId, String code, ContentType type)
     {
-        OrganisationContentType ret = null;
+        ContentSettings ret = null;
         OrganisationSite organisation = OrganisationSites.get(siteId, code);
         if(organisation != null)
         {
-            ret = organisation.getContentType(type);
+            ret = organisation.getContentSettings(type);
             if(ret == null && type != ContentType.ORGANISATION)
                 logger.warning("Unable to find organisation content type for "+code+": "+type);
         }
@@ -216,19 +216,19 @@ public class OrganisationSites
     }
 
     /**
-     * Returns the content type for the given configuration.
+     * Returns the content settings for the given configuration.
      */
-    public static OrganisationContentType getContentType(String siteId, ContentConfig config)
+    public static ContentSettings getContentSettings(String siteId, ContentConfig config)
     {
-        return getContentType(siteId, config.getCode(), config.getType());
+        return getContentSettings(siteId, config.getCode(), config.getType());
     }
 
     /**
-     * Returns the content type for the given configuration.
+     * Returns the content settings for the given configuration.
      */
-    public static OrganisationContentType getContentType(Site site, ContentConfig config)
+    public static ContentSettings getContentSettings(Site site, ContentConfig config)
     {
-        return getContentType(site.getId(), config);
+        return getContentSettings(site.getId(), config);
     }
 
     /**

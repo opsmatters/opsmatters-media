@@ -47,6 +47,7 @@ public class SocialPostHandler
     private String message = null;
     private String markupMessage = null;
     private int messageLength = -1;
+    private int hashtagCount = -1;
 
     /**
      * Private constructor.
@@ -735,15 +736,18 @@ public class SocialPostHandler
      */
     public void createMessages(SocialChannel channel)
     {
-        int count = 0;
         StringBuilder message = new StringBuilder();
         StringBuilder markup = new StringBuilder();
+
+        int length = 0;
+        int hashtagCount = 0;
+
         for(Token token : tokens)
         {
             if(token instanceof StringToken)
             {
                 message.append(token.toString());
-                count += token.length(channel);
+                length += token.length(channel);
                 if(channel != null)
                     markup.append(token.toString());
             }
@@ -753,7 +757,7 @@ public class SocialPostHandler
                 if(str == null)
                     str = token.toString();
                 message.append(str);
-                count += str.length();
+                length += str.length();
                 if(channel != null)
                     markup.append(str);
             }
@@ -761,7 +765,7 @@ public class SocialPostHandler
             {
                 String emoji = EmojiParser.parseToUnicode(token.toString());
                 message.append(emoji);
-                count += token.length(channel);
+                length += token.length(channel);
                 if(channel != null)
                     markup.append(emoji);
             }
@@ -772,7 +776,7 @@ public class SocialPostHandler
                     || channel.getProvider() != SocialProvider.LINKEDIN)
                 {
                     message.append(token.toString());
-                    count += token.length(channel);
+                    length += token.length(channel);
                     if(channel != null)
                         markup.append(token.getMarkup(channel));
                 }
@@ -780,15 +784,18 @@ public class SocialPostHandler
             else // URLs, Hashtags
             {
                 message.append(token.toString());
-                count += token.length(channel);
+                length += token.length(channel);
                 if(channel != null)
                     markup.append(token.getMarkup(channel));
+                if(token instanceof HashtagToken)
+                    ++hashtagCount;
             }
         }
 
         this.message = adjust(channel, message.toString());
         this.markupMessage = adjust(channel, markup.toString());
-        this.messageLength = count;
+        this.messageLength = length;
+        this.hashtagCount = hashtagCount;
 
         // Use the official parser to get the tweet length
         if(channel != null && channel.getProvider() == SocialProvider.TWITTER)
@@ -841,6 +848,14 @@ public class SocialPostHandler
     public int getMessageLength()
     {
         return messageLength;
+    }
+
+    /**
+     * Returns the number of hashtags in the message.
+     */
+    public int getHashtagCount()
+    {
+        return hashtagCount;
     }
 
     /**
