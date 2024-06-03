@@ -318,6 +318,14 @@ public class SocialChannel extends OwnedEntity
     }
 
     /**
+     * Returns <CODE>true</CODE> if the channel status is PAUSED.
+     */
+    public boolean isPaused()
+    {
+        return status == SocialChannelStatus.PAUSED;
+    }
+
+    /**
      * Sets the channel status.
      */
     public void setStatus(SocialChannelStatus status)

@@ -121,6 +121,7 @@ public class SocialPostHandler
             else if(str.endsWith("!"))
             {
                 ignored = true;
+                optional = true;
                 str = str.substring(0, str.length()-1); // Remove trailing "!"
             }
 

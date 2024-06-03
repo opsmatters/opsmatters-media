@@ -190,6 +190,26 @@ public enum ContentType
     }
 
     /**
+     * Returns <CODE>true</CODE> if this content type has a crawled image filename.
+     */
+    public boolean isImageRejectType()
+    {
+        return this == ROUNDUP
+            || this == PUBLICATION;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this content type has a crawled summary.
+     */
+    public boolean isSummaryRejectType()
+    {
+        return this == ROUNDUP
+            || this == VIDEO
+            || this == EVENT
+            || this == PUBLICATION;
+    }
+
+    /**
      * Returns the type for the given value.
      * @param value The type value
      * @return The type for the given value

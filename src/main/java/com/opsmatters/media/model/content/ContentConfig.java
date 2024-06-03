@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 import java.sql.SQLException;
 import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.cache.organisation.OrganisationSites;
-import com.opsmatters.media.cache.content.organisation.OrganisationContentConfigs;
+import com.opsmatters.media.cache.content.organisation.OrganisationConfigs;
 import com.opsmatters.media.cache.content.util.ContentImages;
 import com.opsmatters.media.cache.platform.Environments;
 import com.opsmatters.media.model.platform.Site;
@@ -332,7 +332,7 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
                 else
                     published = organisationSite.isReview() || organisationSite.isActive();
                 fields.put(PUBLISHED, published ? "1" : "0");
-                fields.add(OrganisationContentConfigs.get(organisation.getCode()));
+                fields.add(OrganisationConfigs.get(organisation.getCode()));
 
                 // Add the path to the organisation thumbnail and logo
                 boolean missing = false;

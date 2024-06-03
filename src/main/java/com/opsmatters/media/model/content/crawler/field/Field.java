@@ -36,7 +36,6 @@ public class Field implements ConfigElement
     private List<FieldExtractor> extractors;
     private FieldCase textCase = FieldCase.NONE;
     private List<String> datePatterns;
-    private List<String> rejectValues;
     private List<FieldFilter> filters;
     private boolean removeParameters = true;
     private boolean trailingSlash = false;
@@ -97,12 +96,6 @@ public class Field implements ConfigElement
             {
                 for(String datePattern : obj.getDatePatterns())
                     addDatePattern(datePattern);
-            }
-
-            if(obj.getRejectValues() != null)
-            {
-                for(String rejectValue : obj.getRejectValues())
-                    addRejectValue(rejectValue);
             }
 
             setTextCase(obj.getTextCase());
@@ -263,32 +256,6 @@ public class Field implements ConfigElement
     }
 
     /**
-     * Returns the reject values for this configuration.
-     */
-    public List<String> getRejectValues()
-    {
-        return rejectValues;
-    }
-
-    /**
-     * Adds a reject value object for the given field.
-     */
-    public void addRejectValue(String rejectValue)
-    {
-        if(rejectValues == null)
-            rejectValues = new ArrayList<String>(2);
-        rejectValues.add(rejectValue);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if there are reject values for this configuration.
-     */
-    public boolean hasRejectValues()
-    {
-        return rejectValues != null && rejectValues.size() > 0;
-    }
-
-    /**
      * Returns the filters for this configuration.
      */
     public List<FieldFilter> getFilters()
@@ -432,8 +399,6 @@ public class Field implements ConfigElement
         private static final String TEXT_CASE = "text-case";
         private static final String DATE_PATTERN = "date-pattern";
         private static final String DATE_PATTERNS = "date-patterns";
-        private static final String REJECT_VALUE = "reject-value";
-        private static final String REJECT_VALUES = "reject-values";
         private static final String FILTER = "filter";
         private static final String FILTERS = "filters";
         private static final String REMOVE_PARAMETERS = "remove-parameters";
@@ -504,18 +469,6 @@ public class Field implements ConfigElement
                 List<String> values = (List<String>)map.get(DATE_PATTERNS);
                 for(String value : values)
                   ret.addDatePattern(value);
-            }
-
-            if(map.containsKey(REJECT_VALUE))
-            {
-                ret.addRejectValue((String)map.get(REJECT_VALUE));
-            }
-
-            if(map.containsKey(REJECT_VALUES))
-            {
-                List<String> values = (List<String>)map.get(REJECT_VALUES);
-                for(String value : values)
-                  ret.addRejectValue(value);
             }
 
             if(map.containsKey(FILTER))

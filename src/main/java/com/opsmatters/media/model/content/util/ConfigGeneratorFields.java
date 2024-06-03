@@ -31,7 +31,7 @@ import com.opsmatters.media.model.content.project.ProjectConfig;
 import com.opsmatters.media.model.content.tool.ToolConfig;
 import com.opsmatters.media.model.content.organisation.OrganisationListing;
 import com.opsmatters.media.model.content.organisation.OrganisationTabs;
-import com.opsmatters.media.model.content.organisation.OrganisationContentConfig;
+import com.opsmatters.media.model.content.organisation.OrganisationConfig;
 import com.opsmatters.media.model.content.ContentSettings;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
@@ -89,7 +89,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
     /**
      * Sets the fields from an organisation, site and listing and optional config.
      */
-    public void set(OrganisationListing listing, OrganisationContentConfig config)
+    public void set(OrganisationListing listing, OrganisationConfig config)
     {
         setCode(organisation.getCode());
         setName(organisation.getName());
@@ -150,7 +150,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
     /**
      * Set the fields from the given organisation config.
      */
-    private void setFields(OrganisationContentConfig config, OrganisationTabs tabs)
+    private void setFields(OrganisationConfig config, OrganisationTabs tabs)
     {
         String siteId = organisationSite.getSiteId();
         String channelId = null;

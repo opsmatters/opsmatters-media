@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.logging.Logger;
-import com.opsmatters.media.cache.content.organisation.OrganisationContentConfigs;
+import com.opsmatters.media.cache.content.organisation.OrganisationConfigs;
 import com.opsmatters.media.crawler.event.EventCrawler;
 import com.opsmatters.media.model.content.event.EventConfig;
 import com.opsmatters.media.model.content.event.EventDetails;
@@ -81,7 +81,7 @@ public class EventMonitor extends ContentMonitor<EventDetails>
     {
         ContentSnapshot ret = null;
         EventCrawler crawler = null;
-        EventConfig config = OrganisationContentConfigs.get(getCode()).getEvents();
+        EventConfig config = OrganisationConfigs.get(getCode()).getEvents();
 
         try
         {

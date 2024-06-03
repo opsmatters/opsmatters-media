@@ -27,6 +27,7 @@ import java.util.ArrayList;
 public enum SocialChannelStatus
 {
     ACTIVE("Active", "glyphicon-ok-circle", "status-success"),
+    PAUSED("Paused", "glyphicon-pause", "status-warn"),
     DISABLED("Disabled", "glyphicon-ban-circle", "status-error"),
     ALL("All", "", ""); // Pseudo status
 
@@ -117,6 +118,7 @@ public enum SocialChannelStatus
         List<SocialChannelStatus> ret = new ArrayList<SocialChannelStatus>();
 
         ret.add(ACTIVE);
+        ret.add(PAUSED);
         ret.add(DISABLED);
 
         return ret;

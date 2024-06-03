@@ -24,7 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.util.logging.Logger;
 import org.json.JSONObject;
-import com.opsmatters.media.cache.content.organisation.OrganisationContentConfigs;
+import com.opsmatters.media.cache.content.organisation.OrganisationConfigs;
 import com.opsmatters.media.crawler.video.VideoCrawler;
 import com.opsmatters.media.model.content.video.VideoConfig;
 import com.opsmatters.media.model.content.video.VideoDetails;
@@ -162,7 +162,7 @@ public class VideoMonitor extends ContentMonitor<VideoDetails>
     {
         ContentSnapshot ret = null;
         VideoCrawler crawler = null;
-        VideoConfig config = OrganisationContentConfigs.get(getCode()).getVideos();
+        VideoConfig config = OrganisationConfigs.get(getCode()).getVideos();
 
         try
         {

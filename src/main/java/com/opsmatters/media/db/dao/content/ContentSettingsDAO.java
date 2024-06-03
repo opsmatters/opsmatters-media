@@ -25,7 +25,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
+import com.opsmatters.media.cache.platform.Sites;
 import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.content.Content;
+import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentSettings;
 import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
@@ -45,6 +48,13 @@ public class ContentSettingsDAO extends BaseDAO
     private static final String GET_BY_ID_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, ATTRIBUTES, ITEM_COUNT, DEPLOYED "
       + "FROM CONTENT_SETTINGS WHERE ID=?";
+
+    /**
+     * The query to use to select the settings from the CONTENT_SETTINGS table.
+     */
+    private static final String GET_BY_TYPE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, ATTRIBUTES, ITEM_COUNT, DEPLOYED "
+      + "FROM CONTENT_SETTINGS WHERE SITE_ID=? AND CODE=? AND CONTENT_TYPE=? ORDER BY CREATED_DATE";
 
     /**
      * The query to use to insert settings into the CONTENT_SETTINGS table.
@@ -168,6 +178,69 @@ public class ContentSettingsDAO extends BaseDAO
         postQuery();
 
         return ret;
+    }
+
+    /**
+     * Returns settings from the CONTENT_SETTINGS table by site, code and content type.
+     */
+    public synchronized ContentSettings get(Site site, String code, ContentType type) throws SQLException
+    {
+        ContentSettings ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(getByTypeStmt == null)
+            getByTypeStmt = prepareStatement(getConnection(), GET_BY_TYPE_SQL);
+        clearParameters(getByTypeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            getByTypeStmt.setString(1, site.getId());
+            getByTypeStmt.setString(2, code);
+            getByTypeStmt.setString(3, type.name());
+            rs = getByTypeStmt.executeQuery();
+            while(rs.next())
+            {
+                ContentSettings settings = new ContentSettings();
+                settings.setId(rs.getString(1));
+                settings.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                settings.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                settings.setSiteId(rs.getString(4));
+                settings.setCode(rs.getString(5));
+                settings.setType(rs.getString(6));
+                settings.setAttributes(new JSONObject(getClob(rs, 7)));
+                settings.setItemCount(rs.getInt(8));
+                settings.setDeployed(rs.getBoolean(9));
+                ret = settings;
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns settings from the CONTENT_SETTINGS table for the given content item.
+     */
+    public ContentSettings get(Content content) throws SQLException
+    {
+        return get(Sites.get(content.getSiteId()), content.getCode(), content.getType());
     }
 
     /**
@@ -410,6 +483,8 @@ public class ContentSettingsDAO extends BaseDAO
     {
         closeStatement(getByIdStmt);
         getByIdStmt = null;
+        closeStatement(getByTypeStmt);
+        getByTypeStmt = null;
         closeStatement(insertStmt);
         insertStmt = null;
         closeStatement(updateStmt);
@@ -425,6 +500,7 @@ public class ContentSettingsDAO extends BaseDAO
     }
 
     private PreparedStatement getByIdStmt;
+    private PreparedStatement getByTypeStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;

@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.logging.Logger;
 import com.opsmatters.media.cache.organisation.Organisations;
-import com.opsmatters.media.cache.content.organisation.OrganisationContentConfigs;
+import com.opsmatters.media.cache.content.organisation.OrganisationConfigs;
 import com.opsmatters.media.crawler.post.RoundupPostCrawler;
 import com.opsmatters.media.model.content.post.RoundupPostConfig;
 import com.opsmatters.media.model.content.post.RoundupPostDetails;
@@ -83,7 +83,7 @@ public class RoundupPostMonitor extends ContentMonitor<RoundupPostDetails>
     {
         ContentSnapshot ret = null;
         RoundupPostCrawler crawler = null;
-        RoundupPostConfig config = OrganisationContentConfigs.get(getCode()).getRoundups();
+        RoundupPostConfig config = OrganisationConfigs.get(getCode()).getRoundups();
         Organisation organisation = Organisations.get(getCode());
 
         try

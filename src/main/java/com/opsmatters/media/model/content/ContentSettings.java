@@ -41,6 +41,8 @@ public class ContentSettings extends BaseEntity
     private String tags = "";
     private String technologies = "";
     private boolean newsletter = false;
+    private String imageRejects = "";
+    private String summaryRejects = "";
     private int count = -1;
     private boolean deployed = false;
 
@@ -115,6 +117,8 @@ public class ContentSettings extends BaseEntity
             setTags(obj.getTags());
             setTechnologies(obj.getTechnologies());
             setNewsletter(obj.isNewsletter());
+            setImageRejects(obj.getImageRejects());
+            setSummaryRejects(obj.getSummaryRejects());
             setItemCount(obj.getItemCount());
             setDeployed(obj.isDeployed());
         }
@@ -133,6 +137,8 @@ public class ContentSettings extends BaseEntity
         ret.putOpt(TAGS.value(), getTags());
         ret.putOpt(TECHNOLOGIES.value(), getTechnologies());
         ret.put(NEWSLETTER.value(), isNewsletter());
+        ret.putOpt(IMAGE_REJECTS.value(), getImageRejects());
+        ret.putOpt(SUMMARY_REJECTS.value(), getSummaryRejects());
 
         return ret;
     }
@@ -148,6 +154,8 @@ public class ContentSettings extends BaseEntity
         setTags(obj.optString(TAGS.value()));
         setTechnologies(obj.optString(TECHNOLOGIES.value()));
         setNewsletter(obj.optBoolean(NEWSLETTER.value(), false));
+        setImageRejects(obj.optString(IMAGE_REJECTS.value()));
+        setSummaryRejects(obj.optString(SUMMARY_REJECTS.value()));
     }
 
     /**
@@ -412,6 +420,70 @@ public class ContentSettings extends BaseEntity
     public void setNewsletterObject(Boolean newsletter)
     {
         setNewsletter(newsletter != null && newsletter.booleanValue());
+    }
+
+    /**
+     * Returns the list of image filenames to reject.
+     */
+    public String getImageRejects()
+    {
+        return imageRejects;
+    }
+
+    /**
+     * Sets the list of image filenames to reject.
+     */
+    public void setImageRejects(String imageRejects)
+    {
+        this.imageRejects = imageRejects;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the reject image filenames have been set.
+     */
+    public boolean hasImageRejects()
+    {
+        return imageRejects != null && imageRejects.length() > 0;
+    }
+
+    /**
+     * Returns the list of image filenames to reject.
+     */
+    public List<String> getImageRejectsList()
+    {
+        return StringUtils.toList(imageRejects, "\\n");
+    }
+
+    /**
+     * Returns the list of summary phrases to reject.
+     */
+    public String getSummaryRejects()
+    {
+        return summaryRejects;
+    }
+
+    /**
+     * Sets the list of summary phrases to reject.
+     */
+    public void setSummaryRejects(String summaryRejects)
+    {
+        this.summaryRejects = summaryRejects;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the reject summary phrases have been set.
+     */
+    public boolean hasSummaryRejects()
+    {
+        return summaryRejects != null && summaryRejects.length() > 0;
+    }
+
+    /**
+     * Returns the list of summary phrases to reject.
+     */
+    public List<String> getSummaryRejectsList()
+    {
+        return StringUtils.toList(summaryRejects, "\\n");
     }
 
     /**
