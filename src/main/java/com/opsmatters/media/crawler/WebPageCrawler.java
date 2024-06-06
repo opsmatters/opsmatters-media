@@ -58,13 +58,13 @@ import com.opsmatters.media.model.content.ContentDetails;
 import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.crawler.parser.ElementType;
 import com.opsmatters.media.model.logging.LogEntry;
-import com.opsmatters.media.model.logging.LogCategory;
+import com.opsmatters.media.model.logging.ErrorCategory;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.crawler.field.ElementOutput.*;
 import static com.opsmatters.media.model.content.crawler.field.FieldProtocol.*;
-import static com.opsmatters.media.model.logging.LogCategory.*;
+import static com.opsmatters.media.model.logging.ErrorCategory.*;
 
 /**
  * Class representing a crawler for content items from a web page.
@@ -138,7 +138,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Returns the current page source.
      */
-    protected String getPageSource(String root, LogCategory category)
+    protected String getPageSource(String root, ErrorCategory category)
     {
         String ret = "";
 
@@ -159,7 +159,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Returns the current page source.
      */
-    protected String getPageSource(LogCategory category)
+    protected String getPageSource(ErrorCategory category)
     {
         return getPageSource("html", category);
     }
@@ -232,26 +232,42 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Returns the base path of the crawler.
      */
-    public String getBasePath()
+    public String getBasePath(Field field)
     {
-        ContentRequest request = page.getTeasers().getRequest();
+        String ret = null;
 
-        String ret = request.getBasePath();
-        if(ret == null || ret.length() == 0)
+        if(field != null && field.hasBasePath())
         {
-            ret = request.getUrl(0);
-            int pos = ret.indexOf("//");
-            if(pos != -1)
+            ret = field.getBasePath();
+        }
+        else
+        {
+            ContentRequest request = page.getTeasers().getRequest();
+            ret = request.getBasePath();
+            if(ret == null || ret.length() == 0)
             {
-                pos = ret.indexOf("/", pos+2); // find first slash after http
+                ret = request.getUrl(0);
+                int pos = ret.indexOf("//");
                 if(pos != -1)
                 {
-                    ret = ret.substring(0, pos);
+                    pos = ret.indexOf("/", pos+2); // find first slash after http
+                    if(pos != -1)
+                    {
+                        ret = ret.substring(0, pos);
+                    }
                 }
             }
         }
 
         return ret;
+    }
+
+    /**
+     * Returns the base path of the crawler.
+     */
+    public String getBasePath()
+    {
+        return getBasePath(null);
     }
 
     /**
@@ -351,7 +367,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Click a Load More button after the initial page load.
      */
-    protected void clickMoreLink(MoreLink moreLink, LogCategory category) throws IOException
+    protected void clickMoreLink(MoreLink moreLink, ErrorCategory category) throws IOException
     {
         String selector = moreLink.getSelector();
         if(selector.length() > 0)
@@ -438,7 +454,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         }
     }
 
-    protected void configureMovement(ContentLoading loading, LogCategory category)
+    protected void configureMovement(ContentLoading loading, ErrorCategory category)
     {
         if(loading == null)
             return;
@@ -592,7 +608,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Returns a list of the metatags for the given attribute name and value.
      */
-    protected List<Element> getMetatags(String name, String value, LogCategory category)
+    protected List<Element> getMetatags(String name, String value, ErrorCategory category)
     {
         List<Element> ret = new ArrayList<Element>();
         Document doc = Jsoup.parse(getPageSource(category));
@@ -613,7 +629,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         return ret;
     }
 
-    protected String getPropertyMetatag(String value, LogCategory category)
+    protected String getPropertyMetatag(String value, ErrorCategory category)
     {
         List<Element> tags = getMetatags("property", value, category);
         if(tags.size() == 0)
@@ -626,7 +642,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Returns <CODE>true</CODE> if the content validator is found.
      */
-    protected void validateContent(D content, Field field, Element root, LogCategory category)
+    protected void validateContent(D content, Field field, Element root, ErrorCategory category)
     {
         boolean valid = false;
 
@@ -677,7 +693,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Process an element field returning multiple results.
      */
-    protected String getElements(Field field, Element root, LogCategory category)
+    protected String getElements(Field field, Element root, ErrorCategory category)
     {
         String ret = null;
 
@@ -789,7 +805,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Process an anchor field.
      */
-    protected String getAnchor(Field field, Element root, LogCategory category, boolean removeParameters)
+    protected String getAnchor(Field field, Element root, ErrorCategory category, boolean removeParameters)
     {
         String ret = null;
 
@@ -969,7 +985,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Process the body field to produce a summary.
      */
-    protected String getBodySummary(Field field, Element root, LogCategory category,
+    protected String getBodySummary(Field field, Element root, ErrorCategory category,
         SummaryConfig summary, boolean debug)
     {
         String ret = null;
@@ -1060,7 +1076,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Process the body field.
      */
-    protected String getBody(Field field, Element root, LogCategory category, boolean debug)
+    protected String getBody(Field field, Element root, ErrorCategory category, boolean debug)
     {
         String ret = null;
 
@@ -1115,7 +1131,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Process an image field.
      */
-    protected String getImageSrc(Field field, Element root, LogCategory category)
+    protected String getImageSrc(Field field, Element root, ErrorCategory category)
     {
         String ret = null;
 

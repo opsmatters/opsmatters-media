@@ -25,8 +25,8 @@ import java.io.Serializable;
  */
 public class LogEntry implements Serializable
 {
-    private LogLevel level;
-    private LogCategory category;
+    private ErrorLevel level;
+    private ErrorCategory category;
     private String text = "";
 
     /**
@@ -35,7 +35,7 @@ public class LogEntry implements Serializable
      * @param category The category of the entry
      * @param text The text of the entry
      */
-    public LogEntry(LogLevel level, LogCategory category, String text)
+    public LogEntry(ErrorLevel level, ErrorCategory category, String text)
     {
         setLevel(level);
         setCategory(category);
@@ -55,7 +55,7 @@ public class LogEntry implements Serializable
      * Returns the level of the entry.
      * @return The level of the entry
      */
-    public LogLevel getLevel()
+    public ErrorLevel getLevel()
     {
         return level;
     }
@@ -64,7 +64,7 @@ public class LogEntry implements Serializable
      * Sets the level of the entry.
      * @param level The level of the entry
      */
-    public void setLevel(LogLevel level)
+    public void setLevel(ErrorLevel level)
     {
         this.level = level;
     }
@@ -73,7 +73,7 @@ public class LogEntry implements Serializable
      * Returns the category of the entry.
      * @return The category of the entry
      */
-    public LogCategory getCategory()
+    public ErrorCategory getCategory()
     {
         return category;
     }
@@ -82,7 +82,7 @@ public class LogEntry implements Serializable
      * Sets the category of the entry.
      * @param category The category of the entry
      */
-    public void setCategory(LogCategory category)
+    public void setCategory(ErrorCategory category)
     {
         this.category = category;
     }

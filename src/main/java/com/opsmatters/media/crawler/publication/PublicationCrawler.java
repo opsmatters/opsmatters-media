@@ -31,11 +31,11 @@ import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.model.content.crawler.field.Fields;
-import com.opsmatters.media.model.logging.LogCategory;
+import com.opsmatters.media.model.logging.ErrorCategory;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 
-import static com.opsmatters.media.model.logging.LogCategory.*;
+import static com.opsmatters.media.model.logging.ErrorCategory.*;
 
 /**
  * Class representing a crawler for publications.
@@ -176,7 +176,7 @@ public class PublicationCrawler extends WebPageCrawler<PublicationDetails>
     /**
      * Populate the teaser fields from the given element.
      */
-    private void populateTeaserFields(Element root, Fields fields, PublicationDetails teaser, LogCategory category)
+    private void populateTeaserFields(Element root, Fields fields, PublicationDetails teaser, ErrorCategory category)
         throws DateTimeParseException
     {
         if(fields.hasTitle())
@@ -232,7 +232,7 @@ public class PublicationCrawler extends WebPageCrawler<PublicationDetails>
             if(src != null && src.length() > 0)
             {
                 teaser.setImageFromPath(getImagePrefix(), src);
-                teaser.setImageSource(getBasePath(), encodeUrl(src), field.removeParameters());
+                teaser.setImageSource(getBasePath(field), encodeUrl(src), field.removeParameters());
 
                 if(debug())
                 {

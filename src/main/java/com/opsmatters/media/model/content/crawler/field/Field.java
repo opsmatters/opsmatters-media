@@ -37,6 +37,7 @@ public class Field implements ConfigElement
     private FieldCase textCase = FieldCase.NONE;
     private List<String> datePatterns;
     private List<FieldFilter> filters;
+    private String basePath = "";
     private boolean removeParameters = true;
     private boolean trailingSlash = false;
     private boolean optional = false;
@@ -99,6 +100,7 @@ public class Field implements ConfigElement
             }
 
             setTextCase(obj.getTextCase());
+            setBasePath(obj.getBasePath());
             setRemoveParameters(obj.removeParameters());
             setTrailingSlash(obj.hasTrailingSlash());
             setOptional(obj.isOptional());
@@ -290,6 +292,30 @@ public class Field implements ConfigElement
     }
 
     /**
+     * Returns the base path for this configuration.
+     */
+    public String getBasePath()
+    {
+        return basePath;
+    }
+
+    /**
+     * Sets the base path for this configuration.
+     */
+    public void setBasePath(String basePath)
+    {
+        this.basePath = basePath;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the base path has been set.
+     */
+    public boolean hasBasePath()
+    {
+        return basePath != null && basePath.length() > 0;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the URL query parameters should be removed.
      */
     public boolean removeParameters()
@@ -401,6 +427,7 @@ public class Field implements ConfigElement
         private static final String DATE_PATTERNS = "date-patterns";
         private static final String FILTER = "filter";
         private static final String FILTERS = "filters";
+        private static final String BASE_PATH = "base-path";
         private static final String REMOVE_PARAMETERS = "remove-parameters";
         private static final String TRAILING_SLASH = "trailing-slash";
         private static final String OPTIONAL = "optional";
@@ -428,6 +455,8 @@ public class Field implements ConfigElement
 
             if(map.containsKey(TEXT_CASE))
                 ret.setTextCase((String)map.get(TEXT_CASE));
+            if(map.containsKey(BASE_PATH))
+                ret.setBasePath((String)map.get(BASE_PATH));
             if(map.containsKey(REMOVE_PARAMETERS))
                 ret.setRemoveParameters((Boolean)map.get(REMOVE_PARAMETERS));
             if(map.containsKey(TRAILING_SLASH))

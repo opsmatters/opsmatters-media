@@ -17,11 +17,11 @@
 package com.opsmatters.media.model.logging;
 
 /**
- * Represents the level of a log entry.
+ * Represents the level of a log error.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum LogLevel
+public enum ErrorLevel
 {
     ERROR("Error", 2, "glyphicon-exclamation-sign", "level-error"),
     WARN("Warn", 1, "glyphicon-warning-sign", "level-warn"),
@@ -40,7 +40,7 @@ public enum LogLevel
      * @param icon The glyphicon for the level
      * @param css The css class for the level
      */
-    LogLevel(String value, int precedence, String icon, String css)
+    ErrorLevel(String value, int precedence, String icon, String css)
     {
         this.value = value;
         this.precedence = precedence;
@@ -98,10 +98,10 @@ public enum LogLevel
      * @param value The level value
      * @return The level for the given value
      */
-    public static LogLevel fromValue(String value)
+    public static ErrorLevel fromValue(String value)
     {
-        LogLevel[] levels = values();
-        for(LogLevel level : levels)
+        ErrorLevel[] levels = values();
+        for(ErrorLevel level : levels)
         {
             if(level.value().equals(value))
                 return level;

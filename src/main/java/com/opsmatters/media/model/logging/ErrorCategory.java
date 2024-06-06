@@ -17,11 +17,11 @@
 package com.opsmatters.media.model.logging;
 
 /**
- * Represents the category of a log entry.
+ * Represents the category of a log error.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum LogCategory
+public enum ErrorCategory
 {
     TEASER("teaser"),
     ARTICLE("article");
@@ -32,7 +32,7 @@ public enum LogCategory
      * Constructor that takes the category value.
      * @param value The value for the category
      */
-    LogCategory(String value)
+    ErrorCategory(String value)
     {
         this.value = value;
     }
@@ -60,10 +60,10 @@ public enum LogCategory
      * @param value The category value
      * @return The category for the given value
      */
-    public static LogCategory fromValue(String value)
+    public static ErrorCategory fromValue(String value)
     {
-        LogCategory[] categories = values();
-        for(LogCategory category : categories)
+        ErrorCategory[] categories = values();
+        for(ErrorCategory category : categories)
         {
             if(category.value().equals(value))
                 return category;

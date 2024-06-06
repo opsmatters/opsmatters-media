@@ -70,7 +70,7 @@ public class HtmlUtils
     private static String removeDataAttributes(String str)
     {
         // Remove data- attributes, with and without values
-        str = str.replaceAll(String.format("%s[-\\w]+=\"[-\\w\\[\\]{}:,./\"\\u25cf]*\"", DATA_ATTR), "");
+        str = str.replaceAll(String.format("%s[-\\w]+=\"[- \\w\\[\\]{}:,./\"\\u25cf]*\"", DATA_ATTR), "");
         // Removed as it also replaces valid text such as "data-driven"
         // str = str.replaceAll(String.format("%s[-\\w]+", DATA_ATTR), "");
 

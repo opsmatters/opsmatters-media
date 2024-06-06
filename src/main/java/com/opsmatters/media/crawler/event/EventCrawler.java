@@ -31,13 +31,13 @@ import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.model.content.crawler.field.Fields;
-import com.opsmatters.media.model.logging.LogCategory;
+import com.opsmatters.media.model.logging.ErrorCategory;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;
-import static com.opsmatters.media.model.logging.LogCategory.*;
+import static com.opsmatters.media.model.logging.ErrorCategory.*;
 
 /**
  * Class representing a crawler for events.
@@ -241,7 +241,7 @@ public class EventCrawler extends WebPageCrawler<EventDetails>
     /**
      * Populate the teaser fields from the given element.
      */
-    private void populateTeaserFields(Element root, Fields fields, EventDetails teaser, LogCategory category)
+    private void populateTeaserFields(Element root, Fields fields, EventDetails teaser, ErrorCategory category)
         throws DateTimeParseException
     {
         if(fields.hasTitle())

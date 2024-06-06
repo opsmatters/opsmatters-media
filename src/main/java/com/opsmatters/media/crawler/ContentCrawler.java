@@ -40,7 +40,7 @@ import com.opsmatters.media.model.content.crawler.field.FieldCase;
 import com.opsmatters.media.model.content.crawler.field.FieldExtractor;
 import com.opsmatters.media.model.logging.Log;
 import com.opsmatters.media.model.logging.LogEntry;
-import com.opsmatters.media.model.logging.LogCategory;
+import com.opsmatters.media.model.logging.ErrorCategory;
 
 /**
  * Class representing a crawler for content items with fields.
@@ -260,7 +260,7 @@ public abstract class ContentCrawler<D extends ContentDetails>
     /**
      * Apply the configured regular expression to the given field value.
      */
-    public String getValue(Field field, String value, LogCategory category)
+    public String getValue(Field field, String value, ErrorCategory category)
     {
         return getValue(field, value, value, category);
     }
@@ -268,7 +268,7 @@ public abstract class ContentCrawler<D extends ContentDetails>
     /**
      * Apply the configured regular expression to the given field value.
      */
-    public String getValue(Field field, String value, String dflt, LogCategory category)
+    public String getValue(Field field, String value, String dflt, ErrorCategory category)
     {
         // Remove special characters before processing
         value = processValue(value);

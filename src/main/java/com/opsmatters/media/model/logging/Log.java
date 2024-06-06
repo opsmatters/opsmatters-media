@@ -19,7 +19,7 @@ package com.opsmatters.media.model.logging;
 import java.util.List;
 import java.util.ArrayList;
 
-import static com.opsmatters.media.model.logging.LogLevel.*;
+import static com.opsmatters.media.model.logging.ErrorLevel.*;
 
 /**
  * Defines a set of log entries.
@@ -56,7 +56,7 @@ public class Log
     /**
      * Appends an entry.
      */
-    public void add(LogLevel level, LogCategory category, String text)
+    public void add(ErrorLevel level, ErrorCategory category, String text)
     {
         add(new LogEntry(level, category, text));
     }
@@ -64,7 +64,7 @@ public class Log
     /**
      * Appends an DEBUG entry.
      */
-    public void debug(LogCategory category, String text)
+    public void debug(ErrorCategory category, String text)
     {
         add(DEBUG, category, text);
     }
@@ -72,7 +72,7 @@ public class Log
     /**
      * Appends an INFO entry.
      */
-    public void info(LogCategory category, String text)
+    public void info(ErrorCategory category, String text)
     {
         add(INFO, category, text);
     }
@@ -80,7 +80,7 @@ public class Log
     /**
      * Appends an WARN entry.
      */
-    public void warn(LogCategory category, String text)
+    public void warn(ErrorCategory category, String text)
     {
         add(WARN, category, text);
     }
@@ -88,7 +88,7 @@ public class Log
     /**
      * Appends an ERROR entry.
      */
-    public void error(LogCategory category, String text)
+    public void error(ErrorCategory category, String text)
     {
         add(ERROR, category, text);
     }
@@ -96,7 +96,7 @@ public class Log
     /**
      * Returns the list of entries for the given level and above.
      */
-    public List<LogEntry> list(LogLevel level)
+    public List<LogEntry> list(ErrorLevel level)
     {
         List<LogEntry> ret = new ArrayList<LogEntry>();
         for(LogEntry entry : entries)
