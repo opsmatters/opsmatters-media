@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.ArrayList;
 import com.opsmatters.media.model.OwnedEntity;
 import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -36,6 +37,8 @@ public class SocialChannel extends OwnedEntity
     private String icon = "";
     private String sites = "";
     private List<String> siteList = new ArrayList<String>();
+    private String contentTypes = "";
+    private List<String> contentTypeList = new ArrayList<String>();
     private int delay = -1;
     private int maxPosts = -1;
     private SocialChannelStatus status = SocialChannelStatus.DISABLED;
@@ -62,19 +65,7 @@ public class SocialChannel extends OwnedEntity
      */
     public SocialChannel(SocialChannel obj)
     {
-        if(obj != null)
-        {
-            super.copyAttributes(obj);
-            setCode(obj.getCode());
-            setName(obj.getName());
-            setHandle(obj.getHandle());
-            setIcon(obj.getIcon());
-            setProvider(obj.getProvider());
-            setSites(obj.getSites());
-            setDelay(obj.getDelay());
-            setMaxPosts(obj.getMaxPosts());
-            setStatus(obj.getStatus());
-        }
+        copyAttributes(obj);
     }
 
     /**
@@ -91,6 +82,7 @@ public class SocialChannel extends OwnedEntity
             setIcon(obj.getIcon());
             setProvider(obj.getProvider());
             setSites(obj.getSites());
+            setContentTypes(obj.getContentTypes());
             setDelay(obj.getDelay());
             setMaxPosts(obj.getMaxPosts());
             setStatus(obj.getStatus());
@@ -267,6 +259,70 @@ public class SocialChannel extends OwnedEntity
     public void addSite(Site site)
     {
         addSite(site.getId());
+    }
+
+    /**
+     * Returns the channel content types.
+     */
+    public String getContentTypes()
+    {
+        return contentTypes;
+    }
+
+    /**
+     * Returns the list of channel content types.
+     */
+    public List<String> getContentTypeList()
+    {
+        // Return a copy of the list to stop external modification
+        return new ArrayList<String>(contentTypeList);
+    }
+
+    /**
+     * Sets the channel content types.
+     */
+    public void setContentTypes(String contentTypes)
+    {
+        this.contentTypes = contentTypes;
+
+        contentTypeList.clear();
+        for(String contentType : StringUtils.toList(contentTypes))
+            contentTypeList.add(contentType);
+    }
+
+    /**
+     * Sets the list of channel content types.
+     */
+    public void setContentTypeList(List<String> contentTypeList)
+    {
+        this.contentTypeList.clear();
+        for(String contentType : contentTypeList)
+            this.contentTypeList.add(contentType);
+        this.contentTypes = StringUtils.fromList(contentTypeList);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this channel has content types configured.
+     */
+    public boolean hasContentTypes()
+    {
+        return contentTypes != null && contentTypes.length() > 0;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this channel is configured for the given content type.
+     */
+    public boolean hasContentType(String contentType)
+    {
+        return contentTypeList.contains(contentType);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this channel is configured for the given content type.
+     */
+    public boolean hasContentType(ContentType contentType)
+    {
+        return hasContentType(contentType.value());
     }
 
     /**

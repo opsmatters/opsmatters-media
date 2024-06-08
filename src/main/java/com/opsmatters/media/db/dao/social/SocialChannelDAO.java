@@ -38,14 +38,14 @@ public class SocialChannelDAO extends SocialDAO<SocialChannel>
      * The query to use to select a channel from the SOCIAL_CHANNELS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, PROVIDER, HANDLE, ICON, SITES, DELAY, MAX_POSTS, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, PROVIDER, HANDLE, ICON, SITES, CONTENT_TYPES, DELAY, MAX_POSTS, STATUS, CREATED_BY "
       + "FROM SOCIAL_CHANNELS WHERE ID=?";
 
     /**
      * The query to use to select a channel from the SOCIAL_CHANNELS table by code.
      */
     private static final String GET_BY_CODE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, PROVIDER, HANDLE, ICON, SITES, DELAY, MAX_POSTS, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, PROVIDER, HANDLE, ICON, SITES, CONTENT_TYPES, DELAY, MAX_POSTS, STATUS, CREATED_BY "
       + "FROM SOCIAL_CHANNELS WHERE CODE=?";
 
     /**
@@ -53,22 +53,22 @@ public class SocialChannelDAO extends SocialDAO<SocialChannel>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO SOCIAL_CHANNELS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, PROVIDER, HANDLE, ICON, SITES, DELAY, MAX_POSTS, STATUS, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, PROVIDER, HANDLE, ICON, SITES, CONTENT_TYPES, DELAY, MAX_POSTS, STATUS, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a channel in the SOCIAL_CHANNELS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE SOCIAL_CHANNELS SET UPDATED_DATE=?, CODE=?, NAME=?, PROVIDER=?, HANDLE=?, ICON=?, SITES=?, DELAY=?, MAX_POSTS=?, STATUS=? "
+      "UPDATE SOCIAL_CHANNELS SET UPDATED_DATE=?, CODE=?, NAME=?, PROVIDER=?, HANDLE=?, ICON=?, SITES=?, CONTENT_TYPES=?, DELAY=?, MAX_POSTS=?, STATUS=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the channels from the SOCIAL_CHANNELS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, PROVIDER, HANDLE, ICON, SITES, DELAY, MAX_POSTS, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, PROVIDER, HANDLE, ICON, SITES, CONTENT_TYPES, DELAY, MAX_POSTS, STATUS, CREATED_BY "
       + "FROM SOCIAL_CHANNELS ORDER BY CREATED_DATE";
 
     /**
@@ -106,6 +106,7 @@ public class SocialChannelDAO extends SocialDAO<SocialChannel>
         table.addColumn("HANDLE", Types.VARCHAR, 25, true);
         table.addColumn("ICON", Types.VARCHAR, 15, true);
         table.addColumn("SITES", Types.VARCHAR, 15, true);
+        table.addColumn("CONTENT_TYPES", Types.VARCHAR, 50, false);
         table.addColumn("DELAY", Types.INTEGER, true);
         table.addColumn("MAX_POSTS", Types.INTEGER, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
@@ -149,10 +150,11 @@ public class SocialChannelDAO extends SocialDAO<SocialChannel>
                 channel.setHandle(rs.getString(7));
                 channel.setIcon(rs.getString(8));
                 channel.setSites(rs.getString(9));
-                channel.setDelay(rs.getInt(10));
-                channel.setMaxPosts(rs.getInt(11));
-                channel.setStatus(rs.getString(12));
-                channel.setCreatedBy(rs.getString(13));
+                channel.setContentTypes(rs.getString(10));
+                channel.setDelay(rs.getInt(11));
+                channel.setMaxPosts(rs.getInt(12));
+                channel.setStatus(rs.getString(13));
+                channel.setCreatedBy(rs.getString(14));
                 ret = channel;
             }
         }
@@ -207,10 +209,11 @@ public class SocialChannelDAO extends SocialDAO<SocialChannel>
                 channel.setHandle(rs.getString(7));
                 channel.setIcon(rs.getString(8));
                 channel.setSites(rs.getString(9));
-                channel.setDelay(rs.getInt(10));
-                channel.setMaxPosts(rs.getInt(11));
-                channel.setStatus(rs.getString(12));
-                channel.setCreatedBy(rs.getString(13));
+                channel.setContentTypes(rs.getString(10));
+                channel.setDelay(rs.getInt(11));
+                channel.setMaxPosts(rs.getInt(12));
+                channel.setStatus(rs.getString(13));
+                channel.setCreatedBy(rs.getString(14));
                 ret = channel;
             }
         }
@@ -254,10 +257,11 @@ public class SocialChannelDAO extends SocialDAO<SocialChannel>
             insertStmt.setString(7, channel.getHandle());
             insertStmt.setString(8, channel.getIcon());
             insertStmt.setString(9, channel.getSites());
-            insertStmt.setInt(10, channel.getDelay());
-            insertStmt.setInt(11, channel.getMaxPosts());
-            insertStmt.setString(12, channel.getStatus().name());
-            insertStmt.setString(13, channel.getCreatedBy());
+            insertStmt.setString(10, channel.getContentTypes());
+            insertStmt.setInt(11, channel.getDelay());
+            insertStmt.setInt(12, channel.getMaxPosts());
+            insertStmt.setString(13, channel.getStatus().name());
+            insertStmt.setString(14, channel.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created channel '"+channel.getId()+"' in SOCIAL_CHANNELS");
@@ -296,10 +300,11 @@ public class SocialChannelDAO extends SocialDAO<SocialChannel>
         updateStmt.setString(5, channel.getHandle());
         updateStmt.setString(6, channel.getIcon());
         updateStmt.setString(7, channel.getSites());
-        updateStmt.setInt(8, channel.getDelay());
-        updateStmt.setInt(9, channel.getMaxPosts());
-        updateStmt.setString(10, channel.getStatus().name());
-        updateStmt.setString(11, channel.getId());
+        updateStmt.setString(8, channel.getContentTypes());
+        updateStmt.setInt(9, channel.getDelay());
+        updateStmt.setInt(10, channel.getMaxPosts());
+        updateStmt.setString(11, channel.getStatus().name());
+        updateStmt.setString(12, channel.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated channel '"+channel.getId()+"' in SOCIAL_CHANNELS");
@@ -339,10 +344,11 @@ public class SocialChannelDAO extends SocialDAO<SocialChannel>
                 channel.setHandle(rs.getString(7));
                 channel.setIcon(rs.getString(8));
                 channel.setSites(rs.getString(9));
-                channel.setDelay(rs.getInt(10));
-                channel.setMaxPosts(rs.getInt(11));
-                channel.setStatus(rs.getString(12));
-                channel.setCreatedBy(rs.getString(13));
+                channel.setContentTypes(rs.getString(10));
+                channel.setDelay(rs.getInt(11));
+                channel.setMaxPosts(rs.getInt(12));
+                channel.setStatus(rs.getString(13));
+                channel.setCreatedBy(rs.getString(14));
                 ret.add(channel);
             }
         }
