@@ -40,6 +40,7 @@ public class HtmlUtils
     public static final String NBSP_ENTITY = "&nbsp;";
     public static final String TEXT_CHARS = "\\w\\u2010-\\u2017";
     public static final String IMAGE_SOURCE = "image source:";
+    public static final String PAGE_SOURCE = "page source:";
     public static final String CONTENT_WRAPPER_CLASS = "post-full-content";
     public static final String IMAGE_WRAPPER_CLASS = "image-wrapper";
     public static final String IMAGE_LEGEND_CLASS = "image-legend";
@@ -317,7 +318,8 @@ public class HtmlUtils
         {
             String contents = m.group(1);
             String lower = contents.toLowerCase().trim();
-            if(lower.indexOf(IMAGE_SOURCE) != -1)
+
+            if(lower.indexOf(IMAGE_SOURCE) != -1 || lower.indexOf(PAGE_SOURCE) != -1)
             {
                 String message = String.format("image source: [%s]", contents);
                 ret.add(message);
