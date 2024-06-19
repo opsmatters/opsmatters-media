@@ -70,8 +70,12 @@ public class HtmlUtils
      */
     private static String removeDataAttributes(String str)
     {
+        // Special case to remove data-leveltext attributes
+        str = str.replaceAll("<li data-leveltext=\".+?\">", "<li>");
+
         // Remove data- attributes, with and without values
         str = str.replaceAll(String.format("%s[-\\w]+=\"[- \\w\\[\\]{}:,./\"\\u25cf]*\"", DATA_ATTR), "");
+
         // Removed as it also replaces valid text such as "data-driven"
         // str = str.replaceAll(String.format("%s[-\\w]+", DATA_ATTR), "");
 
