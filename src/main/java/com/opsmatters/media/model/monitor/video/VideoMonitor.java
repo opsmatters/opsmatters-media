@@ -221,6 +221,7 @@ public class VideoMonitor extends ContentMonitor<VideoDetails>
             }
 
             ret = new ContentSnapshot(getContentType(), teasers);
+            ret.setLog(crawler.getLog());
 
             setTitle(crawler.getTitle());
             setChannelId(channel.getChannelId());

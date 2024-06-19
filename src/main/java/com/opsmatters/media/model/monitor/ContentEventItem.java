@@ -21,7 +21,7 @@ import com.opsmatters.media.cache.monitor.ContentMonitors;
 import com.opsmatters.media.model.content.ContentType;
 
 /**
- * Class representing a content event post list item.
+ * Class representing a content event list item.
  * 
  * @author Gerald Curley (opsmatters)
  */
@@ -55,7 +55,7 @@ public abstract class ContentEventItem<T extends ContentEvent> extends BaseEntit
     }
 
     /**
-     * Returns the post organisation.
+     * Returns the event organisation.
      */
     public String getCode()
     {
@@ -63,7 +63,7 @@ public abstract class ContentEventItem<T extends ContentEvent> extends BaseEntit
     }
 
     /**
-     * Sets the post organisation.
+     * Sets the event organisation.
      */
     public void setCode(String code)
     {

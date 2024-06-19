@@ -98,6 +98,7 @@ public class EventMonitor extends ContentMonitor<EventDetails>
             if(EventDetails.hasStartDate(teasers))
                 Collections.sort(teasers, comparator);
             ret = new ContentSnapshot(getContentType(), teasers);
+            ret.setLog(crawler.getLog());
 
             if(crawler.getTitle() != null)
                 setTitle(crawler.getTitle());

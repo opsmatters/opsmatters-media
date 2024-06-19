@@ -35,6 +35,7 @@ import com.opsmatters.media.model.content.video.Video;
 import com.opsmatters.media.model.content.event.EventDetails;
 import com.opsmatters.media.model.content.publication.PublicationDetails;
 import com.opsmatters.media.model.content.LinkedContent;
+import com.opsmatters.media.model.logging.Log;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 
@@ -46,6 +47,8 @@ import static com.opsmatters.media.model.content.FieldName.*;
 public class ContentSnapshot extends JSONObject
 {
     private static final Logger logger = Logger.getLogger(ContentSnapshot.class.getName());
+
+    private Log log;
 
     /**
      * Constructor that takes a content type and list of teasers.
@@ -522,5 +525,21 @@ public class ContentSnapshot extends JSONObject
         }
 
         return builder.toString();
+    }
+
+    /**
+     * Returns the log for the snapshot.
+     */
+    public Log getLog()
+    {
+        return log;
+    }
+
+    /**
+     * Sets the log for th snapshot.
+     */
+    public void setLog(Log log)
+    {
+        this.log = log;
     }
 }

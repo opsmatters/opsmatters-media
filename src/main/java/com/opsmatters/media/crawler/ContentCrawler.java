@@ -39,8 +39,10 @@ import com.opsmatters.media.model.content.crawler.field.FieldMatch;
 import com.opsmatters.media.model.content.crawler.field.FieldCase;
 import com.opsmatters.media.model.content.crawler.field.FieldExtractor;
 import com.opsmatters.media.model.logging.Log;
-import com.opsmatters.media.model.logging.LogEntry;
-import com.opsmatters.media.model.logging.ErrorCategory;
+import com.opsmatters.media.model.logging.LogEvent;
+import com.opsmatters.media.model.logging.EventCategory;
+
+import static com.opsmatters.media.model.logging.EventType.*;
 
 /**
  * Class representing a crawler for content items with fields.
@@ -64,7 +66,7 @@ public abstract class ContentCrawler<D extends ContentDetails>
     private boolean rootError = false;
 
     private Map<String, Object> properties = new HashMap<String, Object>();
-    protected Log log = new Log();
+    protected Log log = new Log(CRAWLER);
 
     /**
      * Constructor that takes a target.
@@ -113,11 +115,19 @@ public abstract class ContentCrawler<D extends ContentDetails>
     }
 
     /**
-     * Returns the list of log entries.
+     * Returns the log.
      */
-    public List<LogEntry> getLogEntries()
+    public Log getLog()
     {
-        return log.list();
+        return log;
+    }
+
+    /**
+     * Returns the list of log events.
+     */
+    public List<LogEvent> getLogEvents()
+    {
+        return getLog().getEvents();
     }
 
     /**
@@ -260,7 +270,7 @@ public abstract class ContentCrawler<D extends ContentDetails>
     /**
      * Apply the configured regular expression to the given field value.
      */
-    public String getValue(Field field, String value, ErrorCategory category)
+    public String getValue(Field field, String value, EventCategory category)
     {
         return getValue(field, value, value, category);
     }
@@ -268,7 +278,7 @@ public abstract class ContentCrawler<D extends ContentDetails>
     /**
      * Apply the configured regular expression to the given field value.
      */
-    public String getValue(Field field, String value, String dflt, ErrorCategory category)
+    public String getValue(Field field, String value, String dflt, EventCategory category)
     {
         // Remove special characters before processing
         value = processValue(value);
@@ -295,9 +305,9 @@ public abstract class ContentCrawler<D extends ContentDetails>
             {
                 if(debug())
                     logger.info(String.format("Validation failed for %s field %s: value=[%s]", 
-                        category.value(), field.getName(), value));
+                        category.tag(), field.getName(), value));
                 log.info(category, String.format("Validation failed for %s field %s: value=[%s]", 
-                    category.value(), field.getName(), value));
+                    category.tag(), field.getName(), value));
 
                 ret = null; // Don't use the default if the expr didn't validate
             }
@@ -305,9 +315,9 @@ public abstract class ContentCrawler<D extends ContentDetails>
             {
                 if(debug())
                     logger.info(String.format("No match found for %s field %s: value=[%s]", 
-                        category.value(), field.getName(), value));
+                        category.tag(), field.getName(), value));
                 log.info(category, String.format("No match found for %s field %s: value=[%s]", 
-                    category.value(), field.getName(), value));
+                    category.tag(), field.getName(), value));
 
                 // Use the default if none of the extractors matched
                 ret = dflt;

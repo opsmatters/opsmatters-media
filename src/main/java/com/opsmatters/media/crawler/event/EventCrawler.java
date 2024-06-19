@@ -31,13 +31,15 @@ import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.model.content.crawler.field.Fields;
-import com.opsmatters.media.model.logging.ErrorCategory;
+import com.opsmatters.media.model.logging.EventCategory;
+import com.opsmatters.media.model.logging.LogError;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;
-import static com.opsmatters.media.model.logging.ErrorCategory.*;
+import static com.opsmatters.media.model.logging.EventCategory.*;
+import static com.opsmatters.media.model.logging.ErrorCode.*;
 
 /**
  * Class representing a crawler for events.
@@ -190,7 +192,12 @@ public class EventCrawler extends WebPageCrawler<EventDetails>
                     {
                         logger.severe(StringUtils.serialize(e));
                         logger.warning("Unparseable start time: "+start);
-                        log.warn(ARTICLE, "Unparseable start time: "+start);
+
+                        log.add(log.warn(E_PARSE_DATE, ARTICLE)
+                            .message(String.format("Unparseable %s start time: %s",
+                                ARTICLE.tag(), start))
+                            .exception(e)
+                            .locate(this, config.getCode()));
                     }
                 }
             }
@@ -241,7 +248,7 @@ public class EventCrawler extends WebPageCrawler<EventDetails>
     /**
      * Populate the teaser fields from the given element.
      */
-    private void populateTeaserFields(Element root, Fields fields, EventDetails teaser, ErrorCategory category)
+    private void populateTeaserFields(Element root, Fields fields, EventDetails teaser, EventCategory category)
         throws DateTimeParseException
     {
         if(fields.hasTitle())
@@ -300,9 +307,13 @@ public class EventCrawler extends WebPageCrawler<EventDetails>
                 {
                     logger.severe(StringUtils.serialize(e));
                     logger.severe(String.format("Unparseable %s start date: %s code=%s",
-                        category.value(), startDate, config.getCode()));
-                    log.error(category, String.format("Unparseable %s start date: %s",
-                        category.value(), startDate));
+                        category.tag(), startDate, config.getCode()));
+
+                    log.add(log.warn(E_PARSE_DATE, category)
+                        .message(String.format("Unparseable %s start date: %s",
+                            category.tag(), startDate))
+                        .exception(e)
+                        .locate(this, config.getCode()));
                 }
             }
         }

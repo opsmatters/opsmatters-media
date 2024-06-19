@@ -25,7 +25,7 @@ import java.util.Iterator;
 import com.opsmatters.media.model.content.ContentDetails;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.logging.LogEntry;
+import com.opsmatters.media.model.logging.LogEvent;
 
 /**
  * Class representing the cache of teasers.
@@ -43,15 +43,15 @@ public class Teasers
         String code;
         ContentType type;
         long tm = 0L;
-        List<LogEntry> entries;
+        List<LogEvent> events;
 
-        TeaserList(ContentConfig config, List<? extends ContentDetails> teasers, List<LogEntry> entries)
+        TeaserList(ContentConfig config, List<? extends ContentDetails> teasers, List<LogEvent> events)
         {
             this.code = config.getCode();
             this.type = config.getType();
             tm = System.currentTimeMillis();
             addTeasers(teasers);
-            addLogEntries(entries);
+            addLogEvents(events);
         }
 
         String getCode()
@@ -93,18 +93,18 @@ public class Teasers
             }
         }
 
-        List<LogEntry> getLogEntries()
+        List<LogEvent> getLogEvents()
         {
-            return this.entries;
+            return this.events;
         }
 
-        void addLogEntries(List<LogEntry> entries)
+        void addLogEvents(List<LogEvent> events)
         {
-            if(entries != null && entries.size() > 0)
+            if(events != null && events.size() > 0)
             {
-                this.entries = new ArrayList<LogEntry>();
-                for(LogEntry entry : entries)
-                    this.entries.add(entry);
+                this.events = new ArrayList<LogEvent>();
+                for(LogEvent event : events)
+                    this.events.add(event);
             }
         }
     }
@@ -120,13 +120,13 @@ public class Teasers
      * Sets the teaser list for the given id.
      */
     public static void set(String id, List<? extends ContentDetails> teasers,
-        ContentConfig config, List<LogEntry> entries)
+        ContentConfig config, List<LogEvent> events)
     {
         synchronized(teaserMap)
         {
             clear(id);
             if(teasers.size() > 0)
-                teaserMap.put(id, new TeaserList(config, teasers, entries));
+                teaserMap.put(id, new TeaserList(config, teasers, events));
         }
     }
 
@@ -162,12 +162,12 @@ public class Teasers
     }
 
     /**
-     * Returns the log entry list for the given organisation and id.
+     * Returns the log event list for the given organisation and id.
      */
-    public static List<LogEntry> getLogEntries(String code, String id)
+    public static List<LogEvent> getLogEvents(String code, String id)
     {
         TeaserList ret = teaserMap.get(id);
-        return ret != null && ret.getCode().equals(code) ? ret.getLogEntries() : null;
+        return ret != null && ret.getCode().equals(code) ? ret.getLogEvents() : null;
     }
 
     /**

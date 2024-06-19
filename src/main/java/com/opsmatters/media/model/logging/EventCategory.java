@@ -16,25 +16,32 @@
 
 package com.opsmatters.media.model.logging;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
- * Represents the category of a log error.
+ * Represents the category of a log event.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ErrorCategory
+public enum EventCategory
 {
-    TEASER("teaser"),
-    ARTICLE("article");
+    TEASER("Teaser", "teaser"),
+    ARTICLE("Article", "article"),
+    MANAGER("Manager", "manager");
 
     private String value;
+    private String tag;
 
     /**
      * Constructor that takes the category value.
      * @param value The value for the category
+     * @param tag The tag for the category
      */
-    ErrorCategory(String value)
+    EventCategory(String value, String tag)
     {
         this.value = value;
+        this.tag = tag;
     }
 
     /**
@@ -56,14 +63,23 @@ public enum ErrorCategory
     }
 
     /**
+     * Returns the tag of the category.
+     * @return The tag of the category.
+     */
+    public String tag()
+    {
+        return tag;
+    }
+
+    /**
      * Returns the category for the given value.
      * @param value The category value
      * @return The category for the given value
      */
-    public static ErrorCategory fromValue(String value)
+    public static EventCategory fromValue(String value)
     {
-        ErrorCategory[] categories = values();
-        for(ErrorCategory category : categories)
+        EventCategory[] categories = values();
+        for(EventCategory category : categories)
         {
             if(category.value().equals(value))
                 return category;
@@ -80,5 +96,34 @@ public enum ErrorCategory
     public static boolean contains(String value)
     {
         return valueOf(value) != null;
+    }
+
+    /**
+     * Returns a list of the event categories.
+     */
+    public static List<EventCategory> toList()
+    {
+        List<EventCategory> ret = new ArrayList<EventCategory>();
+
+        ret.add(TEASER);
+        ret.add(ARTICLE);
+        ret.add(MANAGER);
+
+        return ret;
+    }
+
+    /**
+     * Returns a list of the event category values.
+     */
+    public static List<String> toList(boolean blank)
+    {
+        List<String> ret = new ArrayList<String>();
+
+        if(blank)
+            ret.add("");
+        for(EventCategory category : EventCategory.values())
+            ret.add(category.value());
+
+        return ret;
     }
 }

@@ -43,7 +43,7 @@ import com.opsmatters.media.client.video.VideoClientFactory;
 import static com.opsmatters.media.model.content.crawler.field.FilterScope.*;
 import static com.opsmatters.media.model.content.crawler.field.FilterResult.*;
 import static com.opsmatters.media.model.content.FieldName.*;
-import static com.opsmatters.media.model.logging.ErrorCategory.*;
+import static com.opsmatters.media.model.logging.EventCategory.*;
 
 /**
  * Class representing a crawler for videos.

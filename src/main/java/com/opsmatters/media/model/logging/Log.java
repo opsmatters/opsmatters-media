@@ -19,110 +19,162 @@ package com.opsmatters.media.model.logging;
 import java.util.List;
 import java.util.ArrayList;
 
-import static com.opsmatters.media.model.logging.ErrorLevel.*;
+import static com.opsmatters.media.model.logging.EventLevel.*;
 
 /**
- * Defines a set of log entries.
+ * Defines a set of log events.
  * 
  * @author Gerald Curley (opsmatters)
  */
 public class Log
 {
-    private List<LogEntry> entries = new ArrayList<LogEntry>();
+    private EventType type;   
+    private List<LogEvent> events = new ArrayList<LogEvent>();
 
     /**
      * Default constructor.
      */
-    public Log()
+    public Log(EventType type)
     {
+        setType(type);
     }
 
     /**
-     * Clears the entries.
+     * Returns the type of the log.
+     * @return The type of the log
+     */
+    public EventType getType()
+    {
+        return type;
+    }
+
+    /**
+     * Sets the type of the log.
+     * @param type The type of the log
+     */
+    public void setType(EventType type)
+    {
+        this.type = type;
+    }
+
+    /**
+     * Clears the events.
      */
     public void clear()
     {
-        entries.clear();
+        events.clear();
     }
 
     /**
-     * Appends an entry.
+     * Appends an event.
      */
-    public void add(LogEntry entry)
+    public void add(LogEvent event)
     {
-        entries.add(entry);
+        events.add(event);
     }
 
     /**
-     * Appends an entry.
+     * Appends a list of events.
      */
-    public void add(ErrorLevel level, ErrorCategory category, String text)
+    public void addAll(List<LogEvent> events)
     {
-        add(new LogEntry(level, category, text));
+        this.events.addAll(events);
     }
 
     /**
-     * Appends an DEBUG entry.
+     * Appends an event.
      */
-    public void debug(ErrorCategory category, String text)
+    public void add(EventCategory category, EventLevel level, String message)
     {
-        add(DEBUG, category, text);
+        add(new LogEvent(type, category, level, message));
     }
 
     /**
-     * Appends an INFO entry.
+     * Appends a DEBUG event.
      */
-    public void info(ErrorCategory category, String text)
+    public void debug(EventCategory category, String message)
     {
-        add(INFO, category, text);
+        add(category, DEBUG, message);
     }
 
     /**
-     * Appends an WARN entry.
+     * Appends an INFO event.
      */
-    public void warn(ErrorCategory category, String text)
+    public void info(EventCategory category, String message)
     {
-        add(WARN, category, text);
+        add(category, INFO, message);
     }
 
     /**
-     * Appends an ERROR entry.
+     * Appends a WARN event.
      */
-    public void error(ErrorCategory category, String text)
+    public void warn(EventCategory category, String message)
     {
-        add(ERROR, category, text);
+        add(category, WARN, message);
     }
 
     /**
-     * Returns the list of entries for the given level and above.
+     * Appends an ERROR event.
      */
-    public List<LogEntry> list(ErrorLevel level)
+    public void error(EventCategory category, String message)
     {
-        List<LogEntry> ret = new ArrayList<LogEntry>();
-        for(LogEntry entry : entries)
+        add(category, ERROR, message);
+    }
+
+    /**
+     * Returns an ERROR builder.
+     */
+    public LogError.Builder error(ErrorCode code, EventCategory category)
+    {
+        return LogError.builder(code, type, category, ERROR);
+    }
+
+    /**
+     * Returns a WARN builder.
+     */
+    public LogError.Builder warn(ErrorCode code, EventCategory category)
+    {
+        return LogError.builder(code, type, category, WARN);
+    }
+
+    /**
+     * Closes the error builder and adds it to the log.
+     */
+    public void add(LogError.Builder builder)
+    {
+        add(builder.build());
+    }
+
+    /**
+     * Returns the list of events for the given level and above.
+     */
+    public List<LogEvent> getEvents(EventLevel level)
+    {
+        List<LogEvent> ret = new ArrayList<LogEvent>();
+        for(LogEvent event : events)
         {
-            if(level != null && entry.getLevel().precedence() < level.precedence())
+            if(level != null && event.getLevel().precedence() < level.precedence())
                 continue;
 
-            ret.add(entry);
+            ret.add(event);
         }
 
         return ret;
     }
 
     /**
-     * Returns the list of entries.
+     * Returns the list of events.
      */
-    public List<LogEntry> list()
+    public List<LogEvent> getEvents()
     {
-        return list(null);
+        return getEvents(null);
     }
 
     /**
-     * Returns the count of entries.
+     * Returns the count of events.
      */
     public int size()
     {
-        return entries.size();
+        return events.size();
     }
 }

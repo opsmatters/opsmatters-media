@@ -16,12 +16,15 @@
 
 package com.opsmatters.media.model.logging;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
- * Represents the level of a log error.
+ * Represents the level of a log event.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ErrorLevel
+public enum EventLevel
 {
     ERROR("Error", 2, "glyphicon-exclamation-sign", "level-error"),
     WARN("Warn", 1, "glyphicon-warning-sign", "level-warn"),
@@ -40,7 +43,7 @@ public enum ErrorLevel
      * @param icon The glyphicon for the level
      * @param css The css class for the level
      */
-    ErrorLevel(String value, int precedence, String icon, String css)
+    EventLevel(String value, int precedence, String icon, String css)
     {
         this.value = value;
         this.precedence = precedence;
@@ -98,10 +101,10 @@ public enum ErrorLevel
      * @param value The level value
      * @return The level for the given value
      */
-    public static ErrorLevel fromValue(String value)
+    public static EventLevel fromValue(String value)
     {
-        ErrorLevel[] levels = values();
-        for(ErrorLevel level : levels)
+        EventLevel[] levels = values();
+        for(EventLevel level : levels)
         {
             if(level.value().equals(value))
                 return level;
@@ -118,5 +121,20 @@ public enum ErrorLevel
     public static boolean contains(String value)
     {
         return valueOf(value) != null;
+    }
+
+    /**
+     * Returns a list of the event levels.
+     */
+    public static List<EventLevel> toList()
+    {
+        List<EventLevel> ret = new ArrayList<EventLevel>();
+
+        ret.add(ERROR);
+        ret.add(WARN);
+        ret.add(INFO);
+        ret.add(DEBUG);
+
+        return ret;
     }
 }

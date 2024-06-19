@@ -102,6 +102,7 @@ public class PublicationMonitor extends ContentMonitor<PublicationDetails>
             if(PublicationDetails.hasPublishedDate(teasers))
                 Collections.sort(teasers, comparator);
             ret = new ContentSnapshot(getContentType(), teasers);
+            ret.setLog(crawler.getLog());
 
             if(crawler.getTitle() != null)
                 setTitle(crawler.getTitle());

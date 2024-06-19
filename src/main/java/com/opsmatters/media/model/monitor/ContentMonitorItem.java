@@ -104,7 +104,7 @@ public class ContentMonitorItem extends BaseEntityItem<ContentMonitor>
     }
 
     /**
-     * Sets the organisation name.
+     * Sets the monitor organisation name.
      */
     public void setOrganisation(String organisation)
     {

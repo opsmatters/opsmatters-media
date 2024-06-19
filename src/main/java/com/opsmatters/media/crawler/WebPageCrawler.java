@@ -57,14 +57,17 @@ import com.opsmatters.media.model.content.crawler.field.ElementOutput;
 import com.opsmatters.media.model.content.ContentDetails;
 import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.crawler.parser.ElementType;
-import com.opsmatters.media.model.logging.LogEntry;
-import com.opsmatters.media.model.logging.ErrorCategory;
+import com.opsmatters.media.model.logging.LogEvent;
+import com.opsmatters.media.model.logging.LogError;
+import com.opsmatters.media.model.logging.EventCategory;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.crawler.field.ElementOutput.*;
 import static com.opsmatters.media.model.content.crawler.field.FieldProtocol.*;
-import static com.opsmatters.media.model.logging.ErrorCategory.*;
+import static com.opsmatters.media.model.logging.EventType.*;
+import static com.opsmatters.media.model.logging.EventCategory.*;
+import static com.opsmatters.media.model.logging.ErrorCode.*;
 
 /**
  * Class representing a crawler for content items from a web page.
@@ -138,7 +141,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Returns the current page source.
      */
-    protected String getPageSource(String root, ErrorCategory category)
+    protected String getPageSource(String root, EventCategory category)
     {
         String ret = "";
 
@@ -149,7 +152,11 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         catch(RuntimeException e)
         {
             logger.severe("Unable to get page source for "+root);
-            log.error(category, "Unable to get page source for "+root);
+
+            log.add(log.error(E_MISSING_SOURCE, category)
+                .message(String.format("Unable to get page source for %s", root))
+                .exception(e)
+                .locate(this, config.getCode()));
         }
 
         return ret;
@@ -159,7 +166,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Returns the current page source.
      */
-    protected String getPageSource(ErrorCategory category)
+    protected String getPageSource(EventCategory category)
     {
         return getPageSource("html", category);
     }
@@ -367,7 +374,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Click a Load More button after the initial page load.
      */
-    protected void clickMoreLink(MoreLink moreLink, ErrorCategory category) throws IOException
+    protected void clickMoreLink(MoreLink moreLink, EventCategory category) throws IOException
     {
         String selector = moreLink.getSelector();
         if(selector.length() > 0)
@@ -399,7 +406,10 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
             else
             {
                 logger.warning("More link not found: "+selector);
-                log.warn(category, "More link not found: "+selector);
+
+                log.add(log.warn(E_MISSING_MORE, category)
+                    .message(String.format("More link not found: %s", selector))
+                    .locate(this, config.getCode()));
             }
         }
     }
@@ -454,7 +464,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         }
     }
 
-    protected void configureMovement(ContentLoading loading, ErrorCategory category)
+    protected void configureMovement(ContentLoading loading, EventCategory category)
     {
         if(loading == null)
             return;
@@ -488,7 +498,10 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                 else
                 {
                     logger.severe("Unable to find move to element: "+moveTo);
-                    log.error(category, "Unable to find move to element: "+moveTo);
+
+                    log.add(log.error(E_MISSING_MOVE, category)
+                        .message(String.format("Unable to find move to element: %s", moveTo))
+                        .locate(this, config.getCode()));
                 }
             }
             catch(WebDriverException | InterruptedException e)
@@ -540,13 +553,13 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                     if(debug())
                         logger.info("Retrieved "+count+" teasers from cache");
 
-                    List<LogEntry> entries = Teasers.getLogEntries(config.getCode(), url);
-                    if(entries != null)
+                    List<LogEvent> events = Teasers.getLogEvents(config.getCode(), url);
+                    if(events != null)
                     {
-                        for(LogEntry entry : entries)
-                            log.add(entry);
+                        for(LogEvent event : events)
+                            log.add(event);
                         if(debug())
-                            logger.info("Retrieved "+entries.size()+" log entries from cache");
+                            logger.info("Retrieved "+events.size()+" log events from cache");
                     }
                 }
             }
@@ -595,7 +608,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                 }
 
                 if(cache)
-                    Teasers.set(url, getTeasers(), config, log.list());
+                    Teasers.set(url, getTeasers(), config, log.getEvents());
 
                 if(debug())
                     logger.info("Found "+numTeasers()+" teasers");
@@ -608,7 +621,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Returns a list of the metatags for the given attribute name and value.
      */
-    protected List<Element> getMetatags(String name, String value, ErrorCategory category)
+    protected List<Element> getMetatags(String name, String value, EventCategory category)
     {
         List<Element> ret = new ArrayList<Element>();
         Document doc = Jsoup.parse(getPageSource(category));
@@ -629,7 +642,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         return ret;
     }
 
-    protected String getPropertyMetatag(String value, ErrorCategory category)
+    protected String getPropertyMetatag(String value, EventCategory category)
     {
         List<Element> tags = getMetatags("property", value, category);
         if(tags.size() == 0)
@@ -642,7 +655,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Returns <CODE>true</CODE> if the content validator is found.
      */
-    protected void validateContent(D content, Field field, Element root, ErrorCategory category)
+    protected void validateContent(D content, Field field, Element root, EventCategory category)
     {
         boolean valid = false;
 
@@ -678,28 +691,28 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         {
             if(debug())
                 logger.info(String.format("Validation successful for %s: %s",
-                    category.value(), field.getSelector(0).getExpr()));
+                    category.tag(), field.getSelector(0).getExpr()));
         }
         else
         {
             if(debug())
                 logger.info(String.format("Validation failed for %s, skipping: %s",
-                    category.value(), field.getSelector(0).getExpr()));
+                    category.tag(), field.getSelector(0).getExpr()));
             log.info(category, String.format("Validation failed for %s, skipping: %s",
-                    category.value(), field.getSelector(0).getExpr()));
+                    category.tag(), field.getSelector(0).getExpr()));
         }
     }
 
     /**
      * Process an element field returning multiple results.
      */
-    protected String getElements(Field field, Element root, ErrorCategory category)
+    protected String getElements(Field field, Element root, EventCategory category)
     {
         String ret = null;
 
         if(debug())
             logger.info(String.format("Looking for elements for %s field: %s",
-                category.value(), field.getName()));
+                category.tag(), field.getName()));
 
         Elements nodes = null;
         for(FieldSelector selector : field.getSelectors())
@@ -716,7 +729,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                     {
                         if(debug())
                             logger.info(String.format("Found elements for %s field %s: %s",
-                                category.value(), field.getName(), ret));
+                                category.tag(), field.getName(), ret));
                         found = true;
                     }
                 }
@@ -731,7 +744,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                     {
                         if(debug())
                             logger.info(String.format("Found element metatag for %s field %s: %s",
-                                category.value(), field.getName(), ret));
+                                category.tag(), field.getName(), ret));
                         found = true;
                     }
                 }
@@ -744,9 +757,12 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         if(ret == null && !field.isOptional())
         {
             logger.warning(String.format("Elements not found for %s field: %s",
-                category.value(), field.getName()));
-            log.warn(category, String.format("Elements not found for %s field: %s",
-                category.value(), field.getName()));
+                category.tag(), field.getName()));
+
+            log.add(log.warn(E_MISSING_ELEM, category)
+                .message(String.format("Elements not found for %s field: %s",
+                    category.tag(), field.getName()))
+                .locate(this, config.getCode()));
         }
 
         return ret;
@@ -805,13 +821,13 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Process an anchor field.
      */
-    protected String getAnchor(Field field, Element root, ErrorCategory category, boolean removeParameters)
+    protected String getAnchor(Field field, Element root, EventCategory category, boolean removeParameters)
     {
         String ret = null;
 
         if(debug())
             logger.info(String.format("Looking for anchor for %s field: %s",
-                category.value(), field.getName()));
+                category.tag(), field.getName()));
 
         for(FieldSelector selector : field.getSelectors())
         {
@@ -860,7 +876,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                     ret = FormatUtils.getFormattedUrl(getBasePath(), value, removeParameters);
                     if(debug())
                         logger.info(String.format("Found anchor for %s field %s: %s",
-                            category.value(), field.getName(), ret));
+                            category.tag(), field.getName(), ret));
                     found = true;
                 }
                 else if(div != null) // Sometimes the link is a div with a href attribute
@@ -871,7 +887,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                     ret = FormatUtils.getFormattedUrl(getBasePath(), value, removeParameters);
                     if(debug())
                         logger.info(String.format("Found anchor div for %s field %s: %s",
-                            category.value(), field.getName(), ret));
+                            category.tag(), field.getName(), ret));
                     found = true;
                 }
                 else if(section != null) // Sometimes the link is a section with a custom attribute
@@ -882,7 +898,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                     ret = FormatUtils.getFormattedUrl(getBasePath(), value, removeParameters);
                     if(debug())
                         logger.info(String.format("Found anchor section for %s field %s: %s",
-                            category.value(), field.getName(), ret));
+                            category.tag(), field.getName(), ret));
                     found = true;
                 }
                 else if(elem != null)
@@ -901,7 +917,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                     ret = FormatUtils.getFormattedUrl(getBasePath(), value, removeParameters);
                     if(debug())
                         logger.info(String.format("Found anchor element for %s field %s: %s",
-                            category.value(), field.getName(), ret));
+                            category.tag(), field.getName(), ret));
                     found = true;
                 }
             }
@@ -913,7 +929,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                     ret = getValue(field, tag, category);
                     if(debug())
                         logger.info(String.format("Found anchor metatag for %s field %s: %s",
-                            category.value(), field.getName(), ret));
+                            category.tag(), field.getName(), ret));
                     found = true;
                 }
             }
@@ -925,9 +941,12 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         if(ret == null && !field.isOptional())
         {
             logger.warning(String.format("Anchor not found for %s field: %s",
-                category.value(), field.getName()));
-            log.warn(category, String.format("Anchor not found for %s field: %s",
-                category.value(), field.getName()));
+                category.tag(), field.getName()));
+
+            log.add(log.warn(E_MISSING_ANCHOR, category)
+                .message(String.format("Anchor not found for %s field: %s",
+                    category.tag(), field.getName()))
+                .locate(this, config.getCode()));
         }
 
         return ret;
@@ -985,14 +1004,14 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Process the body field to produce a summary.
      */
-    protected String getBodySummary(Field field, Element root, ErrorCategory category,
+    protected String getBodySummary(Field field, Element root, EventCategory category,
         SummaryConfig summary, boolean debug)
     {
         String ret = null;
 
         if(debug())
             logger.info(String.format("Looking for body summary for %s field: %s",
-                category.value(), field.getName()));
+                category.tag(), field.getName()));
 
         for(FieldSelector selector : field.getSelectors())
         {
@@ -1008,7 +1027,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                     ret = body.trim();
                     if(debug())
                         logger.info(String.format("Found body summary for %s field %s: %s",
-                            category.value(), field.getName(), ret));
+                            category.tag(), field.getName(), ret));
                     found = true;
                 }
             }
@@ -1020,7 +1039,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                     ret = getValue(field, tag, category);
                     if(debug())
                         logger.info(String.format("Found body summary metatag for %s field %s: %s",
-                            category.value(), field.getName(), ret));
+                            category.tag(), field.getName(), ret));
                     found = true;
                 }
             }
@@ -1032,9 +1051,12 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         if(ret == null && !field.isOptional())
         {
             logger.warning(String.format("Body summary not found for %s field: %s",
-                category.value(), field.getName()));
-            log.warn(category, String.format("Body summary not found for %s field: %s",
-                category.value(), field.getName()));
+                category.tag(), field.getName()));
+
+            log.add(log.warn(E_MISSING_SUMMARY, category)
+                .message(String.format("Body summary not found for %s field: %s",
+                    category.tag(), field.getName()))
+                .locate(this, config.getCode()));
         }
 
         return ret;
@@ -1076,13 +1098,13 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Process the body field.
      */
-    protected String getBody(Field field, Element root, ErrorCategory category, boolean debug)
+    protected String getBody(Field field, Element root, EventCategory category, boolean debug)
     {
         String ret = null;
 
         if(debug())
             logger.info(String.format("Looking for body for %s field: %s",
-                category.value(), field.getName()));
+                category.tag(), field.getName()));
 
         for(FieldSelector selector : field.getSelectors())
         {
@@ -1096,7 +1118,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                     ret = body;
                     if(debug())
                         logger.info(String.format("Found body for %s field %s: %s",
-                            category.value(), field.getName(), ret));
+                            category.tag(), field.getName(), ret));
                     found = true;
                 }
             }
@@ -1108,7 +1130,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                     ret = getValue(field, tag, category);
                     if(debug())
                         logger.info(String.format("Found body metatag for %s field %s: %s",
-                            category.value(), field.getName(), ret));
+                            category.tag(), field.getName(), ret));
                     found = true;
                 }
             }
@@ -1120,9 +1142,12 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         if(ret == null && !field.isOptional())
         {
             logger.warning(String.format("Body not found for %s field: %s",
-                category.value(), field.getName()));
-            log.warn(category, String.format("Body not found for %s field: %s",
-                category.value(), field.getName()));
+                category.tag(), field.getName()));
+
+            log.add(log.warn(E_MISSING_BODY, category)
+                .message(String.format("Body not found for %s field: %s",
+                    category.tag(), field.getName()))
+                .locate(this, config.getCode()));
         }
 
         return ret;
@@ -1131,13 +1156,13 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Process an image field.
      */
-    protected String getImageSrc(Field field, Element root, ErrorCategory category)
+    protected String getImageSrc(Field field, Element root, EventCategory category)
     {
         String ret = null;
 
         if(debug())
             logger.info(String.format("Looking for image for %s field: %s",
-                category.value(), field.getName()));
+                category.tag(), field.getName()));
 
         for(FieldSelector selector : field.getSelectors())
         {
@@ -1152,7 +1177,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                         String style = getValue(field, element.attr("style"), category);
                         if(debug())
                             logger.info(String.format("Found style for %s field %s: %s",
-                                category.value(), field.getName(), style));
+                                category.tag(), field.getName(), style));
                         if(style != null && style.length() > 0)
                         {
                             Matcher m = Pattern.compile("(?:.*)background-image:(.+?)(?:;|\\z)(?:.*)").matcher(style);
@@ -1174,7 +1199,10 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                                     else
                                     {
                                         logger.warning(String.format("No url found for background image: %s", image));
-                                        log.warn(category, String.format("No url found for background image: %s", image));
+
+                                        log.add(log.warn(E_MISSING_URL, category)
+                                            .message(String.format("No url found for background image: %s", image))
+                                            .locate(this, config.getCode()));
                                     }
                                 }
                             }
@@ -1189,7 +1217,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                             ret = getValue(field, element.attr(selector.getAttribute()), category);
                             if(debug())
                                 logger.info(String.format("Found image %s for %s field %s: %s",
-                                    selector.getAttribute(), category.value(), field.getName(), ret));
+                                    selector.getAttribute(), category.tag(), field.getName(), ret));
                             found = true;
                         }
                         else if(element.hasAttr("srcset"))
@@ -1228,7 +1256,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
 
                             if(debug())
                                 logger.info(String.format("Found image srcset for %s field %s size=%s: %s",
-                                    category.value(), field.getName(), selector.getSize(), ret));
+                                    category.tag(), field.getName(), selector.getSize(), ret));
                             found = true;
                         }
                         else if(element.hasAttr("src"))
@@ -1236,7 +1264,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                             ret = getValue(field, element.attr("src"), category);
                             if(debug())
                                 logger.info(String.format("Found image src for %s field %s: %s",
-                                    category.value(), field.getName(), ret));
+                                    category.tag(), field.getName(), ret));
                             found = true;
                         }
                     }
@@ -1252,7 +1280,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                     {
                         if(debug())
                             logger.info(String.format("Found image metatag for %s field %s: %s",
-                                category.value(), field.getName(), ret));
+                                category.tag(), field.getName(), ret));
                         found = true;
                     }
                 }
@@ -1268,7 +1296,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                         ret = ret.replace("http://", "https://");
                         if(debug())
                             logger.info(String.format("Changed image src URL to https for %s field %s: %s",
-                                category.value(), field.getName(), ret));
+                                category.tag(), field.getName(), ret));
                     }
                     else if(ret.startsWith("https://") && selector.getForceProtocol() == INSECURE)
                     {
@@ -1276,7 +1304,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                         ret = ret.replace("https://", "http://");
                         if(debug())
                             logger.info(String.format("Changed image src URL to http for %s field %s: %s",
-                                category.value(), field.getName(), ret));
+                                category.tag(), field.getName(), ret));
                     }
                 }
 
@@ -1292,9 +1320,12 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         else if(!field.isOptional())
         {
             logger.warning(String.format("Image not found for %s field: %s",
-                category.value(), field.getName()));
-            log.warn(category, String.format("Image not found for %s field: %s",
-                category.value(), field.getName()));
+                category.tag(), field.getName()));
+
+            log.add(log.warn(E_MISSING_IMAGE, category)
+                .message(String.format("Image not found for %s field: %s",
+                    category.tag(), field.getName()))
+                .locate(this, config.getCode()));
         }
 
         return ret;
