@@ -180,7 +180,7 @@ public class HtmlUtils
     public static boolean needsLinkSpacing(String str)
     {
         Pattern before = Pattern.compile(String.format("[>:;,.%s]+<a.*?>", TEXT_CHARS), Pattern.DOTALL);
-        Pattern after = Pattern.compile(String.format("</a>[<%s]+", TEXT_CHARS), Pattern.DOTALL);
+        Pattern after = Pattern.compile(String.format("</a>[<!%s]+", TEXT_CHARS), Pattern.DOTALL);
         return before.matcher(str).find() || after.matcher(str).find();
     }
 
@@ -348,7 +348,7 @@ public class HtmlUtils
     public static List<String> getMalformedLinks(String str)
     {
         List<String> ret = new ArrayList<String>();
-        Pattern pattern = Pattern.compile("<a(.+?)>(.+?)</a>", Pattern.DOTALL);
+        Pattern pattern = Pattern.compile("<a(.*?)>(.+?)</a>", Pattern.DOTALL);
         Matcher m = pattern.matcher(str);
 
         while(m.find())
@@ -372,6 +372,12 @@ public class HtmlUtils
                 ret.add(message);
                 logger.warning("Found "+message);
             }
+            else if(anchor.startsWith(",") || anchor.endsWith(","))
+            {
+                String message = String.format("malformed link with comma: href=%s, anchor=[%s]", href, anchor);
+                ret.add(message);
+                logger.warning("Found "+message);
+            }
         }
 
         return ret;
@@ -385,7 +391,7 @@ public class HtmlUtils
     public static List<String> getDuplicateLinks(String str)
     {
         List<String> ret = new ArrayList<String>();
-        Pattern pattern = Pattern.compile("<a(.+?)>(.+?)</a>", Pattern.DOTALL);
+        Pattern pattern = Pattern.compile("<a(.*?)>(.+?)</a>", Pattern.DOTALL);
         Matcher m = pattern.matcher(str);
         Map<String,String> links = new HashMap<String,String>();
 
