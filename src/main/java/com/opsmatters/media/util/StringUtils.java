@@ -16,6 +16,8 @@
 
 package com.opsmatters.media.util;
 
+import java.net.URL;
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -812,6 +814,27 @@ public class StringUtils
             pos = ret.indexOf(".");
             if(pos != -1)
                 ret = ret.substring(0, pos);
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the path of the given URL.
+     */
+    public static String getUrlPath(String url)
+    {
+        String ret = url;
+
+        if(url != null && url.length() > 0)
+        {
+            try
+            {
+                ret = new URL(url).getPath();
+            }
+            catch(MalformedURLException e)
+            {
+            }
         }
 
         return ret;
