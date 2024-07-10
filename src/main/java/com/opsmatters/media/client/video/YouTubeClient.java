@@ -212,10 +212,18 @@ public class YouTubeClient extends Client implements VideoClient
                     ret.put(TITLE.value(), snippet.getTitle());
                     ret.put(PUBLISHED_DATE.value(), snippet.getPublishedAt().toString());
                     ret.putOpt(DESCRIPTION.value(), snippet.getDescription());
-                    ret.put(DURATION.value(), Duration.parse(details.getDuration()).getSeconds());
                     ret.put(CHANNEL_ID.value(), snippet.getChannelId());
                     ret.put(CHANNEL_TITLE.value(), snippet.getChannelTitle());
                     ret.put(PROVIDER.value(), VideoProvider.YOUTUBE.code());
+
+                    try
+                    {
+                        ret.put(DURATION.value(), Duration.parse(details.getDuration()).getSeconds());
+                    }
+                    catch(NullPointerException e)
+                    {
+                        ret.put(DURATION.value(), -1);
+                    }
                 }
             }
         }
