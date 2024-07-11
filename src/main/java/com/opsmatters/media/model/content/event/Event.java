@@ -194,7 +194,7 @@ public class Event extends Resource<EventDetails>
 
         event.init();
         event.setSiteId(site.getId());
-        event.setTitle(config.getName()+": New Event");
+        event.setTitle("New Event");
         event.setPublishedDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
         event.setStartDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
         event.addStartTime(config);
@@ -241,6 +241,10 @@ public class Event extends Resource<EventDetails>
     public void prepare(EventConfig config, CrawlerWebPage page, boolean debug)
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getField(PUBLISHED_DATE)));
+
+        // Add the organisation prefix to the title
+        if(!getTitle().startsWith(config.getName()))
+            setTitle(String.format("%s: %s", config.getName(), getTitle()));
 
         BodyParser parser = new BodyParser(getDescription(), page.getArticles().getFilters(), debug);
         if(parser.converted())

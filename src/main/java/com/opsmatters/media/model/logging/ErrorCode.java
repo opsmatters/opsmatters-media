@@ -25,6 +25,7 @@ public enum ErrorCode
 {
     // Maximum 20 characters
     E_EXCEPTION,
+    E_PAGE_ERROR,
     E_PARSE_DATE,
     E_MISSING_SOURCE,
     E_MISSING_BODY,
