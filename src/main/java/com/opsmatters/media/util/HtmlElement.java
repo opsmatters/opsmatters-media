@@ -26,29 +26,41 @@ import java.util.ArrayList;
  */
 public enum HtmlElement
 {
-    NONE(""),
-    P("p"),
-    DIV("div"),
-    FIGURE("figure");
+    NONE("None", ""),
+    P("P", "p"),
+    DIV("DIV", "div"),
+    FIGURE("FIGURE", "figure");
 
+    private String value;
     private String tag;
 
     /**
      * Constructor that takes the element tag.
+     * @param value The element value
      * @param tag The element tag
      */
-    HtmlElement(String tag)
+    HtmlElement(String value, String tag)
     {
+        this.value = value;
         this.tag = tag;
     }
 
     /**
-     * Returns the tag of the element.
-     * @return The tag of the element.
+     * Returns the value of the element.
+     * @return The value of the element.
      */
     public String toString()
     {
-        return name();
+        return value();
+    }
+
+    /**
+     * Returns the value of the element.
+     * @return The value of the element.
+     */
+    public String value()
+    {
+        return value;
     }
 
     /**
