@@ -44,6 +44,7 @@ import static com.opsmatters.media.model.content.crawler.field.FilterScope.*;
 import static com.opsmatters.media.model.content.crawler.field.FilterResult.*;
 import static com.opsmatters.media.model.content.FieldName.*;
 import static com.opsmatters.media.model.logging.EventCategory.*;
+import static com.opsmatters.media.model.logging.ErrorCode.*;
 
 /**
  * Class representing a crawler for videos.
@@ -216,7 +217,7 @@ public class VideoCrawler extends ContentCrawler<VideoDetails>
             return null;
 
         VideoDetails content = new VideoDetails(teaser);
-        List<Fields> articles = channel.getArticles().getFields(hasRootError());
+        List<Fields> articles = channel.getArticles().getFields(getErrorCode() == E_MISSING_ROOT);
         for(Fields fields : articles)
         {
             populateTeaserFields(video, fields, content, "article");

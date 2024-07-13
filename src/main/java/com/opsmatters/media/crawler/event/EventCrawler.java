@@ -113,7 +113,7 @@ public class EventCrawler extends WebPageCrawler<EventDetails>
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
         EventDetails content = new EventDetails(teaser);
-        List<Fields> articles = getPage().getArticles().getFields(hasRootError());
+        List<Fields> articles = getPage().getArticles().getFields(getErrorCode() == E_MISSING_ROOT);
 
         loadArticlePage(content.getUrl());
 
@@ -121,126 +121,135 @@ public class EventCrawler extends WebPageCrawler<EventDetails>
         if(trace(getDriver()))
             logger.info("article-page="+getPageSource(ARTICLE));
 
-        Element root = null;
-        Document doc = Jsoup.parse(getPageSource("body", ARTICLE));
-        doc.outputSettings().prettyPrint(false);
-
-        for(Fields fields : articles)
+        if(getErrorCode() != E_ERROR_PAGE)
         {
-            if(!fields.hasRoot())
-                throw new IllegalArgumentException("Root empty for event article");
+            Element root = null;
+            Document doc = Jsoup.parse(getPageSource("body", ARTICLE));
+            doc.outputSettings().prettyPrint(false);
 
-            Elements elements = doc.select(fields.getRoot());
-            if(elements.size() > 0)
+            for(Fields fields : articles)
             {
-                root = elements.get(0);
-                if(debug())
-                    logger.info("Root found for event article: "+fields.getRoot());
-                populateTeaserFields(root, fields, content, ARTICLE);
-            }
-            else
-            {
-                if(debug())
-                    logger.info("Root not found for event article: "+fields.getRoot());
-                log.info(ARTICLE, "Root not found for event article: "+fields.getRoot());
-                continue;
-            }
-
-            // Trace to see the article root node
-            if(trace(root))
-                logger.info("event-node="+root.html());
-
-            content.setPublishedDate(TimeUtils.truncateTimeUTC());
-
-            boolean hasTime = false;
-            if(content.getStartDate() != null)
-                hasTime = TimeUtils.hasTime(content.getStartDateMillis());
-
-            long starttm = 0L;
-
-            if(fields.hasStartTime())
-            {
-                Field field = fields.getStartTime();
-                String start = getElements(field, root, ARTICLE);
-                if(start != null)
+                if(!fields.hasRoot())
                 {
-                    try
+                    setErrorCode(E_EMPTY_ROOT);
+                    throw new IllegalArgumentException("Root empty for event article");
+                }
+
+                Elements elements = doc.select(fields.getRoot());
+                if(elements.size() > 0)
+                {
+                    root = elements.get(0);
+                    if(debug())
+                        logger.info("Root found for event article: "+fields.getRoot());
+                    populateTeaserFields(root, fields, content, ARTICLE);
+                }
+                else
+                {
+                    if(debug())
+                        logger.info("Root not found for event article: "+fields.getRoot());
+                    log.info(ARTICLE, "Root not found for event article: "+fields.getRoot());
+                    continue;
+                }
+
+                // Trace to see the article root node
+                if(trace(root))
+                    logger.info("event-node="+root.html());
+
+                content.setPublishedDate(TimeUtils.truncateTimeUTC());
+
+                boolean hasTime = false;
+                if(content.getStartDate() != null)
+                    hasTime = TimeUtils.hasTime(content.getStartDateMillis());
+
+                long starttm = 0L;
+
+                if(fields.hasStartTime())
+                {
+                    Field field = fields.getStartTime();
+                    String start = getElements(field, root, ARTICLE);
+                    if(start != null)
                     {
-                        // Try each date pattern
-                        DateTimeParseException ex = null;
-                        for(String datePattern : field.getDatePatterns())
+                        try
                         {
-                            try
+                            // Try each date pattern
+                            DateTimeParseException ex = null;
+                            for(String datePattern : field.getDatePatterns())
                             {
-                                starttm = TimeUtils.toMillisTime(start, datePattern);
-                                ex = null;
-                                break;
+                                try
+                                {
+                                    starttm = TimeUtils.toMillisTime(start, datePattern);
+                                    ex = null;
+                                    break;
+                                }
+                                catch(DateTimeParseException e)
+                                {
+                                    ex = e;
+                                }
                             }
-                            catch(DateTimeParseException e)
-                            {
-                                ex = e;
-                            }
+
+                            if(ex != null)
+                                throw ex;
+
+                            if(debug())
+                                logger.info("Found start time: "+starttm);
                         }
+                        catch(DateTimeParseException e)
+                        {
+                            logger.severe(StringUtils.serialize(e));
+                            logger.warning("Unparseable start time: "+start);
 
-                        if(ex != null)
-                            throw ex;
-
-                        if(debug())
-                            logger.info("Found start time: "+starttm);
-                    }
-                    catch(DateTimeParseException e)
-                    {
-                        logger.severe(StringUtils.serialize(e));
-                        logger.warning("Unparseable start time: "+start);
-
-                        log.add(log.warn(E_PARSE_DATE, ARTICLE)
-                            .message(String.format("Unparseable %s start time: %s",
-                                ARTICLE.tag(), start))
-                            .exception(e)
-                            .locate(this, config.getCode()));
+                            log.add(log.warn(E_PARSE_DATE, ARTICLE)
+                                .message(String.format("Unparseable %s start time: %s",
+                                    ARTICLE.tag(), start))
+                                .exception(e)
+                                .locate(this, config.getCode()));
+                        }
                     }
                 }
+
+                // If no start time was found, use the default
+                if(!hasTime && starttm == 0L && config.getFields().containsKey(START_TIME))
+                {
+                    String start = config.getFields().get(START_TIME);
+                    starttm = TimeUtils.toMillisTime(start, Formats.SHORT_TIME_FORMAT);
+                    if(debug())
+                        logger.info("Found default start time: "+starttm);
+                }
+
+                if(fields.hasTimeZone())
+                {
+                    String timezone = getElements(fields.getTimeZone(), root, ARTICLE);
+                    if(timezone != null)
+                        content.setTimeZone(timezone);
+                }
+
+                if(root != null && fields.hasBody())
+                {
+                    String body = getBody(fields.getBody(), root, ARTICLE, debug());
+                    if(body != null)
+                        content.setDescription(body);
+                }
+
+                // Add the start time if it is a separate field
+                if(starttm > 0L && content.getStartDateMillis() > 0L)
+                {
+                    content.setStartDateMillis(content.getStartDateMillis()+starttm);
+                    if(debug())
+                        logger.info("Added start time: "+content.getStartDateAsString());
+                }
+
+                if(root != null)
+                    break;
             }
 
-            // If no start time was found, use the default
-            if(!hasTime && starttm == 0L && config.getFields().containsKey(START_TIME))
+            if(root == null)
             {
-                String start = config.getFields().get(START_TIME);
-                starttm = TimeUtils.toMillisTime(start, Formats.SHORT_TIME_FORMAT);
-                if(debug())
-                    logger.info("Found default start time: "+starttm);
+                setErrorCode(E_MISSING_ROOT);
+                throw new IllegalArgumentException("Root not found for event article");
             }
 
-            if(fields.hasTimeZone())
-            {
-                String timezone = getElements(fields.getTimeZone(), root, ARTICLE);
-                if(timezone != null)
-                    content.setTimeZone(timezone);
-            }
-
-            if(root != null && fields.hasBody())
-            {
-                String body = getBody(fields.getBody(), root, ARTICLE, debug());
-                if(body != null)
-                    content.setDescription(body);
-            }
-
-            // Add the start time if it is a separate field
-            if(starttm > 0L && content.getStartDateMillis() > 0L)
-            {
-                content.setStartDateMillis(content.getStartDateMillis()+starttm);
-                if(debug())
-                    logger.info("Added start time: "+content.getStartDateAsString());
-            }
-
-            if(root != null)
-                break;
+            Teasers.update(getPage().getTeasers().getUrls(), content);
         }
-
-        if(root == null)
-            throw new IllegalArgumentException("Root not found for event article");
-
-        Teasers.update(getPage().getTeasers().getUrls(), content);
 
         return content;
     }
@@ -257,19 +266,7 @@ public class EventCrawler extends WebPageCrawler<EventDetails>
             String title = getElements(field, root, category);
             if(title != null && title.length() > 0)
             {
-                // Event title should always start with the organisation name
-                if(!title.startsWith(config.getName()))
-                {
-                    if(debug())
-                        logger.info("Adding organisation to event title: "+config.getName());
-                    teaser.setTitle(String.format("%s: %s", config.getName(), title));
-                    if(debug())
-                        logger.info("Added organisation to event title: "+teaser.getTitle());
-                }
-                else
-                {
-                    teaser.setTitle(title);
-                }
+                teaser.setTitle(title);
             }
         }
 

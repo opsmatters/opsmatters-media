@@ -33,6 +33,7 @@ import com.opsmatters.media.model.content.ContentDetails;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerTarget;
 import com.opsmatters.media.model.content.crawler.CrawlerContent;
+import com.opsmatters.media.model.content.crawler.CrawlerStatus;
 import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.model.content.crawler.field.Fields;
 import com.opsmatters.media.model.content.crawler.field.FieldMatch;
@@ -41,8 +42,11 @@ import com.opsmatters.media.model.content.crawler.field.FieldExtractor;
 import com.opsmatters.media.model.logging.Log;
 import com.opsmatters.media.model.logging.LogEvent;
 import com.opsmatters.media.model.logging.EventCategory;
+import com.opsmatters.media.model.logging.ErrorCode;
 
+import static com.opsmatters.media.model.content.crawler.CrawlerStatus.*;
 import static com.opsmatters.media.model.logging.EventType.*;
+import static com.opsmatters.media.model.logging.ErrorCode.*;
 
 /**
  * Class representing a crawler for content items with fields.
@@ -63,7 +67,8 @@ public abstract class ContentCrawler<D extends ContentDetails>
     private int maxResults = 0;
     private CrawlerTarget target;
     private List<D> teasers = new ArrayList<D>();
-    private boolean rootError = false;
+    private CrawlerStatus status = NEW;
+    private ErrorCode error = E_NONE;
 
     private Map<String, Object> properties = new HashMap<String, Object>();
     protected Log log = new Log(CRAWLER);
@@ -147,6 +152,43 @@ public abstract class ContentCrawler<D extends ContentDetails>
     }
 
     /**
+     * Returns the status of the crawler.
+     */
+    public CrawlerStatus getStatus()
+    {
+        return status;
+    }
+
+    /**
+     * Sets the status of the crawler.
+     */
+    public void setStatus(CrawlerStatus status)
+    {
+        this.status = status;
+
+        if(status != ERROR)
+            setErrorCode(E_NONE);
+    }
+
+    /**
+     * Returns the error code of the crawler.
+     */
+    public ErrorCode getErrorCode()
+    {
+        return error;
+    }
+
+    /**
+     * Sets the error code of the crawler.
+     */
+    public void setErrorCode(ErrorCode error)
+    {
+        setStatus(ERROR);
+
+        this.error = error;
+    }
+
+    /**
      * Process the configured teasers.
      */
     public abstract int processTeasers(boolean cache) throws IOException;
@@ -179,22 +221,6 @@ public abstract class ContentCrawler<D extends ContentDetails>
      * Returns the processed content details from the given teaser.
      */
     public abstract D getDetails(D teaser) throws IOException;
-
-    /**
-     * Returns <CODE>true</CODE> if the root needs to be replaced following an error.
-     */
-    public boolean hasRootError()
-    {
-        return rootError;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the root needs to be replaced following an error.
-     */
-    public void setRootError(boolean rootError)
-    {
-        this.rootError = rootError;
-    }
 
     /**
      * Returns the maximum results of the crawler.

@@ -63,6 +63,7 @@ import com.opsmatters.media.model.logging.EventCategory;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.StringUtils;
 
+import static com.opsmatters.media.model.content.crawler.CrawlerStatus.*;
 import static com.opsmatters.media.model.content.crawler.field.ElementOutput.*;
 import static com.opsmatters.media.model.content.crawler.field.FieldProtocol.*;
 import static com.opsmatters.media.model.logging.EventType.*;
@@ -289,7 +290,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Loads the given page.
      */
-    protected void loadPage(String url, ContentRequest request) throws IOException
+    protected void loadPage(String url, ContentRequest request, EventCategory category) throws IOException
     {
         if(request.useWebcache())
             url = WEBCACHE_PREFIX+url;
@@ -302,7 +303,38 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
 
         logger.info("Loading page: "+url);
         driver.get(url);
-        logger.info("Loaded page: "+driver.getTitle());
+
+        String title = driver.getTitle();
+        if(isErrorPage(title))
+        {
+            setErrorCode(E_ERROR_PAGE);
+
+            String message = "Loaded error page: "+title;
+            logger.severe(message);
+
+            log.add(log.error(getErrorCode(), category)
+                .message(message)
+                .locate(this, config.getCode()));
+        }
+        else
+        {
+            logger.info("Loaded page: "+title);
+        }
+    }
+
+    /**
+     * Loads the given page.
+     */
+    private boolean isErrorPage(String title)
+    {
+        boolean ret = false;
+        if(title != null)
+        {
+            ret = title.startsWith("Error 404 (Not Found)")   // Google webcache
+                || title.startsWith("Human Verification");    // Cloudflare
+        }
+
+        return ret;
     }
 
     /**
@@ -318,7 +350,9 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
 
         initWebDriver(request);
         configureImplicitWait(loading);
-        loadPage(url, request);
+        loadPage(url, request, TEASER);
+        if(getErrorCode() == E_ERROR_PAGE)
+            return;
         configureExplicitWait(loading);
 
         // Click a "Load More" button if configured
@@ -361,7 +395,9 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         initWebDriver(request);
 
         configureImplicitWait(loading);
-        loadPage(url, request);
+        loadPage(url, request, ARTICLE);
+        if(getErrorCode() == E_ERROR_PAGE)
+            return;
         configureExplicitWait(loading);
 
         // Scroll the page if configured
@@ -523,6 +559,8 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     {
         int ret = 0;
 
+        setStatus(EXECUTING);
+
         ContentRequest request = page.getTeasers().getRequest();
         ContentLoading loading = page.getTeasers().getLoading();
         Map<String,String> map = new HashMap<String,String>();
@@ -530,7 +568,10 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         for(String url : request.getUrls())
         {
             if(url.length() == 0)
+            {
+                setErrorCode(E_MISSING_URL);
                 throw new IllegalArgumentException("Root empty for teasers");
+            }
 
             // Try to get the teasers from the cache
             List<ContentDetails> teasers = Teasers.getTeasers(config.getCode(), url);
@@ -568,50 +609,55 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                 if(lastUrl == null || !lastUrl.equals(url))
                     loadTeaserPage(url);
 
-                Document doc = Jsoup.parse(getPageSource("body", TEASER));
-                doc.outputSettings().prettyPrint(false);
-
-                // Process the teaser selections
-                int count = 0;
-                for(Fields fields : page.getTeasers().getFields())
+                if(getErrorCode() != E_ERROR_PAGE)
                 {
-                    Elements results = doc.select(fields.getRoot());
-                    if(debug())
-                        logger.info("Found "+results.size()+" teasers for selector: "+fields.getRoot());
-                    ret += results.size();
+                    Document doc = Jsoup.parse(getPageSource("body", TEASER));
+                    doc.outputSettings().prettyPrint(false);
 
-                    for(Element result : results)
+                    // Process the teaser selections
+                    int count = 0;
+                    for(Fields fields : page.getTeasers().getFields())
                     {
-                        // Trace to see the teaser root node
-                        if(trace(result))
-                            logger.info("teaser-node="+result.html());
+                        Elements results = doc.select(fields.getRoot());
+                        if(debug())
+                            logger.info("Found "+results.size()+" teasers for selector: "+fields.getRoot());
+                        ret += results.size();
 
-                        D teaser = getTeaser(result, fields);
-                        if(teaser.isValid() && !map.containsKey(teaser.getUniqueId()))
+                        for(Element result : results)
                         {
-                            // Check that the teaser matches the configured keywords
-                            if(loading != null && loading.hasKeywords() && !teaser.matches(loading.getKeywordList()))
+                            // Trace to see the teaser root node
+                            if(trace(result))
+                                logger.info("teaser-node="+result.html());
+
+                            D teaser = getTeaser(result, fields);
+                            if(teaser.isValid() && !map.containsKey(teaser.getUniqueId()))
                             {
-                                logger.info(String.format("Skipping article as it does not match keywords: %s (%s)",
-                                    teaser.getTitle(), loading.getKeywords()));
-                                continue;
+                                // Check that the teaser matches the configured keywords
+                                if(loading != null && loading.hasKeywords() && !teaser.matches(loading.getKeywordList()))
+                                {
+                                    logger.info(String.format("Skipping article as it does not match keywords: %s (%s)",
+                                        teaser.getTitle(), loading.getKeywords()));
+                                    continue;
+                                }
+
+                                addTeaser(teaser);
+                                map.put(teaser.getUniqueId(), teaser.getUniqueId());
+                                ++count;
                             }
 
-                            addTeaser(teaser);
-                            map.put(teaser.getUniqueId(), teaser.getUniqueId());
-                            ++count;
+                            if(count >= getMaxResults())
+                                break;
                         }
-
-                        if(count >= getMaxResults())
-                            break;
                     }
+
+                    if(cache)
+                        Teasers.set(url, getTeasers(), config, log.getEvents());
+
+                    if(debug())
+                        logger.info("Found "+numTeasers()+" teasers");
+
+                    setStatus(COMPLETED);
                 }
-
-                if(cache)
-                    Teasers.set(url, getTeasers(), config, log.getEvents());
-
-                if(debug())
-                    logger.info("Found "+numTeasers()+" teasers");
             }
         }
 

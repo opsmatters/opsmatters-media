@@ -111,7 +111,7 @@ public class PublicationCrawler extends WebPageCrawler<PublicationDetails>
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
         PublicationDetails content = new PublicationDetails(teaser);
-        List<Fields> articles = getPage().getArticles().getFields(hasRootError());
+        List<Fields> articles = getPage().getArticles().getFields(getErrorCode() == E_MISSING_ROOT);
 
         loadArticlePage(content.getUrl());
 
@@ -119,58 +119,67 @@ public class PublicationCrawler extends WebPageCrawler<PublicationDetails>
         if(trace(getDriver()))
             logger.info("article-page="+getPageSource(ARTICLE));
 
-        Element root = null;
-        Document doc = Jsoup.parse(getPageSource("body", ARTICLE));
-        doc.outputSettings().prettyPrint(false);
-
-        for(Fields fields : articles)
+        if(getErrorCode() != E_ERROR_PAGE)
         {
-            if(!fields.hasRoot())
-                throw new IllegalArgumentException("Root empty for publication article");
+            Element root = null;
+            Document doc = Jsoup.parse(getPageSource("body", ARTICLE));
+            doc.outputSettings().prettyPrint(false);
 
-            Elements elements = doc.select(fields.getRoot());
-            if(elements.size() > 0)
+            for(Fields fields : articles)
             {
-                root = elements.get(0);
-                if(debug())
-                    logger.info("Root found for publication article: "+fields.getRoot());
-                populateTeaserFields(root, fields, content, ARTICLE);
+                if(!fields.hasRoot())
+                {
+                    setErrorCode(E_EMPTY_ROOT);
+                    throw new IllegalArgumentException("Root empty for publication article");
+                }
+
+                Elements elements = doc.select(fields.getRoot());
+                if(elements.size() > 0)
+                {
+                    root = elements.get(0);
+                    if(debug())
+                        logger.info("Root found for publication article: "+fields.getRoot());
+                    populateTeaserFields(root, fields, content, ARTICLE);
+                }
+                else
+                {
+                    if(debug())
+                        logger.info("Root not found for publication article: "+fields.getRoot());
+                    log.info(ARTICLE, "Root not found for publication article: "+fields.getRoot());
+                    continue;
+                }
+
+                // Trace to see the article root node
+                if(trace(root))
+                    logger.info("publication-node="+root.html());
+
+                // Default the published date to today if not found
+                if(!fields.hasPublishedDate() && content.getPublishedDate() == null)
+                {
+                    content.setPublishedDate(TimeUtils.truncateTimeUTC());
+                    if(debug())
+                        logger.info("Defaulting published date: "+content.getPublishedDateAsString());
+                }
+
+                if(root != null && fields.hasBody())
+                {
+                    String body = getBody(fields.getBody(), root, ARTICLE, debug());
+                    if(body != null)
+                        content.setDescription(body);
+                }
+
+                if(root != null)
+                    break;
             }
-            else
+
+            if(root == null)
             {
-                if(debug())
-                    logger.info("Root not found for publication article: "+fields.getRoot());
-                log.info(ARTICLE, "Root not found for publication article: "+fields.getRoot());
-                continue;
+                setErrorCode(E_MISSING_ROOT);
+                throw new IllegalArgumentException("Root not found for publication article");
             }
 
-            // Trace to see the article root node
-            if(trace(root))
-                logger.info("publication-node="+root.html());
-
-            // Default the published date to today if not found
-            if(!fields.hasPublishedDate() && content.getPublishedDate() == null)
-            {
-                content.setPublishedDate(TimeUtils.truncateTimeUTC());
-                if(debug())
-                    logger.info("Defaulting published date: "+content.getPublishedDateAsString());
-            }
-
-            if(root != null && fields.hasBody())
-            {
-                String body = getBody(fields.getBody(), root, ARTICLE, debug());
-                if(body != null)
-                    content.setDescription(body);
-            }
-
-            if(root != null)
-                break;
+            Teasers.update(getPage().getTeasers().getUrls(), content);
         }
-
-        if(root == null)
-            throw new IllegalArgumentException("Root not found for publication article");
-
-        Teasers.update(getPage().getTeasers().getUrls(), content);
 
         return content;
     }

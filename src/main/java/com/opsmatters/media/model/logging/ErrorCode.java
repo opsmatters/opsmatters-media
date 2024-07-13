@@ -24,10 +24,13 @@ package com.opsmatters.media.model.logging;
 public enum ErrorCode
 {
     // Maximum 20 characters
+    E_NONE,
     E_EXCEPTION,
-    E_PAGE_ERROR,
+    E_ERROR_PAGE,
     E_PARSE_DATE,
+    E_EMPTY_ROOT,
     E_MISSING_SOURCE,
+    E_MISSING_ROOT,
     E_MISSING_BODY,
     E_MISSING_SUMMARY,
     E_MISSING_ANCHOR,
