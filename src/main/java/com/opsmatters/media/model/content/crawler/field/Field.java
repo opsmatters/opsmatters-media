@@ -37,6 +37,7 @@ public class Field implements ConfigElement
     private FieldCase textCase = FieldCase.NONE;
     private List<String> datePatterns;
     private List<FieldFilter> filters;
+    private List<FieldCondition> conditions;
     private String basePath = "";
     private boolean removeParameters = true;
     private boolean trailingSlash = false;
@@ -91,6 +92,12 @@ public class Field implements ConfigElement
             {
                 for(FieldFilter filter : obj.getFilters())
                     addFilter(new FieldFilter(filter));
+            }
+
+            if(obj.getConditions() != null)
+            {
+                for(FieldCondition condition : obj.getConditions())
+                    addCondition(new FieldCondition(condition));
             }
 
             if(obj.getDatePatterns() != null)
@@ -292,6 +299,32 @@ public class Field implements ConfigElement
     }
 
     /**
+     * Returns the conditions for this configuration.
+     */
+    public List<FieldCondition> getConditions()
+    {
+        return conditions;
+    }
+
+    /**
+     * Adds a condition for this configuration.
+     */
+    public void addCondition(FieldCondition condition)
+    {
+        if(conditions == null)
+            conditions = new ArrayList<FieldCondition>(2);
+        conditions.add(condition);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if there are conditions for this configuration.
+     */
+    public boolean hasConditions()
+    {
+        return conditions != null && conditions.size() > 0;
+    }
+
+    /**
      * Returns the base path for this configuration.
      */
     public String getBasePath()
@@ -403,6 +436,19 @@ public class Field implements ConfigElement
     }
 
     /**
+     * Add a condition object for the given selector.
+     */
+    private void addCondition(Object value)
+    {
+        FieldCondition.Builder builder = FieldCondition.builder();
+        if(value instanceof String)
+            builder = builder.expr((String)value);
+        else if(value instanceof Map)
+            builder = builder.parse((Map<String,Object>)value);
+        addCondition(builder.build());
+    }
+
+    /**
      * Returns a builder for the configuration.
      * @param name The name for the configuration
      * @return The builder instance.
@@ -427,6 +473,8 @@ public class Field implements ConfigElement
         private static final String DATE_PATTERNS = "date-patterns";
         private static final String FILTER = "filter";
         private static final String FILTERS = "filters";
+        private static final String CONDITION = "condition";
+        private static final String CONDITIONS = "conditions";
         private static final String BASE_PATH = "base-path";
         private static final String REMOVE_PARAMETERS = "remove-parameters";
         private static final String TRAILING_SLASH = "trailing-slash";
@@ -510,6 +558,18 @@ public class Field implements ConfigElement
                 List<Object> values = (List<Object>)map.get(FILTERS);
                 for(Object value : values)
                     ret.addFilter(value);
+            }
+
+            if(map.containsKey(CONDITION))
+            {
+                ret.addCondition(map.get(CONDITION));
+            }
+
+            if(map.containsKey(CONDITIONS))
+            {
+                List<Object> values = (List<Object>)map.get(CONDITIONS);
+                for(Object value : values)
+                    ret.addCondition(value);
             }
 
             return this;

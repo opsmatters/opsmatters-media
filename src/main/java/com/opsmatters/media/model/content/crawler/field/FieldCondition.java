@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Gerald Curley
+ * Copyright 2024 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,29 +21,30 @@ import java.util.regex.Pattern;
 import com.opsmatters.media.model.ConfigElement;
 import com.opsmatters.media.model.ConfigParser;
 
+import static com.opsmatters.media.model.content.crawler.field.ConditionAction.*;
+
 /**
- * Class representing a field filter.
+ * Class representing a field condition.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class FieldFilter implements ConfigElement
+public class FieldCondition implements ConfigElement
 {
     private String expr = null;
     private Pattern pattern;
-    private FilterScope scope = FilterScope.ALL;
-    private boolean stop = false;
+    private ConditionAction action = ConditionAction.ACCEPT;
 
     /**
      * Default constructor.
      */
-    public FieldFilter()
+    public FieldCondition()
     {
     }
 
     /**
      * Constructor that takes an expression.
      */
-    public FieldFilter(String expr)
+    public FieldCondition(String expr)
     {
         setExpr(expr);
     }
@@ -51,7 +52,7 @@ public class FieldFilter implements ConfigElement
     /**
      * Copy constructor.
      */
-    public FieldFilter(FieldFilter obj)
+    public FieldCondition(FieldCondition obj)
     {
         copyAttributes(obj);
     }
@@ -59,13 +60,12 @@ public class FieldFilter implements ConfigElement
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(FieldFilter obj)
+    public void copyAttributes(FieldCondition obj)
     {
         if(obj != null)
         {
             setExpr(obj.getExpr());
-            setScope(obj.getScope());
-            setStop(obj.isStop());
+            setAction(obj.getAction());
         }
     }
 
@@ -78,7 +78,7 @@ public class FieldFilter implements ConfigElement
     }
 
     /**
-     * Returns the regular expression for this filter.
+     * Returns the regular expression for this condition.
      */
     public String getExpr()
     {
@@ -94,7 +94,7 @@ public class FieldFilter implements ConfigElement
     }
 
     /**
-     * Sets the regular expression for this filter.
+     * Sets the regular expression for this condition.
      */
     public void setExpr(String expr)
     {
@@ -119,81 +119,64 @@ public class FieldFilter implements ConfigElement
     }
 
     /**
-     * Returns the scope for this filter.
+     * Returns the action for this condition.
      */
-    public FilterScope getScope()
+    public ConditionAction getAction()
     {
-        return scope;
+        return action;
     }
 
     /**
-     * Sets the scope for this filter.
+     * Sets the action for this condition.
      */
-    public void setScope(FilterScope scope)
+    public void setAction(ConditionAction action)
     {
-        this.scope = scope;
+        this.action = action;
     }
 
     /**
-     * Sets the scope for this filter.
+     * Sets the action for this condition.
      */
-    public void setScope(String scope)
+    public void setAction(String action)
     {
-        setScope(FilterScope.valueOf(scope));
+        setAction(ConditionAction.valueOf(action));
     }
 
     /**
-     * Returns <CODE>true</CODE> if the scope has been set.
+     * Returns <CODE>true</CODE> if the action has been set.
      */
-    public boolean hasScope()
+    public boolean hasAction()
     {
-        return scope != null;
+        return action != null;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given scope is within the scope of this filter.
+     * Returns <CODE>true</CODE> if the conditions match the given string.
      */
-    public boolean applies(FilterScope scope)
+    public static boolean accept(List<FieldCondition> conditions, String str)
     {
         boolean ret = false;
-        if(this.scope == FilterScope.ALL)
-            ret = true;
-        else
-            ret = this.scope == scope;
-        return ret;
-    }
 
-    /**
-     * Returns <CODE>true</CODE> if the filter should stop on a match.
-     */
-    public boolean isStop()
-    {
-        return stop;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the filter should stop on a match.
-     */
-    public void setStop(boolean stop)
-    {
-        this.stop = stop;
-    }
-
-    /**
-     * Returns the result of applying the filters to the given text.
-     */
-    public static FilterResult apply(List<FieldFilter> filters, String text, FilterScope scope)
-    {
-        FilterResult ret = FilterResult.NONE;
-
-        if(filters != null)
+        if(conditions != null)
         {
-            for(FieldFilter filter : filters)
+            for(FieldCondition condition : conditions)
             {
-                if(filter.applies(scope) && filter.hasExpr())
+                if(condition.hasExpr())
                 {
-                    if(filter.matches(text) && ret != FilterResult.STOP)
-                        ret = filter.isStop() ? FilterResult.STOP : FilterResult.SKIP;
+                    boolean matches = condition.matches(str);
+                    if(matches)
+                    {
+                        if(condition.getAction() == ACCEPT)
+                        {
+                            ret = true;
+                            break;
+                        }
+                        else if(condition.getAction() == REJECT)
+                        {
+                            ret = false;
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -213,14 +196,13 @@ public class FieldFilter implements ConfigElement
     /**
      * Builder to make configuration construction easier.
      */
-    public static class Builder implements ConfigParser<FieldFilter>
+    public static class Builder implements ConfigParser<FieldCondition>
     {
         // The config attribute names
         private static final String EXPR = "expr";
-        private static final String SCOPE = "scope";
-        private static final String STOP = "stop";
+        private static final String ACTION = "action";
 
-        private FieldFilter ret = new FieldFilter();
+        private FieldCondition ret = new FieldCondition();
 
         /**
          * Parse the configuration using the given attribute map.
@@ -232,17 +214,15 @@ public class FieldFilter implements ConfigElement
         {
             if(map.containsKey(EXPR))
                 ret.setExpr((String)map.get(EXPR));
-            if(map.containsKey(SCOPE))
-                ret.setScope((String)map.get(SCOPE));
-            if(map.containsKey(STOP))
-                ret.setStop((Boolean)map.get(STOP));
+            if(map.containsKey(ACTION))
+                ret.setAction((String)map.get(ACTION));
 
             return this;
         }
 
         /**
-         * Sets the expression of the filter.
-         * @param expr The expression of the filter
+         * Sets the expression of the condition.
+         * @param expr The expression of the condition
          * @return This object
          */
         public Builder expr(String expr)
@@ -255,7 +235,7 @@ public class FieldFilter implements ConfigElement
          * Returns the configured configuration instance
          * @return The configuration instance
          */
-        public FieldFilter build()
+        public FieldCondition build()
         {
             return ret;
         }

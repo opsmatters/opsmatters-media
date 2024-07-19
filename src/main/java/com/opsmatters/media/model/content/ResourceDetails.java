@@ -80,6 +80,14 @@ public class ResourceDetails extends ContentDetails implements LinkedContent
     }
 
     /**
+     * Returns <CODE>true</CODE> if the resource description has been set.
+     */
+    public boolean hasDescription()
+    {
+        return description != null && description.length() > 0;
+    }
+
+    /**
      * Returns the resource url.
      */
     public String getUrl()

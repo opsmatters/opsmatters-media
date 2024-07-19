@@ -202,7 +202,7 @@ public class EventCrawler extends WebPageCrawler<EventDetails>
                                 .message(String.format("Unparseable %s start time: %s",
                                     ARTICLE.tag(), start))
                                 .exception(e)
-                                .locate(this, config.getCode()));
+                                .locate(this, config.getCode(), getPage().getName()));
                         }
                     }
                 }
@@ -310,7 +310,7 @@ public class EventCrawler extends WebPageCrawler<EventDetails>
                         .message(String.format("Unparseable %s start date: %s",
                             category.tag(), startDate))
                         .exception(e)
-                        .locate(this, config.getCode()));
+                        .locate(this, config.getCode(), getPage().getName()));
                 }
             }
         }

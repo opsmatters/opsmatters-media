@@ -32,7 +32,8 @@ import static com.opsmatters.media.model.logging.LogErrorProperty.*;
 public class LogError extends LogEvent
 {
     private ErrorCode code;
-    private String source = "";
+    private String entityCode = "";
+    private String entityName = "";
     private String organisation = "";
     private String location = "";
     private String exception = "";
@@ -79,7 +80,8 @@ public class LogError extends LogEvent
         {
             super.copyAttributes(obj);
             setCode(obj.getCode());
-            setSource(obj.getSource());
+            setEntityCode(obj.getEntityCode());
+            setEntityName(obj.getEntityName());
             setOrganisation(obj.getOrganisation());
             setLocation(obj.getLocation());
             setException(obj.getException());
@@ -153,33 +155,33 @@ public class LogError extends LogEvent
     }
 
     /**
-     * Returns the source of the error.
-     * @return The source of the error
+     * Returns the code of the entity with the error.
+     * @return The code of the entity with the error
      */
-    public String getSource()
+    public String getEntityCode()
     {
-        return source;
+        return entityCode;
     }
 
     /**
-     * Sets the source of the error.
-     * @param source The source of the error
+     * Sets the code of the entity with the error.
+     * @param entityCode The code of the entity with the error
      */
-    public void setSource(String source)
+    public void setEntityCode(String entityCode)
     {
-        this.source = source;
+        this.entityCode = entityCode;
 
-        Organisation organisation = Organisations.get(source);
+        Organisation organisation = Organisations.get(entityCode);
         setOrganisation(organisation != null ? organisation.getName() : "");
     }
 
     /**
-     * Returns <CODE>true</CODE> if the source of the error has been set.
-     * @return <CODE>true</CODE> if the source of the error has been set
+     * Returns <CODE>true</CODE> if the code of the entity has been set.
+     * @return <CODE>true</CODE> if the code of the entity has been set
      */
-    public boolean hasSource()
+    public boolean hasEntityCode()
     {
-        return source != null && source.length() > 0;
+        return entityCode != null && entityCode.length() > 0;
     }
 
     /**
@@ -207,6 +209,33 @@ public class LogError extends LogEvent
     }
 
     /**
+     * Returns the name of the entity with the error.
+     * @return The name of the entity with the error
+     */
+    public String getEntityName()
+    {
+        return entityName;
+    }
+
+    /**
+     * Sets the name of the entity with the error.
+     * @param name The name of the entity with the error
+     */
+    public void setEntityName(String entityName)
+    {
+        this.entityName = entityName;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the name of the entity has been set.
+     * @return <CODE>true</CODE> if the name of the entity has been set
+     */
+    public boolean hasEntityName()
+    {
+        return entityName != null && entityName.length() > 0;
+    }
+
+    /**
      * Returns the location of the error.
      * @return The location of the error
      */
@@ -217,7 +246,7 @@ public class LogError extends LogEvent
 
     /**
      * Sets the location of the error.
-     * @param source The location of the error
+     * @param location The location of the error
      */
     public void setLocation(String location)
     {
@@ -225,8 +254,8 @@ public class LogError extends LogEvent
     }
 
     /**
-     * Sets the location of the error.
-     * @param source The location of the error
+     * Sets the location class of the error.
+     * @param clazz The location class of the error
      */
     public void setLocation(Class clazz)
     {
@@ -375,15 +404,17 @@ public class LogError extends LogEvent
         }
 
         /**
-         * Sets the location and source for the error.
+         * Sets the location and entity for the error.
          * @param obj The object with the error
-         * @param source The code of the entity with the error
+         * @param code The code of the entity with the error
+         * @name name The name of the entity with the entity
          * @return This object
          */
-        public Builder locate(Object obj, String source)
+        public Builder locate(Object obj, String code, String name)
         {
             error.setLocation(obj.getClass());
-            error.setSource(source);
+            error.setEntityCode(code);
+            error.setEntityName(name);
             return this;
         }
 

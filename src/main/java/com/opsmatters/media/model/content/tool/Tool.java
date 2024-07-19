@@ -219,10 +219,22 @@ public class Tool extends Resource<ToolDetails>
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getField(PUBLISHED_DATE)));
 
-        BodyParser parser = new BodyParser(getDescription(), debug);
-        if(parser.converted())
-            setDescription(parser.formatBody());
-        setSummary(parser.formatSummary(config.getSummary()));
+        formatSummary(config, false, debug);
+    }
+
+    /**
+     * Format the tool body and summary.
+     */
+    public void formatSummary(ToolConfig config, boolean force, boolean debug)
+    {
+        if(hasDescription())
+        {
+            BodyParser parser = new BodyParser(getDescription(), debug);
+            if(parser.converted())
+                setDescription(parser.formatBody());
+            if(getSummary().length() == 0 || force)
+                setSummary(parser.formatSummary(config.getSummary()));
+        }
     }
 
     /**

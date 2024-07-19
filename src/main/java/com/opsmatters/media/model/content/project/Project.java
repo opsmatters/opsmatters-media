@@ -216,11 +216,22 @@ public class Project extends Resource<ProjectDetails>
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getField(PUBLISHED_DATE)));
 
-        BodyParser parser = new BodyParser(getDescription(), debug);
-        if(parser.converted())
-            setDescription(parser.formatBody());
-        if(getSummary().length() == 0)
-            setSummary(parser.formatSummary(config.getSummary()));
+        formatSummary(config, false, debug);
+    }
+
+    /**
+     * Format the project body and summary.
+     */
+    public void formatSummary(ProjectConfig config, boolean force, boolean debug)
+    {
+        if(hasDescription())
+        {
+            BodyParser parser = new BodyParser(getDescription(), debug);
+            if(parser.converted())
+                setDescription(parser.formatBody());
+            if(getSummary().length() == 0 || force)
+                setSummary(parser.formatSummary(config.getSummary()));
+        }
     }
 
     /**

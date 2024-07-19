@@ -100,19 +100,35 @@ public class LogErrorItem extends LogEventItem<LogError>
     }
 
     /**
-     * Returns the error source.
+     * Returns the error entity code.
      */
-    public String getSource()
+    public String getEntityCode()
     {
-        return content.getSource();
+        return content.getEntityCode();
     }
 
     /**
-     * Sets the error source.
+     * Sets the error entity code.
      */
-    public void setSource(String source)
+    public void setEntityCode(String entityCode)
     {
-        content.setSource(source);
+        content.setEntityCode(entityCode);
+    }
+
+    /**
+     * Returns the error entity name.
+     */
+    public String getEntityName()
+    {
+        return content.getEntityName();
+    }
+
+    /**
+     * Sets the error entity name.
+     */
+    public void setEntityName(String entityName)
+    {
+        content.setEntityName(entityName);
     }
 
     /**

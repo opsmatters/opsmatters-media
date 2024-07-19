@@ -15,6 +15,7 @@
  */
 package com.opsmatters.media.model.content.video;
 
+import java.util.List;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
@@ -27,6 +28,7 @@ import com.opsmatters.media.model.content.Article;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
+import com.opsmatters.media.model.content.crawler.field.FieldFilter;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
 
@@ -252,10 +254,7 @@ public class Video extends Article<VideoDetails>
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getField(PUBLISHED_DATE)));
 
-        BodyParser parser = new BodyParser(getDescription(), channel.getArticles().getFilters(), debug);
-        if(parser.converted())
-            setDescription(parser.formatBody());
-        setSummary(parser.formatSummary(config.getSummary()));
+        formatSummary(config, channel.getArticles().getFilters(), false, debug);
 
         // Attempt to guess the video type from the text
         String[] texts = new String[] { getTitle(), getDescription() };
@@ -302,6 +301,21 @@ public class Video extends Article<VideoDetails>
             setChannelId(new String(obj.getChannelId()));
             setChannelTitle(new String(obj.getChannelTitle()));
             setConfigured(true);
+        }
+    }
+
+    /**
+     * Format the video body and summary.
+     */
+    public void formatSummary(VideoConfig config, List<FieldFilter> filters, boolean force, boolean debug)
+    {
+        if(hasDescription())
+        {
+            BodyParser parser = new BodyParser(getDescription(), filters, debug);
+            if(parser.converted())
+                setDescription(parser.formatBody());
+            if(getSummary().length() == 0 || force)
+                setSummary(parser.formatSummary(config.getSummary()));
         }
     }
 

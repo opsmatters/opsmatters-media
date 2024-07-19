@@ -235,7 +235,7 @@ public class PublicationCrawler extends WebPageCrawler<PublicationDetails>
                         .message(String.format("Unparseable %s published date: %s",
                             category.tag(), publishedDate))
                         .exception(e)
-                        .locate(this, config.getCode()));
+                        .locate(this, config.getCode(), getPage().getName()));
                 }
             }
         }

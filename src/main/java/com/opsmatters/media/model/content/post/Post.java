@@ -19,6 +19,7 @@ import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.cache.content.util.ContentImages;
+import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
@@ -264,6 +265,8 @@ public class Post extends Article<PostDetails>
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getField(PUBLISHED_DATE)));
 
+        formatSummary(config, false, debug);
+
         PostType guessed = PostType.guess(getTagsList());
         if(guessed != null)
             setPostType(guessed);
@@ -319,6 +322,21 @@ public class Post extends Article<PostDetails>
             setTeaserDetails(obj);
             setDescription(new String(obj.getDescription() != null ? obj.getDescription() : ""));
             setConfigured(true);
+        }
+    }
+
+    /**
+     * Format the post body and summary.
+     */
+    public void formatSummary(PostConfig config, boolean force, boolean debug)
+    {
+        if(hasDescription())
+        {
+            BodyParser parser = new BodyParser(getDescription(), debug);
+            if(parser.converted())
+                setDescription(parser.formatBody());
+            if(getSummary().length() == 0 || force)
+                setSummary(parser.formatSummary(config.getSummary()));
         }
     }
 

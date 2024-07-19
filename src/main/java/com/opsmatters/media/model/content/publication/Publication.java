@@ -28,6 +28,7 @@ import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.LinkText;
 import com.opsmatters.media.model.content.ContentSettings;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
+import com.opsmatters.media.model.content.crawler.field.FieldFilter;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
@@ -254,10 +255,7 @@ public class Publication extends Resource<PublicationDetails>
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getField(PUBLISHED_DATE)));
 
-        BodyParser parser = new BodyParser(getDescription(), page.getArticles().getFilters(), debug);
-        if(parser.converted())
-            setDescription(parser.formatBody());
-        setSummary(parser.formatSummary(config.getSummary()));
+        formatSummary(config, page.getArticles().getFilters(), false, debug);
 
         // Attempt to guess the publication type from the text
         String[] texts = new String[] { getTitle(), getDescription(), getUrl() };
@@ -295,6 +293,21 @@ public class Publication extends Resource<PublicationDetails>
         {
             setTeaserDetails(obj);
             setConfigured(true);
+        }
+    }
+
+    /**
+     * Format the publication body and summary.
+     */
+    public void formatSummary(PublicationConfig config, List<FieldFilter> filters, boolean force, boolean debug)
+    {
+        if(hasDescription())
+        {
+            BodyParser parser = new BodyParser(getDescription(), filters, debug);
+            if(parser.converted())
+                setDescription(parser.formatBody());
+            if(getSummary().length() == 0 || force)
+                setSummary(parser.formatSummary(config.getSummary()));
         }
     }
 

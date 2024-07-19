@@ -229,14 +229,26 @@ public class Job extends Resource<JobDetails>
     {
         setPublishedDateAsString(getPublishedDateAsString(config.getField(PUBLISHED_DATE)));
 
-        BodyParser parser = new BodyParser(getDescription(), debug);
-        if(parser.converted())
-            setDescription(parser.formatBody());
-        setSummary(parser.formatSummary(config.getSummary()));
+        formatSummary(config, false, debug);
 
         // Use the default location if a job location wasn't found
         if(config.hasField(LOCATION) && getLocation().length() == 0)
             setLocation(config.getField(LOCATION));
+    }
+
+    /**
+     * Format the job body and summary.
+     */
+    public void formatSummary(JobConfig config, boolean force, boolean debug)
+    {
+        if(hasDescription())
+        {
+            BodyParser parser = new BodyParser(getDescription(), debug);
+            if(parser.converted())
+                setDescription(parser.formatBody());
+            if(getSummary().length() == 0 || force)
+                setSummary(parser.formatSummary(config.getSummary()));
+        }
     }
 
     /**

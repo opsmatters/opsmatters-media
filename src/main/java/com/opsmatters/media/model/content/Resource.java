@@ -158,6 +158,14 @@ public abstract class Resource<D extends ResourceDetails> extends Content<D> imp
     }
 
     /**
+     * Returns <CODE>true</CODE> if the resource description has been set.
+     */
+    public boolean hasDescription()
+    {
+        return getDetails().hasDescription();
+    }
+
+    /**
      * Returns the URL of the resource.
      */
     public String getUrl()

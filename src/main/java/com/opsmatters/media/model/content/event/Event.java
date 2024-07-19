@@ -15,6 +15,7 @@
  */
 package com.opsmatters.media.model.content.event;
 
+import java.util.List;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -27,6 +28,7 @@ import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.Resource;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
+import com.opsmatters.media.model.content.crawler.field.FieldFilter;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
@@ -246,10 +248,7 @@ public class Event extends Resource<EventDetails>
         if(!getTitle().startsWith(config.getName()))
             setTitle(String.format("%s: %s", config.getName(), getTitle()));
 
-        BodyParser parser = new BodyParser(getDescription(), page.getArticles().getFilters(), debug);
-        if(parser.converted())
-            setDescription(parser.formatBody());
-        setSummary(parser.formatSummary(config.getSummary()));
+        formatSummary(config, page.getArticles().getFilters(), false, debug);
 
         // Use the default timezone if an event timezone wasn't found
         if(config.hasField(TIMEZONE) && getTimeZone().length() == 0)
@@ -297,6 +296,21 @@ public class Event extends Resource<EventDetails>
             setTimeZone(new String(obj.getTimeZone() != null ? obj.getTimeZone() : ""));
             setLocation(new String(obj.getLocation() != null ? obj.getLocation() : ""));
             setConfigured(true);
+        }
+    }
+
+    /**
+     * Format the event body and summary.
+     */
+    public void formatSummary(EventConfig config, List<FieldFilter> filters, boolean force, boolean debug)
+    {
+        if(hasDescription())
+        {
+            BodyParser parser = new BodyParser(getDescription(), filters, debug);
+            if(parser.converted())
+                setDescription(parser.formatBody());
+            if(getSummary().length() == 0 || force)
+                setSummary(parser.formatSummary(config.getSummary()));
         }
     }
 
