@@ -24,7 +24,7 @@ import java.util.ArrayList;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum EventLevel
+public enum LogEventLevel
 {
     ERROR("Error", 2, "glyphicon-exclamation-sign", "level-error"),
     WARN("Warn", 1, "glyphicon-warning-sign", "level-warn"),
@@ -43,7 +43,7 @@ public enum EventLevel
      * @param icon The glyphicon for the level
      * @param css The css class for the level
      */
-    EventLevel(String value, int precedence, String icon, String css)
+    LogEventLevel(String value, int precedence, String icon, String css)
     {
         this.value = value;
         this.precedence = precedence;
@@ -101,10 +101,10 @@ public enum EventLevel
      * @param value The level value
      * @return The level for the given value
      */
-    public static EventLevel fromValue(String value)
+    public static LogEventLevel fromValue(String value)
     {
-        EventLevel[] levels = values();
-        for(EventLevel level : levels)
+        LogEventLevel[] levels = values();
+        for(LogEventLevel level : levels)
         {
             if(level.value().equals(value))
                 return level;
@@ -126,9 +126,9 @@ public enum EventLevel
     /**
      * Returns a list of the event levels.
      */
-    public static List<EventLevel> toList()
+    public static List<LogEventLevel> toList()
     {
-        List<EventLevel> ret = new ArrayList<EventLevel>();
+        List<LogEventLevel> ret = new ArrayList<LogEventLevel>();
 
         ret.add(ERROR);
         ret.add(WARN);

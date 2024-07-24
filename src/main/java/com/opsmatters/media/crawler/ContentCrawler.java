@@ -41,11 +41,11 @@ import com.opsmatters.media.model.content.crawler.field.FieldCase;
 import com.opsmatters.media.model.content.crawler.field.FieldExtractor;
 import com.opsmatters.media.model.logging.Log;
 import com.opsmatters.media.model.logging.LogEvent;
-import com.opsmatters.media.model.logging.EventCategory;
+import com.opsmatters.media.model.logging.LogEventCategory;
 import com.opsmatters.media.model.logging.ErrorCode;
 
 import static com.opsmatters.media.model.content.crawler.CrawlerStatus.*;
-import static com.opsmatters.media.model.logging.EventType.*;
+import static com.opsmatters.media.model.logging.LogEventType.*;
 import static com.opsmatters.media.model.logging.ErrorCode.*;
 
 /**
@@ -296,7 +296,7 @@ public abstract class ContentCrawler<D extends ContentDetails>
     /**
      * Apply the configured regular expression to the given field value.
      */
-    public String getValue(Field field, String value, EventCategory category)
+    public String getValue(Field field, String value, LogEventCategory category)
     {
         return getValue(field, value, value, category);
     }
@@ -304,7 +304,7 @@ public abstract class ContentCrawler<D extends ContentDetails>
     /**
      * Apply the configured regular expression to the given field value.
      */
-    public String getValue(Field field, String value, String dflt, EventCategory category)
+    public String getValue(Field field, String value, String dflt, LogEventCategory category)
     {
         // Remove special characters before processing
         value = processValue(value);

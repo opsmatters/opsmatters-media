@@ -20,6 +20,10 @@ import java.time.Instant;
 import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.ContentConfig;
+import com.opsmatters.media.model.content.crawler.CrawlerTarget;
+import com.opsmatters.media.model.monitor.ContentMonitor;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.logging.LogErrorProperty.*;
@@ -33,12 +37,15 @@ public class LogError extends LogEvent
 {
     private ErrorCode code;
     private String entityCode = "";
+    private String entityType = "";
     private String entityName = "";
-    private String organisation = "";
     private String location = "";
     private String exception = "";
     private String stacktrace = "";
     private ErrorStatus status;
+
+    private String organisation = "";
+    private ContentType contentType = null;
 
     /**
      * Default constructor.
@@ -54,7 +61,7 @@ public class LogError extends LogEvent
      * @param category The category of the error
      * @param level The level of the error
      */
-    public LogError(ErrorCode code, EventType type, EventCategory category, EventLevel level)
+    public LogError(ErrorCode code, LogEventType type, LogEventCategory category, LogEventLevel level)
     {
         init();
         setCode(code);
@@ -81,6 +88,7 @@ public class LogError extends LogEvent
             super.copyAttributes(obj);
             setCode(obj.getCode());
             setEntityCode(obj.getEntityCode());
+            setEntityType(obj.getEntityType());
             setEntityName(obj.getEntityName());
             setOrganisation(obj.getOrganisation());
             setLocation(obj.getLocation());
@@ -97,7 +105,7 @@ public class LogError extends LogEvent
     protected void init()
     {
         super.init();
-        setLevel(EventLevel.ERROR);
+        setLevel(LogEventLevel.ERROR);
         setStatus(ErrorStatus.NEW);
     }
 
@@ -209,6 +217,65 @@ public class LogError extends LogEvent
     }
 
     /**
+     * Returns the type of the entity with the error.
+     * @return The type of the entity with the error
+     */
+    public String getEntityType()
+    {
+        return entityType;
+    }
+
+    /**
+     * Sets the type of the entity with the error.
+     * @param entityType The type of the entity with the error
+     */
+    public void setEntityType(String entityType)
+    {
+        this.entityType = entityType;
+
+        try
+        {
+            setContentType(ContentType.valueOf(entityType));
+        }
+        catch(IllegalArgumentException e)
+        {
+        }
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the type of the entity has been set.
+     * @return <CODE>true</CODE> if the type of the entity has been set
+     */
+    public boolean hasEntityType()
+    {
+        return entityType != null && entityType.length() > 0;
+    }
+
+    /**
+     * Returns the error content type.
+     */
+    public ContentType getContentType()
+    {
+        return contentType;
+    }
+
+    /**
+     * Sets the error content type.
+     */
+    public void setContentType(ContentType contentType)
+    {
+        this.contentType = contentType;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the error content type has been set.
+     */
+    public boolean hasContentType()
+    {
+        return contentType != null;
+    }
+
+    /**
      * Returns the name of the entity with the error.
      * @return The name of the entity with the error
      */
@@ -219,7 +286,7 @@ public class LogError extends LogEvent
 
     /**
      * Sets the name of the entity with the error.
-     * @param name The name of the entity with the error
+     * @param entityName The name of the entity with the error
      */
     public void setEntityName(String entityName)
     {
@@ -357,7 +424,7 @@ public class LogError extends LogEvent
      * @param level The level of the error
      * @return The builder instance.
      */
-    public static Builder builder(ErrorCode code, EventType type, EventCategory category, EventLevel level)
+    public static Builder builder(ErrorCode code, LogEventType type, LogEventCategory category, LogEventLevel level)
     {
         return new Builder(code, type, category, level);
     }
@@ -376,7 +443,7 @@ public class LogError extends LogEvent
          * @param category The category of the error
          * @param level The level of the error
          */
-        public Builder(ErrorCode code, EventType type, EventCategory category, EventLevel level)
+        public Builder(ErrorCode code, LogEventType type, LogEventCategory category, LogEventLevel level)
         {
             error = new LogError(code, type, category, level);
         }
@@ -404,17 +471,51 @@ public class LogError extends LogEvent
         }
 
         /**
-         * Sets the location and entity for the error.
+         * Sets the location of the error.
          * @param obj The object with the error
-         * @param code The code of the entity with the error
-         * @name name The name of the entity with the entity
          * @return This object
          */
-        public Builder locate(Object obj, String code, String name)
+        public Builder location(Object obj)
         {
             error.setLocation(obj.getClass());
+            return this;
+        }
+
+        /**
+         * Sets the entity for the error.
+         * @param code The code of the entity with the error
+         * @param type The type of the entity with the entity
+         * @param name The name of the entity with the entity
+         * @return This object
+         */
+        public Builder entity(String code, String type, String name)
+        {
             error.setEntityCode(code);
+            error.setEntityType(type);
             error.setEntityName(name);
+            return this;
+        }
+
+        /**
+         * Sets the entity for the error.
+         * @param monitor The monitor with the error
+         * @return This object
+         */
+        public Builder entity(ContentMonitor monitor)
+        {
+            entity(monitor.getCode(), monitor.getContentType().name(), monitor.getName());
+            return this;
+        }
+
+        /**
+         * Sets the entity for the error.
+         * @param config The config with the error
+         * @param target The target with the error
+         * @return This object
+         */
+        public Builder entity(ContentConfig config, CrawlerTarget target)
+        {
+            entity(config.getCode(), config.getType().name(), target.getName());
             return this;
         }
 

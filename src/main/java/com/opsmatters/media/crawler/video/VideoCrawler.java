@@ -43,7 +43,7 @@ import com.opsmatters.media.client.video.VideoClientFactory;
 import static com.opsmatters.media.model.content.crawler.field.FilterScope.*;
 import static com.opsmatters.media.model.content.crawler.field.FilterResult.*;
 import static com.opsmatters.media.model.content.FieldName.*;
-import static com.opsmatters.media.model.logging.EventCategory.*;
+import static com.opsmatters.media.model.logging.LogEventCategory.*;
 import static com.opsmatters.media.model.logging.ErrorCode.*;
 
 /**

@@ -19,7 +19,7 @@ package com.opsmatters.media.model.logging;
 import java.util.List;
 import java.util.ArrayList;
 
-import static com.opsmatters.media.model.logging.EventLevel.*;
+import static com.opsmatters.media.model.logging.LogEventLevel.*;
 
 /**
  * Defines a set of log events.
@@ -28,13 +28,13 @@ import static com.opsmatters.media.model.logging.EventLevel.*;
  */
 public class Log
 {
-    private EventType type;   
+    private LogEventType type;   
     private List<LogEvent> events = new ArrayList<LogEvent>();
 
     /**
      * Default constructor.
      */
-    public Log(EventType type)
+    public Log(LogEventType type)
     {
         setType(type);
     }
@@ -43,7 +43,7 @@ public class Log
      * Returns the type of the log.
      * @return The type of the log
      */
-    public EventType getType()
+    public LogEventType getType()
     {
         return type;
     }
@@ -52,7 +52,7 @@ public class Log
      * Sets the type of the log.
      * @param type The type of the log
      */
-    public void setType(EventType type)
+    public void setType(LogEventType type)
     {
         this.type = type;
     }
@@ -84,7 +84,7 @@ public class Log
     /**
      * Appends an event.
      */
-    public void add(EventCategory category, EventLevel level, String message)
+    public void add(LogEventCategory category, LogEventLevel level, String message)
     {
         add(new LogEvent(type, category, level, message));
     }
@@ -92,7 +92,7 @@ public class Log
     /**
      * Appends a DEBUG event.
      */
-    public void debug(EventCategory category, String message)
+    public void debug(LogEventCategory category, String message)
     {
         add(category, DEBUG, message);
     }
@@ -100,7 +100,7 @@ public class Log
     /**
      * Appends an INFO event.
      */
-    public void info(EventCategory category, String message)
+    public void info(LogEventCategory category, String message)
     {
         add(category, INFO, message);
     }
@@ -108,7 +108,7 @@ public class Log
     /**
      * Appends a WARN event.
      */
-    public void warn(EventCategory category, String message)
+    public void warn(LogEventCategory category, String message)
     {
         add(category, WARN, message);
     }
@@ -116,7 +116,7 @@ public class Log
     /**
      * Appends an ERROR event.
      */
-    public void error(EventCategory category, String message)
+    public void error(LogEventCategory category, String message)
     {
         add(category, ERROR, message);
     }
@@ -124,7 +124,7 @@ public class Log
     /**
      * Returns an ERROR builder.
      */
-    public LogError.Builder error(ErrorCode code, EventCategory category)
+    public LogError.Builder error(ErrorCode code, LogEventCategory category)
     {
         return LogError.builder(code, type, category, ERROR);
     }
@@ -132,7 +132,7 @@ public class Log
     /**
      * Returns a WARN builder.
      */
-    public LogError.Builder warn(ErrorCode code, EventCategory category)
+    public LogError.Builder warn(ErrorCode code, LogEventCategory category)
     {
         return LogError.builder(code, type, category, WARN);
     }
@@ -148,7 +148,7 @@ public class Log
     /**
      * Returns the list of events for the given level and above.
      */
-    public List<LogEvent> getEvents(EventLevel level)
+    public List<LogEvent> getEvents(LogEventLevel level)
     {
         List<LogEvent> ret = new ArrayList<LogEvent>();
         for(LogEvent event : events)

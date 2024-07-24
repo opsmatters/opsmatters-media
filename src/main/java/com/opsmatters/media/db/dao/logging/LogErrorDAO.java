@@ -32,7 +32,7 @@ import com.opsmatters.media.model.logging.LogErrorItem;
 import com.opsmatters.media.model.logging.ErrorCode;
 import com.opsmatters.media.util.SessionId;
 
-import static com.opsmatters.media.model.logging.EventType.*;
+import static com.opsmatters.media.model.logging.LogEventType.*;
 import static com.opsmatters.media.model.logging.ErrorStatus.*;
 
 /**
@@ -48,7 +48,7 @@ public class LogErrorDAO extends LogDAO<LogError>
      * The query to use to select an error from the LOG_ERRORS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, CATEGORY, LEVEL, ENTITY_CODE, ENTITY_NAME, ATTRIBUTES, STATUS "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, CATEGORY, LEVEL, ENTITY_CODE, ENTITY_TYPE, ENTITY_NAME, ATTRIBUTES, STATUS "
       + "FROM LOG_ERRORS WHERE ID=?";
 
     /**
@@ -56,9 +56,9 @@ public class LogErrorDAO extends LogDAO<LogError>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO LOG_ERRORS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, CATEGORY, LEVEL, ENTITY_CODE, ENTITY_NAME, ATTRIBUTES, STATUS, SESSION_ID )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, CATEGORY, LEVEL, ENTITY_CODE, ENTITY_TYPE, ENTITY_NAME, ATTRIBUTES, STATUS, SESSION_ID )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update an error in the LOG_ERRORS table.
@@ -71,21 +71,21 @@ public class LogErrorDAO extends LogDAO<LogError>
      * The query to use to select the errors from the LOG_ERRORS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, CATEGORY, LEVEL, ENTITY_CODE, ENTITY_NAME, ATTRIBUTES, STATUS "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, CATEGORY, LEVEL, ENTITY_CODE, ENTITY_TYPE, ENTITY_NAME, ATTRIBUTES, STATUS "
       + "FROM LOG_ERRORS ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the error items from the LOG_ERRORS table.
      */
     private static final String LIST_ITEMS_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, CATEGORY, LEVEL, ENTITY_CODE, ENTITY_NAME, STATUS "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, CATEGORY, LEVEL, ENTITY_CODE, ENTITY_TYPE, ENTITY_NAME, STATUS "
       + "FROM LOG_ERRORS ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the errors from the LOG_ERRORS table by code.
      */
     private static final String LIST_BY_CODE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, CATEGORY, LEVEL, ENTITY_CODE, ENTITY_NAME, ATTRIBUTES, STATUS "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, CATEGORY, LEVEL, ENTITY_CODE, ENTITY_TYPE, ENTITY_NAME, ATTRIBUTES, STATUS "
       + "FROM LOG_ERRORS WHERE CODE=? ORDER BY CREATED_DATE";
 
     /**
@@ -122,6 +122,7 @@ public class LogErrorDAO extends LogDAO<LogError>
         table.addColumn("CATEGORY", Types.VARCHAR, 15, true);
         table.addColumn("LEVEL", Types.VARCHAR, 15, true);
         table.addColumn("ENTITY_CODE", Types.VARCHAR, 15, true);
+        table.addColumn("ENTITY_TYPE", Types.VARCHAR, 15, true);
         table.addColumn("ENTITY_NAME", Types.VARCHAR, 30, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
@@ -166,9 +167,10 @@ public class LogErrorDAO extends LogDAO<LogError>
                 error.setCategory(rs.getString(6));
                 error.setLevel(rs.getString(7));
                 error.setEntityCode(rs.getString(8));
-                error.setEntityName(rs.getString(9));
-                error.setAttributes(new JSONObject(getClob(rs, 10)));
-                error.setStatus(rs.getString(11));
+                error.setEntityType(rs.getString(9));
+                error.setEntityName(rs.getString(10));
+                error.setAttributes(new JSONObject(getClob(rs, 11)));
+                error.setStatus(rs.getString(12));
                 ret = error;
             }
         }
@@ -213,12 +215,13 @@ public class LogErrorDAO extends LogDAO<LogError>
             insertStmt.setString(6, error.getCategory().name());
             insertStmt.setString(7, error.getLevel().name());
             insertStmt.setString(8, error.getEntityCode());
-            insertStmt.setString(9, error.getEntityName());
+            insertStmt.setString(9, error.getEntityType());
+            insertStmt.setString(10, error.getEntityName());
             String attributes = error.getAttributes().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(10, reader, attributes.length());
-            insertStmt.setString(11, error.getStatus().name());
-            insertStmt.setInt(12, SessionId.get());
+            insertStmt.setCharacterStream(11, reader, attributes.length());
+            insertStmt.setString(12, error.getStatus().name());
+            insertStmt.setInt(13, SessionId.get());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created error %s in LOG_ERRORS",
@@ -258,6 +261,7 @@ public class LogErrorDAO extends LogDAO<LogError>
             {
                 if(existing.getStatus() == NEW
                     && existing.getEntityCode().equals(error.getEntityCode())
+                    && existing.getEntityType().equals(error.getEntityType())
                     && existing.getEntityName().equals(error.getEntityName()))
                 {
                     found = true;
@@ -365,9 +369,10 @@ public class LogErrorDAO extends LogDAO<LogError>
                 error.setCategory(rs.getString(6));
                 error.setLevel(rs.getString(7));
                 error.setEntityCode(rs.getString(8));
-                error.setEntityName(rs.getString(9));
-                error.setAttributes(new JSONObject(getClob(rs, 10)));
-                error.setStatus(rs.getString(11));
+                error.setEntityType(rs.getString(9));
+                error.setEntityName(rs.getString(10));
+                error.setAttributes(new JSONObject(getClob(rs, 11)));
+                error.setStatus(rs.getString(12));
                 ret.add(error);
             }
         }
@@ -421,8 +426,9 @@ public class LogErrorDAO extends LogDAO<LogError>
                 error.setCategory(rs.getString(6));
                 error.setLevel(rs.getString(7));
                 error.setEntityCode(rs.getString(8));
-                error.setEntityName(rs.getString(9));
-                error.setStatus(rs.getString(10));
+                error.setEntityType(rs.getString(9));
+                error.setEntityName(rs.getString(10));
+                error.setStatus(rs.getString(11));
                 ret.add(error);
             }
         }
@@ -477,9 +483,10 @@ public class LogErrorDAO extends LogDAO<LogError>
                 error.setCategory(rs.getString(6));
                 error.setLevel(rs.getString(7));
                 error.setEntityCode(rs.getString(8));
-                error.setEntityName(rs.getString(9));
-                error.setAttributes(new JSONObject(getClob(rs, 10)));
-                error.setStatus(rs.getString(11));
+                error.setEntityType(rs.getString(9));
+                error.setEntityName(rs.getString(10));
+                error.setAttributes(new JSONObject(getClob(rs, 11)));
+                error.setStatus(rs.getString(12));
                 ret.add(error);
             }
         }

@@ -24,7 +24,7 @@ import java.util.ArrayList;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum EventCategory
+public enum LogEventCategory
 {
     TEASER("Teaser", "teaser"),
     ARTICLE("Article", "article"),
@@ -38,7 +38,7 @@ public enum EventCategory
      * @param value The value for the category
      * @param tag The tag for the category
      */
-    EventCategory(String value, String tag)
+    LogEventCategory(String value, String tag)
     {
         this.value = value;
         this.tag = tag;
@@ -76,10 +76,10 @@ public enum EventCategory
      * @param value The category value
      * @return The category for the given value
      */
-    public static EventCategory fromValue(String value)
+    public static LogEventCategory fromValue(String value)
     {
-        EventCategory[] categories = values();
-        for(EventCategory category : categories)
+        LogEventCategory[] categories = values();
+        for(LogEventCategory category : categories)
         {
             if(category.value().equals(value))
                 return category;
@@ -89,7 +89,7 @@ public enum EventCategory
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given value is contained in the list of categories.
+     * LoReturns <CODE>true</CODE> if the given value is contained in the list of categories.
      * @param value The category value
      * @return <CODE>true</CODE> if the given value is contained in the list of categories
      */
@@ -101,9 +101,9 @@ public enum EventCategory
     /**
      * Returns a list of the event categories.
      */
-    public static List<EventCategory> toList()
+    public static List<LogEventCategory> toList()
     {
-        List<EventCategory> ret = new ArrayList<EventCategory>();
+        List<LogEventCategory> ret = new ArrayList<LogEventCategory>();
 
         ret.add(TEASER);
         ret.add(ARTICLE);
@@ -121,7 +121,7 @@ public enum EventCategory
 
         if(blank)
             ret.add("");
-        for(EventCategory category : EventCategory.values())
+        for(LogEventCategory category : LogEventCategory.values())
             ret.add(category.value());
 
         return ret;

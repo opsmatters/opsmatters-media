@@ -46,7 +46,7 @@ public abstract class LogEventItem<T extends LogEvent> extends BaseEntityItem<T>
     /**
      * Returns the event type.
      */
-    public EventType getType()
+    public LogEventType getType()
     {
         return content.getType();
     }
@@ -54,7 +54,7 @@ public abstract class LogEventItem<T extends LogEvent> extends BaseEntityItem<T>
     /**
      * Sets the event type.
      */
-    public void setType(EventType type)
+    public void setType(LogEventType type)
     {
         content.setType(type);
     }
@@ -70,7 +70,7 @@ public abstract class LogEventItem<T extends LogEvent> extends BaseEntityItem<T>
     /**
      * Returns the event category.
      */
-    public EventCategory getCategory()
+    public LogEventCategory getCategory()
     {
         return content.getCategory();
     }
@@ -78,7 +78,7 @@ public abstract class LogEventItem<T extends LogEvent> extends BaseEntityItem<T>
     /**
      * Sets the event category.
      */
-    public void setCategory(EventCategory category)
+    public void setCategory(LogEventCategory category)
     {
         content.setCategory(category);
     }
@@ -94,7 +94,7 @@ public abstract class LogEventItem<T extends LogEvent> extends BaseEntityItem<T>
     /**
      * Returns the event level.
      */
-    public EventLevel getLevel()
+    public LogEventLevel getLevel()
     {
         return content.getLevel();
     }
@@ -102,7 +102,7 @@ public abstract class LogEventItem<T extends LogEvent> extends BaseEntityItem<T>
     /**
      * Sets the event level.
      */
-    public void setLevel(EventLevel level)
+    public void setLevel(LogEventLevel level)
     {
         content.setLevel(level);
     }

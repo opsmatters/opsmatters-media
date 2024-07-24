@@ -116,6 +116,22 @@ public class LogErrorItem extends LogEventItem<LogError>
     }
 
     /**
+     * Returns the error entity type.
+     */
+    public String getEntityType()
+    {
+        return content.getEntityType();
+    }
+
+    /**
+     * Sets the error entity type.
+     */
+    public void setEntityType(String entityType)
+    {
+        content.setEntityType(entityType);
+    }
+
+    /**
      * Returns the error entity name.
      */
     public String getEntityName()

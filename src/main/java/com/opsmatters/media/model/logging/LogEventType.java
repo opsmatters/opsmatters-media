@@ -24,7 +24,7 @@ import java.util.ArrayList;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum EventType
+public enum LogEventType
 {
     UI("UI", "UI", "ui"),
     CRAWLER("CR", "Crawler", "crawler"),
@@ -40,7 +40,7 @@ public enum EventType
      * @param value The value for the type
      * @param tag The tag for the type
      */
-    EventType(String code, String value, String tag)
+    LogEventType(String code, String value, String tag)
     {
         this.code = code;
         this.value = value;
@@ -88,10 +88,10 @@ public enum EventType
      * @param value The type value
      * @return The type for the given value
      */
-    public static EventType fromValue(String value)
+    public static LogEventType fromValue(String value)
     {
-        EventType[] types = values();
-        for(EventType type : types)
+        LogEventType[] types = values();
+        for(LogEventType type : types)
         {
             if(type.value().equals(value))
                 return type;
@@ -113,9 +113,9 @@ public enum EventType
     /**
      * Returns a list of the event types.
      */
-    public static List<EventType> toList()
+    public static List<LogEventType> toList()
     {
-        List<EventType> ret = new ArrayList<EventType>();
+        List<LogEventType> ret = new ArrayList<LogEventType>();
 
         ret.add(UI);
         ret.add(CRAWLER);
@@ -133,7 +133,7 @@ public enum EventType
 
         if(blank)
             ret.add("");
-        for(EventType type : EventType.values())
+        for(LogEventType type : LogEventType.values())
         {
             if(type.code().length() > 0)
                 ret.add(type.value());

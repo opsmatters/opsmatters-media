@@ -60,15 +60,15 @@ import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.crawler.parser.ElementType;
 import com.opsmatters.media.model.logging.LogEvent;
 import com.opsmatters.media.model.logging.LogError;
-import com.opsmatters.media.model.logging.EventCategory;
+import com.opsmatters.media.model.logging.LogEventCategory;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.crawler.CrawlerStatus.*;
 import static com.opsmatters.media.model.content.crawler.field.ElementOutput.*;
 import static com.opsmatters.media.model.content.crawler.field.FieldProtocol.*;
-import static com.opsmatters.media.model.logging.EventType.*;
-import static com.opsmatters.media.model.logging.EventCategory.*;
+import static com.opsmatters.media.model.logging.LogEventType.*;
+import static com.opsmatters.media.model.logging.LogEventCategory.*;
 import static com.opsmatters.media.model.logging.ErrorCode.*;
 
 /**
@@ -143,7 +143,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Returns the current page source.
      */
-    protected String getPageSource(String root, EventCategory category)
+    protected String getPageSource(String root, LogEventCategory category)
     {
         String ret = "";
 
@@ -157,8 +157,9 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
 
             log.add(log.error(E_MISSING_SOURCE, category)
                 .message(String.format("Unable to get page source for %s", root))
-                .exception(e)
-                .locate(this, config.getCode(), page.getName()));
+                .location(this)
+                .entity(config, page)
+                .exception(e));
         }
 
         return ret;
@@ -168,7 +169,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Returns the current page source.
      */
-    protected String getPageSource(EventCategory category)
+    protected String getPageSource(LogEventCategory category)
     {
         return getPageSource("html", category);
     }
@@ -291,7 +292,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Loads the given page.
      */
-    protected void loadPage(String url, ContentRequest request, EventCategory category) throws IOException
+    protected void loadPage(String url, ContentRequest request, LogEventCategory category) throws IOException
     {
         if(request.useWebcache())
             url = WEBCACHE_PREFIX+url;
@@ -315,7 +316,8 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
 
             log.add(log.error(getErrorCode(), category)
                 .message(message)
-                .locate(this, config.getCode(), page.getName()));
+                .location(this)
+                .entity(config, page));
         }
         else
         {
@@ -411,7 +413,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Click a Load More button after the initial page load.
      */
-    protected void clickMoreLink(MoreLink moreLink, EventCategory category) throws IOException
+    protected void clickMoreLink(MoreLink moreLink, LogEventCategory category) throws IOException
     {
         String selector = moreLink.getSelector();
         if(selector.length() > 0)
@@ -446,7 +448,8 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
 
                 log.add(log.warn(E_MISSING_MORE, category)
                     .message(String.format("More link not found: %s", selector))
-                    .locate(this, config.getCode(), page.getName()));
+                    .location(this)
+                    .entity(config, page));
             }
         }
     }
@@ -501,7 +504,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         }
     }
 
-    protected void configureMovement(ContentLoading loading, EventCategory category)
+    protected void configureMovement(ContentLoading loading, LogEventCategory category)
     {
         if(loading == null)
             return;
@@ -538,7 +541,8 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
 
                     log.add(log.error(E_MISSING_MOVE, category)
                         .message(String.format("Unable to find move to element: %s", moveTo))
-                        .locate(this, config.getCode(), page.getName()));
+                        .location(this)
+                        .entity(config, page));
                 }
             }
             catch(WebDriverException | InterruptedException e)
@@ -671,7 +675,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Returns a list of the metatags for the given attribute name and value.
      */
-    protected List<Element> getMetatags(String name, String value, EventCategory category)
+    protected List<Element> getMetatags(String name, String value, LogEventCategory category)
     {
         List<Element> ret = new ArrayList<Element>();
         Document doc = Jsoup.parse(getPageSource(category));
@@ -692,7 +696,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         return ret;
     }
 
-    protected String getPropertyMetatag(String value, EventCategory category)
+    protected String getPropertyMetatag(String value, LogEventCategory category)
     {
         List<Element> tags = getMetatags("property", value, category);
         if(tags.size() == 0)
@@ -705,7 +709,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Returns <CODE>true</CODE> if the content validator is found.
      */
-    protected void validateContent(D content, Field field, Element root, EventCategory category)
+    protected void validateContent(D content, Field field, Element root, LogEventCategory category)
     {
         boolean valid = false;
 
@@ -760,7 +764,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Process an element field returning multiple results.
      */
-    protected String getElements(Field field, Element root, EventCategory category)
+    protected String getElements(Field field, Element root, LogEventCategory category)
     {
         String ret = null;
 
@@ -816,7 +820,8 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
             log.add(log.warn(E_MISSING_ELEM, category)
                 .message(String.format("Elements not found for %s field: %s",
                     category.tag(), field.getName()))
-                .locate(this, config.getCode(), page.getName()));
+                .location(this)
+                .entity(config, page));
         }
 
         return ret;
@@ -875,7 +880,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Process an anchor field.
      */
-    protected String getAnchor(Field field, Element root, EventCategory category, boolean removeParameters)
+    protected String getAnchor(Field field, Element root, LogEventCategory category, boolean removeParameters)
     {
         String ret = null;
 
@@ -1003,7 +1008,8 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
             log.add(log.warn(E_MISSING_ANCHOR, category)
                 .message(String.format("Anchor not found for %s field: %s",
                     category.tag(), field.getName()))
-                .locate(this, config.getCode(), page.getName()));
+                .location(this)
+                .entity(config, page));
         }
 
         return ret;
@@ -1061,7 +1067,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Process the body field to produce a summary.
      */
-    protected String getBodySummary(Field field, Element root, EventCategory category,
+    protected String getBodySummary(Field field, Element root, LogEventCategory category,
         SummaryConfig summary, boolean debug)
     {
         String ret = null;
@@ -1113,7 +1119,8 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
             log.add(log.warn(E_MISSING_SUMMARY, category)
                 .message(String.format("Body summary not found for %s field: %s",
                     category.tag(), field.getName()))
-                .locate(this, config.getCode(), page.getName()));
+                .location(this)
+                .entity(config, page));
         }
 
         return ret;
@@ -1155,7 +1162,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Process the body field.
      */
-    protected String getBody(Field field, Element root, EventCategory category, boolean debug)
+    protected String getBody(Field field, Element root, LogEventCategory category, boolean debug)
     {
         String ret = null;
 
@@ -1204,7 +1211,8 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
             log.add(log.warn(E_MISSING_BODY, category)
                 .message(String.format("Body not found for %s field: %s",
                     category.tag(), field.getName()))
-                .locate(this, config.getCode(), page.getName()));
+                .location(this)
+                .entity(config, page));
         }
 
         return ret;
@@ -1213,7 +1221,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Process an image field.
      */
-    protected String getImageSrc(Field field, Element root, EventCategory category)
+    protected String getImageSrc(Field field, Element root, LogEventCategory category)
     {
         String ret = null;
 
@@ -1261,7 +1269,8 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
 
                                         log.add(log.warn(E_MISSING_URL, category)
                                             .message(String.format("No url found for background image: %s", image))
-                                            .locate(this, config.getCode(), page.getName()));
+                                            .location(this)
+                                            .entity(config, page));
                                     }
                                 }
                             }
@@ -1396,7 +1405,8 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
             log.add(log.warn(E_MISSING_IMAGE, category)
                 .message(String.format("Image not found for %s field: %s",
                     category.tag(), field.getName()))
-                .locate(this, config.getCode(), page.getName()));
+                .location(this)
+                .entity(config, page));
         }
 
         return ret;

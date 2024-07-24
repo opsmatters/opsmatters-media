@@ -27,9 +27,9 @@ import com.opsmatters.media.util.StringUtils;
  */
 public class LogEvent extends OwnedEntity
 {
-    private EventType type;
-    private EventCategory category;
-    private EventLevel level;
+    private LogEventType type;
+    private LogEventCategory category;
+    private LogEventLevel level;
     private String message = "";
 
     /**
@@ -54,7 +54,7 @@ public class LogEvent extends OwnedEntity
      * @param level The level of the event
      * @param message The message of the event
      */
-    public LogEvent(EventType type, EventCategory category, EventLevel level, String message)
+    public LogEvent(LogEventType type, LogEventCategory category, LogEventLevel level, String message)
     {
         init();
         setType(type);
@@ -100,7 +100,7 @@ public class LogEvent extends OwnedEntity
      * Returns the type of the event.
      * @return The type of the event
      */
-    public EventType getType()
+    public LogEventType getType()
     {
         return type;
     }
@@ -111,14 +111,14 @@ public class LogEvent extends OwnedEntity
      */
     public void setType(String type)
     {
-        setType(EventType.valueOf(type));
+        setType(LogEventType.valueOf(type));
     }
 
     /**
      * Sets the type of the event.
      * @param type The type of the event
      */
-    public void setType(EventType type)
+    public void setType(LogEventType type)
     {
         this.type = type;
     }
@@ -127,7 +127,7 @@ public class LogEvent extends OwnedEntity
      * Returns the category of the event.
      * @return The category of the event
      */
-    public EventCategory getCategory()
+    public LogEventCategory getCategory()
     {
         return category;
     }
@@ -138,14 +138,14 @@ public class LogEvent extends OwnedEntity
      */
     public void setCategory(String category)
     {
-        setCategory(EventCategory.valueOf(category));
+        setCategory(LogEventCategory.valueOf(category));
     }
 
     /**
      * Sets the category of the event.
      * @param category The category of the event
      */
-    public void setCategory(EventCategory category)
+    public void setCategory(LogEventCategory category)
     {
         this.category = category;
     }
@@ -154,7 +154,7 @@ public class LogEvent extends OwnedEntity
      * Returns the level of the event.
      * @return The level of the event
      */
-    public EventLevel getLevel()
+    public LogEventLevel getLevel()
     {
         return level;
     }
@@ -165,14 +165,14 @@ public class LogEvent extends OwnedEntity
      */
     public void setLevel(String level)
     {
-        setLevel(EventLevel.valueOf(level));
+        setLevel(LogEventLevel.valueOf(level));
     }
 
     /**
      * Sets the level of the event.
      * @param level The level of the event
      */
-    public void setLevel(EventLevel level)
+    public void setLevel(LogEventLevel level)
     {
         this.level = level;
     }

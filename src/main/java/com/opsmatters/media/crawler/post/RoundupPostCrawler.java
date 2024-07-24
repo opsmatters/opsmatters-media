@@ -32,12 +32,12 @@ import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.model.content.crawler.field.Fields;
-import com.opsmatters.media.model.logging.EventCategory;
+import com.opsmatters.media.model.logging.LogEventCategory;
 import com.opsmatters.media.model.logging.LogError;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.FormatUtils;
 
-import static com.opsmatters.media.model.logging.EventCategory.*;
+import static com.opsmatters.media.model.logging.LogEventCategory.*;
 import static com.opsmatters.media.model.logging.ErrorCode.*;
 
 /**
@@ -180,7 +180,7 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostDetails>
     /**
      * Populate the teaser fields from the given element.
      */
-    private void populateTeaserFields(Element root, Fields fields, RoundupPostDetails teaser, EventCategory category)
+    private void populateTeaserFields(Element root, Fields fields, RoundupPostDetails teaser, LogEventCategory category)
         throws DateTimeParseException
     {
         if(fields.hasTitle())
@@ -227,8 +227,9 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostDetails>
                     log.add(log.warn(E_PARSE_DATE, category)
                         .message(String.format("Unparseable %s published date: %s",
                             category.tag(), publishedDate))
-                        .exception(e)
-                        .locate(this, config.getCode(), getPage().getName()));
+                        .location(this)
+                        .entity(config, getPage())
+                        .exception(e));
                 }
             }
         }
