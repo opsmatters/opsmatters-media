@@ -344,6 +344,8 @@ public class LinkedInClient extends Client implements SocialClient
     public ChannelPost sendPost(String text) throws IOException
     {
         String link = StringUtils.extractUrl(text);
+        if(link == null)
+            throw new IllegalArgumentException("missing url");
 
         // Crawl the link's page to get the metatags
         URL url = new URL(link);

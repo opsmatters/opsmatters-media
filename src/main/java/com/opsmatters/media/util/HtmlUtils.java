@@ -38,6 +38,10 @@ public class HtmlUtils
     public static final String LINE_BREAKS = "(<br[ /]*>){2,}";
     public static final String NBSP = "\u00a0";
     public static final String NBSP_ENTITY = "&nbsp;";
+    public static final String DIV_OPEN = "<div>";
+    public static final String DIV_CLOSE = "</div>";
+    public static final String P_OPEN = "<p>";
+    public static final String P_CLOSE = "</p>";
     public static final String TEXT_CHARS = "\\w\\u2010-\\u2017";
     public static final String IMAGE_SOURCE = "image source:";
     public static final String PAGE_SOURCE = "page source:";
@@ -181,7 +185,8 @@ public class HtmlUtils
     {
         Pattern before = Pattern.compile(String.format("[>:;,.%s]+<a.*?>", TEXT_CHARS), Pattern.DOTALL);
         Pattern after = Pattern.compile(String.format("</a>[<!%s]+", TEXT_CHARS), Pattern.DOTALL);
-        return before.matcher(str).find() || after.matcher(str).find();
+        boolean underline = str.indexOf("<u><a") != -1 || str.indexOf("</a></u>") != -1;
+        return before.matcher(str).find() || after.matcher(str).find() || underline;
     }
 
     /**
@@ -191,6 +196,10 @@ public class HtmlUtils
      */
     public static String addLinkSpacing(String str)
     {
+        // Remove underlines around links
+        str = str.replaceAll("<u>(<a.*?>)", "$1");
+        str = str.replaceAll("(</a>)</u>", "$1");
+
         Pattern before = Pattern.compile(String.format("([>:;,.%s]+)(<a.*?>)", TEXT_CHARS), Pattern.DOTALL);
         str = before.matcher(str).replaceAll("$1 $2");
 
@@ -221,6 +230,30 @@ public class HtmlUtils
         // Replace nbsp with space
         str = str.replaceAll(NBSP, " ");
         str = str.replaceAll(NBSP_ENTITY, " ");
+
+        return str;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given string contains "&lt;div&gt;" tags.
+     * @param str The string to search
+     * @return <CODE>true</CODE> if the given string contains "&lt;div&gt;" tags.
+     */
+    public static boolean hasDiv(String str)
+    {
+        return str.indexOf(DIV_OPEN) != -1;
+    }
+
+    /**
+     * Replaces "&lt;div&gt;" tags in the given string with &lt;p&gt; tags.
+     * @param str The string to amend
+     * @return The amended string.
+     */
+    public static String replaceDiv(String str)
+    {
+        // Replace <div> with <p>
+        Pattern pattern = Pattern.compile(String.format("%s(.+?)%s", DIV_OPEN, DIV_CLOSE), Pattern.DOTALL);
+        str = pattern.matcher(str).replaceAll(String.format("%s$1%s", P_OPEN, P_CLOSE));
 
         return str;
     }

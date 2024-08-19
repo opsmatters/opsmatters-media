@@ -333,8 +333,10 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         boolean ret = false;
         if(title != null)
         {
-            ret = title.startsWith("Error 404 (Not Found)")   // Google webcache
-                || title.startsWith("Human Verification");    // Cloudflare
+            ret = title.startsWith("404")                 // SquaredUp
+                || title.startsWith("Error 404")          // Google webcache
+                || title.startsWith("403 Forbidden")      // Mattermost
+                || title.equals("Human Verification");    // Cloudflare
         }
 
         return ret;

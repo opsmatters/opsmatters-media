@@ -892,10 +892,14 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     {
         List<DraftPost> ret = new ArrayList<DraftPost>();
         List<DraftPost> posts = list(organisation.getSiteId(), organisation.getCode(), ContentType.ORGANISATION);
-        for(DraftPost post : posts)
+
+        if(posts != null)
         {
-            if(post.getStatus() == status)
-                ret.add(post);
+            for(DraftPost post : posts)
+            {
+                if(post.getStatus() == status)
+                    ret.add(post);
+            }
         }
 
         return ret;
@@ -908,17 +912,21 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     {
         List<DraftPost> ret = new ArrayList<DraftPost>();
         List<DraftPost> posts = list(content.getSiteId(), content.getCode(), content.getType());
-        for(DraftPost post : posts)
-        {
-            if(post.getStatus() == status)
-            {
-                DraftContentPost contentPost = (DraftContentPost)post;
 
-                // Roundups don't have a content id
-                if(content.getType() == ContentType.ROUNDUP 
-                    || contentPost.getContentId() == content.getId())
+        if(posts != null)
+        {
+            for(DraftPost post : posts)
+            {
+                if(post.getStatus() == status)
                 {
-                    ret.add(post);
+                    DraftContentPost contentPost = (DraftContentPost)post;
+
+                    // Roundups don't have a content id
+                    if(content.getType() == ContentType.ROUNDUP 
+                        || contentPost.getContentId() == content.getId())
+                    {
+                        ret.add(post);
+                    }
                 }
             }
         }

@@ -163,6 +163,15 @@ public class LogError extends LogEvent
     }
 
     /**
+     * Returns <CODE>true</CODE> if the error should be saved to the database.
+     * @return <CODE>true</CODE> if the error should be saved to the database
+     */
+    public boolean isPersistent()
+    {
+        return code != null && code.persist();
+    }
+
+    /**
      * Returns the code of the entity with the error.
      * @return The code of the entity with the error
      */

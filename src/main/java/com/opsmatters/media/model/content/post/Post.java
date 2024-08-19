@@ -30,6 +30,7 @@ import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
 import com.opsmatters.media.util.TimeUtils;
+import com.opsmatters.media.util.SessionId;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 import static com.opsmatters.media.model.content.post.PostType.*;
@@ -232,7 +233,7 @@ public class Post extends Article<PostDetails>
 
         post.init();
         post.setSiteId(organisationSite.getSiteId());
-        post.setPublishedDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
+        post.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.now(), config.getField(PUBLISHED_DATE)));
 
         return post;
     }

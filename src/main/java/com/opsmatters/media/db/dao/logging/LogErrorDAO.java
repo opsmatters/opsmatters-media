@@ -30,10 +30,12 @@ import com.opsmatters.media.model.logging.LogEvent;
 import com.opsmatters.media.model.logging.LogError;
 import com.opsmatters.media.model.logging.LogErrorItem;
 import com.opsmatters.media.model.logging.ErrorCode;
+import com.opsmatters.media.model.logging.ErrorStatus;
 import com.opsmatters.media.util.SessionId;
 
 import static com.opsmatters.media.model.logging.LogEventType.*;
 import static com.opsmatters.media.model.logging.ErrorStatus.*;
+import static com.opsmatters.media.model.content.ContentType.*;
 
 /**
  * DAO that provides operations on the LOG_ERRORS table in the database.
@@ -287,7 +289,18 @@ public class LogErrorDAO extends LogDAO<LogError>
 
             // Only add LogErrors to database
             if(event instanceof LogError)
-                add((LogError)event, true);
+            {
+                LogError error = (LogError)event;
+
+                // Only include ROUNDUP errors
+                if(error.hasContentType() && error.getContentType() != ROUNDUP)
+                    continue;
+
+                if(!error.isPersistent())
+                    continue;
+
+                add(error, true);
+            }
         }
     }
 
@@ -333,6 +346,25 @@ public class LogErrorDAO extends LogDAO<LogError>
                 reader.close();
             if(reader2 != null)
                 reader2.close();
+        }
+    }
+
+    /**
+     * Updates the given error in the LOG_ERRORS table.
+     */
+    public synchronized void update(String code, ErrorCode errorCode, ErrorStatus status) throws SQLException
+    {
+        List<LogError> errors = list(errorCode);
+        if(errors != null)
+        {
+            for(LogError error : errors)
+            {
+                if(error.getEntityCode().equals(code))
+                {
+                    error.setStatus(status);
+                    update(error);
+                }
+            }
         }
     }
 

@@ -24,20 +24,40 @@ package com.opsmatters.media.model.logging;
 public enum ErrorCode
 {
     // Maximum 20 characters
-    E_NONE,
-    E_EXCEPTION,
-    E_ERROR_PAGE,
-    E_PARSE_DATE,
-    E_EMPTY_ROOT,
-    E_MISSING_SOURCE,
-    E_MISSING_ROOT,
-    E_MISSING_BODY,
-    E_MISSING_SUMMARY,
-    E_MISSING_ANCHOR,
-    E_MISSING_URL,
-    E_MISSING_ELEM,
-    E_MISSING_IMAGE,
-    E_MISSING_MORE,
-    E_MISSING_MOVE,
-    E_SUBSCRIBE_FAIL;
+    E_NONE(false),
+    E_EXCEPTION(true),
+    E_ERROR_PAGE(false),
+    E_PARSE_DATE(true),
+    E_EMPTY_ROOT(true),
+    E_MISSING_SOURCE(false),
+    E_MISSING_ROOT(true),
+    E_MISSING_BODY(true),
+    E_MISSING_SUMMARY(true),
+    E_MISSING_ANCHOR(true),
+    E_MISSING_URL(true),
+    E_MISSING_ELEM(true),
+    E_MISSING_IMAGE(false),
+    E_MISSING_MORE(true),
+    E_MISSING_MOVE(true),
+    E_SUBSCRIBE_FAIL(true);
+
+    private boolean persist;
+
+    /**
+     * Constructor that takes the persist value.
+     * @param persist The persist for the code
+     */
+    ErrorCode(boolean persist)
+    {
+        this.persist = persist;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the code should be persisted.
+     * @return <CODE>true</CODE> if the code should be persisted
+     */
+    public boolean persist()
+    {
+        return persist;
+    }
 }

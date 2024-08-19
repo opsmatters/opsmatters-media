@@ -38,11 +38,7 @@ public class SessionId
      */
     private SessionId()
     {
-        Instant dt = Instant.now();
-        int hour = TimeUtils.toDateTimeUTC(dt).getHour();
-        if(hour < START_HOUR)
-            dt = dt.minus(1, DAYS); // Go back to yesterday if before session start hour
-        setId(Integer.parseInt(TimeUtils.toStringUTC(dt, Formats.SESSION_FORMAT)));
+        setId(Integer.parseInt(TimeUtils.toStringUTC(now(), Formats.SESSION_FORMAT)));
     }
 
     /**
@@ -80,9 +76,21 @@ public class SessionId
     /**
      * Returns the session id for the current system date.
      */
-    public static int now()
+    public static int id()
     {
         return new SessionId().getId();
+    }
+
+    /**
+     * Returns the date for the current session.
+     */
+    public static Instant now()
+    {
+        Instant ret = Instant.now();
+        int hour = TimeUtils.toDateTimeUTC(ret).getHour();
+        if(hour < START_HOUR)
+            ret = ret.minus(1, DAYS); // Go back to yesterday if before session start hour
+        return ret;
     }
 
     /**
