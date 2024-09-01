@@ -27,7 +27,7 @@ public enum DraftPostStatus
     REPOSTED("Reposted", "glyphicon-retweet", ""),
     SUBMITTED("Submitted", "glyphicon-log-in", "status-warn"),
     PROCESSED("Processed", "glyphicon-ok-circle", "status-success"),
-    ERROR("Error", "glyphicon-alert", "status-error"),
+    ERROR("Error", "glyphicon-exclamation-sign", "status-error"),
     SKIPPED("Skipped", "glyphicon-thumbs-down", "status-info"),
     ALL("All", "", ""); // Pseudo status
 

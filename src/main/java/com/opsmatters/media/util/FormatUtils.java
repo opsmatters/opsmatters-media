@@ -102,6 +102,9 @@ public class FormatUtils
 
         if(ret != null)
         {
+            // change to lower case
+            ret = ret.toLowerCase();
+
             // Remove extra parameters added by iStock images
             int pos = ret.indexOf("_s=");
             if(pos != -1)

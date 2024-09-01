@@ -333,10 +333,11 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         boolean ret = false;
         if(title != null)
         {
-            ret = title.startsWith("404")                 // SquaredUp
-                || title.startsWith("Error 404")          // Google webcache
-                || title.startsWith("403 Forbidden")      // Mattermost
-                || title.equals("Human Verification");    // Cloudflare
+            ret = title.startsWith("404")                   // SquaredUp
+                || title.startsWith("Error 404")            // Google webcache
+                || title.startsWith("403 Forbidden")        // Mattermost
+                || title.startsWith("Attention Required!")  // Cloudflare
+                || title.equals("Human Verification");      // Cloudflare
         }
 
         return ret;
@@ -664,6 +665,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                         logger.info("Found "+numTeasers()+" teasers");
                 }
             }
+
             if(getErrorCode() == E_ERROR_PAGE)
                 break;
         }
@@ -700,9 +702,11 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
 
     protected String getPropertyMetatag(String value, LogEventCategory category)
     {
-        List<Element> tags = getMetatags("property", value, category);
+        List<Element> tags = getMetatags("property", value, category); // where property name is in the "property" field
         if(tags.size() == 0)
-            tags = getMetatags("name", value, category); // Sometimes og tags called "name" instead of "property"
+            tags = getMetatags("name", value, category); // where property name is in the "name" field
+        if(tags.size() == 0)
+            tags = getMetatags("itemprop", value, category); // where property name is in the "itemprop" field
         if(tags.size() > 0)
             return tags.get(0).attr("content");
         return null;

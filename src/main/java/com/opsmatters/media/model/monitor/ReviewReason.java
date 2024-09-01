@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Gerald Curley
+ * Copyright 2024 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,32 @@
 
 package com.opsmatters.media.model.monitor;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
- * Represents the reason for a content monitor alert.
+ * Represents the reason for a content monitor review.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum AlertReason
+public enum ReviewReason
 {
-    INACTIVITY("No Activity", false),
-    SUSPENDED("Suspended", true),
-    UNREACHABLE("Unreachable", true),
-    ALL("All", false); // Pseudo status
+    UNDEFINED("Undefined"),
+    UNRELIABLE("Unreliable"),
+    BROKEN("Broken"),
+    BLOCKED("Blocked"),
+    VERIFICATION("Verification"),
+    ALL("All"); // Pseudo status
 
     private String value;
-    private boolean notification = false;
 
     /**
      * Constructor that takes the reason value.
      * @param value The value for the reason
-     * @param notify <CODE>true</CODE> if this reason requires a notification
      */
-    AlertReason(String value, boolean notification)
+    ReviewReason(String value)
     {
         this.value = value;
-        this.notification = notification;
     }
 
     /**
@@ -61,23 +63,14 @@ public enum AlertReason
     }
 
     /**
-     * Returns <CODE>true</CODE> if this reason requires a notification.
-     * @return <CODE>true</CODE> if this reason requires a notification.
-     */
-    public boolean notification()
-    {
-        return notification;
-    }
-
-    /**
      * Returns the type for the given value.
      * @param value The type value
      * @return The type for the given value
      */
-    public static AlertReason fromValue(String value)
+    public static ReviewReason fromValue(String value)
     {
-        AlertReason[] types = values();
-        for(AlertReason type : types)
+        ReviewReason[] types = values();
+        for(ReviewReason type : types)
         {
             if(type.value().equals(value))
                 return type;
@@ -93,5 +86,21 @@ public enum AlertReason
     public static boolean contains(String value)
     {
         return valueOf(value) != null;
+    }
+
+    /**
+     * Returns a list of the review reasons.
+     */
+    public static List<ReviewReason> toList()
+    {
+        List<ReviewReason> ret = new ArrayList<ReviewReason>();
+
+        ret.add(UNDEFINED);
+        ret.add(UNRELIABLE);
+        ret.add(BROKEN);
+        ret.add(BLOCKED);
+        ret.add(VERIFICATION);
+
+        return ret;
     }
 }

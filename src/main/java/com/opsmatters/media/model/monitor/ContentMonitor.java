@@ -172,7 +172,7 @@ public class ContentMonitor<T extends ContentDetails> extends BaseEntity
         boolean ret = false;
 
         Instant now = Instant.now();
-        ContentSnapshot snapshot = check(maxResults, cache, false);
+        ContentSnapshot snapshot = check(maxResults, cache, debug);
         change.setUpdatedDate(now);
 
         Instant then = Instant.now();
@@ -433,6 +433,35 @@ public class ContentMonitor<T extends ContentDetails> extends BaseEntity
         if(alert == null || getEventId().equals(alert.getId()))
         {
             if(getStatus() == MonitorStatus.ALERT)
+            {
+                setStatus(MonitorStatus.RESUMING);
+                setUpdatedDate(Instant.now());
+                clearEvent();
+            }
+        }
+    }
+
+    /**
+     * Set the monitor status to REVIEW.
+     */
+    public void setReview(ContentReview review)
+    {
+        if(getStatus() != MonitorStatus.REVIEW)
+        {
+            setStatus(MonitorStatus.REVIEW);
+            setUpdatedDate(Instant.now());
+            setEvent(review);
+        }
+    }
+
+    /**
+     * Clear the monitor status after REVIEW.
+     */
+    public void clearReview(ContentReview review)
+    {
+        if(review == null || getEventId().equals(review.getId()))
+        {
+            if(getStatus() == MonitorStatus.REVIEW)
             {
                 setStatus(MonitorStatus.RESUMING);
                 setUpdatedDate(Instant.now());

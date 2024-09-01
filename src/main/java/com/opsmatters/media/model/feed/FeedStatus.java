@@ -28,7 +28,7 @@ public enum FeedStatus
     SUBMITTED("Submitted", "glyphicon-log-in", "status-warn", -1),
     DEPLOYING("Deploying", "glyphicon-log-out", "status-warn", -1),
     EXECUTING("Executing", "glyphicon-cog", "status-warn", -1),
-    ERROR("Error", "glyphicon-alert", "status-error", 1),
+    ERROR("Error", "glyphicon-exclamation-sign", "status-error", 1),
     COMPLETED("Completed", "glyphicon-ok-circle", "status-success", 1),
     WAITING("Waiting", "", "", 0), // Pseudo status
     PROCESSED("Processed", "", "", 0), // Pseudo status

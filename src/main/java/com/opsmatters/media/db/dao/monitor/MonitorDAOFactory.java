@@ -36,6 +36,7 @@ public class MonitorDAOFactory extends DAOFactory
         getContentMonitorDAO();
         getContentChangeDAO();
         getContentAlertDAO();
+        getContentReviewDAO();
     }
 
     /**
@@ -69,6 +70,16 @@ public class MonitorDAOFactory extends DAOFactory
     }
 
     /**
+     * Returns the content review DAO.
+     */
+    public ContentReviewDAO getContentReviewDAO()
+    {
+        if(contentReviewDAO == null)
+            contentReviewDAO = new ContentReviewDAO(this);
+        return contentReviewDAO;
+    }
+
+    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
@@ -78,9 +89,11 @@ public class MonitorDAOFactory extends DAOFactory
         contentMonitorDAO = null;
         contentChangeDAO = null;
         contentAlertDAO = null;
+        contentReviewDAO = null;
     }
 
     private ContentMonitorDAO contentMonitorDAO;
     private ContentChangeDAO contentChangeDAO;
     private ContentAlertDAO contentAlertDAO;
+    private ContentReviewDAO contentReviewDAO;
 }

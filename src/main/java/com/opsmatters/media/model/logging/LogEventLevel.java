@@ -27,7 +27,7 @@ import java.util.ArrayList;
 public enum LogEventLevel
 {
     ERROR("Error", 2, "glyphicon-exclamation-sign", "level-error"),
-    WARN("Warn", 1, "glyphicon-warning-sign", "level-warn"),
+    WARN("Warn", 1, "glyphicon-exclamation-sign", "level-warn"),
     INFO("Info", 0, "glyphicon-info-sign", "level-info"),
     DEBUG("Debug", -1, "glyphicon-info-sign", "level-debug");
 

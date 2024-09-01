@@ -15,6 +15,7 @@ public enum UserMessage
     NOT_CHANGED("Not Changed", false),
     CHANGE("Change", false),
     ALERT("Alert", false),
+    REVIEW("Review", false),
     ARCHIVED("Archived", false),
     SYNC("Sync", false),
     WEBCACHE("Webcache", false),

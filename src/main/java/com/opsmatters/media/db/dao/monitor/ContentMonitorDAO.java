@@ -578,7 +578,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     }
 
     /**
-     * Returns the count of monitors from the CONTENT_MONITORS table by organisation code and content type.
+     * Returns the count of monitors from the CONTENT_MONITORS table with a status of CHANGE.
      */
     public int getChangeCount(String code, String name, ContentType type) throws SQLException
     {
@@ -593,7 +593,7 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
     }
 
     /**
-     * Returns the count of monitors from the CONTENT_MONITORS table by organisation code and content type.
+     * Returns the count of monitors from the CONTENT_MONITORS table with a status of ALERT.
      */
     public int getAlertCount(String code, String name, ContentType type) throws SQLException
     {
@@ -601,6 +601,21 @@ public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
         for(ContentMonitor monitor : list(code, name, type))
         {
             if(monitor.getStatus() == MonitorStatus.ALERT)
+                ++ret;
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the count of monitors from the CONTENT_MONITORS table with a status of REVIEW.
+     */
+    public int getReviewCount(String code, String name, ContentType type) throws SQLException
+    {
+        int ret = 0;
+        for(ContentMonitor monitor : list(code, name, type))
+        {
+            if(monitor.getStatus() == MonitorStatus.REVIEW)
                 ++ret;
         }
 
