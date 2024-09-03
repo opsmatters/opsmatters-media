@@ -46,58 +46,80 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
     private static final Logger logger = Logger.getLogger(ContentDAO.class.getName());
 
     /**
+     * The query to use to update the status of a content item in the table.
+     */
+    private static final String UPDATE_STATUS_SQL =  
+      "UPDATE %s SET STATUS=? WHERE SITE_ID=? AND CODE=? AND ID=?";
+
+    /**
      * The query to use to select a content item from the table by UUID.
      */
     private static final String GET_BY_UUID_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM %s WHERE SITE_ID=? AND CODE=? AND UUID=?";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM %s WHERE UUID=?";
 
     /**
      * The query to use to select a content item from the table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM %s WHERE SITE_ID=? AND CODE=? AND ID=?";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM %s WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
      * The query to use to select a content item from the table by title.
      */
     private static final String GET_BY_TITLE_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM %s WHERE SITE_ID=? AND CODE=? AND TITLE=?";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM %s WHERE SITE_ID=? AND CODE=? AND TITLE=?";
 
     /**
      * The query to use to select the content from the table by organisation code.
      */
     private static final String LIST_BY_CODE_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM %s WHERE SITE_ID=? AND CODE=? ORDER BY ID";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM %s WHERE SITE_ID=? AND CODE=? ORDER BY ID";
+
+    /**
+     * The query to use to select the pending content from the table by organisation code.
+     */
+    private static final String LIST_PENDING_BY_CODE_SQL =  
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM %s WHERE SITE_ID=? AND CODE=? AND STATUS IN ('PENDING','STAGED') ORDER BY ID";
 
     /**
      * The query to use to select the content from the table by organisation code and interval.
      */
     private static final String LIST_BY_CODE_INTERVAL_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM %s WHERE SITE_ID=? AND CODE=? AND PUBLISHED_DATE >= (NOW() + INTERVAL -? DAY) ORDER BY ID";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM %s WHERE SITE_ID=? AND CODE=? AND PUBLISHED_DATE >= (NOW() + INTERVAL -? DAY) ORDER BY ID";
 
     /**
      * The query to use to select the content from the table by published date.
      */
     private static final String LIST_BY_DATE_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM %s WHERE SITE_ID=? AND PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM %s WHERE SITE_ID=? AND PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
 
     /**
      * The query to use to select the content from the table by status.
      */
     private static final String LIST_BY_STATUS_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM %s WHERE SITE_ID=? AND STATUS=? ORDER BY CODE";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM %s WHERE SITE_ID=? AND STATUS=? ORDER BY CODE";
 
     /**
      * The query to use to select the content from the table by site.
      */
     private static final String LIST_BY_SITE_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM %s WHERE SITE_ID=? ORDER BY CODE";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM %s WHERE SITE_ID=? ORDER BY CODE";
 
     /**
      * The query to use to select the content from the table by site, code and title.
      */
     private static final String LIST_BY_TITLE_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM %s WHERE SITE_ID=? AND CODE=? AND TITLE=? ORDER BY PUBLISHED_DATE DESC";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM %s WHERE SITE_ID=? AND CODE=? AND TITLE=? ORDER BY PUBLISHED_DATE DESC";
 
     /**
      * The query to use to get the count of content items from the table.
@@ -148,9 +170,34 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
     public abstract void update(T content) throws SQLException;
 
     /**
+     * Updates the status of the given content item in the table.
+     */
+    public synchronized void updateStatus(T content) throws SQLException
+    {
+        if(!hasConnection() || content == null)
+            return;
+
+        if(!content.hasUniqueId())
+            throw new IllegalArgumentException("content uuid null");
+
+        if(updateStatusStmt == null)
+            updateStatusStmt = prepareStatement(getConnection(), String.format(UPDATE_STATUS_SQL, getTableName()));
+        clearParameters(updateStatusStmt);
+
+        updateStatusStmt.setString(1, content.getStatus().name());
+        updateStatusStmt.setString(2, content.getSiteId());
+        updateStatusStmt.setString(3, content.getCode());
+        updateStatusStmt.setInt(4, content.getId());
+        updateStatusStmt.executeUpdate();
+
+        logger.info(String.format("Updated status of %s '%s' in %s (GUID=%s)", 
+            content.getType().value(), content.getTitle(), getTableName(), content.getGuid()));
+    }
+
+    /**
      * Returns a content item from the table by UUID.
      */
-    public synchronized T getByUuid(String siteId, String code, String uuid) throws SQLException
+    public synchronized T getByUuid(String uuid) throws SQLException
     {
         T ret = null;
 
@@ -166,16 +213,22 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
 
         try
         {
-            getByUuidStmt.setString(1, siteId);
-            getByUuidStmt.setString(2, code);
-            getByUuidStmt.setString(3, uuid);
+            getByUuidStmt.setString(1, uuid);
             getByUuidStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByUuidStmt.executeQuery();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
-                ret.setSiteId(rs.getString(2));
+                T content = newContentInstance(new Class[0], new Object[0]);
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
+                ret = content;
             }
         }
         catch(IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
@@ -225,9 +278,17 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
             rs = getByIdStmt.executeQuery();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
-                ret.setSiteId(rs.getString(2));
+                T content = newContentInstance(new Class[0], new Object[0]);
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
+                ret = content;
             }
         }
         catch(IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
@@ -285,9 +346,17 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
             rs = getByTitleStmt.executeQuery();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
-                ret.setSiteId(rs.getString(2));
+                T content = newContentInstance(new Class[0], new Object[0]);
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
+                ret = content;
             }
         }
         catch(IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
@@ -337,9 +406,76 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
             ret = new ArrayList<T>();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                T content = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
+                T content = newContentInstance(new Class[0], new Object[0]);
+                content.setUuid(rs.getString(1));
                 content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
+                ret.add(content);
+            }
+        }
+        catch(IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
+        {
+            logger.severe(StringUtils.serialize(e));
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the pending content items from the table by organisation code.
+     */
+    public synchronized List<T> listPending(Site site, String code) throws SQLException
+    {
+        List<T> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listPendingByCodeStmt == null)
+            listPendingByCodeStmt = prepareStatement(getConnection(), String.format(LIST_PENDING_BY_CODE_SQL, getTableName()));
+        clearParameters(listPendingByCodeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listPendingByCodeStmt.setString(1, site.getId());
+            listPendingByCodeStmt.setString(2, code);
+            listPendingByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listPendingByCodeStmt.executeQuery();
+            ret = new ArrayList<T>();
+            while(rs.next())
+            {
+                T content = newContentInstance(new Class[0], new Object[0]);
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
                 ret.add(content);
             }
         }
@@ -391,9 +527,16 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
             ret = new ArrayList<T>();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                T content = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
+                T content = newContentInstance(new Class[0], new Object[0]);
+                content.setUuid(rs.getString(1));
                 content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
                 ret.add(content);
             }
         }
@@ -444,9 +587,16 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
             ret = new ArrayList<T>();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                T content = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
+                T content = newContentInstance(new Class[0], new Object[0]);
+                content.setUuid(rs.getString(1));
                 content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
                 ret.add(content);
             }
         }
@@ -497,9 +647,16 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
             ret = new ArrayList<T>();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                T content = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
+                T content = newContentInstance(new Class[0], new Object[0]);
+                content.setUuid(rs.getString(1));
                 content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
                 ret.add(content);
             }
         }
@@ -549,9 +706,16 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
             ret = new ArrayList<T>();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                T content = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
+                T content = newContentInstance(new Class[0], new Object[0]);
+                content.setUuid(rs.getString(1));
                 content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
                 ret.add(content);
             }
         }
@@ -603,9 +767,16 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
             ret = new ArrayList<T>();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                T content = newContentInstance(new Class[] { JSONObject.class }, new Object[] { attributes });
+                T content = newContentInstance(new Class[0], new Object[0]);
+                content.setUuid(rs.getString(1));
                 content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
                 ret.add(content);
             }
         }
@@ -771,7 +942,7 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
     {
         boolean ret = false;
 
-        T existing = getByUuid(content.getSiteId(), content.getCode(), content.getUuid());
+        T existing = getByUuid(content.getUuid());
         if(existing != null)
         {
             if(keepExternal)
@@ -831,6 +1002,8 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
     @Override
     protected void close()
     {
+        closeStatement(updateStatusStmt);
+        updateStatusStmt = null;
         closeStatement(getByUuidStmt);
         getByUuidStmt = null;
         closeStatement(getByIdStmt);
@@ -839,6 +1012,8 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
         getByTitleStmt = null;
         closeStatement(listByCodeStmt);
         listByCodeStmt = null;
+        closeStatement(listPendingByCodeStmt);
+        listPendingByCodeStmt = null;
         closeStatement(listByCodeIntervalStmt);
         listByCodeIntervalStmt = null;
         closeStatement(listByDateStmt);
@@ -861,10 +1036,12 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
         deleteByCodeStmt = null;
     }
 
+    private PreparedStatement updateStatusStmt;
     private PreparedStatement getByUuidStmt;
     private PreparedStatement getByIdStmt;
     private PreparedStatement getByTitleStmt;
     private PreparedStatement listByCodeStmt;
+    private PreparedStatement listPendingByCodeStmt;
     private PreparedStatement listByCodeIntervalStmt;
     private PreparedStatement listByDateStmt;
     private PreparedStatement listByStatusStmt;

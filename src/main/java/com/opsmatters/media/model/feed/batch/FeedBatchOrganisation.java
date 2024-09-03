@@ -96,19 +96,23 @@ public class FeedBatchOrganisation
     /**
      * Sets the items.
      */
-    public void setItems() throws SQLException
+    public void setItems(boolean pendingOnly) throws SQLException
     {
         if(items == null)
-            items = getDAO().list(site, config.getCode());
+        {
+            if(pendingOnly)
+                items = getDAO().listPending(site, config.getCode());
+            else
+                items = getDAO().list(site, config.getCode());
+        }
     }
 
     /**
      * Returns the items.
      */
-    public List<Content> getItems(boolean set) throws SQLException
+    public List<Content> getItems(boolean pendingOnly) throws SQLException
     {
-        if(set)
-            setItems();
+        setItems(pendingOnly);
         return getItems();
     }
 

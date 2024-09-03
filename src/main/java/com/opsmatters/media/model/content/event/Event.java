@@ -129,36 +129,12 @@ public class Event extends Resource<EventDetails>
     }
 
     /**
-     * Constructor that takes a JSON object.
+     * Returns the attributes as a JSON object.
      */
-    public Event(JSONObject obj)
+    @Override
+    public JSONObject getAttributes()
     {
-        this();
-        fromJson(obj);
-    }
-
-    /**
-     * Initialise this object using a JSON object.
-     */
-    public void fromJson(JSONObject obj)
-    {
-        super.fromJson(obj);
-
-        setStartDateMillis(obj.optLong(START_DATE.value()));
-        setEndDateMillis(obj.optLong(END_DATE.value()));
-        if(getPublishedDateMillis() == 0L) // Default to start date
-            setPublishedDate(TimeUtils.truncateTimeUTC(getStartDate()));
-        setTimeZone(obj.optString(TIMEZONE.value()));
-        setEventType(obj.optString(EVENT_TYPE.value()));
-        setLocation(obj.optString(LOCATION.value()));
-    }
-
-    /**
-     * Returns this object as a JSON object.
-     */
-    public JSONObject toJson()
-    {
-        JSONObject ret = super.toJson();
+        JSONObject ret = super.getAttributes();
 
         ret.put(START_DATE.value(), getStartDateMillis());
         ret.put(END_DATE.value(), getEndDateMillis());
@@ -167,6 +143,23 @@ public class Event extends Resource<EventDetails>
         ret.putOpt(LOCATION.value(), getLocation());
 
         return ret;
+    }
+
+    /**
+     * Initialise the attributes using a JSON object.
+     */
+    @Override
+    public void setAttributes(JSONObject obj)
+    {
+        super.setAttributes(obj);
+
+        setStartDateMillis(obj.optLong(START_DATE.value()));
+        setEndDateMillis(obj.optLong(END_DATE.value()));
+        if(getPublishedDateMillis() == 0L) // Default to start date
+            setPublishedDate(TimeUtils.truncateTimeUTC(getStartDate()));
+        setTimeZone(obj.optString(TIMEZONE.value()));
+        setEventType(obj.optString(EVENT_TYPE.value()));
+        setLocation(obj.optString(LOCATION.value()));
     }
 
     /**

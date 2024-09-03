@@ -48,7 +48,7 @@ public class EventDAO extends ContentDAO<Event>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO EVENTS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, START_DATE, UUID, TITLE, URL, EVENT_TYPE, TIMEZONE, PUBLISHED, PROMOTE, "
+      + "( UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, START_DATE, TITLE, URL, EVENT_TYPE, TIMEZONE, PUBLISHED, PROMOTE, "
       +   "STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
@@ -57,20 +57,21 @@ public class EventDAO extends ContentDAO<Event>
      * The query to use to update a event in the EVENTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE EVENTS SET PUBLISHED_DATE=?, START_DATE=?, UUID=?, TITLE=?, URL=?, EVENT_TYPE=?, TIMEZONE=?, PUBLISHED=?, PROMOTE=?, STATUS=?, ATTRIBUTES=? "
+      "UPDATE EVENTS SET UUID=?, PUBLISHED_DATE=?, START_DATE=?, TITLE=?, URL=?, EVENT_TYPE=?, TIMEZONE=?, PUBLISHED=?, PROMOTE=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
      * The query to use to select a list of events from the EVENTS table by URL.
      */
     private static final String LIST_BY_URL_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM EVENTS WHERE CODE=? AND URL=? AND (?=0 OR ABS(TIMESTAMPDIFF(DAY, ?, START_DATE)) < 2)";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM EVENTS WHERE CODE=? AND URL=? AND (?=0 OR ABS(TIMESTAMPDIFF(DAY, ?, START_DATE)) < 2)";
 
     /**
      * The query to use to select the event items from the table by organisation code.
      */
     private static final String LIST_ITEMS_BY_CODE_SQL =
-      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, START_DATE, TITLE, URL, EVENT_TYPE, TIMEZONE, PUBLISHED, PROMOTE, STATUS "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, START_DATE, TITLE, URL, EVENT_TYPE, TIMEZONE, PUBLISHED, PROMOTE, STATUS "
       + "FROM EVENTS WHERE SITE_ID=? AND CODE=? ORDER BY ID";
 
     /**
@@ -87,12 +88,12 @@ public class EventDAO extends ContentDAO<Event>
     @Override
     protected void defineTable()
     {
+        table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
         table.addColumn("START_DATE", Types.TIMESTAMP, true);
-        table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("TITLE", Types.VARCHAR, 256, true);
         table.addColumn("URL", Types.VARCHAR, 512, true);
         table.addColumn("EVENT_TYPE", Types.VARCHAR, 30, true);
@@ -103,8 +104,8 @@ public class EventDAO extends ContentDAO<Event>
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("SESSION_ID", Types.INTEGER, true);
-        table.setPrimaryKey("EVENTS_PK", new String[] {"SITE_ID","CODE","ID"});
-        table.addIndex("EVENTS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
+        table.setPrimaryKey("EVENTS_PK", new String[] {"UUID"});
+        table.addIndex("EVENTS_ID_IDX", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("EVENTS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
         table.addIndex("EVENTS_URL_IDX", new String[] {"SITE_ID","CODE","URL"});
         table.addIndex("EVENTS_STATUS_IDX", new String[] {"STATUS"});
@@ -140,10 +141,17 @@ public class EventDAO extends ContentDAO<Event>
             ret = new ArrayList<Event>();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                Event event = new Event(attributes);
-                event.setSiteId(rs.getString(2));
-                ret.add(event);
+                Event content = new Event();
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
+                ret.add(content);
             }
         }
         finally
@@ -182,12 +190,12 @@ public class EventDAO extends ContentDAO<Event>
 
         try
         {
-            insertStmt.setString(1, content.getSiteId());
-            insertStmt.setString(2, content.getCode());
-            insertStmt.setInt(3, content.getId());
-            insertStmt.setTimestamp(4, new Timestamp(content.getPublishedDateMillis()), UTC);
-            insertStmt.setTimestamp(5, new Timestamp(content.getStartDateMillis()), UTC);
-            insertStmt.setString(6, content.getUuid());
+            insertStmt.setString(1, content.getUuid());
+            insertStmt.setString(2, content.getSiteId());
+            insertStmt.setString(3, content.getCode());
+            insertStmt.setInt(4, content.getId());
+            insertStmt.setTimestamp(5, new Timestamp(content.getPublishedDateMillis()), UTC);
+            insertStmt.setTimestamp(6, new Timestamp(content.getStartDateMillis()), UTC);
             insertStmt.setString(7, content.getTitle());
             insertStmt.setString(8, content.getUrl());
             insertStmt.setString(9, content.getEventType());
@@ -196,7 +204,7 @@ public class EventDAO extends ContentDAO<Event>
             insertStmt.setBoolean(12, content.isPromoted());
             insertStmt.setString(13, content.getStatus().name());
             insertStmt.setString(14, content.getCreatedBy());
-            String attributes = content.toJson().toString();
+            String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(15, reader, attributes.length());
             insertStmt.setInt(16, SessionId.get());
@@ -244,9 +252,9 @@ public class EventDAO extends ContentDAO<Event>
 
         try
         {
-            updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
-            updateStmt.setTimestamp(2, new Timestamp(content.getStartDateMillis()), UTC);
-            updateStmt.setString(3, content.getUuid());
+            updateStmt.setString(1, content.getUuid());
+            updateStmt.setTimestamp(2, new Timestamp(content.getPublishedDateMillis()), UTC);
+            updateStmt.setTimestamp(3, new Timestamp(content.getStartDateMillis()), UTC);
             updateStmt.setString(4, content.getTitle());
             updateStmt.setString(5, content.getUrl());
             updateStmt.setString(6, content.getEventType());
@@ -254,7 +262,7 @@ public class EventDAO extends ContentDAO<Event>
             updateStmt.setBoolean(8, content.isPublished());
             updateStmt.setBoolean(9, content.isPromoted());
             updateStmt.setString(10, content.getStatus().name());
-            String attributes = content.toJson().toString();
+            String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(11, reader, attributes.length());
             updateStmt.setString(12, content.getSiteId());
@@ -299,10 +307,10 @@ public class EventDAO extends ContentDAO<Event>
             while(rs.next())
             {
                 EventItem event = new EventItem();
-                event.setSiteId(rs.getString(1));
-                event.setCode(rs.getString(2));
-                event.setId(rs.getInt(3));
-                event.setUuid(rs.getString(4));
+                event.setUuid(rs.getString(1));
+                event.setSiteId(rs.getString(2));
+                event.setCode(rs.getString(3));
+                event.setId(rs.getInt(4));
                 event.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
                 event.setStartDateMillis(rs.getTimestamp(6, UTC).getTime());
                 event.setTitle(rs.getString(7));

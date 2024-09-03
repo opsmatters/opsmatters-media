@@ -48,14 +48,15 @@ public class PublicationDAO extends ContentDAO<Publication>
      * The query to use to select an publication from the PUBLICATIONS table by URL.
      */
     private static final String GET_BY_URL_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM PUBLICATIONS WHERE SITE_ID=? AND CODE=? AND URL=? ";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM PUBLICATIONS WHERE SITE_ID=? AND CODE=? AND URL=? ";
 
     /**
      * The query to use to insert a publication into the PUBLICATIONS table.
      */
     private static final String INSERT_SQL =  
       "INSERT INTO PUBLICATIONS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, URL, PUBLICATION_TYPE, PUBLISHED, PROMOTE, "
+      + "( UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, PUBLICATION_TYPE, PUBLISHED, PROMOTE, "
       +   "STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
@@ -64,20 +65,21 @@ public class PublicationDAO extends ContentDAO<Publication>
      * The query to use to update a publication in the PUBLICATIONS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE PUBLICATIONS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, URL=?, PUBLICATION_TYPE=?, PUBLISHED=?, PROMOTE=?, STATUS=?, ATTRIBUTES=? "
+      "UPDATE PUBLICATIONS SET UUID=?, PUBLISHED_DATE=?, TITLE=?, URL=?, PUBLICATION_TYPE=?, PUBLISHED=?, PROMOTE=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
      * The query to use to select a list of publications from the PUBLICATIONS table by URL.
      */
     private static final String LIST_BY_URL_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM PUBLICATIONS WHERE CODE=? AND URL=?";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM PUBLICATIONS WHERE CODE=? AND URL=?";
 
     /**
      * The query to use to select the publication items from the table by organisation code.
      */
     private static final String LIST_ITEMS_BY_CODE_SQL =
-      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, URL, PUBLICATION_TYPE, PUBLISHED, PROMOTE, STATUS "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, PUBLICATION_TYPE, PUBLISHED, PROMOTE, STATUS "
       + "FROM PUBLICATIONS WHERE SITE_ID=? AND CODE=? ORDER BY ID";
 
     /**
@@ -94,11 +96,11 @@ public class PublicationDAO extends ContentDAO<Publication>
     @Override
     protected void defineTable()
     {
+        table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
-        table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("TITLE", Types.VARCHAR, 256, true);
         table.addColumn("URL", Types.VARCHAR, 256, true);
         table.addColumn("PUBLICATION_TYPE", Types.VARCHAR, 30, true);
@@ -108,8 +110,8 @@ public class PublicationDAO extends ContentDAO<Publication>
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("SESSION_ID", Types.INTEGER, true);
-        table.setPrimaryKey("PUBLICATIONS_PK", new String[] {"SITE_ID","CODE","ID"});
-        table.addIndex("PUBLICATIONS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
+        table.setPrimaryKey("PUBLICATIONS_PK", new String[] {"UUID"});
+        table.addIndex("PUBLICATIONS_ID_IDX", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("PUBLICATIONS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
         table.addIndex("PUBLICATIONS_URL_IDX", new String[] {"SITE_ID","CODE","URL"});
         table.addIndex("PUBLICATIONS_STATUS_IDX", new String[] {"STATUS"});
@@ -143,10 +145,17 @@ public class PublicationDAO extends ContentDAO<Publication>
             rs = getByUrlStmt.executeQuery();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                Publication item = new Publication(attributes);
-                item.setSiteId(rs.getString(2));
-                ret = item;
+                Publication content = new Publication();
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
+                ret = content;
             }
         }
         finally
@@ -192,10 +201,17 @@ public class PublicationDAO extends ContentDAO<Publication>
             ret = new ArrayList<Publication>();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                Publication item = new Publication(attributes);
-                item.setSiteId(rs.getString(2));
-                ret.add(item);
+                Publication content = new Publication();
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
+                ret.add(content);
             }
         }
         finally
@@ -234,11 +250,11 @@ public class PublicationDAO extends ContentDAO<Publication>
 
         try
         {
-            insertStmt.setString(1, content.getSiteId());
-            insertStmt.setString(2, content.getCode());
-            insertStmt.setInt(3, content.getId());
-            insertStmt.setTimestamp(4, new Timestamp(content.getPublishedDateMillis()), UTC);
-            insertStmt.setString(5, content.getUuid());
+            insertStmt.setString(1, content.getUuid());
+            insertStmt.setString(2, content.getSiteId());
+            insertStmt.setString(3, content.getCode());
+            insertStmt.setInt(4, content.getId());
+            insertStmt.setTimestamp(5, new Timestamp(content.getPublishedDateMillis()), UTC);
             insertStmt.setString(6, content.getTitle());
             insertStmt.setString(7, content.getUrl());
             insertStmt.setString(8, content.getPublicationType());
@@ -246,7 +262,7 @@ public class PublicationDAO extends ContentDAO<Publication>
             insertStmt.setBoolean(10, content.isPromoted());
             insertStmt.setString(11, content.getStatus().name());
             insertStmt.setString(12, content.getCreatedBy());
-            String attributes = content.toJson().toString();
+            String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(13, reader, attributes.length());
             insertStmt.setInt(14, SessionId.get());
@@ -294,15 +310,15 @@ public class PublicationDAO extends ContentDAO<Publication>
 
         try
         {
-            updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
-            updateStmt.setString(2, content.getUuid());
+            updateStmt.setString(1, content.getUuid());
+            updateStmt.setTimestamp(2, new Timestamp(content.getPublishedDateMillis()), UTC);
             updateStmt.setString(3, content.getTitle());
             updateStmt.setString(4, content.getUrl());
             updateStmt.setString(5, content.getPublicationType());
             updateStmt.setBoolean(6, content.isPublished());
             updateStmt.setBoolean(7, content.isPromoted());
             updateStmt.setString(8, content.getStatus().name());
-            String attributes = content.toJson().toString();
+            String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(9, reader, attributes.length());
             updateStmt.setString(10, content.getSiteId());
@@ -370,10 +386,10 @@ public class PublicationDAO extends ContentDAO<Publication>
             while(rs.next())
             {
                 PublicationItem publication = new PublicationItem();
-                publication.setSiteId(rs.getString(1));
-                publication.setCode(rs.getString(2));
-                publication.setId(rs.getInt(3));
-                publication.setUuid(rs.getString(4));
+                publication.setUuid(rs.getString(1));
+                publication.setSiteId(rs.getString(2));
+                publication.setCode(rs.getString(3));
+                publication.setId(rs.getInt(4));
                 publication.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
                 publication.setTitle(rs.getString(6));
                 publication.setUrl(rs.getString(7));

@@ -145,37 +145,12 @@ public class Post extends Article<PostDetails>
     }
 
     /**
-     * Constructor that takes a JSON object.
+     * Returns the attributes as a JSON object.
      */
-    public Post(JSONObject obj)
+    @Override
+    public JSONObject getAttributes()
     {
-        this();
-        fromJson(obj);
-    }
-
-    /**
-     * Initialise this object using a JSON object.
-     */
-    public void fromJson(JSONObject obj)
-    {
-        super.fromJson(obj);
-
-        setPostType(obj.optString(POST_TYPE.value()));
-        setDescription(EmojiParser.parseToUnicode(obj.optString(DESCRIPTION.value())));
-        setUrlAlias(obj.optString(URL.value()));
-        setCanonicalUrl(obj.optString(CANONICAL_URL.value()));
-        setImage(obj.optString(IMAGE.value()));
-        setImageSource(obj.optString(IMAGE_SOURCE.value()));
-        setAuthor(obj.optString(AUTHOR.value()));
-        setAuthorLink(obj.optString(AUTHOR_LINK.value()));
-    }
-
-    /**
-     * Returns this object as a JSON object.
-     */
-    public JSONObject toJson()
-    {
-        JSONObject ret = super.toJson();
+        JSONObject ret = super.getAttributes();
 
         ret.putOpt(POST_TYPE.value(), getPostType());
         ret.putOpt(DESCRIPTION.value(), EmojiParser.parseToAliases(getDescription()));
@@ -187,6 +162,24 @@ public class Post extends Article<PostDetails>
         ret.putOpt(AUTHOR_LINK.value(), getAuthorLink());
 
         return ret;
+    }
+
+    /**
+     * Initialise the attributes using a JSON object.
+     */
+    @Override
+    public void setAttributes(JSONObject obj)
+    {
+        super.setAttributes(obj);
+
+        setPostType(obj.optString(POST_TYPE.value()));
+        setDescription(EmojiParser.parseToUnicode(obj.optString(DESCRIPTION.value())));
+        setUrlAlias(obj.optString(URL.value()));
+        setCanonicalUrl(obj.optString(CANONICAL_URL.value()));
+        setImage(obj.optString(IMAGE.value()));
+        setImageSource(obj.optString(IMAGE_SOURCE.value()));
+        setAuthor(obj.optString(AUTHOR.value()));
+        setAuthorLink(obj.optString(AUTHOR_LINK.value()));
     }
 
     /**

@@ -42,34 +42,32 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
     private static final Logger logger = Logger.getLogger(OrganisationListingDAO.class.getName());
 
     /**
-     * The query to use to select an organisation listing from the ORGANISATION_LISTINGS table by UUID.
-     */
-    private static final String GET_BY_UUID_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM ORGANISATION_LISTINGS WHERE SITE_ID=? AND UUID=?";
-
-    /**
      * The query to use to select an organisation listing from the table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM ORGANISATION_LISTINGS WHERE SITE_ID=? AND ID=?";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM ORGANISATION_LISTINGS WHERE SITE_ID=? AND ID=?";
 
     /**
      * The query to use to select an organisation listing from the table by code.
      */
     private static final String GET_BY_CODE_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM ORGANISATION_LISTINGS WHERE SITE_ID=? AND CODE=?";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM ORGANISATION_LISTINGS WHERE SITE_ID=? AND CODE=?";
 
     /**
      * The query to use to select all the organisation listings from the table.
      */
     private static final String LIST_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM ORGANISATION_LISTINGS WHERE SITE_ID=? ORDER BY ID";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM ORGANISATION_LISTINGS WHERE SITE_ID=? ORDER BY ID";
 
     /**
      * The query to use to select the matching organisation listings from the table.
      */
     private static final String LIST_LIKE_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM ORGANISATION_LISTINGS WHERE SITE_ID=? AND TITLE LIKE ? ORDER BY ID";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM ORGANISATION_LISTINGS WHERE SITE_ID=? AND TITLE LIKE ? ORDER BY ID";
 
     /**
      * The query to use to get the count of organisation listings from the table.
@@ -82,7 +80,7 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO ORGANISATION_LISTINGS"
-      + "( SITE_ID, ID, PUBLISHED_DATE, UUID, CODE, TITLE, STATUS, ATTRIBUTES, CREATED_BY )"
+      + "( UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, STATUS, ATTRIBUTES, CREATED_BY )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
@@ -90,7 +88,7 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
      * The query to use to update an organisation listing in the ORGANISATION_LISTINGS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE ORGANISATION_LISTINGS SET PUBLISHED_DATE=?, UUID=?, CODE=?, TITLE=?, STATUS=?, ATTRIBUTES=? "
+      "UPDATE ORGANISATION_LISTINGS SET UUID=?, PUBLISHED_DATE=?, CODE=?, TITLE=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND ID=?";
 
     /**
@@ -119,76 +117,20 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
     @Override
     protected void defineTable()
     {
+        table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
-        table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("TITLE", Types.VARCHAR, 60, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
-        table.setPrimaryKey("ORGANISATION_LISTINGS_PK", new String[] {"SITE_ID","ID"});
-        table.addIndex("ORGANISATION_LISTINGS_UUID_IDX", new String[] {"SITE_ID","UUID"});
-        table.addIndex("ORGANISATION_LISTINGS_TITLE_IDX", new String[] {"SITE_ID","TITLE"});
-        table.addIndex("ORGANISATION_LISTINGS_STATUS_IDX", new String[] {"STATUS"});
+        table.setPrimaryKey("LISTINGS_PK", new String[] {"UUID"});
+        table.addIndex("LISTINGS_ID_IDX", new String[] {"SITE_ID","CODE","ID"});
+        table.addIndex("LISTINGS_TITLE_IDX", new String[] {"SITE_ID","TITLE"});
+        table.addIndex("LISTINGS_STATUS_IDX", new String[] {"STATUS"});
         table.setInitialised(true);
-    }
-
-    /**
-     * Returns an organisation listing from the ORGANISATION_LISTINGS table by UUID.
-     */
-    @Override
-    public OrganisationListing getByUuid(String siteId, String code, String uuid) throws SQLException
-    {
-        return getByUuid(siteId, uuid);
-    }
-
-    /**
-     * Returns an organisation listing from the ORGANISATION_LISTINGS table by UUID.
-     */
-    public synchronized OrganisationListing getByUuid(String siteId, String uuid) throws SQLException
-    {
-        OrganisationListing ret = null;
-
-        if(!hasConnection())
-            return ret;
-
-        preQuery();
-        if(getByUuidStmt == null)
-            getByUuidStmt = prepareStatement(getConnection(), GET_BY_UUID_SQL);
-        clearParameters(getByUuidStmt);
-
-        ResultSet rs = null;
-
-        try
-        {
-            getByUuidStmt.setString(1, siteId);
-            getByUuidStmt.setString(2, uuid);
-            getByUuidStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = getByUuidStmt.executeQuery();
-            while(rs.next())
-            {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = new OrganisationListing(attributes);
-                ret.setSiteId(rs.getString(2));
-            }
-        }
-        finally
-        {
-            try
-            {
-                if(rs != null)
-                    rs.close();
-            }
-            catch (SQLException ex) 
-            {
-            } 
-        }
-
-        postQuery();
-
-        return ret;
     }
 
     /**
@@ -225,9 +167,17 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
             rs = getByIdStmt.executeQuery();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = new OrganisationListing(attributes);
-                ret.setSiteId(rs.getString(2));
+                OrganisationListing content = new OrganisationListing();
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
+                ret = content;
             }
         }
         finally
@@ -272,9 +222,17 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
             rs = getByCodeStmt.executeQuery();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = new OrganisationListing(attributes);
-                ret.setSiteId(rs.getString(2));
+                OrganisationListing content = new OrganisationListing();
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
+                ret = content;
             }
         }
         finally
@@ -328,10 +286,17 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
             ret = new ArrayList<OrganisationListing>();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                OrganisationListing listing = new OrganisationListing(attributes);
-                listing.setSiteId(rs.getString(2));
-                ret.add(listing);
+                OrganisationListing content = new OrganisationListing();
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
+                ret.add(content);
             }
         }
         finally
@@ -379,10 +344,17 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
             ret = new ArrayList<OrganisationListing>();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                OrganisationListing listing = new OrganisationListing(attributes);
-                listing.setSiteId(rs.getString(2));
-                ret.add(listing);
+                OrganisationListing content = new OrganisationListing();
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
+                ret.add(content);
             }
         }
         finally
@@ -449,14 +421,14 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
 
         try
         {
-            insertStmt.setString(1, listing.getSiteId());
-            insertStmt.setInt(2, listing.getId());
-            insertStmt.setTimestamp(3, new Timestamp(listing.getPublishedDateMillis()), UTC);
-            insertStmt.setString(4, listing.getUuid());
-            insertStmt.setString(5, listing.getCode());
+            insertStmt.setString(1, listing.getUuid());
+            insertStmt.setString(2, listing.getSiteId());
+            insertStmt.setString(3, listing.getCode());
+            insertStmt.setInt(4, listing.getId());
+            insertStmt.setTimestamp(5, new Timestamp(listing.getPublishedDateMillis()), UTC);
             insertStmt.setString(6, listing.getTitle());
             insertStmt.setString(7, listing.getStatus().name());
-            String attributes = listing.toJson().toString();
+            String attributes = listing.getAttributes().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(8, reader, attributes.length());
             insertStmt.setString(9, listing.getCreatedBy());
@@ -506,12 +478,12 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
 
         try
         {
-            updateStmt.setTimestamp(1, new Timestamp(listing.getPublishedDateMillis()), UTC);
-            updateStmt.setString(2, listing.getUuid());
+            updateStmt.setString(1, listing.getUuid());
+            updateStmt.setTimestamp(2, new Timestamp(listing.getPublishedDateMillis()), UTC);
             updateStmt.setString(3, listing.getCode());
             updateStmt.setString(4, listing.getTitle());
             updateStmt.setString(5, listing.getStatus().name());
-            String attributes = listing.toJson().toString();
+            String attributes = listing.getAttributes().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(6, reader, attributes.length());
             updateStmt.setString(7, listing.getSiteId());
@@ -595,7 +567,7 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
     {
         boolean ret = false;
 
-        OrganisationListing existing = getByUuid(listing.getSiteId(), listing.getUuid());
+        OrganisationListing existing = getByUuid(listing.getUuid());
         if(existing != null)
         {
             update(listing);
@@ -632,8 +604,6 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
     @Override
     protected void close()
     {
-        closeStatement(getByUuidStmt);
-        getByUuidStmt = null;
         closeStatement(getByIdStmt);
         getByIdStmt = null;
         closeStatement(getByCodeStmt);
@@ -654,7 +624,6 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
         deleteStmt = null;
     }
 
-    private PreparedStatement getByUuidStmt;
     private PreparedStatement getByIdStmt;
     private PreparedStatement getByCodeStmt;
     private PreparedStatement listStmt;

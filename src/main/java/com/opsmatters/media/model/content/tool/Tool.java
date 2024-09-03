@@ -126,33 +126,12 @@ public class Tool extends Resource<ToolDetails>
     }
 
     /**
-     * Constructor that takes a JSON object.
+     * Returns the attributes as a JSON object.
      */
-    public Tool(JSONObject obj)
+    @Override
+    public JSONObject getAttributes()
     {
-        this();
-        fromJson(obj);
-    }
-
-    /**
-     * Initialise this object using a JSON object.
-     */
-    public void fromJson(JSONObject obj)
-    {
-        super.fromJson(obj);
-
-        setWebsite(obj.optString(WEBSITE.value()));
-        setDownload(obj.optString(DOWNLOAD.value()));
-        setDownloadText(obj.optString(DOWNLOAD_TEXT.value()));
-        setPricing(obj.optString(PRICING.value()));
-    }
-
-    /**
-     * Returns this object as a JSON object.
-     */
-    public JSONObject toJson()
-    {
-        JSONObject ret = super.toJson();
+        JSONObject ret = super.getAttributes();
 
         ret.putOpt(WEBSITE.value(), getWebsite());
         ret.putOpt(DOWNLOAD.value(), getDownload());
@@ -160,6 +139,20 @@ public class Tool extends Resource<ToolDetails>
         ret.putOpt(PRICING.value(), getPricing());
 
         return ret;
+    }
+
+    /**
+     * Initialise the attributes using a JSON object.
+     */
+    @Override
+    public void setAttributes(JSONObject obj)
+    {
+        super.setAttributes(obj);
+
+        setWebsite(obj.optString(WEBSITE.value()));
+        setDownload(obj.optString(DOWNLOAD.value()));
+        setDownloadText(obj.optString(DOWNLOAD_TEXT.value()));
+        setPricing(obj.optString(PRICING.value()));
     }
 
     /**

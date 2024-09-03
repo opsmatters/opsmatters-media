@@ -133,34 +133,12 @@ public class RoundupPost extends Article<RoundupPostDetails> implements LinkedCo
     }
 
     /**
-     * Constructor that takes a JSON object.
+     * Returns the attributes as a JSON object.
      */
-    public RoundupPost(JSONObject obj)
+    @Override
+    public JSONObject getAttributes()
     {
-        this();
-        fromJson(obj);
-    }
-
-    /**
-     * Initialise this object using a JSON object.
-     */
-    public void fromJson(JSONObject obj)
-    {
-        super.fromJson(obj);
-
-        setUrl(obj.optString(URL.value()), false);
-        setImage(obj.optString(IMAGE.value()));
-        setImageSource(obj.optString(IMAGE_SOURCE.value()));
-        setAuthor(obj.optString(AUTHOR.value()));
-        setAuthorLink(obj.optString(AUTHOR_LINK.value()));
-    }
-
-    /**
-     * Returns this object as a JSON object.
-     */
-    public JSONObject toJson()
-    {
-        JSONObject ret = super.toJson();
+        JSONObject ret = super.getAttributes();
 
         ret.putOpt(URL.value(), getUrl());
         ret.putOpt(IMAGE.value(), getImage());
@@ -169,6 +147,21 @@ public class RoundupPost extends Article<RoundupPostDetails> implements LinkedCo
         ret.putOpt(AUTHOR_LINK.value(), getAuthorLink());
 
         return ret;
+    }
+
+    /**
+     * Initialise the attributes using a JSON object.
+     */
+    @Override
+    public void setAttributes(JSONObject obj)
+    {
+        super.setAttributes(obj);
+
+        setUrl(obj.optString(URL.value()), false);
+        setImage(obj.optString(IMAGE.value()));
+        setImageSource(obj.optString(IMAGE_SOURCE.value()));
+        setAuthor(obj.optString(AUTHOR.value()));
+        setAuthorLink(obj.optString(AUTHOR_LINK.value()));
     }
 
     /**

@@ -147,35 +147,12 @@ public class Publication extends Resource<PublicationDetails>
     }
 
     /**
-     * Constructor that takes a JSON object.
+     * Returns the attributes as a JSON object.
      */
-    public Publication(JSONObject obj)
+    @Override
+    public JSONObject getAttributes()
     {
-        this();
-        fromJson(obj);
-    }
-
-    /**
-     * Initialise this object using a JSON object.
-     */
-    public void fromJson(JSONObject obj)
-    {
-        super.fromJson(obj);
-
-        setPublicationType(obj.optString(PUBLICATION_TYPE.value()));
-        setTags(obj.optString(TAGS.value()));
-        setCreatorEmail(obj.optString(EMAIL.value()));
-        setCanonicalUrl(obj.optString(CANONICAL_URL.value()));
-        setImage(obj.optString(IMAGE.value()));
-        setImageSource(obj.optString(IMAGE_SOURCE.value()));
-    }
-
-    /**
-     * Returns this object as a JSON object.
-     */
-    public JSONObject toJson()
-    {
-        JSONObject ret = super.toJson();
+        JSONObject ret = super.getAttributes();
 
         ret.putOpt(PUBLICATION_TYPE.value(), getPublicationType());
         ret.putOpt(TAGS.value(), getTags());
@@ -185,6 +162,22 @@ public class Publication extends Resource<PublicationDetails>
         ret.putOpt(IMAGE_SOURCE.value(), getImageSource());
 
         return ret;
+    }
+
+    /**
+     * Initialise the attributes using a JSON object.
+     */
+    @Override
+    public void setAttributes(JSONObject obj)
+    {
+        super.setAttributes(obj);
+
+        setPublicationType(obj.optString(PUBLICATION_TYPE.value()));
+        setTags(obj.optString(TAGS.value()));
+        setCreatorEmail(obj.optString(EMAIL.value()));
+        setCanonicalUrl(obj.optString(CANONICAL_URL.value()));
+        setImage(obj.optString(IMAGE.value()));
+        setImageSource(obj.optString(IMAGE_SOURCE.value()));
     }
 
     /**

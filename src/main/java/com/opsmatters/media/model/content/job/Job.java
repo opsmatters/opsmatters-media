@@ -128,34 +128,12 @@ public class Job extends Resource<JobDetails>
     }
 
     /**
-     * Constructor that takes a JSON object.
+     * Returns the attributes as a JSON object.
      */
-    public Job(JSONObject obj)
+    @Override
+    public JSONObject getAttributes()
     {
-        this();
-        fromJson(obj);
-    }
-
-    /**
-     * Initialise this object using a JSON object.
-     */
-    public void fromJson(JSONObject obj)
-    {
-        super.fromJson(obj);
-
-        setWebsite(obj.optString(WEBSITE.value()));
-        setLocation(obj.optString(LOCATION.value()));
-        setPackage(obj.optString(PACKAGE.value()));
-        setTechnologies(obj.optString(TECHNOLOGIES.value()));
-        setContact(obj.optString(CONTACT.value()));
-    }
-
-    /**
-     * Returns this object as a JSON object.
-     */
-    public JSONObject toJson()
-    {
-        JSONObject ret = super.toJson();
+        JSONObject ret = super.getAttributes();
 
         ret.putOpt(WEBSITE.value(), getWebsite());
         ret.putOpt(LOCATION.value(), getLocation());
@@ -164,6 +142,21 @@ public class Job extends Resource<JobDetails>
         ret.putOpt(CONTACT.value(), getContact());
 
         return ret;
+    }
+
+    /**
+     * Initialise the attributes using a JSON object.
+     */
+    @Override
+    public void setAttributes(JSONObject obj)
+    {
+        super.setAttributes(obj);
+
+        setWebsite(obj.optString(WEBSITE.value()));
+        setLocation(obj.optString(LOCATION.value()));
+        setPackage(obj.optString(PACKAGE.value()));
+        setTechnologies(obj.optString(TECHNOLOGIES.value()));
+        setContact(obj.optString(CONTACT.value()));
     }
 
     /**

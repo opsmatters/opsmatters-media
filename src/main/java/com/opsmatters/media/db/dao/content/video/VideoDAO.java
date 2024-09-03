@@ -49,14 +49,15 @@ public class VideoDAO extends ContentDAO<Video>
      * The query to use to select a video from the VIDEOS table by videoId.
      */
     private static final String GET_BY_VIDEO_ID_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM VIDEOS WHERE SITE_ID=? AND CODE=? AND VIDEO_ID=?";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM VIDEOS WHERE SITE_ID=? AND CODE=? AND VIDEO_ID=?";
 
     /**
      * The query to use to insert a video into the VIDEOS table.
      */
     private static final String INSERT_SQL =  
       "INSERT INTO VIDEOS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, VIDEO_ID, VIDEO_TYPE, DURATION, PROVIDER, PUBLISHED, PROMOTE, NEWSLETTER, "
+      + "( UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, VIDEO_ID, VIDEO_TYPE, DURATION, PROVIDER, PUBLISHED, PROMOTE, NEWSLETTER, "
       +   "STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
@@ -65,7 +66,7 @@ public class VideoDAO extends ContentDAO<Video>
      * The query to use to update a video in the VIDEOS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE VIDEOS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, VIDEO_ID=?, VIDEO_TYPE=?, DURATION=?, PROVIDER=?, PUBLISHED=?, PROMOTE=?, NEWSLETTER=?, "
+      "UPDATE VIDEOS SET UUID=?, PUBLISHED_DATE=?, TITLE=?, VIDEO_ID=?, VIDEO_TYPE=?, DURATION=?, PROVIDER=?, PUBLISHED=?, PROMOTE=?, NEWSLETTER=?, "
       +   "STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
@@ -73,20 +74,21 @@ public class VideoDAO extends ContentDAO<Video>
      * The query to use to select a list of videos from the VIDEOS table by videoId.
      */
     private static final String LIST_BY_VIDEO_ID_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM VIDEOS WHERE CODE=? AND VIDEO_ID=?";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM VIDEOS WHERE CODE=? AND VIDEO_ID=?";
 
     /**
      * The query to use to select the video items from the table by organisation code.
      */
     private static final String LIST_ITEMS_BY_CODE_SQL =
-      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, VIDEO_ID, VIDEO_TYPE, DURATION, PUBLISHED, PROMOTE, NEWSLETTER, STATUS "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, VIDEO_ID, VIDEO_TYPE, DURATION, PUBLISHED, PROMOTE, NEWSLETTER, STATUS "
       + "FROM VIDEOS WHERE SITE_ID=? AND CODE=? ORDER BY ID";
 
     /**
      * The query to use to select the video items from the table by published date.
      */
     private static final String LIST_ITEMS_BY_DATE_SQL =  
-      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, VIDEO_ID, VIDEO_TYPE, DURATION, PUBLISHED, PROMOTE, NEWSLETTER, STATUS "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, VIDEO_ID, VIDEO_TYPE, DURATION, PUBLISHED, PROMOTE, NEWSLETTER, STATUS "
       + "FROM VIDEOS WHERE SITE_ID=? AND PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
 
     /**
@@ -103,11 +105,11 @@ public class VideoDAO extends ContentDAO<Video>
     @Override
     protected void defineTable()
     {
+        table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
-        table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("TITLE", Types.VARCHAR, 256, true);
         table.addColumn("VIDEO_ID", Types.VARCHAR, 30, true);
         table.addColumn("VIDEO_TYPE", Types.VARCHAR, 30, true);
@@ -120,8 +122,8 @@ public class VideoDAO extends ContentDAO<Video>
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("SESSION_ID", Types.INTEGER, true);
-        table.setPrimaryKey("VIDEOS_PK", new String[] {"SITE_ID","CODE","ID"});
-        table.addIndex("VIDEOS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
+        table.setPrimaryKey("VIDEOS_PK", new String[] {"UUID"});
+        table.addIndex("VIDEOS_ID_IDX", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("VIDEOS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
         table.addIndex("VIDEOS_VIDEO_ID_IDX", new String[] {"SITE_ID","CODE","VIDEO_ID"});
         table.addIndex("VIDEOS_STATUS_IDX", new String[] {"STATUS"});
@@ -155,9 +157,16 @@ public class VideoDAO extends ContentDAO<Video>
             rs = getByVideoIdStmt.executeQuery();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                Video content = new Video(attributes);
+                Video content = new Video();
+                content.setUuid(rs.getString(1));
                 content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
                 ret = content;
             }
         }
@@ -204,9 +213,16 @@ public class VideoDAO extends ContentDAO<Video>
             ret = new ArrayList<Video>();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                Video content = new Video(attributes);
+                Video content = new Video();
+                content.setUuid(rs.getString(1));
                 content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
                 ret.add(content);
             }
         }
@@ -246,11 +262,11 @@ public class VideoDAO extends ContentDAO<Video>
 
         try
         {
-            insertStmt.setString(1, content.getSiteId());
-            insertStmt.setString(2, content.getCode());
-            insertStmt.setInt(3, content.getId());
-            insertStmt.setTimestamp(4, new Timestamp(content.getPublishedDateMillis()), UTC);
-            insertStmt.setString(5, content.getUuid());
+            insertStmt.setString(1, content.getUuid());
+            insertStmt.setString(2, content.getSiteId());
+            insertStmt.setString(3, content.getCode());
+            insertStmt.setInt(4, content.getId());
+            insertStmt.setTimestamp(5, new Timestamp(content.getPublishedDateMillis()), UTC);
             insertStmt.setString(6, content.getTitle());
             insertStmt.setString(7, content.getVideoId());
             insertStmt.setString(8, content.getVideoType());
@@ -261,7 +277,7 @@ public class VideoDAO extends ContentDAO<Video>
             insertStmt.setBoolean(13, content.isNewsletter());
             insertStmt.setString(14, content.getStatus().name());
             insertStmt.setString(15, content.getCreatedBy());
-            String attributes = content.toJson().toString();
+            String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(16, reader, attributes.length());
             insertStmt.setInt(17, SessionId.get());
@@ -309,8 +325,8 @@ public class VideoDAO extends ContentDAO<Video>
 
         try
         {
-            updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
-            updateStmt.setString(2, content.getUuid());
+            updateStmt.setString(1, content.getUuid());
+            updateStmt.setTimestamp(2, new Timestamp(content.getPublishedDateMillis()), UTC);
             updateStmt.setString(3, content.getTitle());
             updateStmt.setString(4, content.getVideoId());
             updateStmt.setString(5, content.getVideoType());
@@ -320,7 +336,7 @@ public class VideoDAO extends ContentDAO<Video>
             updateStmt.setBoolean(9, content.isPromoted());
             updateStmt.setBoolean(10, content.isNewsletter());
             updateStmt.setString(11, content.getStatus().name());
-            String attributes = content.toJson().toString();
+            String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(12, reader, attributes.length());
             updateStmt.setString(13, content.getSiteId());
@@ -388,10 +404,10 @@ public class VideoDAO extends ContentDAO<Video>
             while(rs.next())
             {
                 VideoItem video = new VideoItem();
-                video.setSiteId(rs.getString(1));
-                video.setCode(rs.getString(2));
-                video.setId(rs.getInt(3));
-                video.setUuid(rs.getString(4));
+                video.setUuid(rs.getString(1));
+                video.setSiteId(rs.getString(2));
+                video.setCode(rs.getString(3));
+                video.setId(rs.getInt(4));
                 video.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
                 video.setTitle(rs.getString(6));
                 video.setVideoId(rs.getString(7));
@@ -448,10 +464,10 @@ public class VideoDAO extends ContentDAO<Video>
             while(rs.next())
             {
                 VideoItem video = new VideoItem();
-                video.setSiteId(rs.getString(1));
-                video.setCode(rs.getString(2));
-                video.setId(rs.getInt(3));
-                video.setUuid(rs.getString(4));
+                video.setUuid(rs.getString(1));
+                video.setSiteId(rs.getString(2));
+                video.setCode(rs.getString(3));
+                video.setId(rs.getInt(4));
                 video.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
                 video.setTitle(rs.getString(6));
                 video.setVideoId(rs.getString(7));

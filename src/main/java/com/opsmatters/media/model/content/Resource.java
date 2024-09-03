@@ -56,25 +56,12 @@ public abstract class Resource<D extends ResourceDetails> extends Content<D> imp
     }
 
     /**
-     * Initialise this object using a JSON object.
+     * Returns the attributes as a JSON object.
      */
-    public void fromJson(JSONObject obj)
+    @Override
+    public JSONObject getAttributes()
     {
-        super.fromJson(obj);
-
-        setDescription(EmojiParser.parseToUnicode(obj.optString(DESCRIPTION.value())));
-        setUrl(obj.optString(URL.value()));
-        setFeatures(obj.optString(FEATURES.value()));
-        setLinkText(obj.optString(LINK_TEXT.value()));
-        setPromoted(obj.optBoolean(PROMOTE.value(), false));
-    }
-
-    /**
-     * Returns this object as a JSON object.
-     */
-    public JSONObject toJson()
-    {
-        JSONObject ret = super.toJson();
+        JSONObject ret = super.getAttributes();
 
         ret.putOpt(DESCRIPTION.value(), EmojiParser.parseToAliases(getDescription()));
         ret.putOpt(URL.value(), getUrl());
@@ -83,6 +70,21 @@ public abstract class Resource<D extends ResourceDetails> extends Content<D> imp
         ret.put(PROMOTE.value(), isPromoted());
 
         return ret;
+    }
+
+    /**
+     * Initialise the attributes using a JSON object.
+     */
+    @Override
+    public void setAttributes(JSONObject obj)
+    {
+        super.setAttributes(obj);
+
+        setDescription(EmojiParser.parseToUnicode(obj.optString(DESCRIPTION.value())));
+        setUrl(obj.optString(URL.value()));
+        setFeatures(obj.optString(FEATURES.value()));
+        setLinkText(obj.optString(LINK_TEXT.value()));
+        setPromoted(obj.optBoolean(PROMOTE.value(), false));
     }
 
     /**

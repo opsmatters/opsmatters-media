@@ -46,14 +46,15 @@ public class ProjectDAO extends ContentDAO<Project>
      * The query to use to select a project from the PROJECTS table by URL.
      */
     private static final String GET_BY_URL_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM PROJECTS WHERE SITE_ID=? AND CODE=? AND URL=?";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM PROJECTS WHERE SITE_ID=? AND CODE=? AND URL=?";
 
     /**
      * The query to use to insert a project into the PROJECTS table.
      */
     private static final String INSERT_SQL =  
       "INSERT INTO PROJECTS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, URL, LICENSE, PUBLISHED, PROMOTE, "
+      + "( UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, LICENSE, PUBLISHED, PROMOTE, "
       +   "STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
@@ -62,17 +63,17 @@ public class ProjectDAO extends ContentDAO<Project>
      * The query to use to update a project in the PROJECTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE PROJECTS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, URL=?, LICENSE=?, PUBLISHED=?, PROMOTE=?, STATUS=?, ATTRIBUTES=? "
+      "UPDATE PROJECTS SET UUID=?, PUBLISHED_DATE=?, TITLE=?, URL=?, LICENSE=?, PUBLISHED=?, PROMOTE=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
      * The query to use to select the project items from the table by organisation code.
      */
     private static final String LIST_ITEMS_BY_CODE_SQL =
-      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, URL, LICENSE, PUBLISHED, PROMOTE, STATUS "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, LICENSE, PUBLISHED, PROMOTE, STATUS "
       + "FROM PROJECTS WHERE SITE_ID=? AND CODE=? ORDER BY ID";
 
-    /**
+    /** 
      * Constructor that takes a DAO factory.
      */
     public ProjectDAO(ContentDAOFactory factory)
@@ -86,11 +87,11 @@ public class ProjectDAO extends ContentDAO<Project>
     @Override
     protected void defineTable()
     {
+        table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
-        table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("TITLE", Types.VARCHAR, 128, true);
         table.addColumn("URL", Types.VARCHAR, 256, true);
         table.addColumn("LICENSE", Types.VARCHAR, 10, true);
@@ -100,8 +101,8 @@ public class ProjectDAO extends ContentDAO<Project>
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("SESSION_ID", Types.INTEGER, true);
-        table.setPrimaryKey("PROJECTS_PK", new String[] {"SITE_ID","CODE","ID"});
-        table.addIndex("PROJECTS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
+        table.setPrimaryKey("PROJECTS_PK", new String[] {"UUID"});
+        table.addIndex("PROJECTS_ID_IDX", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("PROJECTS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
         table.addIndex("PROJECTS_STATUS_IDX", new String[] {"STATUS"});
         table.setInitialised(true);
@@ -133,9 +134,17 @@ public class ProjectDAO extends ContentDAO<Project>
             rs = getByUrlStmt.executeQuery();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                ret = new Project(attributes);
-                ret.setSiteId(rs.getString(2));
+                Project content = new Project();
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
+                ret = content;
             }
         }
         finally
@@ -174,11 +183,11 @@ public class ProjectDAO extends ContentDAO<Project>
 
         try
         {
-            insertStmt.setString(1, content.getSiteId());
-            insertStmt.setString(2, content.getCode());
-            insertStmt.setInt(3, content.getId());
-            insertStmt.setTimestamp(4, new Timestamp(content.getPublishedDateMillis()), UTC);
-            insertStmt.setString(5, content.getUuid());
+            insertStmt.setString(1, content.getUuid());
+            insertStmt.setString(2, content.getSiteId());
+            insertStmt.setString(3, content.getCode());
+            insertStmt.setInt(4, content.getId());
+            insertStmt.setTimestamp(5, new Timestamp(content.getPublishedDateMillis()), UTC);
             insertStmt.setString(6, content.getTitle());
             insertStmt.setString(7, content.getUrl());
             insertStmt.setString(8, content.getLicense());
@@ -186,7 +195,7 @@ public class ProjectDAO extends ContentDAO<Project>
             insertStmt.setBoolean(10, content.isPromoted());
             insertStmt.setString(11, content.getStatus().name());
             insertStmt.setString(12, content.getCreatedBy());
-            String attributes = content.toJson().toString();
+            String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(13, reader, attributes.length());
             insertStmt.setInt(14, SessionId.get());
@@ -234,15 +243,15 @@ public class ProjectDAO extends ContentDAO<Project>
 
         try
         {
-            updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
-            updateStmt.setString(2, content.getUuid());
+            updateStmt.setString(1, content.getUuid());
+            updateStmt.setTimestamp(2, new Timestamp(content.getPublishedDateMillis()), UTC);
             updateStmt.setString(3, content.getTitle());
             updateStmt.setString(4, content.getUrl());
             updateStmt.setString(5, content.getLicense());
             updateStmt.setBoolean(6, content.isPublished());
             updateStmt.setBoolean(7, content.isPromoted());
             updateStmt.setString(8, content.getStatus().name());
-            String attributes = content.toJson().toString();
+            String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(9, reader, attributes.length());
             updateStmt.setString(10, content.getSiteId());
@@ -287,10 +296,10 @@ public class ProjectDAO extends ContentDAO<Project>
             while(rs.next())
             {
                 ProjectItem project = new ProjectItem();
-                project.setSiteId(rs.getString(1));
-                project.setCode(rs.getString(2));
-                project.setId(rs.getInt(3));
-                project.setUuid(rs.getString(4));
+                project.setUuid(rs.getString(1));
+                project.setSiteId(rs.getString(2));
+                project.setCode(rs.getString(3));
+                project.setId(rs.getInt(4));
                 project.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
                 project.setTitle(rs.getString(6));
                 project.setUrl(rs.getString(7));

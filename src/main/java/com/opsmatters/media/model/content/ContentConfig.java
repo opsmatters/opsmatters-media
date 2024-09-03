@@ -28,21 +28,16 @@ import com.opsmatters.media.cache.content.organisation.OrganisationConfigs;
 import com.opsmatters.media.cache.content.util.ContentImages;
 import com.opsmatters.media.cache.platform.Environments;
 import com.opsmatters.media.model.platform.Site;
-import com.opsmatters.media.model.platform.FeedsConfig;
 import com.opsmatters.media.model.platform.Environment;
 import com.opsmatters.media.model.platform.EnvironmentId;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
-import com.opsmatters.media.model.organisation.OrganisationStatus;
 import com.opsmatters.media.model.ConfigElement;
 import com.opsmatters.media.model.ConfigParser;
 import com.opsmatters.media.model.content.organisation.OrganisationListing;
 import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
-import com.opsmatters.media.model.feed.batch.FeedBatchOrganisation;
 import com.opsmatters.media.handler.ContentHandler;
-import com.opsmatters.media.db.dao.content.ContentDAO;
-import com.opsmatters.media.util.FileUtils;
 
 import static com.opsmatters.media.file.FileFormat.*;
 import static com.opsmatters.media.model.content.FieldName.*;
@@ -282,26 +277,18 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     }
 
     /**
-     * Extract the list of content items from the database and deploy using the given handler.
+     * Populate a content handler using content items from the database.
      */
-    public void deployContent(FeedBatchOrganisation batchOrganisation, List<C> items, EnvironmentId env)
+    public ContentHandler getContentHandler(Site site, List<C> items, EnvironmentId env)
         throws IOException, SQLException
     {
-        Site site = batchOrganisation.getSite();
-        ContentDAO contentDAO = batchOrganisation.getDAO();
+        ContentHandler handler = ContentHandler.builder()
+            .useConfig(this)
+            .withWorkingDirectory(System.getProperty("app.working"))
+            .initFile()
+            .build();
+
         Environment images = Environments.get(EnvironmentId.IMAGE);
-
-        ContentHandler s3Handler = ContentHandler.builder()
-            .useConfig(this)
-            .withWorkingDirectory(System.getProperty("app.working"))
-            .initFile()
-            .build();
-
-        ContentHandler csvHandler = ContentHandler.builder()
-            .useConfig(this)
-            .withWorkingDirectory(System.getProperty("app.working"))
-            .initFile()
-            .build();
 
         for(C content : items)
         {
@@ -399,45 +386,37 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
             }
 
             fields.add(organisation, organisationSite);
-            s3Handler.appendLine(s3Handler.getValues(fields));
 
-            if(content.getStatus() != ContentStatus.DEPLOYED)
+            if(env != null)
             {
-                if(env == EnvironmentId.STAGE)
-                    content.setStatus(ContentStatus.STAGED);
-                else if(content.getStatus() == ContentStatus.STAGED)
-                    content.setStatus(ContentStatus.DEPLOYED);
+                if(content.getStatus() != ContentStatus.DEPLOYED)
+                {
+                    if(env == EnvironmentId.STAGE)
+                        content.setStatus(ContentStatus.STAGED);
+                    else if(content.getStatus() == ContentStatus.STAGED)
+                        content.setStatus(ContentStatus.DEPLOYED);
+                }
+
+                // Only add the rows that have changed
+                if(content.getStatus() != status)
+                    handler.appendLine(handler.getValues(fields));
             }
-
-            if(content.getStatus() != status)
+            else // Otherwise add all rows
             {
-                contentDAO.update(content);
-                csvHandler.appendLine(csvHandler.getValues(fields));
+                handler.appendLine(handler.getValues(fields));
             }
         }
 
-        // Only copy the content to the S3 bucket once per organisation
-        if(batchOrganisation.getBucket() == null)
-        {
-            String bucket = site.getS3Config().getContentBucket();
-            s3Handler.writeFile();
-            s3Handler.copyFileToBucket(bucket);
-            s3Handler.deleteFile();
-            batchOrganisation.setBucket(bucket);
-        }
+        return handler;
+    }
 
-        // Process the CSV file
-        String type = getType().tag();
-        csvHandler.setFilename(csvHandler.getCsvFilename());
-        csvHandler.convertLinesToAscii(getHtmlFields());
-        csvHandler.writeFile();
-
-        // Upload the csv file to the environment
-        Environment environment = site.getEnvironment(env);
-        String path = environment.getBase()+System.getProperty("app.path.files.feeds."+type);
-        csvHandler.copyFileToHost(path, environment);
-
-        csvHandler.deleteFile();
+    /**
+     * Populate a content handler using content items from the database.
+     */
+    public ContentHandler getContentHandler(Site site, List<C> items)
+        throws IOException, SQLException
+    {
+        return getContentHandler(site, items, null);
     }
 
     /**

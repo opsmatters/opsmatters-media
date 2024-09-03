@@ -134,37 +134,12 @@ public class Video extends Article<VideoDetails>
     }
 
     /**
-     * Constructor that takes a JSON object.
+     * Returns the attributes as a JSON object.
      */
-    public Video(JSONObject obj)
+    @Override
+    public JSONObject getAttributes()
     {
-        this();
-        fromJson(obj);
-    }
-
-    /**
-     * Initialise this object using a JSON object.
-     */
-    public void fromJson(JSONObject obj)
-    {
-        super.fromJson(obj);
-
-        setDescription(EmojiParser.parseToUnicode(obj.optString(DESCRIPTION.value())));
-        setVideoId(obj.optString(VIDEO_ID.value()));
-        setVideoType(obj.optString(VIDEO_TYPE.value()));
-        setProvider(VideoProvider.fromCode(obj.optString(PROVIDER.value())));
-        if(obj.has(DURATION.value()))
-            setDuration(obj.optLong(DURATION.value()));
-        setChannelTitle(obj.optString(CHANNEL_TITLE.value()));
-        setChannelId(obj.optString(CHANNEL_ID.value()));
-    }
-
-    /**
-     * Returns this object as a JSON object.
-     */
-    public JSONObject toJson()
-    {
-        JSONObject ret = super.toJson();
+        JSONObject ret = super.getAttributes();
 
         if(getDescription() != null && getDescription().length() > 0)
             ret.putOpt(DESCRIPTION.value(), EmojiParser.parseToAliases(getDescription()));
@@ -177,6 +152,24 @@ public class Video extends Article<VideoDetails>
         ret.putOpt(CHANNEL_ID.value(), getChannelId());
 
         return ret;
+    }
+
+    /**
+     * Initialise the attributes using a JSON object.
+     */
+    @Override
+    public void setAttributes(JSONObject obj)
+    {
+        super.setAttributes(obj);
+
+        setDescription(EmojiParser.parseToUnicode(obj.optString(DESCRIPTION.value())));
+        setVideoId(obj.optString(VIDEO_ID.value()));
+        setVideoType(obj.optString(VIDEO_TYPE.value()));
+        setProvider(VideoProvider.fromCode(obj.optString(PROVIDER.value())));
+        if(obj.has(DURATION.value()))
+            setDuration(obj.optLong(DURATION.value()));
+        setChannelTitle(obj.optString(CHANNEL_TITLE.value()));
+        setChannelId(obj.optString(CHANNEL_ID.value()));
     }
 
     /**

@@ -122,35 +122,12 @@ public class Project extends Resource<ProjectDetails>
     }
 
     /**
-     * Constructor that takes a JSON object.
+     * Returns the attributes as a JSON object.
      */
-    public Project(JSONObject obj)
+    @Override
+    public JSONObject getAttributes()
     {
-        this();
-        fromJson(obj);
-    }
-
-    /**
-     * Initialise this object using a JSON object.
-     */
-    public void fromJson(JSONObject obj)
-    {
-        super.fromJson(obj);
-
-        setUrl(obj.optString(URL.value()));
-        setBadges(obj.optString(BADGES.value()));
-        setLinks(obj.optString(LINKS.value()));
-        setFounded(obj.optString(FOUNDED.value()));
-        setLicense(obj.optString(LICENSE.value()));
-        setWebsite(obj.optString(WEBSITE.value()));
-    }
-
-    /**
-     * Returns this object as a JSON object.
-     */
-    public JSONObject toJson()
-    {
-        JSONObject ret = super.toJson();
+        JSONObject ret = super.getAttributes();
 
         ret.putOpt(URL.value(), getUrl());
         ret.putOpt(BADGES.value(), getBadges());
@@ -160,6 +137,22 @@ public class Project extends Resource<ProjectDetails>
         ret.putOpt(WEBSITE.value(), getWebsite());
 
         return ret;
+    }
+
+    /**
+     * Initialise the attributes using a JSON object.
+     */
+    @Override
+    public void setAttributes(JSONObject obj)
+    {
+        super.setAttributes(obj);
+
+        setUrl(obj.optString(URL.value()));
+        setBadges(obj.optString(BADGES.value()));
+        setLinks(obj.optString(LINKS.value()));
+        setFounded(obj.optString(FOUNDED.value()));
+        setLicense(obj.optString(LICENSE.value()));
+        setWebsite(obj.optString(WEBSITE.value()));
     }
 
     /**

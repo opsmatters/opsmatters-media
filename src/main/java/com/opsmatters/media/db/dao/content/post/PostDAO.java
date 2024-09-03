@@ -48,7 +48,7 @@ public class PostDAO extends ContentDAO<Post>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO POSTS"
-      + "( SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, "
+      + "( UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, "
       +   "AUTHOR, STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
@@ -65,14 +65,14 @@ public class PostDAO extends ContentDAO<Post>
      * The query to use to select the post items from the table by organisation code.
      */
     private static final String LIST_ITEMS_BY_CODE_SQL =
-      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
       + "FROM POSTS WHERE SITE_ID=? AND CODE=? ORDER BY ID";
 
     /**
      * The query to use to select the post items from the table by published date.
      */
     private static final String LIST_ITEMS_BY_DATE_SQL =  
-      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
       + "FROM POSTS WHERE SITE_ID=? AND PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
 
     /**
@@ -89,10 +89,10 @@ public class PostDAO extends ContentDAO<Post>
     @Override
     protected void defineTable()
     {
+        table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
-        table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
         table.addColumn("TITLE", Types.VARCHAR, 256, true);
         table.addColumn("POST_TYPE", Types.VARCHAR, 30, true);
@@ -106,8 +106,8 @@ public class PostDAO extends ContentDAO<Post>
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("SESSION_ID", Types.INTEGER, true);
-        table.setPrimaryKey("POSTS_PK", new String[] {"SITE_ID","CODE","ID"});
-        table.addIndex("POSTS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
+        table.setPrimaryKey("POSTS_PK", new String[] {"UUID"});
+        table.addIndex("POSTS_ID_IDX", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("POSTS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
         table.addIndex("POSTS_STATUS_IDX", new String[] {"STATUS"});
         table.addIndex("POSTS_SESSION_IDX", new String[] {"SESSION_ID"});
@@ -133,10 +133,10 @@ public class PostDAO extends ContentDAO<Post>
 
         try
         {
-            insertStmt.setString(1, content.getSiteId());
-            insertStmt.setString(2, content.getCode());
-            insertStmt.setInt(3, content.getId());
-            insertStmt.setString(4, content.getUuid());
+            insertStmt.setString(1, content.getUuid());
+            insertStmt.setString(2, content.getSiteId());
+            insertStmt.setString(3, content.getCode());
+            insertStmt.setInt(4, content.getId());
             insertStmt.setTimestamp(5, new Timestamp(content.getPublishedDateMillis()), UTC);
             insertStmt.setString(6, content.getTitle());
             insertStmt.setString(7, content.getPostType());
@@ -148,7 +148,7 @@ public class PostDAO extends ContentDAO<Post>
             insertStmt.setString(13, content.getAuthor());
             insertStmt.setString(14, content.getStatus().name());
             insertStmt.setString(15, content.getCreatedBy());
-            String attributes = content.toJson().toString();
+            String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(16, reader, attributes.length());
             insertStmt.setInt(17, SessionId.get());
@@ -207,7 +207,7 @@ public class PostDAO extends ContentDAO<Post>
             updateStmt.setBoolean(9, content.isSponsored());
             updateStmt.setString(10, content.getAuthor());
             updateStmt.setString(11, content.getStatus().name());
-            String attributes = content.toJson().toString();
+            String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(12, reader, attributes.length());
             updateStmt.setString(13, content.getSiteId());
@@ -252,10 +252,10 @@ public class PostDAO extends ContentDAO<Post>
             while(rs.next())
             {
                 PostItem post = new PostItem();
-                post.setSiteId(rs.getString(1));
-                post.setCode(rs.getString(2));
-                post.setId(rs.getInt(3));
-                post.setUuid(rs.getString(4));
+                post.setUuid(rs.getString(1));
+                post.setSiteId(rs.getString(2));
+                post.setCode(rs.getString(3));
+                post.setId(rs.getInt(4));
                 post.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
                 post.setTitle(rs.getString(6));
                 post.setPostType(rs.getString(7));
@@ -313,10 +313,10 @@ public class PostDAO extends ContentDAO<Post>
             while(rs.next())
             {
                 PostItem post = new PostItem();
-                post.setSiteId(rs.getString(1));
-                post.setCode(rs.getString(2));
-                post.setId(rs.getInt(3));
-                post.setUuid(rs.getString(4));
+                post.setUuid(rs.getString(1));
+                post.setSiteId(rs.getString(2));
+                post.setCode(rs.getString(3));
+                post.setId(rs.getInt(4));
                 post.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
                 post.setTitle(rs.getString(6));
                 post.setPostType(rs.getString(7));

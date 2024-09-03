@@ -110,47 +110,12 @@ public class OrganisationListing extends Content
     }
 
     /**
-     * Constructor that takes a JSON object.
+     * Returns the attributes as a JSON object.
      */
-    public OrganisationListing(JSONObject obj)
+    @Override
+    public JSONObject getAttributes()
     {
-        fromJson(obj);
-    }
-
-    /**
-     * Initialise this object using a JSON object.
-     */
-    public void fromJson(JSONObject obj)
-    {
-        super.fromJson(obj);
-
-        setTabs(OrganisationTabs.valueOf(obj.optString(TABS.value())));
-        setDescription(obj.optString(DESCRIPTION.value()));
-        setFooter(obj.optString(FOOTER.value()));
-        setFounded(obj.optString(FOUNDED.value()));
-        setLocation(obj.optString(LOCATION.value()));
-        setStockSymbol(obj.optString(STOCK_SYMBOL.value()));
-        setFeedProvider(SocialProvider.valueOf(obj.optString(FEED_PROVIDER.value())));
-        setFacebook(obj.optString(FACEBOOK.value()));
-        setTwitter(obj.optString(TWITTER.value()));
-        setLinkedIn(obj.optString(LINKEDIN.value()));
-        setInstagram(obj.optString(INSTAGRAM.value()));
-        setYouTube(obj.optString(YOUTUBE.value()));
-        setVimeo(obj.optString(VIMEO.value()));
-        setProjects(obj.optBoolean(PROJECTS.value(), false));
-        setGitHub(obj.optString(GITHUB.value()));
-        setTools(obj.optBoolean(TOOLS.value(), false));
-        setJobs(obj.optBoolean(JOBS.value(), false));
-        setAlternatives(obj.optString(ALTERNATIVES.value()));
-        setFeatures(obj.optString(FEATURES.value()));
-    }
-
-    /**
-     * Returns this object as a JSON object.
-     */
-    public JSONObject toJson()
-    {
-        JSONObject ret = super.toJson();
+        JSONObject ret = super.getAttributes();
 
         ret.put(TABS.value(), getTabs().name());
         ret.put(CONTENT.value(), getContent());
@@ -174,6 +139,35 @@ public class OrganisationListing extends Content
         ret.putOpt(FEATURES.value(), getFeatures());
 
         return ret;
+    }
+
+    /**
+     * Initialise the attributes using a JSON object.
+     */
+    @Override
+    public void setAttributes(JSONObject obj)
+    {
+        super.setAttributes(obj);
+
+        setTabs(OrganisationTabs.valueOf(obj.optString(TABS.value())));
+        setDescription(obj.optString(DESCRIPTION.value()));
+        setFooter(obj.optString(FOOTER.value()));
+        setFounded(obj.optString(FOUNDED.value()));
+        setLocation(obj.optString(LOCATION.value()));
+        setStockSymbol(obj.optString(STOCK_SYMBOL.value()));
+        setFeedProvider(SocialProvider.valueOf(obj.optString(FEED_PROVIDER.value())));
+        setFacebook(obj.optString(FACEBOOK.value()));
+        setTwitter(obj.optString(TWITTER.value()));
+        setLinkedIn(obj.optString(LINKEDIN.value()));
+        setInstagram(obj.optString(INSTAGRAM.value()));
+        setYouTube(obj.optString(YOUTUBE.value()));
+        setVimeo(obj.optString(VIMEO.value()));
+        setProjects(obj.optBoolean(PROJECTS.value(), false));
+        setGitHub(obj.optString(GITHUB.value()));
+        setTools(obj.optBoolean(TOOLS.value(), false));
+        setJobs(obj.optBoolean(JOBS.value(), false));
+        setAlternatives(obj.optString(ALTERNATIVES.value()));
+        setFeatures(obj.optString(FEATURES.value()));
     }
 
     /**

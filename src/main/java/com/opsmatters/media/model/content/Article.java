@@ -66,26 +66,12 @@ public abstract class Article<D extends ArticleDetails> extends Content<D>
     }
 
     /**
-     * Initialise this object using a JSON object.
+     * Returns the attributes as a JSON object.
      */
-    public void fromJson(JSONObject obj)
+    @Override
+    public JSONObject getAttributes()
     {
-        super.fromJson(obj);
-
-        setTags(obj.optString(TAGS.value()));
-        setCreatorEmail(obj.optString(EMAIL.value()));
-        setPromoted(obj.optBoolean(PROMOTE.value(), false));
-        setNewsletter(obj.optBoolean(NEWSLETTER.value(), false));
-        setFeatured(obj.optBoolean(FEATURED.value(), false));
-        setSponsored(obj.optBoolean(SPONSORED.value(), false));
-    }
-
-    /**
-     * Returns this object as a JSON object.
-     */
-    public JSONObject toJson()
-    {
-        JSONObject ret = super.toJson();
+        JSONObject ret = super.getAttributes();
 
         ret.putOpt(TAGS.value(), getTags());
         ret.putOpt(EMAIL.value(), getCreatorEmail());
@@ -95,6 +81,22 @@ public abstract class Article<D extends ArticleDetails> extends Content<D>
         ret.put(SPONSORED.value(), isSponsored());
 
         return ret;
+    }
+
+    /**
+     * Initialise the attributes using a JSON object.
+     */
+    @Override
+    public void setAttributes(JSONObject obj)
+    {
+        super.setAttributes(obj);
+
+        setTags(obj.optString(TAGS.value()));
+        setCreatorEmail(obj.optString(EMAIL.value()));
+        setPromoted(obj.optBoolean(PROMOTE.value(), false));
+        setNewsletter(obj.optBoolean(NEWSLETTER.value(), false));
+        setFeatured(obj.optBoolean(FEATURED.value(), false));
+        setSponsored(obj.optBoolean(SPONSORED.value(), false));
     }
 
     /**

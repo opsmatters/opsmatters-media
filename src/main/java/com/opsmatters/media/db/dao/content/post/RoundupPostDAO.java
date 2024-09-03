@@ -49,14 +49,15 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
      * The query to use to select a roundup from the ROUNDUPS table by URL.
      */
     private static final String GET_BY_URL_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM ROUNDUPS WHERE SITE_ID=? AND CODE=? AND URL=? ";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM ROUNDUPS WHERE SITE_ID=? AND CODE=? AND URL=? ";
 
     /**
      * The query to use to insert a roundup into the ROUNDUPS table.
      */
     private static final String INSERT_SQL =  
       "INSERT INTO ROUNDUPS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, URL, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, "
+      + "( UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, "
       +   "AUTHOR, STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
@@ -65,7 +66,7 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
      * The query to use to update a roundup in the ROUNDUPS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE ROUNDUPS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, URL=?, PUBLISHED=?, PROMOTE=?, NEWSLETTER=?, FEATURED=?, SPONSORED=?, "
+      "UPDATE ROUNDUPS SET UUID=?, PUBLISHED_DATE=?, TITLE=?, URL=?, PUBLISHED=?, PROMOTE=?, NEWSLETTER=?, FEATURED=?, SPONSORED=?, "
       + "AUTHOR=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
@@ -73,20 +74,21 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
      * The query to use to select a list of roundup from the ROUNDUPS table by URL.
      */
     private static final String LIST_BY_URL_SQL =  
-      "SELECT ATTRIBUTES, SITE_ID FROM ROUNDUPS WHERE CODE=? AND URL=? AND (?=0 OR ABS(TIMESTAMPDIFF(DAY, ?, PUBLISHED_DATE)) <= 7)";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM ROUNDUPS WHERE CODE=? AND URL=? AND (?=0 OR ABS(TIMESTAMPDIFF(DAY, ?, PUBLISHED_DATE)) <= 7)";
 
     /**
      * The query to use to select the roundup items from the table by organisation code.
      */
     private static final String LIST_ITEMS_BY_CODE_SQL =
-      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, URL, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
       + "FROM ROUNDUPS WHERE SITE_ID=? AND CODE=? ORDER BY ID";
 
     /**
      * The query to use to select the roundup items from the table by published date.
      */
     private static final String LIST_ITEMS_BY_DATE_SQL =  
-      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, URL, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
       + "FROM ROUNDUPS WHERE SITE_ID=? AND PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
 
     /**
@@ -103,11 +105,11 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
     @Override
     protected void defineTable()
     {
+        table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
-        table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("TITLE", Types.VARCHAR, 256, true);
         table.addColumn("URL", Types.VARCHAR, 256, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
@@ -120,8 +122,8 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("SESSION_ID", Types.INTEGER, true);
-        table.setPrimaryKey("ROUNDUPS_PK", new String[] {"SITE_ID","CODE","ID"});
-        table.addIndex("ROUNDUPS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
+        table.setPrimaryKey("ROUNDUPS_PK", new String[] {"UUID"});
+        table.addIndex("ROUNDUPS_ID_IDX", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("ROUNDUPS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
         table.addIndex("ROUNDUPS_URL_IDX", new String[] {"SITE_ID","CODE","URL"});
         table.addIndex("ROUNDUPS_STATUS_IDX", new String[] {"STATUS"});
@@ -155,10 +157,17 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
             rs = getByUrlStmt.executeQuery();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                RoundupPost item = new RoundupPost(attributes);
-                item.setSiteId(rs.getString(2));
-                ret = item;
+                RoundupPost content = new RoundupPost();
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
+                ret = content;
             }
         }
         finally
@@ -197,11 +206,11 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
 
         try
         {
-            insertStmt.setString(1, content.getSiteId());
-            insertStmt.setString(2, content.getCode());
-            insertStmt.setInt(3, content.getId());
-            insertStmt.setTimestamp(4, new Timestamp(content.getPublishedDateMillis()), UTC);
-            insertStmt.setString(5, content.getUuid());
+            insertStmt.setString(1, content.getUuid());
+            insertStmt.setString(2, content.getSiteId());
+            insertStmt.setString(3, content.getCode());
+            insertStmt.setInt(4, content.getId());
+            insertStmt.setTimestamp(5, new Timestamp(content.getPublishedDateMillis()), UTC);
             insertStmt.setString(6, content.getTitle());
             insertStmt.setString(7, content.getUrl());
             insertStmt.setBoolean(8, content.isPublished());
@@ -212,7 +221,7 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
             insertStmt.setString(13, content.getAuthor());
             insertStmt.setString(14, content.getStatus().name());
             insertStmt.setString(15, content.getCreatedBy());
-            String attributes = content.toJson().toString();
+            String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(16, reader, attributes.length());
             insertStmt.setInt(17, SessionId.get());
@@ -260,8 +269,8 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
 
         try
         {
-            updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
-            updateStmt.setString(2, content.getUuid());
+            updateStmt.setString(1, content.getUuid());
+            updateStmt.setTimestamp(2, new Timestamp(content.getPublishedDateMillis()), UTC);
             updateStmt.setString(3, content.getTitle());
             updateStmt.setString(4, content.getUrl());
             updateStmt.setBoolean(5, content.isPublished());
@@ -271,7 +280,7 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
             updateStmt.setBoolean(9, content.isSponsored());
             updateStmt.setString(10, content.getAuthor());
             updateStmt.setString(11, content.getStatus().name());
-            String attributes = content.toJson().toString();
+            String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(12, reader, attributes.length());
             updateStmt.setString(13, content.getSiteId());
@@ -340,10 +349,17 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
             ret = new ArrayList<RoundupPost>();
             while(rs.next())
             {
-                JSONObject attributes = new JSONObject(getClob(rs, 1));
-                RoundupPost item = new RoundupPost(attributes);
-                item.setSiteId(rs.getString(2));
-                ret.add(item);
+                RoundupPost content = new RoundupPost();
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setPublished(rs.getBoolean(6));
+                content.setAttributes(new JSONObject(getClob(rs, 7)));
+                content.setStatus(rs.getString(8));
+                content.setCreatedBy(rs.getString(9));
+                ret.add(content);
             }
         }
         finally
@@ -390,10 +406,10 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
             while(rs.next())
             {
                 RoundupPostItem post = new RoundupPostItem();
-                post.setSiteId(rs.getString(1));
-                post.setCode(rs.getString(2));
-                post.setId(rs.getInt(3));
-                post.setUuid(rs.getString(4));
+                post.setUuid(rs.getString(1));
+                post.setSiteId(rs.getString(2));
+                post.setCode(rs.getString(3));
+                post.setId(rs.getInt(4));
                 post.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
                 post.setTitle(rs.getString(6));
                 post.setUrl(rs.getString(7));
@@ -451,10 +467,10 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
             while(rs.next())
             {
                 RoundupPostItem post = new RoundupPostItem();
-                post.setSiteId(rs.getString(1));
-                post.setCode(rs.getString(2));
-                post.setId(rs.getInt(3));
-                post.setUuid(rs.getString(4));
+                post.setUuid(rs.getString(1));
+                post.setSiteId(rs.getString(2));
+                post.setCode(rs.getString(3));
+                post.setId(rs.getInt(4));
                 post.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
                 post.setTitle(rs.getString(6));
                 post.setUrl(rs.getString(7));

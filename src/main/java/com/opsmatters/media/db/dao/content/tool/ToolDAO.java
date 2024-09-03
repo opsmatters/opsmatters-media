@@ -47,7 +47,7 @@ public class ToolDAO extends ContentDAO<Tool>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO TOOLS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, PRICING, PUBLISHED, PROMOTE, "
+      + "( UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, PRICING, PUBLISHED, PROMOTE, "
       +   "STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
@@ -56,14 +56,14 @@ public class ToolDAO extends ContentDAO<Tool>
      * The query to use to update a tool in the TOOLS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE TOOLS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, PRICING=?, PUBLISHED=?, PROMOTE=?, STATUS=?, ATTRIBUTES=? "
+      "UPDATE TOOLS SET UUID=?, PUBLISHED_DATE=?, TITLE=?, PRICING=?, PUBLISHED=?, PROMOTE=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
      * The query to use to select the tool items from the table by organisation code.
      */
     private static final String LIST_ITEMS_BY_CODE_SQL =
-      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, PRICING, PUBLISHED, PROMOTE, STATUS "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, PRICING, PUBLISHED, PROMOTE, STATUS "
       + "FROM TOOLS WHERE SITE_ID=? AND CODE=? ORDER BY ID";
 
     /**
@@ -80,11 +80,11 @@ public class ToolDAO extends ContentDAO<Tool>
     @Override
     protected void defineTable()
     {
+        table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
-        table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("TITLE", Types.VARCHAR, 128, true);
         table.addColumn("PRICING", Types.VARCHAR, 15, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
@@ -93,8 +93,8 @@ public class ToolDAO extends ContentDAO<Tool>
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("SESSION_ID", Types.INTEGER, true);
-        table.setPrimaryKey("TOOLS_PK", new String[] {"SITE_ID","CODE","ID"});
-        table.addIndex("TOOLS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
+        table.setPrimaryKey("TOOLS_PK", new String[] {"UUID"});
+        table.addIndex("TOOLS_ID_IDX", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("TOOLS_STATUS_IDX", new String[] {"STATUS"});
         table.setInitialised(true);
     }
@@ -118,18 +118,18 @@ public class ToolDAO extends ContentDAO<Tool>
 
         try
         {
-            insertStmt.setString(1, content.getSiteId());
-            insertStmt.setString(2, content.getCode());
-            insertStmt.setInt(3, content.getId());
-            insertStmt.setTimestamp(4, new Timestamp(content.getPublishedDateMillis()), UTC);
-            insertStmt.setString(5, content.getUuid());
+            insertStmt.setString(1, content.getUuid());
+            insertStmt.setString(2, content.getSiteId());
+            insertStmt.setString(3, content.getCode());
+            insertStmt.setInt(4, content.getId());
+            insertStmt.setTimestamp(5, new Timestamp(content.getPublishedDateMillis()), UTC);
             insertStmt.setString(6, content.getTitle());
             insertStmt.setString(7, content.getPricing());
             insertStmt.setBoolean(8, content.isPublished());
             insertStmt.setBoolean(9, content.isPromoted());
             insertStmt.setString(10, content.getStatus().name());
             insertStmt.setString(11, content.getCreatedBy());
-            String attributes = content.toJson().toString();
+            String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(12, reader, attributes.length());
             insertStmt.setInt(13, SessionId.get());
@@ -177,14 +177,14 @@ public class ToolDAO extends ContentDAO<Tool>
 
         try
         {
-            updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
-            updateStmt.setString(2, content.getUuid());
+            updateStmt.setString(1, content.getUuid());
+            updateStmt.setTimestamp(2, new Timestamp(content.getPublishedDateMillis()), UTC);
             updateStmt.setString(3, content.getTitle());
             updateStmt.setString(4, content.getPricing());
             updateStmt.setBoolean(5, content.isPublished());
             updateStmt.setBoolean(6, content.isPromoted());
             updateStmt.setString(7, content.getStatus().name());
-            String attributes = content.toJson().toString();
+            String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(8, reader, attributes.length());
             updateStmt.setString(9, content.getSiteId());
@@ -229,10 +229,10 @@ public class ToolDAO extends ContentDAO<Tool>
             while(rs.next())
             {
                 ToolItem tool = new ToolItem();
-                tool.setSiteId(rs.getString(1));
-                tool.setCode(rs.getString(2));
-                tool.setId(rs.getInt(3));
-                tool.setUuid(rs.getString(4));
+                tool.setUuid(rs.getString(1));
+                tool.setSiteId(rs.getString(2));
+                tool.setCode(rs.getString(3));
+                tool.setId(rs.getInt(4));
                 tool.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
                 tool.setTitle(rs.getString(6));
                 tool.setPricing(rs.getString(7));

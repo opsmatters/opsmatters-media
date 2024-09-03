@@ -47,7 +47,7 @@ public class JobDAO extends ContentDAO<Job>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO JOBS"
-      + "( SITE_ID, CODE, ID, PUBLISHED_DATE, UUID, TITLE, PACKAGE, LOCATION, PUBLISHED, PROMOTE, "
+      + "( UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, PACKAGE, LOCATION, PUBLISHED, PROMOTE, "
       +   "STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
@@ -56,14 +56,14 @@ public class JobDAO extends ContentDAO<Job>
      * The query to use to update a job in the JOBS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE JOBS SET PUBLISHED_DATE=?, UUID=?, TITLE=?, PACKAGE=?, LOCATION=?, PUBLISHED=?, PROMOTE=?, STATUS=?, ATTRIBUTES=? "
+      "UPDATE JOBS SET UUID=?, PUBLISHED_DATE=?, TITLE=?, PACKAGE=?, LOCATION=?, PUBLISHED=?, PROMOTE=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
      * The query to use to select the job items from the table by organisation code.
      */
     private static final String LIST_ITEMS_BY_CODE_SQL =
-      "SELECT SITE_ID, CODE, ID, UUID, PUBLISHED_DATE, TITLE, PACKAGE, LOCATION, PUBLISHED, PROMOTE, STATUS "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, PACKAGE, LOCATION, PUBLISHED, PROMOTE, STATUS "
       + "FROM JOBS WHERE SITE_ID=? AND CODE=? ORDER BY ID";
 
     /**
@@ -80,11 +80,11 @@ public class JobDAO extends ContentDAO<Job>
     @Override
     protected void defineTable()
     {
+        table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
-        table.addColumn("UUID", Types.VARCHAR, 36, true);
         table.addColumn("TITLE", Types.VARCHAR, 128, true);
         table.addColumn("PACKAGE", Types.VARCHAR, 30, true);
         table.addColumn("LOCATION", Types.VARCHAR, 30, true);
@@ -94,8 +94,8 @@ public class JobDAO extends ContentDAO<Job>
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("SESSION_ID", Types.INTEGER, true);
-        table.setPrimaryKey("JOBS_PK", new String[] {"SITE_ID","CODE","ID"});
-        table.addIndex("JOBS_UUID_IDX", new String[] {"SITE_ID","CODE","UUID"});
+        table.setPrimaryKey("JOBS_PK", new String[] {"UUID"});
+        table.addIndex("JOBS_ID_IDX", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("JOBS_STATUS_IDX", new String[] {"STATUS"});
         table.setInitialised(true);
     }
@@ -119,11 +119,11 @@ public class JobDAO extends ContentDAO<Job>
 
         try
         {
-            insertStmt.setString(1, content.getSiteId());
-            insertStmt.setString(2, content.getCode());
-            insertStmt.setInt(3, content.getId());
-            insertStmt.setTimestamp(4, new Timestamp(content.getPublishedDateMillis()), UTC);
-            insertStmt.setString(5, content.getUuid());
+            insertStmt.setString(1, content.getUuid());
+            insertStmt.setString(2, content.getSiteId());
+            insertStmt.setString(3, content.getCode());
+            insertStmt.setInt(4, content.getId());
+            insertStmt.setTimestamp(5, new Timestamp(content.getPublishedDateMillis()), UTC);
             insertStmt.setString(6, content.getTitle());
             insertStmt.setString(7, content.getPackage());
             insertStmt.setString(8, content.getLocation());
@@ -131,7 +131,7 @@ public class JobDAO extends ContentDAO<Job>
             insertStmt.setBoolean(10, content.isPromoted());
             insertStmt.setString(11, content.getStatus().name());
             insertStmt.setString(12, content.getCreatedBy());
-            String attributes = content.toJson().toString();
+            String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(13, reader, attributes.length());
             insertStmt.setInt(14, SessionId.get());
@@ -179,15 +179,15 @@ public class JobDAO extends ContentDAO<Job>
 
         try
         {
-            updateStmt.setTimestamp(1, new Timestamp(content.getPublishedDateMillis()), UTC);
-            updateStmt.setString(2, content.getUuid());
+            updateStmt.setString(1, content.getUuid());
+            updateStmt.setTimestamp(2, new Timestamp(content.getPublishedDateMillis()), UTC);
             updateStmt.setString(3, content.getTitle());
             updateStmt.setString(4, content.getPackage());
             updateStmt.setString(5, content.getLocation());
             updateStmt.setBoolean(6, content.isPublished());
             updateStmt.setBoolean(7, content.isPromoted());
             updateStmt.setString(8, content.getStatus().name());
-            String attributes = content.toJson().toString();
+            String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(9, reader, attributes.length());
             updateStmt.setString(10, content.getSiteId());
@@ -232,10 +232,10 @@ public class JobDAO extends ContentDAO<Job>
             while(rs.next())
             {
                 JobItem job = new JobItem();
-                job.setSiteId(rs.getString(1));
-                job.setCode(rs.getString(2));
-                job.setId(rs.getInt(3));
-                job.setUuid(rs.getString(4));
+                job.setUuid(rs.getString(1));
+                job.setSiteId(rs.getString(2));
+                job.setCode(rs.getString(3));
+                job.setId(rs.getInt(4));
                 job.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
                 job.setTitle(rs.getString(6));
                 job.setPackage(rs.getString(7));

@@ -101,42 +101,28 @@ public abstract class Content<D extends ContentDetails>
     }
 
     /**
-     * Initialise this object using a JSON object.
+     * Returns the attributes as a JSON object.
      */
-    public void fromJson(JSONObject obj)
-    {
-        setCode(obj.optString(FieldName.CODE.value()));
-        setId(obj.optInt(FieldName.ID.value()));
-        setUuid(obj.optString(FieldName.UUID.value()));
-        setPublishedDateMillis(obj.optLong(FieldName.PUBLISHED_DATE.value()));
-        setTitle(obj.optString(FieldName.TITLE.value()));
-        setSummary(EmojiParser.parseToUnicode(obj.optString(FieldName.SUMMARY.value())));
-        setPublished(obj.optBoolean(FieldName.PUBLISHED.value(), false));
-        setTracking(obj.optString(FieldName.TRACKING.value()));
-        setCreatedBy(obj.optString(FieldName.CREATED_BY.value()));
-        setStatus(obj.optString(FieldName.STATUS.value()));
-    }
-
-    /**
-     * Returns this object as a JSON object.
-     */
-    public JSONObject toJson()
+    public JSONObject getAttributes()
     {
         JSONObject ret = new JSONObject();
 
-        ret.putOpt(FieldName.CODE.value(), getCode());
-        ret.put(FieldName.ID.value(), getId());
-        ret.put(FieldName.UUID.value(), getUuid());
-        ret.put(FieldName.PUBLISHED_DATE.value(), getPublishedDateMillis());
         ret.putOpt(FieldName.TITLE.value(), getTitle());
         if(getSummary() != null && getSummary().length() > 0)
             ret.putOpt(FieldName.SUMMARY.value(), EmojiParser.parseToAliases(getSummary()));
-        ret.put(FieldName.PUBLISHED.value(), isPublished());
         ret.put(FieldName.TRACKING.value(), getTracking());
-        ret.put(FieldName.CREATED_BY.value(), getCreatedBy());
-        ret.put(FieldName.STATUS.value(), getStatus().name());
 
         return ret;
+    }
+
+    /**
+     * Initialise the attributes using a JSON object.
+     */
+    public void setAttributes(JSONObject obj)
+    {
+        setTitle(obj.optString(FieldName.TITLE.value()));
+        setSummary(EmojiParser.parseToUnicode(obj.optString(FieldName.SUMMARY.value())));
+        setTracking(obj.optString(FieldName.TRACKING.value()));
     }
 
     /**
