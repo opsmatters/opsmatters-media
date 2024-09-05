@@ -64,7 +64,7 @@ public class EventDAO extends ContentDAO<Event>
      * The query to use to select a list of events from the EVENTS table by URL.
      */
     private static final String LIST_BY_URL_SQL =  
-      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM EVENTS WHERE CODE=? AND URL=? AND (?=0 OR ABS(TIMESTAMPDIFF(DAY, ?, START_DATE)) < 2)";
 
     /**
@@ -147,10 +147,9 @@ public class EventDAO extends ContentDAO<Event>
                 content.setCode(rs.getString(3));
                 content.setId(rs.getInt(4));
                 content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
-                content.setPublished(rs.getBoolean(6));
-                content.setAttributes(new JSONObject(getClob(rs, 7)));
-                content.setStatus(rs.getString(8));
-                content.setCreatedBy(rs.getString(9));
+                content.setAttributes(new JSONObject(getClob(rs, 6)));
+                content.setStatus(rs.getString(7));
+                content.setCreatedBy(rs.getString(8));
                 ret.add(content);
             }
         }

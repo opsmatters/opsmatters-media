@@ -111,6 +111,7 @@ public abstract class Content<D extends ContentDetails>
         if(getSummary() != null && getSummary().length() > 0)
             ret.putOpt(FieldName.SUMMARY.value(), EmojiParser.parseToAliases(getSummary()));
         ret.put(FieldName.TRACKING.value(), getTracking());
+        ret.put(FieldName.PUBLISHED.value(), isPublished());
 
         return ret;
     }
@@ -123,6 +124,7 @@ public abstract class Content<D extends ContentDetails>
         setTitle(obj.optString(FieldName.TITLE.value()));
         setSummary(EmojiParser.parseToUnicode(obj.optString(FieldName.SUMMARY.value())));
         setTracking(obj.optString(FieldName.TRACKING.value()));
+        setPublished(obj.optBoolean(FieldName.PUBLISHED.value(), false));
     }
 
     /**

@@ -48,7 +48,7 @@ public class PublicationDAO extends ContentDAO<Publication>
      * The query to use to select an publication from the PUBLICATIONS table by URL.
      */
     private static final String GET_BY_URL_SQL =  
-      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM PUBLICATIONS WHERE SITE_ID=? AND CODE=? AND URL=? ";
 
     /**
@@ -72,7 +72,7 @@ public class PublicationDAO extends ContentDAO<Publication>
      * The query to use to select a list of publications from the PUBLICATIONS table by URL.
      */
     private static final String LIST_BY_URL_SQL =  
-      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM PUBLICATIONS WHERE CODE=? AND URL=?";
 
     /**
@@ -151,10 +151,9 @@ public class PublicationDAO extends ContentDAO<Publication>
                 content.setCode(rs.getString(3));
                 content.setId(rs.getInt(4));
                 content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
-                content.setPublished(rs.getBoolean(6));
-                content.setAttributes(new JSONObject(getClob(rs, 7)));
-                content.setStatus(rs.getString(8));
-                content.setCreatedBy(rs.getString(9));
+                content.setAttributes(new JSONObject(getClob(rs, 6)));
+                content.setStatus(rs.getString(7));
+                content.setCreatedBy(rs.getString(8));
                 ret = content;
             }
         }
@@ -207,10 +206,9 @@ public class PublicationDAO extends ContentDAO<Publication>
                 content.setCode(rs.getString(3));
                 content.setId(rs.getInt(4));
                 content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
-                content.setPublished(rs.getBoolean(6));
-                content.setAttributes(new JSONObject(getClob(rs, 7)));
-                content.setStatus(rs.getString(8));
-                content.setCreatedBy(rs.getString(9));
+                content.setAttributes(new JSONObject(getClob(rs, 6)));
+                content.setStatus(rs.getString(7));
+                content.setCreatedBy(rs.getString(8));
                 ret.add(content);
             }
         }

@@ -49,7 +49,7 @@ public class VideoDAO extends ContentDAO<Video>
      * The query to use to select a video from the VIDEOS table by videoId.
      */
     private static final String GET_BY_VIDEO_ID_SQL =  
-      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM VIDEOS WHERE SITE_ID=? AND CODE=? AND VIDEO_ID=?";
 
     /**
@@ -74,7 +74,7 @@ public class VideoDAO extends ContentDAO<Video>
      * The query to use to select a list of videos from the VIDEOS table by videoId.
      */
     private static final String LIST_BY_VIDEO_ID_SQL =  
-      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM VIDEOS WHERE CODE=? AND VIDEO_ID=?";
 
     /**
@@ -163,10 +163,9 @@ public class VideoDAO extends ContentDAO<Video>
                 content.setCode(rs.getString(3));
                 content.setId(rs.getInt(4));
                 content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
-                content.setPublished(rs.getBoolean(6));
-                content.setAttributes(new JSONObject(getClob(rs, 7)));
-                content.setStatus(rs.getString(8));
-                content.setCreatedBy(rs.getString(9));
+                content.setAttributes(new JSONObject(getClob(rs, 6)));
+                content.setStatus(rs.getString(7));
+                content.setCreatedBy(rs.getString(8));
                 ret = content;
             }
         }
@@ -219,10 +218,9 @@ public class VideoDAO extends ContentDAO<Video>
                 content.setCode(rs.getString(3));
                 content.setId(rs.getInt(4));
                 content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
-                content.setPublished(rs.getBoolean(6));
-                content.setAttributes(new JSONObject(getClob(rs, 7)));
-                content.setStatus(rs.getString(8));
-                content.setCreatedBy(rs.getString(9));
+                content.setAttributes(new JSONObject(getClob(rs, 6)));
+                content.setStatus(rs.getString(7));
+                content.setCreatedBy(rs.getString(8));
                 ret.add(content);
             }
         }

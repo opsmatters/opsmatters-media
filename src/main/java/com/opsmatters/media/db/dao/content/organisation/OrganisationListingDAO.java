@@ -44,29 +44,36 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
     /**
      * The query to use to select an organisation listing from the table by id.
      */
-    private static final String GET_BY_ID_SQL =  
-      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+    private static final String GET_BY_ID_SQL =
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM ORGANISATION_LISTINGS WHERE SITE_ID=? AND ID=?";
 
     /**
      * The query to use to select an organisation listing from the table by code.
      */
-    private static final String GET_BY_CODE_SQL =  
-      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+    private static final String GET_BY_CODE_SQL =
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM ORGANISATION_LISTINGS WHERE SITE_ID=? AND CODE=?";
 
     /**
-     * The query to use to select all the organisation listings from the table.
+     * The query to use to select all the organisation listings from the table by site.
      */
-    private static final String LIST_SQL =  
-      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+    private static final String LIST_SQL =
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM ORGANISATION_LISTINGS WHERE SITE_ID=? ORDER BY ID";
+
+    /**
+     * The query to use to select the pending organisation listings from the table by site.
+     */
+    private static final String LIST_PENDING_SQL =  
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM ORGANISATION_LISTINGS WHERE SITE_ID=? AND STATUS IN ('PENDING','STAGED') ORDER BY ID";
 
     /**
      * The query to use to select the matching organisation listings from the table.
      */
-    private static final String LIST_LIKE_SQL =  
-      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+    private static final String LIST_LIKE_SQL =
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM ORGANISATION_LISTINGS WHERE SITE_ID=? AND TITLE LIKE ? ORDER BY ID";
 
     /**
@@ -173,10 +180,9 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
                 content.setCode(rs.getString(3));
                 content.setId(rs.getInt(4));
                 content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
-                content.setPublished(rs.getBoolean(6));
-                content.setAttributes(new JSONObject(getClob(rs, 7)));
-                content.setStatus(rs.getString(8));
-                content.setCreatedBy(rs.getString(9));
+                content.setAttributes(new JSONObject(getClob(rs, 6)));
+                content.setStatus(rs.getString(7));
+                content.setCreatedBy(rs.getString(8));
                 ret = content;
             }
         }
@@ -228,10 +234,9 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
                 content.setCode(rs.getString(3));
                 content.setId(rs.getInt(4));
                 content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
-                content.setPublished(rs.getBoolean(6));
-                content.setAttributes(new JSONObject(getClob(rs, 7)));
-                content.setStatus(rs.getString(8));
-                content.setCreatedBy(rs.getString(9));
+                content.setAttributes(new JSONObject(getClob(rs, 6)));
+                content.setStatus(rs.getString(7));
+                content.setCreatedBy(rs.getString(8));
                 ret = content;
             }
         }
@@ -250,155 +255,6 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
         postQuery();
 
         return ret;
-    }
-
-    /**
-     * Returns the organisation listings from the table.
-     */
-    @Override
-    public List<OrganisationListing> list(Site site, String code) throws SQLException
-    {
-        return list(site);
-    }
-
-    /**
-     * Returns the organisation listings from the table.
-     */
-    public synchronized List<OrganisationListing> list(Site site) throws SQLException
-    {
-        List<OrganisationListing> ret = null;
-
-        if(!hasConnection())
-            return ret;
-
-        preQuery();
-        if(listStmt == null)
-            listStmt = prepareStatement(getConnection(), LIST_SQL);
-        clearParameters(listStmt);
-
-        ResultSet rs = null;
-
-        try
-        {
-            listStmt.setString(1, site.getId());
-            listStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = listStmt.executeQuery();
-            ret = new ArrayList<OrganisationListing>();
-            while(rs.next())
-            {
-                OrganisationListing content = new OrganisationListing();
-                content.setUuid(rs.getString(1));
-                content.setSiteId(rs.getString(2));
-                content.setCode(rs.getString(3));
-                content.setId(rs.getInt(4));
-                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
-                content.setPublished(rs.getBoolean(6));
-                content.setAttributes(new JSONObject(getClob(rs, 7)));
-                content.setStatus(rs.getString(8));
-                content.setCreatedBy(rs.getString(9));
-                ret.add(content);
-            }
-        }
-        finally
-        {
-            try
-            {
-                if(rs != null)
-                    rs.close();
-            }
-            catch (SQLException ex) 
-            {
-            } 
-        }
-
-        postQuery();
-
-        return ret;
-    }
-
-    /**
-     * Returns the matching organisation listings from the table.
-     */
-    public synchronized List<OrganisationListing> listByName(Site site, String name) throws SQLException
-    {
-        List<OrganisationListing> ret = null;
-
-        if(!hasConnection())
-            return ret;
-
-        preQuery();
-        if(listLikeStmt == null)
-            listLikeStmt = prepareStatement(getConnection(), LIST_LIKE_SQL);
-        clearParameters(listLikeStmt);
-
-        ResultSet rs = null;
-
-        try
-        {
-            if(name == null)
-                name = "";
-            listLikeStmt.setString(1, site.getId());
-            listLikeStmt.setString(2, name+"%");
-            listLikeStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = listLikeStmt.executeQuery();
-            ret = new ArrayList<OrganisationListing>();
-            while(rs.next())
-            {
-                OrganisationListing content = new OrganisationListing();
-                content.setUuid(rs.getString(1));
-                content.setSiteId(rs.getString(2));
-                content.setCode(rs.getString(3));
-                content.setId(rs.getInt(4));
-                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
-                content.setPublished(rs.getBoolean(6));
-                content.setAttributes(new JSONObject(getClob(rs, 7)));
-                content.setStatus(rs.getString(8));
-                content.setCreatedBy(rs.getString(9));
-                ret.add(content);
-            }
-        }
-        finally
-        {
-            try
-            {
-                if(rs != null)
-                    rs.close();
-            }
-            catch (SQLException ex) 
-            {
-            } 
-        }
-
-        postQuery();
-
-        return ret;
-    }
-
-    /**
-     * Returns the count of organisation listings from the table.
-     */
-    @Override
-    public int count(Site site, String code) throws SQLException
-    {
-        return count();
-    }
-
-    /**
-     * Returns the count of  listings from the table.
-     */
-    public int count() throws SQLException
-    {
-        if(!hasConnection())
-            return -1;
-
-        if(countStmt == null)
-            countStmt = prepareStatement(getConnection(), COUNT_SQL);
-        clearParameters(countStmt);
-
-        countStmt.setQueryTimeout(QUERY_TIMEOUT);
-        ResultSet rs = countStmt.executeQuery();
-        rs.next();
-        return rs.getInt(1);
     }
 
     /**
@@ -499,6 +355,216 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
             if(reader != null)
                 reader.close();
         }
+    }
+
+    /**
+     * Returns the organisation listings from the table.
+     */
+    public synchronized List<OrganisationListing> list(Site site) throws SQLException
+    {
+        List<OrganisationListing> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listStmt == null)
+            listStmt = prepareStatement(getConnection(), LIST_SQL);
+        clearParameters(listStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listStmt.setString(1, site.getId());
+            listStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listStmt.executeQuery();
+            ret = new ArrayList<OrganisationListing>();
+            while(rs.next())
+            {
+                OrganisationListing content = new OrganisationListing();
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setAttributes(new JSONObject(getClob(rs, 6)));
+                content.setStatus(rs.getString(7));
+                content.setCreatedBy(rs.getString(8));
+                ret.add(content);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the organisation listings from the table.
+     */
+    @Override
+    public List<OrganisationListing> list(Site site, String code) throws SQLException
+    {
+        return list(site);
+    }
+
+    /**
+     * Returns the pending organisation listings from the table.
+     */
+    public synchronized List<OrganisationListing> listPending(Site site) throws SQLException
+    {
+        List<OrganisationListing> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listPendingStmt == null)
+            listPendingStmt = prepareStatement(getConnection(), LIST_PENDING_SQL);
+        clearParameters(listPendingStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listPendingStmt.setString(1, site.getId());
+            listPendingStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listPendingStmt.executeQuery();
+            ret = new ArrayList<OrganisationListing>();
+            while(rs.next())
+            {
+                OrganisationListing content = new OrganisationListing();
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setAttributes(new JSONObject(getClob(rs, 6)));
+                content.setStatus(rs.getString(7));
+                content.setCreatedBy(rs.getString(8));
+                ret.add(content);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the pending organisation listings from the table.
+     */
+    @Override
+    public List<OrganisationListing> listPending(Site site, String code) throws SQLException
+    {
+        return listPending(site);
+    }
+
+    /**
+     * Returns the matching organisation listings from the table.
+     */
+    public synchronized List<OrganisationListing> listByName(Site site, String name) throws SQLException
+    {
+        List<OrganisationListing> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listLikeStmt == null)
+            listLikeStmt = prepareStatement(getConnection(), LIST_LIKE_SQL);
+        clearParameters(listLikeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            if(name == null)
+                name = "";
+            listLikeStmt.setString(1, site.getId());
+            listLikeStmt.setString(2, name+"%");
+            listLikeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listLikeStmt.executeQuery();
+            ret = new ArrayList<OrganisationListing>();
+            while(rs.next())
+            {
+                OrganisationListing content = new OrganisationListing();
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setAttributes(new JSONObject(getClob(rs, 6)));
+                content.setStatus(rs.getString(7));
+                content.setCreatedBy(rs.getString(8));
+                ret.add(content);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the count of organisation listings from the table.
+     */
+    @Override
+    public int count(Site site, String code) throws SQLException
+    {
+        return count();
+    }
+
+    /**
+     * Returns the count of  listings from the table.
+     */
+    public int count() throws SQLException
+    {
+        if(!hasConnection())
+            return -1;
+
+        if(countStmt == null)
+            countStmt = prepareStatement(getConnection(), COUNT_SQL);
+        clearParameters(countStmt);
+
+        countStmt.setQueryTimeout(QUERY_TIMEOUT);
+        ResultSet rs = countStmt.executeQuery();
+        rs.next();
+        return rs.getInt(1);
     }
 
     /**
@@ -610,6 +676,8 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
         getByCodeStmt = null;
         closeStatement(listStmt);
         listStmt = null;
+        closeStatement(listPendingStmt);
+        listPendingStmt = null;
         closeStatement(listLikeStmt);
         listLikeStmt = null;
         closeStatement(countStmt);
@@ -627,6 +695,7 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
     private PreparedStatement getByIdStmt;
     private PreparedStatement getByCodeStmt;
     private PreparedStatement listStmt;
+    private PreparedStatement listPendingStmt;
     private PreparedStatement listLikeStmt;
     private PreparedStatement countStmt;
     private PreparedStatement insertStmt;

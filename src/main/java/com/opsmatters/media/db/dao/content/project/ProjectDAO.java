@@ -46,7 +46,7 @@ public class ProjectDAO extends ContentDAO<Project>
      * The query to use to select a project from the PROJECTS table by URL.
      */
     private static final String GET_BY_URL_SQL =  
-      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, PUBLISHED, ATTRIBUTES, STATUS, CREATED_BY "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM PROJECTS WHERE SITE_ID=? AND CODE=? AND URL=?";
 
     /**
@@ -140,10 +140,9 @@ public class ProjectDAO extends ContentDAO<Project>
                 content.setCode(rs.getString(3));
                 content.setId(rs.getInt(4));
                 content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
-                content.setPublished(rs.getBoolean(6));
-                content.setAttributes(new JSONObject(getClob(rs, 7)));
-                content.setStatus(rs.getString(8));
-                content.setCreatedBy(rs.getString(9));
+                content.setAttributes(new JSONObject(getClob(rs, 6)));
+                content.setStatus(rs.getString(7));
+                content.setCreatedBy(rs.getString(8));
                 ret = content;
             }
         }
