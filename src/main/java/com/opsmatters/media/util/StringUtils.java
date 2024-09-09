@@ -333,7 +333,7 @@ public class StringUtils
      * Returns the number of occurrences of the substring in the given string.
      * @param expr The string to look for occurrences of
      * @param str The string to search
-     * @return The number of occurences
+     * @return The number of occurrences
      */
     public static int getOccurrenceCount(String expr, String str)
     {
