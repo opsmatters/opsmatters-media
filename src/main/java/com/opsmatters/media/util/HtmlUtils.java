@@ -75,9 +75,12 @@ public class HtmlUtils
      * @param str The string to search
      * @return <CODE>true</CODE> if the given string contains an unnecessary attribute.
      */
-    public static boolean hasAttribute(String str)
+    public static boolean hasUnnecessaryAttribute(String str)
     {
-        return HtmlDocument.hasAttribute(str);
+        return HtmlDocument.builder(str)
+            .withTags("p", "div", "h1", "h2", "h3", "h4", "h5")
+            .build()
+            .hasUnnecessaryAttribute();
     }
 
     /**
@@ -85,10 +88,37 @@ public class HtmlUtils
      * @param str The string to amend
      * @return The amended string.
      */
-    public static String removeAttributes(String str)
+    public static String removeUnnecessaryAttributes(String str)
     {
         return HtmlDocument.builder(str)
-            .removeAttributes()
+            .withTags("p", "div", "h1", "h2", "h3", "h4", "h5")
+            .removeUnnecessaryAttributes()
+            .get();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given string contains unnecessary spacing.
+     * @param str The string to search
+     * @return <CODE>true</CODE> if the given string contains unnecessary spacing.
+     */
+    public static boolean hasUnnecessarySpacing(String str)
+    {
+        return HtmlDocument.builder(str)
+            .withTags("p", "div", "h1", "h2", "h3", "h4", "h5")
+            .build()
+            .hasUnnecessarySpacing();
+    }
+
+    /**
+     * Removes unnecessary spacing from the given string.
+     * @param str The string to amend
+     * @return The amended string.
+     */
+    public static String removeUnnecessarySpacing(String str)
+    {
+        return HtmlDocument.builder(str)
+            .withTags("p", "div", "h1", "h2", "h3", "h4", "h5")
+            .removeUnnecessarySpacing()
             .get();
     }
 
@@ -131,7 +161,10 @@ public class HtmlUtils
      */
     public static boolean hasExtraLineBreaks(String str)
     {
-        return HtmlDocument.hasExtraLineBreaks(str);
+        return HtmlDocument.builder(str)
+            .withTags("p", "div", "li")
+            .build()
+            .hasExtraLineBreaks();
     }
 
     /**
@@ -142,7 +175,10 @@ public class HtmlUtils
     public static String fixExtraLineBreaks(String str)
     {
         return HtmlDocument.builder(str)
-            .fixExtraLineBreaks()
+            .withTags("li")
+            .removeExtraLineBreaks()
+            .withTags("p", "div")
+            .replaceExtraLineBreaks()
             .get();
     }
 
@@ -199,28 +235,68 @@ public class HtmlUtils
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given string contains links not surrounded by spaces.
+     * Returns the list of messages for links with bad external spacing for the given string.
      * @param str The string to search
-     * @return <CODE>true</CODE> if the given string contains links not surrounded by spaces.
+     * @return The list of messages for links with bad external spacing for the given string
      */
-    public static boolean needsLinkSpacing(String str)
+    public static List<String> getBadExternalSpacingLinks(String str)
     {
-        return HtmlDocument.builder(str)
+        List<String> messages = HtmlDocument.builder(str)
             .withTags("p")
             .build()
-            .needsLinkSpacing();
+            .getBadExternalSpacingLinkMessages();
+
+        for(String message : messages)
+            logger.warning("Found "+message);
+
+        return messages;
     }
 
     /**
-     * Fix the spacing around links in the given string.
+     * Returns <CODE>true</CODE> if the given string contains links with bad external spacing.
+     * @param str The string to search
+     * @return <CODE>true</CODE> if the given string contains links with bad external spacing.
+     */
+    public static boolean hasBadExternalSpacingLink(String str)
+    {
+        return HtmlDocument.builder(str)
+            .withTags("p", "li")
+            .build()
+            .hasBadExternalSpacingLink();
+    }
+
+    /**
+     * Fix the links with bad external spacing in the given string.
      * @param str The string to amend
      * @return The amended string.
      */
-    public static String fixLinkSpacing(String str)
+    public static String fixBadExternalSpacingLinks(String str)
     {
         return HtmlDocument.builder(str)
-            .withTags("p")
-            .fixLinkSpacing()
+            .withTags("p", "li")
+            .fixBadExternalSpacingLinks()
+            .get();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given string contains a link with anchor text with bad spacing.
+     * @param str The string to search
+     * @return <CODE>true</CODE> if the given string contains a link with anchor text with bad spacing.
+     */
+    public static boolean hasBadAnchorTextLink(String str)
+    {
+        return HtmlDocument.hasBadAnchorTextLink(str);
+    }
+
+    /**
+     * Fix links with anchor text with bad spacing in the given string.
+     * @param str The string to amend
+     * @return The amended string.
+     */
+    public static String fixBadAnchorTextLinks(String str)
+    {
+        return HtmlDocument.builder(str)
+            .fixBadAnchorTextLinks()
             .get();
     }
 

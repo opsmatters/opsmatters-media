@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-//GERALD
-//import java.util.logging.Logger;
 
 /**
  * A set of utility methods to perform miscellaneous tasks related to HTML links.
@@ -32,10 +30,7 @@ import java.util.regex.Matcher;
  */
 public class HtmlDocument
 {
-//GERALD
-//    private static final Logger logger = Logger.getLogger(HtmlDocument.class.getName());
 
-    private static final String DIR_ATTR = " dir=\"ltr\"";
     private static final String START_ATTR = " start=";
     private static final String STYLE_ATTR = " style=";
 
@@ -46,19 +41,19 @@ public class HtmlDocument
     private static final String NBSP_CHAR = "\u00a0";
     private static final String NBSP_ENTITY = "&nbsp;";
 
-    private static final String BEFORE_CHARS = " "+NBSP_CHAR;
-    private static final String AFTER_CHARS = " !:;,.?"+NBSP_CHAR;
+    private static final String BEFORE_CHARS = " ("+NBSP_CHAR;
+    private static final String AFTER_CHARS = " !:;,.?)"+NBSP_CHAR;
     private static final String BEFORE_ENTITIES = "&ldquo;"+NBSP_ENTITY;
     private static final String AFTER_ENTITIES = "&rdquo;"+NBSP_ENTITY;
 
     private static final String HTTP_PROTOCOL = "http:";
     private static final String HTTPS_PROTOCOL = "https:";
-    private static final String MAILTO_PROTOCOL = "mailto:";
 
     private static final String LINE_BREAKS = "(<br[ /]*>){2,}";
     private static final String NEW_PARAGRAPH = "</p>\n<p>";
 
     private static Pattern DATA_ATTR_PATTERN = Pattern.compile(" data-[-\\w]+=", Pattern.DOTALL);
+    private static Pattern DIR_ATTR_PATTERN = Pattern.compile(" dir=\"[lr]t[rl]\"", Pattern.DOTALL);
     private static Pattern ANCHOR_TEXT_PATTERN = Pattern.compile("(.*?)(<a.*?>.*?</a>)(.*)", Pattern.DOTALL);
     private static Pattern BEFORE_TEXT_PATTERN = Pattern.compile(".*(&\\w+;)$", Pattern.DOTALL);
     private static Pattern AFTER_TEXT_PATTERN = Pattern.compile("^(&\\w+;).*", Pattern.DOTALL);
@@ -107,71 +102,9 @@ public class HtmlDocument
 
     /**
      * Returns <CODE>true</CODE> if the HTML document contains an unnecessary attribute.
-     * @param doc The HTML document to search
      * @return <CODE>true</CODE> if the HTML document contains an unnecessary attribute.
      */
-    public static boolean hasAttribute(String str)
-    {
-        return hasDataAttribute(str) || hasDirAttribute(str);
-    }
-
-    /**
-     * Removes unnecessary attributes from the HTML document.
-     */
-    public void removeAttributes()
-    {
-        removeDataAttributes();
-        removeDirAttributes();
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the HTML document contains an attribute prefixed by "data-".
-     * @param doc The HTML document to search
-     * @return <CODE>true</CODE> if the HTML document contains attributes prefixed by "data-".
-     */
-    private static boolean hasDataAttribute(String doc)
-    {
-        return DATA_ATTR_PATTERN.matcher(doc).find();
-    }
-
-    /**
-     * Removes attributes prefixed by "data-" from the HTML document.
-     */
-    private void removeDataAttributes()
-    {
-        // Special case to remove data-leveltext attributes
-        doc = doc.replaceAll("<li data-leveltext=\".+?\">", "<li>");
-
-        // Remove data- attributes, with and without values
-        doc = doc.replaceAll(" data-[-\\w]+=\"[- \\w\\[\\]{}:,./\"\\u25cf]*\"", "");
-
-        // Removed as it also replaces valid text such as "data-driven"
-        // doc = doc.replaceAll(" data-[-\\w]+", "");
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the HTML document contains a dir attribute.
-     * @param doc The HTML document to search
-     * @return <CODE>true</CODE> if the HTML document contains a dir attribute.
-     */
-    private static boolean hasDirAttribute(String doc)
-    {
-        return doc.indexOf(DIR_ATTR) != -1;
-    }
-
-    /**
-     * Removes dir attributes from the HTML document.
-     */
-    private void removeDirAttributes()
-    {
-        doc = doc.replaceAll(DIR_ATTR, "");
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the HTML document contains links not surrounded by spaces.
-     * @return <CODE>true</CODE> if the HTML document contains links not surrounded by spaces.
-     */
-    public boolean needsLinkSpacing()
+    public boolean hasUnnecessaryAttribute()
     {
         boolean ret = false;
 
@@ -179,7 +112,7 @@ public class HtmlDocument
         {
             for(String tag : tags)
             {
-                if(ret = needsLinkSpacing(tag))
+                if(ret = hasUnnecessaryAttribute(tag))
                     break;
             }
         }
@@ -188,67 +121,173 @@ public class HtmlDocument
     }
 
     /**
-     * Returns <CODE>true</CODE> if the HTML document contains links not surrounded by spaces.
+     * Returns <CODE>true</CODE> if the HTML document contains an unnecessary attribute.
      * @param tag The tag to look for in the document
-     * @return <CODE>true</CODE> if the HTML document contains links not surrounded by spaces.
+     * @return <CODE>true</CODE> if the HTML document contains an unnecessary attribute.
      */
-    private boolean needsLinkSpacing(String tag)
+    private boolean hasUnnecessaryAttribute(String tag)
     {
         boolean ret = false;
 
 //GERALD
-//System.out.println("HtmlDocument.needsLinkSpacing:1: tag="+tag);
-        Pattern pattern = Pattern.compile(String.format("<%s.*?>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+//System.out.println("HtmlDocument.hasUnnecessaryAttribute:1: tag="+tag);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>", tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
+
         while(m.find() && !ret)
         {
-            String content = m.group(1);
+            String attr = m.group(1);
 
+            ret = DATA_ATTR_PATTERN.matcher(attr).find();
 //GERALD
-//System.out.println("HtmlDocument.needsLinkSpacing:2: tag="+tag+" content="+content);
-            Matcher textMatcher = ANCHOR_TEXT_PATTERN.matcher(content);
-            while(textMatcher.find() && !ret)
-            {
-                String before = removeMarkup(textMatcher.group(1));
-                String after = removeMarkup(textMatcher.group(3));
-
+//System.out.println("HtmlDocument.hasUnnecessaryAttribute:2: tag="+tag+" ret="+ret);
+            if(!ret)
+                ret = DIR_ATTR_PATTERN.matcher(attr).find();
 //GERALD
-//System.out.println("HtmlDocument.needsLinkSpacing:3: tag="+tag+" before=["+before+"] after=["+after+"]");
-                ret = needSpaceBefore(before);
-                if(!ret)
-                    ret = needSpaceAfter(after);
-//GERALD
-//System.out.println("HtmlDocument.needsLinkSpacing:4: tag="+tag+" before=["+before+"] after=["+after+"] ret="+ret);
-            }
+//System.out.println("HtmlDocument.hasUnnecessaryAttribute:3: tag="+tag+" ret="+ret);
         }
 
 //GERALD
-//System.out.println("HtmlDocument.needsLinkSpacing:5: tag="+tag+" ret="+ret);
+//System.out.println("HtmlDocument.hasUnnecessaryAttribute:4: tag="+tag+" ret="+ret);
         return ret;
     }
 
     /**
-     * Fix the spacing around links in the HTML document.
+     * Removes unnecessary attributes from the HTML document.
      */
-    public void fixLinkSpacing()
+    public void removeUnnecessaryAttributes()
     {
         if(tags != null)
         {
             for(String tag : tags)
-                fixLinkSpacing(tag);
+                removeUnnecessaryAttributes(tag);
         }
     }
 
     /**
-     * Fix the spacing around links in the HTML document.
+     * Removes unnecessary attributes from the HTML document.
      * @param tag The tag to look for
      */
-    private void fixLinkSpacing(String tag)
+    private void removeUnnecessaryAttributes(String tag)
     {
 //GERALD
-//System.out.println("HtmlDocument.addLinkSpacing:1: tag="+tag);
+//System.out.println("HtmlDocument.removeUnnecessaryAttributes:1: tag="+tag);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>", tag), Pattern.DOTALL);
+        Matcher m = pattern.matcher(doc);
+
+        while(m.find())
+        {
+            String whole = m.group(0);
+            String attr = m.group(1);
+
+//GERALD
+//System.out.println("HtmlDocument.removeUnnecessaryAttributes:2: tag="+tag+" attr=["+attr+"] whole="+whole);
+
+            boolean changed = false;
+
+            // Remove data- attributes, with and without values
+            if(DATA_ATTR_PATTERN.matcher(attr).find())
+            {
+                attr = attr.replaceAll(" data-[-\\w]+=\".*?\"", "");
+                attr = attr.replaceAll(" data-[-\\w]+", "");
+                changed = true;
+//GERALD
+//System.out.println("HtmlDocument.removeUnnecessaryAttributes:3: tag="+tag+" attr=["+attr+"] changed="+changed);
+            }
+
+            // Remove dir attribute
+            if(DIR_ATTR_PATTERN.matcher(attr).find())
+            {
+                attr = attr.replaceAll(" dir=\"[lr]t[rl]\"", "");
+                changed = true;
+//GERALD
+//System.out.println("HtmlDocument.removeUnnecessaryAttributes:4: tag="+tag+" attr=["+attr+"] changed="+changed);
+            }
+
+            if(changed)
+            {
+                doc = doc.replaceFirst(Pattern.quote(whole), String.format("<%s%s>", tag, attr));
+//GERALD
+//System.out.println("HtmlDocument.removeUnnecessaryAttributes:5: tag="+tag+" attr=["+attr
+//  +" newWhole="+String.format("<%s%s>", tag, attr));
+            }
+        }
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the HTML document contains unnecessary spacing.
+     * @return <CODE>true</CODE> if the HTML document contains unnecessary spacing.
+     */
+    public boolean hasUnnecessarySpacing()
+    {
+        boolean ret = false;
+
+        if(tags != null)
+        {
+            for(String tag : tags)
+            {
+                if(ret = hasUnnecessarySpacing(tag))
+                    break;
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the HTML document contains unnecessary spacing.
+     * @param tag The tag to look for in the document
+     * @return <CODE>true</CODE> if the HTML document contains unnecessary spacing.
+     */
+    private boolean hasUnnecessarySpacing(String tag)
+    {
+        boolean ret = false;
+
+//GERALD
+//System.out.println("HtmlDocument.hasUnnecessarySpacing:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
+
+        while(m.find() && !ret)
+        {
+            String attr = m.group(1);
+            String content = m.group(2);
+
+            ret = content.startsWith(" ") || content.endsWith(" ")
+                || content.startsWith(NBSP_CHAR) || content.endsWith(NBSP_CHAR)
+                || content.startsWith(NBSP_ENTITY) || content.endsWith(NBSP_ENTITY);
+//GERALD
+//System.out.println("HtmlDocument.hasUnnecessarySpacing:2: tag="+tag+" content="+content+" ret="+ret);
+        }
+
+//GERALD
+//System.out.println("HtmlDocument.hasUnnecessarySpacing:3: tag="+tag+" ret="+ret);
+        return ret;
+    }
+
+    /**
+     * Removes unnecessary spacing from the HTML document.
+     */
+    public void removeUnnecessarySpacing()
+    {
+        if(tags != null)
+        {
+            for(String tag : tags)
+                removeUnnecessarySpacing(tag);
+        }
+    }
+
+    /**
+     * Removes unnecessary spacing from the HTML document.
+     * @param tag The tag to look for
+     */
+    private void removeUnnecessarySpacing(String tag)
+    {
+//GERALD
+//System.out.println("HtmlDocument.removeUnnecessarySpacing:1: tag="+tag);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Matcher m = pattern.matcher(doc);
+
         while(m.find())
         {
             String whole = m.group(0);
@@ -256,8 +295,200 @@ public class HtmlDocument
             String content = m.group(2);
 
 //GERALD
-//System.out.println("HtmlDocument.addLinkSpacing:2: tag="+tag+" content="+content+" attr=["+attr+"] whole="+whole);
+//System.out.println("HtmlDocument.removeUnnecessarySpacing:2: tag="+tag+" content=["+content+"] whole="+whole);
+
+            boolean changed = false;
+
+            while(content.startsWith(NBSP_CHAR))
+            {
+                content = content.substring(NBSP_CHAR.length());
+                changed = true;
+//GERALD
+//System.out.println("HtmlDocument.removeUnnecessarySpacing:3: tag="+tag+" content=["+content+"]");
+            }
+
+            while(content.endsWith(NBSP_CHAR))
+            {
+                content = content.substring(0, content.length()-NBSP_CHAR.length());
+                changed = true;
+//GERALD
+//System.out.println("HtmlDocument.removeUnnecessarySpacing:4: tag="+tag+" content=["+content+"]");
+            }
+
+            while(content.startsWith(NBSP_ENTITY))
+            {
+                content = content.substring(NBSP_ENTITY.length());
+                changed = true;
+//GERALD
+//System.out.println("HtmlDocument.removeUnnecessarySpacing:5: tag="+tag+" content=["+content+"]");
+            }
+
+            while(content.endsWith(NBSP_ENTITY))
+            {
+                content = content.substring(0, content.length()-NBSP_ENTITY.length());
+                changed = true;
+//GERALD
+//System.out.println("HtmlDocument.removeUnnecessarySpacing:6: tag="+tag+" content=["+content+"]");
+            }
+
+            if(content.startsWith(" ") || content.endsWith(" "))
+            {
+                content = content.trim();
+                changed = true;
+//GERALD
+//System.out.println("HtmlDocument.removeUnnecessarySpacing:7: tag="+tag+" content=["+content+"]");
+            }
+
+            if(changed)
+            {
+                doc = doc.replaceFirst(Pattern.quote(whole), String.format("<%s%s>%s</%s>", tag, attr, content, tag));
+//GERALD
+//System.out.println("HtmlDocument.removeUnnecessarySpacing:8: tag="+tag+" content=["+content
+//  +" newWhole="+String.format("<%s%s>%s</%s>", tag, attr, content, tag));
+            }
+        }
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the HTML document contains links with bad external spacing.
+     * @return <CODE>true</CODE> if the HTML document contains links with bad external spacing.
+     */
+    public boolean hasBadExternalSpacingLink()
+    {
+        boolean ret = false;
+
+        if(tags != null)
+        {
+            for(String tag : tags)
+            {
+                if(ret = hasBadExternalSpacingLink(tag))
+                    break;
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the HTML document contains links with bad external spacing.
+     * @param tag The tag to look for in the document
+     * @return <CODE>true</CODE> if the HTML document contains links with bad external spacing.
+     */
+    private boolean hasBadExternalSpacingLink(String tag)
+    {
+        boolean ret = false;
+
+//GERALD
+//System.out.println("HtmlDocument.hasBadExternalSpacingLink:1: tag="+tag);
+        Pattern pattern = Pattern.compile(String.format("<%s.*?>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Matcher m = pattern.matcher(doc);
+
+        while(m.find() && !ret)
+        {
+            String content = m.group(1);
+
+            ret = hasBadExternalSpacingLinkFromContent(content);
+        }
+
+//GERALD
+//System.out.println("HtmlDocument.hasBadExternalSpacingLink:2: tag="+tag+" ret="+ret);
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content contains links with bad external spacing.
+     * @param content The content to search
+     * @return <CODE>true</CODE> if the content contains links with bad external spacing.
+     */
+    private boolean hasBadExternalSpacingLinkFromContent(String content)
+    {
+        boolean ret = false;
+
+        if(content != null && content.length() > 0)
+        {
+//GERALD
+//System.out.println("HtmlDocument.hasBadExternalSpacingLinkFromContent:1: content="+content);
             Matcher textMatcher = ANCHOR_TEXT_PATTERN.matcher(content);
+
+            while(textMatcher.find() && !ret)
+            {
+                String before = textMatcher.group(1);
+                String after = textMatcher.group(3);
+
+                ret = needSpaceBefore(removeMarkup(before));
+//GERALD
+//System.out.println("HtmlDocument.hasBadExternalSpacingLinkFromContent:2: before=["+removeMarkup(before)+"] ret="+ret);
+                if(!ret)
+                {
+                    ret = needSpaceAfter(removeMarkup(after));
+//GERALD
+//System.out.println("HtmlDocument.hasBadExternalSpacingLinkFromContent:3: after=["+removeMarkup(after)+"] ret="+ret);
+                }
+//GERALD
+//System.out.println("HtmlDocument.hasBadExternalSpacingLinkFromContent:4: ret="+ret);
+
+                if(!ret)
+                {
+                    // Search the rest of the string in case there are more anchors
+                    ret = hasBadExternalSpacingLinkFromContent(after);
+//GERALD
+//System.out.println("HtmlDocument.hasBadExternalSpacingLinkFromContent:5: ret="+ret);
+                }
+//GERALD
+//System.out.println("HtmlDocument.hasBadExternalSpacingLinkFromContent:6: ret="+ret);
+            }
+        }
+
+//GERALD
+//System.out.println("HtmlDocument.hasBadExternalSpacingLinkFromContent:7: ret="+ret);
+        return ret;
+    }
+
+    /**
+     * Fix the links with bad external spacing in the HTML document.
+     */
+    public void fixBadExternalSpacingLinks()
+    {
+        if(tags != null)
+        {
+            for(String tag : tags)
+                fixBadExternalSpacingLinks(tag);
+        }
+    }
+
+    /**
+     * Fix the links with bad external spacing in the HTML document.
+     * @param tag The tag to look for
+     */
+    private void fixBadExternalSpacingLinks(String tag)
+    {
+//GERALD
+//System.out.println("HtmlDocument.fixBadExternalSpacingLinks:1: tag="+tag);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Matcher m = pattern.matcher(doc);
+
+        while(m.find())
+        {
+            String content = m.group(2);
+
+//GERALD
+//System.out.println("HtmlDocument.fixBadExternalSpacingLinks:2: tag="+tag+" content=["+content+"]");
+            fixBadExternalSpacingLinksFromContent(content);
+        }
+    }
+
+    /**
+     * Fix the links with bad external spacing in the content.
+     * @param content The content to search
+     */
+    private void fixBadExternalSpacingLinksFromContent(String content)
+    {
+        if(content != null && content.length() > 0)
+        {
+//GERALD
+//System.out.println("HtmlDocument.fixBadExternalSpacingLinksFromContent:1: content="+content);
+            Matcher textMatcher = ANCHOR_TEXT_PATTERN.matcher(content);
+
             while(textMatcher.find())
             {
                 String before = textMatcher.group(1);
@@ -265,12 +496,12 @@ public class HtmlDocument
                 String after = textMatcher.group(3);
 
 //GERALD
-//System.out.println("HtmlDocument.addLinkSpacing:3: tag="+tag+" before=["+before+"] after=["+after+"] link="+link);
+//System.out.println("HtmlDocument.fixBadExternalSpacingLinksFromContent:2: before=["+before+"] after=["+after+"] link="+link);
                 boolean addBefore = needSpaceBefore(removeMarkup(before));
                 boolean addAfter = needSpaceAfter(removeMarkup(after));
 
 //GERALD
-//System.out.println("HtmlDocument.addLinkSpacing:4: tag="+tag+" testBefore=["+testBefore+"] testAfter=["+testAfter+"] addBefore="+addBefore+" addAfter="+addAfter);
+//System.out.println("HtmlDocument.fixBadExternalSpacingLinksFromContent:3: testBefore=["+removeMarkup(before)+"] testAfter=["+removeMarkup(after)+"] addBefore="+addBefore+" addAfter="+addAfter);
 
                 if(addBefore || addAfter)
                 {
@@ -281,12 +512,13 @@ public class HtmlDocument
                         addAfter ? " " : "",
                         after);
 
-                    doc = doc.replaceFirst(Pattern.quote(whole),
-                        String.format("<%s%s>%s</%s>", tag, attr, newContent, tag));
+                    doc = doc.replaceFirst(Pattern.quote(String.format(">%s<", content)), String.format(">%s<", newContent));
 //GERALD
-//System.out.println("HtmlDocument.addLinkSpacing:5: tag="+tag+" before=["+before+"] after=["+after+"] addBefore="+addBefore+" addAfter="+addAfter
-//  +" newContent="+newContent+" newWhole="+String.format("<%s%s>%s</%s>", tag, attr, newContent, tag));
+//System.out.println("HtmlDocument.fixBadExternalSpacingLinksFromContent:4: before=["+before+"] after=["+after+"] addBefore="+addBefore+" addAfter="+addAfter
+//  +" newContent="+newContent+" newWhole="+String.format(">%s<", newContent));
                 }
+
+                fixBadExternalSpacingLinksFromContent(after);
             }
         }
     }
@@ -361,7 +593,7 @@ public class HtmlDocument
      * Returns the given string with all markup removed.
      * @return The given string with all markup removed
      */
-    private String removeMarkup(String str)
+    private static String removeMarkup(String str)
     {
         String ret = str;
 
@@ -369,6 +601,74 @@ public class HtmlDocument
         ret = ret.replaceAll("</\\w+>", "");
 
         return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the HTML document contains a link with anchor text with bad spacing.
+     * @param doc The HTML document to search
+     * @return <CODE>true</CODE> if the HTML document contains a link with anchor text with bad spacing.
+     */
+    public static boolean hasBadAnchorTextLink(String doc)
+    {
+        boolean ret = false;
+
+        Matcher m = ANCHOR_ATTR_CONTENT_PATTERN.matcher(doc);
+        while (m.find() && !ret)
+        {
+            String anchor = removeMarkup(m.group(2));
+
+//GERALD
+//System.out.println("HtmlDocument.hasBadAnchorTextLink:1: anchor=["+anchor+"]");
+            if(anchor.startsWith(" ") || anchor.endsWith(" ")
+                || anchor.startsWith(NBSP_ENTITY) || anchor.endsWith(NBSP_ENTITY))
+            {
+                ret = true;
+            }
+//GERALD
+//System.out.println("HtmlDocument.hasBadAnchorTextLink:2: anchor=["+anchor+"] ret="+ret);
+        }
+
+//GERALD
+//System.out.println("HtmlDocument.hasBadAnchorTextLink:3: ret="+ret);
+        return ret;
+    }
+
+    /**
+     * Fix links with anchor text with bad spacing in the HTML document.
+     */
+    public void fixBadAnchorTextLinks()
+    {
+        Matcher m = ANCHOR_ATTR_CONTENT_PATTERN.matcher(doc);
+
+        while(m.find())
+        {
+            String whole = m.group(0);
+            String attr = m.group(1);
+            String anchor = m.group(2);
+
+//GERALD
+//System.out.println("HtmlDocument.fixBadAnchorTextLinks:1: anchor=["+anchor+"] attr=["+attr+"] whole="+whole);
+
+            if(anchor.startsWith(NBSP_CHAR) || anchor.endsWith(NBSP_CHAR)
+                || anchor.startsWith(NBSP_ENTITY) || anchor.endsWith(NBSP_ENTITY))
+            {
+                anchor = replaceNbsps(anchor);
+//GERALD
+//System.out.println("HtmlDocument.fixBadAnchorTextLinks:2: anchor=["+anchor+"] attr=["+attr+"] whole="+whole);
+            }
+
+//GERALD
+//System.out.println("HtmlDocument.fixBadAnchorTextLinks:3: anchor=["+anchor+"] attr=["+attr+"] whole="+whole);
+            if(anchor.startsWith(" ") || anchor.endsWith(" "))
+            {
+                doc = doc.replaceFirst(Pattern.quote(whole), String.format("<a%s>%s</a>", attr, anchor.trim()));
+//GERALD
+//System.out.println("HtmlDocument.fixBadAnchorTextLinks:4: whole="+Pattern.quote(whole)
+//  +" newWhole="+String.format("<a%s>%s</a>", attr, anchor.trim()));
+            }
+//GERALD
+//System.out.println("HtmlDocument.fixBadAnchorTextLinks:5: anchor=["+anchor+"] attr=["+attr+"] whole="+whole);
+        }
     }
 
     /**
@@ -386,11 +686,16 @@ public class HtmlDocument
         {
             String attr = m.group(1);
 
-            Matcher hrefMatcher = HREF_PATTERN.matcher(attr);
-            String href = hrefMatcher.find() ? hrefMatcher.group(1) : "";
-
-            if(ret = href.startsWith(HTTP_PROTOCOL))
+//GERALD
+//System.out.println("HtmlDocument.hasBadProtocolLink:1: attr="+attr);
+            if(ret = attr.indexOf(HTTP_PROTOCOL) != -1)
+            {
+//GERALD
+//System.out.println("HtmlDocument.hasBadProtocolLink:2: attr="+attr+" ret="+ret);
                 break;
+            }
+//GERALD
+//System.out.println("HtmlDocument.hasBadProtocolLink:3: attr="+attr+" ret="+ret);
         }
 
         return ret;
@@ -410,19 +715,18 @@ public class HtmlDocument
             String whole = m.group(0);
             String attr = m.group(1);
 
-            Matcher hrefMatcher = HREF_PATTERN.matcher(attr);
-            String href = hrefMatcher.find() ? hrefMatcher.group(1) : "";
-
-            if(href.startsWith(HTTP_PROTOCOL))
+            if(attr.indexOf(HTTP_PROTOCOL) != -1)
             {
 //GERALD
-//System.out.println("HtmlDocument.fixBadProtocolLinks:2: attr="+attr+" href="+href
-//  +" newAttr="+attr.replaceFirst(Pattern.quote(href), href.replaceFirst(HTTP_PROTOCOL, HTTPS_PROTOCOL)));
-                doc = doc.replaceFirst(Pattern.quote(whole), String.format("<a%s>)",
-                    attr.replaceFirst(Pattern.quote(href), href.replaceFirst(HTTP_PROTOCOL, HTTPS_PROTOCOL))));
+//System.out.println("HtmlDocument.fixBadProtocolLinks:2: attr="+attr
+//  +" newAttr="+attr.replaceFirst(HTTP_PROTOCOL, HTTPS_PROTOCOL));
+
+                // Replace http:// in title and href in attributes
+                doc = doc.replaceFirst(Pattern.quote(whole), String.format("<a%s>",
+                    attr.replaceAll(HTTP_PROTOCOL, HTTPS_PROTOCOL)));
 //GERALD
 //System.out.println("HtmlDocument.fixBadProtocolLinks:3: whole="+Pattern.quote(whole)
-//  +" newWhole="+String.format("<a%s>)", attr.replaceFirst(Pattern.quote(href), href.replaceFirst(HTTP_PROTOCOL, HTTPS_PROTOCOL))));
+//  +" newWhole="+String.format("<a%s>", attr.replaceFirst(HTTP_PROTOCOL, HTTPS_PROTOCOL)));
             }
         }
     }
@@ -442,9 +746,19 @@ public class HtmlDocument
      */
     private void replaceNbsps()
     {
+        doc = replaceNbsps(doc);
+    }
+
+    /**
+     * Replaces "&amp;nbsp;" characters in the given string with normal spaces.
+     */
+    private String replaceNbsps(String str)
+    {
         // Replace nbsp with space
-        doc = doc.replaceAll(NBSP_CHAR, " ");
-        doc = doc.replaceAll(NBSP_ENTITY, " ");
+        str = str.replaceAll(NBSP_CHAR, " ");
+        str = str.replaceAll(NBSP_ENTITY, " ");
+
+        return str;
     }
 
     /**
@@ -591,20 +905,142 @@ public class HtmlDocument
 
     /**
      * Returns <CODE>true</CODE> if the HTML document contains extra line breaks.
-     * @param doc The HTML document to search
      * @return <CODE>true</CODE> if the HTML document contains extra line breaks.
      */
-    public static boolean hasExtraLineBreaks(String doc)
+    public boolean hasExtraLineBreaks()
     {
-        return LINE_BREAKS_PATTERN.matcher(doc).find();
+        boolean ret = false;
+
+        if(tags != null)
+        {
+            for(String tag : tags)
+            {
+                if(ret = hasExtraLineBreaks(tag))
+                    break;
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the HTML document contains extra line breaks.
+     * @param tag The tag to look for in the document
+     * @return <CODE>true</CODE> if the HTML document contains extra line breaks.
+     */
+    private boolean hasExtraLineBreaks(String tag)
+    {
+        boolean ret = false;
+
+//GERALD
+//System.out.println("HtmlDocument.hasExtraLineBreaks:1: tag="+tag);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Matcher m = pattern.matcher(doc);
+
+        while(m.find() && !ret)
+        {
+            String content = m.group(2);
+
+//GERALD
+//System.out.println("HtmlDocument.hasExtraLineBreaks:2: tag="+tag+" content=["+content+"]");
+            ret = LINE_BREAKS_PATTERN.matcher(content).find();
+//GERALD
+//System.out.println("HtmlDocument.hasExtraLineBreaks:3: tag="+tag+" ret="+ret);
+        }
+
+//GERALD
+//System.out.println("HtmlDocument.hasExtraLineBreaks:4: tag="+tag+" ret="+ret);
+        return ret;
     }
 
     /**
      * Replaces extra line breaks in the HTML document with a new paragraph.
      */
-    private void fixExtraLineBreaks()
+    private void replaceExtraLineBreaks()
     {
-        doc = doc.replaceAll(LINE_BREAKS, NEW_PARAGRAPH);
+        if(tags != null)
+        {
+            for(String tag : tags)
+                replaceExtraLineBreaks(tag);
+        }
+    }
+
+    /**
+     * Replaces extra line breaks in the HTML document with a new paragraph.
+     * @param tag The tag to look for
+     */
+    private void replaceExtraLineBreaks(String tag)
+    {
+//GERALD
+//System.out.println("HtmlDocument.replaceExtraLineBreaks:1: tag="+tag);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Matcher m = pattern.matcher(doc);
+
+        while(m.find())
+        {
+            String whole = m.group(0);
+            String attr = m.group(1);
+            String content = m.group(2);
+
+//GERALD
+//System.out.println("HtmlDocument.replaceExtraLineBreaks:2: tag="+tag+" content=["+content+"] whole="+whole);
+            if(LINE_BREAKS_PATTERN.matcher(content).find())
+            {
+                // Replace multiple line breaks with new paragraph
+                content = content.replaceAll(LINE_BREAKS, NEW_PARAGRAPH);
+//GERALD
+//System.out.println("HtmlDocument.replaceExtraLineBreaks:3: tag="+tag+" content=["+content+"]");
+                doc = doc.replaceFirst(Pattern.quote(whole), String.format("<%s%s>%s</%s>", tag, attr, content, tag));
+//GERALD
+//System.out.println("HtmlDocument.replaceExtraLineBreaks:4: tag="+tag+" content="+content
+//  +" newWhole="+String.format("<%s%s>%s</%s>", tag, attr, content, tag));
+            }
+        }
+    }
+
+    /**
+     * Removes extra line breaks from the HTML document.
+     */
+    private void removeExtraLineBreaks()
+    {
+        if(tags != null)
+        {
+            for(String tag : tags)
+                removeExtraLineBreaks(tag);
+        }
+    }
+
+    /**
+     * Removes extra line breaks from the HTML document.
+     * @param tag The tag to look for
+     */
+    private void removeExtraLineBreaks(String tag)
+    {
+//GERALD
+//System.out.println("HtmlDocument.removeExtraLineBreaks:1: tag="+tag);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Matcher m = pattern.matcher(doc);
+
+        while(m.find())
+        {
+            String whole = m.group(0);
+            String attr = m.group(1);
+            String content = m.group(2);
+
+//GERALD
+//System.out.println("HtmlDocument.removeExtraLineBreaks:2: tag="+tag+" content=["+content+"] whole="+whole);
+            if(LINE_BREAKS_PATTERN.matcher(content).find())
+            {
+                // Remove multiple line breaks
+                content = content.replaceAll(LINE_BREAKS, "");
+//GERALD
+//System.out.println("HtmlDocument.removeExtraLineBreaks:3: tag="+tag+" content=["+content+"]");
+                doc = doc.replaceFirst(Pattern.quote(whole), String.format("<%s%s>%s</%s>", tag, attr, content, tag));
+//GERALD
+//System.out.println("HtmlDocument.removeExtraLineBreaks:4: tag="+tag+" content="+content
+//  +" newWhole="+String.format("<%s%s>%s</%s>", tag, attr, content, tag));
+            }
+        }
     }
 
     /**
@@ -640,6 +1076,7 @@ public class HtmlDocument
 //System.out.println("HtmlDocument.needsImageWrapperClass:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
+
         while(m.find() && !ret)
         {
             String attr = m.group(1);
@@ -687,6 +1124,7 @@ public class HtmlDocument
 //System.out.println("HtmlDocument.addImageWrapperClass:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
+
         while(m.find())
         {
             String whole = m.group(0);
@@ -752,6 +1190,7 @@ public class HtmlDocument
 //System.out.println("HtmlDocument.needsImageLegendClass:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
+
         while(m.find() && !ret)
         {
             String content = m.group(2);
@@ -801,6 +1240,7 @@ public class HtmlDocument
 //System.out.println("HtmlDocument.addImageLegendClass:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
+
         while(m.find())
         {
             Matcher captionMatcher = FIGCAPTION_PATTERN.matcher(m.group(2));
@@ -829,7 +1269,7 @@ public class HtmlDocument
 
     /**
      * Returns <CODE>true</CODE> if the HTML document contains a &lt;h1&gt; tag.
-     * @param str The string to search
+     * @param doc The string to search
      * @return <CODE>true</CODE> if the HTML document contains a &lt;h1&gt; tag.
      */
     public static boolean hasH1(String doc)
@@ -861,7 +1301,7 @@ public class HtmlDocument
     /**
      * Returns the list of duplicate link messages for the HTML document.
      * @param doc The HTML document to search
-     * @return the list of duplicate link messages for the HTML document
+     * @return The list of duplicate link messages for the HTML document
      */
     public static List<String> getDuplicateLinkMessages(String doc)
     {
@@ -872,13 +1312,15 @@ public class HtmlDocument
 
         while(m.find())
         {
+            String whole = m.group(0);
             String attr = m.group(1);
             String content = m.group(2);
 
             String href = attr.replaceAll(" href=\"(.+)\"", "$1");
             String value = links.get(href);
+
             if(value != null && value.equals(content)) // duplicate link
-                ret.add(String.format("duplicate link: href=%s, content=[%s]", href, content));
+                ret.add(String.format("duplicate link: %s", StringUtils.normalise(whole)));
 
             links.put(href, content);
         }
@@ -888,7 +1330,7 @@ public class HtmlDocument
 
     /**
      * Returns the list of bad link messages for the HTML document.
-     * @return the list of bad link messages for the HTML document
+     * @return The list of bad link messages for the HTML document
      */
     public static List<String> getBadLinkMessages(String doc)
     {
@@ -898,26 +1340,98 @@ public class HtmlDocument
 
         while(m.find())
         {
+            String whole = m.group(0);
             String attr = m.group(1);
             String content = m.group(2);
 
-            Matcher hrefMatcher = HREF_PATTERN.matcher(attr);
-            String href = hrefMatcher.find() ? hrefMatcher.group(1) : "";
-
-            if(!href.startsWith(HTTPS_PROTOCOL) && !href.startsWith(MAILTO_PROTOCOL))
-                ret.add(String.format("link with bad protocol: href=%s, content=[%s]", href, content));
-            else if(content.startsWith(" ") || content.endsWith(" "))
-                ret.add(String.format("link with space: href=%s, content=[%s]", href, content));
+            if(attr.indexOf(HTTP_PROTOCOL) != -1)
+                ret.add(String.format("link with bad protocol: %s", StringUtils.normalise(whole)));
+            else if(content.startsWith(" ") || content.endsWith(" ") || content.startsWith(NBSP_ENTITY) || content.endsWith(NBSP_ENTITY))
+                ret.add(String.format("link with anchor text with bad spacing: %s", StringUtils.normalise(whole)));
             else if(content.startsWith(",") || content.endsWith(","))
-                ret.add(String.format("link with comma: href=%s, content=[%s]", href, content));
+                ret.add(String.format("link with anchor text with comma: %s", StringUtils.normalise(whole)));
         }
 
         return ret;
     }
 
     /**
+     * Returns the list of messages for links with bad external spacing in the HTML document.
+     * @return The list of messages for links with bad external spacing in the HTML document
+     */
+    public List<String> getBadExternalSpacingLinkMessages()
+    {
+        List<String> ret = new ArrayList<String>();
+
+        if(tags != null)
+        {
+            for(String tag : tags)
+                addBadExternalSpacingLinkMessages(tag, ret);
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the list of messages for links with bad external spacing in the HTML document.
+     * @param tag The tag to look for
+     * @param messages The list of messages to add to
+     */
+    private void addBadExternalSpacingLinkMessages(String tag, List<String> messages)
+    {
+//GERALD
+//System.out.println("HtmlDocument.addBadExternalSpacingLinkMessages:1: tag="+tag);
+        Pattern pattern = Pattern.compile(String.format("<%s.*?>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Matcher m = pattern.matcher(doc);
+
+        while(m.find())
+        {
+            String content = m.group(1);
+
+//GERALD
+//System.out.println("HtmlDocument.addBadExternalSpacingLinkMessages:2: tag="+tag+" content="+content);
+            addBadExternalSpacingLinkMessagesFromContent(content, messages);
+        }
+
+//GERALD
+//System.out.println("HtmlDocument.addBadExternalSpacingLinkMessages:3: tag="+tag+" messages="+messages);
+    }
+
+    /**
+     * Returns the list of messages for links with bad external spacing in the content.
+     * @param content The content to search
+     * @param messages The list of messages to add to
+     */
+    private void addBadExternalSpacingLinkMessagesFromContent(String content, List<String> messages)
+    {
+        if(content != null && content.length() > 0)
+        {
+            Matcher textMatcher = ANCHOR_TEXT_PATTERN.matcher(content);
+
+            while(textMatcher.find())
+            {
+                String before = textMatcher.group(1);
+                String link = textMatcher.group(2);
+                String after = textMatcher.group(3);
+
+//GERALD
+//System.out.println("HtmlDocument.addBadExternalSpacingLinkMessagesFromContent:1: before=["+removeMarkup(before)+"] after=["+removeMarkup(after)+"] needSpaceBefore="+needSpaceBefore(before)+" needSpaceAfter="+needSpaceAfter(after));
+                if(needSpaceBefore(removeMarkup(before)) || needSpaceAfter(removeMarkup(after)))
+                {
+                    messages.add(String.format("link with bad external spacing: %s", StringUtils.normalise(link)));
+//GERALD
+//System.out.println("HtmlDocument.addBadExternalSpacingLinkMessagesFromContent:2: before=["+before+"] after=["+after+"] needSpaceBefore="+needSpaceBefore(before)+" needSpaceAfter="+needSpaceAfter(after)+" messages="+messages);
+                }
+
+                // Search the rest of the string in case there are more anchors
+                addBadExternalSpacingLinkMessagesFromContent(after, messages);
+            }
+        }
+    }
+
+    /**
      * Returns the list of image source messages in the HTML document
-     * @return the list of image source messages in the HTML document
+     * @return The list of image source messages in the HTML document
      */
     public List<String> getImageSourceMessages()
     {
@@ -944,14 +1458,15 @@ public class HtmlDocument
 
         while(m.find())
         {
+            String whole = m.group(0);
             String content = m.group(1);
 
             Matcher sourceMatcher = SOURCE_PATTERN.matcher(content.toLowerCase().trim());
 
             if(sourceMatcher.find())
-                messages.add(String.format("image source: [%s]", content));
+                messages.add(String.format("image source: %s", StringUtils.normalise(whole)));
             else if(content.startsWith("https://") && content.indexOf("<") == -1) // No markup, just text
-                messages.add(String.format("image source: [%s]", content));
+                messages.add(String.format("image source: %s", StringUtils.normalise(whole)));
         }
     }
 
@@ -995,19 +1510,39 @@ public class HtmlDocument
          * Removes unnecessary attributes from the HTML document.
          * @return This object
          */
-        public Builder removeAttributes()
+        public Builder removeUnnecessaryAttributes()
         {
-            ret.removeAttributes();
+            ret.removeUnnecessaryAttributes();
             return this;
         }
 
         /**
-         * Fix the spacing around links in the HTML document.
+         * Removes unnecessary spacing from the HTML document.
          * @return This object
          */
-        public Builder fixLinkSpacing()
+        public Builder removeUnnecessarySpacing()
         {
-            ret.fixLinkSpacing();
+            ret.removeUnnecessarySpacing();
+            return this;
+        }
+
+        /**
+         * Fix the links with bad external spacing in the HTML document.
+         * @return This object
+         */
+        public Builder fixBadExternalSpacingLinks()
+        {
+            ret.fixBadExternalSpacingLinks();
+            return this;
+        }
+
+        /**
+         * Fix the links with anchor text with bad spacing in the HTML document.
+         * @return This object
+         */
+        public Builder fixBadAnchorTextLinks()
+        {
+            ret.fixBadAnchorTextLinks();
             return this;
         }
 
@@ -1065,9 +1600,19 @@ public class HtmlDocument
          * Replaces extra line breaks in the HTML document with a new paragraph.
          * @return This object
          */
-        public Builder fixExtraLineBreaks()
+        public Builder replaceExtraLineBreaks()
         {
-            ret.fixExtraLineBreaks();
+            ret.replaceExtraLineBreaks();
+            return this;
+        }
+
+        /**
+         * Removes extra line breaks from the HTML document.
+         * @return This object
+         */
+        public Builder removeExtraLineBreaks()
+        {
+            ret.removeExtraLineBreaks();
             return this;
         }
 

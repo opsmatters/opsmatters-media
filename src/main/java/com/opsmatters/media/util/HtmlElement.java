@@ -29,7 +29,8 @@ public enum HtmlElement
     NONE("None", ""),
     P("P", "p"),
     DIV("DIV", "div"),
-    FIGURE("FIGURE", "figure");
+    FIGURE("FIGURE", "figure"),
+    FIGCAPTION("FIGCAPTION", "figcaption");
 
     private String value;
     private String tag;
@@ -73,15 +74,35 @@ public enum HtmlElement
     }
 
     /**
-     * Returns the list of elements.
-     * @return The list of elements.
+     * Returns the list of text wrapper elements.
+     * @return The list of text wrapper elements.
      */
-    public static List<HtmlElement> toList()
+    public static List<HtmlElement> toTextWrapperList(boolean blank)
     {
         List<HtmlElement> ret = new ArrayList<HtmlElement>();
 
-        for(HtmlElement element : HtmlElement.values())
-            ret.add(element);
+        if(blank)
+            ret.add(NONE);
+        ret.add(P);
+        ret.add(DIV);
+        ret.add(FIGCAPTION);
+
+        return ret;
+    }
+
+    /**
+     * Returns the list of image wrapper elements.
+     * @return The list of image wrapper elements.
+     */
+    public static List<HtmlElement> toImageWrapperList(boolean blank)
+    {
+        List<HtmlElement> ret = new ArrayList<HtmlElement>();
+
+        if(blank)
+            ret.add(NONE);
+        ret.add(P);
+        ret.add(DIV);
+        ret.add(FIGURE);
 
         return ret;
     }
