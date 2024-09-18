@@ -26,9 +26,10 @@ import com.opsmatters.media.model.ConfigParser;
  */
 public class S3Config extends AwsConfig
 {
-    private String config = "";
-    private String content = "";
     private String contentConfig = "";
+    private String chartConfig = "";
+    private String platformConfig = "";
+    private String content = "";
 
     /**
      * Constructor that takes an id.
@@ -53,42 +54,11 @@ public class S3Config extends AwsConfig
     {
         if(obj != null)
         {
-            setConfigBucket(obj.getConfigBucket());
-            setContentBucket(obj.getContentBucket());
             setContentConfigBucket(obj.getContentConfigBucket());
+            setChartConfigBucket(obj.getChartConfigBucket());
+            setPlatformConfigBucket(obj.getPlatformConfigBucket());
+            setContentBucket(obj.getContentBucket());
         }
-    }
-
-    /**
-     * Returns the config bucket for the S3 configuration.
-     */
-    public String getConfigBucket()
-    {
-        return config;
-    }
-
-    /**
-     * Sets the config bucket for the S3 configuration.
-     */
-    public void setConfigBucket(String config)
-    {
-        this.config = config;
-    }
-
-    /**
-     * Returns the content bucket for the S3 configuration.
-     */
-    public String getContentBucket()
-    {
-        return content;
-    }
-
-    /**
-     * Sets the content bucket for the S3 configuration.
-     */
-    public void setContentBucket(String content)
-    {
-        this.content = content;
     }
 
     /**
@@ -108,6 +78,54 @@ public class S3Config extends AwsConfig
     }
 
     /**
+     * Returns the chart config bucket for the S3 configuration.
+     */
+    public String getChartConfigBucket()
+    {
+        return chartConfig;
+    }
+
+    /**
+     * Sets the chart config bucket for the S3 configuration.
+     */
+    public void setChartConfigBucket(String chartConfig)
+    {
+        this.chartConfig = chartConfig;
+    }
+
+    /**
+     * Returns the platform config bucket for the S3 configuration.
+     */
+    public String getPlatformConfigBucket()
+    {
+        return platformConfig;
+    }
+
+    /**
+     * Sets the platform config bucket for the S3 configuration.
+     */
+    public void setPlatformConfigBucket(String platformConfig)
+    {
+        this.platformConfig = platformConfig;
+    }
+
+    /**
+     * Returns the content bucket for the S3 configuration.
+     */
+    public String getContentBucket()
+    {
+        return content;
+    }
+
+    /**
+     * Sets the content bucket for the S3 configuration.
+     */
+    public void setContentBucket(String content)
+    {
+        this.content = content;
+    }
+
+    /**
      * Returns a builder for the configuration.
      * @param id The id of the configuration
      * @return The builder instance.
@@ -124,9 +142,10 @@ public class S3Config extends AwsConfig
     {
         // The config attribute names
         private static final String REGION = "region";
-        private static final String CONFIG = "config";
-        private static final String CONTENT = "content";
         private static final String CONTENT_CONFIG = "content-config";
+        private static final String CHART_CONFIG = "chart-config";
+        private static final String PLATFORM_CONFIG = "platform-config";
+        private static final String CONTENT = "content";
 
         private S3Config ret = null;
 
@@ -149,12 +168,14 @@ public class S3Config extends AwsConfig
         {
             if(map.containsKey(REGION))
                 ret.setRegion((String)map.get(REGION));
-            if(map.containsKey(CONFIG))
-                ret.setConfigBucket((String)map.get(CONFIG));
-            if(map.containsKey(CONTENT))
-                ret.setContentBucket((String)map.get(CONTENT));
             if(map.containsKey(CONTENT_CONFIG))
                 ret.setContentConfigBucket((String)map.get(CONTENT_CONFIG));
+            if(map.containsKey(CHART_CONFIG))
+                ret.setChartConfigBucket((String)map.get(CHART_CONFIG));
+            if(map.containsKey(PLATFORM_CONFIG))
+                ret.setPlatformConfigBucket((String)map.get(PLATFORM_CONFIG));
+            if(map.containsKey(CONTENT))
+                ret.setContentBucket((String)map.get(CONTENT));
 
             return this;
         }

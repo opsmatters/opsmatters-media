@@ -41,8 +41,8 @@ public class HtmlDocument
     private static final String NBSP_CHAR = "\u00a0";
     private static final String NBSP_ENTITY = "&nbsp;";
 
-    private static final String BEFORE_CHARS = " ("+NBSP_CHAR;
-    private static final String AFTER_CHARS = " !:;,.?)"+NBSP_CHAR;
+    private static final String BEFORE_CHARS = " ('\""+NBSP_CHAR;
+    private static final String AFTER_CHARS = " !:;,.'\"?)"+NBSP_CHAR;
     private static final String BEFORE_ENTITIES = "&ldquo;"+NBSP_ENTITY;
     private static final String AFTER_ENTITIES = "&rdquo;"+NBSP_ENTITY;
 
@@ -206,7 +206,7 @@ public class HtmlDocument
 
             if(changed)
             {
-                doc = doc.replaceFirst(Pattern.quote(whole), String.format("<%s%s>", tag, attr));
+                doc = doc.replace(whole, String.format("<%s%s>", tag, attr));
 //GERALD
 //System.out.println("HtmlDocument.removeUnnecessaryAttributes:5: tag="+tag+" attr=["+attr
 //  +" newWhole="+String.format("<%s%s>", tag, attr));
@@ -341,10 +341,10 @@ public class HtmlDocument
 
             if(changed)
             {
-                doc = doc.replaceFirst(Pattern.quote(whole), String.format("<%s%s>%s</%s>", tag, attr, content, tag));
+                doc = doc.replace(whole, String.format("<%s%s>%s</%s>", tag, attr, content, tag));
 //GERALD
-//System.out.println("HtmlDocument.removeUnnecessarySpacing:8: tag="+tag+" content=["+content
-//  +" newWhole="+String.format("<%s%s>%s</%s>", tag, attr, content, tag));
+//System.out.println("HtmlDocument.removeUnnecessarySpacing:9: tag="+tag+" content=["+content
+//  +"] newWhole="+String.format("<%s%s>%s</%s>", tag, attr, content, tag));
             }
         }
     }
@@ -512,7 +512,7 @@ public class HtmlDocument
                         addAfter ? " " : "",
                         after);
 
-                    doc = doc.replaceFirst(Pattern.quote(String.format(">%s<", content)), String.format(">%s<", newContent));
+                    doc = doc.replace(String.format(">%s<", content), String.format(">%s<", newContent));
 //GERALD
 //System.out.println("HtmlDocument.fixBadExternalSpacingLinksFromContent:4: before=["+before+"] after=["+after+"] addBefore="+addBefore+" addAfter="+addAfter
 //  +" newContent="+newContent+" newWhole="+String.format(">%s<", newContent));
@@ -661,7 +661,7 @@ public class HtmlDocument
 //System.out.println("HtmlDocument.fixBadAnchorTextLinks:3: anchor=["+anchor+"] attr=["+attr+"] whole="+whole);
             if(anchor.startsWith(" ") || anchor.endsWith(" "))
             {
-                doc = doc.replaceFirst(Pattern.quote(whole), String.format("<a%s>%s</a>", attr, anchor.trim()));
+                doc = doc.replace(whole, String.format("<a%s>%s</a>", attr, anchor.trim()));
 //GERALD
 //System.out.println("HtmlDocument.fixBadAnchorTextLinks:4: whole="+Pattern.quote(whole)
 //  +" newWhole="+String.format("<a%s>%s</a>", attr, anchor.trim()));
@@ -719,14 +719,14 @@ public class HtmlDocument
             {
 //GERALD
 //System.out.println("HtmlDocument.fixBadProtocolLinks:2: attr="+attr
-//  +" newAttr="+attr.replaceFirst(HTTP_PROTOCOL, HTTPS_PROTOCOL));
+//  +" newAttr="+attr.replace(HTTP_PROTOCOL, HTTPS_PROTOCOL));
 
                 // Replace http:// in title and href in attributes
-                doc = doc.replaceFirst(Pattern.quote(whole), String.format("<a%s>",
-                    attr.replaceAll(HTTP_PROTOCOL, HTTPS_PROTOCOL)));
+                doc = doc.replace(whole, String.format("<a%s>",
+                    attr.replace(HTTP_PROTOCOL, HTTPS_PROTOCOL)));
 //GERALD
 //System.out.println("HtmlDocument.fixBadProtocolLinks:3: whole="+Pattern.quote(whole)
-//  +" newWhole="+String.format("<a%s>", attr.replaceFirst(HTTP_PROTOCOL, HTTPS_PROTOCOL)));
+//  +" newWhole="+String.format("<a%s>", attr.replace(HTTP_PROTOCOL, HTTPS_PROTOCOL)));
             }
         }
     }
@@ -782,7 +782,8 @@ public class HtmlDocument
         {
             String whole = m.group(0);
             String content = m.group(1);
-            doc = doc.replaceFirst(whole, content);
+
+            doc = doc.replace(whole, content);
         }
     }
 
@@ -990,7 +991,7 @@ public class HtmlDocument
                 content = content.replaceAll(LINE_BREAKS, NEW_PARAGRAPH);
 //GERALD
 //System.out.println("HtmlDocument.replaceExtraLineBreaks:3: tag="+tag+" content=["+content+"]");
-                doc = doc.replaceFirst(Pattern.quote(whole), String.format("<%s%s>%s</%s>", tag, attr, content, tag));
+                doc = doc.replace(whole, String.format("<%s%s>%s</%s>", tag, attr, content, tag));
 //GERALD
 //System.out.println("HtmlDocument.replaceExtraLineBreaks:4: tag="+tag+" content="+content
 //  +" newWhole="+String.format("<%s%s>%s</%s>", tag, attr, content, tag));
@@ -1035,7 +1036,7 @@ public class HtmlDocument
                 content = content.replaceAll(LINE_BREAKS, "");
 //GERALD
 //System.out.println("HtmlDocument.removeExtraLineBreaks:3: tag="+tag+" content=["+content+"]");
-                doc = doc.replaceFirst(Pattern.quote(whole), String.format("<%s%s>%s</%s>", tag, attr, content, tag));
+                doc = doc.replace(whole, String.format("<%s%s>%s</%s>", tag, attr, content, tag));
 //GERALD
 //System.out.println("HtmlDocument.removeExtraLineBreaks:4: tag="+tag+" content="+content
 //  +" newWhole="+String.format("<%s%s>%s</%s>", tag, attr, content, tag));
@@ -1146,9 +1147,7 @@ public class HtmlDocument
                         attr = String.format("%s style=\"%s\"", attr, IMAGE_STYLE);
 //GERALD
 //System.out.println("HtmlDocument.addImageWrapperClass:5: tag="+tag+" content="+content+" attr=["+attr+"]");
-
-                    doc = doc.replaceFirst(Pattern.quote(whole),
-                        String.format("<%s%s>%s</%s>", tag, attr, content, tag));
+                    doc = doc.replace(whole, String.format("<%s%s>%s</%s>", tag, attr, content, tag));
 //GERALD
 //System.out.println("HtmlDocument.addImageWrapperClass:6: tag="+tag+" content="+content+"] attr="+attr
 //  +" newWhole="+String.format("<%s%s>%s</%s>", tag, attr, content, tag));
@@ -1257,8 +1256,7 @@ public class HtmlDocument
                     attr = String.format("%s class=\"%s\"", attr, IMAGE_LEGEND_CLASS);
 //GERALD
 //System.out.println("HtmlDocument.addImageLegendClass:3: tag="+tag+" content="+content+" attr=["+attr+"]");
-                    doc = doc.replaceFirst(Pattern.quote(whole),
-                        String.format("<figcaption%s>%s</figcaption>", attr, content));
+                    doc = doc.replace(whole, String.format("<figcaption%s>%s</figcaption>", attr, content));
 //GERALD
 //System.out.println("HtmlDocument.addImageLegendClass:4: tag="+tag+" content="+content+"] attr="+attr
 //  +" newWhole="+String.format("<%s%s>%s</%s>", tag, attr, content, tag));
@@ -1471,6 +1469,125 @@ public class HtmlDocument
     }
 
     /**
+     * Returns <CODE>true</CODE> if the HTML document contains an image source.
+     * @return <CODE>true</CODE> if the HTML document contains an image source.
+     */
+    public boolean hasImageSource()
+    {
+        boolean ret = false;
+
+        if(tags != null)
+        {
+            for(String tag : tags)
+            {
+                if(ret = hasImageSource(tag))
+                    break;
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the HTML document contains an image source.
+     * @param tag The tag to look for in the document
+     * @return <CODE>true</CODE> if the HTML document contains an image source.
+     */
+    private boolean hasImageSource(String tag)
+    {
+        boolean ret = false;
+
+//GERALD
+//System.out.println("HtmlDocument.hasImageSource:1: tag="+tag);
+        Pattern pattern = Pattern.compile(String.format("<%s>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Matcher m = pattern.matcher(doc);
+
+        while(m.find() && !ret)
+        {
+            String whole = m.group(0);
+            String content = m.group(1);
+
+            Matcher sourceMatcher = SOURCE_PATTERN.matcher(content.toLowerCase().trim());
+
+//GERALD
+//System.out.println("HtmlDocument.hasImageSource:2: tag="+tag+" content="+content);
+            if(sourceMatcher.find())
+            {
+                ret = true;
+//GERALD
+//System.out.println("HtmlDocument.hasImageSource:3: tag="+tag+" content="+content+" ret="+ret);
+            }
+            else if(!ret && content.startsWith("https://") && content.indexOf("<") == -1) // No markup, just text
+            {
+                ret = true;
+//GERALD
+//System.out.println("HtmlDocument.hasImageSource:4: tag="+tag+" content="+content+" ret="+ret);
+            }
+        }
+
+//GERALD
+//System.out.println("HtmlDocument.hasIm:5: tag="+tag+" ret="+ret);
+        return ret;
+    }
+
+    /**
+     * Removes image sources from the HTML document.
+     */
+    public void removeImageSources()
+    {
+        if(tags != null)
+        {
+            for(String tag : tags)
+                removeImageSources(tag);
+        }
+    }
+
+    /**
+     * Removes image sources from the HTML document.
+     * @param tag The tag to look for
+     */
+    private void removeImageSources(String tag)
+    {
+//GERALD
+//System.out.println("HtmlDocument.removeImageSources:1: tag="+tag);
+        Pattern pattern = Pattern.compile(String.format("\\s*<%s>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Matcher m = pattern.matcher(doc);
+
+        while(m.find())
+        {
+            String whole = m.group(0);
+            String content = m.group(1);
+
+            Matcher sourceMatcher = SOURCE_PATTERN.matcher(content.toLowerCase().trim());
+
+//GERALD
+//System.out.println("HtmlDocument.removeImageSources:2: tag="+tag+" content=["+content+"] whole="+whole);
+            boolean found = false;
+            if(sourceMatcher.find())
+            {
+                found = true;
+//GERALD
+//System.out.println("HtmlDocument.removeImageSources:3: tag="+tag+" content=["+content+"] found="+found);
+            }
+
+            // Remove dir attribute
+            if(content.startsWith("https://") && content.indexOf("<") == -1) // No markup, just text
+            {
+                found = true;
+//GERALD
+//System.out.println("HtmlDocument.removeImageSources:4: tag="+tag+" content=["+content+"] found="+found);
+            }
+
+            if(found)
+            {
+                doc = doc.replace(whole, "");
+//GERALD
+//System.out.println("HtmlDocument.removeImageSources:5: tag="+tag+" content=["+content+"] found="+found);
+            }
+        }
+    }
+
+    /**
      * Returns a builder for the HTML document.
      * @param doc The HTML document
      * @return The builder instance.
@@ -1633,6 +1750,16 @@ public class HtmlDocument
         public Builder addImageLegendClass()
         {
             ret.addImageLegendClass();
+            return this;
+        }
+
+        /**
+         * Removes image sources from the HTML document.
+         * @return This object
+         */
+        public Builder removeImageSources()
+        {
+            ret.removeImageSources();
             return this;
         }
 

@@ -407,6 +407,32 @@ public class HtmlUtils
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given string contains an image source.
+     * @param str The string to search
+     * @return <CODE>true</CODE> if the given string contains an image source.
+     */
+    public static boolean hasImageSource(String str)
+    {
+        return HtmlDocument.builder(str)
+            .withTags("p", "h2")
+            .build()
+            .hasImageSource();
+    }
+
+    /**
+     * Replaces extra line breaks in the given string contains an image source.
+     * @param str The string to amend
+     * @return The amended string.
+     */
+    public static String removeImageSources(String str)
+    {
+        return HtmlDocument.builder(str)
+            .withTags("p", "h2")
+            .removeImageSources()
+            .get();
+    }
+
+    /**
      * Returns the list of duplicate link messages for the given string.
      * @param str The string to search
      * @return the list of duplicate link messages for the given string
