@@ -255,19 +255,19 @@ public abstract class DraftPost extends PropertyPost
     }
 
     /**
-     * Returns <CODE>true</CODE> if the draft status is SUBMITTED.
+     * Returns <CODE>true</CODE> if the draft status is PENDING.
      */
-    public boolean isSubmitted()
+    public boolean isPending()
     {
-        return status == SUBMITTED;
+        return status == PENDING;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the draft status is PROCESSED.
+     * Returns <CODE>true</CODE> if the draft status is COMPLETED.
      */
-    public boolean isProcessed()
+    public boolean isCompleted()
     {
-        return status == PROCESSED;
+        return status == COMPLETED;
     }
 
     /**

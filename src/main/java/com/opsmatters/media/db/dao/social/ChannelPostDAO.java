@@ -73,7 +73,7 @@ public class ChannelPostDAO extends SocialDAO<ChannelPost>
      */
     private static final String LIST_ITEMS_BY_INTERVAL_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, CHANNEL, CODE, TITLE, STATUS "
-      + "FROM CHANNEL_POSTS WHERE CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR UPDATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS != 'SENT' ORDER BY CREATED_DATE";
+      + "FROM CHANNEL_POSTS WHERE CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR UPDATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS != 'COMPLETED' ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the posts from the CHANNEL_POSTS table by status.

@@ -23,53 +23,54 @@ package com.opsmatters.media.model.feed;
  */
 public enum FeedStatus
 {
-    NEW("New", "glyphicon-unchecked", "", 1),
-    PENDING("Pending", "glyphicon-check", "status-warn", -1),
-    SUBMITTED("Submitted", "glyphicon-log-in", "status-warn", -1),
-    DEPLOYING("Deploying", "glyphicon-log-out", "status-warn", -1),
-    EXECUTING("Executing", "glyphicon-cog", "status-warn", -1),
-    ERROR("Error", "glyphicon-exclamation-sign", "status-error", 1),
-    COMPLETED("Completed", "glyphicon-ok-circle", "status-success", 1),
-    WAITING("Waiting", "", "", 0), // Pseudo status
-    PROCESSED("Processed", "", "", 0), // Pseudo status
-    ALL("All", "", "", 0); // Pseudo status
+    NEW("New", "glyphicon-unchecked", ""),
+    WAITING("Waiting", "glyphicon-hourglass", "status-warn"),
+    PENDING("Pending", "glyphicon-log-in", "status-warn"),
+    UPLOADING("Uploading", "glyphicon-collapse-up", "status-warn"),
+    IMPORTING("Importing", "glyphicon-collapse-down", "status-warn"),
+    COMPLETED("Completed", "glyphicon-ok-circle", "status-success"),
+    ERROR("Error", "glyphicon-exclamation-sign", "status-error"),
+    IDLE("Idle", "", ""), // Pseudo status
+    PROCESSING("Processing", "", ""), // Pseudo status
+    ALL("All", "", ""); // Pseudo status
 
     private String value;
     private String icon;
     private String css;
-    private int state;
 
     /**
      * Constructor that takes the status value.
      * @param value The value for the status
      * @param icon The glyphicon for the status
      * @param css The css class for the status
-     * @param state The state for the status
      */
-    FeedStatus(String value, String icon, String css, int state)
+    FeedStatus(String value, String icon, String css)
     {
         this.value = value;
         this.icon = icon;
         this.css = css;
-        this.state = state;
     }
 
     /**
-     * Returns <CODE>true<CODE> if the feed state is WAITING.
-     * @return <CODE>true<CODE> if the feed state is WAITING.
+     * Returns <CODE>true<CODE> if the feed is idle.
+     * @return <CODE>true<CODE> if the feed is idle.
      */
-    public boolean isWaiting()
+    public boolean idle()
     {
-        return state < 0;
+        return this == NEW
+            || this == COMPLETED
+            || this == ERROR;
     }
 
     /**
-     * Returns <CODE>true<CODE> if the feed state is PROCESSED.
-     * @return <CODE>true<CODE> if the feed state is PROCESSED.
+     * Returns <CODE>true<CODE> if this is a feed processing status.
+     * @return <CODE>true<CODE> if this is a feed processing status.
      */
-    public boolean isProcessed()
+    public boolean processing()
     {
-        return state > 0;
+        return this == PENDING
+            || this == UPLOADING
+            || this == IMPORTING;
     }
 
     /**

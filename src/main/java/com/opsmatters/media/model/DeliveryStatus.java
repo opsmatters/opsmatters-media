@@ -24,11 +24,11 @@ package com.opsmatters.media.model;
 public enum DeliveryStatus
 {
     NEW("New", "glyphicon-unchecked", ""),
-    WAITING("Waiting", "glyphicon-hourglass", "status-warn"),
+    PENDING("Pending", "glyphicon-log-in", "status-warn"),
     SENDING("Sending", "glyphicon-send", "status-warn"),
-    SENT("Sent", "glyphicon-ok-circle", "status-success"),
-    RECEIVED("Received", "", ""),
+    COMPLETED("Completed", "glyphicon-ok-circle", "status-success"),
     ERROR("Error", "glyphicon-exclamation-sign", "status-error"),
+    RECEIVED("Received", "", ""),
     PAUSED("Paused", "glyphicon-pause", "status-warn"),
     DELETED("Deleted", "glyphicon-trash", "status-error"),
     ALL("All", "", ""); // Pseudo status

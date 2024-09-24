@@ -81,7 +81,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
      */
     private static final String LIST_ITEMS_BY_TYPE_INTERVAL_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, TITLE, STATUS "
-      + "FROM DRAFT_POSTS WHERE TYPE=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS != 'PROCESSED') ORDER BY CREATED_DATE";
+      + "FROM DRAFT_POSTS WHERE TYPE=? AND (CREATED_DATE >= (NOW() + INTERVAL -? DAY) OR STATUS != 'COMPLETED') ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the post items from the DRAFT_POSTS table by type, status and interval.
@@ -839,7 +839,7 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
             listByContentTypeStmt.setString(1, siteId);
             listByContentTypeStmt.setString(2, code);
             listByContentTypeStmt.setString(3, type.name());
-            listByContentTypeStmt.setInt(4, SessionId.get()); // Used for PROCESSED posts
+            listByContentTypeStmt.setInt(4, SessionId.get()); // Used for COMPLETED posts
             listByContentTypeStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByContentTypeStmt.executeQuery();
             ret = new ArrayList<DraftPost>();
@@ -951,11 +951,11 @@ public class DraftPostDAO extends SocialDAO<DraftPost>
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given content has a processed post in the DRAFT_POSTS table.
+     * Returns <CODE>true</CODE> if the given content has a completed post in the DRAFT_POSTS table.
      */
-    public boolean hasProcessed(Content content) throws SQLException
+    public boolean hasCompleted(Content content) throws SQLException
     {
-        return list(content, DraftPostStatus.PROCESSED).size() > 0;
+        return list(content, DraftPostStatus.COMPLETED).size() > 0;
     }
 
     /**

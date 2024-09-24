@@ -25,8 +25,8 @@ public enum DraftPostStatus
 {
     NEW("New", "glyphicon-unchecked", ""),
     REPOSTED("Reposted", "glyphicon-retweet", ""),
-    SUBMITTED("Submitted", "glyphicon-log-in", "status-warn"),
-    PROCESSED("Processed", "glyphicon-ok-circle", "status-success"),
+    PENDING("Pending", "glyphicon-log-in", "status-warn"),
+    COMPLETED("Completed", "glyphicon-ok-circle", "status-success"),
     ERROR("Error", "glyphicon-exclamation-sign", "status-error"),
     SKIPPED("Skipped", "glyphicon-thumbs-down", "status-info"),
     ALL("All", "", ""); // Pseudo status

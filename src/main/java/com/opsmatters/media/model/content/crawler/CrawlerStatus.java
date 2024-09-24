@@ -25,8 +25,8 @@ public enum CrawlerStatus
 {
     NEW("New", "glyphicon-unchecked", ""),
     EXECUTING("Executing", "glyphicon-cog", "status-warn"),
-    ERROR("Error", "glyphicon-exclamation-sign", "status-error"),
-    COMPLETED("Completed", "glyphicon-ok-circle", "status-success");
+    COMPLETED("Completed", "glyphicon-ok-circle", "status-success"),
+    ERROR("Error", "glyphicon-exclamation-sign", "status-error");
 
     private String value;
     private String icon;

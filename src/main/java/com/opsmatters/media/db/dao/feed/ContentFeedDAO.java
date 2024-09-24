@@ -506,6 +506,25 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     }
 
     /**
+     * Returns the feeds from the CONTENT_FEEDS table by site and content type that are currently processing.
+     */
+    public List<ContentFeed> listProcessing(Site site, ContentType type) throws SQLException
+    {
+        List<ContentFeed> ret = new ArrayList<ContentFeed>();
+        List<ContentFeed> feeds = list(site, type);
+        if(feeds != null)
+        {
+            for(ContentFeed feed : feeds)
+            {
+                if(feed.isProcessing())
+                    ret.add(feed);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the feeds from the CONTENT_FEEDS table by external id and environment.
      */
     public List<ContentFeed> list(String id, Site site, EnvironmentId environment) throws SQLException
@@ -516,8 +535,8 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
         {
             for(ContentFeed feed : feeds)
             {
-                  if(feed.getEnvironment() == environment
-                    && feed.getExternalId().equals(id))
+                if(feed.getEnvironment() == environment
+                  && feed.getExternalId().equals(id))
                 {
                     ret.add(feed);
                 }

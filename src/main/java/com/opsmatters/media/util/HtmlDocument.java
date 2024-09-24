@@ -55,6 +55,7 @@ public class HtmlDocument
     private static Pattern DATA_ATTR_PATTERN = Pattern.compile(" data-[-\\w]+=", Pattern.DOTALL);
     private static Pattern DIR_ATTR_PATTERN = Pattern.compile(" dir=\"[lr]t[rl]\"", Pattern.DOTALL);
     private static Pattern ANCHOR_TEXT_PATTERN = Pattern.compile("(.*?)(<a.*?>.*?</a>)(.*)", Pattern.DOTALL);
+    private static Pattern ANCHOR_LEADING_TEXT_PATTERN = Pattern.compile("(.*?)<a(.*?)>(.*?)</a>", Pattern.DOTALL);
     private static Pattern BEFORE_TEXT_PATTERN = Pattern.compile(".*(&\\w+;)$", Pattern.DOTALL);
     private static Pattern AFTER_TEXT_PATTERN = Pattern.compile("^(&\\w+;).*", Pattern.DOTALL);
     private static Pattern ANCHOR_ATTR_PATTERN = Pattern.compile("<a(.*?)>", Pattern.DOTALL);
@@ -571,6 +572,10 @@ public class HtmlDocument
         if(after.length() > 0)
         {
             char afterChar = after.charAt(0);
+
+            // Allow for plurals
+            if(afterChar == 's' && after.length() > 1)
+                afterChar = after.charAt(1);
 
             Matcher afterMatcher = AFTER_TEXT_PATTERN.matcher(after);
             String afterEntity = afterMatcher.find() ? afterMatcher.group(1) : "";
@@ -1425,6 +1430,83 @@ public class HtmlDocument
                 addBadExternalSpacingLinkMessagesFromContent(after, messages);
             }
         }
+    }
+
+    /**
+     * Returns the list of messages for split links in the HTML document.
+     * @return The list of messages for split links in the HTML document
+     */
+    public List<String> getSplitLinkMessages()
+    {
+        List<String> ret = new ArrayList<String>();
+
+        if(tags != null)
+        {
+            for(String tag : tags)
+                addSplitLinkMessages(tag, ret);
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the list of messages for split links in the HTML document.
+     * @param tag The tag to look for
+     * @param messages The list of messages to add to
+     */
+    private void addSplitLinkMessages(String tag, List<String> messages)
+    {
+//GERALD
+//System.out.println("HtmlDocument.addSplitLinkMessages:1: tag="+tag);
+        Pattern pattern = Pattern.compile(String.format("<%s.*?>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Matcher m = pattern.matcher(doc);
+
+        while(m.find())
+        {
+            String content = m.group(1);
+
+//GERALD
+//System.out.println("HtmlDocument.addSplitLinkMessages:2: tag="+tag+" content="+content);
+            int idx = 0;
+            String lastHref = null;
+            String lastBefore = null;
+            String lastWhole = null;
+
+            Matcher textMatcher = ANCHOR_LEADING_TEXT_PATTERN.matcher(content);
+
+            while(textMatcher.find())
+            {
+                String whole = textMatcher.group(0);
+                String before = textMatcher.group(1);
+                String attr = textMatcher.group(2);
+
+                String href = attr.replaceAll(" href=\"(.+)\"", "$1");
+
+//GERALD
+//System.out.println("HtmlDocument.addSplitLinkMessages:3: tag="+tag+" before=["+before+"] attr=["+attr+"] href="+href+" lastHref="+lastHref);
+                // Look for the same link repeated with no intervening text
+                if(lastHref != null
+                    && href.equals(lastHref)
+                    && before.trim().length() == 0)
+                {
+                    // If this is the second part of the split link, add a message for the first part too
+                    if(idx == 1)
+                        messages.add(String.format("split link: %s", StringUtils.normalise(lastWhole.trim())));
+
+                    messages.add(String.format("split link: %s", StringUtils.normalise(whole.trim())));
+//GERALD
+//System.out.println("HtmlDocument.addSplitLinkMessages:4: tag="+tag+" before=["+before+"] attr=["+attr+"] href="+href+" whole="+whole.trim());
+                }
+
+                ++idx;
+                lastHref = href;
+                lastBefore = before;
+                lastWhole = whole;
+            }
+        }
+
+//GERALD
+//System.out.println("HtmlDocument.addSplitLinkMessages:5: tag="+tag+" messages="+messages);
     }
 
     /**

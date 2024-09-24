@@ -30,8 +30,8 @@ public enum TaskStatus
     ACTIVE("Active", "glyphicon-ok-circle", "status-success"),
     PENDING("Pending", "glyphicon-check", "status-warn"),
     EXECUTING("Executing", "glyphicon-cog", "status-warn"),
-    ERROR("Error", "glyphicon-exclamation-sign", "status-error"),
     COMPLETED("Completed", "glyphicon-ok-circle", "status-success"),
+    ERROR("Error", "glyphicon-exclamation-sign", "status-error"),
     DISABLED("Disabled", "glyphicon-ban-circle", "status-error"),
     ALL("All", "", ""); // Pseudo status
 

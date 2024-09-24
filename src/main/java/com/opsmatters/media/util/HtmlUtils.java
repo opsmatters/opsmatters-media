@@ -301,6 +301,24 @@ public class HtmlUtils
     }
 
     /**
+     * Returns the list of messages for split links for the given string.
+     * @param str The string to search
+     * @return The list of messages for split links for the given string
+     */
+    public static List<String> getSplitLinks(String str)
+    {
+        List<String> messages = HtmlDocument.builder(str)
+            .withTags("p")
+            .build()
+            .getSplitLinkMessages();
+
+        for(String message : messages)
+            logger.severe("Found "+message);
+
+        return messages;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the given string contains an "&amp;nbsp;" character.
      * @param str The string to search
      * @return <CODE>true</CODE> if the given string contains an "&amp;nbsp;" character.

@@ -394,19 +394,19 @@ public class ChannelPost extends SocialPost
     }
 
     /**
-     * Returns <CODE>true</CODE> if the delivery status is WAITING.
+     * Returns <CODE>true</CODE> if the delivery status is PENDING.
      */
-    public boolean isWaiting()
+    public boolean isPending()
     {
-        return status == DeliveryStatus.WAITING;
+        return status == DeliveryStatus.PENDING;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the delivery status is SENT.
+     * Returns <CODE>true</CODE> if the delivery status is COMPLETED.
      */
-    public boolean isSent()
+    public boolean isCompleted()
     {
-        return status == DeliveryStatus.SENT;
+        return status == DeliveryStatus.COMPLETED;
     }
 
     /**
@@ -580,7 +580,7 @@ public class ChannelPost extends SocialPost
             if(sent != null)
             {
                 setExternalId(sent.getId());
-                setStatus(DeliveryStatus.SENT);
+                setStatus(DeliveryStatus.COMPLETED);
                 setErrorCode(0);
                 setErrorMessage("");
             }

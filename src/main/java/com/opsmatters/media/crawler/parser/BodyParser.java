@@ -533,17 +533,16 @@ public class BodyParser
                 break;
             }
 
-//GERALD
-//System.out.println("formatSummary:1: text="+text+" line="+text.indexOf("_"));
-if(text.startsWith("#")  // hashtags
-    || text.startsWith("~") // tildes
-    || text.startsWith("_") // underscores
-    || text.startsWith("=") // equals
-    || text.indexOf("\u25ac") != -1) // "bar" character in title
-{
-//System.out.println("formatSummary:2: text="+text);
-    continue;
-}
+            // Exclude some text if it starts with a particular character
+            if(text.startsWith("#")  // hashtags
+                || text.startsWith("~") // tildes
+                || text.startsWith("_") // underscores
+                || text.startsWith("=") // equals
+                || text.indexOf("\u25ac") != -1) // "bar" character in title
+            {
+                continue;
+            }
+
             // Exit if the addition would take us over the maximum
             if(ret.length() > 0 && (ret.length()+text.length()) > maxLength)
             {

@@ -108,22 +108,37 @@ public abstract class Feed extends BaseEntity
     }
 
     /**
-     * Returns <CODE>true</CODE> if the feed can be submitted for importing.
+     * Returns <CODE>true</CODE> if the feed is not currently processing.
      */
-    public boolean canSubmit()
+    public boolean isIdle()
     {
-        return getStatus() != FeedStatus.PENDING
-            && getStatus() != FeedStatus.SUBMITTED
-            && getStatus() != FeedStatus.EXECUTING;
+        return getStatus().idle();
     }
 
     /**
-     * Returns <CODE>true</CODE> if the feed is ready for importing.
+     * Returns <CODE>true</CODE> if the feed is currently processing.
      */
-    public boolean canImport()
+    public boolean isProcessing()
     {
-        return getStatus() == FeedStatus.PENDING
+        return getStatus().processing();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the feed is ready for processing.
+     */
+    public boolean canProcess()
+    {
+        return getStatus() == FeedStatus.WAITING
             || getStatus() == FeedStatus.ERROR;
+    }
+
+    /**
+     * Set the feed status to WAITING.
+     */
+    public void setWaiting()
+    {
+        setStatus(FeedStatus.WAITING);
+        setUpdatedDate(Instant.now());
     }
 
     /**
@@ -133,23 +148,6 @@ public abstract class Feed extends BaseEntity
     {
         setStatus(FeedStatus.PENDING);
         setUpdatedDate(Instant.now());
-    }
-
-    /**
-     * Set the feed status to SUBMITTED.
-     */
-    public void setSubmitted()
-    {
-        setStatus(FeedStatus.SUBMITTED);
-        setUpdatedDate(Instant.now());
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the feed status is EXECUTING.
-     */
-    public boolean isExecuting()
-    {
-        return status == FeedStatus.EXECUTING;
     }
 
     /**

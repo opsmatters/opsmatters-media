@@ -393,7 +393,7 @@ public class Email extends BaseEntity
             if(messageId != null)
             {
                 setMessageId(messageId);
-                setStatus(DeliveryStatus.SENT);
+                setStatus(DeliveryStatus.COMPLETED);
             }
         }
         catch(Exception e)

@@ -67,7 +67,7 @@ public abstract class EmailHandler
      */
     public void enqueue(Email email) throws SQLException
     {
-        email.setStatus(DeliveryStatus.WAITING);
+        email.setStatus(DeliveryStatus.PENDING);
         getEmailDAO().add(email);
     }
 
