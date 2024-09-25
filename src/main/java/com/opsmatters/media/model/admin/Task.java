@@ -36,6 +36,7 @@ public abstract class Task extends OwnedEntity
     private TaskType type;
     private int interval = -1;
     private ChronoUnit intervalUnit = ChronoUnit.DAYS;
+    private boolean enabled = false;
     private TaskStatus status = TaskStatus.NEW;
 
     /**
@@ -67,6 +68,7 @@ public abstract class Task extends OwnedEntity
             setItemCount(obj.getItemCount());
             setInterval(obj.getInterval());
             setIntervalUnit(obj.getIntervalUnit());
+            setEnabled(obj.isEnabled());
             setStatus(obj.getStatus());
         }
     }
@@ -109,6 +111,78 @@ public abstract class Task extends OwnedEntity
     public void setType(String type)
     {
         setType(TaskType.valueOf(type));
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the task is enabled.
+     */
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this task is enabled.
+     */
+    public Boolean getEnabledObject()
+    {
+        return Boolean.valueOf(isEnabled());
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the task is enabled.
+     */
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this task is enabled.
+     */
+    public void setEnabledObject(Boolean enabled)
+    {
+        setEnabled(enabled != null && enabled.booleanValue());
+    }
+
+    /**
+     * Returns the task interval.
+     */
+    public int getInterval()
+    {
+        return interval;
+    }
+
+    /**
+     * Sets the task interval.
+     */
+    public void setInterval(int interval)
+    {
+        this.interval = interval;
+    }
+
+    /**
+     * Returns the task interval unit.
+     */
+    public ChronoUnit getIntervalUnit()
+    {
+        return intervalUnit;
+    }
+
+    /**
+     * Sets the task interval unit.
+     */
+    public void setIntervalUnit(ChronoUnit intervalUnit)
+    {
+        this.intervalUnit = intervalUnit;
+    }
+
+    /**
+     * Sets the task interval unit.
+     */
+    public void setIntervalUnit(String intervalUnit)
+    {
+        setIntervalUnit(ChronoUnit.valueOf(intervalUnit));
     }
 
     /**
@@ -259,42 +333,10 @@ public abstract class Task extends OwnedEntity
     }
 
     /**
-     * Returns the task interval.
+     * Returns <CODE>true</CODE> if the task is not currently processing.
      */
-    public int getInterval()
+    public boolean isIdle()
     {
-        return interval;
-    }
-
-    /**
-     * Sets the task interval.
-     */
-    public void setInterval(int interval)
-    {
-        this.interval = interval;
-    }
-
-    /**
-     * Returns the task interval unit.
-     */
-    public ChronoUnit getIntervalUnit()
-    {
-        return intervalUnit;
-    }
-
-    /**
-     * Sets the task interval unit.
-     */
-    public void setIntervalUnit(ChronoUnit intervalUnit)
-    {
-        this.intervalUnit = intervalUnit;
-    }
-
-    /**
-     * Sets the task interval unit.
-     */
-    public void setIntervalUnit(String intervalUnit)
-    {
-        setIntervalUnit(ChronoUnit.valueOf(intervalUnit));
+        return getStatus().idle();
     }
 }

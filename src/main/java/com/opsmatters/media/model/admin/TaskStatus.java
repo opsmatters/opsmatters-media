@@ -27,12 +27,10 @@ import java.util.ArrayList;
 public enum TaskStatus
 {
     NEW("New", "glyphicon-unchecked", ""),
-    ACTIVE("Active", "glyphicon-ok-circle", "status-success"),
     PENDING("Pending", "glyphicon-check", "status-warn"),
     EXECUTING("Executing", "glyphicon-cog", "status-warn"),
     COMPLETED("Completed", "glyphicon-ok-circle", "status-success"),
     ERROR("Error", "glyphicon-exclamation-sign", "status-error"),
-    DISABLED("Disabled", "glyphicon-ban-circle", "status-error"),
     ALL("All", "", ""); // Pseudo status
 
     private String value;
@@ -89,6 +87,17 @@ public enum TaskStatus
     }
 
     /**
+     * Returns <CODE>true<CODE> if the task is idle.
+     * @return <CODE>true<CODE> if the task is idle.
+     */
+    public boolean idle()
+    {
+        return this == NEW
+            || this == COMPLETED
+            || this == ERROR;
+    }
+
+    /**
      * Returns the type for the given value.
      * @param value The type value
      * @return The type for the given value
@@ -122,12 +131,10 @@ public enum TaskStatus
         List<TaskStatus> ret = new ArrayList<TaskStatus>();
 
         ret.add(NEW);
-        ret.add(ACTIVE);
         ret.add(PENDING);
         ret.add(EXECUTING);
-        ret.add(ERROR);
         ret.add(COMPLETED);
-        ret.add(DISABLED);
+        ret.add(ERROR);
 
         return ret;
     }

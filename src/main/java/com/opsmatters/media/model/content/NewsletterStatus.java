@@ -24,7 +24,7 @@ package com.opsmatters.media.model.content;
 public enum NewsletterStatus
 {
     INCLUDED("Included"),
-    NOT_INCLUDED("Not Included"),
+    EXCLUDED("Excluded"),
     ALL("All"); // Pseudo status
 
     private String value;

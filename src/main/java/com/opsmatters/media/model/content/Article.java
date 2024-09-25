@@ -324,7 +324,7 @@ public abstract class Article<D extends ArticleDetails> extends Content<D>
      */
     public NewsletterStatus getNewsletterStatus()
     {
-        return newsletter ? NewsletterStatus.INCLUDED : NewsletterStatus.NOT_INCLUDED;
+        return newsletter ? NewsletterStatus.INCLUDED : NewsletterStatus.EXCLUDED;
     }
 
     /**

@@ -25,7 +25,6 @@ public enum ContentStatus
 {
     NEW("New", "glyphicon-unchecked", ""),
     PENDING("Pending", "glyphicon-check", "status-warn"),
-    DEPLOYING("Deploying", "glyphicon-log-out", "status-warn"),
     STAGED("Staged", "glyphicon-adjust", "status-warn"),
     DEPLOYED("Deployed", "glyphicon-ok-circle", "status-success"),
     SKIPPED("Skipped", "glyphicon-remove-circle", "status-info"),
