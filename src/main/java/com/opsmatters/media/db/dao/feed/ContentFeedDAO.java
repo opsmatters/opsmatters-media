@@ -511,7 +511,7 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     public List<ContentFeed> listProcessing(Site site, ContentType type) throws SQLException
     {
         List<ContentFeed> ret = new ArrayList<ContentFeed>();
-        List<ContentFeed> feeds = list(site, type);
+        List<ContentFeed> feeds = type != null ? list(site, type) : list(site);
         if(feeds != null)
         {
             for(ContentFeed feed : feeds)

@@ -444,6 +444,29 @@ public class ContentAlertDAO extends MonitorDAO<ContentAlert>
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given organisation has a NEW alert in the CONTENT_ALERTS table.
+     */
+    public boolean hasAlert(String code) throws SQLException
+    {
+        boolean ret = false;
+
+        List<ContentAlert> alerts = list(code);
+        if(alerts != null)
+        {
+            for(ContentAlert alert : alerts)
+            {
+                if(alert.getStatus() == AlertStatus.NEW)
+                {
+                    ret = true;
+                    break;
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the alert items from the CONTENT_ALERTS table by status.
      */
     public synchronized List<ContentAlertItem> listItems(AlertStatus status) throws SQLException

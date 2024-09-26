@@ -333,11 +333,12 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         boolean ret = false;
         if(title != null)
         {
-            ret = title.startsWith("404")                   // SquaredUp
-                || title.startsWith("Error 404")            // Google webcache
-                || title.startsWith("403 Forbidden")        // Mattermost
-                || title.startsWith("Attention Required!")  // Cloudflare
-                || title.equals("Human Verification");      // Cloudflare
+            ret = title.startsWith("404")                      // SquaredUp
+                || title.startsWith("Error 404")               // Google webcache
+                || title.startsWith("403 Forbidden")           // Mattermost
+                || title.startsWith("Attention Required!")     // Cloudflare
+                || title.equals("Human Verification")          // Cloudflare
+                || title.indexOf("access to this site") != -1; // Informer
         }
 
         return ret;
