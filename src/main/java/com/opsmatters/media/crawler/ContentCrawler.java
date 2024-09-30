@@ -160,6 +160,14 @@ public abstract class ContentCrawler<D extends ContentDetails>
     }
 
     /**
+     * Returns <CODE>true</CODE> if the crawler has the ERROR status.
+     */
+    public boolean hasError()
+    {
+        return status == ERROR;
+    }
+
+    /**
      * Sets the status of the crawler.
      */
     public void setStatus(CrawlerStatus status)
@@ -183,7 +191,8 @@ public abstract class ContentCrawler<D extends ContentDetails>
      */
     public void setErrorCode(ErrorCode error)
     {
-        setStatus(ERROR);
+        if(error != E_NONE)
+            setStatus(ERROR);
 
         this.error = error;
     }

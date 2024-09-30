@@ -28,6 +28,8 @@ public class SummaryConfig implements ConfigElement
 {
     private int maxLength = 0;
     private int minLength = 0;
+    private int errorLength = 0;
+    private int warnLength = 0;
 
     /**
      * Default constructor.
@@ -53,6 +55,8 @@ public class SummaryConfig implements ConfigElement
         {
             setMaxLength(obj.getMaxLength());
             setMinLength(obj.getMinLength());
+            setErrorLength(obj.getErrorLength());
+            setWarnLength(obj.getWarnLength());
         }
     }
 
@@ -89,6 +93,38 @@ public class SummaryConfig implements ConfigElement
     }
 
     /**
+     * Returns the error summary length for this configuration.
+     */
+    public int getErrorLength()
+    {
+        return errorLength;
+    }
+
+    /**
+     * Sets the error summary length for this configuration.
+     */
+    public void setErrorLength(int errorLength)
+    {
+        this.errorLength = errorLength;
+    }
+
+    /**
+     * Returns the warning summary length for this configuration.
+     */
+    public int getWarnLength()
+    {
+        return warnLength;
+    }
+
+    /**
+     * Sets the warning summary length for this configuration.
+     */
+    public void setWarnLength(int warnLength)
+    {
+        this.warnLength = warnLength;
+    }
+
+    /**
      * Returns a builder for the configuration.
      * @return The builder instance.
      */
@@ -105,6 +141,8 @@ public class SummaryConfig implements ConfigElement
         // The config attribute names
         private static final String MAX_LENGTH = "max-length";
         private static final String MIN_LENGTH = "min-length";
+        private static final String ERROR_LENGTH = "error-length";
+        private static final String WARN_LENGTH = "warn-length";
 
         private SummaryConfig ret = new SummaryConfig();
 
@@ -120,6 +158,10 @@ public class SummaryConfig implements ConfigElement
                 ret.setMaxLength((Integer)map.get(MAX_LENGTH));
             if(map.containsKey(MIN_LENGTH))
                 ret.setMinLength((Integer)map.get(MIN_LENGTH));
+            if(map.containsKey(ERROR_LENGTH))
+                ret.setErrorLength((Integer)map.get(ERROR_LENGTH));
+            if(map.containsKey(WARN_LENGTH))
+                ret.setWarnLength((Integer)map.get(WARN_LENGTH));
 
             return this;
         }

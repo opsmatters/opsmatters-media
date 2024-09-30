@@ -130,8 +130,6 @@ public class HtmlDocument
     {
         boolean ret = false;
 
-//GERALD
-//System.out.println("HtmlDocument.hasUnnecessaryAttribute:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s(.*?)>", tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
@@ -140,16 +138,10 @@ public class HtmlDocument
             String attr = m.group(1);
 
             ret = DATA_ATTR_PATTERN.matcher(attr).find();
-//GERALD
-//System.out.println("HtmlDocument.hasUnnecessaryAttribute:2: tag="+tag+" ret="+ret);
             if(!ret)
                 ret = DIR_ATTR_PATTERN.matcher(attr).find();
-//GERALD
-//System.out.println("HtmlDocument.hasUnnecessaryAttribute:3: tag="+tag+" ret="+ret);
         }
 
-//GERALD
-//System.out.println("HtmlDocument.hasUnnecessaryAttribute:4: tag="+tag+" ret="+ret);
         return ret;
     }
 
@@ -171,8 +163,6 @@ public class HtmlDocument
      */
     private void removeUnnecessaryAttributes(String tag)
     {
-//GERALD
-//System.out.println("HtmlDocument.removeUnnecessaryAttributes:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s(.*?)>", tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
@@ -180,9 +170,6 @@ public class HtmlDocument
         {
             String whole = m.group(0);
             String attr = m.group(1);
-
-//GERALD
-//System.out.println("HtmlDocument.removeUnnecessaryAttributes:2: tag="+tag+" attr=["+attr+"] whole="+whole);
 
             boolean changed = false;
 
@@ -192,8 +179,6 @@ public class HtmlDocument
                 attr = attr.replaceAll(" data-[-\\w]+=\".*?\"", "");
                 attr = attr.replaceAll(" data-[-\\w]+", "");
                 changed = true;
-//GERALD
-//System.out.println("HtmlDocument.removeUnnecessaryAttributes:3: tag="+tag+" attr=["+attr+"] changed="+changed);
             }
 
             // Remove dir attribute
@@ -201,16 +186,11 @@ public class HtmlDocument
             {
                 attr = attr.replaceAll(" dir=\"[lr]t[rl]\"", "");
                 changed = true;
-//GERALD
-//System.out.println("HtmlDocument.removeUnnecessaryAttributes:4: tag="+tag+" attr=["+attr+"] changed="+changed);
             }
 
             if(changed)
             {
                 doc = doc.replace(whole, String.format("<%s%s>", tag, attr));
-//GERALD
-//System.out.println("HtmlDocument.removeUnnecessaryAttributes:5: tag="+tag+" attr=["+attr
-//  +" newWhole="+String.format("<%s%s>", tag, attr));
             }
         }
     }
@@ -244,8 +224,6 @@ public class HtmlDocument
     {
         boolean ret = false;
 
-//GERALD
-//System.out.println("HtmlDocument.hasUnnecessarySpacing:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
@@ -257,12 +235,8 @@ public class HtmlDocument
             ret = content.startsWith(" ") || content.endsWith(" ")
                 || content.startsWith(NBSP_CHAR) || content.endsWith(NBSP_CHAR)
                 || content.startsWith(NBSP_ENTITY) || content.endsWith(NBSP_ENTITY);
-//GERALD
-//System.out.println("HtmlDocument.hasUnnecessarySpacing:2: tag="+tag+" content="+content+" ret="+ret);
         }
 
-//GERALD
-//System.out.println("HtmlDocument.hasUnnecessarySpacing:3: tag="+tag+" ret="+ret);
         return ret;
     }
 
@@ -284,8 +258,6 @@ public class HtmlDocument
      */
     private void removeUnnecessarySpacing(String tag)
     {
-//GERALD
-//System.out.println("HtmlDocument.removeUnnecessarySpacing:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
@@ -295,8 +267,6 @@ public class HtmlDocument
             String attr = m.group(1);
             String content = m.group(2);
 
-//GERALD
-//System.out.println("HtmlDocument.removeUnnecessarySpacing:2: tag="+tag+" content=["+content+"] whole="+whole);
 
             boolean changed = false;
 
@@ -304,48 +274,35 @@ public class HtmlDocument
             {
                 content = content.substring(NBSP_CHAR.length());
                 changed = true;
-//GERALD
-//System.out.println("HtmlDocument.removeUnnecessarySpacing:3: tag="+tag+" content=["+content+"]");
             }
 
             while(content.endsWith(NBSP_CHAR))
             {
                 content = content.substring(0, content.length()-NBSP_CHAR.length());
                 changed = true;
-//GERALD
-//System.out.println("HtmlDocument.removeUnnecessarySpacing:4: tag="+tag+" content=["+content+"]");
             }
 
             while(content.startsWith(NBSP_ENTITY))
             {
                 content = content.substring(NBSP_ENTITY.length());
                 changed = true;
-//GERALD
-//System.out.println("HtmlDocument.removeUnnecessarySpacing:5: tag="+tag+" content=["+content+"]");
             }
 
             while(content.endsWith(NBSP_ENTITY))
             {
                 content = content.substring(0, content.length()-NBSP_ENTITY.length());
                 changed = true;
-//GERALD
-//System.out.println("HtmlDocument.removeUnnecessarySpacing:6: tag="+tag+" content=["+content+"]");
             }
 
             if(content.startsWith(" ") || content.endsWith(" "))
             {
                 content = content.trim();
                 changed = true;
-//GERALD
-//System.out.println("HtmlDocument.removeUnnecessarySpacing:7: tag="+tag+" content=["+content+"]");
             }
 
             if(changed)
             {
                 doc = doc.replace(whole, String.format("<%s%s>%s</%s>", tag, attr, content, tag));
-//GERALD
-//System.out.println("HtmlDocument.removeUnnecessarySpacing:9: tag="+tag+" content=["+content
-//  +"] newWhole="+String.format("<%s%s>%s</%s>", tag, attr, content, tag));
             }
         }
     }
@@ -379,8 +336,6 @@ public class HtmlDocument
     {
         boolean ret = false;
 
-//GERALD
-//System.out.println("HtmlDocument.hasBadExternalSpacingLink:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s.*?>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
@@ -391,8 +346,6 @@ public class HtmlDocument
             ret = hasBadExternalSpacingLinkFromContent(content);
         }
 
-//GERALD
-//System.out.println("HtmlDocument.hasBadExternalSpacingLink:2: tag="+tag+" ret="+ret);
         return ret;
     }
 
@@ -407,8 +360,6 @@ public class HtmlDocument
 
         if(content != null && content.length() > 0)
         {
-//GERALD
-//System.out.println("HtmlDocument.hasBadExternalSpacingLinkFromContent:1: content="+content);
             Matcher textMatcher = ANCHOR_TEXT_PATTERN.matcher(content);
 
             while(textMatcher.find() && !ret)
@@ -417,31 +368,19 @@ public class HtmlDocument
                 String after = textMatcher.group(3);
 
                 ret = needSpaceBefore(removeMarkup(before));
-//GERALD
-//System.out.println("HtmlDocument.hasBadExternalSpacingLinkFromContent:2: before=["+removeMarkup(before)+"] ret="+ret);
                 if(!ret)
                 {
                     ret = needSpaceAfter(removeMarkup(after));
-//GERALD
-//System.out.println("HtmlDocument.hasBadExternalSpacingLinkFromContent:3: after=["+removeMarkup(after)+"] ret="+ret);
                 }
-//GERALD
-//System.out.println("HtmlDocument.hasBadExternalSpacingLinkFromContent:4: ret="+ret);
 
                 if(!ret)
                 {
                     // Search the rest of the string in case there are more anchors
                     ret = hasBadExternalSpacingLinkFromContent(after);
-//GERALD
-//System.out.println("HtmlDocument.hasBadExternalSpacingLinkFromContent:5: ret="+ret);
                 }
-//GERALD
-//System.out.println("HtmlDocument.hasBadExternalSpacingLinkFromContent:6: ret="+ret);
             }
         }
 
-//GERALD
-//System.out.println("HtmlDocument.hasBadExternalSpacingLinkFromContent:7: ret="+ret);
         return ret;
     }
 
@@ -463,8 +402,6 @@ public class HtmlDocument
      */
     private void fixBadExternalSpacingLinks(String tag)
     {
-//GERALD
-//System.out.println("HtmlDocument.fixBadExternalSpacingLinks:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
@@ -472,8 +409,6 @@ public class HtmlDocument
         {
             String content = m.group(2);
 
-//GERALD
-//System.out.println("HtmlDocument.fixBadExternalSpacingLinks:2: tag="+tag+" content=["+content+"]");
             fixBadExternalSpacingLinksFromContent(content);
         }
     }
@@ -486,8 +421,6 @@ public class HtmlDocument
     {
         if(content != null && content.length() > 0)
         {
-//GERALD
-//System.out.println("HtmlDocument.fixBadExternalSpacingLinksFromContent:1: content="+content);
             Matcher textMatcher = ANCHOR_TEXT_PATTERN.matcher(content);
 
             while(textMatcher.find())
@@ -496,13 +429,8 @@ public class HtmlDocument
                 String link = textMatcher.group(2);
                 String after = textMatcher.group(3);
 
-//GERALD
-//System.out.println("HtmlDocument.fixBadExternalSpacingLinksFromContent:2: before=["+before+"] after=["+after+"] link="+link);
                 boolean addBefore = needSpaceBefore(removeMarkup(before));
                 boolean addAfter = needSpaceAfter(removeMarkup(after));
-
-//GERALD
-//System.out.println("HtmlDocument.fixBadExternalSpacingLinksFromContent:3: testBefore=["+removeMarkup(before)+"] testAfter=["+removeMarkup(after)+"] addBefore="+addBefore+" addAfter="+addAfter);
 
                 if(addBefore || addAfter)
                 {
@@ -514,9 +442,6 @@ public class HtmlDocument
                         after);
 
                     doc = doc.replace(String.format(">%s<", content), String.format(">%s<", newContent));
-//GERALD
-//System.out.println("HtmlDocument.fixBadExternalSpacingLinksFromContent:4: before=["+before+"] after=["+after+"] addBefore="+addBefore+" addAfter="+addAfter
-//  +" newContent="+newContent+" newWhole="+String.format(">%s<", newContent));
                 }
 
                 fixBadExternalSpacingLinksFromContent(after);
@@ -533,8 +458,6 @@ public class HtmlDocument
     {
         boolean ret = false;
 
-//GERALD
-//System.out.println("HtmlDocument.needSpaceBefore:1: before=["+before+"]");
         if(before.length() > 0)
         {
             char beforeChar = before.charAt(before.length()-1);
@@ -542,17 +465,10 @@ public class HtmlDocument
             Matcher beforeMatcher = BEFORE_TEXT_PATTERN.matcher(before);
             String beforeEntity = beforeMatcher.find() ? beforeMatcher.group(1) : "";
 
-//GERALD
-//System.out.println("HtmlDocument.needSpaceBefore:2: beforeChar=["+beforeChar+"] beforeEntity=["+beforeEntity+"]");
-//System.out.println("HtmlDocument.needSpaceBefore:2a: BEFORE_ENTITIES="+BEFORE_ENTITIES.indexOf(beforeEntity));
-//System.out.println("HtmlDocument.needSpaceBefore:2b: BEFORE_CHARS="+BEFORE_CHARS.indexOf(beforeChar));
             if(beforeEntity.length() > 0)
                 ret = BEFORE_ENTITIES.indexOf(beforeEntity) == -1; // try to match the entity first
             else
                 ret = BEFORE_CHARS.indexOf(beforeChar) == -1;
-
-//GERALD
-//System.out.println("HtmlDocument.needSpaceBefore:3: before=["+before+"] ret="+ret);
         }
 
         return ret;
@@ -567,8 +483,6 @@ public class HtmlDocument
     {
         boolean ret = false;
 
-//GERALD
-//System.out.println("HtmlDocument.needSpaceAfter:1: after=["+after+"]");
         if(after.length() > 0)
         {
             char afterChar = after.charAt(0);
@@ -580,15 +494,10 @@ public class HtmlDocument
             Matcher afterMatcher = AFTER_TEXT_PATTERN.matcher(after);
             String afterEntity = afterMatcher.find() ? afterMatcher.group(1) : "";
 
-//GERALD
-//System.out.println("HtmlDocument.needSpaceAfter:2: afterChar=["+afterChar+"] afterEntity=["+afterEntity+"]");
             if(afterEntity.length() > 0)
                 ret = AFTER_ENTITIES.indexOf(afterEntity) == -1; // try to match the entity first
             else
                 ret = AFTER_CHARS.indexOf(afterChar) == -1;
-
-//GERALD
-//System.out.println("HtmlDocument.needSpaceAfter:3: after=["+after+"] ret="+ret);
         }
 
         return ret;
@@ -622,19 +531,13 @@ public class HtmlDocument
         {
             String anchor = removeMarkup(m.group(2));
 
-//GERALD
-//System.out.println("HtmlDocument.hasBadAnchorTextLink:1: anchor=["+anchor+"]");
             if(anchor.startsWith(" ") || anchor.endsWith(" ")
                 || anchor.startsWith(NBSP_ENTITY) || anchor.endsWith(NBSP_ENTITY))
             {
                 ret = true;
             }
-//GERALD
-//System.out.println("HtmlDocument.hasBadAnchorTextLink:2: anchor=["+anchor+"] ret="+ret);
         }
 
-//GERALD
-//System.out.println("HtmlDocument.hasBadAnchorTextLink:3: ret="+ret);
         return ret;
     }
 
@@ -651,28 +554,17 @@ public class HtmlDocument
             String attr = m.group(1);
             String anchor = m.group(2);
 
-//GERALD
-//System.out.println("HtmlDocument.fixBadAnchorTextLinks:1: anchor=["+anchor+"] attr=["+attr+"] whole="+whole);
 
             if(anchor.startsWith(NBSP_CHAR) || anchor.endsWith(NBSP_CHAR)
                 || anchor.startsWith(NBSP_ENTITY) || anchor.endsWith(NBSP_ENTITY))
             {
                 anchor = replaceNbsps(anchor);
-//GERALD
-//System.out.println("HtmlDocument.fixBadAnchorTextLinks:2: anchor=["+anchor+"] attr=["+attr+"] whole="+whole);
             }
 
-//GERALD
-//System.out.println("HtmlDocument.fixBadAnchorTextLinks:3: anchor=["+anchor+"] attr=["+attr+"] whole="+whole);
             if(anchor.startsWith(" ") || anchor.endsWith(" "))
             {
                 doc = doc.replace(whole, String.format("<a%s>%s</a>", attr, anchor.trim()));
-//GERALD
-//System.out.println("HtmlDocument.fixBadAnchorTextLinks:4: whole="+Pattern.quote(whole)
-//  +" newWhole="+String.format("<a%s>%s</a>", attr, anchor.trim()));
             }
-//GERALD
-//System.out.println("HtmlDocument.fixBadAnchorTextLinks:5: anchor=["+anchor+"] attr=["+attr+"] whole="+whole);
         }
     }
 
@@ -691,16 +583,10 @@ public class HtmlDocument
         {
             String attr = m.group(1);
 
-//GERALD
-//System.out.println("HtmlDocument.hasBadProtocolLink:1: attr="+attr);
             if(ret = attr.indexOf(HTTP_PROTOCOL) != -1)
             {
-//GERALD
-//System.out.println("HtmlDocument.hasBadProtocolLink:2: attr="+attr+" ret="+ret);
                 break;
             }
-//GERALD
-//System.out.println("HtmlDocument.hasBadProtocolLink:3: attr="+attr+" ret="+ret);
         }
 
         return ret;
@@ -711,8 +597,6 @@ public class HtmlDocument
      */
     public void fixBadProtocolLinks()
     {
-//GERALD
-//System.out.println("HtmlDocument.fixBadProtocolLinks:1: ");
         Matcher m = ANCHOR_ATTR_PATTERN.matcher(doc);
 
         while(m.find())
@@ -722,16 +606,9 @@ public class HtmlDocument
 
             if(attr.indexOf(HTTP_PROTOCOL) != -1)
             {
-//GERALD
-//System.out.println("HtmlDocument.fixBadProtocolLinks:2: attr="+attr
-//  +" newAttr="+attr.replace(HTTP_PROTOCOL, HTTPS_PROTOCOL));
-
                 // Replace http:// in title and href in attributes
                 doc = doc.replace(whole, String.format("<a%s>",
                     attr.replace(HTTP_PROTOCOL, HTTPS_PROTOCOL)));
-//GERALD
-//System.out.println("HtmlDocument.fixBadProtocolLinks:3: whole="+Pattern.quote(whole)
-//  +" newWhole="+String.format("<a%s>", attr.replace(HTTP_PROTOCOL, HTTPS_PROTOCOL)));
             }
         }
     }
@@ -849,47 +726,33 @@ public class HtmlDocument
             String attr = m.group(1);
             String content = m.group(2);
 
-//GERALD
-//System.out.println("HtmlDocument.hasBadOrderedList:1: attr="+attr+" content="+content+" found="+found);
             // Look for two successive <ol><li>...</li></ol> without a "start" attribute
             if(attr.indexOf(START_ATTR) == -1)
             {
                 int count = getLiCount(content);
-//GERALD
-//System.out.println("HtmlDocument.hasBadOrderedList:2: attr="+attr+" content="+content+" count="+count+" found="+found);
                 if(count == 1)
                 {
                     if(found)
                     {
                         ret = true;
-//GERALD
-//System.out.println("HtmlDocument.hasBadOrderedList:3: attr="+attr+" content="+content+" count="+count+" found="+found+" ret="+ret);
                         break;
                     }
                     else
                     {
                         found = true;
-//GERALD
-//System.out.println("HtmlDocument.hasBadOrderedList:4: attr="+attr+" content="+content+" count="+count+" found="+found+" ret="+ret);
                     }
                 }
                 else
                 {
                     found = false;
-//GERALD
-//System.out.println("HtmlDocument.hasBadOrderedList:5: attr="+attr+" content="+content+" count="+count+" found="+found+" ret="+ret);
                 }
             }
             else
             {
                 found = false;
-//GERALD
-//System.out.println("HtmlDocument.hasBadOrderedList:6: attr="+attr+" content="+content+" found="+found+" ret="+ret);
             }
         }
 
-//GERALD
-//System.out.println("HtmlDocument.hasBadOrderedList:7: ret="+ret);
         return ret;
     }
 
@@ -938,8 +801,6 @@ public class HtmlDocument
     {
         boolean ret = false;
 
-//GERALD
-//System.out.println("HtmlDocument.hasExtraLineBreaks:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
@@ -947,15 +808,9 @@ public class HtmlDocument
         {
             String content = m.group(2);
 
-//GERALD
-//System.out.println("HtmlDocument.hasExtraLineBreaks:2: tag="+tag+" content=["+content+"]");
             ret = LINE_BREAKS_PATTERN.matcher(content).find();
-//GERALD
-//System.out.println("HtmlDocument.hasExtraLineBreaks:3: tag="+tag+" ret="+ret);
         }
 
-//GERALD
-//System.out.println("HtmlDocument.hasExtraLineBreaks:4: tag="+tag+" ret="+ret);
         return ret;
     }
 
@@ -977,8 +832,6 @@ public class HtmlDocument
      */
     private void replaceExtraLineBreaks(String tag)
     {
-//GERALD
-//System.out.println("HtmlDocument.replaceExtraLineBreaks:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
@@ -988,18 +841,11 @@ public class HtmlDocument
             String attr = m.group(1);
             String content = m.group(2);
 
-//GERALD
-//System.out.println("HtmlDocument.replaceExtraLineBreaks:2: tag="+tag+" content=["+content+"] whole="+whole);
             if(LINE_BREAKS_PATTERN.matcher(content).find())
             {
                 // Replace multiple line breaks with new paragraph
                 content = content.replaceAll(LINE_BREAKS, NEW_PARAGRAPH);
-//GERALD
-//System.out.println("HtmlDocument.replaceExtraLineBreaks:3: tag="+tag+" content=["+content+"]");
                 doc = doc.replace(whole, String.format("<%s%s>%s</%s>", tag, attr, content, tag));
-//GERALD
-//System.out.println("HtmlDocument.replaceExtraLineBreaks:4: tag="+tag+" content="+content
-//  +" newWhole="+String.format("<%s%s>%s</%s>", tag, attr, content, tag));
             }
         }
     }
@@ -1022,8 +868,6 @@ public class HtmlDocument
      */
     private void removeExtraLineBreaks(String tag)
     {
-//GERALD
-//System.out.println("HtmlDocument.removeExtraLineBreaks:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
@@ -1033,18 +877,11 @@ public class HtmlDocument
             String attr = m.group(1);
             String content = m.group(2);
 
-//GERALD
-//System.out.println("HtmlDocument.removeExtraLineBreaks:2: tag="+tag+" content=["+content+"] whole="+whole);
             if(LINE_BREAKS_PATTERN.matcher(content).find())
             {
                 // Remove multiple line breaks
                 content = content.replaceAll(LINE_BREAKS, "");
-//GERALD
-//System.out.println("HtmlDocument.removeExtraLineBreaks:3: tag="+tag+" content=["+content+"]");
                 doc = doc.replace(whole, String.format("<%s%s>%s</%s>", tag, attr, content, tag));
-//GERALD
-//System.out.println("HtmlDocument.removeExtraLineBreaks:4: tag="+tag+" content="+content
-//  +" newWhole="+String.format("<%s%s>%s</%s>", tag, attr, content, tag));
             }
         }
     }
@@ -1078,8 +915,6 @@ public class HtmlDocument
     {
         boolean ret = false;
 
-//GERALD
-//System.out.println("HtmlDocument.needsImageWrapperClass:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
@@ -1088,23 +923,15 @@ public class HtmlDocument
             String attr = m.group(1);
             String content = m.group(2);
 
-//GERALD
-//System.out.println("HtmlDocument.needsImageWrapperClass:2: tag="+tag+" content="+content+" attr="+attr);
             if(content.indexOf("<img") != -1)
             {
-//GERALD
-//System.out.println("HtmlDocument.needsImageWrapperClass:3: tag="+tag+" content="+content+" attr="+attr);
                 if(attr.indexOf(IMAGE_WRAPPER_CLASS) == -1)
                 {
                     ret = true;
-//GERALD
-//System.out.println("HtmlDocument.needsImageWrapperClass:4: tag="+tag+" content="+content+" attr="+attr+" ret="+ret);
                 }
             }
         }
 
-//GERALD
-//System.out.println("HtmlDocument.needsImageWrapperClass:4: tag="+tag+" ret="+ret);
         return ret;
     }
 
@@ -1126,8 +953,6 @@ public class HtmlDocument
      */
     private void addImageWrapperClass(String tag)
     {
-//GERALD
-//System.out.println("HtmlDocument.addImageWrapperClass:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
@@ -1137,25 +962,14 @@ public class HtmlDocument
             String attr = m.group(1);
             String content = m.group(2);
 
-//GERALD
-//System.out.println("HtmlDocument.addImageWrapperClass:2: tag="+tag+" content="+content+" attr=["+attr+"] whole="+whole);
             if(content.indexOf("<img") != -1)
             {
-//GERALD
-//System.out.println("HtmlDocument.addImageWrapperClass:3: tag="+tag+" content="+content+" attr=["+attr+"] whole="+whole);
                 if(attr.indexOf(IMAGE_WRAPPER_CLASS) == -1)
                 {
                     attr = String.format("%s class=\"%s\"", attr, IMAGE_WRAPPER_CLASS);
-//GERALD
-//System.out.println("HtmlDocument.addImageWrapperClass:4: tag="+tag+" content="+content+" attr=["+attr+"]");
                     if(attr.indexOf(STYLE_ATTR) == -1)
                         attr = String.format("%s style=\"%s\"", attr, IMAGE_STYLE);
-//GERALD
-//System.out.println("HtmlDocument.addImageWrapperClass:5: tag="+tag+" content="+content+" attr=["+attr+"]");
                     doc = doc.replace(whole, String.format("<%s%s>%s</%s>", tag, attr, content, tag));
-//GERALD
-//System.out.println("HtmlDocument.addImageWrapperClass:6: tag="+tag+" content="+content+"] attr="+attr
-//  +" newWhole="+String.format("<%s%s>%s</%s>", tag, attr, content, tag));
                 }
             }
         }
@@ -1190,8 +1004,6 @@ public class HtmlDocument
     {
         boolean ret = false;
 
-//GERALD
-//System.out.println("HtmlDocument.needsImageLegendClass:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
@@ -1201,24 +1013,16 @@ public class HtmlDocument
 
             Matcher captionMatcher = FIGCAPTION_PATTERN.matcher(content);
 
-//GERALD
-//System.out.println("HtmlDocument.needsImageLegendClass:2: tag="+tag+" content="+content);
             if(captionMatcher.find())
             {
                 String attr = captionMatcher.group(1);
-//GERALD
-//System.out.println("HtmlDocument.needsImageLegendClass:3: tag="+tag+" content="+content+" attr="+attr);
                 if(attr.indexOf(IMAGE_LEGEND_CLASS) == -1)
                 {
                     ret = true;
-//GERALD
-//System.out.println("HtmlDocument.needsImageLegendClass:4: tag="+tag+" content="+content+" attr="+attr+" ret="+ret);
                 }
             }
         }
 
-//GERALD
-//System.out.println("HtmlDocument.needsImageLegendClass:4: tag="+tag+" ret="+ret);
         return ret;
     }
 
@@ -1240,8 +1044,6 @@ public class HtmlDocument
      */
     private void addImageLegendClass(String tag)
     {
-//GERALD
-//System.out.println("HtmlDocument.addImageLegendClass:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
@@ -1254,17 +1056,10 @@ public class HtmlDocument
                 String whole = captionMatcher.group(0);
                 String attr = captionMatcher.group(1);
                 String content = captionMatcher.group(2);
-//GERALD
-//System.out.println("HtmlDocument.addImageLegendClass:2: tag="+tag+" content="+content+" attr=["+attr+"] whole="+whole);
                 if(attr.indexOf(IMAGE_LEGEND_CLASS) == -1)
                 {
                     attr = String.format("%s class=\"%s\"", attr, IMAGE_LEGEND_CLASS);
-//GERALD
-//System.out.println("HtmlDocument.addImageLegendClass:3: tag="+tag+" content="+content+" attr=["+attr+"]");
                     doc = doc.replace(whole, String.format("<figcaption%s>%s</figcaption>", attr, content));
-//GERALD
-//System.out.println("HtmlDocument.addImageLegendClass:4: tag="+tag+" content="+content+"] attr="+attr
-//  +" newWhole="+String.format("<%s%s>%s</%s>", tag, attr, content, tag));
                 }
             }
         }
@@ -1382,8 +1177,6 @@ public class HtmlDocument
      */
     private void addBadExternalSpacingLinkMessages(String tag, List<String> messages)
     {
-//GERALD
-//System.out.println("HtmlDocument.addBadExternalSpacingLinkMessages:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s.*?>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
@@ -1391,13 +1184,8 @@ public class HtmlDocument
         {
             String content = m.group(1);
 
-//GERALD
-//System.out.println("HtmlDocument.addBadExternalSpacingLinkMessages:2: tag="+tag+" content="+content);
             addBadExternalSpacingLinkMessagesFromContent(content, messages);
         }
-
-//GERALD
-//System.out.println("HtmlDocument.addBadExternalSpacingLinkMessages:3: tag="+tag+" messages="+messages);
     }
 
     /**
@@ -1417,13 +1205,9 @@ public class HtmlDocument
                 String link = textMatcher.group(2);
                 String after = textMatcher.group(3);
 
-//GERALD
-//System.out.println("HtmlDocument.addBadExternalSpacingLinkMessagesFromContent:1: before=["+removeMarkup(before)+"] after=["+removeMarkup(after)+"] needSpaceBefore="+needSpaceBefore(before)+" needSpaceAfter="+needSpaceAfter(after));
                 if(needSpaceBefore(removeMarkup(before)) || needSpaceAfter(removeMarkup(after)))
                 {
                     messages.add(String.format("link with bad external spacing: %s", StringUtils.normalise(link)));
-//GERALD
-//System.out.println("HtmlDocument.addBadExternalSpacingLinkMessagesFromContent:2: before=["+before+"] after=["+after+"] needSpaceBefore="+needSpaceBefore(before)+" needSpaceAfter="+needSpaceAfter(after)+" messages="+messages);
                 }
 
                 // Search the rest of the string in case there are more anchors
@@ -1456,8 +1240,6 @@ public class HtmlDocument
      */
     private void addSplitLinkMessages(String tag, List<String> messages)
     {
-//GERALD
-//System.out.println("HtmlDocument.addSplitLinkMessages:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s.*?>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
@@ -1465,8 +1247,6 @@ public class HtmlDocument
         {
             String content = m.group(1);
 
-//GERALD
-//System.out.println("HtmlDocument.addSplitLinkMessages:2: tag="+tag+" content="+content);
             int idx = 0;
             String lastHref = null;
             String lastBefore = null;
@@ -1482,8 +1262,6 @@ public class HtmlDocument
 
                 String href = attr.replaceAll(" href=\"(.+)\"", "$1");
 
-//GERALD
-//System.out.println("HtmlDocument.addSplitLinkMessages:3: tag="+tag+" before=["+before+"] attr=["+attr+"] href="+href+" lastHref="+lastHref);
                 // Look for the same link repeated with no intervening text
                 if(lastHref != null
                     && href.equals(lastHref)
@@ -1494,8 +1272,6 @@ public class HtmlDocument
                         messages.add(String.format("split link: %s", StringUtils.normalise(lastWhole.trim())));
 
                     messages.add(String.format("split link: %s", StringUtils.normalise(whole.trim())));
-//GERALD
-//System.out.println("HtmlDocument.addSplitLinkMessages:4: tag="+tag+" before=["+before+"] attr=["+attr+"] href="+href+" whole="+whole.trim());
                 }
 
                 ++idx;
@@ -1504,9 +1280,6 @@ public class HtmlDocument
                 lastWhole = whole;
             }
         }
-
-//GERALD
-//System.out.println("HtmlDocument.addSplitLinkMessages:5: tag="+tag+" messages="+messages);
     }
 
     /**
@@ -1539,10 +1312,22 @@ public class HtmlDocument
         while(m.find())
         {
             String whole = m.group(0);
-            String content = m.group(1);
+            String content = m.group(1).trim();
 
-            Matcher sourceMatcher = SOURCE_PATTERN.matcher(content.toLowerCase().trim());
+            // If the content contains a link, remove it
+            Matcher anchorMatcher = ANCHOR_ATTR_CONTENT_PATTERN.matcher(content);
+            if(anchorMatcher.find())
+            {
+                String link = anchorMatcher.group(0);
+                String anchor = anchorMatcher.group(2).trim();
 
+                if(anchor.length() > 0)
+                    content = content.replace(link, anchor);
+            }
+
+            content = removeMarkup(content);
+
+            Matcher sourceMatcher = SOURCE_PATTERN.matcher(content.toLowerCase());
             if(sourceMatcher.find())
                 messages.add(String.format("image source: %s", StringUtils.normalise(whole)));
             else if(content.startsWith("https://") && content.indexOf("<") == -1) // No markup, just text
@@ -1579,36 +1364,38 @@ public class HtmlDocument
     {
         boolean ret = false;
 
-//GERALD
-//System.out.println("HtmlDocument.hasImageSource:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("<%s>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find() && !ret)
         {
             String whole = m.group(0);
-            String content = m.group(1);
+            String content = m.group(1).trim();
 
-            Matcher sourceMatcher = SOURCE_PATTERN.matcher(content.toLowerCase().trim());
+            // If the content contains a link, remove it
+            Matcher anchorMatcher = ANCHOR_ATTR_CONTENT_PATTERN.matcher(content);
+            if(anchorMatcher.find())
+            {
+                String link = anchorMatcher.group(0);
+                String anchor = anchorMatcher.group(2).trim();
 
-//GERALD
-//System.out.println("HtmlDocument.hasImageSource:2: tag="+tag+" content="+content);
+                if(anchor.length() > 0)
+                    content = content.replace(link, anchor);
+            }
+
+            content = removeMarkup(content);
+
+            Matcher sourceMatcher = SOURCE_PATTERN.matcher(content.toLowerCase());
             if(sourceMatcher.find())
             {
                 ret = true;
-//GERALD
-//System.out.println("HtmlDocument.hasImageSource:3: tag="+tag+" content="+content+" ret="+ret);
             }
             else if(!ret && content.startsWith("https://") && content.indexOf("<") == -1) // No markup, just text
             {
                 ret = true;
-//GERALD
-//System.out.println("HtmlDocument.hasImageSource:4: tag="+tag+" content="+content+" ret="+ret);
             }
         }
 
-//GERALD
-//System.out.println("HtmlDocument.hasIm:5: tag="+tag+" ret="+ret);
         return ret;
     }
 
@@ -1630,41 +1417,43 @@ public class HtmlDocument
      */
     private void removeImageSources(String tag)
     {
-//GERALD
-//System.out.println("HtmlDocument.removeImageSources:1: tag="+tag);
         Pattern pattern = Pattern.compile(String.format("\\s*<%s>(.+?)</%s>", tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find())
         {
             String whole = m.group(0);
-            String content = m.group(1);
+            String content = m.group(1).trim();
 
-            Matcher sourceMatcher = SOURCE_PATTERN.matcher(content.toLowerCase().trim());
+            // If the content contains a link, remove it
+            Matcher anchorMatcher = ANCHOR_ATTR_CONTENT_PATTERN.matcher(content);
+            if(anchorMatcher.find())
+            {
+                String link = anchorMatcher.group(0);
+                String anchor = anchorMatcher.group(2).trim();
 
-//GERALD
-//System.out.println("HtmlDocument.removeImageSources:2: tag="+tag+" content=["+content+"] whole="+whole);
+                if(anchor.length() > 0)
+                    content = content.replace(link, anchor);
+            }
+
+            content = removeMarkup(content);
+
+            Matcher sourceMatcher = SOURCE_PATTERN.matcher(content.toLowerCase());
             boolean found = false;
             if(sourceMatcher.find())
             {
                 found = true;
-//GERALD
-//System.out.println("HtmlDocument.removeImageSources:3: tag="+tag+" content=["+content+"] found="+found);
             }
 
             // Remove dir attribute
             if(content.startsWith("https://") && content.indexOf("<") == -1) // No markup, just text
             {
                 found = true;
-//GERALD
-//System.out.println("HtmlDocument.removeImageSources:4: tag="+tag+" content=["+content+"] found="+found);
             }
 
             if(found)
             {
                 doc = doc.replace(whole, "");
-//GERALD
-//System.out.println("HtmlDocument.removeImageSources:5: tag="+tag+" content=["+content+"] found="+found);
             }
         }
     }

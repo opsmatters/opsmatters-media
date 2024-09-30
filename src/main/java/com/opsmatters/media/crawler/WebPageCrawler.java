@@ -48,6 +48,7 @@ import com.opsmatters.media.model.content.crawler.ContentRequest;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.MoreLink;
+import com.opsmatters.media.model.content.crawler.ErrorPage;
 import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.model.content.crawler.field.Fields;
 import com.opsmatters.media.model.content.crawler.field.FieldSelector;
@@ -86,6 +87,8 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     public static final String DIV = "div";
     public static final String SECTION = "section";
     public static final String ROOT = "<root>";
+
+    private static List<ErrorPage> errorPages = new ArrayList<ErrorPage>();
 
     private CrawlerBrowser browser;
     private WebDriver driver;
@@ -138,6 +141,24 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     protected WebDriver getDriver()
     {
         return driver;
+    }
+
+    /**
+     * Returns the error pages for the crawler.
+     */
+    public static List<ErrorPage> getErrorPages()
+    {
+        return errorPages;
+    }
+
+    /**
+     * Sets the error pages for the crawler.
+     */
+    public static void setErrorPages(List<ErrorPage> errorPages)
+    {
+        WebPageCrawler.errorPages.clear();
+        WebPageCrawler.errorPages.addAll(errorPages);
+        logger.info("Loaded "+errorPages.size()+" crawler error pages");
     }
 
     /**
@@ -306,7 +327,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         logger.info("Loading page: "+url);
         driver.get(url);
 
-        String title = driver.getTitle();
+        String title = getTitle();
         if(isErrorPage(title))
         {
             setErrorCode(E_ERROR_PAGE);
@@ -333,12 +354,14 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         boolean ret = false;
         if(title != null)
         {
-            ret = title.startsWith("404")                      // SquaredUp
-                || title.startsWith("Error 404")               // Google webcache
-                || title.startsWith("403 Forbidden")           // Mattermost
-                || title.startsWith("Attention Required!")     // Cloudflare
-                || title.equals("Human Verification")          // Cloudflare
-                || title.indexOf("access to this site") != -1; // Informer
+            for(ErrorPage errorPage : errorPages)
+            {
+                if(title.startsWith(errorPage.getTitle()))
+                {
+                    ret = true;
+                    break;
+                }
+            }
         }
 
         return ret;
