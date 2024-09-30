@@ -30,6 +30,7 @@ public enum PublicationType
 {
     CASE_STUDY("Case Study"),
     CHEAT_SHEET("Cheat Sheet"),
+    CHECKLIST("Checklist"),
     DATASHEET("Datasheet"),
     EBOOK("EBook"),
     HANDBOOK("Handbook"),
@@ -106,6 +107,8 @@ public enum PublicationType
                 ret = test(text, HANDBOOK);
             if(ret == null)
                 ret = test(text, CHEAT_SHEET);
+            if(ret == null)
+                ret = test(text, CHECKLIST);
             if(ret == null)
                 ret = test(text, CASE_STUDY);
             if(ret == null)

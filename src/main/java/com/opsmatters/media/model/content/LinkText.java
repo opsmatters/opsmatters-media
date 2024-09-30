@@ -31,6 +31,8 @@ public enum LinkText
     GO_AGENDA("Go to Agenda and Booking", EVENT),
     GO_REGISTRATION("Go to Registration", EVENT),
     GET_CASE_STUDY("Get the Case Study", PUBLICATION),
+    GET_CHEAT_SHEET("Get the Cheat Sheet", PUBLICATION),
+    GET_CHECKLIST("Get the Checklist", PUBLICATION),
     GET_DATASHEET("Get the Datasheet", PUBLICATION),
     GET_EBOOK("Get the EBook", PUBLICATION),
     GET_GUIDE("Get the Guide", PUBLICATION),
