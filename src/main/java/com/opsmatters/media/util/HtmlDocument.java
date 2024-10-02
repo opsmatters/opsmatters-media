@@ -34,6 +34,7 @@ public class HtmlDocument
     private static final String START_ATTR = " start=";
     private static final String STYLE_ATTR = " style=";
 
+    public static final String POST_FULL_CONTENT_CLASS = "post-full-content";
     private static final String IMAGE_WRAPPER_CLASS = "image-wrapper";
     private static final String IMAGE_LEGEND_CLASS = "image-legend";
     private static final String IMAGE_STYLE = "margin:15px 0;";
@@ -67,8 +68,8 @@ public class HtmlDocument
     private static Pattern OL_ATTR_CONTENT_PATTERN = Pattern.compile("<ol(.*?)>(.*?)</ol>", Pattern.DOTALL);
     private static Pattern LI_PATTERN = Pattern.compile("<li>", Pattern.DOTALL);
     private static Pattern SOURCE_PATTERN = Pattern.compile("^\\w*[ ]?source:", Pattern.DOTALL); // eg. Image Source
-    private static Pattern FRAGMENTED_UL_LIST_PATTERN = Pattern.compile("</li>[\r\n]*</ul>[\r\n]*<ul>[\r\n]*<li>", Pattern.DOTALL);
-    private static Pattern FRAGMENTED_OL_LIST_PATTERN = Pattern.compile("</li>[\r\n]*</ol>[\r\n]*<ol>[\r\n]*<li>", Pattern.DOTALL);
+    private static Pattern FRAGMENTED_UL_LIST_PATTERN = Pattern.compile("</li>[\r\n]*</ul>[\r\n]*<ul.*?>[\r\n]*<li>", Pattern.DOTALL);
+    private static Pattern FRAGMENTED_OL_LIST_PATTERN = Pattern.compile("</li>[\r\n]*</ol>[\r\n]*<ol.*?>[\r\n]*<li>", Pattern.DOTALL);
     private static Pattern LINE_BREAKS_PATTERN = Pattern.compile(LINE_BREAKS, Pattern.DOTALL);
     private static Pattern FIGCAPTION_PATTERN = Pattern.compile("<figcaption(.*?)>(.+?)</figcaption>", Pattern.DOTALL);
 
@@ -532,6 +533,7 @@ public class HtmlDocument
             String anchor = removeMarkup(m.group(2));
 
             if(anchor.startsWith(" ") || anchor.endsWith(" ")
+                || anchor.startsWith(NBSP_CHAR) || anchor.endsWith(NBSP_CHAR)
                 || anchor.startsWith(NBSP_ENTITY) || anchor.endsWith(NBSP_ENTITY))
             {
                 ret = true;
@@ -689,6 +691,16 @@ public class HtmlDocument
     }
 
     /**
+     * Removes "&lt;div&gt;" tags in the HTML document.
+     */
+    private void removeDivs()
+    {
+        doc = doc.replaceAll("^<div>\\s*", ""); // <div> at start of doc
+        doc = doc.replaceAll("\\s*<div>", "");
+        doc = doc.replaceAll("\\s*</div>", "");
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the HTML document contains a list that is not contiguous.
      * @param doc The HTML document to search
      * @return <CODE>true</CODE> if the HTML document contains a list that is not contiguous.
@@ -705,8 +717,8 @@ public class HtmlDocument
     private void fixFragmentedLists()
     {
         // Remove list open and close tags in the middle of another list
-        doc = doc.replaceAll("(</li>[\r\n]*)</ul>[\r\n]*<ul>[\r\n]*(<li>)", "$1$2");
-        doc = doc.replaceAll("(</li>[\r\n]*)</ol>[\r\n]*<ol>[\r\n]*(<li>)", "$1$2");
+        doc = doc.replaceAll("(</li>[\r\n]*)</ul>[\r\n]*<ul.*?>[\r\n]*(<li>)", "$1$2");
+        doc = doc.replaceAll("(</li>[\r\n]*)</ol>[\r\n]*<ol.*?>[\r\n]*(<li>)", "$1$2");
     }
 
     /**
@@ -923,6 +935,9 @@ public class HtmlDocument
             String attr = m.group(1);
             String content = m.group(2);
 
+            if(attr.indexOf(POST_FULL_CONTENT_CLASS) != -1)
+                continue;
+
             if(content.indexOf("<img") != -1)
             {
                 if(attr.indexOf(IMAGE_WRAPPER_CLASS) == -1)
@@ -961,6 +976,9 @@ public class HtmlDocument
             String whole = m.group(0);
             String attr = m.group(1);
             String content = m.group(2);
+
+            if(attr.indexOf(POST_FULL_CONTENT_CLASS) != -1)
+                continue;
 
             if(content.indexOf("<img") != -1)
             {
@@ -1571,6 +1589,16 @@ public class HtmlDocument
         public Builder replaceDivs()
         {
             ret.replaceDivs();
+            return this;
+        }
+
+        /**
+         * Removes "&lt;div&gt;" tags in the HTML document.
+         * @return This object
+         */
+        public Builder removeDivs()
+        {
+            ret.removeDivs();
             return this;
         }
 

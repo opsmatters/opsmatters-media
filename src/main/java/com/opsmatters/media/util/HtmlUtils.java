@@ -28,7 +28,7 @@ public class HtmlUtils
 {
     private static final Logger logger = Logger.getLogger(HtmlUtils.class.getName());
 
-    public static final String CONTENT_WRAPPER_CLASS = "post-full-content";
+    public static final String CONTENT_WRAPPER_CLASS = HtmlDocument.POST_FULL_CONTENT_CLASS;
 
     /**
      * Private constructor as this class shouldn't be instantiated.
@@ -359,6 +359,18 @@ public class HtmlUtils
     {
         return HtmlDocument.builder(str)
             .replaceDivs()
+            .get();
+    }
+
+    /**
+     * Removes "&lt;div&gt;" tags in the given string.
+     * @param str The string to amend
+     * @return The amended string.
+     */
+    public static String removeDivs(String str)
+    {
+        return HtmlDocument.builder(str)
+            .removeDivs()
             .get();
     }
 
