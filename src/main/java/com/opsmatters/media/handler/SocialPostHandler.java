@@ -26,6 +26,7 @@ import com.twitter.twittertext.TwitterTextParser;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.SocialProvider;
+import com.opsmatters.media.model.social.SocialPostProperty;
 import com.opsmatters.media.model.social.SocialPostProperties;
 import com.opsmatters.media.model.social.Hashtag;
 
@@ -96,6 +97,31 @@ public class SocialPostHandler
     public void setProperties(SocialPostProperties properties)
     {
         getProperties().set(properties);
+
+        formatPropertyValue(TITLE);
+        formatPropertyValue(TITLE1);
+        formatPropertyValue(TITLE2);
+        formatPropertyValue(SUMMARY);
+        formatPropertyValue(PREAMBLE);
+        formatPropertyValue(DESCRIPTION);
+    }
+
+    /**
+     * Returns the given property value with some special characters changed or removed.
+     */
+    private void formatPropertyValue(SocialPostProperty property)
+    {
+        String value = getProperties().get(property);
+
+        if(value != null)
+        {
+            value = value.replaceAll("\"|'|‘|’|‛|“|”|′|″", "'");
+            value = value.replaceAll("‚|„", ",");
+            value = value.replaceAll("®|©|™|«|»", ""); // Remove registered, copyright, trademark, etc
+
+            getProperties().put(property, value);
+        }
+
     }
 
     /**

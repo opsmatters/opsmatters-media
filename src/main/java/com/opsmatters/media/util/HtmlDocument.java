@@ -41,9 +41,10 @@ public class HtmlDocument
 
     private static final String NBSP_CHAR = "\u00a0";
     private static final String NBSP_ENTITY = "&nbsp;";
+    private static final String LF_ENTITY = "&#013;";
 
-    private static final String BEFORE_CHARS = " ('\""+NBSP_CHAR;
-    private static final String AFTER_CHARS = " !:;,.'\"?)"+NBSP_CHAR;
+    private static final String BEFORE_CHARS = " ('\"“"+NBSP_CHAR+LF_ENTITY;
+    private static final String AFTER_CHARS = " !:;,.'\"”?)"+NBSP_CHAR;
     private static final String BEFORE_ENTITIES = "&ldquo;"+NBSP_ENTITY;
     private static final String AFTER_ENTITIES = "&rdquo;"+NBSP_ENTITY;
 
@@ -52,6 +53,8 @@ public class HtmlDocument
 
     private static final String LINE_BREAKS = "(<br[ /]*>){2,}";
     private static final String NEW_PARAGRAPH = "</p>\n<p>";
+    private static final String OPEN_SPAN = "<span.*?>";
+    private static final String CLOSE_SPAN = "</span>";
 
     private static Pattern DATA_ATTR_PATTERN = Pattern.compile(" data-[-\\w]+=", Pattern.DOTALL);
     private static Pattern DIR_ATTR_PATTERN = Pattern.compile(" dir=\"[lr]t[rl]\"", Pattern.DOTALL);
@@ -62,7 +65,7 @@ public class HtmlDocument
     private static Pattern ANCHOR_ATTR_PATTERN = Pattern.compile("<a(.*?)>", Pattern.DOTALL);
     private static Pattern ANCHOR_ATTR_CONTENT_PATTERN = Pattern.compile("<a(.*?)>(.+?)</a>", Pattern.DOTALL);
     private static Pattern HREF_PATTERN = Pattern.compile(" href=\"(.+?)\"", Pattern.DOTALL);
-    private static Pattern SPAN_CONTENT_PATTERN = Pattern.compile("<span.*?>(.*?)</span>", Pattern.DOTALL);
+    private static Pattern SPAN_PATTERN = Pattern.compile(OPEN_SPAN, Pattern.DOTALL);
     private static Pattern DIV_CONTENT_PATTERN = Pattern.compile("<div>(.+?)</div>", Pattern.DOTALL);
     private static Pattern H1_CONTENT_PATTERN = Pattern.compile("<h1.*?>(.+?)</h1>", Pattern.DOTALL);
     private static Pattern OL_ATTR_CONTENT_PATTERN = Pattern.compile("<ol(.*?)>(.*?)</ol>", Pattern.DOTALL);
@@ -512,6 +515,7 @@ public class HtmlDocument
     {
         String ret = str;
 
+        ret = ret.replaceAll("<br[ ]*/>", LF_ENTITY);
         ret = ret.replaceAll("<\\w+.*?>", "");
         ret = ret.replaceAll("</\\w+>", "");
 
@@ -652,7 +656,7 @@ public class HtmlDocument
      */
     public static boolean hasSpan(String doc)
     {
-        return SPAN_CONTENT_PATTERN.matcher(doc).find();
+        return SPAN_PATTERN.matcher(doc).find();
     }
 
     /**
@@ -660,15 +664,8 @@ public class HtmlDocument
      */
     private void removeSpans()
     {
-        Matcher m = SPAN_CONTENT_PATTERN.matcher(doc);
-
-        while(m.find())
-        {
-            String whole = m.group(0);
-            String content = m.group(1);
-
-            doc = doc.replace(whole, content);
-        }
+        doc = doc.replaceAll(OPEN_SPAN, "");
+        doc = doc.replace(CLOSE_SPAN, "");
     }
 
     /**

@@ -109,12 +109,4 @@ public abstract class SocialPost extends OwnedEntity
     {
         return message != null && message.length() > 0;
     }
-
-    /**
-     * Returns <CODE>true</CODE> if the post message contains a reference to the given property.
-     */
-    public boolean hasReference(SocialPostProperty property)
-    {
-        return hasMessage() && getMessage().indexOf(String.format("${%s}", property.value())) != -1;
-    }
 }

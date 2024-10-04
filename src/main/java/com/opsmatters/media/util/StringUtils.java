@@ -62,11 +62,15 @@ public class StringUtils
     private static final String EMOJI_REGEX = "\\:[\\w\\+]+\\:";
     private static final Pattern emojiPattern = Pattern.compile(EMOJI_REGEX);
 
-    // Patterns to detect email address in string
+    // Patterns to detect email address in a string
     private static final String STRICT_EMAIL_REGEX = "[A-Z0-9a-z.'_%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,7}";
     private static Pattern strictEmailPattern = Pattern.compile(STRICT_EMAIL_REGEX);
     private static final String LAX_EMAIL_REGEX = ".+@.+\\.[A-Za-z]{2}[A-Za-z]*";
     private static Pattern laxEmailPattern = Pattern.compile(LAX_EMAIL_REGEX);
+
+    // Pattern to remove the last sentence from a string
+    private static final String SENTENCE_REGEX = "(.+[.!?:]) .+";
+    private static final Pattern sentencePattern = Pattern.compile(SENTENCE_REGEX);
 
     /**
      * The default depth for stack traces.
@@ -1031,5 +1035,14 @@ public class StringUtils
             .append(url.indexOf("?") == -1 ? "?" : "&")
             .append("ts=").append(System.currentTimeMillis())
             .toString();
+    }
+
+    /**
+     * Returns the given text with the last sentence removed.
+     */
+    public static String removeLastSentence(String text)
+    {
+        Matcher m = sentencePattern.matcher(text);
+        return m.find() ? m.group(1) : text;
     }
 }

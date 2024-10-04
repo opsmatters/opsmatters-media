@@ -86,4 +86,12 @@ public abstract class PropertyPost extends SocialPost
     {
         getProperties().put(property, value);
     }
+
+    /**
+     * Returns <CODE>true</CODE> if the post message contains a reference to the given property.
+     */
+    public boolean hasReference(SocialPostProperty property)
+    {
+        return hasMessage() && getMessage().indexOf(String.format("${%s}", property.value())) != -1;
+    }
 }

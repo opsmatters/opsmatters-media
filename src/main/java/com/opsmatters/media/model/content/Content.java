@@ -490,6 +490,28 @@ public abstract class Content<D extends ContentDetails>
     }
 
     /**
+     * Shorten the summary by removing the last sentence.
+     * <p>
+     * Returns <CODE>true</CODE> if the summary was shortened.
+     */
+    public boolean shortenSummary()
+    {
+        boolean ret = false;
+
+        if(hasSummary())
+        {
+            String summary = StringUtils.removeLastSentence(getSummary());
+            if(!summary.equals(getSummary()))
+            {
+                setSummary(summary);
+                ret = true;
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the content image name.
      * <P>
      * Always returns <CODE>null</CODE>.
