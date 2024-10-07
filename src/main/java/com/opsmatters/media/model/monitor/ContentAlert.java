@@ -265,6 +265,30 @@ public class ContentAlert extends ContentEvent
     }
 
     /**
+     * Returns <CODE>true</CODE> if this change is NEW.
+     */
+    public boolean isNew()
+    {
+        return getStatus() == AlertStatus.NEW;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this change has been DISMISSED.
+     */
+    public boolean isDismissed()
+    {
+        return getStatus() == AlertStatus.DISMISSED;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this change has been RESOLVED.
+     */
+    public boolean isResolved()
+    {
+        return getStatus() == AlertStatus.RESOLVED;
+    }
+
+    /**
      * Returns the alert crawled page title.
      */
     public String getTitle()

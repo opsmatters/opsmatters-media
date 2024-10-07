@@ -276,6 +276,30 @@ public class ContentReview extends ContentEvent
     }
 
     /**
+     * Returns <CODE>true</CODE> if this review is NEW.
+     */
+    public boolean isNew()
+    {
+        return getStatus() == ReviewStatus.NEW;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this review has been SKIPPED.
+     */
+    public boolean isSkipped()
+    {
+        return getStatus() == ReviewStatus.SKIPPED;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this review has been CLOSED.
+     */
+    public boolean isClosed()
+    {
+        return getStatus() == ReviewStatus.CLOSED;
+    }
+
+    /**
      * Returns the review session id.
      */
     public int getSessionId()

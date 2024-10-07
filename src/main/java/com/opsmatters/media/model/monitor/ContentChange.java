@@ -140,11 +140,27 @@ public class ContentChange extends ContentEvent
     }
 
     /**
-     * Returns <CODE>true</CODE> if this change has been skipped.
+     * Returns <CODE>true</CODE> if this change is NEW.
+     */
+    public boolean isNew()
+    {
+        return getStatus() == ChangeStatus.NEW;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this change has been SKIPPED.
      */
     public boolean isSkipped()
     {
         return getStatus() == ChangeStatus.SKIPPED;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this change has been RESOLVED.
+     */
+    public boolean isResolved()
+    {
+        return getStatus() == ChangeStatus.RESOLVED;
     }
 
     /**

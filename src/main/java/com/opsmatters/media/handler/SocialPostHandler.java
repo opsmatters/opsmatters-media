@@ -117,7 +117,7 @@ public class SocialPostHandler
         {
             value = value.replaceAll("\"|'|‘|’|‛|“|”|′|″", "'");
             value = value.replaceAll("‚|„", ",");
-            value = value.replaceAll("®|©|™|«|»", ""); // Remove registered, copyright, trademark, etc
+            value = value.replaceAll("®|©|™|«|»|\\*", ""); // Remove registered, copyright, trademark, etc
 
             getProperties().put(property, value);
         }

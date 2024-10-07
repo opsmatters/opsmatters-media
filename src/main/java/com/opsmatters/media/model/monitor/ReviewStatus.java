@@ -27,7 +27,7 @@ public enum ReviewStatus
     WAITING("Waiting", "glyphicon-hourglass", ""),
     COMPLETED("Completed", "glyphicon-ok-circle", "status-success"),
     SKIPPED("Skipped", "glyphicon-remove-circle", "status-info"),
-    RESOLVED("Resolved", "glyphicon-trash", "status-error"),
+    CLOSED("Closed", "glyphicon-stop", "status-success"),
     ALL("All", "", ""); // Pseudo status
 
     private String value;
