@@ -41,6 +41,7 @@ public class Environment implements ConfigElement
     private SshConfig ssh;
     private String status = "";
     private String dashboard = "";
+    private boolean stopInstanceWhenIdle = false;
 
     /**
      * Constructor that takes an id.
@@ -95,6 +96,14 @@ public class Environment implements ConfigElement
     public String getName()
     {
         return getId().name();
+    }
+
+    /**
+     * Returns the display name of the environment.
+     */
+    public String getDisplayName()
+    {
+        return site != null ? String.format("%s %s", site.getTitle(), id.value()) : id.value();
     }
 
     /**
@@ -306,6 +315,22 @@ public class Environment implements ConfigElement
     public void setDashboard(String dashboard)
     {
         this.dashboard = dashboard;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the instance for this environment should stop when feeds complete.
+     */
+    public boolean stopInstanceWhenIdle()
+    {
+        return stopInstanceWhenIdle;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the instance for this environment should stop when feeds complete.
+     */
+    public void setStopInstanceWhenIdle(boolean stopInstanceWhenIdle)
+    {
+        this.stopInstanceWhenIdle = stopInstanceWhenIdle;
     }
 
     /**

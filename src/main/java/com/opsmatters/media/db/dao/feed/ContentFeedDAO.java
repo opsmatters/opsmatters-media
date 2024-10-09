@@ -525,9 +525,56 @@ public class ContentFeedDAO extends FeedDAO<ContentFeed>
     }
 
     /**
-     * Returns the feeds from the CONTENT_FEEDS table by external id and environment.
+     * Returns the feeds from the CONTENT_FEEDS table by environment.
      */
-    public List<ContentFeed> list(String id, Site site, EnvironmentId environment) throws SQLException
+    public List<ContentFeed> list(Site site, EnvironmentId env) throws SQLException
+    {
+        List<ContentFeed> ret = new ArrayList<ContentFeed>();
+        List<ContentFeed> feeds = list(site);
+        if(feeds != null)
+        {
+            for(ContentFeed feed : feeds)
+            {
+                if(feed.getEnvironment() == env)
+                {
+                    ret.add(feed);
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the feeds from the CONTENT_FEEDS table by environment that are currently busy.
+     */
+    public List<ContentFeed> listBusy(Site site, EnvironmentId env) throws SQLException
+    {
+        List<ContentFeed> ret = new ArrayList<ContentFeed>();
+        List<ContentFeed> feeds = list(site, env);
+        for(ContentFeed feed : feeds)
+        {
+            if(feed.isProcessing() || feed.hasError())
+            {
+                ret.add(feed);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if there are feeds from the CONTENT_FEEDS table that are currently busy for the environment.
+     */
+    public boolean hasBusy(Site site, EnvironmentId env) throws SQLException
+    {
+        return listBusy(site, env).size() > 0;
+    }
+
+    /**
+     * Returns the feeds from the CONTENT_FEEDS table by environment and external id.
+     */
+    public List<ContentFeed> list(Site site, EnvironmentId environment, String id) throws SQLException
     {
         List<ContentFeed> ret = new ArrayList<ContentFeed>();
         List<ContentFeed> feeds = list(site);

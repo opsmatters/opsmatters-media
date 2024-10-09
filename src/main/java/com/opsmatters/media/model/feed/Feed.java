@@ -124,6 +124,14 @@ public abstract class Feed extends BaseEntity
     }
 
     /**
+     * Returns <CODE>true</CODE> if the feed has an error.
+     */
+    public boolean hasError()
+    {
+        return getStatus() == FeedStatus.ERROR;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the feed is ready for processing.
      */
     public boolean canProcess()

@@ -93,6 +93,14 @@ public class Organisations
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given organisation already exists.
+     */
+    public static boolean exists(String code)
+    {
+        return code != null && organisationMap.containsKey(code);
+    }
+
+    /**
      * Returns the organisation with the given name.
      */
     public static Organisation getByName(String name)
