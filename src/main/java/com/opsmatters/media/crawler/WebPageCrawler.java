@@ -81,8 +81,6 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
 {
     private static final Logger logger = Logger.getLogger(WebPageCrawler.class.getName());
 
-    private static final String WEBCACHE_PREFIX = "https://webcache.googleusercontent.com/search?q=cache:";
-
     public static final String ANCHOR = "a";
     public static final String DIV = "div";
     public static final String SECTION = "section";
@@ -315,8 +313,6 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
      */
     protected void loadPage(String url, ContentRequest request, LogEventCategory category) throws IOException
     {
-        if(request.useWebcache())
-            url = WEBCACHE_PREFIX+url;
         if(request.isAntiCache())
             url = StringUtils.addAntiCacheParameter(url);
         if(request.hasTrailingSlash())

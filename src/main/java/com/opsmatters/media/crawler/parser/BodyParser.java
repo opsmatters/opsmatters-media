@@ -508,6 +508,7 @@ public class BodyParser
             text = text.replaceAll("\n|<br>",""); //Remove linefeeds and breaks
             text = text.replaceAll("\\[.+\\]",""); // Remove references and asides
             text = text.replaceAll("_{2,}",""); // Remove underscores as separators
+            text = text.replaceAll(" #\\w+",""); // Remove hashtags
 
             // Apply the filters to skip elements or truncate the text
             FilterResult result = FieldFilter.apply(getFilters(), text, SUMMARY);

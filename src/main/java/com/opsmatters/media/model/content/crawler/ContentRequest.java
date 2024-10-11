@@ -38,7 +38,6 @@ public class ContentRequest implements ConfigElement
     private boolean trailingSlash = false;
     private boolean headless = true;
     private boolean antiCache = false;
-    private boolean webcache = false;
 
     /**
      * Default constructor.
@@ -71,7 +70,6 @@ public class ContentRequest implements ConfigElement
             setRemoveParameters(obj.removeParameters());
             setTrailingSlash(obj.hasTrailingSlash());
             setAntiCache(obj.isAntiCache());
-            setWebcache(obj.useWebcache());
         }
     }
 
@@ -247,22 +245,6 @@ public class ContentRequest implements ConfigElement
     }
 
     /**
-     * Returns <CODE>true</CODE> if the browser should use Google Webcache.
-     */
-    public boolean useWebcache()
-    {
-        return webcache;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the browser should use Google Webcache.
-     */
-    public void setWebcache(boolean webcache)
-    {
-        this.webcache = webcache;
-    }
-
-    /**
      * Returns a builder for the configuration.
      * @return The builder instance.
      */
@@ -286,7 +268,6 @@ public class ContentRequest implements ConfigElement
         private static final String TRAILING_SLASH = "trailing-slash";
         private static final String HEADLESS = "headless";
         private static final String ANTI_CACHE = "anti-cache";
-        private static final String WEBCACHE = "webcache";
 
         private ContentRequest ret = new ContentRequest();
 
@@ -316,8 +297,6 @@ public class ContentRequest implements ConfigElement
                 ret.setHeadless((Boolean)map.get(HEADLESS));
             if(map.containsKey(ANTI_CACHE))
                 ret.setAntiCache((Boolean)map.get(ANTI_CACHE));
-            if(map.containsKey(WEBCACHE))
-                ret.setWebcache((Boolean)map.get(WEBCACHE));
 
             return this;
         }

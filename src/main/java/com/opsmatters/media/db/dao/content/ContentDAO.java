@@ -792,11 +792,11 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
     }
 
     /**
-     * Returns the count of duplicates of the given content item from the table.
+     * Returns the duplicates of the given content item from the table.
      */
-    public int getDuplicateCount(T content) throws SQLException
+    public List<T> getDuplicates(T content) throws SQLException
     {
-        int ret = 0;
+        List<T> ret = new ArrayList<T>();
         List<T> duplicates = listByTitle(content.getSiteId(),
             content.getCode(), content.getTitle());
         for(T duplicate : duplicates)
@@ -811,7 +811,7 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
                         continue;
                 }
 
-                ++ret;
+                ret.add(duplicate);
             }
         }
 
