@@ -284,6 +284,14 @@ public class ContentReview extends ContentEvent
     }
 
     /**
+     * Returns <CODE>true</CODE> if this review is WAITING.
+     */
+    public boolean isWaiting()
+    {
+        return getStatus() == ReviewStatus.WAITING;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if this review has been SKIPPED.
      */
     public boolean isSkipped()
