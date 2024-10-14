@@ -43,7 +43,7 @@ public enum LinkText
     DOWNLOAD("Download", TOOL),
     GET_STARTED("Get Started", TOOL),
     VIEW_WEBSITE("View on Website", TOOL),
-    LEARN_MORE("Learn More", new ContentType[] {TOOL,JOB});
+    LEARN_MORE("Learn More", TOOL);
 
     private String value;
     private ContentType[] types;

@@ -34,7 +34,6 @@ public enum ContentType
     PUBLICATION("PB", "Publication", "publications", "glyphicon-book", false),
     PROJECT("PR", "Project", "projects", "glyphicon-tasks", false),
     TOOL("TL", "Tool", "tools", "glyphicon-wrench", false),
-    JOB("JB", "Job", "jobs", "glyphicon-briefcase", false),
     ARTICLE("", "Article", "", "glyphicon-file", false);
 
     private String code;
@@ -159,21 +158,11 @@ public enum ContentType
     }
 
     /**
-     * Returns <CODE>true</CODE> if this content type has technologies.
-     */
-    public boolean isTechnologiesType()
-    {
-        return this == JOB;
-    }
-
-    /**
      * Returns <CODE>true</CODE> if this content type has tracking.
      */
     public boolean isTrackingType()
     {
-        return this == VIDEO
-            || this == ROUNDUP
-            || this == POST
+        return this == ROUNDUP
             || this == EVENT
             || this == PUBLICATION
             || this == TOOL;
@@ -266,7 +255,6 @@ public enum ContentType
         ret.add(PUBLICATION);
         ret.add(PROJECT);
         ret.add(TOOL);
-        ret.add(JOB);
 
         return ret;
     }

@@ -38,7 +38,6 @@ import com.opsmatters.media.model.content.post.PostConfig;
 import com.opsmatters.media.model.content.post.RoundupPostConfig;
 import com.opsmatters.media.model.content.project.ProjectConfig;
 import com.opsmatters.media.model.content.tool.ToolConfig;
-import com.opsmatters.media.model.content.job.JobConfig;
 import com.opsmatters.media.util.FileUtils;
 
 import static com.opsmatters.media.model.content.ContentType.*;
@@ -68,7 +67,6 @@ public class OrganisationConfig extends ConfigStore implements FieldSource
     private PublicationConfig publications;
     private ToolConfig tools;
     private ProjectConfig projects;
-    private JobConfig jobs;
     private FieldMap fields;
 
     private Map<ContentType,ContentConfig> configs = new LinkedHashMap<ContentType,ContentConfig>();
@@ -385,31 +383,6 @@ public class OrganisationConfig extends ConfigStore implements FieldSource
     }
 
     /**
-     * Returns the job configuration.
-     */
-    public JobConfig getJobs()
-    {
-        return jobs;
-    }
-
-    /**
-     * Sets the job configuration.
-     */
-    public void setJobs(JobConfig jobs)
-    {
-        this.jobs = jobs;
-        configs.put(jobs.getType(), jobs);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the job configuration has been set.
-     */
-    public boolean hasJobs()
-    {
-        return jobs != null;
-    }
-
-    /**
      * Returns a builder for the configuration.
      * @param name The name for the configuration
      * @return The builder instance.
@@ -530,15 +503,6 @@ public class OrganisationConfig extends ConfigStore implements FieldSource
                     builder = builder.copy(defaults.getTools());
                 ret.setTools(builder.fields(map)
                     .parse((Map<String,Object>)map.get(TOOL.tag())).build());
-            }
-
-            if(map.containsKey(JOB.tag()))
-            {
-                JobConfig.Builder builder = JobConfig.builder(name);
-                if(defaults != null)
-                    builder = builder.copy(defaults.getJobs());
-                ret.setJobs(builder.fields(map)
-                    .parse((Map<String,Object>)map.get(JOB.tag())).build());
             }
 
             return this;

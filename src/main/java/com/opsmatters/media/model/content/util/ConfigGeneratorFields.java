@@ -108,7 +108,6 @@ public class ConfigGeneratorFields implements java.io.Serializable
                 setPublications(config.hasPublications());
                 setProjects(config.hasProjects());
                 setTools(config.hasTools());
-                setJobs(config.hasJobs());
                 setFields(config, tabs);
             }
             else
@@ -120,7 +119,6 @@ public class ConfigGeneratorFields implements java.io.Serializable
                 setPublications(tabs.contains(ContentType.PUBLICATION));
                 setProjects(listing.hasProjects());
                 setTools(listing.hasTools());
-                setJobs(listing.hasJobs());
             }
 
             // Set the video channel from the listing
@@ -565,22 +563,6 @@ public class ConfigGeneratorFields implements java.io.Serializable
     public void setTools(Boolean tools)
     {
         setType(tools, ContentType.TOOL);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if jobs are enabled.
-     */
-    public Boolean getJobs()
-    {
-        return hasType(ContentType.JOB);
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if tools are enabled.
-     */
-    public void setJobs(Boolean jobs)
-    {
-        setType(jobs, ContentType.JOB);
     }
 
     /**

@@ -27,7 +27,6 @@ import com.opsmatters.media.db.dao.content.post.PostDAO;
 import com.opsmatters.media.db.dao.content.post.RoundupPostDAO;
 import com.opsmatters.media.db.dao.content.project.ProjectDAO;
 import com.opsmatters.media.db.dao.content.tool.ToolDAO;
-import com.opsmatters.media.db.dao.content.job.JobDAO;
 
 
 /**
@@ -46,14 +45,13 @@ public class ContentDAOFactory extends DAOFactory
 
         getOrganisationListingDAO();
         getContentSettingsDAO();
-        getVideoDAO();
-        getPostDAO();
         getRoundupPostDAO();
+        getVideoDAO();
         getEventDAO();
         getPublicationDAO();
-        getToolDAO();
+        getPostDAO();
         getProjectDAO();
-        getJobDAO();
+        getToolDAO();
     }
 
     /**
@@ -77,26 +75,6 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the Video DAO.
-     */
-    public VideoDAO getVideoDAO()
-    {
-        if(videoDAO == null)
-            videoDAO = new VideoDAO(this);
-        return videoDAO;
-    }
-
-    /**
-     * Returns the Post DAO.
-     */
-    public PostDAO getPostDAO()
-    {
-        if(postDAO == null)
-            postDAO = new PostDAO(this);
-        return postDAO;
-    }
-
-    /**
      * Returns the RoundupPost DAO.
      */
     public RoundupPostDAO getRoundupPostDAO()
@@ -104,6 +82,16 @@ public class ContentDAOFactory extends DAOFactory
         if(roundupPostDAO == null)
             roundupPostDAO = new RoundupPostDAO(this);
         return roundupPostDAO;
+    }
+
+    /**
+     * Returns the Video DAO.
+     */
+    public VideoDAO getVideoDAO()
+    {
+        if(videoDAO == null)
+            videoDAO = new VideoDAO(this);
+        return videoDAO;
     }
 
     /**
@@ -127,13 +115,13 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the Tool DAO.
+     * Returns the Post DAO.
      */
-    public ToolDAO getToolDAO()
+    public PostDAO getPostDAO()
     {
-        if(toolDAO == null)
-            toolDAO = new ToolDAO(this);
-        return toolDAO;
+        if(postDAO == null)
+            postDAO = new PostDAO(this);
+        return postDAO;
     }
 
     /**
@@ -147,13 +135,13 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the Job DAO.
+     * Returns the Tool DAO.
      */
-    public JobDAO getJobDAO()
+    public ToolDAO getToolDAO()
     {
-        if(jobDAO == null)
-            jobDAO = new JobDAO(this);
-        return jobDAO;
+        if(toolDAO == null)
+            toolDAO = new ToolDAO(this);
+        return toolDAO;
     }
 
     /**
@@ -165,24 +153,22 @@ public class ContentDAOFactory extends DAOFactory
         super.close();
         organisationListingDAO = null;
         contentSettingsDAO = null;
-        videoDAO = null;
         roundupPostDAO = null;
-        postDAO = null;
+        videoDAO = null;
         eventDAO = null;
         publicationDAO = null;
-        toolDAO = null;
+        postDAO = null;
         projectDAO = null;
-        jobDAO = null;
+        toolDAO = null;
     }
 
     private OrganisationListingDAO organisationListingDAO;
     private ContentSettingsDAO contentSettingsDAO;
-    private VideoDAO videoDAO;
     private RoundupPostDAO roundupPostDAO;
-    private PostDAO postDAO;
+    private VideoDAO videoDAO;
     private EventDAO eventDAO;
     private PublicationDAO publicationDAO;
-    private ToolDAO toolDAO;
+    private PostDAO postDAO;
     private ProjectDAO projectDAO;
-    private JobDAO jobDAO;
+    private ToolDAO toolDAO;
 }
