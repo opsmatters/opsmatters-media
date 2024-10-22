@@ -26,13 +26,14 @@ import java.util.logging.Logger;
 import com.opsmatters.media.model.admin.Notification;
 import com.opsmatters.media.model.admin.NotificationStatus;
 import com.opsmatters.media.model.admin.NotificationType;
+import com.opsmatters.media.db.dao.BaseDAO;
 
 /**
  * DAO that provides operations on the NOTIFICATIONS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class NotificationDAO extends AdminDAO<Notification>
+public class NotificationDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(NotificationDAO.class.getName());
 

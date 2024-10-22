@@ -24,13 +24,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.social.Hashtag;
+import com.opsmatters.media.db.dao.BaseDAO;
 
 /**
  * DAO that provides operations on the HASHTAGS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class HashtagDAO extends SocialDAO<Hashtag>
+public class HashtagDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(HashtagDAO.class.getName());
 

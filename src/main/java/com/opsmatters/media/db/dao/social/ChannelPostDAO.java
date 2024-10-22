@@ -32,6 +32,7 @@ import com.opsmatters.media.model.social.ChannelPostItem;
 import com.opsmatters.media.model.social.DraftPost;
 import com.opsmatters.media.model.social.MessageFormat;
 import com.opsmatters.media.model.social.SocialChannel;
+import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.util.SessionId;
 
 /**
@@ -39,7 +40,7 @@ import com.opsmatters.media.util.SessionId;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ChannelPostDAO extends SocialDAO<ChannelPost>
+public class ChannelPostDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(ChannelPostDAO.class.getName());
 

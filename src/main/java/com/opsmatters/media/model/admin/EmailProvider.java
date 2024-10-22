@@ -23,7 +23,7 @@ package com.opsmatters.media.model.admin;
  */
 public enum EmailProvider
 {
-    SES("ses", "SES");
+    SES("SES", "SES");
 
     private String code;
     private String value;

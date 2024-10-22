@@ -35,6 +35,7 @@ import com.opsmatters.media.model.social.MessageFormat;
 import com.opsmatters.media.model.social.SavedContentPost;
 import com.opsmatters.media.model.social.SavedContentPostItem;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.db.dao.BaseDAO;
 
 import static com.opsmatters.media.model.social.SocialPostType.*;
 
@@ -43,7 +44,7 @@ import static com.opsmatters.media.model.social.SocialPostType.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SavedPostDAO extends SocialDAO<SavedPost>
+public class SavedPostDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(SavedPostDAO.class.getName());
 

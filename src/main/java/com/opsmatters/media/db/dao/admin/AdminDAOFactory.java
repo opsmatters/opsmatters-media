@@ -39,6 +39,8 @@ public class AdminDAOFactory extends DAOFactory
         getParameterDAO();
         getTableTaskDAO();
         getTaskExecutionDAO();
+        getEventPlatformDAO();
+        getImagePlatformDAO();
     }
 
     /**
@@ -102,6 +104,26 @@ public class AdminDAOFactory extends DAOFactory
     }
 
     /**
+     * Returns the event platform DAO.
+     */
+    public EventPlatformDAO getEventPlatformDAO()
+    {
+        if(eventPlatformDAO == null)
+            eventPlatformDAO = new EventPlatformDAO(this);
+        return eventPlatformDAO;
+    }
+
+    /**
+     * Returns the image platform DAO.
+     */
+    public ImagePlatformDAO getImagePlatformDAO()
+    {
+        if(imagePlatformDAO == null)
+            imagePlatformDAO = new ImagePlatformDAO(this);
+        return imagePlatformDAO;
+    }
+
+    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
@@ -114,6 +136,8 @@ public class AdminDAOFactory extends DAOFactory
         parameterDAO = null;
         tableTaskDAO = null;
         taskExecutionDAO = null;
+        eventPlatformDAO = null;
+        imagePlatformDAO = null;
     }
 
     private UserDAO userDAO;
@@ -122,4 +146,6 @@ public class AdminDAOFactory extends DAOFactory
     private ParameterDAO parameterDAO;
     private TableTaskDAO tableTaskDAO;
     private TaskExecutionDAO taskExecutionDAO;
+    private EventPlatformDAO eventPlatformDAO;
+    private ImagePlatformDAO imagePlatformDAO;
 }

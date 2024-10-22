@@ -34,7 +34,6 @@ public class EventConfig extends ContentConfig<Event>
     private static final Logger logger = Logger.getLogger(EventConfig.class.getName());
 
     private List<CrawlerWebPage> pages = new ArrayList<CrawlerWebPage>();
-    private List<CrawlerWebPage> providers = new ArrayList<CrawlerWebPage>();
 
     /**
      * Constructor that takes a name.
@@ -63,8 +62,6 @@ public class EventConfig extends ContentConfig<Event>
             super.copyAttributes(obj);
             for(CrawlerWebPage page : obj.getPages())
                 addPage(new CrawlerWebPage(page));
-            for(CrawlerWebPage provider : obj.getProviders())
-                addProvider(new CrawlerWebPage(provider));
         }
     }
 
@@ -143,56 +140,6 @@ public class EventConfig extends ContentConfig<Event>
     }
 
     /**
-     * Returns the providers for this configuration.
-     */
-    public List<CrawlerWebPage> getProviders()
-    {
-        return providers;
-    }
-
-    /**
-     * Adds a provider for this configuration.
-     */
-    public void addProvider(CrawlerWebPage provider)
-    {
-        this.providers.add(provider);
-    }
-
-    /**
-     * Returns the number of providers.
-     */
-    public int numProviders()
-    {
-        return providers.size();
-    }
-
-    /**
-     * Returns the provider at the given index.
-     */
-    public CrawlerWebPage getProvider(int i)
-    {
-        return providers.get(i);
-    }
-
-    /**
-     * Returns the provider with the given name.
-     */
-    public CrawlerWebPage getProvider(String name)
-    {
-        CrawlerWebPage ret = null;
-        for(CrawlerWebPage provider : getProviders())
-        {
-            if(provider.getName().equals(name))
-            {
-                ret = provider;
-                break;
-            }
-        }
-
-        return ret;
-    }
-
-    /**
      * Returns a builder for the configuration.
      * @param name The name for the configuration
      * @return The builder instance.
@@ -209,7 +156,6 @@ public class EventConfig extends ContentConfig<Event>
     {
         // The config attribute names
         private static final String PAGES = "pages";
-        private static final String PROVIDERS = "providers";
 
         private EventConfig ret = null;
 
@@ -232,19 +178,6 @@ public class EventConfig extends ContentConfig<Event>
         public Builder parse(Map<String, Object> map)
         {
             super.parse(map);
-
-            if(map.containsKey(PROVIDERS))
-            {
-                List<Map<String,Object>> providers = (List<Map<String,Object>>)map.get(PROVIDERS);
-                for(Map<String,Object> provider : providers)
-                {
-                    for(Map.Entry<String,Object> entry : provider.entrySet())
-                    {
-                        ret.addProvider(CrawlerWebPage.builder(entry.getKey())
-                            .parse((Map<String,Object>)entry.getValue()).build());
-                    }
-                }
-            }
 
             if(map.containsKey(PAGES))
             {

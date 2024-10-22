@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 import com.opsmatters.media.model.admin.Parameter;
 import com.opsmatters.media.model.admin.ParameterType;
 import com.opsmatters.media.model.admin.ParameterName;
+import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -34,7 +35,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ParameterDAO extends AdminDAO<Parameter>
+public class ParameterDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(ParameterDAO.class.getName());
 

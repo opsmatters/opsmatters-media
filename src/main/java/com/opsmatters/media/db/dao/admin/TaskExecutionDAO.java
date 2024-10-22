@@ -24,13 +24,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.admin.TaskExecution;
+import com.opsmatters.media.db.dao.BaseDAO;
 
 /**
  * DAO that provides operations on the TASK_EXECUTIONS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class TaskExecutionDAO extends AdminDAO<TaskExecution>
+public class TaskExecutionDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(TaskExecutionDAO.class.getName());
 

@@ -111,7 +111,7 @@ public class CrawlerVideoChannel extends CrawlerTarget
      */
     public VideoProvider getVideoProvider()
     {
-        return VideoProvider.fromCode(getProvider());
+        return VideoProvider.fromTag(getProvider());
     }
 
     /**
@@ -120,7 +120,7 @@ public class CrawlerVideoChannel extends CrawlerTarget
     public String getChannelUrl()
     {
         VideoProvider provider = getVideoProvider();
-        return provider != null ? String.format(provider.channelUrl(), channelId) : null;
+        return provider != null ? provider.url()+String.format(provider.channelUrl(), channelId) : null;
     }
 
     /**

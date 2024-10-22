@@ -31,6 +31,7 @@ import com.opsmatters.media.model.logging.LogError;
 import com.opsmatters.media.model.logging.LogErrorItem;
 import com.opsmatters.media.model.logging.ErrorCode;
 import com.opsmatters.media.model.logging.ErrorStatus;
+import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.util.SessionId;
 
 import static com.opsmatters.media.model.logging.LogEventType.*;
@@ -42,7 +43,7 @@ import static com.opsmatters.media.model.content.ContentType.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class LogErrorDAO extends LogDAO<LogError>
+public class LogErrorDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(LogErrorDAO.class.getName());
 

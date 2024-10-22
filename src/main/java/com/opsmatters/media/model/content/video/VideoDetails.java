@@ -158,7 +158,7 @@ public class VideoDetails extends ArticleDetails
      */
     public String getVideoUrl()
     {
-        return provider != null ? String.format(provider.videoUrl(), videoId) : null;
+        return provider != null ? provider.url()+String.format(provider.videoUrl(), videoId) : null;
     }
 
     /**
@@ -255,7 +255,7 @@ public class VideoDetails extends ArticleDetails
      */
     public String getChannelUrl()
     {
-        return getProvider() != null ? String.format(getProvider().channelUrl(), channelId) : null;
+        return getProvider() != null ? provider.url()+String.format(getProvider().channelUrl(), channelId) : null;
     }
 
     /**

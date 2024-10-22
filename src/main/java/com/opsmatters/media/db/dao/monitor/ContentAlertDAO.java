@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.model.monitor.ContentAlert;
 import com.opsmatters.media.model.monitor.ContentAlertItem;
 import com.opsmatters.media.model.monitor.AlertStatus;
+import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.util.SessionId;
 
 /**
@@ -35,7 +36,7 @@ import com.opsmatters.media.util.SessionId;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentAlertDAO extends MonitorDAO<ContentAlert>
+public class ContentAlertDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(ContentAlertDAO.class.getName());
 

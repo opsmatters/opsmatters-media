@@ -140,6 +140,7 @@ public class Event extends Resource<EventDetails>
         ret.put(END_DATE.value(), getEndDateMillis());
         ret.putOpt(TIMEZONE.value(), getTimeZone());
         ret.putOpt(EVENT_TYPE.value(), getEventType());
+        ret.putOpt(PLATFORM.value(), getPlatform());
         ret.putOpt(LOCATION.value(), getLocation());
 
         return ret;
@@ -159,6 +160,7 @@ public class Event extends Resource<EventDetails>
             setPublishedDate(TimeUtils.truncateTimeUTC(getStartDate()));
         setTimeZone(obj.optString(TIMEZONE.value()));
         setEventType(obj.optString(EVENT_TYPE.value()));
+        setPlatform(obj.optString(PLATFORM.value()));
         setLocation(obj.optString(LOCATION.value()));
     }
 
@@ -274,6 +276,7 @@ public class Event extends Resource<EventDetails>
             setStartDate(obj.getStartDate());
             setEndDate(obj.getEndDate());
             setUrl(new String(obj.getUrl()), false);
+            setPlatform(obj.getPlatform());
         }
     }
 
@@ -510,6 +513,22 @@ public class Event extends Resource<EventDetails>
     public void setTimeZone(String timezone)
     {
         getDetails().setTimeZone(timezone);
+    }
+
+    /**
+     * Returns the platform of the event.
+     */
+    public String getPlatform()
+    {
+        return getDetails().getPlatform();
+    }
+
+    /**
+     * Sets the platform of the event.
+     */
+    public void setPlatform(String platform)
+    {
+        getDetails().setPlatform(platform);
     }
 
     /**

@@ -24,13 +24,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.admin.User;
+import com.opsmatters.media.db.dao.BaseDAO;
 
 /**
  * DAO that provides operations on the USERS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class UserDAO extends AdminDAO<User>
+public class UserDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(UserDAO.class.getName());
 

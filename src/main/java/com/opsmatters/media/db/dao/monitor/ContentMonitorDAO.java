@@ -30,13 +30,14 @@ import com.opsmatters.media.model.monitor.ContentMonitor;
 import com.opsmatters.media.model.monitor.ContentMonitorItem;
 import com.opsmatters.media.model.monitor.MonitorStatus;
 import com.opsmatters.media.model.monitor.ContentMonitorFactory;
+import com.opsmatters.media.db.dao.BaseDAO;
 
 /**
  * DAO that provides operations on the CONTENT_MONITORS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentMonitorDAO extends MonitorDAO<ContentMonitor>
+public class ContentMonitorDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(ContentMonitorDAO.class.getName());
 

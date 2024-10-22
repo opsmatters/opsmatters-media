@@ -94,7 +94,7 @@ public class ConfigGenerator
         for(ContentType type : ContentType.toList())
             contentTypeTemplates.put(type, getContents(String.format("%s.yml", type.tag())));
         for(VideoProvider provider : VideoProvider.toList())
-            videoTemplates.put(provider, getContents(String.format("videos-%s.yml", provider.code())));
+            videoTemplates.put(provider, getContents(String.format("videos-%s.yml", provider.tag())));
 
         initialised = true;
     }

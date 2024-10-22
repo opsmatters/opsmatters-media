@@ -49,6 +49,7 @@ public enum FieldName
     LAST_VIDEO_ID("last-video-id"),
     VIDEO_URL("video-url"),
     PROVIDER("provider"),
+    PLATFORM("platform"),
     CHANNEL_ID("channel-id"),
     CHANNEL_URL("channel-url"),
     CHANNEL_TITLE("channel-title"),

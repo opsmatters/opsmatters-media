@@ -24,13 +24,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.social.SocialChannel;
+import com.opsmatters.media.db.dao.BaseDAO;
 
 /**
  * DAO that provides operations on the SOCIAL_CHANNELS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialChannelDAO extends SocialDAO<SocialChannel>
+public class SocialChannelDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(SocialChannelDAO.class.getName());
 

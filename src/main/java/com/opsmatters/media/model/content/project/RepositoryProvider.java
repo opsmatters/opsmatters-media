@@ -23,8 +23,8 @@ package com.opsmatters.media.model.content.project;
  */
 public enum RepositoryProvider
 {
-    GITHUB("github", "GitHub", "https://github.com"),
-    GITLAB("gitlab", "GitLab", "https://gitlab.com");
+    GITHUB("GTH", "GitHub", "https://github.com"),
+    GITLAB("GTL", "GitLab", "https://gitlab.com");
 
     private String code;
     private String value;

@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.model.monitor.ContentReview;
 import com.opsmatters.media.model.monitor.ContentReviewItem;
 import com.opsmatters.media.model.monitor.ReviewStatus;
+import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.util.SessionId;
 
 /**
@@ -35,7 +36,7 @@ import com.opsmatters.media.util.SessionId;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentReviewDAO extends MonitorDAO<ContentReview>
+public class ContentReviewDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(ContentReviewDAO.class.getName());
 

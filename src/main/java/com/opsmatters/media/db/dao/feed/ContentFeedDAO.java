@@ -28,13 +28,14 @@ import com.opsmatters.media.model.platform.EnvironmentId;
 import com.opsmatters.media.model.feed.ContentFeed;
 import com.opsmatters.media.model.feed.FeedStatus;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.db.dao.BaseDAO;
 
 /**
  * DAO that provides operations on the CONTENT_FEEDS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentFeedDAO extends FeedDAO<ContentFeed>
+public class ContentFeedDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(ContentFeedDAO.class.getName());
 

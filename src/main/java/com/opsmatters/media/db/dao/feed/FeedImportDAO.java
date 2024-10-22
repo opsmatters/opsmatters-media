@@ -24,13 +24,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.feed.FeedImport;
+import com.opsmatters.media.db.dao.BaseDAO;
 
 /**
  * DAO that provides operations on the FEED_IMPORTS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class FeedImportDAO extends FeedDAO<FeedImport>
+public class FeedImportDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(FeedImportDAO.class.getName());
 

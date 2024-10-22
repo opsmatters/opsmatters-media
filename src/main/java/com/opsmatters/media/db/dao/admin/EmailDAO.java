@@ -27,13 +27,14 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.DeliveryStatus;
 import com.opsmatters.media.model.admin.Email;
+import com.opsmatters.media.db.dao.BaseDAO;
 
 /**
  * DAO that provides operations on the EMAILS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EmailDAO extends AdminDAO<Email>
+public class EmailDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(EmailDAO.class.getName());
 
@@ -241,7 +242,7 @@ public class EmailDAO extends AdminDAO<Email>
             String attributes = email.getAttributes().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(3, reader, attributes.length());
-            updateStmt.setString(4, email.getProvider() != null ? email.getProvider().name() : null);
+            updateStmt.setString(4, email.getProvider() != null ? email.getProvider().code() : null);
             updateStmt.setString(5, email.getMessageId());
             updateStmt.setString(6, email.getStatus().name());
             updateStmt.setString(7, email.getId());

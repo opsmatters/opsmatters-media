@@ -26,13 +26,14 @@ import java.util.logging.Logger;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.util.TaxonomyTerm;
 import com.opsmatters.media.model.content.util.TaxonomyType;
+import com.opsmatters.media.db.dao.BaseDAO;
 
 /**
  * DAO that provides operations on the TAXONOMY_TERMS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class TaxonomyTermDAO extends ContentUtilDAO<TaxonomyTerm>
+public class TaxonomyTermDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(TaxonomyTermDAO.class.getName());
 

@@ -71,7 +71,7 @@ public class SnapshotDiff
                     if(leftProperty.equals(URL.value()))
                         leftUrl = left;
                     else if(leftProperty.equals(VIDEO_ID.value()))
-                        leftUrl = String.format(VideoProvider.YOUTUBE.videoUrl(), left);
+                        leftUrl = VideoProvider.YOUTUBE.url()+String.format(VideoProvider.YOUTUBE.videoUrl(), left);
                     leftProperty = NAMES.get(leftProperty);
                 }
 
@@ -84,7 +84,7 @@ public class SnapshotDiff
                     if(rightProperty.equals(URL.value()))
                         rightUrl = right;
                     else if(rightProperty.equals(VIDEO_ID.value()))
-                        rightUrl = String.format(VideoProvider.YOUTUBE.videoUrl(), right);
+                        rightUrl = VideoProvider.YOUTUBE.url()+String.format(VideoProvider.YOUTUBE.videoUrl(), right);
                     rightProperty = NAMES.get(rightProperty);
                 }
 

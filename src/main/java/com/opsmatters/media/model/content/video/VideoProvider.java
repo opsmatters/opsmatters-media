@@ -32,23 +32,28 @@ import static com.opsmatters.media.model.UserMessage.*;
  */
 public enum VideoProvider
 {
-    YOUTUBE("youtube", "YouTube",
-        "https://www.youtube.com/channel/%s",
-        "https://www.youtube.com/watch?v=%s",
+    YOUTUBE("YTB", "YouTube", "youtube",
+        "https://www.youtube.com",
+        "/channel/%s",
+        "/watch?v=%s",
         "<iframe src=\"https://www.youtube.com/embed/%s?modestbranding=1&autohide=1&autoplay=%s\" width=\"%d\" height=\"%d\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>"),
-    VIMEO("vimeo", "Vimeo",
-        "https://vimeo.com/%s",
-        "https://vimeo.com/%s",
+    VIMEO("VIM", "Vimeo", "vimeo",
+        "https://vimeo.com",
+        "/%s",
+        "/%s",
         "<iframe src=\"https://player.vimeo.com/video/%s?title=0&byline=0&portrait=0&autoplay=%s\" width=\"%d\" height=\"%d\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe>"),
-    WISTIA("wistia", "Wistia",
-        "https://fast.wistia.com/projects/%s",
-        "https://fast.wistia.com/medias/%s",
+    WISTIA("WST", "Wistia", "wistia",
+        "https://fast.wistia.com",
+        "/projects/%s",
+        "/medias/%s",
         "<iframe src=\"//fast.wistia.net/embed/iframe/%s?autoplay=%s\" allowtransparency=\"true\" frameborder=\"0\" scrolling=\"no\" class=\"wistia_embed\" name=\"wistia_embed\" allowfullscreen mozallowfullscreen webkitallowfullscreen oallowfullscreen msallowfullscreen width=\"%d\" height=\"%d\"></iframe>");
 
     private static final Logger logger = Logger.getLogger(VideoProvider.class.getName());
 
     private String code;
     private String value;
+    private String tag;
+    private String url;
     private String channelUrl;
     private String videoUrl;
     private String embed;
@@ -57,14 +62,18 @@ public enum VideoProvider
      * Constructor that takes the channel information.
      * @param code The code for the provider
      * @param value The value for the provider
+     * @param tag The tag for the provider
+     * @param url The base URL for the provider
      * @param channelUrl The channel URL template for the provider
      * @param videoUrl The video URL template for the provider
      * @param embed The embedded player template for the provider
      */
-    VideoProvider(String code, String value, String channelUrl, String videoUrl, String embed)
+    VideoProvider(String code, String value, String tag, String url, String channelUrl, String videoUrl, String embed)
     {
         this.code = code;
         this.value = value;
+        this.tag = tag;
+        this.url = url;
         this.channelUrl = channelUrl;
         this.videoUrl = videoUrl;
         this.embed = embed;
@@ -86,6 +95,24 @@ public enum VideoProvider
     public String value()
     {
         return value;
+    }
+
+    /**
+     * Returns the tag of the provider.
+     * @return The tag of the provider.
+     */
+    public String tag()
+    {
+        return tag;
+    }
+
+    /**
+     * Returns the base URL.
+     * @return The base URL.
+     */
+    public String url()
+    {
+        return url;
     }
 
     /**
@@ -226,6 +253,23 @@ public enum VideoProvider
     }
 
     /**
+     * Returns the type for the given tag.
+     * @param code The type tag
+     * @return The type for the given tag
+     */
+    public static VideoProvider fromTag(String tag)
+    {
+        VideoProvider[] types = values();
+        for(VideoProvider type : types)
+        {
+            if(type.tag().equals(tag))
+                return type;
+        }
+
+        return null;
+    }
+
+    /**
      * Returns the type for the given video url.
      * @param videoUrl The video url
      * @return The type for the given video url
@@ -235,7 +279,7 @@ public enum VideoProvider
         VideoProvider[] types = values();
         for(VideoProvider type : types)
         {
-            if(videoUrl.indexOf(type.code()) != -1)
+            if(videoUrl.indexOf(type.tag()) != -1)
                 return type;
         }
 

@@ -30,13 +30,14 @@ import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.social.SocialTemplate;
 import com.opsmatters.media.model.social.SocialTemplateItem;
 import com.opsmatters.media.model.social.MessageFormat;
+import com.opsmatters.media.db.dao.BaseDAO;
 
 /**
  * DAO that provides operations on the SOCIAL_TEMPLATES table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialTemplateDAO extends SocialDAO<SocialTemplate>
+public class SocialTemplateDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(SocialTemplateDAO.class.getName());
 

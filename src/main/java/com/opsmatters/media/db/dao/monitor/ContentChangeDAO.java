@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.model.monitor.ContentChange;
 import com.opsmatters.media.model.monitor.ContentChangeItem;
 import com.opsmatters.media.model.monitor.ChangeStatus;
+import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.util.SessionId;
 
 /**
@@ -35,7 +36,7 @@ import com.opsmatters.media.util.SessionId;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentChangeDAO extends MonitorDAO<ContentChange>
+public class ContentChangeDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(ContentChangeDAO.class.getName());
 

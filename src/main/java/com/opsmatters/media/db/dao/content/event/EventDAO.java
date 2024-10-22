@@ -48,16 +48,16 @@ public class EventDAO extends ContentDAO<Event>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO EVENTS"
-      + "( UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, START_DATE, TITLE, URL, EVENT_TYPE, TIMEZONE, PUBLISHED, PROMOTE, "
+      + "( UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, START_DATE, TITLE, URL, EVENT_TYPE, TIMEZONE, PLATFORM, PUBLISHED, PROMOTE, "
       +   "STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a event in the EVENTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE EVENTS SET UUID=?, PUBLISHED_DATE=?, START_DATE=?, TITLE=?, URL=?, EVENT_TYPE=?, TIMEZONE=?, PUBLISHED=?, PROMOTE=?, STATUS=?, ATTRIBUTES=? "
+      "UPDATE EVENTS SET UUID=?, PUBLISHED_DATE=?, START_DATE=?, TITLE=?, URL=?, EVENT_TYPE=?, TIMEZONE=?, PLATFORM=?, PUBLISHED=?, PROMOTE=?, STATUS=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -98,6 +98,7 @@ public class EventDAO extends ContentDAO<Event>
         table.addColumn("URL", Types.VARCHAR, 512, true);
         table.addColumn("EVENT_TYPE", Types.VARCHAR, 30, true);
         table.addColumn("TIMEZONE", Types.VARCHAR, 8, true);
+        table.addColumn("PLATFORM", Types.VARCHAR, 15, false);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
         table.addColumn("PROMOTE", Types.BOOLEAN, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
@@ -199,14 +200,15 @@ public class EventDAO extends ContentDAO<Event>
             insertStmt.setString(8, content.getUrl());
             insertStmt.setString(9, content.getEventType());
             insertStmt.setString(10, content.getTimeZone());
-            insertStmt.setBoolean(11, content.isPublished());
-            insertStmt.setBoolean(12, content.isPromoted());
-            insertStmt.setString(13, content.getStatus().name());
-            insertStmt.setString(14, content.getCreatedBy());
+            insertStmt.setString(11, content.getPlatform());
+            insertStmt.setBoolean(12, content.isPublished());
+            insertStmt.setBoolean(13, content.isPromoted());
+            insertStmt.setString(14, content.getStatus().name());
+            insertStmt.setString(15, content.getCreatedBy());
             String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(15, reader, attributes.length());
-            insertStmt.setInt(16, SessionId.get());
+            insertStmt.setCharacterStream(16, reader, attributes.length());
+            insertStmt.setInt(17, SessionId.get());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -258,15 +260,16 @@ public class EventDAO extends ContentDAO<Event>
             updateStmt.setString(5, content.getUrl());
             updateStmt.setString(6, content.getEventType());
             updateStmt.setString(7, content.getTimeZone());
-            updateStmt.setBoolean(8, content.isPublished());
-            updateStmt.setBoolean(9, content.isPromoted());
-            updateStmt.setString(10, content.getStatus().name());
+            updateStmt.setString(8, content.getPlatform());
+            updateStmt.setBoolean(9, content.isPublished());
+            updateStmt.setBoolean(10, content.isPromoted());
+            updateStmt.setString(11, content.getStatus().name());
             String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(11, reader, attributes.length());
-            updateStmt.setString(12, content.getSiteId());
-            updateStmt.setString(13, content.getCode());
-            updateStmt.setInt(14, content.getId());
+            updateStmt.setCharacterStream(12, reader, attributes.length());
+            updateStmt.setString(13, content.getSiteId());
+            updateStmt.setString(14, content.getCode());
+            updateStmt.setInt(15, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 

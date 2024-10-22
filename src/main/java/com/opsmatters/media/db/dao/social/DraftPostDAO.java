@@ -39,6 +39,7 @@ import com.opsmatters.media.model.social.SocialPostType;
 import com.opsmatters.media.model.social.DraftContentPost;
 import com.opsmatters.media.model.social.DraftContentPostItem;
 import com.opsmatters.media.model.social.DraftStandardPostItem;
+import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.util.SessionId;
 
 import static com.opsmatters.media.model.social.SocialPostType.*;
@@ -48,7 +49,7 @@ import static com.opsmatters.media.model.social.SocialPostType.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class DraftPostDAO extends SocialDAO<DraftPost>
+public class DraftPostDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(DraftPostDAO.class.getName());
 

@@ -26,6 +26,7 @@ import java.time.Instant;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.util.Note;
 import com.opsmatters.media.model.content.util.NoteType;
+import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -33,7 +34,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class NoteDAO extends ContentUtilDAO<Note>
+public class NoteDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(NoteDAO.class.getName());
 

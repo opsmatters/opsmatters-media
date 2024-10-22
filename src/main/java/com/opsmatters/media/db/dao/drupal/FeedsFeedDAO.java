@@ -25,13 +25,14 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.drupal.FeedsFeed;
 import com.opsmatters.media.model.drupal.FeedsItem;
+import com.opsmatters.media.db.dao.BaseDAO;
 
 /**
  * DAO that provides operations on the FEEDS_FEED table in the drupal database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class FeedsFeedDAO extends DrupalDAO<FeedsFeed>
+public class FeedsFeedDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(FeedsFeedDAO.class.getName());
 

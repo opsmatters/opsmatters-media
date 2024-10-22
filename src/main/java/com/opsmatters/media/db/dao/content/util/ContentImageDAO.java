@@ -26,6 +26,7 @@ import java.time.Instant;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
+import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -33,7 +34,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentImageDAO extends ContentUtilDAO<ContentImage>
+public class ContentImageDAO extends BaseDAO
 {
     private static final Logger logger = Logger.getLogger(ContentImageDAO.class.getName());
 
