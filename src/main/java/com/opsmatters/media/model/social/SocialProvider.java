@@ -26,7 +26,7 @@ import java.util.ArrayList;
  */
 public enum SocialProvider
 {
-    TWITTER("twitter",
+    TWITTER("TW",
         "Twitter",
         "https://twitter.com",
         "/%s",
@@ -34,7 +34,7 @@ public enum SocialProvider
         "images/twitter-thumb.png",
         280,
         23),
-    FACEBOOK("facebook",
+    FACEBOOK("FB",
         "Facebook",
         "https://www.facebook.com",
         "/%s",
@@ -42,7 +42,7 @@ public enum SocialProvider
         "images/facebook-thumb.png",
         2000,
         -1),
-    LINKEDIN("linkedin",
+    LINKEDIN("LI",
         "LinkedIn",
         "https://www.linkedin.com",
         "/company/%s",

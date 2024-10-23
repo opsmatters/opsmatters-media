@@ -483,7 +483,7 @@ public class Field implements ConfigElement
         private Field ret = null;
 
         /**
-         * Constructor that takes an name.
+         * Constructor that takes a name.
          * @param name The name for the configuration
          */
         public Builder(String name)
@@ -583,6 +583,17 @@ public class Field implements ConfigElement
         public Builder expr(String expr)
         {
             ret.addSelector(FieldSelector.builder(ret.getName()).expr(expr).build());
+            return this;
+        }
+
+        /**
+         * Sets the date pattern of the field.
+         * @param pattern The date pattern of the field
+         * @return This object
+         */
+        public Builder datePattern(String pattern)
+        {
+            ret.addDatePattern(pattern);
             return this;
         }
 

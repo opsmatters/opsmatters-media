@@ -484,10 +484,10 @@ public class Fields implements ConfigElement
         // The config attribute names
         private static final String ROOT = "root";
         private static final String VALIDATOR = "validator";
-        private static final String TITLE = "title";
+        public static final String TITLE = "title";
         private static final String AUTHOR = "author";
         private static final String AUTHOR_LINK = "author-link";
-        private static final String PUBLISHED_DATE = "published-date";
+        public static final String PUBLISHED_DATE = "published-date";
         private static final String START_DATE = "start-date";
         private static final String START_TIME = "start-time";
         private static final String END_DATE = "end-date";

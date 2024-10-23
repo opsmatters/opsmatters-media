@@ -17,6 +17,11 @@ package com.opsmatters.media.model.content.crawler;
 
 import java.util.Map;
 import com.opsmatters.media.model.content.video.VideoProvider;
+import com.opsmatters.media.model.content.crawler.field.Fields;
+import com.opsmatters.media.model.content.crawler.field.Field;
+import com.opsmatters.media.util.Formats;
+
+import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
  * Class that represents a YAML configuration for a video channel crawler.
@@ -169,7 +174,71 @@ public class CrawlerVideoChannel extends CrawlerTarget
             if(map.containsKey(USER_ID))
                 ret.setUserId((String)map.get(USER_ID));
 
+            setTeaserFields(ret.getTeasers());
+            setArticleFields(ret.getArticles());
+
             return this;
+        }
+
+        /**
+         * Set the default video teaser fields if they are not present.
+         */
+        private void setTeaserFields(CrawlerContent teasers)
+        {
+            if(!teasers.hasFields())
+                teasers.addFields(new Fields());
+            Fields fields = teasers.getFields().get(0);
+            if(!fields.hasTitle())
+                fields.setTitle(createTitleField());
+            if(!fields.hasPublishedDate())
+                fields.setPublishedDate(createPublishedDateField());
+        }
+
+        /**
+         * Set the default video article fields if they are not present.
+         */
+        private void setArticleFields(CrawlerContent articles)
+        {
+            if(!articles.hasFields())
+                articles.addFields(new Fields());
+            Fields fields = articles.getFields().get(0);
+            if(!fields.hasTitle())
+                fields.setTitle(createTitleField());
+            if(!fields.hasPublishedDate())
+                fields.setPublishedDate(createPublishedDateField());
+            if(!fields.hasBody())
+                fields.setBody(createBodyField());
+        }
+
+        /**
+         * Create a title field object.
+         */
+        private Field createTitleField()
+        {
+            return Field.builder(Fields.Builder.TITLE)
+                .expr(TITLE.value())
+                .build();
+        }
+
+        /**
+         * Create a published date field object.
+         */
+        private Field createPublishedDateField()
+        {
+            return Field.builder(Fields.Builder.PUBLISHED_DATE)
+                .expr(PUBLISHED_DATE.value())
+                .datePattern(Formats.LONG_ISO8601_FORMAT)
+                .build();
+        }
+
+        /**
+         * Create a body field object.
+         */
+        private Field createBodyField()
+        {
+            return Field.builder(Fields.Builder.BODY)
+                .expr(DESCRIPTION.value())
+                .build();
         }
 
         /**

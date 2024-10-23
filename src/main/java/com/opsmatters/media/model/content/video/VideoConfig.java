@@ -23,7 +23,6 @@ import java.util.logging.Logger;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
-import com.opsmatters.media.model.content.crawler.field.FieldFilter;
 
 /**
  * Class that represents the configuration for video content items.
@@ -35,7 +34,6 @@ public class VideoConfig extends ContentConfig<Video>
     private static final Logger logger = Logger.getLogger(VideoConfig.class.getName());
 
     private List<CrawlerVideoChannel> channels = new ArrayList<CrawlerVideoChannel>();
-    private List<CrawlerVideoChannel> providers = new ArrayList<CrawlerVideoChannel>();
 
     /**
      * Constructor that takes a name.
@@ -64,8 +62,6 @@ public class VideoConfig extends ContentConfig<Video>
             super.copyAttributes(obj);
             for(CrawlerVideoChannel channel : obj.getChannels())
                 addChannel(new CrawlerVideoChannel(channel));
-            for(CrawlerVideoChannel provider : obj.getProviders())
-                addProvider(new CrawlerVideoChannel(provider));
         }
     }
 
@@ -154,63 +150,6 @@ public class VideoConfig extends ContentConfig<Video>
     }
 
     /**
-     * Returns the providers for this configuration.
-     */
-    public List<CrawlerVideoChannel> getProviders()
-    {
-        return providers;
-    }
-
-    /**
-     * Sets the providers for this configuration.
-     */
-    public void setProviders(List<CrawlerVideoChannel> providers)
-    {
-        this.providers = providers;
-    }
-
-    /**
-     * Adds a provider for this configuration.
-     */
-    public void addProvider(CrawlerVideoChannel provider)
-    {
-        this.providers.add(provider);
-    }
-
-    /**
-     * Returns the number of providers.
-     */
-    public int numProviders()
-    {
-        return providers.size();
-    }
-
-    /**
-     * Returns the provider at the given index.
-     */
-    public CrawlerVideoChannel getProvider(int i)
-    {
-        return providers.get(i);
-    }
-
-    /**
-     * Returns the provider with the given name.
-     */
-    public CrawlerVideoChannel getProvider(String name)
-    {
-        CrawlerVideoChannel ret = null;
-        for(CrawlerVideoChannel provider : getProviders())
-        {
-            if(provider.getName().equals(name))
-            {
-                ret = provider;
-                break;
-            }
-        }
-        return ret;
-    }
-
-    /**
      * Returns a builder for the configuration.
      * @param name The name for the configuration
      * @return The builder instance.
@@ -227,7 +166,6 @@ public class VideoConfig extends ContentConfig<Video>
     {
         // The config attribute names
         private static final String CHANNELS = "channels";
-        private static final String PROVIDERS = "providers";
 
         private VideoConfig ret = null;
 
@@ -251,19 +189,6 @@ public class VideoConfig extends ContentConfig<Video>
         {
             super.parse(map);
 
-            if(map.containsKey(PROVIDERS))
-            {
-                List<Map<String,Object>> providers = (List<Map<String,Object>>)map.get(PROVIDERS);
-                for(Map<String,Object> provider : providers)
-                {
-                    for(Map.Entry<String,Object> entry : provider.entrySet())
-                    {
-                        ret.addProvider(CrawlerVideoChannel.builder(entry.getKey())
-                            .parse((Map<String,Object>)entry.getValue()).build());
-                    }
-                }
-            }
-
             if(map.containsKey(CHANNELS))
             {
                 List<Map<String,Object>> channels = (List<Map<String,Object>>)map.get(CHANNELS);
@@ -271,25 +196,8 @@ public class VideoConfig extends ContentConfig<Video>
                 {
                     for(Map.Entry<String,Object> entry : channel.entrySet())
                     {
-                        CrawlerVideoChannel config = CrawlerVideoChannel.builder(entry.getKey())
-                            .parse((Map<String,Object>)entry.getValue()).build();
-
-                        CrawlerVideoChannel provider = ret.getProvider(config.getProvider());
-                        if(provider != null)
-                        {
-                            String keywords = config.getTeasers().getLoading().getKeywords();
-                            List<FieldFilter> filters = config.getArticles().getFilters();
-
-                            config.setTeasers(provider.getTeasers());
-                            config.setArticles(provider.getArticles());
-
-                            // Add the keywords and filters from the original channel
-                            config.getTeasers().getLoading().setKeywords(keywords);
-                            for(FieldFilter filter : filters)
-                                config.getArticles().getFields().get(0).getBody().addFilter(filter);
-                        }
-
-                        ret.addChannel(config);
+                        ret.addChannel(CrawlerVideoChannel.builder(entry.getKey())
+                            .parse((Map<String,Object>)entry.getValue()).build());
                     }
                 }
             }

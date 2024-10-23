@@ -89,6 +89,11 @@ public class Formats
     public static final String ISO8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
     /**
+     * The long date format used by ISO8601.
+     */
+    public static final String LONG_ISO8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ssX";
+
+    /**
      * The date format used for content.
      */
     public static final String CONTENT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";

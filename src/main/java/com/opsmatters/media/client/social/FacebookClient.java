@@ -319,11 +319,21 @@ public class FacebookClient extends Client implements SocialClient
     public boolean isRecoverable(Exception e)
     {
         int errorCode = getErrorCode(e);
+
+        if(errorCode == -1)
+        {
+            // Sometimes if FB is down the only code you get is a 500 status code
+            int statusCode = getStatusCode(e);
+            if(statusCode >= 400)
+                errorCode = statusCode;
+        }
+
         return errorCode != 1     // Unknown Error
             && errorCode != 506   // Duplicate Post
             && errorCode != 200   // Permission Error
             && errorCode != 368   // Temporarily Blocked
-            && errorCode != 1500; // Invalid URL
+            && errorCode != 1500  // Invalid URL
+            && errorCode != 500;  // Server Error
     }
 
     /**
@@ -337,6 +347,22 @@ public class FacebookClient extends Client implements SocialClient
         {
             FacebookException ex = (FacebookException)e;
             ret = ex.getErrorCode();
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the status code from the given exception.
+     */
+    public int getStatusCode(Exception e)
+    {
+        int ret = -1;
+
+        if(e instanceof FacebookException)
+        {
+            FacebookException ex = (FacebookException)e;
+            ret = ex.getStatusCode();
         }
 
         return ret;
