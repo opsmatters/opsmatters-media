@@ -25,6 +25,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import com.opsmatters.media.crawler.WebPageCrawler;
 import com.opsmatters.media.cache.content.Teasers;
+import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.publication.PublicationDetails;
 import com.opsmatters.media.model.content.publication.PublicationConfig;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
@@ -57,6 +58,15 @@ public class PublicationCrawler extends WebPageCrawler<PublicationDetails>
     {
         super(config, page);
         this.config = config;
+    }
+
+    /**
+     * Returns the content type.
+     */
+    @Override
+    public ContentType getType()
+    {
+        return ContentType.PUBLICATION;
     }
 
     /**

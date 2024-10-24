@@ -43,7 +43,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import com.opsmatters.media.cache.content.Teasers;
 import com.opsmatters.media.model.admin.TraceObject;
 import com.opsmatters.media.model.content.ContentConfig;
-import com.opsmatters.media.model.content.SummaryConfig;
 import com.opsmatters.media.model.content.crawler.ContentRequest;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
@@ -1045,17 +1044,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
      * Coalesces the given paragraphs into a single string by accumulating paragraphs up to a heading or maximum length.
      */
     protected String getFormattedSummary(String selector, boolean multiple,
-        List<FieldExclude> excludes, List<FieldFilter> filters, Element root, SummaryConfig config, boolean debug)
-    {
-        return getFormattedSummary(selector, multiple, excludes, filters,
-            root, config.getMinLength(), config.getMaxLength(), debug);
-    }
-
-    /**
-     * Coalesces the given paragraphs into a single string by accumulating paragraphs up to a heading or maximum length.
-     */
-    protected String getFormattedSummary(String selector, boolean multiple,
-        List<FieldExclude> excludes, List<FieldFilter> filters, Element root, int minLength, int maxLength, boolean debug)
+        List<FieldExclude> excludes, List<FieldFilter> filters, Element root, boolean debug)
     {
         ElementType lastType = null;
         List<Element> elements;
@@ -1071,7 +1060,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
 
         if(debug)
             logger.info(String.format("1: getFormattedSummary: elements=%d minLength=%d maxLength=%d",
-                elements.size(), minLength, maxLength));
+                elements.size(), getType().summaryMin(), getType().summaryMax()));
 
         BodyParser parser = new BodyParser(excludes, filters, debug);
         for(Element element : elements)
@@ -1082,7 +1071,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                 break;
         }
 
-        String ret = parser.formatSummary(minLength, maxLength);
+        String ret = parser.formatSummary(getType().summaryMin(), getType().summaryMax());
         if(debug)
             logger.info(String.format("2: getFormattedSummary: ret=%s ret.length=%d",
                 ret, ret.length()));
@@ -1093,8 +1082,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     /**
      * Process the body field to produce a summary.
      */
-    protected String getBodySummary(Field field, Element root, LogEventCategory category,
-        SummaryConfig summary, boolean debug)
+    protected String getBodySummary(Field field, Element root, LogEventCategory category, boolean debug)
     {
         String ret = null;
 
@@ -1108,7 +1096,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
             if(selector.getSource().isPage())
             {
                 String body = getFormattedSummary(selector.getExpr(), selector.isMultiple(),
-                    selector.getExcludes(), field.getFilters(), root, summary, debug);
+                    selector.getExcludes(), field.getFilters(), root, debug);
                 if(body.length() > 0)
                 {
                     // Apply any extractors to the selection

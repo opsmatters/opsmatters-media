@@ -29,7 +29,7 @@ import net.fellbaum.jemoji.EmojiManager;
 import com.opsmatters.media.model.content.crawler.field.FieldExclude;
 import com.opsmatters.media.model.content.crawler.field.FieldFilter;
 import com.opsmatters.media.model.content.crawler.field.FilterResult;
-import com.opsmatters.media.model.content.SummaryConfig;
+import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.crawler.parser.ElementType.*;
@@ -617,9 +617,9 @@ public class BodyParser
     /**
      * Returns the list of body elements formatted as an article summary.
      */
-    public String formatSummary(SummaryConfig config)
+    public String formatSummary(ContentType type)
     {
-        return formatSummary(config.getMinLength(), config.getMaxLength());
+        return formatSummary(type.summaryMin(), type.summaryMax());
     }
 
     /**

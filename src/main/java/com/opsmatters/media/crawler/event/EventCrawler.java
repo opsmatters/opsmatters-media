@@ -25,6 +25,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import com.opsmatters.media.crawler.WebPageCrawler;
 import com.opsmatters.media.cache.content.Teasers;
+import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.event.EventDetails;
 import com.opsmatters.media.model.content.event.EventConfig;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
@@ -59,6 +60,15 @@ public class EventCrawler extends WebPageCrawler<EventDetails>
     {
         super(config, page);
         this.config = config;
+    }
+
+    /**
+     * Returns the content type.
+     */
+    @Override
+    public ContentType getType()
+    {
+        return ContentType.EVENT;
     }
 
     /**

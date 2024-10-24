@@ -226,7 +226,7 @@ public class Tool extends Resource<ToolDetails>
             if(parser.converted())
                 setDescription(parser.formatBody());
             if(getSummary().length() == 0 || force)
-                setSummary(parser.formatSummary(config.getSummary()));
+                setSummary(parser.formatSummary(getType()));
         }
     }
 

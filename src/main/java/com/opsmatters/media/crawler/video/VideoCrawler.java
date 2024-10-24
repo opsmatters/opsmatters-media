@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 import org.json.JSONObject;
 import net.fellbaum.jemoji.EmojiManager;
 import com.opsmatters.media.cache.content.Teasers;
+import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentDetails;
 import com.opsmatters.media.model.content.video.VideoDetails;
 import com.opsmatters.media.model.content.video.VideoConfig;
@@ -80,6 +81,15 @@ public class VideoCrawler extends ContentCrawler<VideoDetails>
     {
         if(client != null)
             client.close();
+    }
+
+    /**
+     * Returns the content type.
+     */
+    @Override
+    public ContentType getType()
+    {
+        return ContentType.VIDEO;
     }
 
     /**

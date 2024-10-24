@@ -26,39 +26,47 @@ import java.util.ArrayList;
  */
 public enum ContentType
 {
-    ORGANISATION("ORG", "Organisation", "organisations", "glyphicon-th-list", true),
-    VIDEO("VD", "Video", "videos", "glyphicon-film", false),
-    ROUNDUP("RP", "Roundup", "roundups", "glyphicon-file", true),
-    POST("PO", "Post", "posts", "glyphicon-file", true),
-    EVENT("EV", "Event", "events", "glyphicon-calendar", false),
-    PUBLICATION("PB", "Publication", "publications", "glyphicon-book", false),
-    PROJECT("PR", "Project", "projects", "glyphicon-tasks", false),
-    TOOL("TL", "Tool", "tools", "glyphicon-wrench", false),
-    ARTICLE("", "Article", "", "glyphicon-file", false);
+    ORGANISATION("ORG", "Organisation", "organisations", "glyphicon-th-list"),
+    VIDEO("VD", "Video", "videos", "glyphicon-film"),
+    ROUNDUP("RP", "Roundup", "roundups", "glyphicon-file"),
+    POST("PO", "Post", "posts", "glyphicon-file"),
+    EVENT("EV", "Event", "events", "glyphicon-calendar"),
+    PUBLICATION("PB", "Publication", "publications", "glyphicon-book"),
+    PROJECT("PR", "Project", "projects", "glyphicon-tasks"),
+    TOOL("TL", "Tool", "tools", "glyphicon-wrench"),
+    ARTICLE("", "Article"); // pseudo type
 
     private String code;
     private String value;
     private String tag;
     private String title;
     private String icon;
-    private boolean social;
 
     /**
-     * Constructor that takes the type code, value and tag.
+     * Constructor that takes the type code, value, tag, icon and social flag.
      * @param code The code for the type
      * @param value The value for the type
      * @param tag The tag for the type
      * @param icon The glyphicon for the type
-     * @param social <CODE>true</CODE> if the type should have a social post
      */
-    ContentType(String code, String value, String tag, String icon, boolean social)
+    ContentType(String code, String value, String tag, String icon)
     {
         this.code = code;
         this.value = value;
         this.tag = tag;
         this.title = value+"s";
         this.icon = icon;
-        this.social = social;
+    }
+
+    /**
+     * Constructor that takes the type code and value.
+     * @param code The code for the type
+     * @param value The value for the type
+     */
+    ContentType(String code, String value)
+    {
+        this.code = code;
+        this.value = value;
     }
 
     /**
@@ -116,18 +124,29 @@ public enum ContentType
     }
 
     /**
-     * Returns <CODE>true</CODE> if the type should have a social post.
-     * @return <CODE>true</CODE> if the type should have a social post
+     * Returns <CODE>true</CODE> if this content type is an article.
      */
-    public boolean social()
+    public boolean isArticleType()
     {
-        return social;
+        return this == VIDEO
+            || this == ROUNDUP
+            || this == POST;
     }
 
     /**
      * Returns <CODE>true</CODE> if this content type has social posts.
      */
-    public boolean hasSocialPosts()
+    public boolean hasSocial()
+    {
+        return this == ORGANISATION
+            || this == ROUNDUP
+            || this == POST;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this content type has social templates.
+     */
+    public boolean hasSocialTemplates()
     {
         return this == VIDEO
             || this == ROUNDUP
@@ -199,6 +218,58 @@ public enum ContentType
     }
 
     /**
+     * Returns the summary minimum length for the type.
+     */
+    public int summaryMin()
+    {
+        if(this == ROUNDUP)
+            return 550;
+        return 400;
+    }
+
+    /**
+     * Returns the summary maximum length for the type.
+     */
+    public int summaryMax()
+    {
+        if(this == ROUNDUP)
+            return 750;
+        return 600;
+    }
+
+    /**
+     * Returns the summary error length for the type.
+     */
+    public int summaryError()
+    {
+        if(isArticleType())
+            return 750;
+        return 600;
+    }
+
+    /**
+     * Returns the summary warning length for the type.
+     */
+    public int summaryWarn()
+    {
+        if(isArticleType())
+            return 640;
+        return 500;
+    }
+
+    /**
+     * Returns the content source for the type.
+     */
+    public ContentSource source()
+    {
+        if(this == ROUNDUP)
+            return ContentSource.PAGE;
+        else if(this == VIDEO)
+            return ContentSource.CHANNEL;
+        return ContentSource.STORE;
+    }
+
+    /**
      * Returns the type for the given value.
      * @param value The type value
      * @return The type for the given value
@@ -211,6 +282,7 @@ public enum ContentType
             if(type.value().equals(value))
                 return type;
         }
+
         return null;
     }
 

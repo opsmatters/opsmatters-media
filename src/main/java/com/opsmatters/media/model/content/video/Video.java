@@ -308,7 +308,7 @@ public class Video extends Article<VideoDetails>
             if(parser.converted())
                 setDescription(parser.formatBody());
             if(getSummary().length() == 0 || force)
-                setSummary(parser.formatSummary(config.getSummary()));
+                setSummary(parser.formatSummary(getType()));
         }
     }
 

@@ -26,6 +26,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import com.opsmatters.media.crawler.WebPageCrawler;
 import com.opsmatters.media.cache.content.Teasers;
+import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.post.RoundupPostDetails;
 import com.opsmatters.media.model.content.post.RoundupPostConfig;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
@@ -58,6 +59,15 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostDetails>
     {
         super(config, page);
         this.config = config;
+    }
+
+    /**
+     * Returns the content type.
+     */
+    @Override
+    public ContentType getType()
+    {
+        return ContentType.ROUNDUP;
     }
 
     /**
@@ -156,7 +166,7 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostDetails>
 
                 if(root != null && fields.hasBody())
                 {
-                    String body = getBodySummary(fields.getBody(), root, ARTICLE, config.getSummary(), debug());
+                    String body = getBodySummary(fields.getBody(), root, ARTICLE, debug());
                     if(body != null)
                         content.setSummary(EmojiManager.removeAllEmojis(body));
                 }

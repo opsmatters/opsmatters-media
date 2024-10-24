@@ -29,6 +29,7 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.WordUtils;
+import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentDetails;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerTarget;
@@ -89,6 +90,11 @@ public abstract class ContentCrawler<D extends ContentDetails>
      * Close the crawler and release resources.
      */
     public abstract void close();
+
+    /**
+     * Returns the content type.
+     */
+    public abstract ContentType getType();
 
     /**
      * Returns the name of the crawler.

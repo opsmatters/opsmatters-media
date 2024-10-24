@@ -53,8 +53,7 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
 
     private String name = "";
     private String sheet = "";
-    private ContentSource source = ContentSource.STORE;
-    private SummaryConfig summary; 
+    private ContentSource source = getType().source();
     private FieldMap fields = new FieldMap();
     private Map<String,String> output;
 
@@ -83,8 +82,6 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
         {
             setSheet(obj.getSheet());
             setSource(obj.getSource());
-            if(obj.getSummary() != null)
-                setSummary(new SummaryConfig(obj.getSummary()));
             setFields(new FieldMap(obj.getFields()));
             setOutput(new LinkedHashMap<String,String>(obj.getOutput()));
         }
@@ -165,22 +162,6 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     public void setSource(ContentSource source)
     {
         this.source = source;
-    }
-
-    /**
-     * Returns the summary configuration.
-     */
-    public SummaryConfig getSummary()
-    {
-        return summary;
-    }
-
-    /**
-     * Sets the summary configuration.
-     */
-    public void setSummary(SummaryConfig summary)
-    {
-        this.summary = summary;
     }
 
     /**
@@ -436,7 +417,6 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     {
         // The config attribute names
         private static final String SOURCE = "source";
-        private static final String SUMMARY = "summary";
         private static final String FIELDS = "fields";
         private static final String OUTPUT = "output";
 
@@ -465,12 +445,6 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
                 ret.addFields((Map<String,String>)map.get(FIELDS));
             if(map.containsKey(OUTPUT))
                 ret.addOutput((Map<String,String>)map.get(OUTPUT));
-
-            if(map.containsKey(SUMMARY))
-            {
-                ret.setSummary(SummaryConfig.builder()
-                    .parse((Map<String,Object>)map.get(SUMMARY)).build());
-            }
 
             return self();
         }
