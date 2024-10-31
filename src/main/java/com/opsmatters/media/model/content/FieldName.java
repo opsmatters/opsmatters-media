@@ -25,6 +25,7 @@ public enum FieldName
 {
     ID("id"),
     CODE("code"),
+    TYPE("type"),
     ORGANISATION("organisation"),
     PUBDATE("pubdate"),
     TITLE("title"),
@@ -108,9 +109,7 @@ public enum FieldName
     BADGES("badges"),
     LINKS("links"),
     LICENSE("license"),
-    JOBS("jobs"),
     PACKAGE("package"),
-    TECHNOLOGIES("technologies"),
     CONTACT("contact"),
     CANONICAL_URL("canonical-url"),
     METATAGS("metatags"),

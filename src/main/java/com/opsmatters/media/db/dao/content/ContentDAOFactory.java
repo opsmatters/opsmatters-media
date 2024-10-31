@@ -18,8 +18,10 @@ package com.opsmatters.media.db.dao.content;
 import com.opsmatters.media.db.JDBCDatabaseDriver;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.db.dao.DAOFactory;
-import com.opsmatters.media.db.dao.content.organisation.OrganisationListingDAO;
 import com.opsmatters.media.db.dao.content.ContentSettingsDAO;
+import com.opsmatters.media.db.dao.content.OutputColumnDAO;
+import com.opsmatters.media.db.dao.content.ContentDefaultDAO;
+import com.opsmatters.media.db.dao.content.organisation.OrganisationListingDAO;
 import com.opsmatters.media.db.dao.content.video.VideoDAO;
 import com.opsmatters.media.db.dao.content.event.EventDAO;
 import com.opsmatters.media.db.dao.content.publication.PublicationDAO;
@@ -44,7 +46,6 @@ public class ContentDAOFactory extends DAOFactory
         super(driver, conn);
 
         getOrganisationListingDAO();
-        getContentSettingsDAO();
         getRoundupPostDAO();
         getVideoDAO();
         getEventDAO();
@@ -52,6 +53,9 @@ public class ContentDAOFactory extends DAOFactory
         getPostDAO();
         getProjectDAO();
         getToolDAO();
+        getContentSettingsDAO();
+        getOutputColumnDAO();
+        getContentDefaultDAO();
     }
 
     /**
@@ -62,16 +66,6 @@ public class ContentDAOFactory extends DAOFactory
         if(organisationListingDAO == null)
             organisationListingDAO = new OrganisationListingDAO(this);
         return organisationListingDAO;
-    }
-
-    /**
-     * Returns the ContentSettings DAO.
-     */
-    public ContentSettingsDAO getContentSettingsDAO()
-    {
-        if(contentSettingsDAO == null)
-            contentSettingsDAO = new ContentSettingsDAO(this);
-        return contentSettingsDAO;
     }
 
     /**
@@ -145,6 +139,36 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
+     * Returns the ContentSettings DAO.
+     */
+    public ContentSettingsDAO getContentSettingsDAO()
+    {
+        if(contentSettingsDAO == null)
+            contentSettingsDAO = new ContentSettingsDAO(this);
+        return contentSettingsDAO;
+    }
+
+    /**
+     * Returns the OutputColumn DAO.
+     */
+    public OutputColumnDAO getOutputColumnDAO()
+    {
+        if(outputColumnDAO == null)
+            outputColumnDAO = new OutputColumnDAO(this);
+        return outputColumnDAO;
+    }
+
+    /**
+     * Returns the ContentDefault DAO.
+     */
+    public ContentDefaultDAO getContentDefaultDAO()
+    {
+        if(contentDefaultDAO == null)
+            contentDefaultDAO = new ContentDefaultDAO(this);
+        return contentDefaultDAO;
+    }
+
+    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
@@ -152,7 +176,6 @@ public class ContentDAOFactory extends DAOFactory
     {
         super.close();
         organisationListingDAO = null;
-        contentSettingsDAO = null;
         roundupPostDAO = null;
         videoDAO = null;
         eventDAO = null;
@@ -160,10 +183,12 @@ public class ContentDAOFactory extends DAOFactory
         postDAO = null;
         projectDAO = null;
         toolDAO = null;
+        contentSettingsDAO = null;
+        outputColumnDAO = null;
+        contentDefaultDAO = null;
     }
 
     private OrganisationListingDAO organisationListingDAO;
-    private ContentSettingsDAO contentSettingsDAO;
     private RoundupPostDAO roundupPostDAO;
     private VideoDAO videoDAO;
     private EventDAO eventDAO;
@@ -171,4 +196,7 @@ public class ContentDAOFactory extends DAOFactory
     private PostDAO postDAO;
     private ProjectDAO projectDAO;
     private ToolDAO toolDAO;
+    private ContentSettingsDAO contentSettingsDAO;
+    private OutputColumnDAO outputColumnDAO;
+    private ContentDefaultDAO contentDefaultDAO;
 }

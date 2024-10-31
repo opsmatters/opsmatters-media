@@ -68,7 +68,6 @@ public class ContentHandler
     private String workingDir = "";
     private String dateFormat = Formats.CONTENT_DATE_FORMAT;
     private File file;
-    private S3Config s3Config;
 
     /**
      * Default constructor.
@@ -100,13 +99,6 @@ public class ContentHandler
     {
         setName(config.getName());
         setFilename(config.getFilename());
-        setOutput(config.getOutput());
-
-        // Use the default sheet name if none was given
-        if(sheet == null || sheet.length() == 0)
-            sheet = DEFAULT_SHEET;
-
-        s3Config = PlatformConfig.getS3Config();
     }
 
     /**
@@ -404,6 +396,8 @@ public class ContentHandler
         AwsS3Client client = null;
         InputStream is = null;
         boolean ret = false;
+
+        S3Config s3Config = PlatformConfig.getS3Config();
 
         if(bucket == null || bucket.length() == 0)
             throw new IllegalArgumentException("bucket empty");
@@ -757,6 +751,8 @@ public class ContentHandler
         InputStream is = null;
         boolean ret = false;
 
+        S3Config s3Config = PlatformConfig.getS3Config();
+
         try
         {
             // Connect to the remote server using S3
@@ -856,6 +852,17 @@ public class ContentHandler
         public Builder withWorkingDirectory(String workingDir)
         {
             handler.setWorkingDirectory(workingDir);
+            return this;
+        }
+
+        /**
+         * Sets the output columns for the handler.
+         * @param output The output columns for the handler
+         * @return This object
+         */
+        public Builder withOutput(Map<String,String> output)
+        {
+            handler.setOutput(output);
             return this;
         }
 

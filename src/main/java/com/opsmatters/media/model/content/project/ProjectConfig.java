@@ -137,17 +137,6 @@ public class ProjectConfig extends ContentConfig<Project>
         }
 
         /**
-         * Copy constructor.
-         * @param obj The object to copy attributes from
-         * @return This object
-         */
-        public Builder copy(ProjectConfig obj)
-        {
-            ret.copyAttributes(obj);
-            return this;
-        }
-
-        /**
          * Returns this object.
          * @return This object
          */

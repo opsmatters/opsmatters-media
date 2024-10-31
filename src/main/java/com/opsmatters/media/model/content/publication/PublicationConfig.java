@@ -197,17 +197,6 @@ public class PublicationConfig extends ContentConfig<Publication>
         }
 
         /**
-         * Copy constructor.
-         * @param obj The object to copy attributes from
-         * @return This object
-         */
-        public Builder copy(PublicationConfig obj)
-        {
-            ret.copyAttributes(obj);
-            return this;
-        }
-
-        /**
          * Returns this object.
          * @return This object
          */

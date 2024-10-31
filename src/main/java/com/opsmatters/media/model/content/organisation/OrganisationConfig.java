@@ -51,10 +51,8 @@ public class OrganisationConfig extends ConfigStore implements FieldSource
 {
     private static final Logger logger = Logger.getLogger(OrganisationConfig.class.getName());
 
-    public static final String DEFAULTS = "content.yml";
     public static final String SUFFIX = "-content.yml";
 
-    private static OrganisationConfig defaults;
     private static OrganisationListingConfig listing;
 
     private String code = "";
@@ -149,30 +147,6 @@ public class OrganisationConfig extends ConfigStore implements FieldSource
         if(this.fields == null)
             this.fields = new FieldMap();
         this.fields.putAll(fields);
-    }
-
-    /**
-     * Returns the default content configuration.
-     */
-    public static OrganisationConfig getGlobalDefaults()
-    {
-        return defaults;
-    }
-
-    /**
-     * Sets the default content configuration.
-     */
-    public static void setGlobalDefaults(OrganisationConfig defaults)
-    {
-        OrganisationConfig.defaults = defaults;
-    }
-
-    /**
-     * Clears the default content configuration.
-     */
-    public static void clearGlobalDefaults()
-    {
-        setGlobalDefaults(null);
     }
 
     /**
@@ -413,6 +387,7 @@ public class OrganisationConfig extends ConfigStore implements FieldSource
         {
             name = FileUtils.getName(name);
             ret = new OrganisationConfig(name);
+            ret.setOrganisationListing(new OrganisationListingConfig(ret.getName()));
         }
 
         /**
@@ -423,8 +398,6 @@ public class OrganisationConfig extends ConfigStore implements FieldSource
         @Override
         public Builder parse(Map<String, Object> map)
         {
-            OrganisationConfig defaults = OrganisationConfig.getGlobalDefaults();
-
             if(map.containsKey(CODE))
                 ret.setCode((String)map.get(CODE));
 
@@ -433,75 +406,45 @@ public class OrganisationConfig extends ConfigStore implements FieldSource
 
             String name = ret.getName();
 
-            if(map.containsKey(ORGANISATION.tag()))
-            {
-                OrganisationListingConfig.Builder builder = OrganisationListingConfig.builder(name);
-                if(defaults != null)
-                    builder = builder.copy(defaults.getOrganisationListing());
-                ret.setOrganisationListing(builder.fields(map)
-                    .parse((Map<String,Object>)map.get(ORGANISATION.tag())).build());
-            }
-
             if(map.containsKey(VIDEO.tag()))
             {
-                VideoConfig.Builder builder = VideoConfig.builder(name);
-                if(defaults != null)
-                    builder = builder.copy(defaults.getVideos());
-                ret.setVideos(builder.fields(map)
+                ret.setVideos(VideoConfig.builder(name).fields(map)
                     .parse((Map<String,Object>)map.get(VIDEO.tag())).build());
             }
 
             if(map.containsKey(ROUNDUP.tag()))
             {
-                RoundupPostConfig.Builder builder = RoundupPostConfig.builder(name);
-                if(defaults != null)
-                    builder = builder.copy(defaults.getRoundups());
-                ret.setRoundups(builder.fields(map)
+                ret.setRoundups(RoundupPostConfig.builder(name).fields(map)
                     .parse((Map<String,Object>)map.get(ROUNDUP.tag())).build());
             }
 
             if(map.containsKey(EVENT.tag()))
             {
-                EventConfig.Builder builder = EventConfig.builder(name);
-                if(defaults != null)
-                    builder = builder.copy(defaults.getEvents());
-                ret.setEvents(builder.fields(map)
+                ret.setEvents(EventConfig.builder(name).fields(map)
                     .parse((Map<String,Object>)map.get(EVENT.tag())).build());
             }
 
             if(map.containsKey(PUBLICATION.tag()))
             {
-                PublicationConfig.Builder builder = PublicationConfig.builder(name);
-                if(defaults != null)
-                    builder = builder.copy(defaults.getPublications());
-                ret.setPublications(builder.fields(map)
+                ret.setPublications(PublicationConfig.builder(name).fields(map)
                     .parse((Map<String,Object>)map.get(PUBLICATION.tag())).build());
             }
 
             if(map.containsKey(POST.tag()))
             {
-                PostConfig.Builder builder = PostConfig.builder(name);
-                if(defaults != null)
-                    builder = builder.copy(defaults.getPosts());
-                ret.setPosts(builder.fields(map)
+                ret.setPosts(PostConfig.builder(name).fields(map)
                     .parse((Map<String,Object>)map.get(POST.tag())).build());
             }
 
             if(map.containsKey(PROJECT.tag()))
             {
-                ProjectConfig.Builder builder = ProjectConfig.builder(name);
-                if(defaults != null)
-                    builder = builder.copy(defaults.getProjects());
-                ret.setProjects(builder.fields(map)
+                ret.setProjects(ProjectConfig.builder(name).fields(map)
                     .parse((Map<String,Object>)map.get(PROJECT.tag())).build());
             }
 
             if(map.containsKey(TOOL.tag()))
             {
-                ToolConfig.Builder builder = ToolConfig.builder(name);
-                if(defaults != null)
-                    builder = builder.copy(defaults.getTools());
-                ret.setTools(builder.fields(map)
+                ret.setTools(ToolConfig.builder(name).fields(map)
                     .parse((Map<String,Object>)map.get(TOOL.tag())).build());
             }
 

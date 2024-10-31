@@ -51,11 +51,12 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
 {
     private static final Logger logger = Logger.getLogger(ContentConfig.class.getName());
 
+    private static Map<ContentType,FieldMap> defaultMap = new LinkedHashMap<ContentType,FieldMap>();
+    private static Map<ContentType,Map<String,String>> outputMap = new LinkedHashMap<ContentType,Map<String,String>>();
+
     private String name = "";
-    private String sheet = "";
     private ContentSource source = getType().source();
     private FieldMap fields = new FieldMap();
-    private Map<String,String> output;
 
     /**
      * Constructor that takes a name.
@@ -63,6 +64,9 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     protected ContentConfig(String name)
     {
         setName(name);
+
+        // Add the default fields
+        addFields(getDefaults(getType()));
     }
 
     /**
@@ -80,10 +84,8 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     {
         if(obj != null)
         {
-            setSheet(obj.getSheet());
             setSource(obj.getSource());
             setFields(new FieldMap(obj.getFields()));
-            setOutput(new LinkedHashMap<String,String>(obj.getOutput()));
         }
     }
 
@@ -130,22 +132,6 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
             ret = String.format("%s-%s.%s",
                 organisation.getFilePrefix(), getType().tag(), XLSX.value());
         return ret;
-    }
-
-    /**
-     * Returns the worksheet for this configuration.
-     */
-    public String getSheet()
-    {
-        return sheet;
-    }
-
-    /**
-     * Sets the worksheet for this configuration.
-     */
-    public void setSheet(String sheet)
-    {
-        this.sheet = sheet;
     }
 
     /**
@@ -224,29 +210,104 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     }
 
     /**
-     * Returns the output fields for this configuration.
+     * Returns the defaults for the given type.
      */
-    public Map<String,String> getOutput()
+    private static FieldMap getDefaults(ContentType type)
     {
-        return output;
+        return defaultMap.get(type);
     }
 
     /**
-     * Sets the output fields for this configuration.
+     * Sets the defaults.
      */
-    public void setOutput(Map<String,String> output)
+    public static void setDefaults(List<ContentDefault> defaults)
     {
-        this.output = output;
+        defaultMap.clear();
+        for(ContentDefault _default : defaults)
+        {
+            if(_default.isEnabled())
+                addDefault(_default);
+        }
+
+        int count = 0;
+        for(ContentType type : ContentType.values())
+        {
+            if(getDefaults(type) != null)
+            {
+                int size = getDefaults(type).size();
+                logger.info(String.format("Loaded %d defaults for %s",
+                    size, type.tag()));
+                count += size;
+            }
+        }
+
+        logger.info(String.format("Loaded %d defaults", count));
     }
 
     /**
-     * Adds the output fields for this configuration.
+     * Adds the given default.
      */
-    public void addOutput(Map<String,String> output)
+    private static void addDefault(ContentDefault _default)
     {
-        if(this.output == null)
-            this.output = new LinkedHashMap<String,String>();
-        this.output.putAll(output);
+        FieldMap defaults = defaultMap.get(_default.getType());
+        if(defaults == null)
+        {
+            defaults = new FieldMap();
+            defaults.put(TYPE, _default.getType().code()); // Add the type code
+            defaultMap.put(_default.getType(), defaults);
+        }
+      
+        defaults.put(_default.getName(), _default.getValue());
+    }
+
+    /**
+     * Returns the output columns for the given type.
+     */
+    public static Map<String,String> getOutput(ContentType type)
+    {
+        return outputMap.get(type);
+    }
+
+    /**
+     * Sets the output columns.
+     */
+    public static void setOutputColumns(List<OutputColumn> columns)
+    {
+        outputMap.clear();
+        for(OutputColumn column : columns)
+        {
+            if(column.isEnabled())
+                addOutputColumn(column);
+        }
+
+        int count = 0;
+        for(ContentType type : ContentType.values())
+        {
+            if(getOutput(type) != null)
+            {
+                int size = getOutput(type).size();
+                logger.info(String.format("Loaded %d output columns for %s",
+                    size, type.tag()));
+                count += size;
+            }
+        }
+
+        logger.info(String.format("Loaded %d output columns", count));
+    }
+
+    /**
+     * Adds the given output column.
+     */
+    private static void addOutputColumn(OutputColumn column)
+    {
+        Map<String,String> output = outputMap.get(column.getType());
+        if(output == null)
+        {
+            output = new LinkedHashMap<String,String>();
+            outputMap.put(column.getType(), output);
+        }
+      
+        output.put(column.getName(), column.getValue());
     }
 
     /**
@@ -265,6 +326,7 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     {
         ContentHandler handler = ContentHandler.builder()
             .useConfig(this)
+            .withOutput(getOutput(getType()))
             .withWorkingDirectory(System.getProperty("app.working"))
             .initFile()
             .build();
@@ -418,7 +480,6 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
         // The config attribute names
         private static final String SOURCE = "source";
         private static final String FIELDS = "fields";
-        private static final String OUTPUT = "output";
 
         private ContentConfig ret = null;
 
@@ -443,8 +504,6 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
                 ret.setSource(ContentSource.fromCode((String)map.get(SOURCE)));
             if(map.containsKey(FIELDS))
                 ret.addFields((Map<String,String>)map.get(FIELDS));
-            if(map.containsKey(OUTPUT))
-                ret.addOutput((Map<String,String>)map.get(OUTPUT));
 
             return self();
         }
@@ -464,17 +523,6 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
                     ret.getFields().put(key, (String)value);
             }
 
-            return self();
-        }
-
-        /**
-         * Copy constructor.
-         * @param obj The object to copy attributes from
-         * @return This object
-         */
-        public B copy(T obj)
-        {
-            ret.copyAttributes(obj);
             return self();
         }
 

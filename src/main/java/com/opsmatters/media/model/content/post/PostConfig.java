@@ -98,17 +98,6 @@ public class PostConfig extends ContentConfig<Post>
         }
 
         /**
-         * Copy constructor.
-         * @param obj The object to copy attributes from
-         * @return This object
-         */
-        public Builder copy(PostConfig obj)
-        {
-            ret.copyAttributes(obj);
-            return this;
-        }
-
-        /**
          * Returns this object.
          * @return This object
          */

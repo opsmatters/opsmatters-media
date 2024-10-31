@@ -39,7 +39,6 @@ public class ContentSettings extends BaseEntity
     private String tracking = "";
     private String features = "";
     private String tags = "";
-    private String technologies = "";
     private boolean newsletter = false;
     private String imageRejects = "";
     private String summaryRejects = "";
@@ -115,7 +114,6 @@ public class ContentSettings extends BaseEntity
             setTracking(obj.getTracking());
             setFeatures(obj.getFeatures());
             setTags(obj.getTags());
-            setTechnologies(obj.getTechnologies());
             setNewsletter(obj.isNewsletter());
             setImageRejects(obj.getImageRejects());
             setSummaryRejects(obj.getSummaryRejects());
@@ -135,7 +133,6 @@ public class ContentSettings extends BaseEntity
         ret.putOpt(TRACKING.value(), getTracking());
         ret.putOpt(FEATURES.value(), getFeatures());
         ret.putOpt(TAGS.value(), getTags());
-        ret.putOpt(TECHNOLOGIES.value(), getTechnologies());
         ret.put(NEWSLETTER.value(), isNewsletter());
         ret.putOpt(IMAGE_REJECTS.value(), getImageRejects());
         ret.putOpt(SUMMARY_REJECTS.value(), getSummaryRejects());
@@ -152,7 +149,6 @@ public class ContentSettings extends BaseEntity
         setTracking(obj.optString(TRACKING.value()));
         setFeatures(obj.optString(FEATURES.value()));
         setTags(obj.optString(TAGS.value()));
-        setTechnologies(obj.optString(TECHNOLOGIES.value()));
         setNewsletter(obj.optBoolean(NEWSLETTER.value(), false));
         setImageRejects(obj.optString(IMAGE_REJECTS.value()));
         setSummaryRejects(obj.optString(SUMMARY_REJECTS.value()));
@@ -348,46 +344,6 @@ public class ContentSettings extends BaseEntity
     public boolean hasTags()
     {
         return tags != null && tags.length() > 0;
-    }
-
-    /**
-     * Returns the technologies.
-     */
-    public String getTechnologies()
-    {
-        return technologies;
-    }
-
-    /**
-     * Returns the list of technologies.
-     */
-    public List<String> getTechnologiesList()
-    {
-        return StringUtils.toList(getTechnologies());
-    }
-
-    /**
-     * Sets the technologies.
-     */
-    public void setTechnologies(String technologies)
-    {
-        this.technologies = technologies;
-    }
-
-    /**
-     * Sets the list of technologies.
-     */
-    public void setTechnologiesList(List<String> technologies)
-    {
-        setTechnologies(StringUtils.fromList(technologies));
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the technologies has been set.
-     */
-    public boolean hasTechnologies()
-    {
-        return technologies != null && technologies.length() > 0;
     }
 
     /**

@@ -216,17 +216,6 @@ public class RoundupPostConfig extends ContentConfig<RoundupPost>
         }
 
         /**
-         * Copy constructor.
-         * @param obj The object to copy attributes from
-         * @return This object
-         */
-        public Builder copy(RoundupPostConfig obj)
-        {
-            ret.copyAttributes(obj);
-            return this;
-        }
-
-        /**
          * Returns this object.
          * @return This object
          */

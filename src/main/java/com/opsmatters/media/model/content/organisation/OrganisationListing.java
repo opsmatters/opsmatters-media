@@ -59,7 +59,6 @@ public class OrganisationListing extends Content
     private boolean projects = false;
     private String github = "";
     private boolean tools = false;
-    private boolean jobs = false;
     private String alternatives = "";
     private String features = "";
 
@@ -104,7 +103,6 @@ public class OrganisationListing extends Content
         setProjects(obj.hasProjects());
         setGitHub(new String(obj.getGitHub() != null ? obj.getGitHub() : ""));
         setTools(obj.hasTools());
-        setJobs(obj.hasJobs());
         setAlternatives(new String(obj.getAlternatives() != null ? obj.getAlternatives() : ""));
         setFeatures(new String(obj.getFeatures() != null ? obj.getFeatures() : ""));
     }
@@ -134,7 +132,6 @@ public class OrganisationListing extends Content
         ret.put(PROJECTS.value(), hasProjects());
         ret.putOpt(GITHUB.value(), getGitHub());
         ret.put(TOOLS.value(), hasTools());
-        ret.put(JOBS.value(), hasJobs());
         ret.putOpt(ALTERNATIVES.value(), getAlternatives());
         ret.putOpt(FEATURES.value(), getFeatures());
 
@@ -165,7 +162,6 @@ public class OrganisationListing extends Content
         setProjects(obj.optBoolean(PROJECTS.value(), false));
         setGitHub(obj.optString(GITHUB.value()));
         setTools(obj.optBoolean(TOOLS.value(), false));
-        setJobs(obj.optBoolean(JOBS.value(), false));
         setAlternatives(obj.optString(ALTERNATIVES.value()));
         setFeatures(obj.optString(FEATURES.value()));
     }
@@ -196,7 +192,6 @@ public class OrganisationListing extends Content
         ret.put(PROJECTS, hasProjects() ? "1" : "0");
         ret.put(GITHUB, getGitHub());
         ret.put(TOOLS, hasTools() ? "1" : "0");
-        ret.put(JOBS, hasJobs() ? "1" : "0");
         ret.put(ALTERNATIVES, getAlternatives());
         ret.put(FEATURES, getFeatures());
 
@@ -237,9 +232,6 @@ public class OrganisationListing extends Content
 
         String tools = config.getField(TOOLS);
         setTools(tools == null || tools.equals("0") ? false : true);
-
-        String jobs = config.getField(JOBS);
-        setJobs(jobs == null || jobs.equals("0") ? false : true);
     }
 
     /**
@@ -698,38 +690,6 @@ public class OrganisationListing extends Content
     public void setToolsObject(Boolean tools)
     {
         setTools(tools != null && tools.booleanValue());
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if this organisation has jobs.
-     */
-    public boolean hasJobs()
-    {
-        return jobs;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if this organisation has jobs.
-     */
-    public Boolean getJobsObject()
-    {
-        return Boolean.valueOf(hasJobs());
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if this organisation has jobs.
-     */
-    public void setJobs(boolean jobs)
-    {
-        this.jobs = jobs;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if this organisation has jobs.
-     */
-    public void setJobsObject(Boolean jobs)
-    {
-        setJobs(jobs != null && jobs.booleanValue());
     }
 
     /**

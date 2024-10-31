@@ -206,17 +206,6 @@ public class VideoConfig extends ContentConfig<Video>
         }
 
         /**
-         * Copy constructor.
-         * @param obj The object to copy attributes from
-         * @return This object
-         */
-        public Builder copy(VideoConfig obj)
-        {
-            ret.copyAttributes(obj);
-            return this;
-        }
-
-        /**
          * Returns this object.
          * @return This object
          */
