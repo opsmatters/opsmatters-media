@@ -26,6 +26,7 @@ import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.Article;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.ContentSettings;
 import com.opsmatters.media.model.content.LinkedContent;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.util.ContentImage;
@@ -220,19 +221,21 @@ public class RoundupPost extends Article<RoundupPostDetails> implements LinkedCo
 
         setCreatorEmail(organisation.getEmail());
 
+        if(organisationSite != null)
+        {
+            ContentSettings settings = organisationSite.getContentSettings(getType());
+            if(settings != null)
+            {
+                setPromoted(settings.isPromoted());
+                setFeatured(settings.isFeatured());
+                setSponsored(settings.isSponsored());
+            }
+        }
+
         if(page.hasField(TAGS))
             setTags(page.getField(TAGS, ""));
         if(page.hasField(NEWSLETTER))
             setNewsletter(page.getField(NEWSLETTER, "0").equals("0") ? false : true);
-
-        String promote = config.getField(PROMOTE);
-        setPromoted(promote == null || promote.equals("0") ? false : true);
-
-        String featured = config.getField(FEATURED);
-        setFeatured(featured == null || featured.equals("0") ? false : true);
-
-        String sponsored = config.getField(SPONSORED);
-        setSponsored(sponsored == null || sponsored.equals("0") ? false : true);
     }
 
     /**

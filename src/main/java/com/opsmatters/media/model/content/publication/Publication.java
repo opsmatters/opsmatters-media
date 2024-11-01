@@ -228,7 +228,10 @@ public class Publication extends Resource<PublicationDetails>
         {
             ContentSettings settings = organisationSite.getContentSettings(getType());
             if(settings != null)
+            {
+                setPromoted(settings.isPromoted());
                 setTags(settings.getTags());
+            }
         }
 
         if(page.hasField(TAGS))
@@ -236,9 +239,6 @@ public class Publication extends Resource<PublicationDetails>
 
         setPublicationType(config.getField(PUBLICATION_TYPE, ""));
         setLinkText(config.getField(LINK_TEXT, ""));
-
-        String promote = config.getField(PROMOTE);
-        setPromoted(promote == null || promote.equals("0") ? false : true);
     }
 
     /**

@@ -27,6 +27,7 @@ import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.Article;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.ContentSettings;
 import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
 import com.opsmatters.media.util.TimeUtils;
@@ -240,14 +241,16 @@ public class Post extends Article<PostDetails>
 
         setCreatorEmail(organisation.getEmail());
 
-        String promote = config.getField(PROMOTE);
-        setPromoted(promote == null || promote.equals("0") ? false : true);
-
-        String featured = config.getField(FEATURED);
-        setFeatured(featured == null || featured.equals("0") ? false : true);
-
-        String sponsored = config.getField(SPONSORED);
-        setSponsored(sponsored == null || sponsored.equals("0") ? false : true);
+        if(organisationSite != null)
+        {
+            ContentSettings settings = organisationSite.getContentSettings(getType());
+            if(settings != null)
+            {
+                setPromoted(settings.isPromoted());
+                setFeatured(settings.isFeatured());
+                setSponsored(settings.isSponsored());
+            }
+        }
 
         setPostType(config.getField(POST_TYPE, ""));
     }

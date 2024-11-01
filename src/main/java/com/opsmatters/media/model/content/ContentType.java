@@ -188,12 +188,33 @@ public enum ContentType
     }
 
     /**
+     * Returns <CODE>true</CODE> if this content type can be promoted.
+     */
+    public boolean isPromoteType()
+    {
+        return this == VIDEO
+            || this == ROUNDUP
+            || this == POST
+            || this == PUBLICATION
+            || this == TOOL;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if this content type is in the newsletter.
      */
     public boolean isNewsletterType()
     {
         return this == VIDEO
             || this == ROUNDUP
+            || this == POST;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this content type can be featured.
+     */
+    public boolean isFeaturedType()
+    {
+        return this == ROUNDUP
             || this == POST;
     }
 

@@ -27,6 +27,7 @@ import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.Article;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.ContentSettings;
 import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
 import com.opsmatters.media.model.content.crawler.field.FieldFilter;
 import com.opsmatters.media.util.FormatUtils;
@@ -229,15 +230,21 @@ public class Video extends Article<VideoDetails>
     {
         super.init(organisation, organisationSite, config);
 
+        if(organisationSite != null)
+        {
+            ContentSettings settings = organisationSite.getContentSettings(getType());
+            if(settings != null)
+            {
+                setPromoted(settings.isPromoted());
+            }
+        }
+
         if(channel.hasField(TAGS))
             setTags(channel.getField(TAGS, ""));
         if(channel.hasField(NEWSLETTER))
             setNewsletter(channel.getField(NEWSLETTER, "0").equals("0") ? false : true);
 
         setVideoType(config.getField(VIDEO_TYPE, ""));
-
-        String promote = config.getField(PROMOTE);
-        setPromoted(promote == null || promote.equals("0") ? false : true);
     }
 
     /**

@@ -22,6 +22,7 @@ import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.Resource;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.ContentSettings;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.util.FormatUtils;
@@ -197,12 +198,18 @@ public class Tool extends Resource<ToolDetails>
 
         setWebsite(organisation.getWebsite());
 
+        if(organisationSite != null)
+        {
+            ContentSettings settings = organisationSite.getContentSettings(getType());
+            if(settings != null)
+            {
+                setPromoted(settings.isPromoted());
+            }
+        }
+
         setLinkText(config.getField(LINK_TEXT, ""));
         setDownloadText(config.getField(DOWNLOAD_TEXT, ""));
         setPricing(config.getField(PRICING, ""));
-
-        String promote = config.getField(PROMOTE);
-        setPromoted(promote == null || promote.equals("0") ? false : true);
     }
 
     /**

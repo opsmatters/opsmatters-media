@@ -39,7 +39,10 @@ public class ContentSettings extends BaseEntity
     private String tracking = "";
     private String features = "";
     private String tags = "";
+    private boolean promote = false;
     private boolean newsletter = false;
+    private boolean featured = false;
+    private boolean sponsored = false;
     private String imageRejects = "";
     private String summaryRejects = "";
     private int count = -1;
@@ -70,6 +73,7 @@ public class ContentSettings extends BaseEntity
         setSiteId(organisation.getSiteId());
         setCode(organisation.getCode());
         setContent(content);
+        setPromoted(true);
     }
 
     /**
@@ -82,6 +86,7 @@ public class ContentSettings extends BaseEntity
         setSiteId(content.getSiteId());
         setCode(content.getCode());
         setType(content.getType());
+        setPromoted(true);
         setItemCount(1);
         setDeployed(false);
     }
@@ -95,6 +100,7 @@ public class ContentSettings extends BaseEntity
         setCreatedDate(organisation.getCreatedDate());
         setSiteId(organisation.getSiteId());
         setCode(organisation.getCode());
+        setPromoted(true);
         setType(type);
         setItemCount(0);
     }
@@ -114,7 +120,10 @@ public class ContentSettings extends BaseEntity
             setTracking(obj.getTracking());
             setFeatures(obj.getFeatures());
             setTags(obj.getTags());
+            setPromoted(obj.isPromoted());
             setNewsletter(obj.isNewsletter());
+            setFeatured(obj.isFeatured());
+            setSponsored(obj.isSponsored());
             setImageRejects(obj.getImageRejects());
             setSummaryRejects(obj.getSummaryRejects());
             setItemCount(obj.getItemCount());
@@ -133,7 +142,10 @@ public class ContentSettings extends BaseEntity
         ret.putOpt(TRACKING.value(), getTracking());
         ret.putOpt(FEATURES.value(), getFeatures());
         ret.putOpt(TAGS.value(), getTags());
+        ret.put(PROMOTE.value(), isPromoted());
         ret.put(NEWSLETTER.value(), isNewsletter());
+        ret.put(FEATURED.value(), isFeatured());
+        ret.put(SPONSORED.value(), isSponsored());
         ret.putOpt(IMAGE_REJECTS.value(), getImageRejects());
         ret.putOpt(SUMMARY_REJECTS.value(), getSummaryRejects());
 
@@ -149,7 +161,10 @@ public class ContentSettings extends BaseEntity
         setTracking(obj.optString(TRACKING.value()));
         setFeatures(obj.optString(FEATURES.value()));
         setTags(obj.optString(TAGS.value()));
+        setPromoted(obj.optBoolean(PROMOTE.value(), false));
         setNewsletter(obj.optBoolean(NEWSLETTER.value(), false));
+        setFeatured(obj.optBoolean(FEATURED.value(), false));
+        setSponsored(obj.optBoolean(SPONSORED.value(), false));
         setImageRejects(obj.optString(IMAGE_REJECTS.value()));
         setSummaryRejects(obj.optString(SUMMARY_REJECTS.value()));
     }
@@ -347,6 +362,38 @@ public class ContentSettings extends BaseEntity
     }
 
     /**
+     * Returns <CODE>true</CODE> if the content is promoted.
+     */
+    public boolean isPromoted()
+    {
+        return promote;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content is promoted.
+     */
+    public Boolean getPromoteObject()
+    {
+        return Boolean.valueOf(isPromoted());
+    }
+
+    /**
+     * Sets to <CODE>true</CODE> if the content is promoted.
+     */
+    public void setPromoted(boolean promote)
+    {
+        this.promote = promote;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the content is promoted.
+     */
+    public void setPromoteObject(Boolean promote)
+    {
+        setPromoted(promote != null && promote.booleanValue());
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the newsletter is enabled.
      */
     public boolean isNewsletter()
@@ -355,7 +402,7 @@ public class ContentSettings extends BaseEntity
     }
 
     /**
-     * Returns <CODE>true</CODE> if this content should appear in the newsletter.
+     * Returns <CODE>true</CODE> if the newsletter is enabled.
      */
     public Boolean getNewsletterObject()
     {
@@ -371,11 +418,75 @@ public class ContentSettings extends BaseEntity
     }
 
     /**
-     * Set to <CODE>true</CODE> if this content should appear in the newsletter.
+     * Set to <CODE>true</CODE> if the newsletter is enabled.
      */
     public void setNewsletterObject(Boolean newsletter)
     {
         setNewsletter(newsletter != null && newsletter.booleanValue());
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content is featured.
+     */
+    public boolean isFeatured()
+    {
+        return featured;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content is featured.
+     */
+    public Boolean getFeaturedObject()
+    {
+        return Boolean.valueOf(isFeatured());
+    }
+
+    /**
+     * Sets to <CODE>true</CODE> if the content is featured.
+     */
+    public void setFeatured(boolean featured)
+    {
+        this.featured = featured;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the content is featured.
+     */
+    public void setFeaturedObject(Boolean featured)
+    {
+        setFeatured(featured != null && featured.booleanValue());
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content is sponsored.
+     */
+    public boolean isSponsored()
+    {
+        return sponsored;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content is sponsored.
+     */
+    public Boolean getSponsoredObject()
+    {
+        return Boolean.valueOf(isSponsored());
+    }
+
+    /**
+     * Sets to <CODE>true</CODE> if the content is sponsored.
+     */
+    public void setSponsored(boolean sponsored)
+    {
+        this.sponsored = sponsored;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the content is sponsored.
+     */
+    public void setSponsoredObject(Boolean sponsored)
+    {
+        setSponsored(sponsored != null && sponsored.booleanValue());
     }
 
     /**
