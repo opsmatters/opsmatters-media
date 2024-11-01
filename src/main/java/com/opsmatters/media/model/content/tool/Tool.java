@@ -22,7 +22,7 @@ import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.Resource;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.ContentSettings;
+import com.opsmatters.media.model.content.ContentSiteSettings;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.util.FormatUtils;
@@ -200,7 +200,7 @@ public class Tool extends Resource<ToolDetails>
 
         if(organisationSite != null)
         {
-            ContentSettings settings = organisationSite.getContentSettings(getType());
+            ContentSiteSettings settings = organisationSite.getSettings(getType());
             if(settings != null)
             {
                 setPromoted(settings.isPromoted());

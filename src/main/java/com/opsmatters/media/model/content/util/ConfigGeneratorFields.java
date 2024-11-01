@@ -32,7 +32,7 @@ import com.opsmatters.media.model.content.tool.ToolConfig;
 import com.opsmatters.media.model.content.organisation.OrganisationListing;
 import com.opsmatters.media.model.content.organisation.OrganisationTabs;
 import com.opsmatters.media.model.content.organisation.OrganisationConfig;
-import com.opsmatters.media.model.content.ContentSettings;
+import com.opsmatters.media.model.content.ContentSiteSettings;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
 import com.opsmatters.media.util.StringUtils;
@@ -161,7 +161,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
         {
             VideoConfig videos = config.getVideos();
 
-            ContentSettings settings = OrganisationSites.getContentSettings(siteId, videos);
+            ContentSiteSettings settings = OrganisationSites.getSettings(siteId, videos);
             if(settings != null)
             {
                 if(tags == null)
@@ -188,7 +188,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
         {
             RoundupPostConfig roundups = config.getRoundups();
 
-            ContentSettings settings = OrganisationSites.getContentSettings(siteId, roundups);
+            ContentSiteSettings settings = OrganisationSites.getSettings(siteId, roundups);
             if(settings != null)
             {
                 if(tags == null)
@@ -206,7 +206,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
         {
             PostConfig posts = config.getPosts();
 
-            ContentSettings settings = OrganisationSites.getContentSettings(siteId, posts);
+            ContentSiteSettings settings = OrganisationSites.getSettings(siteId, posts);
             if(settings != null)
             {
                 if(tags == null)
@@ -218,7 +218,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
         {
             ProjectConfig projects = config.getProjects();
 
-            ContentSettings settings = OrganisationSites.getContentSettings(siteId, projects);
+            ContentSiteSettings settings = OrganisationSites.getSettings(siteId, projects);
             if(settings != null)
             {
                 if(features == null)
@@ -230,7 +230,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
         {
             ToolConfig tools = config.getTools();
 
-            ContentSettings settings = OrganisationSites.getContentSettings(siteId, tools);
+            ContentSiteSettings settings = OrganisationSites.getSettings(siteId, tools);
             if(settings != null)
             {
                 if(features == null)

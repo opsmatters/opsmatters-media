@@ -27,7 +27,7 @@ import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentConfig;
-import com.opsmatters.media.model.content.ContentSettings;
+import com.opsmatters.media.model.content.ContentSiteSettings;
 
 /**
  * Class representing the set of organisation sites.
@@ -40,7 +40,7 @@ public class OrganisationSites
 
     private static Map<String,List<OrganisationSite>> organisationList = new HashMap<String,List<OrganisationSite>>();
     private static Map<String,Map<String,OrganisationSite>> organisationMap = new HashMap<String,Map<String,OrganisationSite>>();
-    private static List<ContentSettings> contentSettings = new ArrayList<ContentSettings>();
+    private static List<ContentSiteSettings> settings = new ArrayList<ContentSiteSettings>();
 
     private static boolean initialised = false;
 
@@ -101,9 +101,9 @@ public class OrganisationSites
     /**
      * Load the set of organisation content settings.
      */
-    public static void add(List<ContentSettings> settings)
+    public static void add(List<ContentSiteSettings> settings)
     {
-        OrganisationSites.contentSettings.addAll(settings);
+        OrganisationSites.settings.addAll(settings);
     }
 
     /**
@@ -113,7 +113,7 @@ public class OrganisationSites
     {
         organisationMap.clear();
         organisationList.clear();
-        contentSettings.clear();
+        settings.clear();
     }
 
     /**
@@ -123,12 +123,12 @@ public class OrganisationSites
     {
         organisationMap.get(organisation.getSiteId()).put(organisation.getCode(), organisation);
         organisationList.get(organisation.getSiteId()).add(organisation);
-        for(ContentSettings settings : contentSettings)
+        for(ContentSiteSettings settings : OrganisationSites.settings)
         {
             if(settings.getSiteId().equals(organisation.getSiteId())
                 && settings.getCode().equals(organisation.getCode()))
             {
-                organisation.setContentSettings(settings);
+                organisation.setSettings(settings);
             }
         }
     }
@@ -201,13 +201,13 @@ public class OrganisationSites
     /**
      * Returns the content settings for the given organisation site and content type.
      */
-    public static ContentSettings getContentSettings(String siteId, String code, ContentType type)
+    public static ContentSiteSettings getSettings(String siteId, String code, ContentType type)
     {
-        ContentSettings ret = null;
+        ContentSiteSettings ret = null;
         OrganisationSite organisation = OrganisationSites.get(siteId, code);
         if(organisation != null)
         {
-            ret = organisation.getContentSettings(type);
+            ret = organisation.getSettings(type);
             if(ret == null && type != ContentType.ORGANISATION)
                 logger.warning("Unable to find organisation content type for "+code+": "+type);
         }
@@ -218,17 +218,17 @@ public class OrganisationSites
     /**
      * Returns the content settings for the given configuration.
      */
-    public static ContentSettings getContentSettings(String siteId, ContentConfig config)
+    public static ContentSiteSettings getSettings(String siteId, ContentConfig config)
     {
-        return getContentSettings(siteId, config.getCode(), config.getType());
+        return getSettings(siteId, config.getCode(), config.getType());
     }
 
     /**
      * Returns the content settings for the given configuration.
      */
-    public static ContentSettings getContentSettings(Site site, ContentConfig config)
+    public static ContentSiteSettings getSettings(Site site, ContentConfig config)
     {
-        return getContentSettings(site.getId(), config);
+        return getSettings(site.getId(), config);
     }
 
     /**

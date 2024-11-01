@@ -26,7 +26,7 @@ import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.Article;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.ContentSettings;
+import com.opsmatters.media.model.content.ContentSiteSettings;
 import com.opsmatters.media.model.content.LinkedContent;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.util.ContentImage;
@@ -223,7 +223,7 @@ public class RoundupPost extends Article<RoundupPostDetails> implements LinkedCo
 
         if(organisationSite != null)
         {
-            ContentSettings settings = organisationSite.getContentSettings(getType());
+            ContentSiteSettings settings = organisationSite.getSettings(getType());
             if(settings != null)
             {
                 setPromoted(settings.isPromoted());

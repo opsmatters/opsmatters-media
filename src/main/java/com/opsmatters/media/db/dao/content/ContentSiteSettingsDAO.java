@@ -29,85 +29,85 @@ import com.opsmatters.media.cache.platform.Sites;
 import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.ContentSettings;
+import com.opsmatters.media.model.content.ContentSiteSettings;
 import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
 
 /**
- * DAO that provides operations on the CONTENT_SETTINGS table in the database.
+ * DAO that provides operations on the CONTENT_SITE_SETTINGS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentSettingsDAO extends BaseDAO
+public class ContentSiteSettingsDAO extends BaseDAO
 {
-    private static final Logger logger = Logger.getLogger(ContentSettingsDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(ContentSiteSettingsDAO.class.getName());
 
     /**
-     * The query to use to select settings from the CONTENT_SETTINGS table by id.
+     * The query to use to select settings from the CONTENT_SITE_SETTINGS table by id.
      */
     private static final String GET_BY_ID_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, ATTRIBUTES, ITEM_COUNT, DEPLOYED "
-      + "FROM CONTENT_SETTINGS WHERE ID=?";
+      + "FROM CONTENT_SITE_SETTINGS WHERE ID=?";
 
     /**
-     * The query to use to select the settings from the CONTENT_SETTINGS table.
+     * The query to use to select the settings from the CONTENT_SITE_SETTINGS table.
      */
     private static final String GET_BY_TYPE_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, ATTRIBUTES, ITEM_COUNT, DEPLOYED "
-      + "FROM CONTENT_SETTINGS WHERE SITE_ID=? AND CODE=? AND CONTENT_TYPE=? ORDER BY CREATED_DATE";
+      + "FROM CONTENT_SITE_SETTINGS WHERE SITE_ID=? AND CODE=? AND CONTENT_TYPE=? ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to insert settings into the CONTENT_SETTINGS table.
+     * The query to use to insert settings into the CONTENT_SITE_SETTINGS table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO CONTENT_SETTINGS"
+      "INSERT INTO CONTENT_SITE_SETTINGS"
       + "( ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, ATTRIBUTES, ITEM_COUNT, DEPLOYED )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update settings in the CONTENT_SETTINGS table.
+     * The query to use to update settings in the CONTENT_SITE_SETTINGS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTENT_SETTINGS SET UPDATED_DATE=?, ATTRIBUTES=?, ITEM_COUNT=?, DEPLOYED=? "
+      "UPDATE CONTENT_SITE_SETTINGS SET UPDATED_DATE=?, ATTRIBUTES=?, ITEM_COUNT=?, DEPLOYED=? "
       + "WHERE ID=?";
 
     /**
-     * The query to use to select the settings from the CONTENT_SETTINGS table.
+     * The query to use to select the settings from the CONTENT_SITE_SETTINGS table.
      */
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, ATTRIBUTES, ITEM_COUNT, DEPLOYED "
-      + "FROM CONTENT_SETTINGS WHERE SITE_ID=? ORDER BY CREATED_DATE";
+      + "FROM CONTENT_SITE_SETTINGS WHERE SITE_ID=? ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to select the settings from the CONTENT_SETTINGS table by organisation code.
+     * The query to use to select the settings from the CONTENT_SITE_SETTINGS table by organisation code.
      */
     private static final String LIST_BY_CODE_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, SITE_ID, CODE, CONTENT_TYPE, ATTRIBUTES, ITEM_COUNT, DEPLOYED "
-      + "FROM CONTENT_SETTINGS WHERE SITE_ID=? AND CODE=? ORDER BY CREATED_DATE";
+      + "FROM CONTENT_SITE_SETTINGS WHERE SITE_ID=? AND CODE=? ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to get the count of settings from the CONTENT_SETTINGS table.
+     * The query to use to get the count of settings from the CONTENT_SITE_SETTINGS table.
      */
     private static final String COUNT_SQL =  
-      "SELECT COUNT(*) FROM CONTENT_SETTINGS";
+      "SELECT COUNT(*) FROM CONTENT_SITE_SETTINGS";
 
     /**
-     * The query to use to delete settings from the CONTENT_SETTINGS table.
+     * The query to use to delete settings from the CONTENT_SITE_SETTINGS table.
      */
     private static final String DELETE_SQL =  
-      "DELETE FROM CONTENT_SETTINGS WHERE ID=?";
+      "DELETE FROM CONTENT_SITE_SETTINGS WHERE ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public ContentSettingsDAO(ContentDAOFactory factory)
+    public ContentSiteSettingsDAO(ContentDAOFactory factory)
     {
-        super(factory, "CONTENT_SETTINGS");
+        super(factory, "CONTENT_SITE_SETTINGS");
     }
 
     /**
-     * Defines the columns and indices for the CONTENT_SETTINGS table.
+     * Defines the columns and indices for the CONTENT_SITE_SETTINGS table.
      */
     @Override
     protected void defineTable()
@@ -121,17 +121,17 @@ public class ContentSettingsDAO extends BaseDAO
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("ITEM_COUNT", Types.INTEGER, true);
         table.addColumn("DEPLOYED", Types.BOOLEAN, true);
-        table.setPrimaryKey("CONTENT_SETTINGS_PK", new String[] {"ID"});
-        table.addIndex("CONTENT_SETTINGS_CODE_IDX", new String[] {"SITE_ID","CODE"});
+        table.setPrimaryKey("CONTENT_SITE_SETTINGS_PK", new String[] {"ID"});
+        table.addIndex("CONTENT_SITE_SETTINGS_CODE_IDX", new String[] {"SITE_ID","CODE"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns settings from the CONTENT_SETTINGS table by id.
+     * Returns settings from the CONTENT_SITE_SETTINGS table by id.
      */
-    public synchronized ContentSettings getById(String id) throws SQLException
+    public synchronized ContentSiteSettings getById(String id) throws SQLException
     {
-        ContentSettings ret = null;
+        ContentSiteSettings ret = null;
 
         if(!hasConnection())
             return ret;
@@ -150,7 +150,7 @@ public class ContentSettingsDAO extends BaseDAO
             rs = getByIdStmt.executeQuery();
             while(rs.next())
             {
-                ContentSettings settings = new ContentSettings();
+                ContentSiteSettings settings = new ContentSiteSettings();
                 settings.setId(rs.getString(1));
                 settings.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 settings.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
@@ -181,11 +181,11 @@ public class ContentSettingsDAO extends BaseDAO
     }
 
     /**
-     * Returns settings from the CONTENT_SETTINGS table by site, code and content type.
+     * Returns settings from the CONTENT_SITE_SETTINGS table by site, code and content type.
      */
-    public synchronized ContentSettings get(Site site, String code, ContentType type) throws SQLException
+    public synchronized ContentSiteSettings get(Site site, String code, ContentType type) throws SQLException
     {
-        ContentSettings ret = null;
+        ContentSiteSettings ret = null;
 
         if(!hasConnection())
             return ret;
@@ -205,7 +205,7 @@ public class ContentSettingsDAO extends BaseDAO
             rs = getByTypeStmt.executeQuery();
             while(rs.next())
             {
-                ContentSettings settings = new ContentSettings();
+                ContentSiteSettings settings = new ContentSiteSettings();
                 settings.setId(rs.getString(1));
                 settings.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 settings.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
@@ -236,17 +236,17 @@ public class ContentSettingsDAO extends BaseDAO
     }
 
     /**
-     * Returns settings from the CONTENT_SETTINGS table for the given content item.
+     * Returns settings from the CONTENT_SITE_SETTINGS table for the given content item.
      */
-    public ContentSettings get(Content content) throws SQLException
+    public ContentSiteSettings get(Content content) throws SQLException
     {
         return get(Sites.get(content.getSiteId()), content.getCode(), content.getType());
     }
 
     /**
-     * Stores the given settings in the CONTENT_SETTINGS table.
+     * Stores the given settings in the CONTENT_SITE_SETTINGS table.
      */
-    public synchronized void add(ContentSettings settings) throws SQLException
+    public synchronized void add(ContentSiteSettings settings) throws SQLException
     {
         if(!hasConnection() || settings == null)
             return;
@@ -272,7 +272,7 @@ public class ContentSettingsDAO extends BaseDAO
             insertStmt.setBoolean(9, settings.isDeployed());
             insertStmt.executeUpdate();
 
-            logger.info("Created settings '"+settings.getId()+"' in CONTENT_SETTINGS");
+            logger.info("Created settings '"+settings.getId()+"' in CONTENT_SITE_SETTINGS");
         }
         catch(SQLException ex)
         {
@@ -295,9 +295,9 @@ public class ContentSettingsDAO extends BaseDAO
     }
 
     /**
-     * Updates the given settings in the CONTENT_SETTINGS table.
+     * Updates the given settings in the CONTENT_SITE_SETTINGS table.
      */
-    public synchronized void update(ContentSettings settings) throws SQLException
+    public synchronized void update(ContentSiteSettings settings) throws SQLException
     {
         if(!hasConnection() || settings == null)
             return;
@@ -319,7 +319,7 @@ public class ContentSettingsDAO extends BaseDAO
             updateStmt.setString(5, settings.getId());
             updateStmt.executeUpdate();
 
-            logger.info("Updated settings '"+settings.getId()+"' in CONTENT_SETTINGS");
+            logger.info("Updated settings '"+settings.getId()+"' in CONTENT_SITE_SETTINGS");
         }
         finally
         {
@@ -329,11 +329,11 @@ public class ContentSettingsDAO extends BaseDAO
     }
 
     /**
-     * Returns the settings from the CONTENT_SETTINGS table.
+     * Returns the settings from the CONTENT_SITE_SETTINGS table.
      */
-    public synchronized List<ContentSettings> list(Site site) throws SQLException
+    public synchronized List<ContentSiteSettings> list(Site site) throws SQLException
     {
-        List<ContentSettings> ret = null;
+        List<ContentSiteSettings> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -350,10 +350,10 @@ public class ContentSettingsDAO extends BaseDAO
             listStmt.setString(1, site.getId());
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
-            ret = new ArrayList<ContentSettings>();
+            ret = new ArrayList<ContentSiteSettings>();
             while(rs.next())
             {
-                ContentSettings settings = new ContentSettings();
+                ContentSiteSettings settings = new ContentSiteSettings();
                 settings.setId(rs.getString(1));
                 settings.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 settings.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
@@ -384,11 +384,11 @@ public class ContentSettingsDAO extends BaseDAO
     }
 
     /**
-     * Returns the settings from the CONTENT_SETTINGS table by organisation code.
+     * Returns the settings from the CONTENT_SITE_SETTINGS table by organisation code.
      */
-    public synchronized List<ContentSettings> list(Site site, String code) throws SQLException
+    public synchronized List<ContentSiteSettings> list(Site site, String code) throws SQLException
     {
-        List<ContentSettings> ret = null;
+        List<ContentSiteSettings> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -406,10 +406,10 @@ public class ContentSettingsDAO extends BaseDAO
             listByCodeStmt.setString(2, code);
             listByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByCodeStmt.executeQuery();
-            ret = new ArrayList<ContentSettings>();
+            ret = new ArrayList<ContentSiteSettings>();
             while(rs.next())
             {
-                ContentSettings settings = new ContentSettings();
+                ContentSiteSettings settings = new ContentSiteSettings();
                 settings.setId(rs.getString(1));
                 settings.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 settings.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
@@ -458,9 +458,9 @@ public class ContentSettingsDAO extends BaseDAO
     }
 
     /**
-     * Removes the given settings from the CONTENT_SETTINGS table.
+     * Removes the given settings from the CONTENT_SITE_SETTINGS table.
      */
-    public synchronized void delete(ContentSettings settings) throws SQLException
+    public synchronized void delete(ContentSiteSettings settings) throws SQLException
     {
         if(!hasConnection() || settings == null)
             return;
@@ -472,7 +472,7 @@ public class ContentSettingsDAO extends BaseDAO
         deleteStmt.setString(1, settings.getId());
         deleteStmt.executeUpdate();
 
-        logger.info("Deleted settings '"+settings.getId()+"' in CONTENT_SETTINGS");
+        logger.info("Deleted settings '"+settings.getId()+"' in CONTENT_SITE_SETTINGS");
     }
 
     /**

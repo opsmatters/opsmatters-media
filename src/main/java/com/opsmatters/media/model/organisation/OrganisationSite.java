@@ -28,7 +28,7 @@ import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.FieldName;
 import com.opsmatters.media.model.content.FieldSource;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.ContentSettings;
+import com.opsmatters.media.model.content.ContentSiteSettings;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;
@@ -49,7 +49,7 @@ public class OrganisationSite extends OwnedEntity implements FieldSource
     private boolean social = false;
     private OrganisationStatus status = OrganisationStatus.NEW;
     private ArchiveReason reason = ArchiveReason.NONE;
-    private Map<ContentType, ContentSettings> contentSettings = new HashMap<ContentType, ContentSettings>();
+    private Map<ContentType, ContentSiteSettings> settings = new HashMap<ContentType, ContentSiteSettings>();
 
 
     /**
@@ -410,75 +410,75 @@ public class OrganisationSite extends OwnedEntity implements FieldSource
     /**
      * Returns the content settings.
      */
-    public Map<ContentType,ContentSettings> getContentSettings()
+    public Map<ContentType,ContentSiteSettings> getSettings()
     {
-        return contentSettings;
+        return settings;
     }
 
     /**
      * Returns a list of the content settings.
      */
-    public List<ContentSettings> getContentSettingsList()
+    public List<ContentSiteSettings> getSettingsList()
     {
-        return new ArrayList<ContentSettings>(contentSettings.values());
+        return new ArrayList<ContentSiteSettings>(settings.values());
     }
 
     /**
      * Returns <CODE>true</CODE>if the organisation has content settings.
      */
-    public boolean hasContentSettings()
+    public boolean hasSettings()
     {
-        return contentSettings != null && contentSettings.size() > 0;
+        return settings != null && settings.size() > 0;
     }
 
     /**
      * Returns the number of content settings.
      */
-    public int numContentSettings()
+    public int numSettings()
     {
-        return contentSettings.size();
+        return settings.size();
     }
 
     /**
      * Returns the settings for the given content type.
      */
-    public ContentSettings getContentSettings(ContentType type)
+    public ContentSiteSettings getSettings(ContentType type)
     {
-        return contentSettings.get(type);
+        return settings.get(type);
     }
 
     /**
      * Adds the given content settings.
      */
-    public void setContentSettings(ContentSettings settings)
+    public void setSettings(ContentSiteSettings settings)
     {
-        contentSettings.put(settings.getType(), settings);
+        this.settings.put(settings.getType(), settings);
     }
 
     /**
      * Removes the given content settings.
      */
-    public void removeContentSettings(ContentSettings settings)
+    public void removeSettings(ContentSiteSettings settings)
     {
-        contentSettings.remove(settings.getType());
+        this.settings.remove(settings.getType());
     }
 
     /**
      * Sets the content settings.
      */
-    public void setContentSettings(Map<ContentType,ContentSettings> map)
+    public void setSettings(Map<ContentType,ContentSiteSettings> map)
     {
-        contentSettings.clear();
-        for(ContentSettings settings : map.values())
-            setContentSettings(settings);
+        this.settings.clear();
+        for(ContentSiteSettings settings : map.values())
+            setSettings(settings);
     }
 
     /**
      * Clears the content settings.
      */
-    public void clearContentSettings()
+    public void clearSettings()
     {
-        contentSettings.clear();
+        settings.clear();
     }
 
     /**
@@ -488,10 +488,10 @@ public class OrganisationSite extends OwnedEntity implements FieldSource
     {
         boolean ret = false;
 
-        if(contentSettings.size() > 0)
+        if(getSettings().size() > 0)
         {
             ret = true;
-            for(ContentSettings settings : contentSettings.values())
+            for(ContentSiteSettings settings : getSettings().values())
             {
                 if(settings.getItemCount() > 0 && !settings.isDeployed())
                 {

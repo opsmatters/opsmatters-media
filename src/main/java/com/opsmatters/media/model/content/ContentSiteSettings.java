@@ -26,11 +26,11 @@ import com.opsmatters.media.util.StringUtils;
 import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
- * Class representing the settings of a content type for an organisation.
+ * Class representing the settings of a content type for an organisation site.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentSettings extends BaseEntity
+public class ContentSiteSettings extends BaseEntity
 {
     private String siteId = "";
     private String code = "";
@@ -51,14 +51,14 @@ public class ContentSettings extends BaseEntity
     /**
      * Default constructor.
      */
-    public ContentSettings()
+    public ContentSiteSettings()
     {
     }
 
     /**
      * Copy constructor.
      */
-    public ContentSettings(ContentSettings obj)
+    public ContentSiteSettings(ContentSiteSettings obj)
     {
         copyAttributes(obj);
     }
@@ -66,7 +66,7 @@ public class ContentSettings extends BaseEntity
     /**
      * Constructor that takes an organisation and content type.
      */
-    public ContentSettings(OrganisationSite organisation, List<? extends Content> content)
+    public ContentSiteSettings(OrganisationSite organisation, List<? extends Content> content)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(organisation.getCreatedDate());
@@ -79,7 +79,7 @@ public class ContentSettings extends BaseEntity
     /**
      * Constructor that takes new content.
      */
-    public ContentSettings(Content content)
+    public ContentSiteSettings(Content content)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
@@ -94,7 +94,7 @@ public class ContentSettings extends BaseEntity
     /**
      * Constructor that takes an organisation and content type.
      */
-    public ContentSettings(OrganisationSite organisation, ContentType type)
+    public ContentSiteSettings(OrganisationSite organisation, ContentType type)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(organisation.getCreatedDate());
@@ -108,7 +108,7 @@ public class ContentSettings extends BaseEntity
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ContentSettings obj)
+    public void copyAttributes(ContentSiteSettings obj)
     {
         if(obj != null)
         {

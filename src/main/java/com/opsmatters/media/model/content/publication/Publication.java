@@ -26,7 +26,7 @@ import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.Resource;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.LinkText;
-import com.opsmatters.media.model.content.ContentSettings;
+import com.opsmatters.media.model.content.ContentSiteSettings;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.field.FieldFilter;
 import com.opsmatters.media.util.FormatUtils;
@@ -226,7 +226,7 @@ public class Publication extends Resource<PublicationDetails>
 
         if(organisationSite != null)
         {
-            ContentSettings settings = organisationSite.getContentSettings(getType());
+            ContentSiteSettings settings = organisationSite.getSettings(getType());
             if(settings != null)
             {
                 setPromoted(settings.isPromoted());

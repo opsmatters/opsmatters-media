@@ -20,7 +20,7 @@ import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
-import com.opsmatters.media.model.content.ContentSettings;
+import com.opsmatters.media.model.content.ContentSiteSettings;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;
@@ -114,7 +114,7 @@ public abstract class Resource<D extends ResourceDetails> extends Content<D> imp
 
         if(organisationSite != null)
         {
-            ContentSettings settings = organisationSite.getContentSettings(getType());
+            ContentSiteSettings settings = organisationSite.getSettings(getType());
             if(settings != null)
                 setFeatures(settings.getFeatures());
         }

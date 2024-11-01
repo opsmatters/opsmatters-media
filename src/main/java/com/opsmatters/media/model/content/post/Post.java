@@ -27,7 +27,7 @@ import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.Article;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.ContentSettings;
+import com.opsmatters.media.model.content.ContentSiteSettings;
 import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
 import com.opsmatters.media.util.TimeUtils;
@@ -243,7 +243,7 @@ public class Post extends Article<PostDetails>
 
         if(organisationSite != null)
         {
-            ContentSettings settings = organisationSite.getContentSettings(getType());
+            ContentSiteSettings settings = organisationSite.getSettings(getType());
             if(settings != null)
             {
                 setPromoted(settings.isPromoted());
