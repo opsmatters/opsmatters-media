@@ -99,7 +99,7 @@ public class OrganisationSites
     }
 
     /**
-     * Load the set of organisation content settings.
+     * Load the set of content settings.
      */
     public static void add(List<ContentSiteSettings> settings)
     {

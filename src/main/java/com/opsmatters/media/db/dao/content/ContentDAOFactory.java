@@ -18,6 +18,7 @@ package com.opsmatters.media.db.dao.content;
 import com.opsmatters.media.db.JDBCDatabaseDriver;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.db.dao.DAOFactory;
+import com.opsmatters.media.db.dao.content.ContentSettingsDAO;
 import com.opsmatters.media.db.dao.content.ContentSiteSettingsDAO;
 import com.opsmatters.media.db.dao.content.OutputColumnDAO;
 import com.opsmatters.media.db.dao.content.ContentDefaultDAO;
@@ -53,6 +54,7 @@ public class ContentDAOFactory extends DAOFactory
         getPostDAO();
         getProjectDAO();
         getToolDAO();
+        getContentSettingsDAO();
         getContentSiteSettingsDAO();
         getOutputColumnDAO();
         getContentDefaultDAO();
@@ -139,6 +141,16 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
+     * Returns the ContentSettings DAO.
+     */
+    public ContentSettingsDAO getContentSettingsDAO()
+    {
+        if(contentSettingsDAO == null)
+            contentSettingsDAO = new ContentSettingsDAO(this);
+        return contentSettingsDAO;
+    }
+
+    /**
      * Returns the ContentSiteSettings DAO.
      */
     public ContentSiteSettingsDAO getContentSiteSettingsDAO()
@@ -183,6 +195,7 @@ public class ContentDAOFactory extends DAOFactory
         postDAO = null;
         projectDAO = null;
         toolDAO = null;
+        contentSettingsDAO = null;
         contentSiteSettingsDAO = null;
         outputColumnDAO = null;
         contentDefaultDAO = null;
@@ -196,6 +209,7 @@ public class ContentDAOFactory extends DAOFactory
     private PostDAO postDAO;
     private ProjectDAO projectDAO;
     private ToolDAO toolDAO;
+    private ContentSettingsDAO contentSettingsDAO;
     private ContentSiteSettingsDAO contentSiteSettingsDAO;
     private OutputColumnDAO outputColumnDAO;
     private ContentDefaultDAO contentDefaultDAO;

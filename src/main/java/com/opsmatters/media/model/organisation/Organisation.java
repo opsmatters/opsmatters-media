@@ -17,14 +17,16 @@ package com.opsmatters.media.model.organisation;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 import java.time.Instant;
 import org.json.JSONObject;
 import com.opsmatters.media.model.OwnedEntity;
-import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.FieldName;
 import com.opsmatters.media.model.content.FieldSource;
 import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.ContentSettings;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;
@@ -48,6 +50,7 @@ public class Organisation extends OwnedEntity implements FieldSource
     private String filePrefix = "";
     private String imagePrefix = "";
     private String imageText = "";
+    private Map<ContentType,ContentSettings> settings = new HashMap<ContentType,ContentSettings>();
 
     /**
      * Default constructor.
@@ -399,5 +402,79 @@ public class Organisation extends OwnedEntity implements FieldSource
     public void setImageText(String imageText)
     {
         this.imageText = imageText;
+    }
+
+    /**
+     * Returns the content settings.
+     */
+    public Map<ContentType,ContentSettings> getSettings()
+    {
+        return settings;
+    }
+
+    /**
+     * Returns a list of the content settings.
+     */
+    public List<ContentSettings> getSettingsList()
+    {
+        return new ArrayList<ContentSettings>(settings.values());
+    }
+
+    /**
+     * Returns <CODE>true</CODE>if the organisation has content settings.
+     */
+    public boolean hasSettings()
+    {
+        return settings != null && settings.size() > 0;
+    }
+
+    /**
+     * Returns the number of content settings.
+     */
+    public int numSettings()
+    {
+        return settings.size();
+    }
+
+    /**
+     * Returns the settings for the given content type.
+     */
+    public ContentSettings getSettings(ContentType type)
+    {
+        return settings.get(type);
+    }
+
+    /**
+     * Adds the given content settings.
+     */
+    public void setSettings(ContentSettings settings)
+    {
+        this.settings.put(settings.getType(), settings);
+    }
+
+    /**
+     * Removes the given content settings.
+     */
+    public void removeSettings(ContentSettings settings)
+    {
+        this.settings.remove(settings.getType());
+    }
+
+    /**
+     * Sets the content settings.
+     */
+    public void setSettings(Map<ContentType,ContentSettings> map)
+    {
+        this.settings.clear();
+        for(ContentSettings settings : map.values())
+            setSettings(settings);
+    }
+
+    /**
+     * Clears the content settings.
+     */
+    public void clearSettings()
+    {
+        settings.clear();
     }
 }

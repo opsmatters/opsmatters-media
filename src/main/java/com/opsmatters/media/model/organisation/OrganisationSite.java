@@ -49,7 +49,7 @@ public class OrganisationSite extends OwnedEntity implements FieldSource
     private boolean social = false;
     private OrganisationStatus status = OrganisationStatus.NEW;
     private ArchiveReason reason = ArchiveReason.NONE;
-    private Map<ContentType, ContentSiteSettings> settings = new HashMap<ContentType, ContentSiteSettings>();
+    private Map<ContentType,ContentSiteSettings> settings = new HashMap<ContentType,ContentSiteSettings>();
 
 
     /**

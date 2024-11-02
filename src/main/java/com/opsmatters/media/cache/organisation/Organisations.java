@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.content.ContentType;
+import com.opsmatters.media.model.content.ContentConfig;
+import com.opsmatters.media.model.content.ContentSettings;
 
 /**
  * Class representing the set of organisations.
@@ -33,6 +36,7 @@ public class Organisations
 
     private static List<Organisation> organisationList = new ArrayList<Organisation>();
     private static Map<String,Organisation> organisationMap = new HashMap<String,Organisation>();
+    private static List<ContentSettings> settings = new ArrayList<ContentSettings>();
 
     private static boolean initialised = false;
 
@@ -67,12 +71,21 @@ public class Organisations
     }
 
     /**
+     * Load the set of content settings.
+     */
+    public static void add(List<ContentSettings> settings)
+    {
+        Organisations.settings.addAll(settings);
+    }
+
+    /**
      * Clears the organisations.
      */
     public static void clear()
     {
         organisationMap.clear();
         organisationList.clear();
+        settings.clear();
     }
 
     /**
@@ -82,6 +95,13 @@ public class Organisations
     {
         organisationMap.put(organisation.getCode(), organisation);
         organisationList.add(organisation);
+        for(ContentSettings settings : Organisations.settings)
+        {
+            if(settings.getCode().equals(organisation.getCode()))
+            {
+                organisation.setSettings(settings);
+            }
+        }
     }
 
     /**
@@ -130,6 +150,31 @@ public class Organisations
     {
         Organisation existing = get(organisation.getCode());
         return existing != null ? !existing.getId().equals(organisation.getId()) : false;
+    }
+
+    /**
+     * Returns the content settings for the given content type.
+     */
+    public static ContentSettings getSettings(String code, ContentType type)
+    {
+        ContentSettings ret = null;
+        Organisation organisation = Organisations.get(code);
+        if(organisation != null)
+        {
+            ret = organisation.getSettings(type);
+            if(ret == null && type != ContentType.ORGANISATION)
+                logger.warning("Unable to find organisation content type for "+code+": "+type);
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the content settings for the given configuration.
+     */
+    public static ContentSettings getSettings(ContentConfig config)
+    {
+        return getSettings(config.getCode(), config.getType());
     }
 
     /**
