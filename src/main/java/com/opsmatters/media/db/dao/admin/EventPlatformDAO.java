@@ -39,7 +39,7 @@ public class EventPlatformDAO extends BaseDAO
      * The query to use to select a platform from the EVENT_PLATFORMS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, DOMAIN, PAGE, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, DOMAIN, CONFIG, STATUS, CREATED_BY "
       + "FROM EVENT_PLATFORMS WHERE ID=?";
 
     /**
@@ -47,7 +47,7 @@ public class EventPlatformDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO EVENT_PLATFORMS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, DOMAIN, PAGE, STATUS, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, DOMAIN, CONFIG, STATUS, CREATED_BY )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
@@ -55,14 +55,14 @@ public class EventPlatformDAO extends BaseDAO
      * The query to use to update a platform in the EVENT_PLATFORMS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE EVENT_PLATFORMS SET UPDATED_DATE=?, CODE=?, NAME=?, DOMAIN=?, PAGE=?, STATUS=? "
+      "UPDATE EVENT_PLATFORMS SET UPDATED_DATE=?, CODE=?, NAME=?, DOMAIN=?, CONFIG=?, STATUS=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the platforms from the EVENT_PLATFORMS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, DOMAIN, PAGE, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, DOMAIN, CONFIG, STATUS, CREATED_BY "
       + "FROM EVENT_PLATFORMS";
 
     /**
@@ -97,7 +97,7 @@ public class EventPlatformDAO extends BaseDAO
         table.addColumn("CODE", Types.VARCHAR, 15, true);
         table.addColumn("NAME", Types.VARCHAR, 30, true);
         table.addColumn("DOMAIN", Types.VARCHAR, 36, true);
-        table.addColumn("PAGE", Types.LONGVARCHAR, true);
+        table.addColumn("CONFIG", Types.LONGVARCHAR, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("EVENT_PLATFORMS_PK", new String[] {"ID"});
@@ -136,7 +136,7 @@ public class EventPlatformDAO extends BaseDAO
                 platform.setCode(rs.getString(4));
                 platform.setName(rs.getString(5));
                 platform.setDomain(rs.getString(6));
-                platform.setPage(rs.getString(7));
+                platform.setConfig(rs.getString(7));
                 platform.setStatus(rs.getString(8));
                 platform.setCreatedBy(rs.getString(9));
                 ret = platform;
@@ -179,7 +179,7 @@ public class EventPlatformDAO extends BaseDAO
             insertStmt.setString(4, platform.getCode());
             insertStmt.setString(5, platform.getName());
             insertStmt.setString(6, platform.getDomain());
-            insertStmt.setString(7, platform.getPage());
+            insertStmt.setString(7, platform.getConfig());
             insertStmt.setString(8, platform.getStatus().name());
             insertStmt.setString(9, platform.getCreatedBy());
             insertStmt.executeUpdate();
@@ -217,7 +217,7 @@ public class EventPlatformDAO extends BaseDAO
         updateStmt.setString(2, platform.getCode());
         updateStmt.setString(3, platform.getName());
         updateStmt.setString(4, platform.getDomain());
-        updateStmt.setString(5, platform.getPage());
+        updateStmt.setString(5, platform.getConfig());
         updateStmt.setString(6, platform.getStatus().name());
         updateStmt.setString(7, platform.getId());
         updateStmt.executeUpdate();
@@ -256,7 +256,7 @@ public class EventPlatformDAO extends BaseDAO
                 platform.setCode(rs.getString(4));
                 platform.setName(rs.getString(5));
                 platform.setDomain(rs.getString(6));
-                platform.setPage(rs.getString(7));
+                platform.setConfig(rs.getString(7));
                 platform.setStatus(rs.getString(8));
                 platform.setCreatedBy(rs.getString(9));
                 ret.add(platform);

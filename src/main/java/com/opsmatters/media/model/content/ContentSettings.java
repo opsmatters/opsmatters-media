@@ -18,8 +18,12 @@ package com.opsmatters.media.model.content;
 import java.time.Instant;
 import java.util.List;
 import org.json.JSONObject;
+import org.yaml.snakeyaml.Yaml;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.content.crawler.CrawlerTarget;
+import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
+import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;
@@ -35,6 +39,8 @@ public class ContentSettings extends BaseEntity
     private ContentType type;
     private String imageRejects = "";
     private String summaryRejects = "";
+    private String config = "";
+    private CrawlerTarget crawlerTarget;
 
     /**
      * Default constructor.
@@ -74,6 +80,7 @@ public class ContentSettings extends BaseEntity
             setType(obj.getType());
             setImageRejects(obj.getImageRejects());
             setSummaryRejects(obj.getSummaryRejects());
+            setConfig(obj.getConfig());
         }
     }
 
@@ -209,5 +216,83 @@ public class ContentSettings extends BaseEntity
     public List<String> getSummaryRejectsList()
     {
         return StringUtils.toList(summaryRejects, "\\n");
+    }
+
+    /**
+     * Returns the config for the content.
+     */
+    public String getConfig()
+    {
+        return config;
+    }
+
+    /**
+     * Sets the config for the content.
+     */
+    public void setConfig(String config)
+    {
+        this.config = config;
+
+        setCrawlerTarget();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the config for the content has been configured.
+     */
+    public boolean hasConfig()
+    {
+        return config != null && config.length() > 0;
+    }
+
+    /**
+     * Returns the crawler page for the content.
+     */
+    public CrawlerWebPage getCrawlerPage()
+    {
+        return hasCrawlerPage() ? (CrawlerWebPage)crawlerTarget : null;
+    }
+
+    /**
+     * Returns the crawler video channel for the content.
+     */
+    public CrawlerVideoChannel getCrawlerVideoChannel()
+    {
+        return hasCrawlerChannel() ? (CrawlerVideoChannel)crawlerTarget : null;
+    }
+
+    /**
+     * Sets the crawler target for the content.
+     */
+    private void setCrawlerTarget()
+    {
+        crawlerTarget = null;
+
+        if(hasConfig())
+        {
+            if(type == ContentType.VIDEO)
+                crawlerTarget = CrawlerVideoChannel.builder(getCode())
+                    .parse(new Yaml().load(getConfig()))
+                    .build();
+            else
+                crawlerTarget = CrawlerWebPage.builder(getCode())
+                    .parse(new Yaml().load(getConfig()))
+                    .build();
+        }
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the crawler page for the content has been configured.
+     */
+    public boolean hasCrawlerPage()
+    {
+        return crawlerTarget instanceof CrawlerWebPage;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the crawler channel for the content has been configured.
+     */
+    public boolean hasCrawlerChannel()
+    {
+        return crawlerTarget instanceof CrawlerVideoChannel;
     }
 }

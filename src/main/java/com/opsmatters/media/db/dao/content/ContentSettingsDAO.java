@@ -44,14 +44,14 @@ public class ContentSettingsDAO extends BaseDAO
      * The query to use to select settings from the CONTENT_SETTINGS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, ATTRIBUTES "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, ATTRIBUTES, CONFIG "
       + "FROM CONTENT_SETTINGS WHERE ID=?";
 
     /**
      * The query to use to select the settings from the CONTENT_SETTINGS table.
      */
     private static final String GET_BY_TYPE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, ATTRIBUTES "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, ATTRIBUTES, CONFIG "
       + "FROM CONTENT_SETTINGS WHERE CODE=? AND CONTENT_TYPE=? ORDER BY CREATED_DATE";
 
     /**
@@ -59,29 +59,29 @@ public class ContentSettingsDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTENT_SETTINGS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, ATTRIBUTES )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, ATTRIBUTES, CONFIG )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update settings in the CONTENT_SETTINGS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTENT_SETTINGS SET UPDATED_DATE=?, ATTRIBUTES=? "
+      "UPDATE CONTENT_SETTINGS SET UPDATED_DATE=?, ATTRIBUTES=?, CONFIG=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the settings from the CONTENT_SETTINGS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, ATTRIBUTES "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, ATTRIBUTES, CONFIG "
       + "FROM CONTENT_SETTINGS ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the settings from the CONTENT_SETTINGS table by organisation code.
      */
     private static final String LIST_BY_CODE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, ATTRIBUTES "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, CONTENT_TYPE, ATTRIBUTES, CONFIG "
       + "FROM CONTENT_SETTINGS WHERE CODE=? ORDER BY CREATED_DATE";
 
     /**
@@ -114,8 +114,9 @@ public class ContentSettingsDAO extends BaseDAO
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
-        table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, false);
+        table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
+        table.addColumn("CONFIG", Types.LONGVARCHAR, false);
         table.setPrimaryKey("CONTENT_SETTINGS_PK", new String[] {"ID"});
         table.addIndex("CONTENT_SETTINGS_CODE_IDX", new String[] {"CODE"});
         table.setInitialised(true);
@@ -152,6 +153,7 @@ public class ContentSettingsDAO extends BaseDAO
                 settings.setCode(rs.getString(4));
                 settings.setType(rs.getString(5));
                 settings.setAttributes(new JSONObject(getClob(rs, 6)));
+                settings.setConfig(rs.getString(7));
                 ret = settings;
             }
         }
@@ -203,6 +205,7 @@ public class ContentSettingsDAO extends BaseDAO
                 settings.setCode(rs.getString(4));
                 settings.setType(rs.getString(5));
                 settings.setAttributes(new JSONObject(getClob(rs, 6)));
+                settings.setConfig(rs.getString(7));
                 ret = settings;
             }
         }
@@ -255,6 +258,7 @@ public class ContentSettingsDAO extends BaseDAO
             String attributes = settings.getAttributes().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(6, reader, attributes.length());
+            insertStmt.setString(7, settings.getConfig());
             insertStmt.executeUpdate();
 
             logger.info("Created settings '"+settings.getId()+"' in CONTENT_SETTINGS");
@@ -299,7 +303,8 @@ public class ContentSettingsDAO extends BaseDAO
             String attributes = settings.getAttributes().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(2, reader, attributes.length());
-            updateStmt.setString(3, settings.getId());
+            updateStmt.setString(3, settings.getConfig());
+            updateStmt.setString(4, settings.getId());
             updateStmt.executeUpdate();
 
             logger.info("Updated settings '"+settings.getId()+"' in CONTENT_SETTINGS");
@@ -342,6 +347,7 @@ public class ContentSettingsDAO extends BaseDAO
                 settings.setCode(rs.getString(4));
                 settings.setType(rs.getString(5));
                 settings.setAttributes(new JSONObject(getClob(rs, 6)));
+                settings.setConfig(rs.getString(7));
                 ret.add(settings);
             }
         }
@@ -394,6 +400,7 @@ public class ContentSettingsDAO extends BaseDAO
                 settings.setCode(rs.getString(4));
                 settings.setType(rs.getString(5));
                 settings.setAttributes(new JSONObject(getClob(rs, 6)));
+                settings.setConfig(rs.getString(7));
                 ret.add(settings);
             }
         }

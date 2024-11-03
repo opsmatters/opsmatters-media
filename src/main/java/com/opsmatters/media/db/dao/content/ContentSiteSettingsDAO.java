@@ -117,7 +117,7 @@ public class ContentSiteSettingsDAO extends BaseDAO
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
-        table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, false);
+        table.addColumn("CONTENT_TYPE", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
         table.addColumn("ITEM_COUNT", Types.INTEGER, true);
         table.addColumn("DEPLOYED", Types.BOOLEAN, true);

@@ -27,7 +27,7 @@ import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 public class EventPlatform extends ExternalPlatform
 {
     private String domain = "";
-    private String page = "";
+    private String config = "";
     private CrawlerWebPage crawlerPage;
 
     /**
@@ -62,7 +62,7 @@ public class EventPlatform extends ExternalPlatform
         {
             super.copyAttributes(obj);
             setDomain(obj.getDomain());
-            setPage(obj.getPage());
+            setConfig(obj.getConfig());
         }
     }
 
@@ -83,29 +83,29 @@ public class EventPlatform extends ExternalPlatform
     }
 
     /**
-     * Returns the page for the platform.
+     * Returns the config for the platform.
      */
-    public String getPage()
+    public String getConfig()
     {
-        return page;
+        return config;
     }
 
     /**
-     * Sets the page for the platform.
+     * Sets the config for the platform.
      */
-    public void setPage(String page)
+    public void setConfig(String config)
     {
-        this.page = page;
+        this.config = config;
 
         setCrawlerPage();
     }
 
     /**
-     * Returns <CODE>true</CODE> if the page for the platform have been configured.
+     * Returns <CODE>true</CODE> if the config for the platform has been set.
      */
-    public boolean hasPage()
+    public boolean hasConfig()
     {
-        return page != null && page.length() > 0;
+        return config != null && config.length() > 0;
     }
 
     /**
@@ -117,16 +117,16 @@ public class EventPlatform extends ExternalPlatform
     }
 
     /**
-     * Returns the crawler page for the platform.
+     * Sets the crawler page for the platform.
      */
     private void setCrawlerPage()
     {
         crawlerPage = null;
 
-        if(hasPage())
+        if(hasConfig())
         {
             crawlerPage = CrawlerWebPage.builder(getCode())
-                .parse(new Yaml().load(getPage()))
+                .parse(new Yaml().load(getConfig()))
                 .build();
         }
     }

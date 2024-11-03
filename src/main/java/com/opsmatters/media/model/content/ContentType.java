@@ -38,9 +38,9 @@ public enum ContentType
 
     private String code;
     private String value;
-    private String tag;
-    private String title;
-    private String icon;
+    private String tag = "";
+    private String title = "";
+    private String icon = "";
 
     /**
      * Constructor that takes the type code, value, tag, icon and social flag.
