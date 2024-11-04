@@ -33,11 +33,11 @@ public class ToolConfig extends ContentConfig<Tool>
     private static final Logger logger = Logger.getLogger(ToolConfig.class.getName());
 
     /**
-     * Constructor that takes a name.
+     * Constructor that takes a code.
      */
-    public ToolConfig(String name)
+    public ToolConfig(String code)
     {
-        super(name);
+        super(code);
     }
 
     /**
@@ -60,12 +60,12 @@ public class ToolConfig extends ContentConfig<Tool>
 
     /**
      * Returns a builder for the configuration.
-     * @param name The name for the configuration
+     * @param code The code for the configuration
      * @return The builder instance.
      */
-    public static Builder builder(String name)
+    public static Builder builder(String code)
     {
-        return new Builder(name);
+        return new Builder(code);
     }
 
     /**
@@ -76,12 +76,12 @@ public class ToolConfig extends ContentConfig<Tool>
         private ToolConfig ret = null;
 
         /**
-         * Constructor that takes a name.
-         * @param name The name for the configuration
+         * Constructor that takes a code.
+         * @param code The code for the configuration
          */
-        public Builder(String name)
+        public Builder(String code)
         {
-            ret = new ToolConfig(name);
+            ret = new ToolConfig(code);
             super.set(ret);
         }
 

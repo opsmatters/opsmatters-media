@@ -36,11 +36,11 @@ public class EventConfig extends ContentConfig<Event>
     private List<CrawlerWebPage> pages = new ArrayList<CrawlerWebPage>();
 
     /**
-     * Constructor that takes a name.
+     * Constructor that takes a code.
      */
-    public EventConfig(String name)
+    public EventConfig(String code)
     {
-        super(name);
+        super(code);
     }
 
     /**
@@ -141,12 +141,12 @@ public class EventConfig extends ContentConfig<Event>
 
     /**
      * Returns a builder for the configuration.
-     * @param name The name for the configuration
+     * @param code The code for the configuration
      * @return The builder instance.
      */
-    public static Builder builder(String name)
+    public static Builder builder(String code)
     {
-        return new Builder(name);
+        return new Builder(code);
     }
 
     /**
@@ -160,12 +160,12 @@ public class EventConfig extends ContentConfig<Event>
         private EventConfig ret = null;
 
         /**
-         * Constructor that takes a name.
-         * @param name The name for the configuration
+         * Constructor that takes a code.
+         * @param code The code for the configuration
          */
-        public Builder(String name)
+        public Builder(String code)
         {
-            ret = new EventConfig(name);
+            ret = new EventConfig(code);
             super.set(ret);
         }
 

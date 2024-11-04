@@ -35,11 +35,11 @@ public class ProjectConfig extends ContentConfig<Project>
     private String branch = "";
 
     /**
-     * Constructor that takes a name.
+     * Constructor that takes a code.
      */
-    public ProjectConfig(String name)
+    public ProjectConfig(String code)
     {
-        super(name);
+        super(code);
     }
 
     /**
@@ -90,12 +90,12 @@ public class ProjectConfig extends ContentConfig<Project>
 
     /**
      * Returns a builder for the configuration.
-     * @param name The name for the configuration
+     * @param code The code for the configuration
      * @return The builder instance.
      */
-    public static Builder builder(String name)
+    public static Builder builder(String code)
     {
-        return new Builder(name);
+        return new Builder(code);
     }
 
     /**
@@ -109,12 +109,12 @@ public class ProjectConfig extends ContentConfig<Project>
         private static final String BRANCH = "branch";
 
         /**
-         * Constructor that takes a name.
-         * @param name The name for the configuration
+         * Constructor that takes a code.
+         * @param code The code for the configuration
          */
-        public Builder(String name)
+        public Builder(String code)
         {
-            ret = new ProjectConfig(name);
+            ret = new ProjectConfig(code);
             super.set(ret);
         }
 

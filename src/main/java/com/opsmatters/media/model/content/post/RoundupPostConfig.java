@@ -41,11 +41,11 @@ public class RoundupPostConfig extends ContentConfig<RoundupPost>
     private List<CrawlerWebPage> pages = new ArrayList<CrawlerWebPage>();
 
     /**
-     * Constructor that takes a name.
+     * Constructor that takes a code.
      */
-    public RoundupPostConfig(String name)
+    public RoundupPostConfig(String code)
     {
-        super(name);
+        super(code);
     }
 
     /**
@@ -161,12 +161,12 @@ public class RoundupPostConfig extends ContentConfig<RoundupPost>
 
     /**
      * Returns a builder for the configuration.
-     * @param name The name for the configuration
+     * @param code The code for the configuration
      * @return The builder instance.
      */
-    public static Builder builder(String name)
+    public static Builder builder(String code)
     {
-        return new Builder(name);
+        return new Builder(code);
     }
 
     /**
@@ -180,12 +180,12 @@ public class RoundupPostConfig extends ContentConfig<RoundupPost>
         private RoundupPostConfig ret = null;
 
         /**
-         * Constructor that takes a name.
-         * @param name The name for the configuration
+         * Constructor that takes a code.
+         * @param code The code for the configuration
          */
-        public Builder(String name)
+        public Builder(String code)
         {
-            ret = new RoundupPostConfig(name);
+            ret = new RoundupPostConfig(code);
             super.set(ret);
         }
 

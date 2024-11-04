@@ -24,11 +24,12 @@ import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.util.logging.Logger;
 import org.json.JSONObject;
-import com.opsmatters.media.cache.content.organisation.OrganisationConfigs;
 import com.opsmatters.media.crawler.video.VideoCrawler;
+import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.model.content.video.VideoConfig;
 import com.opsmatters.media.model.content.video.VideoDetails;
 import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
+import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.monitor.ContentMonitor;
 import com.opsmatters.media.model.monitor.ContentSnapshot;
 
@@ -162,7 +163,8 @@ public class VideoMonitor extends ContentMonitor<VideoDetails>
     {
         ContentSnapshot ret = null;
         VideoCrawler crawler = null;
-        VideoConfig config = OrganisationConfigs.get(getCode()).getVideos();
+        Organisation organisation = Organisations.get(getCode());
+        VideoConfig config = organisation.getVideoConfig();
 
         try
         {

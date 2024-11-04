@@ -33,11 +33,11 @@ public class PostConfig extends ContentConfig<Post>
     private static final Logger logger = Logger.getLogger(PostConfig.class.getName());
 
     /**
-     * Constructor that takes a name.
+     * Constructor that takes a code.
      */
-    public PostConfig(String name)
+    public PostConfig(String code)
     {
-        super(name);
+        super(code);
     }
 
     /**
@@ -60,12 +60,12 @@ public class PostConfig extends ContentConfig<Post>
 
     /**
      * Returns a builder for the configuration.
-     * @param name The name for the configuration
+     * @param code The code for the configuration
      * @return The builder instance.
      */
-    public static Builder builder(String name)
+    public static Builder builder(String code)
     {
-        return new Builder(name);
+        return new Builder(code);
     }
 
     /**
@@ -76,12 +76,12 @@ public class PostConfig extends ContentConfig<Post>
         private PostConfig ret = null;
 
         /**
-         * Constructor that takes a name.
-         * @param name The name for the configuration
+         * Constructor that takes a code.
+         * @param code The code for the configuration
          */
-        public Builder(String name)
+        public Builder(String code)
         {
-            ret = new PostConfig(name);
+            ret = new PostConfig(code);
             super.set(ret);
         }
 

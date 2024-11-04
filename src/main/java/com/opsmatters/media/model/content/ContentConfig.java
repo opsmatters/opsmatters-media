@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 import java.sql.SQLException;
 import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.cache.organisation.OrganisationSites;
-import com.opsmatters.media.cache.content.organisation.OrganisationConfigs;
 import com.opsmatters.media.cache.content.util.ContentImages;
 import com.opsmatters.media.cache.platform.Environments;
 import com.opsmatters.media.model.platform.Site;
@@ -54,19 +53,18 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     private static Map<ContentType,FieldMap> defaultMap = new LinkedHashMap<ContentType,FieldMap>();
     private static Map<ContentType,Map<String,String>> outputMap = new LinkedHashMap<ContentType,Map<String,String>>();
 
-    private String name = "";
     private ContentSource source = getType().source();
     private FieldMap fields = new FieldMap();
 
     /**
-     * Constructor that takes a name.
+     * Constructor that takes an organisation code.
      */
-    protected ContentConfig(String name)
+    protected ContentConfig(String code)
     {
-        setName(name);
-
         // Add the default fields
         addFields(getDefaults(getType()));
+
+        fields.put(CODE, code);
     }
 
     /**
@@ -98,19 +96,11 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     }
 
     /**
-     * Returns the name of this configuration.
+     * Returns the name of the organisation for this config.
      */
     public String getName()
     {
-        return name;
-    }
-
-    /**
-     * Sets the name of this configuration.
-     */
-    public void setName(String name)
-    {
-        this.name = name;
+        return Organisations.get(getCode()).getName();
     }
 
     /**
@@ -119,6 +109,11 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     public String getCode()
     {
         return fields.get(CODE);
+    }
+
+    public void setOrganisation(Organisation organisation)
+    {
+        fields.put(ORGANISATION, organisation.getName());
     }
 
     /**
@@ -362,7 +357,6 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
                 else
                     published = organisationSite.isReview() || organisationSite.isActive();
                 fields.put(PUBLISHED, published ? "1" : "0");
-                fields.add(OrganisationConfigs.get(organisation.getCode()));
 
                 // Add the path to the organisation thumbnail and logo
                 boolean missing = false;
@@ -504,24 +498,6 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
                 ret.setSource(ContentSource.fromCode((String)map.get(SOURCE)));
             if(map.containsKey(FIELDS))
                 ret.addFields((Map<String,String>)map.get(FIELDS));
-
-            return self();
-        }
-
-        /**
-         * Sets the content defaults.
-         */
-        public B fields(Map<String,Object> map)
-        {
-            ret.getFields().put(ORGANISATION, ret.getName());
-
-            for(Map.Entry<String, Object> entry : map.entrySet())
-            {
-                String key = entry.getKey().toString();
-                Object value = entry.getValue();
-                if(value instanceof String)
-                    ret.getFields().put(key, (String)value);
-            }
 
             return self();
         }

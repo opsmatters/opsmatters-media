@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.logging.Logger;
 import com.opsmatters.media.cache.organisation.Organisations;
-import com.opsmatters.media.cache.content.organisation.OrganisationConfigs;
 import com.opsmatters.media.crawler.publication.PublicationCrawler;
 import com.opsmatters.media.model.content.publication.PublicationConfig;
 import com.opsmatters.media.model.content.publication.PublicationDetails;
@@ -83,8 +82,8 @@ public class PublicationMonitor extends ContentMonitor<PublicationDetails>
     {
         ContentSnapshot ret = null;
         PublicationCrawler crawler = null;
-        PublicationConfig config = OrganisationConfigs.get(getCode()).getPublications();
         Organisation organisation = Organisations.get(getCode());
+        PublicationConfig config = organisation.getPublicationConfig();
 
         try
         {

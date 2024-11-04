@@ -17,6 +17,7 @@ package com.opsmatters.media.cache.organisation;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -36,6 +37,7 @@ public class Organisations
 
     private static List<Organisation> organisationList = new ArrayList<Organisation>();
     private static Map<String,Organisation> organisationMap = new HashMap<String,Organisation>();
+    private static Map<ContentType,Map<String,Organisation>> typeMap = new HashMap<ContentType,Map<String,Organisation>>();
     private static List<ContentSettings> settings = new ArrayList<ContentSettings>();
 
     private static boolean initialised = false;
@@ -85,6 +87,7 @@ public class Organisations
     {
         organisationMap.clear();
         organisationList.clear();
+        typeMap.clear();
         settings.clear();
     }
 
@@ -95,11 +98,31 @@ public class Organisations
     {
         organisationMap.put(organisation.getCode(), organisation);
         organisationList.add(organisation);
+
+        // Add the settings for the organisation
         for(ContentSettings settings : Organisations.settings)
         {
             if(settings.getCode().equals(organisation.getCode()))
             {
                 organisation.setSettings(settings);
+            }
+        }
+
+        // Add the organisation to the map of config types
+        for(ContentType type : ContentType.values())
+        {
+            if(type != ContentType.ORGANISATION
+                && type != ContentType.ARTICLE)
+            {
+                Map<String,Organisation> map = typeMap.get(type);
+                if(map == null)
+                {
+                    map = new TreeMap<String,Organisation>();
+                    typeMap.put(type, map);
+                }
+
+                if(organisation.hasContentConfig(type))
+                    map.put(organisation.getName(), organisation);
             }
         }
     }
@@ -129,7 +152,6 @@ public class Organisations
         if(name != null)
         {
             name = name.toLowerCase();
-//            for(Organisation organisation : organisationList.get(site.getId()))
             for(Organisation organisation : organisationList)
             {
                 if(organisation.getName().toLowerCase().equals(name))
@@ -204,6 +226,14 @@ public class Organisations
     {
         organisation = organisationMap.remove(organisation.getCode());
         organisationList.remove(organisation);
+    }
+
+    /**
+     * Returns the map of organisations for the given type.
+     */
+    public static Map<String,Organisation> mapByType(ContentType type)
+    {
+        return typeMap.get(type);
     }
 
     /**

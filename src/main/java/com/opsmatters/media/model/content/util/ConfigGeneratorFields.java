@@ -31,7 +31,6 @@ import com.opsmatters.media.model.content.project.ProjectConfig;
 import com.opsmatters.media.model.content.tool.ToolConfig;
 import com.opsmatters.media.model.content.organisation.OrganisationListing;
 import com.opsmatters.media.model.content.organisation.OrganisationTabs;
-import com.opsmatters.media.model.content.organisation.OrganisationConfig;
 import com.opsmatters.media.model.content.ContentSiteSettings;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
@@ -89,7 +88,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
     /**
      * Sets the fields from an organisation, site and listing and optional config.
      */
-    public void set(OrganisationListing listing, OrganisationConfig config)
+    public void set(OrganisationListing listing)
     {
         setCode(organisation.getCode());
         setName(organisation.getName());
@@ -99,16 +98,16 @@ public class ConfigGeneratorFields implements java.io.Serializable
         {
             OrganisationTabs tabs = listing.getTabs();
 
-            if(config != null)
+            if(organisation.hasSettings())
             {
-                setVideos(config.hasVideos());
-                setRoundups(config.hasRoundups());
-                setPosts(config.hasPosts());
-                setEvents(config.hasEvents());
-                setPublications(config.hasPublications());
-                setProjects(config.hasProjects());
-                setTools(config.hasTools());
-                setFields(config, tabs);
+                setVideos(organisation.hasVideoConfig());
+                setRoundups(organisation.hasRoundupPostConfig());
+                setPosts(organisation.hasPostConfig());
+                setEvents(organisation.hasEventConfig());
+                setPublications(organisation.hasPublicationConfig());
+                setProjects(organisation.hasProjectConfig());
+                setTools(organisation.hasToolConfig());
+                setFields(tabs);
             }
             else
             {
@@ -146,9 +145,9 @@ public class ConfigGeneratorFields implements java.io.Serializable
     }
 
     /**
-     * Set the fields from the given organisation config.
+     * Set the fields for the content.
      */
-    private void setFields(OrganisationConfig config, OrganisationTabs tabs)
+    private void setFields(OrganisationTabs tabs)
     {
         String siteId = organisationSite.getSiteId();
         String channelId = null;
@@ -157,9 +156,9 @@ public class ConfigGeneratorFields implements java.io.Serializable
         String features = null;
         String tags = null;
 
-        if(config.hasVideos())
+        if(organisation.hasVideoConfig())
         {
-            VideoConfig videos = config.getVideos();
+            VideoConfig videos = organisation.getVideoConfig();
 
             ContentSiteSettings settings = OrganisationSites.getSettings(siteId, videos);
             if(settings != null)
@@ -184,9 +183,9 @@ public class ConfigGeneratorFields implements java.io.Serializable
             setVideos(tabs.contains(ContentType.VIDEO));
         }
 
-        if(config.hasRoundups())
+        if(organisation.hasRoundupPostConfig())
         {
-            RoundupPostConfig roundups = config.getRoundups();
+            RoundupPostConfig roundups = organisation.getRoundupPostConfig();
 
             ContentSiteSettings settings = OrganisationSites.getSettings(siteId, roundups);
             if(settings != null)
@@ -202,9 +201,9 @@ public class ConfigGeneratorFields implements java.io.Serializable
             }
         }
 
-        if(config.hasPosts())
+        if(organisation.hasPostConfig())
         {
-            PostConfig posts = config.getPosts();
+            PostConfig posts = organisation.getPostConfig();
 
             ContentSiteSettings settings = OrganisationSites.getSettings(siteId, posts);
             if(settings != null)
@@ -214,9 +213,9 @@ public class ConfigGeneratorFields implements java.io.Serializable
             }
         }
 
-        if(config.hasProjects())
+        if(organisation.hasProjectConfig())
         {
-            ProjectConfig projects = config.getProjects();
+            ProjectConfig projects = organisation.getProjectConfig();
 
             ContentSiteSettings settings = OrganisationSites.getSettings(siteId, projects);
             if(settings != null)
@@ -226,9 +225,9 @@ public class ConfigGeneratorFields implements java.io.Serializable
             }
         }
 
-        if(config.hasTools())
+        if(organisation.hasToolConfig())
         {
-            ToolConfig tools = config.getTools();
+            ToolConfig tools = organisation.getToolConfig();
 
             ContentSiteSettings settings = OrganisationSites.getSettings(siteId, tools);
             if(settings != null)

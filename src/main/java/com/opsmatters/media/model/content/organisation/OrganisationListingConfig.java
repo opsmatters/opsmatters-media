@@ -82,12 +82,11 @@ public class OrganisationListingConfig extends ContentConfig<OrganisationListing
 
     /**
      * Returns a builder for the configuration.
-     * @param name The name for the configuration
      * @return The builder instance.
      */
-    public static Builder builder(String name)
+    public static Builder builder()
     {
-        return new Builder(name);
+        return new Builder();
     }
 
     /**
@@ -98,12 +97,11 @@ public class OrganisationListingConfig extends ContentConfig<OrganisationListing
         private OrganisationListingConfig ret = null;
 
         /**
-         * Constructor that takes a name.
-         * @param name The name for the configuration
+         * Default constructor.
          */
-        public Builder(String name)
+        public Builder()
         {
-            ret = new OrganisationListingConfig(name);
+            ret = new OrganisationListingConfig("");
             super.set(ret);
         }
 

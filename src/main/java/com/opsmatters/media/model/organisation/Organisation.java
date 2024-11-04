@@ -27,9 +27,17 @@ import com.opsmatters.media.model.content.FieldName;
 import com.opsmatters.media.model.content.FieldSource;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentSettings;
+import com.opsmatters.media.model.content.video.VideoConfig;
+import com.opsmatters.media.model.content.event.EventConfig;
+import com.opsmatters.media.model.content.publication.PublicationConfig;
+import com.opsmatters.media.model.content.post.PostConfig;
+import com.opsmatters.media.model.content.post.RoundupPostConfig;
+import com.opsmatters.media.model.content.project.ProjectConfig;
+import com.opsmatters.media.model.content.tool.ToolConfig;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;
+import static com.opsmatters.media.model.content.ContentType.*;
 
 /**
  * Class representing an organisation.
@@ -449,6 +457,8 @@ public class Organisation extends OwnedEntity implements FieldSource
      */
     public void setSettings(ContentSettings settings)
     {
+        if(settings.hasContentConfig())
+            settings.getContentConfig().setOrganisation(this);
         this.settings.put(settings.getType(), settings);
     }
 
@@ -476,5 +486,126 @@ public class Organisation extends OwnedEntity implements FieldSource
     public void clearSettings()
     {
         settings.clear();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the config of the given type has been set.
+     */
+    public boolean hasContentConfig(ContentType type)
+    {
+        ContentSettings settings = getSettings(type);
+        return settings != null && settings.hasContentConfig();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the roundup config has been set.
+     */
+    public boolean hasRoundupPostConfig()
+    {
+        return hasContentConfig(ROUNDUP);
+    }
+
+    /**
+     * Returns the roundup config.
+     */
+    public RoundupPostConfig getRoundupPostConfig()
+    {
+        return getSettings(ROUNDUP).getRoundupPostConfig();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the video config has been set.
+     */
+    public boolean hasVideoConfig()
+    {
+        return hasContentConfig(VIDEO);
+    }
+
+    /**
+     * Returns the video config.
+     */
+    public VideoConfig getVideoConfig()
+    {
+        return getSettings(VIDEO).getVideoConfig();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the event config has been set.
+     */
+    public boolean hasEventConfig()
+    {
+        return hasContentConfig(EVENT);
+    }
+
+    /**
+     * Returns the event config.
+     */
+    public EventConfig getEventConfig()
+    {
+        return getSettings(EVENT).getEventConfig();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the publication config has been set.
+     */
+    public boolean hasPublicationConfig()
+    {
+        return hasContentConfig(PUBLICATION);
+    }
+
+    /**
+     * Returns the publication config.
+     */
+    public PublicationConfig getPublicationConfig()
+    {
+        return getSettings(PUBLICATION).getPublicationConfig();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the post config has been set.
+     */
+    public boolean hasPostConfig()
+    {
+        return hasContentConfig(POST);
+    }
+
+    /**
+     * Returns the post config.
+     */
+    public PostConfig getPostConfig()
+    {
+        return getSettings(POST).getPostConfig();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the project config has been set.
+     */
+    public boolean hasProjectConfig()
+    {
+        return hasContentConfig(PROJECT);
+    }
+
+    /**
+     * Returns the project config.
+     */
+    public ProjectConfig getProjectConfig()
+    {
+        return getSettings(PROJECT).getProjectConfig();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the tool config has been set.
+     */
+    public boolean hasToolConfig()
+    {
+        return hasContentConfig(TOOL);
+    }
+
+    /**
+     * Returns the tool config.
+     */
+    public ToolConfig getToolConfig()
+    {
+        return getSettings(TOOL).getToolConfig();
     }
 }
