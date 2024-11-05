@@ -26,9 +26,7 @@ import com.opsmatters.media.model.ConfigParser;
  */
 public class S3Config extends AwsConfig
 {
-    private String contentConfig = "";
-    private String chartConfig = "";
-    private String platformConfig = "";
+    private String config = "";
     private String content = "";
 
     /**
@@ -54,59 +52,25 @@ public class S3Config extends AwsConfig
     {
         if(obj != null)
         {
-            setContentConfigBucket(obj.getContentConfigBucket());
-            setChartConfigBucket(obj.getChartConfigBucket());
-            setPlatformConfigBucket(obj.getPlatformConfigBucket());
+            setConfigBucket(obj.getConfigBucket());
             setContentBucket(obj.getContentBucket());
         }
     }
 
     /**
-     * Returns the content config bucket for the S3 configuration.
+     * Returns the config bucket for the S3 configuration.
      */
-    public String getContentConfigBucket()
+    public String getConfigBucket()
     {
-        return contentConfig;
+        return config;
     }
 
     /**
-     * Sets the content config bucket for the S3 configuration.
+     * Sets the config bucket for the S3 configuration.
      */
-    public void setContentConfigBucket(String contentConfig)
+    public void setConfigBucket(String config)
     {
-        this.contentConfig = contentConfig;
-    }
-
-    /**
-     * Returns the chart config bucket for the S3 configuration.
-     */
-    public String getChartConfigBucket()
-    {
-        return chartConfig;
-    }
-
-    /**
-     * Sets the chart config bucket for the S3 configuration.
-     */
-    public void setChartConfigBucket(String chartConfig)
-    {
-        this.chartConfig = chartConfig;
-    }
-
-    /**
-     * Returns the platform config bucket for the S3 configuration.
-     */
-    public String getPlatformConfigBucket()
-    {
-        return platformConfig;
-    }
-
-    /**
-     * Sets the platform config bucket for the S3 configuration.
-     */
-    public void setPlatformConfigBucket(String platformConfig)
-    {
-        this.platformConfig = platformConfig;
+        this.config = config;
     }
 
     /**
@@ -142,9 +106,7 @@ public class S3Config extends AwsConfig
     {
         // The config attribute names
         private static final String REGION = "region";
-        private static final String CONTENT_CONFIG = "content-config";
-        private static final String CHART_CONFIG = "chart-config";
-        private static final String PLATFORM_CONFIG = "platform-config";
+        private static final String CONFIG = "config";
         private static final String CONTENT = "content";
 
         private S3Config ret = null;
@@ -168,12 +130,8 @@ public class S3Config extends AwsConfig
         {
             if(map.containsKey(REGION))
                 ret.setRegion((String)map.get(REGION));
-            if(map.containsKey(CONTENT_CONFIG))
-                ret.setContentConfigBucket((String)map.get(CONTENT_CONFIG));
-            if(map.containsKey(CHART_CONFIG))
-                ret.setChartConfigBucket((String)map.get(CHART_CONFIG));
-            if(map.containsKey(PLATFORM_CONFIG))
-                ret.setPlatformConfigBucket((String)map.get(PLATFORM_CONFIG));
+            if(map.containsKey(CONFIG))
+                ret.setConfigBucket((String)map.get(CONFIG));
             if(map.containsKey(CONTENT))
                 ret.setContentBucket((String)map.get(CONTENT));
 

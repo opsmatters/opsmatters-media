@@ -16,8 +16,6 @@
 
 package com.opsmatters.media.model;
 
-import com.opsmatters.media.model.platform.PlatformConfig;
-
 /**
  * Represents a configuration type.
  * 
@@ -25,28 +23,21 @@ import com.opsmatters.media.model.platform.PlatformConfig;
  */
 public enum ConfigType
 {
-    CONTENT("Content", "content",
-        PlatformConfig.getS3Config().getContentConfigBucket()),
-    CHART("Chart", "chart",
-        PlatformConfig.getS3Config().getChartConfigBucket()),
-    PLATFORM("Platform", "platform",
-        PlatformConfig.getS3Config().getPlatformConfigBucket());
+    CHART("Chart", "chart"),
+    PLATFORM("Platform", "platform");
 
     private String value;
     private String tag;
-    private String bucket;
 
     /**
      * Constructor that takes the type value.
      * @param value The value for the type
      * @param tag The tag for the type
-     * @param bucket The S3 bucket for the type
      */
-    ConfigType(String value, String tag, String bucket)
+    ConfigType(String value, String tag)
     {
         this.value = value;
         this.tag = tag;
-        this.bucket = bucket;
     }
 
     /**
@@ -74,15 +65,6 @@ public enum ConfigType
     public String tag()
     {
         return tag;
-    }
-
-    /**
-     * Returns the S3 bucket of the type.
-     * @return The S3 bucket of the type.
-     */
-    public String bucket()
-    {
-        return bucket;
     }
 
     /**
