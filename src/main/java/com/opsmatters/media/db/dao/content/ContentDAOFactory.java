@@ -22,6 +22,7 @@ import com.opsmatters.media.db.dao.content.ContentSettingsDAO;
 import com.opsmatters.media.db.dao.content.ContentSiteSettingsDAO;
 import com.opsmatters.media.db.dao.content.OutputColumnDAO;
 import com.opsmatters.media.db.dao.content.ContentDefaultDAO;
+import com.opsmatters.media.db.dao.content.crawler.ErrorPageDAO;
 import com.opsmatters.media.db.dao.content.organisation.OrganisationListingDAO;
 import com.opsmatters.media.db.dao.content.video.VideoDAO;
 import com.opsmatters.media.db.dao.content.event.EventDAO;
@@ -30,7 +31,6 @@ import com.opsmatters.media.db.dao.content.post.PostDAO;
 import com.opsmatters.media.db.dao.content.post.RoundupPostDAO;
 import com.opsmatters.media.db.dao.content.project.ProjectDAO;
 import com.opsmatters.media.db.dao.content.tool.ToolDAO;
-
 
 /**
  * The class for all content data access object factories.
@@ -58,6 +58,7 @@ public class ContentDAOFactory extends DAOFactory
         getContentSiteSettingsDAO();
         getOutputColumnDAO();
         getContentDefaultDAO();
+        getErrorPageDAO();
     }
 
     /**
@@ -181,6 +182,16 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
+     * Returns the ErroPage DAO.
+     */
+    public ErrorPageDAO getErrorPageDAO()
+    {
+        if(errorPageDAO == null)
+            errorPageDAO = new ErrorPageDAO(this);
+        return errorPageDAO;
+    }
+
+    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
@@ -199,6 +210,7 @@ public class ContentDAOFactory extends DAOFactory
         contentSiteSettingsDAO = null;
         outputColumnDAO = null;
         contentDefaultDAO = null;
+        errorPageDAO = null;
     }
 
     private OrganisationListingDAO organisationListingDAO;
@@ -213,4 +225,5 @@ public class ContentDAOFactory extends DAOFactory
     private ContentSiteSettingsDAO contentSiteSettingsDAO;
     private OutputColumnDAO outputColumnDAO;
     private ContentDefaultDAO contentDefaultDAO;
+    private ErrorPageDAO errorPageDAO;
 }

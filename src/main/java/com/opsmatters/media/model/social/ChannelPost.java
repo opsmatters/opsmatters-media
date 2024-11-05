@@ -572,7 +572,7 @@ public class ChannelPost extends SocialPost
 
         try
         {
-            client = SocialClientFactory.newClient(SocialChannels.getChannel(getChannel()));
+            client = SocialClientFactory.newClient(SocialChannels.get(getChannel()));
             if(client == null)
                 throw new IllegalArgumentException("unknown channel provider: "+getChannel());
             setStatus(DeliveryStatus.SENDING);

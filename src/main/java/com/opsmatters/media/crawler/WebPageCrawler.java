@@ -41,6 +41,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import com.opsmatters.media.cache.content.Teasers;
+import com.opsmatters.media.cache.content.crawler.ErrorPages;
 import com.opsmatters.media.model.admin.TraceObject;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.crawler.ContentRequest;
@@ -84,8 +85,6 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     public static final String DIV = "div";
     public static final String SECTION = "section";
     public static final String ROOT = "<root>";
-
-    private static List<ErrorPage> errorPages = new ArrayList<ErrorPage>();
 
     private CrawlerBrowser browser;
     private WebDriver driver;
@@ -138,24 +137,6 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     protected WebDriver getDriver()
     {
         return driver;
-    }
-
-    /**
-     * Returns the error pages for the crawler.
-     */
-    public static List<ErrorPage> getErrorPages()
-    {
-        return errorPages;
-    }
-
-    /**
-     * Sets the error pages for the crawler.
-     */
-    public static void setErrorPages(List<ErrorPage> errorPages)
-    {
-        WebPageCrawler.errorPages.clear();
-        WebPageCrawler.errorPages.addAll(errorPages);
-        logger.info("Loaded "+errorPages.size()+" crawler error pages");
     }
 
     /**
@@ -349,9 +330,9 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         boolean ret = false;
         if(title != null)
         {
-            for(ErrorPage errorPage : errorPages)
+            for(ErrorPage page : ErrorPages.list())
             {
-                if(title.startsWith(errorPage.getTitle()))
+                if(page.isActive() && title.startsWith(page.getTitle()))
                 {
                     ret = true;
                     break;

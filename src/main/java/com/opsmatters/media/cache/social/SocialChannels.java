@@ -81,7 +81,7 @@ public class SocialChannels implements java.io.Serializable
     /**
      * Returns the social channel with the given code.
      */
-    public static SocialChannel getChannel(String code)
+    public static SocialChannel get(String code)
     {
         return channelMap.get(code);
     }

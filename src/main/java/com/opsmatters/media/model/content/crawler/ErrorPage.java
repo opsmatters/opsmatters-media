@@ -15,26 +15,38 @@
  */
 package com.opsmatters.media.model.content.crawler;
 
-import java.util.Map;
-import com.opsmatters.media.model.ConfigElement;
-import com.opsmatters.media.model.ConfigParser;
+import java.time.Instant;
+import com.opsmatters.media.model.OwnedEntity;
+import com.opsmatters.media.util.StringUtils;
 
 /**
  * Class that represents an error page for a crawler.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ErrorPage implements ConfigElement
+public class ErrorPage extends OwnedEntity
 {
+    private String name = "";
     private String title = "";
+    private String notes = "";
     private ErrorPageType type;
+    private ErrorPageStatus status;
 
     /**
-     * Constructor that takes a type.
+     * Default constructor.
      */
-    public ErrorPage(String type)
+    public ErrorPage()
     {
-        setType(type);
+    }
+
+    /**
+     * Constructor that takes a name.
+     */
+    public ErrorPage(String name)
+    {
+        setId(StringUtils.getUUID(null));
+        setCreatedDate(Instant.now());
+        setName(name);
     }
 
     /**
@@ -52,8 +64,12 @@ public class ErrorPage implements ConfigElement
     {
         if(obj != null)
         {
+            super.copyAttributes(obj);
+            setName(obj.getName());
             setTitle(obj.getTitle());
+            setNotes(obj.getNotes());
             setType(obj.getType());
+            setStatus(obj.getStatus());
         }
     }
 
@@ -62,7 +78,23 @@ public class ErrorPage implements ConfigElement
      */
     public String toString()
     {
-        return getTitle();
+        return getName();
+    }
+
+    /**
+     * Returns the name of the error page.
+     */
+    public String getName()
+    {
+        return name;
+    }
+
+    /**
+     * Sets the name of the error page.
+     */
+    public void setName(String name)
+    {
+        this.name = name;
     }
 
     /**
@@ -106,55 +138,50 @@ public class ErrorPage implements ConfigElement
     }
 
     /**
-     * Returns a builder for the error page.
-     * @param type The type of the error page
-     * @return The builder instance.
+     * Returns the notes for the error page.
      */
-    public static Builder builder(String type)
+    public String getNotes()
     {
-        return new Builder(type);
+        return notes;
     }
 
     /**
-     * Builder to make configuration construction easier.
+     * Sets the notes for the error page.
      */
-    public static class Builder implements ConfigParser<ErrorPage>
+    public void setNotes(String notes)
     {
-        // The config attribute names
-        private static final String TITLE = "title";
+        this.notes = notes;
+    }
 
-        private ErrorPage ret = null;
+    /**
+     * Returns the error page status.
+     */
+    public ErrorPageStatus getStatus()
+    {
+        return status;
+    }
 
-        /**
-         * Constructor that takes a type.
-         * @param type The type for the error page
-         */
-        public Builder(String type)
-        {
-            ret = new ErrorPage(type);
-        }
+    /**
+     * Returns <CODE>true</CODE> if the error page status is ACTIVE.
+     */
+    public boolean isActive()
+    {
+        return status == ErrorPageStatus.ACTIVE;
+    }
 
-        /**
-         * Parse the configuration using the given attribute map.
-         * @param map The map of attributes
-         * @return This object
-         */
-        @Override
-        public Builder parse(Map<String, Object> map)
-        {
-            if(map.containsKey(TITLE))
-                ret.setTitle((String)map.get(TITLE));
+    /**
+     * Sets the error page status.
+     */
+    public void setStatus(ErrorPageStatus status)
+    {
+        this.status = status;
+    }
 
-            return this;
-        }
-
-        /**
-         * Returns the configured error page instance
-         * @return The error page instance
-         */
-        public ErrorPage build()
-        {
-            return ret;
-        }
+    /**
+     * Sets the error page status.
+     */
+    public void setStatus(String status)
+    {
+        setStatus(ErrorPageStatus.valueOf(status));
     }
 }

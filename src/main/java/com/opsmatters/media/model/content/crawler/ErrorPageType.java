@@ -16,6 +16,9 @@
 
 package com.opsmatters.media.model.content.crawler;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * Represents the type of an error page.
  * 
@@ -23,9 +26,10 @@ package com.opsmatters.media.model.content.crawler;
  */
 public enum ErrorPageType
 {
+    UNKNOWN("Unknown"),
     CLOUDFLARE("Cloudflare"),
-    ERROR_403("403"),
-    ERROR_404("403");
+    ERROR_403("403 Error"),
+    ERROR_404("404 Error");
 
     private String value;
 
@@ -64,5 +68,20 @@ public enum ErrorPageType
     public static boolean contains(String value)
     {
         return valueOf(value) != null;
+    }
+
+    /**
+     * Returns a list of the error page types.
+     */
+    public static List<ErrorPageType> toList()
+    {
+        List<ErrorPageType> ret = new ArrayList<ErrorPageType>();
+
+        ret.add(UNKNOWN);
+        ret.add(CLOUDFLARE);
+        ret.add(ERROR_403);
+        ret.add(ERROR_404);
+
+        return ret;
     }
 }
