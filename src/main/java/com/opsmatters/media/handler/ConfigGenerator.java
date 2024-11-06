@@ -16,8 +16,7 @@
 
 package com.opsmatters.media.handler;
 
-import java.io.File;
-import java.io.FileReader;
+import java.io.StringReader;
 import java.io.InputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -29,13 +28,11 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.text.StringSubstitutor;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.video.VideoProvider;
 import com.opsmatters.media.model.content.project.RepositoryBranch;
 import com.opsmatters.media.model.content.util.ConfigGeneratorFields;
-import com.opsmatters.media.util.StringUtils;
 
 /**
  * Generates and writes an organisation content configuration YAML file.
@@ -47,20 +44,14 @@ public class ConfigGenerator
     private static final Logger logger = Logger.getLogger(ConfigGenerator.class.getName());
 
     private static boolean initialised = false;
-    private static String header = null;
     private static Map<ContentType,String> contentTypeTemplates = new HashMap<ContentType,String>();
     private static Map<VideoProvider,String> videoTemplates = new HashMap<VideoProvider,String>();
 
-    private String config = null;
     private ConfigGeneratorFields fields;
     private Map<String, Object> properties = new HashMap<String, Object>();
     private StringSubstitutor substitutor = null;
-    private ContentType currentType = null;
-    private String currentVideo = null;
-    private String currentEvent = null;
-    private Map<ContentType,String> contentTypes = new HashMap<ContentType,String>();
     private Map<String,String> videos = new LinkedHashMap<String,String>();
-    private Map<String,String> events = new LinkedHashMap<String,String>();
+    private Map<ContentType,String> configMap = new HashMap<ContentType,String>();
 
     /**
      * Constructor that takes a set of config fields.
@@ -77,11 +68,11 @@ public class ConfigGenerator
     }
 
     /**
-     * Returns the generated configuration.
+     * Returns the map of generated configurations.
      */
-    public String getConfig()
+    public Map<ContentType,String> getConfigMap()
     {
-        return config;
+        return configMap;
     }
 
     /**
@@ -89,8 +80,6 @@ public class ConfigGenerator
      */
     private void init() throws IOException
     {
-        header = getContents("header.yml");
-
         for(ContentType type : ContentType.toList())
             contentTypeTemplates.put(type, getContents(String.format("%s.yml", type.tag())));
         for(VideoProvider provider : VideoProvider.toList())
@@ -135,8 +124,6 @@ public class ConfigGenerator
     {
         // Set the substitution properties
         properties.clear();
-        properties.put("code", fields.getCode());
-        properties.put("name", fields.getName());
         properties.put("tags", fields.getTags());
         properties.put("features", fields.getFeatures());
         properties.put("channel-id", fields.getChannelId());
@@ -153,16 +140,17 @@ public class ConfigGenerator
      */
     public void generate() throws IOException
     {
-        StringBuffer buff = new StringBuffer(header); 
+        configMap.clear();
+
         for(ContentType type : ContentType.toList())
         {
             if(fields.getContentTypes().contains(type))
             {
-                buff.append("\r\n\r\n");
+                StringBuffer buff = new StringBuffer();
 
                 // Go through the existing content types
-                if(contentTypes.get(type) != null)
-                    buff.append(contentTypes.get(type));
+                if(configMap.get(type) != null)
+                    buff.append(configMap.get(type));
                 else
                     buff.append(contentTypeTemplates.get(type));
 
@@ -198,52 +186,51 @@ public class ConfigGenerator
                         }
                     }
                 }
+
+                configMap.put(type, substitutor.replace(buff.toString()));
             }
         }
-
-        config = substitutor.replace(buff.toString());
     }
 
     /**
-     * Parse the configuration from the given file.
+     * Parse the configuration of the given type.
      */
-    public boolean parse(File file) throws IOException
+    public void set(ContentType type, String config) throws IOException
     {
-        FileReader reader = null;
-        boolean ret = false;
-
-        if(!file.exists())
-            return ret;
+        StringReader reader = null;
+        String currentVideo = null;
 
         try
         {
             StringBuffer buff = null; 
-            reader = new FileReader(file);
+            reader = new StringReader(config);
             List<String> lines = IOUtils.readLines(reader);
             for(String line : lines)
             {
                 if(line.length() > 0)
                 {
                     // Extract the tag if this is the start of a content type
-                    String tag = line.replaceAll("(.+):", "$1");
-                    ContentType type = ContentType.fromTag(tag);
-                    if(type != null)
+                    if(buff == null)
                     {
-                        closeBuffer(buff);
-                        buff = startBuffer(line);
-                        currentType = type;
+                        buff = new StringBuffer(line);
                     }
-                    else if(currentType != null)
+                    else
                     {
                         // Extract the name if this is the start of a page or channel
-                        Matcher matcher = Pattern.compile("^  - (.+):$").matcher(line);
+                        Matcher matcher = Pattern.compile("^- (.+):$").matcher(line);
                         String name = matcher.find() ? matcher.group(1) : null;
                         if(name != null)
                         {
-                            if(currentType == ContentType.VIDEO)
+                            if(type == ContentType.VIDEO)
                             {
-                                closeBuffer(buff);
-                                buff = startBuffer(line);
+                                if(currentVideo != null && buff.length() > 0)
+                                {
+                                    videos.put(currentVideo, buff.toString());
+                                    buff.setLength(0);
+                                }
+
+                                currentVideo = null;
+                                buff = new StringBuffer(line);
                                 currentVideo = name;
                             }
                             else // Other types don't have provider
@@ -261,60 +248,18 @@ public class ConfigGenerator
                 }
             }
 
-            closeBuffer(buff);
+            if(currentVideo != null && buff.length() > 0)
+            {
+                videos.put(currentVideo, buff.toString());
+                buff.setLength(0);
+            }
 
-            ret = true;
+            configMap.put(type, config);
         }
         finally
         {
-            try
-            {
-                if(reader != null)
-                    reader.close();
-            }
-            catch(IOException e)
-            {
-            }
+            if(reader != null)
+                reader.close();
         }
-
-        return ret;
-    }
-
-    private StringBuffer startBuffer(String line)
-    {
-        currentVideo = currentEvent = null;
-        return new StringBuffer(line);
-    }
-
-    private void closeBuffer(StringBuffer buff)
-    {
-        if(currentVideo != null && buff.length() > 0)
-        {
-            videos.put(currentVideo, buff.toString());
-            buff.setLength(0);
-        }
-
-        if(currentEvent != null && buff.length() > 0)
-        {
-            events.put(currentEvent, buff.toString());
-            buff.setLength(0);
-        }
-
-        if(currentType != null && buff.length() > 0)
-        {
-            contentTypes.put(currentType, buff.toString());
-            buff.setLength(0);
-        }
-    }
-
-    public void write(File file) throws IOException
-    {
-        if(file == null)
-            throw new IllegalStateException("file null");
-
-        if(config == null)
-            generate();
-
-        FileUtils.copyInputStreamToFile(IOUtils.toInputStream(config, StandardCharsets.UTF_8), file);
     }
 }

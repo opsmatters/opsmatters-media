@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.cache.organisation.OrganisationSites;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
@@ -45,10 +46,6 @@ import static com.opsmatters.media.model.content.video.VideoProvider.*;
  */
 public class ConfigGeneratorFields implements java.io.Serializable
 {
-    private Organisation organisation;
-    private OrganisationSite organisationSite;
-    private String code = "";
-    private String name = "";
     private String tags = "";
     private String channelId = "";
     private String userId = "";
@@ -60,12 +57,10 @@ public class ConfigGeneratorFields implements java.io.Serializable
     Map<VideoProvider,Boolean> videos = new HashMap<VideoProvider,Boolean>();
 
     /**
-     * Constructor that takes an organisation and organisation site.
+     * Default constructor.
      */
-    public ConfigGeneratorFields(Organisation organisation, OrganisationSite organisationSite)
+    public ConfigGeneratorFields()
     {
-        this.organisation = organisation;
-        this.organisationSite = organisationSite;
     }
 
     /**
@@ -73,8 +68,6 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public void clear()
     {
-        code = "";
-        name = "";
         tags = "";
         channelId = "";
         userId = "";
@@ -86,12 +79,13 @@ public class ConfigGeneratorFields implements java.io.Serializable
     }
 
     /**
-     * Sets the fields from an organisation, site and listing and optional config.
+     * Sets the fields from an organisation, site and listing.
      */
-    public void set(OrganisationListing listing)
+    public void setFields(Organisation organisation, OrganisationSite organisationSite, OrganisationListing listing)
     {
-        setCode(organisation.getCode());
-        setName(organisation.getName());
+        organisation = Organisations.get(organisation.getCode());
+        organisationSite = OrganisationSites.get(organisationSite.getSiteId(), organisationSite.getCode());
+
         setWebsite(organisation.getWebsite());
 
         if(organisationSite.hasListing())
@@ -107,7 +101,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
                 setPublications(organisation.hasPublicationConfig());
                 setProjects(organisation.hasProjectConfig());
                 setTools(organisation.hasToolConfig());
-                setFields(tabs);
+                setFields(organisation, organisationSite.getSiteId(), tabs);
             }
             else
             {
@@ -147,9 +141,8 @@ public class ConfigGeneratorFields implements java.io.Serializable
     /**
      * Set the fields for the content.
      */
-    private void setFields(OrganisationTabs tabs)
+    private void setFields(Organisation organisation, String siteId, OrganisationTabs tabs)
     {
-        String siteId = organisationSite.getSiteId();
         String channelId = null;
         String userId = null;
         String blogUrl = null;
@@ -247,38 +240,6 @@ public class ConfigGeneratorFields implements java.io.Serializable
             setFeatures(features);
         if(tags != null)
             setTags(tags);
-    }
-
-    /**
-     * Returns the code.
-     */
-    public String getCode()
-    {
-        return code;
-    }
-
-    /**
-     * Sets the code.
-     */
-    public void setCode(String code)
-    {
-        this.code = code;
-    }
-
-    /**
-     * Returns the name.
-     */
-    public String getName()
-    {
-        return name;
-    }
-
-    /**
-     * Sets the name.
-     */
-    public void setName(String name)
-    {
-        this.name = name;
     }
 
     /**

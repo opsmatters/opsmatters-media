@@ -38,7 +38,7 @@ public class Organisations
     private static List<Organisation> organisationList = new ArrayList<Organisation>();
     private static Map<String,Organisation> organisationMap = new HashMap<String,Organisation>();
     private static Map<ContentType,Map<String,Organisation>> typeMap = new HashMap<ContentType,Map<String,Organisation>>();
-    private static List<ContentSettings> settings = new ArrayList<ContentSettings>();
+    private static List<ContentSettings> settingsList = new ArrayList<ContentSettings>();
 
     private static boolean initialised = false;
 
@@ -65,7 +65,7 @@ public class Organisations
         initialised = false;
 
         for(Organisation organisation : organisations)
-                add(organisation);
+            add(organisation);
 
         logger.info(String.format("Loaded %d organisations", size()));
 
@@ -77,7 +77,7 @@ public class Organisations
      */
     public static void add(List<ContentSettings> settings)
     {
-        Organisations.settings.addAll(settings);
+        settingsList.addAll(settings);
     }
 
     /**
@@ -88,19 +88,19 @@ public class Organisations
         organisationMap.clear();
         organisationList.clear();
         typeMap.clear();
-        settings.clear();
+        settingsList.clear();
     }
 
     /**
      * Adds the given organisation.
      */
-    private static void add(Organisation organisation)
+    public static void add(Organisation organisation)
     {
         organisationMap.put(organisation.getCode(), organisation);
         organisationList.add(organisation);
 
         // Add the settings for the organisation
-        for(ContentSettings settings : Organisations.settings)
+        for(ContentSettings settings : settingsList)
         {
             if(settings.getCode().equals(organisation.getCode()))
             {
@@ -204,11 +204,8 @@ public class Organisations
      */
     public static void set(Organisation organisation)
     {
-        Organisation existing = get(organisation.getCode());
-        organisationMap.put(organisation.getCode(), organisation);
-        if(existing != null)
-            organisationList.remove(existing);
-        organisationList.add(organisation);
+        remove(organisation);
+        add(organisation);
     }
 
     /**
@@ -224,8 +221,19 @@ public class Organisations
      */
     public static void remove(Organisation organisation)
     {
-        organisation = organisationMap.remove(organisation.getCode());
-        organisationList.remove(organisation);
+        for(ContentType type : ContentType.values())
+        {
+            ContentSettings settings = getSettings(organisation.getCode(), type);
+            if(settings != null)
+                settingsList.remove(settings);
+        }
+
+        Organisation existing = get(organisation.getCode());
+        if(existing != null)
+        {
+            organisationMap.remove(organisation.getCode());
+            organisationList.remove(existing);
+        }
     }
 
     /**
