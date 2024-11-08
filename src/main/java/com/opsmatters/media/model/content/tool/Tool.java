@@ -28,6 +28,7 @@ import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
+import com.opsmatters.media.util.SessionId;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 
@@ -184,7 +185,7 @@ public class Tool extends Resource<ToolDetails>
         tool.setSiteId(organisationSite.getSiteId());
         tool.setTitle("New Tool");
         tool.setDescription(StringUtils.EMPTY);
-        tool.setPublishedDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
+        tool.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.now(), config.getField(PUBLISHED_DATE)));
 
         return tool;
     }

@@ -46,6 +46,8 @@ import static com.opsmatters.media.model.content.video.VideoProvider.*;
  */
 public class ConfigGeneratorFields implements java.io.Serializable
 {
+    private String code = "";
+    private String name = "";
     private String tags = "";
     private String channelId = "";
     private String userId = "";
@@ -68,6 +70,8 @@ public class ConfigGeneratorFields implements java.io.Serializable
      */
     public void clear()
     {
+        code = "";
+        name = "";
         tags = "";
         channelId = "";
         userId = "";
@@ -86,6 +90,8 @@ public class ConfigGeneratorFields implements java.io.Serializable
         organisation = Organisations.get(organisation.getCode());
         organisationSite = OrganisationSites.get(organisationSite.getSiteId(), organisationSite.getCode());
 
+        setCode(organisation.getCode());
+        setName(organisation.getName());
         setWebsite(organisation.getWebsite());
 
         if(organisationSite.hasListing())
@@ -240,6 +246,38 @@ public class ConfigGeneratorFields implements java.io.Serializable
             setFeatures(features);
         if(tags != null)
             setTags(tags);
+    }
+
+    /**
+     * Returns the code.
+     */
+    public String getCode()
+    {
+        return code;
+    }
+
+    /**
+     * Sets the code.
+     */
+    public void setCode(String code)
+    {
+        this.code = code;
+    }
+
+    /**
+     * Returns the name.
+     */
+    public String getName()
+    {
+        return name;
+    }
+
+    /**
+     * Sets the name.
+     */
+    public void setName(String name)
+    {
+        this.name = name;
     }
 
     /**

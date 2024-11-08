@@ -622,6 +622,27 @@ public class StringUtils
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given string contains non-ASCII characters.
+     * @return <CODE>true</CODE> if the given string contains non-ASCII characters
+     */
+    public static boolean containsNonAscii(String s)
+    {
+        boolean ret = false;
+
+        for(int i = 0; i < s.length(); i++)
+        {
+            int c = (int)s.charAt(i);
+            if(c >= 128)
+            {
+                ret = true;
+                break;
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the the given string contains only numeric digits [0-9].
      * @param s The string to be checked
      * @return <CODE>true</CODE> if the the given string contains only numeric digits [0-9]

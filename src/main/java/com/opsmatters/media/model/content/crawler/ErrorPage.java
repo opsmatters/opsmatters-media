@@ -29,8 +29,8 @@ public class ErrorPage extends OwnedEntity
     private String name = "";
     private String title = "";
     private String notes = "";
-    private ErrorPageType type;
-    private ErrorPageStatus status;
+    private ErrorPageType type = ErrorPageType.UNKNOWN;
+    private ErrorPageStatus status = ErrorPageStatus.ACTIVE;
 
     /**
      * Default constructor.

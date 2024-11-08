@@ -426,7 +426,7 @@ media.built.on=${TODAY}
   <dependency>
     <groupId>com.google.apis</groupId>
     <artifactId>google-api-services-youtube</artifactId>
-    <version>v3-rev212-1.25.0</version>
+    <version>v3-rev20241105-2.0.0</version>
   </dependency>
 
   <dependency>

@@ -188,13 +188,13 @@ public enum VideoProvider
 
                         if(url.indexOf("/user") != -1) // user id
                         {
-                            ret = client.userIdToChannelId(id);
+                            ret = client.getChannelIdFromUserId(id);
                         }
                         else // handle
                         {
                             if(id.startsWith("@"))
                                 id = id.substring(1);
-                            ret = client.handleToChannelId(id);
+                            ret = client.getChannelIdFromHandle(id);
                         }
                     }
                     catch(IOException e)

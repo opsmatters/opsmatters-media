@@ -29,7 +29,7 @@ public abstract class ExternalPlatform extends OwnedEntity
 {
     private String code = "";
     private String name = "";
-    private PlatformStatus status = PlatformStatus.DISABLED;
+    private PlatformStatus status = PlatformStatus.ACTIVE;
 
     /**
      * Default constructor.

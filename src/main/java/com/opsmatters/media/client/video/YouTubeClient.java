@@ -21,16 +21,17 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.time.Duration;
+import org.json.JSONObject;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.DataStore;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -39,10 +40,10 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.ResourceId;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.SearchResultSnippet;
-import com.google.api.services.youtube.model.ResourceId;
 import com.google.api.services.youtube.model.VideoListResponse;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoSnippet;
@@ -55,12 +56,8 @@ import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import com.google.common.collect.Lists;
-import org.json.JSONObject;
-import org.json.JSONArray;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.client.ApiClient;
 import com.opsmatters.media.model.content.video.VideoProvider;
-import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 
@@ -79,11 +76,12 @@ public class YouTubeClient extends Client implements VideoClient
     public static final String CREDENTIALS = ".oauth";
 
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
-    private static final JsonFactory JSON_FACTORY = new JacksonFactory();
+    private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
     public static final String APPLICATION = "opsmatters";
-    public static final String LIST_FIELDS = "id,snippet";
-    public static final String DETAIL_FIELDS = "snippet,contentDetails";
+    public static final List<String> ID_FIELD = Lists.newArrayList("id");
+    public static final List<String> LIST_FIELDS = Lists.newArrayList("id","snippet");
+    public static final List<String> DETAIL_FIELDS = Lists.newArrayList("snippet","contentDetails");
 
     private YouTube client;
     private Credential credential;
@@ -186,7 +184,7 @@ public class YouTubeClient extends Client implements VideoClient
         try
         {
             YouTube.Videos.List videoRequest = client.videos().list(DETAIL_FIELDS);
-            videoRequest.setId(videoId);
+            videoRequest.setId(Lists.newArrayList(videoId));
 
             VideoListResponse videoResult = videoRequest.execute();
             List<Video> videoList = videoResult.getItems();
@@ -257,7 +255,7 @@ public class YouTubeClient extends Client implements VideoClient
             YouTube.Search.List searchRequest = client.search().list(LIST_FIELDS);
             searchRequest.setChannelId(channelId);
             searchRequest.setMaxResults((long)maxResults);
-            searchRequest.setType("video");
+            searchRequest.setType(Lists.newArrayList("video"));
             searchRequest.setOrder("date");
 
             if(debug())
@@ -318,7 +316,7 @@ public class YouTubeClient extends Client implements VideoClient
         try
         {
             YouTube.Channels.List channelRequest = client.channels().list(DETAIL_FIELDS);
-            channelRequest.setId(channelId);
+            channelRequest.setId(Lists.newArrayList(channelId));
             channelRequest.setMaxResults((long)maxResults);
 
             if(debug())
@@ -390,7 +388,7 @@ public class YouTubeClient extends Client implements VideoClient
                 YouTube.Search.List searchRequest = client.search().list(LIST_FIELDS);
                 searchRequest.setChannelId(channelId);
                 searchRequest.setMaxResults((long)maxResults);
-                searchRequest.setType("video");
+                searchRequest.setType(Lists.newArrayList("video"));
                 searchRequest.setOrder("date");
 
                 if(debug())
@@ -439,58 +437,102 @@ public class YouTubeClient extends Client implements VideoClient
     }
 
     /**
-     * Returns the channel ID for the given user ID.
-     *
-     * @param userId The ID of the user
-     * @return The channel ID
-     */
-    public String userIdToChannelId(String userId) throws IOException
-    {
-        return getChannelId(String.format("%s/channels?forUsername=%s",
-            YT_URL, userId));
-    }
-
-    /**
      * Returns the channel ID for the given handle.
      *
      * @param handle The handle of the channel
-     * @return The channel ID
+     * @return channel ID of the channel
      */
-    public String handleToChannelId(String handle) throws IOException
+    public String getChannelIdFromHandle(String handle) throws IOException
     {
-        return getChannelId(String.format("%s/channels?handle=@%s",
-            YT_URL, handle));
+        String ret = null;
+
+        try
+        {
+            YouTube.Channels.List channelRequest = client.channels().list(ID_FIELD);
+            channelRequest.setForHandle(handle);
+
+            if(debug())
+                logger.info("Search for youtube handle: "+handle);
+
+            ChannelListResponse channelResult = channelRequest.execute();
+            List<Channel> channelList = channelResult.getItems();
+            if(channelList != null)
+            {
+                if(debug())
+                    logger.info("Found "+channelList.size()+" channels: "+handle);
+                if(channelList.isEmpty())
+                {
+                    logger.severe("Unable to find youtube channel for handle: "+handle);
+                }
+                else
+                {
+                    Channel channel = channelList.get(0);
+                    ChannelSnippet snippet = channel.getSnippet();
+                    ret = channel.getId();
+                    if(debug())
+                        logger.info("Found youtube channel: "+channel.getId());
+                }
+            }
+        }
+        catch (GoogleJsonResponseException e)
+        {
+            String message = e.getDetails().getCode()+": "+e.getDetails().getMessage();
+            logger.severe("Service error: "+message);
+
+            IOException ioe = new IOException(message);
+            ioe.initCause(e);
+            throw ioe;
+        }
+
+        return ret;
     }
 
     /**
-     * Extracts the channel ID from the given response to the given URL.
+     * Returns the channel ID for the given user ID.
      *
-     * @param url The url for the request
-     * @return The channel ID
+     * @param userId The userId of the channel
+     * @return channel ID of the channel
      */
-    private String getChannelId(String url) throws IOException
+    public String getChannelIdFromUserId(String userId) throws IOException
     {
         String ret = null;
-        ApiClient client = ApiClient.newClient();
-        JSONObject response = new JSONObject(client.get(url));
-        client.close();
 
-        // Process the lookup response
-        if(response.has("error"))
+        try
         {
-            JSONObject error = response.getJSONObject("error");
-            throw new IllegalStateException(String.format("YouTube channel lookup failed with error %d: %s",
-                error.optInt("code"), error.optString("message")));
+            YouTube.Channels.List channelRequest = client.channels().list(ID_FIELD);
+            channelRequest.setForUsername(userId);
+
+            if(debug())
+                logger.info("Search for youtube userId: "+userId);
+
+            ChannelListResponse channelResult = channelRequest.execute();
+            List<Channel> channelList = channelResult.getItems();
+            if(channelList != null)
+            {
+                if(debug())
+                    logger.info("Found "+channelList.size()+" channels: "+userId);
+                if(channelList.isEmpty())
+                {
+                    logger.severe("Unable to find youtube channel for userId: "+userId);
+                }
+                else
+                {
+                    Channel channel = channelList.get(0);
+                    ChannelSnippet snippet = channel.getSnippet();
+                    ret = channel.getId();
+                   if(debug())
+                        logger.info("Found youtube channel: "+channel.getId());
+                }
+            }
         }
-        else if(response.has("items"))
+        catch (GoogleJsonResponseException e)
         {
-            JSONArray array = response.getJSONArray("items");
-            if(array.length() > 0)
-                ret = array.getJSONObject(0).optString("id");
-        }
-        else
-        {
-            throw new IllegalStateException("Invalid YouTube channel lookup response");
+            String message = e.getDetails().getCode()+": "+e.getDetails().getMessage();
+            logger.severe("Service error: "+message);
+
+            IOException ioe = new IOException(message);
+            ioe.initCause(e);
+            throw ioe;
         }
 
         return ret;

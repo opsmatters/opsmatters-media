@@ -124,6 +124,8 @@ public class ConfigGenerator
     {
         // Set the substitution properties
         properties.clear();
+        properties.put("code", fields.getCode());
+        properties.put("name", fields.getName());
         properties.put("tags", fields.getTags());
         properties.put("features", fields.getFeatures());
         properties.put("channel-id", fields.getChannelId());
