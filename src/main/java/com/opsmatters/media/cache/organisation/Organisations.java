@@ -94,7 +94,7 @@ public class Organisations
     /**
      * Adds the given organisation.
      */
-    public static void add(Organisation organisation)
+    private static void add(Organisation organisation)
     {
         organisationMap.put(organisation.getCode(), organisation);
         organisationList.add(organisation);
@@ -200,11 +200,12 @@ public class Organisations
     }
 
     /**
-     * Sets the organisation.
+     * Sets the organisation and its settings.
      */
-    public static void set(Organisation organisation)
+    public static void set(Organisation organisation, List<ContentSettings> settings)
     {
         remove(organisation);
+        add(settings);
         add(organisation);
     }
 
