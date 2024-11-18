@@ -22,11 +22,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
+import com.opsmatters.media.model.admin.ImagePlatform;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.ContentSiteSettings;
-import com.opsmatters.media.file.FileFormat;
 import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.file.FileFormat;
+import com.opsmatters.media.util.FileUtils;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 
@@ -563,6 +565,23 @@ public abstract class Content<D extends ContentDetails>
     public boolean isGifImage()
     {
         return FileFormat.fromFilename(getImage()) == GIF;
+    }
+
+    /**
+     * Adds the tag from the given platform to the image name.
+     */
+    public void appendImageTag(ImagePlatform platform)
+    {
+        String filename = getImage();
+        String tag = platform.getTag();
+        if(filename != null && filename.indexOf(tag) == -1)
+        {
+            String name = FileUtils.getName(filename);
+            String ext = FileUtils.getExtension(filename);
+            if(ext.length() == 0)
+                ext = FileFormat.JPG.value();
+            setImage(String.format("%s-%s.%s", name, tag, ext));
+        }
     }
 
     /**

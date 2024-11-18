@@ -15,9 +15,6 @@
  */
 package com.opsmatters.media.model.admin;
 
-import com.opsmatters.media.file.FileFormat;
-import com.opsmatters.media.util.FileUtils;
-
 /**
  * Class that represents an external image platform.
  * 
@@ -110,24 +107,5 @@ public class ImagePlatform extends ExternalPlatform
     public void setFreeObject(Boolean free)
     {
         this.free = free != null && free.booleanValue();
-    }
-
-    /**
-     * Adds the platform tag to the given filename.
-     * @return The revised filename.
-     */
-    public String appendTag(String filename)
-    {
-        String ret = filename;
-        if(filename != null && filename.indexOf(getTag()) == -1)
-        {
-            String name = FileUtils.getName(filename);
-            String ext = FileUtils.getExtension(filename);
-            if(ext.length() == 0)
-                ext = FileFormat.JPG.value();
-            ret = String.format("%s-%s.%s", name, getTag(), ext);
-        }
-
-        return ret;
     }
 }

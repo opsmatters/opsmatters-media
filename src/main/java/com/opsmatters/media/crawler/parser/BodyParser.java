@@ -69,7 +69,7 @@ public class BodyParser
     public BodyParser(String text, List<FieldFilter> filters, boolean debug)
     {
         this((List<FieldExclude>)null, filters, debug);
-        if(text.indexOf("<p") != -1) // Contains markup
+        if(text.indexOf("<p") != -1 || text.indexOf("<div") != -1) // Contains markup
             parseHtml(text);
         else
             parseText(text);
@@ -352,7 +352,7 @@ public class BodyParser
     private boolean isStrong(Node node)
     {
         String str = node.toString();
-        if(str.indexOf("<p") != -1)
+        if(str.indexOf("<p") != -1 || str.indexOf("<div") != -1)
             str = str.replaceAll("<p(?:.*?)>(.+)</p>", "$1");
         str = str.replaceAll("<br>", "");
         str = str.trim();

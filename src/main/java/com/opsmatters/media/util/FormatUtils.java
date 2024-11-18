@@ -259,24 +259,4 @@ public class FormatUtils
 
         return ret;
     }
-
-    /**
-     * Returns the given title formatted for as a filename.
-     */
-    public static String getFormattedTitle(String title)
-    {
-        String ret = title;
-        if(ret != null)
-        {
-            ret = ret.trim();
-            if(ret.length() > 0)
-            {
-                ret = ret.toLowerCase()
-                    .replaceAll(" ","-")
-                    .replaceAll("&|:|\\.|\\?","");
-            }
-        }
-
-        return ret;
-    }
 }

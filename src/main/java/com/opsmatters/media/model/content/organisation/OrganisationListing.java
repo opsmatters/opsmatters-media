@@ -29,6 +29,7 @@ import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
+import com.opsmatters.media.util.SessionId;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 
@@ -211,7 +212,7 @@ public class OrganisationListing extends Content
         listing.setSiteId(organisationSite.getSiteId());
         listing.setCode(organisation.getCode());
         listing.setTitle(organisation.getName());
-        listing.setPublishedDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
+        listing.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.now(), config.getField(PUBLISHED_DATE)));
         listing.setFounded(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
         listing.setFeedProvider(SocialProvider.TWITTER);
 
