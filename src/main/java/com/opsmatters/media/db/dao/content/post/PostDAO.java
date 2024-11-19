@@ -44,6 +44,13 @@ public class PostDAO extends ContentDAO<Post>
     private static final Logger logger = Logger.getLogger(PostDAO.class.getName());
 
     /**
+     * The query to use to select a roundup from the ROUNDUPS table by URL.
+     */
+    private static final String GET_BY_URL_SQL =  
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM POSTS WHERE SITE_ID=? AND CODE=? AND ATTRIBUTES LIKE ? ";
+
+    /**
      * The query to use to insert a post into the POSTS table.
      */
     private static final String INSERT_SQL =  
@@ -112,6 +119,68 @@ public class PostDAO extends ContentDAO<Post>
         table.addIndex("POSTS_STATUS_IDX", new String[] {"STATUS"});
         table.addIndex("POSTS_SESSION_IDX", new String[] {"SESSION_ID"});
         table.setInitialised(true);
+    }
+
+    /**
+     * Returns a post from the POSTS table by URL alias.
+     */
+    public synchronized Post getByUrl(String siteId, String code, String urlAlias) throws SQLException
+    {
+        Post ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(getByUrlStmt == null)
+            getByUrlStmt = prepareStatement(getConnection(), GET_BY_URL_SQL);
+        clearParameters(getByUrlStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            getByUrlStmt.setString(1, siteId);
+            getByUrlStmt.setString(2, code);
+            getByUrlStmt.setString(3, "%"+urlAlias+"%");
+            getByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = getByUrlStmt.executeQuery();
+            while(rs.next())
+            {
+                Post content = new Post();
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setTitle(rs.getString(6));
+                content.setPostType(rs.getString(7));
+                content.setPublished(rs.getBoolean(8));
+                content.setPromoted(rs.getBoolean(9));
+                content.setNewsletter(rs.getBoolean(10));
+                content.setFeatured(rs.getBoolean(11));
+                content.setSponsored(rs.getBoolean(12));
+                content.setAttributes(new JSONObject(getClob(rs, 13)));
+                content.setStatus(rs.getString(14));
+                content.setCreatedBy(rs.getString(15));
+                ret = content;
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
     }
 
     /**
@@ -353,6 +422,8 @@ public class PostDAO extends ContentDAO<Post>
     @Override
     protected void close()
     {
+        closeStatement(getByUrlStmt);
+        getByUrlStmt = null;
         closeStatement(insertStmt);
         insertStmt = null;
         closeStatement(updateStmt);
@@ -363,6 +434,7 @@ public class PostDAO extends ContentDAO<Post>
         listByDateStmt = null;
     }
 
+    private PreparedStatement getByUrlStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listByCodeStmt;
