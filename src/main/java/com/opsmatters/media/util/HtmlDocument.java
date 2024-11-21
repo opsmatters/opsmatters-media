@@ -67,6 +67,7 @@ public class HtmlDocument
     private static Pattern HREF_PATTERN = Pattern.compile(" href=\"(.+?)\"", Pattern.DOTALL);
     private static Pattern SPAN_PATTERN = Pattern.compile(OPEN_SPAN, Pattern.DOTALL);
     private static Pattern DIV_CONTENT_PATTERN = Pattern.compile("<div>(.+?)</div>", Pattern.DOTALL);
+    private static Pattern SECTION_CONTENT_PATTERN = Pattern.compile("<section>(.+?)</section>", Pattern.DOTALL);
     private static Pattern H1_CONTENT_PATTERN = Pattern.compile("<h1.*?>(.+?)</h1>", Pattern.DOTALL);
     private static Pattern OL_ATTR_CONTENT_PATTERN = Pattern.compile("<ol(.*?)>(.*?)</ol>", Pattern.DOTALL);
     private static Pattern LI_PATTERN = Pattern.compile("<li>", Pattern.DOTALL);
@@ -695,6 +696,26 @@ public class HtmlDocument
         doc = doc.replaceAll("^<div>\\s*", ""); // <div> at start of doc
         doc = doc.replaceAll("\\s*<div>", "");
         doc = doc.replaceAll("\\s*</div>", "");
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the HTML document contains a "&lt;section&gt;" tag.
+     * @param doc The HTML document to search
+     * @return <CODE>true</CODE> if the HTML document contains a "&lt;section&gt;" tag.
+     */
+    public static boolean hasSection(String doc)
+    {
+        return SECTION_CONTENT_PATTERN.matcher(doc).find();
+    }
+
+    /**
+     * Removes "&lt;section&gt;" tags in the HTML document.
+     */
+    private void removeSections()
+    {
+        doc = doc.replaceAll("^<section>\\s*", ""); // <section> at start of doc
+        doc = doc.replaceAll("\\s*<section>", "");
+        doc = doc.replaceAll("\\s*</section>", "");
     }
 
     /**
@@ -1596,6 +1617,16 @@ public class HtmlDocument
         public Builder removeDivs()
         {
             ret.removeDivs();
+            return this;
+        }
+
+        /**
+         * Removes "&lt;section&gt;" tags in the HTML document.
+         * @return This object
+         */
+        public Builder removeSections()
+        {
+            ret.removeSections();
             return this;
         }
 

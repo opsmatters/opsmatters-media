@@ -375,6 +375,28 @@ public class HtmlUtils
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given string contain a "&lt;section&gt;" tag.
+     * @param str The string to search
+     * @return <CODE>true</CODE> if the given string contain a "&lt;section&gt;" tag.
+     */
+    public static boolean hasSection(String str)
+    {
+        return HtmlDocument.hasSection(str);
+    }
+
+    /**
+     * Removes "&lt;section&gt;" tags in the given string.
+     * @param str The string to amend
+     * @return The amended string.
+     */
+    public static String removeSections(String str)
+    {
+        return HtmlDocument.builder(str)
+            .removeSections()
+            .get();
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the given string contains a "&lt;span&gt;" tag.
      * @param str The string to search
      * @return <CODE>true</CODE> if the given string contains a "&lt;span&gt;" tag.
