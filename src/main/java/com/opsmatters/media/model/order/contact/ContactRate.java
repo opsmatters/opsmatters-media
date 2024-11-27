@@ -32,6 +32,7 @@ public class ContactRate extends BaseEntity
     private String productCode = "";
     private int amount = 0;
     private Currency currency = Currency.UNDEFINED;
+    private String notes = "";
 
     /**
      * Default constructor.
@@ -48,6 +49,7 @@ public class ContactRate extends BaseEntity
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setContactId(contact.getId());
+        setCurrency(contact.getCurrency());
     }
 
     /**
@@ -71,6 +73,7 @@ public class ContactRate extends BaseEntity
             setProductCode(obj.getProductCode());
             setAmount(obj.getAmount());
             setCurrency(obj.getCurrency());
+            setNotes(obj.getNotes());
         }
     }
 
@@ -160,5 +163,21 @@ public class ContactRate extends BaseEntity
     public void setCurrency(Currency currency)
     {
         this.currency = currency;
+    }
+
+    /**
+     * Returns the notes.
+     */
+    public String getNotes()
+    {
+        return notes;
+    }
+
+    /**
+     * Sets the notes.
+     */
+    public void setNotes(String notes)
+    {
+        this.notes = notes;
     }
 }

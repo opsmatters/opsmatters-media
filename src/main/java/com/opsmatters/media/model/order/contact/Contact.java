@@ -30,13 +30,14 @@ import com.opsmatters.media.util.StringUtils;
 public class Contact extends OwnedEntity
 {
     private String name = "";
-    private ContactType type = ContactType.UNDEFINED;
+    private ContactType type = ContactType.INDIVIDUAL;
     private String companyName = "";
-    private String url = "";
+    private String website = "";
     private String notes = "";
     private PaymentMethod method = PaymentMethod.UNDEFINED;
     private PaymentMode mode = PaymentMode.UNDEFINED;
     private Currency currency = Currency.UNDEFINED;
+    private String profileId = "";
     private ContactStatus status = ContactStatus.NEW;
     private SuspendReason reason = SuspendReason.NONE;
 
@@ -76,11 +77,12 @@ public class Contact extends OwnedEntity
             setName(obj.getName());
             setType(obj.getType());
             setCompanyName(obj.getCompanyName());
-            setUrl(obj.getUrl());
+            setWebsite(obj.getWebsite());
             setNotes(obj.getNotes());
             setPaymentMethod(obj.getPaymentMethod());
             setPaymentMode(obj.getPaymentMode());
             setCurrency(obj.getCurrency());
+            setProfileId(obj.getProfileId());
             setStatus(obj.getStatus());
             setReason(obj.getReason());
         }
@@ -151,27 +153,27 @@ public class Contact extends OwnedEntity
     }
 
     /**
-     * Returns the contact url.
+     * Returns the contact website.
      */
-    public String getUrl()
+    public String getWebsite()
     {
-        return url;
+        return website;
     }
 
     /**
-     * Sets the contact url.
+     * Sets the contact website.
      */
-    public void setUrl(String url)
+    public void setWebsite(String website)
     {
-        this.url = url;
+        this.website = website;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the contact url has been set.
+     * Returns <CODE>true</CODE> if the contact website has been set.
      */
-    public boolean hasUrl()
+    public boolean hasWebsite()
     {
-        return getUrl() != null && getUrl().length() > 0;
+        return getWebsite() != null && getWebsite().length() > 0;
     }
 
     /**
@@ -260,6 +262,22 @@ public class Contact extends OwnedEntity
     public void setCurrency(Currency currency)
     {
         this.currency = currency;
+    }
+
+    /**
+     * Returns the profile id.
+     */
+    public String getProfileId()
+    {
+        return profileId;
+    }
+
+    /**
+     * Sets the profile id.
+     */
+    public void setProfileId(String profileId)
+    {
+        this.profileId = profileId;
     }
 
     /**

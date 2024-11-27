@@ -41,7 +41,7 @@ public class ContactRateDAO extends BaseDAO
      * The query to use to select a rate from the CONTACT_RATES table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, SITE_ID, PRODUCT_CODE, AMOUNT, CURRENCY  "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, SITE_ID, PRODUCT_CODE, AMOUNT, CURRENCY, NOTES  "
       + "FROM CONTACT_RATES WHERE ID=?";
 
     /**
@@ -49,22 +49,22 @@ public class ContactRateDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTACT_RATES"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, SITE_ID, PRODUCT_CODE, AMOUNT, CURRENCY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, SITE_ID, PRODUCT_CODE, AMOUNT, CURRENCY, NOTES )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a rate in the CONTACT_RATES table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTACT_RATES SET UPDATED_DATE=?, SITE_ID=?, PRODUCT_CODE=?, AMOUNT=?, CURRENCY=? "
+      "UPDATE CONTACT_RATES SET UPDATED_DATE=?, SITE_ID=?, PRODUCT_CODE=?, AMOUNT=?, CURRENCY=?, NOTES=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the rates from the CONTACT_RATES table by contact.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, SITE_ID, PRODUCT_CODE, AMOUNT, CURRENCY  "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, SITE_ID, PRODUCT_CODE, AMOUNT, CURRENCY, NOTES  "
       + "FROM CONTACT_RATES WHERE CONTACT_ID=? ORDER BY CREATED_DATE";
 
     /**
@@ -101,6 +101,7 @@ public class ContactRateDAO extends BaseDAO
         table.addColumn("PRODUCT_CODE", Types.VARCHAR, 5, true);
         table.addColumn("AMOUNT", Types.INTEGER, true);
         table.addColumn("CURRENCY", Types.VARCHAR, 5, true);
+        table.addColumn("NOTES", Types.LONGVARCHAR, false);
         table.setPrimaryKey("CONTACT_RATES_PK", new String[] {"ID"});
         table.addIndex("CONTACT_RATES_CONTACT_IDX", new String[] {"CONTACT_ID"});
         table.setInitialised(true);
@@ -139,6 +140,7 @@ public class ContactRateDAO extends BaseDAO
                 rate.setProductCode(rs.getString(6));
                 rate.setAmount(rs.getInt(7));
                 rate.setCurrency(rs.getString(8));
+                rate.setNotes(rs.getString(9));
                 ret = rate;
             }
         }
@@ -181,6 +183,7 @@ public class ContactRateDAO extends BaseDAO
             insertStmt.setString(6, rate.getProductCode());
             insertStmt.setInt(7, rate.getAmount());
             insertStmt.setString(8, rate.getCurrency().code());
+            insertStmt.setString(9, rate.getNotes());
             insertStmt.executeUpdate();
 
             logger.info("Created contact rate '"+rate.getId()+"' in CONTACT_RATES");
@@ -217,7 +220,8 @@ public class ContactRateDAO extends BaseDAO
         updateStmt.setString(3, rate.getProductCode());
         updateStmt.setInt(4, rate.getAmount());
         updateStmt.setString(5, rate.getCurrency().code());
-        updateStmt.setString(6, rate.getId());
+        updateStmt.setString(6, rate.getNotes());
+        updateStmt.setString(7, rate.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated contact rate '"+rate.getId()+"' in CONTACT_RATES");
@@ -257,6 +261,7 @@ public class ContactRateDAO extends BaseDAO
                 rate.setProductCode(rs.getString(6));
                 rate.setAmount(rs.getInt(7));
                 rate.setCurrency(rs.getString(8));
+                rate.setNotes(rs.getString(9));
                 ret.add(rate);
             }
         }

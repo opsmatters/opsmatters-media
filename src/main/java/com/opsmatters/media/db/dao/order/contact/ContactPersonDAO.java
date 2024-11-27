@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.db.dao.order.product;
+package com.opsmatters.media.db.dao.order.contact;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -23,71 +23,72 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.order.product.Product;
+import com.opsmatters.media.model.order.contact.Contact;
+import com.opsmatters.media.model.order.contact.ContactPerson;
 import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.db.dao.order.OrderDAOFactory;
 
 /**
- * DAO that provides operations on the PRODUCTS table in the database.
+ * DAO that provides operations on the CONTACT_PERSONS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ProductDAO extends BaseDAO
+public class ContactPersonDAO extends BaseDAO
 {
-    private static final Logger logger = Logger.getLogger(ProductDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(ContactPersonDAO.class.getName());
 
     /**
-     * The query to use to select a product from the PRODUCTS table by id.
+     * The query to use to select a person from the CONTACT_PERSONS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, DESCRIPTION, STATUS, CREATED_BY "
-      + "FROM PRODUCTS WHERE ID=?";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, EMAIL  "
+      + "FROM CONTACT_PERSONS WHERE ID=?";
 
     /**
-     * The query to use to insert a product into the PRODUCTS table.
+     * The query to use to insert a person into the CONTACT_PERSONS table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO PRODUCTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, DESCRIPTION, STATUS, CREATED_BY )"
+      "INSERT INTO CONTACT_PERSONS"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, EMAIL )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update a product in the PRODUCTS table.
+     * The query to use to update a person in the CONTACT_PERSONS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE PRODUCTS SET UPDATED_DATE=?, CODE=?, NAME=?, DESCRIPTION=?, STATUS=?, CREATED_BY=? "
+      "UPDATE CONTACT_PERSONS SET UPDATED_DATE=?, NAME=?, EMAIL=? "
       + "WHERE ID=?";
 
     /**
-     * The query to use to select the products from the PRODUCTS table.
+     * The query to use to select the persons from the CONTACT_PERSONS table by contact.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, DESCRIPTION, STATUS, CREATED_BY "
-      + "FROM PRODUCTS ORDER BY CREATED_DATE";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, EMAIL  "
+      + "FROM CONTACT_PERSONS WHERE CONTACT_ID=? ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to get the count of products from the PRODUCTS table.
+     * The query to use to get the count of persons from the CONTACT_PERSONS table.
      */
     private static final String COUNT_SQL =  
-      "SELECT COUNT(*) FROM PRODUCTS";
+      "SELECT COUNT(*) FROM CONTACT_PERSONS";
 
     /**
-     * The query to use to delete a product from the PRODUCTS table.
+     * The query to use to delete a person from the CONTACT_PERSONS table.
      */
     private static final String DELETE_SQL =  
-      "DELETE FROM PRODUCTS WHERE ID=?";
+      "DELETE FROM CONTACT_PERSONS WHERE ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public ProductDAO(OrderDAOFactory factory)
+    public ContactPersonDAO(OrderDAOFactory factory)
     {
-        super(factory, "PRODUCTS");
+        super(factory, "CONTACT_PERSONS");
     }
 
     /**
-     * Defines the columns and indices for the PRODUCTS table.
+     * Defines the columns and indices for the CONTACT_PERSONS table.
      */
     @Override
     protected void defineTable()
@@ -95,21 +96,20 @@ public class ProductDAO extends BaseDAO
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
-        table.addColumn("CODE", Types.VARCHAR, 5, true);
-        table.addColumn("NAME", Types.VARCHAR, 30, true);
-        table.addColumn("DESCRIPTION", Types.VARCHAR, 128, true);
-        table.addColumn("STATUS", Types.VARCHAR, 15, true);
-        table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
-        table.setPrimaryKey("PRODUCTS_PK", new String[] {"ID"});
+        table.addColumn("CONTACT_ID", Types.VARCHAR, 36, true);
+        table.addColumn("NAME", Types.VARCHAR, 50, true);
+        table.addColumn("EMAIL", Types.VARCHAR, 50, true);
+        table.setPrimaryKey("CONTACT_PERSONS_PK", new String[] {"ID"});
+        table.addIndex("CONTACT_PERSONS_CONTACT_IDX", new String[] {"CONTACT_ID"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns a product from the PRODUCTS table by id.
+     * Returns a person from the CONTACT_PERSONS table by id.
      */
-    public synchronized Product getById(String id) throws SQLException
+    public synchronized ContactPerson getById(String id) throws SQLException
     {
-        Product ret = null;
+        ContactPerson ret = null;
 
         if(!hasConnection())
             return ret;
@@ -128,16 +128,14 @@ public class ProductDAO extends BaseDAO
             rs = getByIdStmt.executeQuery();
             while(rs.next())
             {
-                Product product = new Product();
-                product.setId(rs.getString(1));
-                product.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                product.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                product.setCode(rs.getString(4));
-                product.setName(rs.getString(5));
-                product.setDescription(rs.getString(6));
-                product.setStatus(rs.getString(7));
-                product.setCreatedBy(rs.getString(8));
-                ret = product;
+                ContactPerson person = new ContactPerson();
+                person.setId(rs.getString(1));
+                person.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                person.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                person.setContactId(rs.getString(4));
+                person.setName(rs.getString(5));
+                person.setEmail(rs.getString(6));
+                ret = person;
             }
         }
         finally
@@ -158,11 +156,11 @@ public class ProductDAO extends BaseDAO
     }
 
     /**
-     * Stores the given product in the PRODUCTS table.
+     * Stores the given person in the CONTACT_PERSONS table.
      */
-    public synchronized void add(Product product) throws SQLException
+    public synchronized void add(ContactPerson person) throws SQLException
     {
-        if(!hasConnection() || product == null)
+        if(!hasConnection() || person == null)
             return;
 
         if(insertStmt == null)
@@ -171,17 +169,15 @@ public class ProductDAO extends BaseDAO
 
         try
         {
-            insertStmt.setString(1, product.getId());
-            insertStmt.setTimestamp(2, new Timestamp(product.getCreatedDateMillis()), UTC);
-            insertStmt.setTimestamp(3, new Timestamp(product.getUpdatedDateMillis()), UTC);
-            insertStmt.setString(4, product.getCode());
-            insertStmt.setString(5, product.getName());
-            insertStmt.setString(6, product.getDescription());
-            insertStmt.setString(7, product.getStatus().name());
-            insertStmt.setString(8, product.getCreatedBy());
+            insertStmt.setString(1, person.getId());
+            insertStmt.setTimestamp(2, new Timestamp(person.getCreatedDateMillis()), UTC);
+            insertStmt.setTimestamp(3, new Timestamp(person.getUpdatedDateMillis()), UTC);
+            insertStmt.setString(4, person.getContactId());
+            insertStmt.setString(5, person.getName());
+            insertStmt.setString(6, person.getEmail());
             insertStmt.executeUpdate();
 
-            logger.info("Created product '"+product.getId()+"' in PRODUCTS");
+            logger.info("Created contact person '"+person.getId()+"' in CONTACT_PERSONS");
         }
         catch(SQLException ex)
         {
@@ -192,42 +188,39 @@ public class ProductDAO extends BaseDAO
                 insertStmt = null;
             }
 
-            // Unique constraint violated means that the product already exists
+            // Unique constraint violated means that the contact rate  exists
             if(!getDriver().isConstraintViolation(ex))
                 throw ex;
         }
     }
 
     /**
-     * Updates the given product in the PRODUCTS table.
+     * Updates the given person in the CONTACT_PERSONS table.
      */
-    public synchronized void update(Product product) throws SQLException
+    public synchronized void update(ContactPerson person) throws SQLException
     {
-        if(!hasConnection() || product == null)
+        if(!hasConnection() || person == null)
             return;
 
         if(updateStmt == null)
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
         clearParameters(updateStmt);
 
-        updateStmt.setTimestamp(1, new Timestamp(product.getUpdatedDateMillis()), UTC);
-        updateStmt.setString(2, product.getCode());
-        updateStmt.setString(3, product.getName());
-        updateStmt.setString(4, product.getDescription());
-        updateStmt.setString(5, product.getStatus().name());
-        updateStmt.setString(6, product.getCreatedBy());
-        updateStmt.setString(7, product.getId());
+        updateStmt.setTimestamp(1, new Timestamp(person.getUpdatedDateMillis()), UTC);
+        updateStmt.setString(2, person.getName());
+        updateStmt.setString(3, person.getEmail());
+        updateStmt.setString(4, person.getId());
         updateStmt.executeUpdate();
 
-        logger.info("Updated product '"+product.getId()+"' in PRODUCTS");
+        logger.info("Updated contact person '"+person.getId()+"' in CONTACT_PERSONS");
     }
 
     /**
-     * Returns the products from the PRODUCTS table.
+     * Returns the persons from the CONTACT_PERSONS table by contact.
      */
-    public synchronized List<Product> list() throws SQLException
+    public synchronized List<ContactPerson> list(Contact contact) throws SQLException
     {
-        List<Product> ret = null;
+        List<ContactPerson> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -241,21 +234,20 @@ public class ProductDAO extends BaseDAO
 
         try
         {
+            listStmt.setString(1, contact.getId());
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
-            ret = new ArrayList<Product>();
+            ret = new ArrayList<ContactPerson>();
             while(rs.next())
             {
-                Product product = new Product();
-                product.setId(rs.getString(1));
-                product.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                product.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                product.setCode(rs.getString(4));
-                product.setName(rs.getString(5));
-                product.setDescription(rs.getString(6));
-                product.setStatus(rs.getString(7));
-                product.setCreatedBy(rs.getString(8));
-                ret.add(product);
+                ContactPerson person = new ContactPerson();
+                person.setId(rs.getString(1));
+                person.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                person.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                person.setContactId(rs.getString(4));
+                person.setName(rs.getString(5));
+                person.setEmail(rs.getString(6));
+                ret.add(person);
             }
         }
         finally
@@ -276,7 +268,7 @@ public class ProductDAO extends BaseDAO
     }
 
     /**
-     * Returns the count of products from the PRODUCTS table.
+     * Returns the count of persons from the CONTACT_PERSONS table.
      */
     public int count() throws SQLException
     {
@@ -294,21 +286,21 @@ public class ProductDAO extends BaseDAO
     }
 
     /**
-     * Removes the given product from the PRODUCTS table.
+     * Removes the given person from the CONTACT_PERSONS table.
      */
-    public synchronized void delete(Product product) throws SQLException
+    public synchronized void delete(ContactPerson person) throws SQLException
     {
-        if(!hasConnection() || product == null)
+        if(!hasConnection() || person == null)
             return;
 
         if(deleteStmt == null)
             deleteStmt = prepareStatement(getConnection(), DELETE_SQL);
         clearParameters(deleteStmt);
 
-        deleteStmt.setString(1, product.getId());
+        deleteStmt.setString(1, person.getId());
         deleteStmt.executeUpdate();
 
-        logger.info("Deleted product '"+product.getId()+"' in PRODUCTS");
+        logger.info("Deleted contact person '"+person.getId()+"' in CONTACT_PERSONS");
     }
 
     /**

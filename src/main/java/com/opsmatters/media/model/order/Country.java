@@ -27,8 +27,31 @@ import java.util.ArrayList;
 public enum Country
 {
     UNDEFINED("", "Undefined"),
-    UNITED_KINGDOM("GB", "United Kingdom"),
-    UNITED_STATES("US", "United States"),
+    ARMENIA("AM", "Armenia"),
+    AUSTRALIA("AU", "Australia"),
+    BULGARIA("BG", "Bulgaria"),
+    CANADA("CA", "Canada"),
+    CHINA("CN", "China"),
+    CYPRUS("CY", "Cyprus"),
+    ESTONIA("EE", "Estonia"),
+    GERMANY("DE", "Germany"),
+    INDIA("IN", "India"),
+    IRELAND("IE", "Ireland"),
+    LITHUANIA("LT", "Lithuania"),
+    MALTA("MT", "Malta"),
+    MONTENEGRO("ME", "Montenegro"),
+    NETHERLANDS("NL", "Netherlands"),
+    PANAMA("PA", "Panama"),
+    POLAND("PL", "Poland"),
+    ROMANIA("RO", "Romania"),
+    SINGAPORE("SG", "Singapore"),
+    SPAIN("ES", "Spain"),
+    SWEDEN("SE", "Sweden"),
+    SWITZERLAND("CH", "Switzerland"),
+    UAE("AE", "United Arab Emirates"),
+    UK("GB", "United Kingdom"),
+    UKRAINE("UA", "Ukraine"),
+    USA("US", "United States"),
     ALL("", "All"); // Pseudo status
 
     private String code;
@@ -89,6 +112,22 @@ public enum Country
     }
 
     /**
+     * Returns the type for the given code.
+     * @param code The type code
+     * @return The type for the given code
+     */
+    public static Country fromCode(String code)
+    {
+        Country[] types = values();
+        for(Country type : types)
+        {
+            if(type.code().equals(code))
+                return type;
+        }
+        return null;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the given value is contained in the list of types.
      * @param value The type value
      * @return <CODE>true</CODE> if the given value is contained in the list of types
@@ -106,8 +145,9 @@ public enum Country
         List<Country> ret = new ArrayList<Country>();
 
         ret.add(UNDEFINED);
-        ret.add(UNITED_KINGDOM);
-        ret.add(UNITED_STATES);
+        ret.add(UAE);
+        ret.add(UK);
+        ret.add(USA);
 
         return ret;
     }

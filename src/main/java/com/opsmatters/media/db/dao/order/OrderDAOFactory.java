@@ -20,6 +20,8 @@ import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.db.dao.DAOFactory;
 import com.opsmatters.media.db.dao.order.contact.ContactDAO;
 import com.opsmatters.media.db.dao.order.contact.ContactRateDAO;
+import com.opsmatters.media.db.dao.order.contact.ContactPersonDAO;
+import com.opsmatters.media.db.dao.order.billing.BillingProfileDAO;
 import com.opsmatters.media.db.dao.order.product.ProductDAO;
 
 /**
@@ -38,6 +40,8 @@ public class OrderDAOFactory extends DAOFactory
 
         getContactDAO();
         getContactRateDAO();
+        getContactPersonDAO();
+        getBillingProfileDAO();
         getProductDAO();
     }
 
@@ -62,6 +66,26 @@ public class OrderDAOFactory extends DAOFactory
     }
 
     /**
+     * Returns the contact person DAO.
+     */
+    public ContactPersonDAO getContactPersonDAO()
+    {
+        if(contactPersonDAO == null)
+            contactPersonDAO = new ContactPersonDAO(this);
+        return contactPersonDAO;
+    }
+
+    /**
+     * Returns the billing profile DAO.
+     */
+    public BillingProfileDAO getBillingProfileDAO()
+    {
+        if(billingProfileDAO == null)
+            billingProfileDAO = new BillingProfileDAO(this);
+        return billingProfileDAO;
+    }
+
+    /**
      * Returns the product DAO.
      */
     public ProductDAO getProductDAO()
@@ -80,10 +104,14 @@ public class OrderDAOFactory extends DAOFactory
         super.close();
         contactDAO = null;
         contactRateDAO = null;
+        contactPersonDAO = null;
+        billingProfileDAO = null;
         productDAO = null;
     }
 
     private ContactDAO contactDAO;
     private ContactRateDAO contactRateDAO;
+    private ContactPersonDAO contactPersonDAO;
+    private BillingProfileDAO billingProfileDAO;
     private ProductDAO productDAO;
 }

@@ -26,10 +26,9 @@ import java.util.ArrayList;
  */
 public enum ContactType
 {
-    UNDEFINED("Undefined"),
-    AGENCY("Agency"),
+    INDIVIDUAL("Individual"),
+    COMPANY("Company"),
     PLATFORM("Platform"),
-    RESELLER("Reseller"),
     ALL("All"); // Pseudo status
 
     private String value;
@@ -94,11 +93,10 @@ public enum ContactType
     {
         List<ContactType> ret = new ArrayList<ContactType>();
 
-        ret.add(UNDEFINED);
-        ret.add(AGENCY);
+        ret.add(INDIVIDUAL);
+        ret.add(COMPANY);
         ret.add(PLATFORM);
-        ret.add(RESELLER);
-
+ 
         return ret;
     }
 }

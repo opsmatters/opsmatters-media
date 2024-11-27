@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.order.contact;
+package com.opsmatters.media.model.order.billing;
 
 import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Represents the status of a contact email.
+ * Represents the status of a profile.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum EmailStatus
+public enum ProfileStatus
 {
-//GERALD
-//    NEW("New", "glyphicon-unchecked", ""),
+    NEW("New", "glyphicon-unchecked", ""),
     ACTIVE("Active", "glyphicon-ok-circle", "status-success"),
     DISABLED("Disabled", "glyphicon-ban-circle", "status-error"),
     ALL("All", "", ""); // Pseudo status
@@ -42,7 +41,7 @@ public enum EmailStatus
      * @param icon The glyphicon for the status
      * @param css The css class for the status
      */
-    EmailStatus(String value, String icon, String css)
+    ProfileStatus(String value, String icon, String css)
     {
         this.value = value;
         this.icon = icon;
@@ -90,10 +89,10 @@ public enum EmailStatus
      * @param value The type value
      * @return The type for the given value
      */
-    public static EmailStatus fromValue(String value)
+    public static ProfileStatus fromValue(String value)
     {
-        EmailStatus[] types = values();
-        for(EmailStatus type : types)
+        ProfileStatus[] types = values();
+        for(ProfileStatus type : types)
         {
             if(type.value().equals(value))
                 return type;
@@ -111,16 +110,14 @@ public enum EmailStatus
         return valueOf(value) != null;
     }
 
-//GERALD: needed?
     /**
-     * Returns a list of the email statuses.
+     * Returns a list of the profile statuses.
      */
-    public static List<EmailStatus> toList()
+    public static List<ProfileStatus> toList()
     {
-        List<EmailStatus> ret = new ArrayList<EmailStatus>();
+        List<ProfileStatus> ret = new ArrayList<ProfileStatus>();
 
-//GERALD
-//        ret.add(NEW);
+        ret.add(NEW);
         ret.add(ACTIVE);
         ret.add(DISABLED);
 
