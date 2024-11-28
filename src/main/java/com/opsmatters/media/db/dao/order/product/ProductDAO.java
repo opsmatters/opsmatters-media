@@ -40,7 +40,7 @@ public class ProductDAO extends BaseDAO
      * The query to use to select a product from the PRODUCTS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, DESCRIPTION, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, TEMPLATE, STATUS, CREATED_BY "
       + "FROM PRODUCTS WHERE ID=?";
 
     /**
@@ -48,7 +48,7 @@ public class ProductDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO PRODUCTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, DESCRIPTION, STATUS, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, TEMPLATE, STATUS, CREATED_BY )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ? )";
 
@@ -56,14 +56,14 @@ public class ProductDAO extends BaseDAO
      * The query to use to update a product in the PRODUCTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE PRODUCTS SET UPDATED_DATE=?, CODE=?, NAME=?, DESCRIPTION=?, STATUS=?, CREATED_BY=? "
+      "UPDATE PRODUCTS SET UPDATED_DATE=?, CODE=?, NAME=?, TEMPLATE=?, STATUS=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the products from the PRODUCTS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, DESCRIPTION, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, TEMPLATE, STATUS, CREATED_BY "
       + "FROM PRODUCTS ORDER BY CREATED_DATE";
 
     /**
@@ -97,7 +97,7 @@ public class ProductDAO extends BaseDAO
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("NAME", Types.VARCHAR, 30, true);
-        table.addColumn("DESCRIPTION", Types.VARCHAR, 128, true);
+        table.addColumn("TEMPLATE", Types.VARCHAR, 128, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("PRODUCTS_PK", new String[] {"ID"});
@@ -134,7 +134,7 @@ public class ProductDAO extends BaseDAO
                 product.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 product.setCode(rs.getString(4));
                 product.setName(rs.getString(5));
-                product.setDescription(rs.getString(6));
+                product.setTemplate(rs.getString(6));
                 product.setStatus(rs.getString(7));
                 product.setCreatedBy(rs.getString(8));
                 ret = product;
@@ -176,7 +176,7 @@ public class ProductDAO extends BaseDAO
             insertStmt.setTimestamp(3, new Timestamp(product.getUpdatedDateMillis()), UTC);
             insertStmt.setString(4, product.getCode());
             insertStmt.setString(5, product.getName());
-            insertStmt.setString(6, product.getDescription());
+            insertStmt.setString(6, product.getTemplate());
             insertStmt.setString(7, product.getStatus().name());
             insertStmt.setString(8, product.getCreatedBy());
             insertStmt.executeUpdate();
@@ -213,7 +213,7 @@ public class ProductDAO extends BaseDAO
         updateStmt.setTimestamp(1, new Timestamp(product.getUpdatedDateMillis()), UTC);
         updateStmt.setString(2, product.getCode());
         updateStmt.setString(3, product.getName());
-        updateStmt.setString(4, product.getDescription());
+        updateStmt.setString(4, product.getTemplate());
         updateStmt.setString(5, product.getStatus().name());
         updateStmt.setString(6, product.getCreatedBy());
         updateStmt.setString(7, product.getId());
@@ -252,7 +252,7 @@ public class ProductDAO extends BaseDAO
                 product.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 product.setCode(rs.getString(4));
                 product.setName(rs.getString(5));
-                product.setDescription(rs.getString(6));
+                product.setTemplate(rs.getString(6));
                 product.setStatus(rs.getString(7));
                 product.setCreatedBy(rs.getString(8));
                 ret.add(product);

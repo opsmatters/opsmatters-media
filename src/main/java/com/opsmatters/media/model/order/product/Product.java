@@ -28,7 +28,7 @@ public class Product extends OwnedEntity
 {
     private String code = "";
     private String name = "";
-    private String description = "";
+    private String template = "";
     private ProductStatus status = ProductStatus.NEW;
 
     /**
@@ -66,7 +66,7 @@ public class Product extends OwnedEntity
             super.copyAttributes(obj);
             setCode(obj.getCode());
             setName(obj.getName());
-            setDescription(obj.getDescription());
+            setTemplate(obj.getTemplate());
             setStatus(obj.getStatus());
         }
     }
@@ -112,27 +112,27 @@ public class Product extends OwnedEntity
     }
 
     /**
-     * Returns the product description.
+     * Returns the product template.
      */
-    public String getDescription()
+    public String getTemplate()
     {
-        return description;
+        return template;
     }
 
     /**
-     * Sets the product description.
+     * Sets the product template.
      */
-    public void setDescription(String description)
+    public void setTemplate(String template)
     {
-        this.description = description;
+        this.template = template;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the product description has been set.
+     * Returns <CODE>true</CODE> if the product template has been set.
      */
-    public boolean hasDescription()
+    public boolean hasTemplate()
     {
-        return getDescription() != null && getDescription().length() > 0;
+        return getTemplate() != null && getTemplate().length() > 0;
     }
 
     /**
