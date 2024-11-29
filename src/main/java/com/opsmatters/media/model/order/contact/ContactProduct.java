@@ -21,15 +21,15 @@ import com.opsmatters.media.model.order.Currency;
 import com.opsmatters.media.util.StringUtils;
 
 /**
- * Class representing a contact rate.
+ * Class representing a contact product.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContactRate extends BaseEntity
+public class ContactProduct extends BaseEntity
 {
     private String contactId = "";
-    private String siteId = "";
     private String productCode = "";
+    private String siteId = "";
     private int amount = 0;
     private Currency currency = Currency.UNDEFINED;
     private String notes = "";
@@ -37,14 +37,14 @@ public class ContactRate extends BaseEntity
     /**
      * Default constructor.
      */
-    public ContactRate()
+    public ContactProduct()
     {
     }
 
     /**
      * Constructor that takes a contact.
      */
-    public ContactRate(Contact contact)
+    public ContactProduct(Contact contact)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
@@ -55,7 +55,7 @@ public class ContactRate extends BaseEntity
     /**
      * Copy constructor.
      */
-    public ContactRate(ContactRate obj)
+    public ContactProduct(ContactProduct obj)
     {
         copyAttributes(obj);
     }
@@ -63,14 +63,14 @@ public class ContactRate extends BaseEntity
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ContactRate obj)
+    public void copyAttributes(ContactProduct obj)
     {
         if(obj != null)
         {
             super.copyAttributes(obj);
             setContactId(obj.getContactId());
-            setSiteId(obj.getSiteId());
             setProductCode(obj.getProductCode());
+            setSiteId(obj.getSiteId());
             setAmount(obj.getAmount());
             setCurrency(obj.getCurrency());
             setNotes(obj.getNotes());
@@ -94,22 +94,6 @@ public class ContactRate extends BaseEntity
     }
 
     /**
-     * Returns the site id.
-     */
-    public String getSiteId()
-    {
-        return siteId;
-    }
-
-    /**
-     * Sets the site id.
-     */
-    public void setSiteId(String siteId)
-    {
-        this.siteId = siteId;
-    }
-
-    /**
      * Returns the product code.
      */
     public String getProductCode()
@@ -123,6 +107,22 @@ public class ContactRate extends BaseEntity
     public void setProductCode(String productCode)
     {
         this.productCode = productCode;
+    }
+
+    /**
+     * Returns the site id.
+     */
+    public String getSiteId()
+    {
+        return siteId;
+    }
+
+    /**
+     * Sets the site id.
+     */
+    public void setSiteId(String siteId)
+    {
+        this.siteId = siteId;
     }
 
     /**

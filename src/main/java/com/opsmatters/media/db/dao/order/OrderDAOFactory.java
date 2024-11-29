@@ -21,7 +21,7 @@ import com.opsmatters.media.db.dao.DAOFactory;
 import com.opsmatters.media.db.dao.order.product.ProductDAO;
 import com.opsmatters.media.db.dao.order.contact.CompanyDAO;
 import com.opsmatters.media.db.dao.order.contact.ContactDAO;
-import com.opsmatters.media.db.dao.order.contact.ContactRateDAO;
+import com.opsmatters.media.db.dao.order.contact.ContactProductDAO;
 import com.opsmatters.media.db.dao.order.contact.ContactPersonDAO;
 
 /**
@@ -41,7 +41,7 @@ public class OrderDAOFactory extends DAOFactory
         getProductDAO();
         getCompanyDAO();
         getContactDAO();
-        getContactRateDAO();
+        getContactProductDAO();
         getContactPersonDAO();
     }
 
@@ -76,13 +76,13 @@ public class OrderDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the contact rate DAO.
+     * Returns the contact product DAO.
      */
-    public ContactRateDAO getContactRateDAO()
+    public ContactProductDAO getContactProductDAO()
     {
-        if(contactRateDAO == null)
-            contactRateDAO = new ContactRateDAO(this);
-        return contactRateDAO;
+        if(contactProductDAO == null)
+            contactProductDAO = new ContactProductDAO(this);
+        return contactProductDAO;
     }
 
     /**
@@ -105,13 +105,13 @@ public class OrderDAOFactory extends DAOFactory
         productDAO = null;
         companyDAO = null;
         contactDAO = null;
-        contactRateDAO = null;
+        contactProductDAO = null;
         contactPersonDAO = null;
     }
 
     private ProductDAO productDAO;
     private CompanyDAO companyDAO;
     private ContactDAO contactDAO;
-    private ContactRateDAO contactRateDAO;
+    private ContactProductDAO contactProductDAO;
     private ContactPersonDAO contactPersonDAO;
 }

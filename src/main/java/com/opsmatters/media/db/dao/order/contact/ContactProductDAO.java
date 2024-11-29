@@ -24,71 +24,71 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.order.contact.Contact;
-import com.opsmatters.media.model.order.contact.ContactRate;
+import com.opsmatters.media.model.order.contact.ContactProduct;
 import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.db.dao.order.OrderDAOFactory;
 
 /**
- * DAO that provides operations on the CONTACT_RATES table in the database.
+ * DAO that provides operations on the CONTACT_PRODUCTS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContactRateDAO extends BaseDAO
+public class ContactProductDAO extends BaseDAO
 {
-    private static final Logger logger = Logger.getLogger(ContactRateDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(ContactProductDAO.class.getName());
 
     /**
-     * The query to use to select a rate from the CONTACT_RATES table by id.
+     * The query to use to select a product from the CONTACT_PRODUCTS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, SITE_ID, PRODUCT_CODE, AMOUNT, CURRENCY, NOTES  "
-      + "FROM CONTACT_RATES WHERE ID=?";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, PRODUCT_CODE, SITE_ID, AMOUNT, CURRENCY, NOTES  "
+      + "FROM CONTACT_PRODUCTS WHERE ID=?";
 
     /**
-     * The query to use to insert a rate into the CONTACT_RATES table.
+     * The query to use to insert a product into the CONTACT_PRODUCTS table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO CONTACT_RATES"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, SITE_ID, PRODUCT_CODE, AMOUNT, CURRENCY, NOTES )"
+      "INSERT INTO CONTACT_PRODUCTS"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, PRODUCT_CODE, SITE_ID, AMOUNT, CURRENCY, NOTES )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update a rate in the CONTACT_RATES table.
+     * The query to use to update a product in the CONTACT_PRODUCTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTACT_RATES SET UPDATED_DATE=?, SITE_ID=?, PRODUCT_CODE=?, AMOUNT=?, CURRENCY=?, NOTES=? "
+      "UPDATE CONTACT_PRODUCTS SET UPDATED_DATE=?, PRODUCT_CODE=?, SITE_ID=?, AMOUNT=?, CURRENCY=?, NOTES=? "
       + "WHERE ID=?";
 
     /**
-     * The query to use to select the rates from the CONTACT_RATES table by contact.
+     * The query to use to select the products from the CONTACT_PRODUCTS table by contact.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, SITE_ID, PRODUCT_CODE, AMOUNT, CURRENCY, NOTES  "
-      + "FROM CONTACT_RATES WHERE CONTACT_ID=? ORDER BY CREATED_DATE";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, PRODUCT_CODE, SITE_ID, AMOUNT, CURRENCY, NOTES  "
+      + "FROM CONTACT_PRODUCTS WHERE CONTACT_ID=? ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to get the count of rates from the CONTACT_RATES table.
+     * The query to use to get the count of products from the CONTACT_PRODUCTS table.
      */
     private static final String COUNT_SQL =  
-      "SELECT COUNT(*) FROM CONTACT_RATES";
+      "SELECT COUNT(*) FROM CONTACT_PRODUCTS";
 
     /**
-     * The query to use to delete a rate from the CONTACT_RATES table.
+     * The query to use to delete a product from the CONTACT_PRODUCTS table.
      */
     private static final String DELETE_SQL =  
-      "DELETE FROM CONTACT_RATES WHERE ID=?";
+      "DELETE FROM CONTACT_PRODUCTS WHERE ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public ContactRateDAO(OrderDAOFactory factory)
+    public ContactProductDAO(OrderDAOFactory factory)
     {
-        super(factory, "CONTACT_RATES");
+        super(factory, "CONTACT_PRODUCTS");
     }
 
     /**
-     * Defines the columns and indices for the CONTACT_RATES table.
+     * Defines the columns and indices for the CONTACT_PRODUCTS table.
      */
     @Override
     protected void defineTable()
@@ -97,22 +97,22 @@ public class ContactRateDAO extends BaseDAO
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("CONTACT_ID", Types.VARCHAR, 36, true);
-        table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("PRODUCT_CODE", Types.VARCHAR, 5, true);
+        table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
         table.addColumn("AMOUNT", Types.INTEGER, true);
         table.addColumn("CURRENCY", Types.VARCHAR, 5, true);
         table.addColumn("NOTES", Types.LONGVARCHAR, false);
-        table.setPrimaryKey("CONTACT_RATES_PK", new String[] {"ID"});
-        table.addIndex("CONTACT_RATES_CONTACT_IDX", new String[] {"CONTACT_ID"});
+        table.setPrimaryKey("CONTACT_PRODUCTS_PK", new String[] {"ID"});
+        table.addIndex("CONTACT_PRODUCTS_CONTACT_IDX", new String[] {"CONTACT_ID"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns a rate from the CONTACT_RATES table by id.
+     * Returns a product from the CONTACT_PRODUCTS table by id.
      */
-    public synchronized ContactRate getById(String id) throws SQLException
+    public synchronized ContactProduct getById(String id) throws SQLException
     {
-        ContactRate ret = null;
+        ContactProduct ret = null;
 
         if(!hasConnection())
             return ret;
@@ -131,17 +131,17 @@ public class ContactRateDAO extends BaseDAO
             rs = getByIdStmt.executeQuery();
             while(rs.next())
             {
-                ContactRate rate = new ContactRate();
-                rate.setId(rs.getString(1));
-                rate.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                rate.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                rate.setContactId(rs.getString(4));
-                rate.setSiteId(rs.getString(5));
-                rate.setProductCode(rs.getString(6));
-                rate.setAmount(rs.getInt(7));
-                rate.setCurrency(rs.getString(8));
-                rate.setNotes(rs.getString(9));
-                ret = rate;
+                ContactProduct product = new ContactProduct();
+                product.setId(rs.getString(1));
+                product.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                product.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                product.setContactId(rs.getString(4));
+                product.setProductCode(rs.getString(5));
+                product.setSiteId(rs.getString(6));
+                product.setAmount(rs.getInt(7));
+                product.setCurrency(rs.getString(8));
+                product.setNotes(rs.getString(9));
+                ret = product;
             }
         }
         finally
@@ -162,11 +162,11 @@ public class ContactRateDAO extends BaseDAO
     }
 
     /**
-     * Stores the given rate in the CONTACT_RATES table.
+     * Stores the given product in the CONTACT_PRODUCTS table.
      */
-    public synchronized void add(ContactRate rate) throws SQLException
+    public synchronized void add(ContactProduct product) throws SQLException
     {
-        if(!hasConnection() || rate == null)
+        if(!hasConnection() || product == null)
             return;
 
         if(insertStmt == null)
@@ -175,18 +175,18 @@ public class ContactRateDAO extends BaseDAO
 
         try
         {
-            insertStmt.setString(1, rate.getId());
-            insertStmt.setTimestamp(2, new Timestamp(rate.getCreatedDateMillis()), UTC);
-            insertStmt.setTimestamp(3, new Timestamp(rate.getUpdatedDateMillis()), UTC);
-            insertStmt.setString(4, rate.getContactId());
-            insertStmt.setString(5, rate.getSiteId());
-            insertStmt.setString(6, rate.getProductCode());
-            insertStmt.setInt(7, rate.getAmount());
-            insertStmt.setString(8, rate.getCurrency().code());
-            insertStmt.setString(9, rate.getNotes());
+            insertStmt.setString(1, product.getId());
+            insertStmt.setTimestamp(2, new Timestamp(product.getCreatedDateMillis()), UTC);
+            insertStmt.setTimestamp(3, new Timestamp(product.getUpdatedDateMillis()), UTC);
+            insertStmt.setString(4, product.getContactId());
+            insertStmt.setString(5, product.getProductCode());
+            insertStmt.setString(6, product.getSiteId());
+            insertStmt.setInt(7, product.getAmount());
+            insertStmt.setString(8, product.getCurrency().code());
+            insertStmt.setString(9, product.getNotes());
             insertStmt.executeUpdate();
 
-            logger.info("Created contact rate '"+rate.getId()+"' in CONTACT_RATES");
+            logger.info("Created contact product '"+product.getId()+"' in CONTACT_PRODUCTS");
         }
         catch(SQLException ex)
         {
@@ -197,42 +197,42 @@ public class ContactRateDAO extends BaseDAO
                 insertStmt = null;
             }
 
-            // Unique constraint violated means that the contact rate  exists
+            // Unique constraint violated means that the contact product already exists
             if(!getDriver().isConstraintViolation(ex))
                 throw ex;
         }
     }
 
     /**
-     * Updates the given rate in the CONTACT_RATES table.
+     * Updates the given product in the CONTACT_PRODUCTS table.
      */
-    public synchronized void update(ContactRate rate) throws SQLException
+    public synchronized void update(ContactProduct product) throws SQLException
     {
-        if(!hasConnection() || rate == null)
+        if(!hasConnection() || product == null)
             return;
 
         if(updateStmt == null)
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
         clearParameters(updateStmt);
 
-        updateStmt.setTimestamp(1, new Timestamp(rate.getUpdatedDateMillis()), UTC);
-        updateStmt.setString(2, rate.getSiteId());
-        updateStmt.setString(3, rate.getProductCode());
-        updateStmt.setInt(4, rate.getAmount());
-        updateStmt.setString(5, rate.getCurrency().code());
-        updateStmt.setString(6, rate.getNotes());
-        updateStmt.setString(7, rate.getId());
+        updateStmt.setTimestamp(1, new Timestamp(product.getUpdatedDateMillis()), UTC);
+        updateStmt.setString(2, product.getProductCode());
+        updateStmt.setString(3, product.getSiteId());
+        updateStmt.setInt(4, product.getAmount());
+        updateStmt.setString(5, product.getCurrency().code());
+        updateStmt.setString(6, product.getNotes());
+        updateStmt.setString(7, product.getId());
         updateStmt.executeUpdate();
 
-        logger.info("Updated contact rate '"+rate.getId()+"' in CONTACT_RATES");
+        logger.info("Updated contact product '"+product.getId()+"' in CONTACT_PRODUCTS");
     }
 
     /**
-     * Returns the rates from the CONTACT_RATES table by contact.
+     * Returns the products from the CONTACT_PRODUCTS table by contact.
      */
-    public synchronized List<ContactRate> list(Contact contact) throws SQLException
+    public synchronized List<ContactProduct> list(Contact contact) throws SQLException
     {
-        List<ContactRate> ret = null;
+        List<ContactProduct> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -249,20 +249,20 @@ public class ContactRateDAO extends BaseDAO
             listStmt.setString(1, contact.getId());
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
-            ret = new ArrayList<ContactRate>();
+            ret = new ArrayList<ContactProduct>();
             while(rs.next())
             {
-                ContactRate rate = new ContactRate();
-                rate.setId(rs.getString(1));
-                rate.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                rate.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                rate.setContactId(rs.getString(4));
-                rate.setSiteId(rs.getString(5));
-                rate.setProductCode(rs.getString(6));
-                rate.setAmount(rs.getInt(7));
-                rate.setCurrency(rs.getString(8));
-                rate.setNotes(rs.getString(9));
-                ret.add(rate);
+                ContactProduct product = new ContactProduct();
+                product.setId(rs.getString(1));
+                product.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                product.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                product.setContactId(rs.getString(4));
+                product.setProductCode(rs.getString(5));
+                product.setSiteId(rs.getString(6));
+                product.setAmount(rs.getInt(7));
+                product.setCurrency(rs.getString(8));
+                product.setNotes(rs.getString(9));
+                ret.add(product);
             }
         }
         finally
@@ -283,7 +283,7 @@ public class ContactRateDAO extends BaseDAO
     }
 
     /**
-     * Returns the count of rates from the CONTACT_RATES table.
+     * Returns the count of products from the CONTACT_PRODUCTS table.
      */
     public int count() throws SQLException
     {
@@ -301,21 +301,21 @@ public class ContactRateDAO extends BaseDAO
     }
 
     /**
-     * Removes the given rate from the CONTACT_RATES table.
+     * Removes the given product from the CONTACT_PRODUCTS table.
      */
-    public synchronized void delete(ContactRate rate) throws SQLException
+    public synchronized void delete(ContactProduct product) throws SQLException
     {
-        if(!hasConnection() || rate == null)
+        if(!hasConnection() || product == null)
             return;
 
         if(deleteStmt == null)
             deleteStmt = prepareStatement(getConnection(), DELETE_SQL);
         clearParameters(deleteStmt);
 
-        deleteStmt.setString(1, rate.getId());
+        deleteStmt.setString(1, product.getId());
         deleteStmt.executeUpdate();
 
-        logger.info("Deleted contact rate '"+rate.getId()+"' in CONTACT_RATES");
+        logger.info("Deleted contact product '"+product.getId()+"' in CONTACT_PRODUCTS");
     }
 
     /**
