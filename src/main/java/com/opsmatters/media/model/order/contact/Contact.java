@@ -31,13 +31,14 @@ public class Contact extends OwnedEntity
 {
     private String name = "";
     private ContactType type = ContactType.INDIVIDUAL;
-    private String companyName = "";
+    private String contactEmail = "";
+    private String billingEmail = "";
+    private String companyId = "";
     private String website = "";
     private String notes = "";
     private PaymentMethod method = PaymentMethod.UNDEFINED;
     private PaymentMode mode = PaymentMode.UNDEFINED;
     private Currency currency = Currency.UNDEFINED;
-    private String profileId = "";
     private ContactStatus status = ContactStatus.NEW;
     private SuspendReason reason = SuspendReason.NONE;
 
@@ -76,13 +77,14 @@ public class Contact extends OwnedEntity
             super.copyAttributes(obj);
             setName(obj.getName());
             setType(obj.getType());
-            setCompanyName(obj.getCompanyName());
+            setContactEmail(obj.getContactEmail());
+            setBillingEmail(obj.getBillingEmail());
+            setCompanyId(obj.getCompanyId());
             setWebsite(obj.getWebsite());
             setNotes(obj.getNotes());
             setPaymentMethod(obj.getPaymentMethod());
             setPaymentMode(obj.getPaymentMode());
             setCurrency(obj.getCurrency());
-            setProfileId(obj.getProfileId());
             setStatus(obj.getStatus());
             setReason(obj.getReason());
         }
@@ -129,27 +131,67 @@ public class Contact extends OwnedEntity
     }
 
     /**
-     * Returns the contact company name.
+     * Returns the contact email.
      */
-    public String getCompanyName()
+    public String getContactEmail()
     {
-        return companyName;
+        return contactEmail;
     }
 
     /**
-     * Sets the contact company name.
+     * Sets the contact email.
      */
-    public void setCompanyName(String companyName)
+    public void setContactEmail(String contactEmail)
     {
-        this.companyName = companyName;
+        this.contactEmail = contactEmail;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the contact company name has been set.
+     * Returns <CODE>true</CODE> if the contact email has been set.
      */
-    public boolean hasCompanyName()
+    public boolean hasContactEmail()
     {
-        return getCompanyName() != null && getCompanyName().length() > 0;
+        return getContactEmail() != null && getContactEmail().length() > 0;
+    }
+
+    /**
+     * Returns the billing email.
+     */
+    public String getBillingEmail()
+    {
+        return billingEmail;
+    }
+
+    /**
+     * Sets the billing email.
+     */
+    public void setBillingEmail(String billingEmail)
+    {
+        this.billingEmail = billingEmail;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the billing email has been set.
+     */
+    public boolean hasBillingEmail()
+    {
+        return getBillingEmail() != null && getBillingEmail().length() > 0;
+    }
+
+    /**
+     * Returns the company id.
+     */
+    public String getCompanyId()
+    {
+        return companyId;
+    }
+
+    /**
+     * Sets the company id.
+     */
+    public void setCompanyId(String companyId)
+    {
+        this.companyId = companyId;
     }
 
     /**
@@ -262,22 +304,6 @@ public class Contact extends OwnedEntity
     public void setCurrency(Currency currency)
     {
         this.currency = currency;
-    }
-
-    /**
-     * Returns the profile id.
-     */
-    public String getProfileId()
-    {
-        return profileId;
-    }
-
-    /**
-     * Sets the profile id.
-     */
-    public void setProfileId(String profileId)
-    {
-        this.profileId = profileId;
     }
 
     /**

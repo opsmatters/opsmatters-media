@@ -18,11 +18,11 @@ package com.opsmatters.media.db.dao.order;
 import com.opsmatters.media.db.JDBCDatabaseDriver;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.db.dao.DAOFactory;
+import com.opsmatters.media.db.dao.order.product.ProductDAO;
+import com.opsmatters.media.db.dao.order.contact.CompanyDAO;
 import com.opsmatters.media.db.dao.order.contact.ContactDAO;
 import com.opsmatters.media.db.dao.order.contact.ContactRateDAO;
 import com.opsmatters.media.db.dao.order.contact.ContactPersonDAO;
-import com.opsmatters.media.db.dao.order.billing.BillingProfileDAO;
-import com.opsmatters.media.db.dao.order.product.ProductDAO;
 
 /**
  * The class for all order management data access object factories.
@@ -38,11 +38,31 @@ public class OrderDAOFactory extends DAOFactory
     {
         super(driver, conn);
 
+        getProductDAO();
+        getCompanyDAO();
         getContactDAO();
         getContactRateDAO();
         getContactPersonDAO();
-        getBillingProfileDAO();
-        getProductDAO();
+    }
+
+    /**
+     * Returns the product DAO.
+     */
+    public ProductDAO getProductDAO()
+    {
+        if(productDAO == null)
+            productDAO = new ProductDAO(this);
+        return productDAO;
+    }
+
+    /**
+     * Returns the company DAO.
+     */
+    public CompanyDAO getCompanyDAO()
+    {
+        if(companyDAO == null)
+            companyDAO = new CompanyDAO(this);
+        return companyDAO;
     }
 
     /**
@@ -76,42 +96,22 @@ public class OrderDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the billing profile DAO.
-     */
-    public BillingProfileDAO getBillingProfileDAO()
-    {
-        if(billingProfileDAO == null)
-            billingProfileDAO = new BillingProfileDAO(this);
-        return billingProfileDAO;
-    }
-
-    /**
-     * Returns the product DAO.
-     */
-    public ProductDAO getProductDAO()
-    {
-        if(productDAO == null)
-            productDAO = new ProductDAO(this);
-        return productDAO;
-    }
-
-    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
     public void close()
     {
         super.close();
+        productDAO = null;
+        companyDAO = null;
         contactDAO = null;
         contactRateDAO = null;
         contactPersonDAO = null;
-        billingProfileDAO = null;
-        productDAO = null;
     }
 
+    private ProductDAO productDAO;
+    private CompanyDAO companyDAO;
     private ContactDAO contactDAO;
     private ContactRateDAO contactRateDAO;
     private ContactPersonDAO contactPersonDAO;
-    private BillingProfileDAO billingProfileDAO;
-    private ProductDAO productDAO;
 }

@@ -144,10 +144,11 @@ public enum Country
     {
         List<Country> ret = new ArrayList<Country>();
 
-        ret.add(UNDEFINED);
-        ret.add(UAE);
-        ret.add(UK);
-        ret.add(USA);
+        for(Country country : values())
+        {
+            if(country.code().length() > 0)
+                ret.add(country);
+        }
 
         return ret;
     }

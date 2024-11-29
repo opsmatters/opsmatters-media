@@ -27,7 +27,8 @@ import java.util.ArrayList;
 public enum ContactType
 {
     INDIVIDUAL("Individual"),
-    COMPANY("Company"),
+    ASSOCIATE("Associate"),
+    AGENCY("Agency"),
     PLATFORM("Platform"),
     ALL("All"); // Pseudo status
 
@@ -94,7 +95,8 @@ public enum ContactType
         List<ContactType> ret = new ArrayList<ContactType>();
 
         ret.add(INDIVIDUAL);
-        ret.add(COMPANY);
+        ret.add(ASSOCIATE);
+        ret.add(AGENCY);
         ret.add(PLATFORM);
  
         return ret;

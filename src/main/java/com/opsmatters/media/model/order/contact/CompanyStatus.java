@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.order.billing;
+package com.opsmatters.media.model.order.contact;
 
 import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Represents the status of a profile.
+ * Represents the status of a company.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ProfileStatus
+public enum CompanyStatus
 {
     NEW("New", "glyphicon-unchecked", ""),
     ACTIVE("Active", "glyphicon-ok-circle", "status-success"),
@@ -41,7 +41,7 @@ public enum ProfileStatus
      * @param icon The glyphicon for the status
      * @param css The css class for the status
      */
-    ProfileStatus(String value, String icon, String css)
+    CompanyStatus(String value, String icon, String css)
     {
         this.value = value;
         this.icon = icon;
@@ -89,10 +89,10 @@ public enum ProfileStatus
      * @param value The type value
      * @return The type for the given value
      */
-    public static ProfileStatus fromValue(String value)
+    public static CompanyStatus fromValue(String value)
     {
-        ProfileStatus[] types = values();
-        for(ProfileStatus type : types)
+        CompanyStatus[] types = values();
+        for(CompanyStatus type : types)
         {
             if(type.value().equals(value))
                 return type;
@@ -111,11 +111,11 @@ public enum ProfileStatus
     }
 
     /**
-     * Returns a list of the profile statuses.
+     * Returns a list of the company statuses.
      */
-    public static List<ProfileStatus> toList()
+    public static List<CompanyStatus> toList()
     {
-        List<ProfileStatus> ret = new ArrayList<ProfileStatus>();
+        List<CompanyStatus> ret = new ArrayList<CompanyStatus>();
 
         ret.add(NEW);
         ret.add(ACTIVE);

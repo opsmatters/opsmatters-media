@@ -20,17 +20,19 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Represents the status of an order.
+ * Represents the status of an invoice.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum OrderStatus
+public enum InvoiceStatus
 {
     NEW("New", "glyphicon-unchecked", ""),
-    APPROVED("Approved", "glyphicon-ok-circle", "status-info"),
-    PENDING("Pending", "glyphicon-log-in", "status-warn"),
-    COMPLETED("Completed", "glyphicon-ok-circle", "status-success"),
+    DRAFT("Draft", "glyphicon-edit", ""),
+    SENT("Sent", "glyphicon-send", "status-warn"),
+    PENDING("Pending", "glyphicon-hourglass", "status-warn"),
+    PAID("Paid", "glyphicon-ok-circle", "status-success"),
     CANCELLED("Cancelled", "glyphicon-trash", "status-error"),
+    REFUNDED("Refunded", "glyphicon-log-out", "status-info"),
     ALL("All", "", ""); // Pseudo status
 
     private String value;
@@ -43,7 +45,7 @@ public enum OrderStatus
      * @param icon The glyphicon for the status
      * @param css The css class for the status
      */
-    OrderStatus(String value, String icon, String css)
+    InvoiceStatus(String value, String icon, String css)
     {
         this.value = value;
         this.icon = icon;
@@ -91,10 +93,10 @@ public enum OrderStatus
      * @param value The type value
      * @return The type for the given value
      */
-    public static OrderStatus fromValue(String value)
+    public static InvoiceStatus fromValue(String value)
     {
-        OrderStatus[] types = values();
-        for(OrderStatus type : types)
+        InvoiceStatus[] types = values();
+        for(InvoiceStatus type : types)
         {
             if(type.value().equals(value))
                 return type;
@@ -113,16 +115,19 @@ public enum OrderStatus
     }
 
     /**
-     * Returns a list of the order statuses.
+     * Returns a list of the invoice statuses.
      */
-    public static List<OrderStatus> toList()
+    public static List<InvoiceStatus> toList()
     {
-        List<OrderStatus> ret = new ArrayList<OrderStatus>();
+        List<InvoiceStatus> ret = new ArrayList<InvoiceStatus>();
 
         ret.add(NEW);
+        ret.add(DRAFT);
+        ret.add(SENT);
         ret.add(PENDING);
-        ret.add(COMPLETED);
+        ret.add(PAID);
         ret.add(CANCELLED);
+        ret.add(REFUNDED);
 
         return ret;
     }

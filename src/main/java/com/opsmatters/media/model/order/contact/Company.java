@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.order.billing;
+package com.opsmatters.media.model.order.contact;
 
 import java.time.Instant;
 import com.opsmatters.media.model.OwnedEntity;
@@ -21,16 +21,16 @@ import com.opsmatters.media.model.order.Country;
 import com.opsmatters.media.util.StringUtils;
 
 /**
- * Class representing a billing profile.
+ * Class representing a company.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class BillingProfile extends OwnedEntity
+public class Company extends OwnedEntity
 {
-    private String email = "";
+    private String name = "";
+    private String billingEmail = "";
     private String givenName = "";
     private String surname = "";
-    private String companyName = "";
     private String addressLine1 = "";
     private String addressLine2 = "";
     private String addressArea1 = "";
@@ -40,29 +40,29 @@ public class BillingProfile extends OwnedEntity
     private String phoneCode = "";
     private String phoneNumber = "";
     private String additionalInfo = "";
-    private ProfileStatus status = ProfileStatus.NEW;
+    private CompanyStatus status = CompanyStatus.NEW;
 
     /**
      * Default constructor.
      */
-    public BillingProfile()
+    public Company()
     {
     }
 
     /**
-     * Constructor that takes an email.
+     * Constructor that takes a name.
      */
-    public BillingProfile(String email)
+    public Company(String name)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
-        setEmail(email);
+        setName(name);
     }
 
     /**
      * Copy constructor.
      */
-    public BillingProfile(BillingProfile obj)
+    public Company(Company obj)
     {
         copyAttributes(obj);
     }
@@ -70,15 +70,15 @@ public class BillingProfile extends OwnedEntity
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(BillingProfile obj)
+    public void copyAttributes(Company obj)
     {
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setEmail(obj.getEmail());
+            setName(obj.getName());
+            setBillingEmail(obj.getBillingEmail());
             setGivenName(obj.getGivenName());
             setSurname(obj.getSurname());
-            setCompanyName(obj.getCompanyName());
             setAddressLine1(obj.getAddressLine1());
             setAddressLine2(obj.getAddressLine2());
             setAddressArea1(obj.getAddressArea1());
@@ -93,35 +93,59 @@ public class BillingProfile extends OwnedEntity
     }
 
     /**
-     * Returns the email.
+     * Returns the name.
      */
     public String toString()
     {
-        return getEmail();
+        return getName();
     }
 
     /**
-     * Returns the email.
+     * Returns the company name.
      */
-    public String getEmail()
+    public String getName()
     {
-        return email;
+        return name;
     }
 
     /**
-     * Sets the email.
+     * Sets the company name.
      */
-    public void setEmail(String email)
+    public void setName(String name)
     {
-        this.email = email;
+        this.name = name;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the email has been set.
+     * Returns <CODE>true</CODE> if the company name has been set.
      */
-    public boolean hasEmail()
+    public boolean hasName()
     {
-        return getEmail() != null && getEmail().length() > 0;
+        return getName() != null && getName().length() > 0;
+    }
+
+    /**
+     * Returns the billing email.
+     */
+    public String getBillingEmail()
+    {
+        return billingEmail;
+    }
+
+    /**
+     * Sets the billing email.
+     */
+    public void setBillingEmail(String billingEmail)
+    {
+        this.billingEmail = billingEmail;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the billing email has been set.
+     */
+    public boolean hasBillingEmail()
+    {
+        return getBillingEmail() != null && getBillingEmail().length() > 0;
     }
 
     /**
@@ -175,7 +199,7 @@ public class BillingProfile extends OwnedEntity
     /**
      * Returns the given name and surname.
      */
-    public String getName()
+    public String getFullName()
     {
         StringBuffer ret = new StringBuffer();
         if(hasGivenName())
@@ -185,30 +209,6 @@ public class BillingProfile extends OwnedEntity
         if(hasSurname())
             ret.append(getSurname());
         return ret.toString();
-    }
-
-    /**
-     * Returns the company name.
-     */
-    public String getCompanyName()
-    {
-        return companyName;
-    }
-
-    /**
-     * Sets the company name.
-     */
-    public void setCompanyName(String companyName)
-    {
-        this.companyName = companyName;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the company name has been set.
-     */
-    public boolean hasCompanyName()
-    {
-        return getCompanyName() != null && getCompanyName().length() > 0;
     }
 
     /**
@@ -364,33 +364,33 @@ public class BillingProfile extends OwnedEntity
     }
 
     /**
-     * Returns the profile status.
+     * Returns the company status.
      */
-    public ProfileStatus getStatus()
+    public CompanyStatus getStatus()
     {
         return status;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the profile status is ACTIVE.
+     * Returns <CODE>true</CODE> if the company status is ACTIVE.
      */
     public boolean isActive()
     {
-        return status == ProfileStatus.ACTIVE;
+        return status == CompanyStatus.ACTIVE;
     }
 
     /**
-     * Sets the profile status.
+     * Sets the company status.
      */
     public void setStatus(String status)
     {
-        setStatus(ProfileStatus.valueOf(status));
+        setStatus(CompanyStatus.valueOf(status));
     }
 
     /**
-     * Sets the profile status.
+     * Sets the company status.
      */
-    public void setStatus(ProfileStatus status)
+    public void setStatus(CompanyStatus status)
     {
         this.status = status;
     }

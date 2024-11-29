@@ -122,10 +122,11 @@ public enum Currency
     {
         List<Currency> ret = new ArrayList<Currency>();
 
-        ret.add(UNDEFINED);
-        ret.add(US_DOLLAR);
-        ret.add(UK_POUND);
-        ret.add(EURO);
+        for(Currency currency : values())
+        {
+            if(currency.code().length() > 0)
+                ret.add(currency);
+        }
 
         return ret;
     }
