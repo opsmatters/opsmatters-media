@@ -102,4 +102,9 @@ public class Formats
      * The date format used for a session.
      */
     public static final String SESSION_FORMAT = "yyyyMMdd";
+
+    /**
+     * The date format used by order items.
+     */
+    public static final String ORDER_DATE_FORMAT = "dd/MMM/yyyy";
 }

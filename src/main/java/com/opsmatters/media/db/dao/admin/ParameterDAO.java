@@ -114,7 +114,7 @@ public class ParameterDAO extends BaseDAO
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("TYPE", Types.VARCHAR, 20, true);
         table.addColumn("NAME", Types.VARCHAR, 30, true);
-        table.addColumn("VALUE", Types.VARCHAR, 10, true);
+        table.addColumn("VALUE", Types.VARCHAR, 100, true);
         table.setPrimaryKey("PARAMETERS_PK", new String[] {"ID"});
         table.addIndex("PARAMETERS_NAME_IDX", new String[] {"TYPE", "NAME"});
         table.setInitialised(true);

@@ -40,7 +40,7 @@ public class CompanyDAO extends BaseDAO
      * The query to use to select a company from the COMPANIES table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, BILLING_EMAIL, GIVEN_NAME, SURNAME, ADDRESS_LINE_1, ADDRESS_LINE_2, ADDRESS_AREA_1, ADDRESS_AREA_2, POSTAL_CODE, COUNTRY, PHONE_CODE, PHONE_NUMBER, ADDITIONAL_INFO, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, BILLING_NAME, BILLING_EMAIL, GIVEN_NAME, SURNAME, ADDRESS_LINE_1, ADDRESS_LINE_2, ADDRESS_AREA_1, ADDRESS_AREA_2, POSTAL_CODE, COUNTRY_CODE, PHONE_CODE, PHONE_NUMBER, ADDITIONAL_INFO, STATUS, CREATED_BY "
       + "FROM COMPANIES WHERE ID=?";
 
     /**
@@ -48,22 +48,22 @@ public class CompanyDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO COMPANIES"
-      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, BILLING_EMAIL, GIVEN_NAME, SURNAME, ADDRESS_LINE_1, ADDRESS_LINE_2, ADDRESS_AREA_1, ADDRESS_AREA_2, POSTAL_CODE, COUNTRY, PHONE_CODE, PHONE_NUMBER, ADDITIONAL_INFO, STATUS, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, BILLING_NAME, BILLING_EMAIL, GIVEN_NAME, SURNAME, ADDRESS_LINE_1, ADDRESS_LINE_2, ADDRESS_AREA_1, ADDRESS_AREA_2, POSTAL_CODE, COUNTRY_CODE, PHONE_CODE, PHONE_NUMBER, ADDITIONAL_INFO, STATUS, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a company in the COMPANIES table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE COMPANIES SET UPDATED_DATE=?, NAME=?, BILLING_EMAIL=?, GIVEN_NAME=?, SURNAME=?, ADDRESS_LINE_1=?, ADDRESS_LINE_2=?, ADDRESS_AREA_1=?, ADDRESS_AREA_2=?, POSTAL_CODE=?, COUNTRY=?, PHONE_CODE=?, PHONE_NUMBER=?, ADDITIONAL_INFO=?, STATUS=?, CREATED_BY=? "
+      "UPDATE COMPANIES SET UPDATED_DATE=?, NAME=?, BILLING_NAME=?, BILLING_EMAIL=?, GIVEN_NAME=?, SURNAME=?, ADDRESS_LINE_1=?, ADDRESS_LINE_2=?, ADDRESS_AREA_1=?, ADDRESS_AREA_2=?, POSTAL_CODE=?, COUNTRY_CODE=?, PHONE_CODE=?, PHONE_NUMBER=?, ADDITIONAL_INFO=?, STATUS=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the companies from the COMPANIES table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, BILLING_EMAIL, GIVEN_NAME, SURNAME, ADDRESS_LINE_1, ADDRESS_LINE_2, ADDRESS_AREA_1, ADDRESS_AREA_2, POSTAL_CODE, COUNTRY, PHONE_CODE, PHONE_NUMBER, ADDITIONAL_INFO, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, BILLING_NAME, BILLING_EMAIL, GIVEN_NAME, SURNAME, ADDRESS_LINE_1, ADDRESS_LINE_2, ADDRESS_AREA_1, ADDRESS_AREA_2, POSTAL_CODE, COUNTRY_CODE, PHONE_CODE, PHONE_NUMBER, ADDITIONAL_INFO, STATUS, CREATED_BY "
       + "FROM COMPANIES ORDER BY CREATED_DATE";
 
     /**
@@ -96,15 +96,16 @@ public class CompanyDAO extends BaseDAO
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("NAME", Types.VARCHAR, 50, true);
+        table.addColumn("BILLING_NAME", Types.VARCHAR, 50, false);
         table.addColumn("BILLING_EMAIL", Types.VARCHAR, 50, true);
         table.addColumn("GIVEN_NAME", Types.VARCHAR, 30, false);
         table.addColumn("SURNAME", Types.VARCHAR, 30, false);
-        table.addColumn("ADDRESS_LINE_1", Types.VARCHAR, 30, false);
-        table.addColumn("ADDRESS_LINE_2", Types.VARCHAR, 30, false);
+        table.addColumn("ADDRESS_LINE_1", Types.VARCHAR, 50, false);
+        table.addColumn("ADDRESS_LINE_2", Types.VARCHAR, 50, false);
         table.addColumn("ADDRESS_AREA_1", Types.VARCHAR, 20, false);
         table.addColumn("ADDRESS_AREA_2", Types.VARCHAR, 20, false);
         table.addColumn("POSTAL_CODE", Types.VARCHAR, 20, false);
-        table.addColumn("COUNTRY", Types.VARCHAR, 5, false);
+        table.addColumn("COUNTRY_CODE", Types.VARCHAR, 5, false);
         table.addColumn("PHONE_CODE", Types.VARCHAR, 5, false);
         table.addColumn("PHONE_NUMBER", Types.VARCHAR, 20, false);
         table.addColumn("ADDITIONAL_INFO", Types.VARCHAR, 50, false);
@@ -143,20 +144,21 @@ public class CompanyDAO extends BaseDAO
                 company.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 company.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 company.setName(rs.getString(4));
-                company.setBillingEmail(rs.getString(5));
-                company.setGivenName(rs.getString(6));
-                company.setSurname(rs.getString(7));
-                company.setAddressLine1(rs.getString(8));
-                company.setAddressLine2(rs.getString(9));
-                company.setAddressArea1(rs.getString(10));
-                company.setAddressArea2(rs.getString(11));
-                company.setPostalCode(rs.getString(12));
-                company.setCountry(rs.getString(13));
-                company.setPhoneCode(rs.getString(14));
-                company.setPhoneNumber(rs.getString(15));
-                company.setAdditionalInfo(rs.getString(16));
-                company.setStatus(rs.getString(17));
-                company.setCreatedBy(rs.getString(18));
+                company.setBillingName(rs.getString(5));
+                company.setBillingEmail(rs.getString(6));
+                company.setGivenName(rs.getString(7));
+                company.setSurname(rs.getString(8));
+                company.setAddressLine1(rs.getString(9));
+                company.setAddressLine2(rs.getString(10));
+                company.setAddressArea1(rs.getString(11));
+                company.setAddressArea2(rs.getString(12));
+                company.setPostalCode(rs.getString(13));
+                company.setCountry(rs.getString(14));
+                company.setPhoneCode(rs.getString(15));
+                company.setPhoneNumber(rs.getString(16));
+                company.setAdditionalInfo(rs.getString(17));
+                company.setStatus(rs.getString(18));
+                company.setCreatedBy(rs.getString(19));
                 ret = company;
             }
         }
@@ -195,20 +197,21 @@ public class CompanyDAO extends BaseDAO
             insertStmt.setTimestamp(2, new Timestamp(company.getCreatedDateMillis()), UTC);
             insertStmt.setTimestamp(3, new Timestamp(company.getUpdatedDateMillis()), UTC);
             insertStmt.setString(4, company.getName());
-            insertStmt.setString(5, company.getBillingEmail());
-            insertStmt.setString(6, company.getGivenName());
-            insertStmt.setString(7, company.getSurname());
-            insertStmt.setString(8, company.getAddressLine1());
-            insertStmt.setString(9, company.getAddressLine2());
-            insertStmt.setString(10, company.getAddressArea1());
-            insertStmt.setString(11, company.getAddressArea2());
-            insertStmt.setString(12, company.getPostalCode());
-            insertStmt.setString(13, company.getCountry().code());
-            insertStmt.setString(14, company.getPhoneCode());
-            insertStmt.setString(15, company.getPhoneNumber());
-            insertStmt.setString(16, company.getAdditionalInfo());
-            insertStmt.setString(17, company.getStatus().name());
-            insertStmt.setString(18, company.getCreatedBy());
+            insertStmt.setString(5, company.getBillingName());
+            insertStmt.setString(6, company.getBillingEmail());
+            insertStmt.setString(7, company.getGivenName());
+            insertStmt.setString(8, company.getSurname());
+            insertStmt.setString(9, company.getAddressLine1());
+            insertStmt.setString(10, company.getAddressLine2());
+            insertStmt.setString(11, company.getAddressArea1());
+            insertStmt.setString(12, company.getAddressArea2());
+            insertStmt.setString(13, company.getPostalCode());
+            insertStmt.setString(14, company.getCountry().code());
+            insertStmt.setString(15, company.getPhoneCode());
+            insertStmt.setString(16, company.getPhoneNumber());
+            insertStmt.setString(17, company.getAdditionalInfo());
+            insertStmt.setString(18, company.getStatus().name());
+            insertStmt.setString(19, company.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created company '"+company.getId()+"' in COMPANIES");
@@ -242,21 +245,22 @@ public class CompanyDAO extends BaseDAO
 
         updateStmt.setTimestamp(1, new Timestamp(company.getUpdatedDateMillis()), UTC);
         updateStmt.setString(2, company.getName());
-        updateStmt.setString(3, company.getBillingEmail());
-        updateStmt.setString(4, company.getGivenName());
-        updateStmt.setString(5, company.getSurname());
-        updateStmt.setString(6, company.getAddressLine1());
-        updateStmt.setString(7, company.getAddressLine2());
-        updateStmt.setString(8, company.getAddressArea1());
-        updateStmt.setString(9, company.getAddressArea2());
-        updateStmt.setString(10, company.getPostalCode());
-        updateStmt.setString(11, company.getCountry().code());
-        updateStmt.setString(12, company.getPhoneCode());
-        updateStmt.setString(13, company.getPhoneNumber());
-        updateStmt.setString(14, company.getAdditionalInfo());
-        updateStmt.setString(15, company.getStatus().name());
-        updateStmt.setString(16, company.getCreatedBy());
-        updateStmt.setString(17, company.getId());
+        updateStmt.setString(3, company.getBillingName());
+        updateStmt.setString(4, company.getBillingEmail());
+        updateStmt.setString(5, company.getGivenName());
+        updateStmt.setString(6, company.getSurname());
+        updateStmt.setString(7, company.getAddressLine1());
+        updateStmt.setString(8, company.getAddressLine2());
+        updateStmt.setString(9, company.getAddressArea1());
+        updateStmt.setString(10, company.getAddressArea2());
+        updateStmt.setString(11, company.getPostalCode());
+        updateStmt.setString(12, company.getCountry().code());
+        updateStmt.setString(13, company.getPhoneCode());
+        updateStmt.setString(14, company.getPhoneNumber());
+        updateStmt.setString(15, company.getAdditionalInfo());
+        updateStmt.setString(16, company.getStatus().name());
+        updateStmt.setString(17, company.getCreatedBy());
+        updateStmt.setString(18, company.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated company '"+company.getId()+"' in COMPANIES");
@@ -291,20 +295,21 @@ public class CompanyDAO extends BaseDAO
                 company.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 company.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 company.setName(rs.getString(4));
-                company.setBillingEmail(rs.getString(5));
-                company.setGivenName(rs.getString(6));
-                company.setSurname(rs.getString(7));
-                company.setAddressLine1(rs.getString(8));
-                company.setAddressLine2(rs.getString(9));
-                company.setAddressArea1(rs.getString(10));
-                company.setAddressArea2(rs.getString(11));
-                company.setPostalCode(rs.getString(12));
-                company.setCountry(rs.getString(13));
-                company.setPhoneCode(rs.getString(14));
-                company.setPhoneNumber(rs.getString(15));
-                company.setAdditionalInfo(rs.getString(16));
-                company.setStatus(rs.getString(17));
-                company.setCreatedBy(rs.getString(18));
+                company.setBillingName(rs.getString(5));
+                company.setBillingEmail(rs.getString(6));
+                company.setGivenName(rs.getString(7));
+                company.setSurname(rs.getString(8));
+                company.setAddressLine1(rs.getString(9));
+                company.setAddressLine2(rs.getString(10));
+                company.setAddressArea1(rs.getString(11));
+                company.setAddressArea2(rs.getString(12));
+                company.setPostalCode(rs.getString(13));
+                company.setCountry(rs.getString(14));
+                company.setPhoneCode(rs.getString(15));
+                company.setPhoneNumber(rs.getString(16));
+                company.setAdditionalInfo(rs.getString(17));
+                company.setStatus(rs.getString(18));
+                company.setCreatedBy(rs.getString(19));
                 ret.add(company);
             }
         }

@@ -26,6 +26,7 @@ import java.util.ArrayList;
  */
 public enum InvoiceStatus
 {
+    NONE("None", "glyphicon-unchecked", ""),
     NEW("New", "glyphicon-unchecked", ""),
     DRAFT("Draft", "glyphicon-edit", ""),
     SENT("Sent", "glyphicon-send", "status-warn"),
@@ -121,6 +122,7 @@ public enum InvoiceStatus
     {
         List<InvoiceStatus> ret = new ArrayList<InvoiceStatus>();
 
+        ret.add(NONE);
         ret.add(NEW);
         ret.add(DRAFT);
         ret.add(SENT);

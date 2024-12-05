@@ -16,8 +16,12 @@
 package com.opsmatters.media.model.order.contact;
 
 import java.time.Instant;
+import com.opsmatters.media.cache.order.product.Products;
+import com.opsmatters.media.cache.platform.Sites;
 import com.opsmatters.media.model.BaseEntity;
+import com.opsmatters.media.model.platform.Site;
 import com.opsmatters.media.model.order.Currency;
+import com.opsmatters.media.model.order.product.Product;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -30,7 +34,7 @@ public class ContactProduct extends BaseEntity
     private String contactId = "";
     private String productCode = "";
     private String siteId = "";
-    private int amount = 0;
+    private int price = 0;
     private Currency currency = Currency.UNDEFINED;
     private String notes = "";
 
@@ -71,10 +75,22 @@ public class ContactProduct extends BaseEntity
             setContactId(obj.getContactId());
             setProductCode(obj.getProductCode());
             setSiteId(obj.getSiteId());
-            setAmount(obj.getAmount());
+            setPrice(obj.getPrice());
             setCurrency(obj.getCurrency());
             setNotes(obj.getNotes());
         }
+    }
+
+    /**
+     * Returns the product and site.
+     */
+    public String toString()
+    {
+        Product product = Products.get(getProductCode());
+        Site site = Sites.get(getSiteId());
+        return String.format("%s / %s",
+            product != null ? product.getName() : "-",
+            site != null ? site.getTitle() : "-");
     }
 
     /**
@@ -126,19 +142,19 @@ public class ContactProduct extends BaseEntity
     }
 
     /**
-     * Returns the amount.
+     * Returns the price.
      */
-    public int getAmount()
+    public int getPrice()
     {
-        return amount;
+        return price;
     }
 
     /**
-     * Sets the amount.
+     * Sets the price.
      */
-    public void setAmount(int amount)
+    public void setPrice(int price)
     {
-        this.amount = amount;
+        this.price = price;
     }
 
     /**

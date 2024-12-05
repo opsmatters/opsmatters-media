@@ -43,6 +43,8 @@ public class OrderDAOFactory extends DAOFactory
         getContactDAO();
         getContactProductDAO();
         getContactPersonDAO();
+        getOrderDAO();
+        getOrderItemDAO();
     }
 
     /**
@@ -96,6 +98,26 @@ public class OrderDAOFactory extends DAOFactory
     }
 
     /**
+     * Returns the order DAO.
+     */
+    public OrderDAO getOrderDAO()
+    {
+        if(orderDAO == null)
+            orderDAO = new OrderDAO(this);
+        return orderDAO;
+    }
+
+    /**
+     * Returns the order item DAO.
+     */
+    public OrderItemDAO getOrderItemDAO()
+    {
+        if(orderItemDAO == null)
+            orderItemDAO = new OrderItemDAO(this);
+        return orderItemDAO;
+    }
+
+    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
@@ -107,6 +129,8 @@ public class OrderDAOFactory extends DAOFactory
         contactDAO = null;
         contactProductDAO = null;
         contactPersonDAO = null;
+        orderDAO = null;
+        orderItemDAO = null;
     }
 
     private ProductDAO productDAO;
@@ -114,4 +138,6 @@ public class OrderDAOFactory extends DAOFactory
     private ContactDAO contactDAO;
     private ContactProductDAO contactProductDAO;
     private ContactPersonDAO contactPersonDAO;
+    private OrderDAO orderDAO;
+    private OrderItemDAO orderItemDAO;
 }

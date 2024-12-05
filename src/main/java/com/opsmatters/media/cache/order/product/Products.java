@@ -31,7 +31,7 @@ public class Products implements java.io.Serializable
 {
     private static final Logger logger = Logger.getLogger(Products.class.getName());
 
-    private static Map<String,Product> productMap = new LinkedHashMap<String,Product>();
+    private static Map<String,Product> codeMap = new LinkedHashMap<String,Product>();
 
     private static boolean initialised = false;
 
@@ -73,7 +73,7 @@ public class Products implements java.io.Serializable
      */
     public static void clear()
     {
-        productMap.clear();
+        codeMap.clear();
     }
 
     /**
@@ -81,7 +81,7 @@ public class Products implements java.io.Serializable
      */
     public static Product get(String code)
     {
-        return productMap.get(code);
+        return code != null ? codeMap.get(code) : null;
     }
 
     /**
@@ -89,7 +89,7 @@ public class Products implements java.io.Serializable
      */
     public static void add(Product product)
     {
-        productMap.put(product.getCode(), product);
+        codeMap.put(product.getCode(), product);
     }
 
     /**
@@ -97,7 +97,7 @@ public class Products implements java.io.Serializable
      */
     public static void remove(Product product)
     {
-        productMap.remove(product.getCode());
+        codeMap.remove(product.getCode());
     }
 
     /**
@@ -105,7 +105,7 @@ public class Products implements java.io.Serializable
      */
     public static int size()
     {
-        return productMap.size();
+        return codeMap.size();
     }
 
     /**
@@ -114,7 +114,7 @@ public class Products implements java.io.Serializable
     public static List<Product> list()
     {
         List<Product> ret = new ArrayList<Product>();
-        for(Product product : productMap.values())
+        for(Product product : codeMap.values())
         {
             if(product.isActive())
                 ret.add(product);

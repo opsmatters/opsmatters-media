@@ -16,11 +16,15 @@
 package com.opsmatters.media.model.order.contact;
 
 import java.time.Instant;
+import com.opsmatters.media.cache.admin.Parameters;
 import com.opsmatters.media.model.OwnedEntity;
 import com.opsmatters.media.model.order.Currency;
 import com.opsmatters.media.model.order.PaymentMethod;
 import com.opsmatters.media.model.order.PaymentMode;
 import com.opsmatters.media.util.StringUtils;
+
+import static com.opsmatters.media.model.admin.ParameterType.*;
+import static com.opsmatters.media.model.admin.ParameterName.*;
 
 /**
  * Class representing a contact.
@@ -57,6 +61,10 @@ public class Contact extends OwnedEntity
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setName(name);
+
+        setPaymentMethod(Parameters.get(ORDER, PAYMENT_METHOD).getValue());
+        setPaymentMode(Parameters.get(ORDER, PAYMENT_MODE).getValue());
+        setCurrency(Parameters.get(ORDER, CURRENCY).getValue());
     }
 
     /**
@@ -88,6 +96,14 @@ public class Contact extends OwnedEntity
             setStatus(obj.getStatus());
             setReason(obj.getReason());
         }
+    }
+
+    /**
+     * Returns the contact name.
+     */
+    public String toString()
+    {
+        return getName();
     }
 
     /**
@@ -192,6 +208,14 @@ public class Contact extends OwnedEntity
     public void setCompanyId(String companyId)
     {
         this.companyId = companyId;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the company id has been set.
+     */
+    public boolean hasCompanyId()
+    {
+        return getCompanyId() != null && getCompanyId().length() > 0;
     }
 
     /**
@@ -312,6 +336,14 @@ public class Contact extends OwnedEntity
     public ContactStatus getStatus()
     {
         return status;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the contact status is ACTIVE.
+     */
+    public boolean isActive()
+    {
+        return status == ContactStatus.ACTIVE;
     }
 
     /**

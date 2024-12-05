@@ -40,7 +40,7 @@ public class ContactDAO extends BaseDAO
      * The query to use to select a contact from the CONTACTS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, WEBSITE, NOTES, PAYMENT_METHOD, PAYMENT_MODE, CURRENCY, STATUS, REASON, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, WEBSITE, NOTES, PAYMENT_METHOD, PAYMENT_MODE, CURRENCY_CODE, STATUS, REASON, CREATED_BY "
       + "FROM CONTACTS WHERE ID=?";
 
     /**
@@ -48,7 +48,7 @@ public class ContactDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTACTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, WEBSITE, NOTES, PAYMENT_METHOD, PAYMENT_MODE, CURRENCY, STATUS, REASON, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, WEBSITE, NOTES, PAYMENT_METHOD, PAYMENT_MODE, CURRENCY_CODE, STATUS, REASON, CREATED_BY )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
@@ -56,14 +56,14 @@ public class ContactDAO extends BaseDAO
      * The query to use to update a contact in the CONTACTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTACTS SET UPDATED_DATE=?, NAME=?, TYPE=?, CONTACT_EMAIL=?, BILLING_EMAIL=?, COMPANY_ID=?, WEBSITE=?, NOTES=?, PAYMENT_METHOD=?, PAYMENT_MODE=?, CURRENCY=?, STATUS=?, REASON=?, CREATED_BY=? "
+      "UPDATE CONTACTS SET UPDATED_DATE=?, NAME=?, TYPE=?, CONTACT_EMAIL=?, BILLING_EMAIL=?, COMPANY_ID=?, WEBSITE=?, NOTES=?, PAYMENT_METHOD=?, PAYMENT_MODE=?, CURRENCY_CODE=?, STATUS=?, REASON=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the contacts from the CONTACTS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, WEBSITE, NOTES, PAYMENT_METHOD, PAYMENT_MODE, CURRENCY, STATUS, REASON, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, WEBSITE, NOTES, PAYMENT_METHOD, PAYMENT_MODE, CURRENCY_CODE, STATUS, REASON, CREATED_BY "
       + "FROM CONTACTS ORDER BY CREATED_DATE";
 
     /**
@@ -104,7 +104,7 @@ public class ContactDAO extends BaseDAO
         table.addColumn("NOTES", Types.LONGVARCHAR, false);
         table.addColumn("PAYMENT_METHOD", Types.VARCHAR, 15, true);
         table.addColumn("PAYMENT_MODE", Types.VARCHAR, 15, true);
-        table.addColumn("CURRENCY", Types.VARCHAR, 5, true);
+        table.addColumn("CURRENCY_CODE", Types.VARCHAR, 5, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("REASON", Types.VARCHAR, 15, false);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);

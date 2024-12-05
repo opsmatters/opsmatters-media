@@ -26,7 +26,7 @@ import java.util.ArrayList;
  */
 public enum Country
 {
-    UNDEFINED("", "Undefined"),
+    UNDEFINED("??", "Undefined"),
     ARMENIA("AM", "Armenia"),
     AUSTRALIA("AU", "Australia"),
     BULGARIA("BG", "Bulgaria"),
@@ -34,6 +34,7 @@ public enum Country
     CHINA("CN", "China"),
     CYPRUS("CY", "Cyprus"),
     ESTONIA("EE", "Estonia"),
+    GEORGIA("GE", "Georgia"),
     GERMANY("DE", "Germany"),
     INDIA("IN", "India"),
     IRELAND("IE", "Ireland"),

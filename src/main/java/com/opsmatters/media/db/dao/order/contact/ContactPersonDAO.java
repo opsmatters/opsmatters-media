@@ -218,7 +218,7 @@ public class ContactPersonDAO extends BaseDAO
     /**
      * Returns the persons from the CONTACT_PERSONS table by contact.
      */
-    public synchronized List<ContactPerson> list(Contact contact) throws SQLException
+    public synchronized List<ContactPerson> list(String contactId) throws SQLException
     {
         List<ContactPerson> ret = null;
 
@@ -234,7 +234,7 @@ public class ContactPersonDAO extends BaseDAO
 
         try
         {
-            listStmt.setString(1, contact.getId());
+            listStmt.setString(1, contactId);
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
             ret = new ArrayList<ContactPerson>();

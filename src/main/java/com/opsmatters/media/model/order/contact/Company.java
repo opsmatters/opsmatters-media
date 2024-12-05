@@ -28,6 +28,7 @@ import com.opsmatters.media.util.StringUtils;
 public class Company extends OwnedEntity
 {
     private String name = "";
+    private String billingName = "";
     private String billingEmail = "";
     private String givenName = "";
     private String surname = "";
@@ -76,6 +77,7 @@ public class Company extends OwnedEntity
         {
             super.copyAttributes(obj);
             setName(obj.getName());
+            setBillingName(obj.getBillingName());
             setBillingEmail(obj.getBillingEmail());
             setGivenName(obj.getGivenName());
             setSurname(obj.getSurname());
@@ -122,6 +124,30 @@ public class Company extends OwnedEntity
     public boolean hasName()
     {
         return getName() != null && getName().length() > 0;
+    }
+
+    /**
+     * Returns the billing name.
+     */
+    public String getBillingName()
+    {
+        return billingName;
+    }
+
+    /**
+     * Sets the billing name.
+     */
+    public void setBillingName(String billingName)
+    {
+        this.billingName = billingName;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the billing name has been set.
+     */
+    public boolean hasBillingName()
+    {
+        return getBillingName() != null && getBillingName().length() > 0;
     }
 
     /**
@@ -361,6 +387,14 @@ public class Company extends OwnedEntity
     public void setAdditionalInfo(String additionalInfo)
     {
         this.additionalInfo = additionalInfo;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the additional info has been set.
+     */
+    public boolean hasAdditionalInfo()
+    {
+        return getAdditionalInfo() != null && getAdditionalInfo().length() > 0;
     }
 
     /**

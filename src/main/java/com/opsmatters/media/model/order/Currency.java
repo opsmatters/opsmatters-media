@@ -26,7 +26,7 @@ import java.util.ArrayList;
  */
 public enum Currency
 {
-    UNDEFINED("", "Undefined"),
+    UNDEFINED("???", "Undefined"),
     US_DOLLAR("USD", "United States dollar"),
     UK_POUND("GBP", "Pound sterling"),
     EURO("EUR", "Euro"),

@@ -17,6 +17,7 @@ package com.opsmatters.media.cache.order.contact;
 
 import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.TreeMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -31,7 +32,9 @@ public class Companies implements java.io.Serializable
 {
     private static final Logger logger = Logger.getLogger(Companies.class.getName());
 
-    private static Map<String,Company> companyMap = new LinkedHashMap<String,Company>();
+    private static Map<String,Company> idMap = new LinkedHashMap<String,Company>();
+    private static Map<String,Company> nameMap = new TreeMap<String,Company>();
+    private static Map<String,Company> emailMap = new LinkedHashMap<String,Company>();
 
     private static boolean initialised = false;
 
@@ -73,31 +76,53 @@ public class Companies implements java.io.Serializable
      */
     public static void clear()
     {
-        companyMap.clear();
+        idMap.clear();
+        nameMap.clear();
+        emailMap.clear();
     }
 
     /**
      * Returns the company with the given id.
      */
-    public static Company get(String id)
+    public static Company getById(String id)
     {
-        return companyMap.get(id);
+        return idMap.get(id);
     }
 
     /**
-     * Adds the company with the given id.
+     * Returns the company with the given name.
+     */
+    public static Company getByName(String name)
+    {
+        return name != null ? nameMap.get(name) : null;
+    }
+
+    /**
+     * Returns the company with the given email.
+     */
+    public static Company getByEmail(String email)
+    {
+        return email != null ? emailMap.get(email) : null;
+    }
+
+    /**
+     * Adds the company.
      */
     public static void add(Company company)
     {
-        companyMap.put(company.getId(), company);
+        idMap.put(company.getId(), company);
+        nameMap.put(company.getName(), company);
+        emailMap.put(company.getBillingEmail(), company);
     }
 
     /**
-     * Removes the company with the given id.
+     * Removes the company with the given name.
      */
     public static void remove(Company company)
     {
-        companyMap.remove(company.getId());
+        idMap.remove(company.getId());
+        nameMap.remove(company.getName());
+        emailMap.remove(company.getBillingEmail());
     }
 
     /**
@@ -105,7 +130,7 @@ public class Companies implements java.io.Serializable
      */
     public static int size()
     {
-        return companyMap.size();
+        return idMap.size();
     }
 
     /**
@@ -114,7 +139,7 @@ public class Companies implements java.io.Serializable
     public static List<Company> list()
     {
         List<Company> ret = new ArrayList<Company>();
-        for(Company company : companyMap.values())
+        for(Company company : nameMap.values())
         {
             if(company.isActive())
                 ret.add(company);

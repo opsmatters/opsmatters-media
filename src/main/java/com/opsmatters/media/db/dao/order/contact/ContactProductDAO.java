@@ -41,7 +41,7 @@ public class ContactProductDAO extends BaseDAO
      * The query to use to select a product from the CONTACT_PRODUCTS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, PRODUCT_CODE, SITE_ID, AMOUNT, CURRENCY, NOTES  "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, PRODUCT_CODE, SITE_ID, PRICE, CURRENCY_CODE, NOTES  "
       + "FROM CONTACT_PRODUCTS WHERE ID=?";
 
     /**
@@ -49,7 +49,7 @@ public class ContactProductDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTACT_PRODUCTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, PRODUCT_CODE, SITE_ID, AMOUNT, CURRENCY, NOTES )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, PRODUCT_CODE, SITE_ID, PRICE, CURRENCY_CODE, NOTES )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
@@ -57,14 +57,14 @@ public class ContactProductDAO extends BaseDAO
      * The query to use to update a product in the CONTACT_PRODUCTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTACT_PRODUCTS SET UPDATED_DATE=?, PRODUCT_CODE=?, SITE_ID=?, AMOUNT=?, CURRENCY=?, NOTES=? "
+      "UPDATE CONTACT_PRODUCTS SET UPDATED_DATE=?, PRODUCT_CODE=?, SITE_ID=?, PRICE=?, CURRENCY_CODE=?, NOTES=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the products from the CONTACT_PRODUCTS table by contact.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, PRODUCT_CODE, SITE_ID, AMOUNT, CURRENCY, NOTES  "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, PRODUCT_CODE, SITE_ID, PRICE, CURRENCY_CODE, NOTES  "
       + "FROM CONTACT_PRODUCTS WHERE CONTACT_ID=? ORDER BY CREATED_DATE";
 
     /**
@@ -99,8 +99,8 @@ public class ContactProductDAO extends BaseDAO
         table.addColumn("CONTACT_ID", Types.VARCHAR, 36, true);
         table.addColumn("PRODUCT_CODE", Types.VARCHAR, 5, true);
         table.addColumn("SITE_ID", Types.VARCHAR, 5, true);
-        table.addColumn("AMOUNT", Types.INTEGER, true);
-        table.addColumn("CURRENCY", Types.VARCHAR, 5, true);
+        table.addColumn("PRICE", Types.INTEGER, true);
+        table.addColumn("CURRENCY_CODE", Types.VARCHAR, 5, true);
         table.addColumn("NOTES", Types.LONGVARCHAR, false);
         table.setPrimaryKey("CONTACT_PRODUCTS_PK", new String[] {"ID"});
         table.addIndex("CONTACT_PRODUCTS_CONTACT_IDX", new String[] {"CONTACT_ID"});
@@ -138,7 +138,7 @@ public class ContactProductDAO extends BaseDAO
                 product.setContactId(rs.getString(4));
                 product.setProductCode(rs.getString(5));
                 product.setSiteId(rs.getString(6));
-                product.setAmount(rs.getInt(7));
+                product.setPrice(rs.getInt(7));
                 product.setCurrency(rs.getString(8));
                 product.setNotes(rs.getString(9));
                 ret = product;
@@ -181,7 +181,7 @@ public class ContactProductDAO extends BaseDAO
             insertStmt.setString(4, product.getContactId());
             insertStmt.setString(5, product.getProductCode());
             insertStmt.setString(6, product.getSiteId());
-            insertStmt.setInt(7, product.getAmount());
+            insertStmt.setInt(7, product.getPrice());
             insertStmt.setString(8, product.getCurrency().code());
             insertStmt.setString(9, product.getNotes());
             insertStmt.executeUpdate();
@@ -218,7 +218,7 @@ public class ContactProductDAO extends BaseDAO
         updateStmt.setTimestamp(1, new Timestamp(product.getUpdatedDateMillis()), UTC);
         updateStmt.setString(2, product.getProductCode());
         updateStmt.setString(3, product.getSiteId());
-        updateStmt.setInt(4, product.getAmount());
+        updateStmt.setInt(4, product.getPrice());
         updateStmt.setString(5, product.getCurrency().code());
         updateStmt.setString(6, product.getNotes());
         updateStmt.setString(7, product.getId());
@@ -230,7 +230,7 @@ public class ContactProductDAO extends BaseDAO
     /**
      * Returns the products from the CONTACT_PRODUCTS table by contact.
      */
-    public synchronized List<ContactProduct> list(Contact contact) throws SQLException
+    public synchronized List<ContactProduct> list(String contactId) throws SQLException
     {
         List<ContactProduct> ret = null;
 
@@ -246,7 +246,7 @@ public class ContactProductDAO extends BaseDAO
 
         try
         {
-            listStmt.setString(1, contact.getId());
+            listStmt.setString(1, contactId);
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
             ret = new ArrayList<ContactProduct>();
@@ -259,7 +259,7 @@ public class ContactProductDAO extends BaseDAO
                 product.setContactId(rs.getString(4));
                 product.setProductCode(rs.getString(5));
                 product.setSiteId(rs.getString(6));
-                product.setAmount(rs.getInt(7));
+                product.setPrice(rs.getInt(7));
                 product.setCurrency(rs.getString(8));
                 product.setNotes(rs.getString(9));
                 ret.add(product);
