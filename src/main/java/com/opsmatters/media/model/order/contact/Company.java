@@ -358,6 +358,14 @@ public class Company extends OwnedEntity
     }
 
     /**
+     * Returns <CODE>true</CODE> if the phone code has been set.
+     */
+    public boolean hasPhoneCode()
+    {
+        return getPhoneCode() != null && getPhoneCode().length() > 0;
+    }
+
+    /**
      * Returns the phone number.
      */
     public String getPhoneNumber()

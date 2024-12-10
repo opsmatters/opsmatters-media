@@ -56,7 +56,7 @@ public enum ParameterName
     MAX_CHANNEL_POST_AGE("max-channel-post-age"),
     MIN_WEBINAR_DURATION("min-webinar-duration"),
     SHUTDOWN("shutdown"),
-    INVOICE_MEMO("invoice-memo"),
+    INVOICE_NOTE("invoice-note"),
     PAYMENT_METHOD("payment-method"),
     PAYMENT_MODE("payment-mode"),
     CURRENCY("currency");

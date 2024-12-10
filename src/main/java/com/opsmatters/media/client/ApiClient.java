@@ -1,7 +1,6 @@
 package com.opsmatters.media.client;
 
 import java.net.URL;
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.List;
@@ -30,8 +29,6 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
-import org.apache.commons.io.FileUtils;
-import com.opsmatters.media.model.platform.FeedsConfig;
 
 /**
  * Executes API calls using a http client.
@@ -42,33 +39,12 @@ public class ApiClient extends Client
 
     private String env = "";
     private String url = null;
-    private String suffix = null;
     private String username = null;
     private String password = null;
     private HttpClient client;
     private HttpClientContext context;
     private StatusLine status;
-
-    /**
-     * Returns a new client using credentials from the given feeds construction.
-     */
-    static public ApiClient newClient(String key, String url, FeedsConfig config) 
-        throws IOException
-    {
-        ApiClient ret = ApiClient.builder()
-            .env(key)
-            .url(url)
-            .suffix(".feeds")
-            .username(config.getUsername())
-            .build();
-
-        // Configure and create the API client
-        ret.configure();
-        if(!ret.create())
-            logger.severe("Unable to create API client: "+ret.getUrl());
-
-        return ret;
-    }
+    private String bearer = null;
 
     /**
      * Returns a new client that does not use authentication.
@@ -88,31 +64,12 @@ public class ApiClient extends Client
 
     /**
      * Configure the client.
+     *
+     * <P> Empty implementation
      */
     @Override
     public void configure() throws IOException
     {
-        if(debug())
-            logger.info("Configuring API client: "+getUrl());
-
-        if(suffix != null)
-        {
-            String directory = System.getProperty("app.auth", ".");
-
-            File file = new File(directory, env+suffix);
-            try
-            {
-                // Read password from auth directory
-                password = FileUtils.readFileToString(file, "UTF-8");
-            }
-            catch(IOException e)
-            {
-                logger.severe("Unable to read API password file: "+e.getClass().getName()+": "+e.getMessage());
-            }
-        }
-
-        if(debug())
-            logger.info("Configured API client successfully: "+getUrl());
     }
 
     /**
@@ -193,22 +150,6 @@ public class ApiClient extends Client
     }
 
     /**
-     * Returns the suffix for the client.
-     */
-    public String getSuffix() 
-    {
-        return suffix;
-    }
-
-    /**
-     * Sets the suffix for the client.
-     */
-    public void setSuffix(String suffix) 
-    {
-        this.suffix = suffix;
-    }
-
-    /**
      * Returns the username for the client.
      */
     public String getUsername() 
@@ -225,11 +166,54 @@ public class ApiClient extends Client
     }
 
     /**
+     * Returns the password for the client.
+     */
+    public String getPassword() 
+    {
+        return password;
+    }
+
+    /**
+     * Sets the password for the client.
+     */
+    public void setPassword(String password) 
+    {
+        this.password = password;
+    }
+
+    /**
+     * Sets the bearer token for the client.
+     */
+    public void setBearer(String bearer)
+    {
+        this.bearer = bearer;
+    }
+
+    /**
+     * Clears the bearer token for the client.
+     */
+    public void clearBearer()
+    {
+        setBearer(null);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the bearer token for the client has been set.
+     */
+    public boolean hasBearer()
+    {
+        return bearer != null && bearer.length() > 0;
+    }
+
+    /**
      * Executes a GET operation.
      */
     public String get(String url) throws IOException
     {
-        return execute(new HttpGet(url));
+        HttpGet request = new HttpGet(url);
+        if(bearer != null)
+            request.addHeader("Authorization", String.format("Bearer %s", bearer));
+        return execute(request);
     }
 
     /**
@@ -242,6 +226,8 @@ public class ApiClient extends Client
             paramList.add(new BasicNameValuePair(param.getKey(), param.getValue()));
 
         HttpPost request = new HttpPost(url);
+        if(bearer != null)
+            request.addHeader("Authorization", String.format("Bearer %s", bearer));
         request.addHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setEntity(new UrlEncodedFormEntity(paramList));
         return execute(request);
@@ -358,17 +344,6 @@ public class ApiClient extends Client
         public Builder url(String url)
         {
             client.setUrl(url);
-            return this;
-        }
-
-        /**
-         * Sets the suffix for the client.
-         * @param type The suffix for the client
-         * @return This object
-         */
-        public Builder suffix(String suffix)
-        {
-            client.setSuffix(suffix);
             return this;
         }
 

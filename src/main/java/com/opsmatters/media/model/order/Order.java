@@ -46,11 +46,7 @@ public class Order extends OwnedEntity
     private String notes = "";
     private OrderStatus status = OrderStatus.NEW;
     private CancelReason reason = CancelReason.NONE;
-    private String invoiceEmail = "";
-    private String invoiceRef = "";
-    private String invoiceUrl = "";
-    private String invoiceMemo = "";
-    private InvoiceStatus invoiceStatus = InvoiceStatus.NONE;
+    private Invoice invoice = new Invoice();
 
     /**
      * Default constructor.
@@ -78,7 +74,7 @@ public class Order extends OwnedEntity
         if(getPaymentMode() == PaymentMode.INVOICE)
         {
             String email = contact.getBillingEmail();
-            String memo = Parameters.get(ORDER, INVOICE_MEMO).getValue();
+            String note = Parameters.get(ORDER, INVOICE_NOTE).getValue();
 
             if(contact.hasCompanyId())
             {
@@ -86,15 +82,16 @@ public class Order extends OwnedEntity
                 if(company != null)
                 {
                     if(company.hasAdditionalInfo())
-                        memo = String.format("%s\n\n%s", company.getAdditionalInfo(), memo);
+                        note = String.format("%s\n\n%s", company.getAdditionalInfo(), note);
                     if(company.hasBillingEmail())
                         email = company.getBillingEmail();
                 }
             }
 
-            setInvoiceEmail(email);
-            setInvoiceMemo(memo);
-            setInvoiceStatus(InvoiceStatus.DRAFT);
+            getInvoice().setEmail(email);
+            getInvoice().setNote(note);
+            getInvoice().setCurrency(contact.getCurrency());
+            getInvoice().setStatus(InvoiceStatus.NEW);
         }
     }
 
@@ -122,11 +119,7 @@ public class Order extends OwnedEntity
             setReason(obj.getReason());
             setWeek(obj.getWeek());
             setYear(obj.getYear());
-            setInvoiceEmail(obj.getInvoiceEmail());
-            setInvoiceRef(obj.getInvoiceRef());
-            setInvoiceUrl(obj.getInvoiceUrl());
-            setInvoiceMemo(obj.getInvoiceMemo());
-            setInvoiceStatus(obj.getInvoiceStatus());
+            getInvoice().copyAttributes(obj.getInvoice());
         }
     }
 
@@ -311,98 +304,10 @@ public class Order extends OwnedEntity
     }
 
     /**
-     * Returns the invoice email.
+     * Returns the invoice.
      */
-    public String getInvoiceEmail()
+    public Invoice getInvoice()
     {
-        return invoiceEmail;
-    }
-
-    /**
-     * Sets the invoice email.
-     */
-    public void setInvoiceEmail(String invoiceEmail)
-    {
-        this.invoiceEmail = invoiceEmail;
-    }
-
-    /**
-     * Returns the invoice ref.
-     */
-    public String getInvoiceRef()
-    {
-        return invoiceRef;
-    }
-
-    /**
-     * Sets the invoice ref.
-     */
-    public void setInvoiceRef(String invoiceRef)
-    {
-        this.invoiceRef = invoiceRef;
-    }
-
-    /**
-     * Returns the invoice URL.
-     */
-    public String getInvoiceUrl()
-    {
-        return invoiceUrl;
-    }
-
-    /**
-     * Sets the invoice URL.
-     */
-    public void setInvoiceUrl(String invoiceUrl)
-    {
-        this.invoiceUrl = invoiceUrl;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the invoice URL has been set.
-     */
-    public boolean hasInvoiceUrl()
-    {
-        return getInvoiceUrl() != null && getInvoiceUrl().length() > 0;
-    }
-
-    /**
-     * Returns the invoice memo.
-     */
-    public String getInvoiceMemo()
-    {
-        return invoiceMemo;
-    }
-
-    /**
-     * Sets the invoice memo.
-     */
-    public void setInvoiceMemo(String invoiceMemo)
-    {
-        this.invoiceMemo = invoiceMemo;
-    }
-
-    /**
-     * Returns the invoice status.
-     */
-    public InvoiceStatus getInvoiceStatus()
-    {
-        return invoiceStatus;
-    }
-
-    /**
-     * Sets the invoice status.
-     */
-    public void setInvoiceStatus(String invoiceStatus)
-    {
-        setInvoiceStatus(InvoiceStatus.valueOf(invoiceStatus));
-    }
-
-    /**
-     * Sets the invoice status.
-     */
-    public void setInvoiceStatus(InvoiceStatus invoiceStatus)
-    {
-        this.invoiceStatus = invoiceStatus;
+        return invoice;
     }
 }
