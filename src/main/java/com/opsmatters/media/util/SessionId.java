@@ -31,14 +31,14 @@ public class SessionId
 
     private static SessionId _session = new SessionId();
 
-    private int id = -1;
+    private int id, yesterday = -1;
 
     /**
      * Private constructor as this class shouldn't be instantiated.
      */
     private SessionId()
     {
-        setId(Integer.parseInt(TimeUtils.toStringUTC(now(), Formats.SESSION_FORMAT)));
+        setId(now());
     }
 
     /**
@@ -58,11 +58,36 @@ public class SessionId
     }
 
     /**
+     * Sets the current and yesterday session id from an instant.
+     */
+    private void setId(Instant dt)
+    {
+        setId(Integer.parseInt(TimeUtils.toStringUTC(dt, Formats.SESSION_FORMAT)));
+        setYesterday(Integer.parseInt(TimeUtils.toStringUTC(dt.minus(1, DAYS), Formats.SESSION_FORMAT)));
+    }
+
+    /**
+     * Returns yesterday's session id.
+     */
+    private int getYesterday()
+    {
+        return yesterday;
+    }
+
+    /**
+     * Sets yesterday's session id.
+     */
+    private void setYesterday(int yesterday)
+    {
+        this.yesterday = yesterday;
+    }
+
+    /**
      * Sets the current session id.
      */
     public static void set(int id)
     {
-        _session.setId(id);
+        _session.setId(toInstant(id));
     }
 
     /**
@@ -71,6 +96,14 @@ public class SessionId
     public static int get()
     {
         return _session.getId();
+    }
+
+    /**
+     * Returns yesterday's session id.
+     */
+    public static int yesterday()
+    {
+        return _session.getYesterday();
     }
 
     /**

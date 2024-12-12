@@ -39,8 +39,6 @@ public class Environment implements ConfigElement
     private Ec2Config ec2;
     private RdsConfig rds;
     private SshConfig ssh;
-    private String status = "";
-    private String dashboard = "";
     private boolean stopInstanceWhenIdle = false;
 
     /**
@@ -77,8 +75,6 @@ public class Environment implements ConfigElement
             setEc2Config(new Ec2Config(obj.getEc2Config()));
             setRdsConfig(new RdsConfig(obj.getRdsConfig()));
             setSshConfig(new SshConfig(obj.getSshConfig()));
-            setStatus(obj.getStatus());
-            setDashboard(obj.getDashboard());
         }
     }
 
@@ -286,38 +282,6 @@ public class Environment implements ConfigElement
     }
 
     /**
-     * Returns the status dashboard of the environment.
-     */
-    public String getStatus()
-    {
-        return status;
-    }
-
-    /**
-     * Sets the status dashboard for the environment.
-     */
-    public void setStatus(String status)
-    {
-        this.status = status;
-    }
-
-    /**
-     * Returns the default dashboard of the environment.
-     */
-    public String getDashboard()
-    {
-        return dashboard;
-    }
-
-    /**
-     * Sets the default dashboard for the environment.
-     */
-    public void setDashboard(String dashboard)
-    {
-        this.dashboard = dashboard;
-    }
-
-    /**
      * Returns <CODE>true</CODE> if the instance for this environment should stop when feeds complete.
      */
     public boolean stopInstanceWhenIdle()
@@ -358,8 +322,6 @@ public class Environment implements ConfigElement
         private static final String EC2 = "ec2";
         private static final String RDS = "rds";
         private static final String SSH = "ssh";
-        private static final String STATUS = "status";
-        private static final String DASHBOARD = "dashboard";
 
         private Environment ret = null;
 
@@ -387,10 +349,6 @@ public class Environment implements ConfigElement
                 ret.setPing((String)map.get(PING));
             if(map.containsKey(BASE))
                 ret.setBase((String)map.get(BASE));
-            if(map.containsKey(STATUS))
-                ret.setStatus((String)map.get(STATUS));
-            if(map.containsKey(DASHBOARD))
-                ret.setDashboard((String)map.get(DASHBOARD));
 
             String name = ret.getName();
 

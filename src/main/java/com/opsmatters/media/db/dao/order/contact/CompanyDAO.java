@@ -96,7 +96,7 @@ public class CompanyDAO extends BaseDAO
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("NAME", Types.VARCHAR, 50, true);
-        table.addColumn("BILLING_NAME", Types.VARCHAR, 50, false);
+        table.addColumn("BILLING_NAME", Types.VARCHAR, 80, false);
         table.addColumn("BILLING_EMAIL", Types.VARCHAR, 50, true);
         table.addColumn("GIVEN_NAME", Types.VARCHAR, 30, false);
         table.addColumn("SURNAME", Types.VARCHAR, 30, false);

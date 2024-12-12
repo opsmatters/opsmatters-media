@@ -73,6 +73,14 @@ public class StringSelection extends ChartSelection<String>
                 return CURRENT_SITE.name(); // evaluated later
             case CURRENT_SESSION:
                 return CURRENT_SESSION.name(); // evaluated later
+            case CURRENT_YESTERDAY:
+                return CURRENT_YESTERDAY.name(); // evaluated later
+            case CURRENT_WEEK:
+                return CURRENT_WEEK.name(); // evaluated later
+            case CURRENT_MONTH:
+                return CURRENT_MONTH.name(); // evaluated later
+            case CURRENT_YEAR:
+                return CURRENT_YEAR.name(); // evaluated later
             default:
                 return getValue();
         }

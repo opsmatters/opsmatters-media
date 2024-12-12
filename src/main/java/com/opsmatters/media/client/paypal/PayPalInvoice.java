@@ -70,10 +70,9 @@ public class PayPalInvoice extends JSONObject
         BillingInfo billingInfo = new BillingInfo();
 //GERALD; Live
         billingInfo.setEmailAddress(invoice.getEmail());
-//GERALD: test
+//GERALD: Test
 //        billingInfo.setEmailAddress("sb-9izcs34623085@personal.example.com");
 
-//GERALD: test
         if(company != null)
         {
             billingInfo.setBusinessName(company.getBillingName());
@@ -104,9 +103,6 @@ public class PayPalInvoice extends JSONObject
         detail.setNote(invoice.getNote());
         setDetail(detail);
 
-//GERALD: needed?
-//int total = 0;
-
         for(OrderItem orderItem : orderItems)
         {
             if(orderItem.isEnabled())
@@ -121,39 +117,10 @@ public class PayPalInvoice extends JSONObject
                 item.setUnitAmount(amount);
                 item.setUnitOfMeasure("AMOUNT");
                 getItems().put(item);
-//GERALD: needed?
-//total += (orderItem.getPrice() * orderItem.getQuantity());
             }
         }
 
-//GERALD: needed?
-/*
-        Configuration configuration = new Configuration();
-//GERALD: needed?
-//        configuration.setAllowTip(false);
-//GERALD: needed?
-//        configuration.setTaxCalculatedAfterDiscount(false);
-//GERALD: needed?
-//        configuration.setTaxInclusive(true);
-//GERALD: set template id?
-        PartialPayment partialPayment = new PartialPayment();
-//GERALD: needed?
-//        partialPayment.setAllowPartialPayment(false);
-        configuration.setPartialPayment(partialPayment);
-        setConfiguration(configuration);
-*/
-
         Amount amount = new Amount();
-//GERALD
-//        amount.setValue(String.format("%d.00", total));
-//        amount.setCurrencyCode("USD");
-//        amount.setCurrencyCode(invoice.getCurrency().code());
-/*
-        Breakdown breakdown = new Breakdown();
-        breakdown.getShipping().getAmount().setValue(String.format("%d.00", 0));
-        breakdown.getShipping().getAmount().setCurrencyCode(invoice.getCurrency().code());
-        amount.setBreakdown(breakdown);
-*/
         Shipping shipping = new Shipping();
         shipping.getAmount().setValue(String.format("%d.00", 0));
         shipping.getAmount().setCurrencyCode(invoice.getCurrency().code());

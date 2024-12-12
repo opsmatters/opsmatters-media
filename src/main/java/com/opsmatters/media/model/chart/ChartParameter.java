@@ -29,7 +29,11 @@ public enum ChartParameter implements Serializable
     TO_DATE(false),
     ORGANISATIONS(true),
     SITE(false),
-    SESSION(false);
+    SESSION(false),
+    YESTERDAY(false),
+    WEEK(false),
+    MONTH(false),
+    YEAR(false);
 
     private boolean multiple;
 

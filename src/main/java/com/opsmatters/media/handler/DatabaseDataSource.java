@@ -25,7 +25,9 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.temporal.WeekFields;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
@@ -112,6 +114,24 @@ public class DatabaseDataSource<E extends Serializable> implements DataSource<E>
                                 // Replace the session default with the current session id
                                 if(str == CURRENT_SESSION.name())
                                     str = Integer.toString(SessionId.get());
+
+                                LocalDate dt = SessionId.now().atZone(ZoneId.of("UTC")).toLocalDate();
+
+                                // Replace the yesterday default with the session week
+                                if(str == CURRENT_YESTERDAY.name())
+                                    str = Integer.toString(SessionId.yesterday());
+
+                                // Replace the week default with the session week
+                                if(str == CURRENT_WEEK.name())
+                                    str = Integer.toString(dt.get(WeekFields.ISO.weekOfWeekBasedYear()));
+
+                                // Replace the month default with the session month
+                                if(str == CURRENT_MONTH.name())
+                                    str = Integer.toString(dt.getMonth().getValue());
+
+                                // Replace the year default with the session year
+                                if(str == CURRENT_YEAR.name())
+                                    str = Integer.toString(dt.getYear());
 
                                 if(str == null || str.length() == 0)
                                 {

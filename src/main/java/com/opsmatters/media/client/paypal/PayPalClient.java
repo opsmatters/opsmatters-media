@@ -225,6 +225,20 @@ public class PayPalClient extends ApiClient
     }
 
     /**
+     * Cancels the sent invoice with the given id.
+     */
+    public boolean cancelSentInvoice(String invoiceId) throws IOException
+    {
+        JSONObject obj = new JSONObject();
+        obj.put("send_to_invoicer", true);
+        obj.put("send_to_recipient", true);
+
+        post(String.format("%s/v2/invoicing/invoices/%s/cancel",
+            BASE_URL, invoiceId), "application/json", obj.toString(), false);
+        return getStatusLine().getStatusCode() == 204;
+    }
+
+    /**
      * Returns a builder for the client.
      * @return The builder instance.
      */

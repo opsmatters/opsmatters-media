@@ -213,13 +213,13 @@ public class ApiClient extends Client
         HttpGet request = new HttpGet(url);
         if(bearer != null)
             request.addHeader("Authorization", String.format("Bearer %s", bearer));
-        return execute(request);
+        return execute(request, true);
     }
 
     /**
      * Executes a POST operation with a set of url-encoded parameters.
      */
-    public String post(String url, Map<String,String> params) throws IOException
+    public String post(String url, Map<String,String> params, boolean hasResponseEntity) throws IOException
     {
         List<NameValuePair> paramList = new ArrayList<NameValuePair>();
         for(Map.Entry<String,String> param : params.entrySet())
@@ -230,7 +230,15 @@ public class ApiClient extends Client
             request.addHeader("Authorization", String.format("Bearer %s", bearer));
         request.addHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setEntity(new UrlEncodedFormEntity(paramList));
-        return execute(request);
+        return execute(request, hasResponseEntity);
+    }
+
+    /**
+     * Executes a POST operation with a set of url-encoded parameters.
+     */
+    public String post(String url, Map<String,String> params) throws IOException
+    {
+        return post(url, params, true);
     }
 
     /**
@@ -252,14 +260,22 @@ public class ApiClient extends Client
     /**
      * Executes a POST operation with an optional content type and message body.
      */
-    public String post(String url, String contentType, String body) throws IOException
+    public String post(String url, String contentType, String body, boolean hasResponseEntity) throws IOException
     {
         HttpPost request = new HttpPost(url);
         if(contentType != null)
             request.addHeader("Content-Type", contentType);
         if(body != null)
             request.setEntity(new StringEntity(body));
-        return execute(request);
+        return execute(request, hasResponseEntity);
+    }
+
+    /**
+     * Executes a POST operation with an optional content type and message body.
+     */
+    public String post(String url, String contentType, String body) throws IOException
+    {
+        return post(url, contentType, body, true);
     }
 
     /**
@@ -267,13 +283,13 @@ public class ApiClient extends Client
      */
     public String delete(String url) throws IOException
     {
-        return execute(new HttpDelete(url));
+        return execute(new HttpDelete(url), true);
     }
 
     /**
      * Executes a request operation.
      */
-    public String execute(HttpUriRequest request) throws IOException
+    public String execute(HttpUriRequest request, boolean hasResponseEntity) throws IOException
     {
         String ret = null;
 
@@ -282,7 +298,8 @@ public class ApiClient extends Client
             // Execute the API call
             HttpResponse response = client.execute(request, context);
             status = response.getStatusLine();
-            ret = EntityUtils.toString(response.getEntity(), "UTF-8");
+            if(hasResponseEntity)
+                ret = EntityUtils.toString(response.getEntity(), "UTF-8");
         }
         catch(IOException e)
         {

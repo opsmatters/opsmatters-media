@@ -53,6 +53,7 @@ public enum Country
     UK("GB", "United Kingdom"),
     UKRAINE("UA", "Ukraine"),
     USA("US", "United States"),
+    VIETNAM("VN", "Vietnam"),
     ALL("", "All"); // Pseudo status
 
     private String code;

@@ -27,8 +27,10 @@ import java.util.ArrayList;
 public enum CancelReason
 {
     NONE("None"),
-    CLIENT_ERROR("Client Error"),
-    REFUSED_INVOICE("Refused Invoice"),
+    ALREADY_PAID("Already Paid"),
+    RECIPIENT_ERROR("Wrong Recipient"),
+    INVOICE_REFUSED("Refused To Pay"),
+    MISTAKEN_ORDER("Order Sent In Error"),
     ALL("All"); // Pseudo status
 
     private String value;
@@ -94,8 +96,10 @@ public enum CancelReason
         List<CancelReason> ret = new ArrayList<CancelReason>();
 
         ret.add(NONE);
-        ret.add(CLIENT_ERROR);
-        ret.add(REFUSED_INVOICE);
+        ret.add(ALREADY_PAID);
+        ret.add(RECIPIENT_ERROR);
+        ret.add(INVOICE_REFUSED);
+        ret.add(MISTAKEN_ORDER);
 
         return ret;
     }

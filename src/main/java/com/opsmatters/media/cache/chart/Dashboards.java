@@ -24,6 +24,7 @@ import com.opsmatters.media.cache.admin.Parameters;
 import com.opsmatters.media.model.admin.ParameterType;
 import com.opsmatters.media.model.admin.ParameterName;
 import com.opsmatters.media.model.chart.Dashboard;
+import com.opsmatters.media.model.chart.DashboardId;
 
 /**
  * Class representing the cache of dashboards.
@@ -34,7 +35,7 @@ public class Dashboards
 {
     private static final Logger logger = Logger.getLogger(Dashboards.class.getName());
 
-    private static Map<String,Dashboard> dashboardMap = new HashMap<String,Dashboard>();
+    private static Map<DashboardId,Dashboard> dashboardMap = new HashMap<DashboardId,Dashboard>();
     private static List<Dashboard> dashboardList = new ArrayList<Dashboard>();
 
     private static boolean initialised = false;
@@ -92,7 +93,7 @@ public class Dashboards
     /**
      * Returns the dashboard for the given id.
      */
-    public static Dashboard get(String id)
+    public static Dashboard get(DashboardId id)
     {
         return dashboardMap.get(id);
     }

@@ -29,7 +29,7 @@ import com.opsmatters.media.model.ConfigParser;
  */
 public class Dashboard implements ConfigElement
 {
-    private String id = "";
+    private DashboardId id;
     private String title = "";
     private Map<String,Widget> widgets = new LinkedHashMap<String,Widget>();
     private Map<ChartParameter,ChartSelection<?>> selections = new LinkedHashMap<ChartParameter,ChartSelection<?>>();
@@ -37,7 +37,7 @@ public class Dashboard implements ConfigElement
     /**
      * Default constructor.
      */
-    public Dashboard(String id)
+    public Dashboard(DashboardId id)
     {
         setId(id);
     }
@@ -77,7 +77,7 @@ public class Dashboard implements ConfigElement
     /**
      * Returns the id of the dashboard.
      */
-    public String getId()
+    public DashboardId getId()
     {
         return id;
     }
@@ -85,7 +85,7 @@ public class Dashboard implements ConfigElement
     /**
      * Sets the id for the dashboard.
      */
-    public void setId(String id)
+    public void setId(DashboardId id)
     {
         this.id = id;
     }
@@ -222,7 +222,7 @@ public class Dashboard implements ConfigElement
          */
         public Builder(String id)
         {
-            ret = new Dashboard(id);
+            ret = new Dashboard(DashboardId.fromCode(id));
         }
 
         /**

@@ -40,7 +40,7 @@ public class Order extends OwnedEntity
 {
     private String contactId = "";
     private String contactName = ""; // Used as a filter
-    private int week, year = -1;
+    private int week, month, year = -1;
     private PaymentMethod method = PaymentMethod.UNDEFINED;
     private PaymentMode mode = PaymentMode.UNDEFINED;
     private String notes = "";
@@ -68,6 +68,7 @@ public class Order extends OwnedEntity
 
         LocalDate dt = SessionId.now().atZone(ZoneId.of("UTC")).toLocalDate();
         setWeek(dt.get(WeekFields.ISO.weekOfWeekBasedYear()));
+        setMonth(dt.getMonth().getValue());
         setYear(dt.getYear());
 
         // Set the email and additional info for an invoice
@@ -92,6 +93,11 @@ public class Order extends OwnedEntity
             getInvoice().setNote(note);
             getInvoice().setCurrency(contact.getCurrency());
             getInvoice().setStatus(InvoiceStatus.NEW);
+        }
+        else
+        {
+            getInvoice().setCurrency(Currency.UNDEFINED);
+            getInvoice().setStatus(InvoiceStatus.NONE);
         }
     }
 
@@ -118,6 +124,7 @@ public class Order extends OwnedEntity
             setStatus(obj.getStatus());
             setReason(obj.getReason());
             setWeek(obj.getWeek());
+            setMonth(obj.getMonth());
             setYear(obj.getYear());
             getInvoice().copyAttributes(obj.getInvoice());
         }
@@ -173,6 +180,22 @@ public class Order extends OwnedEntity
     public void setWeek(int week)
     {
         this.week = week;
+    }
+
+    /**
+     * Returns the month number.
+     */
+    public int getMonth()
+    {
+        return month;
+    }
+
+    /**
+     * Sets the month number.
+     */
+    public void setMonth(int month)
+    {
+        this.month = month;
     }
 
     /**
