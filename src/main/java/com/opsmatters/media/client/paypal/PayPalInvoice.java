@@ -3,7 +3,6 @@ package com.opsmatters.media.client.paypal;
 import java.util.List;
 import org.json.JSONObject;
 import com.opsmatters.media.cache.order.contact.Contacts;
-import com.opsmatters.media.cache.order.contact.Companies;
 import com.opsmatters.media.model.order.Order;
 import com.opsmatters.media.model.order.OrderItem;
 import com.opsmatters.media.model.order.Invoice;
@@ -39,16 +38,11 @@ public class PayPalInvoice extends JSONObject
     }
 
     /**
-     * Constructor that takes an order and order items.
+     * Constructor that takes an order, order items and a company.
      */
-    public PayPalInvoice(Order order, List<OrderItem> orderItems) 
+    public PayPalInvoice(Order order, List<OrderItem> orderItems, Company company) 
     {
         Invoice invoice = order.getInvoice();
-        Contact contact = Contacts.getById(order.getContactId());
-
-        Company company = null;
-        if(contact != null)
-            company = Companies.getById(contact.getCompanyId());
 
 //GERALD: move somewhere else
         Invoicer invoicer = new Invoicer();

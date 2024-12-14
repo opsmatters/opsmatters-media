@@ -29,6 +29,7 @@ public class ContactPerson extends BaseEntity
     private String contactId = "";
     private String name = "";
     private String email = "";
+    private boolean enabled = true;
 
     /**
      * Default constructor.
@@ -66,6 +67,7 @@ public class ContactPerson extends BaseEntity
             setContactId(obj.getContactId());
             setName(obj.getName());
             setEmail(obj.getEmail());
+            setEnabled(obj.isEnabled());
         }
     }
 
@@ -115,5 +117,37 @@ public class ContactPerson extends BaseEntity
     public void setEmail(String email)
     {
         this.email = email;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the person is enabled.
+     */
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this person is enabled.
+     */
+    public Boolean getEnabledObject()
+    {
+        return Boolean.valueOf(isEnabled());
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the person is enabled.
+     */
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this person is enabled.
+     */
+    public void setEnabledObject(Boolean enabled)
+    {
+        setEnabled(enabled != null && enabled.booleanValue());
     }
 }

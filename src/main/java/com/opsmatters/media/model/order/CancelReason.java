@@ -28,9 +28,9 @@ public enum CancelReason
 {
     NONE("None"),
     ALREADY_PAID("Already Paid"),
-    RECIPIENT_ERROR("Wrong Recipient"),
+    WRONG_RECIPIENT("Wrong Recipient"),
     INVOICE_REFUSED("Refused To Pay"),
-    MISTAKEN_ORDER("Order Sent In Error"),
+    CHANGED_MIND("Changed Mind"),
     ALL("All"); // Pseudo status
 
     private String value;
@@ -97,9 +97,9 @@ public enum CancelReason
 
         ret.add(NONE);
         ret.add(ALREADY_PAID);
-        ret.add(RECIPIENT_ERROR);
+        ret.add(WRONG_RECIPIENT);
         ret.add(INVOICE_REFUSED);
-        ret.add(MISTAKEN_ORDER);
+        ret.add(CHANGED_MIND);
 
         return ret;
     }

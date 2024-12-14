@@ -24,6 +24,7 @@ import com.opsmatters.media.cache.order.contact.Contacts;
 import com.opsmatters.media.cache.order.contact.Companies;
 import com.opsmatters.media.model.OwnedEntity;
 import com.opsmatters.media.model.order.contact.Contact;
+import com.opsmatters.media.model.order.contact.ContactPerson;
 import com.opsmatters.media.model.order.contact.Company;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.SessionId;
@@ -40,6 +41,7 @@ public class Order extends OwnedEntity
 {
     private String contactId = "";
     private String contactName = ""; // Used as a filter
+    private String companyId = "";
     private int week, month, year = -1;
     private PaymentMethod method = PaymentMethod.UNDEFINED;
     private PaymentMode mode = PaymentMode.UNDEFINED;
@@ -56,13 +58,14 @@ public class Order extends OwnedEntity
     }
 
     /**
-     * Constructor that takes a contact.
+     * Constructor that takes a contact and optional person.
      */
-    public Order(Contact contact)
+    public Order(Contact contact, ContactPerson person)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setContactId(contact.getId());
+        setCompanyId(contact.getCompanyId());
         setPaymentMethod(contact.getPaymentMethod());
         setPaymentMode(contact.getPaymentMode());
 
@@ -87,6 +90,13 @@ public class Order extends OwnedEntity
                     if(company.hasBillingEmail())
                         email = company.getBillingEmail();
                 }
+            }
+
+            // Otherwise look for an email in the given person
+            if(email == null || email.length() == 0)
+            {
+                if(person != null)
+                    email = person.getEmail();
             }
 
             getInvoice().setEmail(email);
@@ -118,6 +128,7 @@ public class Order extends OwnedEntity
         {
             super.copyAttributes(obj);
             setContactId(obj.getContactId());
+            setCompanyId(obj.getCompanyId());
             setPaymentMethod(obj.getPaymentMethod());
             setPaymentMode(obj.getPaymentMode());
             setNotes(obj.getNotes());
@@ -164,6 +175,30 @@ public class Order extends OwnedEntity
     public void setContactName(String contactName)
     {
         this.contactName = contactName;
+    }
+
+    /**
+     * Returns the company id.
+     */
+    public String getCompanyId()
+    {
+        return companyId;
+    }
+
+    /**
+     * Sets the company id.
+     */
+    public void setCompanyId(String companyId)
+    {
+        this.companyId = companyId;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the company id has been set.
+     */
+    public boolean hasCompanyId()
+    {
+        return getCompanyId() != null && getCompanyId().length() > 0;
     }
 
     /**

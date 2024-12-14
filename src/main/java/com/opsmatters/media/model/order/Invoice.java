@@ -23,7 +23,7 @@ package com.opsmatters.media.model.order;
 public class Invoice
 {
     private String id = "";
-    private String ref = "";
+    private String number = "";
     private String email = "";
     private String url = "";
     private String note = "";
@@ -53,7 +53,7 @@ public class Invoice
         if(obj != null)
         {
             setId(obj.getId());
-            setRef(obj.getRef());
+            setNumber(obj.getNumber());
             setEmail(obj.getEmail());
             setUrl(obj.getUrl());
             setNote(obj.getNote());
@@ -87,19 +87,19 @@ public class Invoice
     }
 
     /**
-     * Returns the invoice ref.
+     * Returns the invoice number.
      */
-    public String getRef()
+    public String getNumber()
     {
-        return ref;
+        return number;
     }
 
     /**
-     * Sets the invoice ref.
+     * Sets the invoice number.
      */
-    public void setRef(String ref)
+    public void setNumber(String number)
     {
-        this.ref = ref;
+        this.number = number;
     }
 
     /**

@@ -242,7 +242,7 @@ public class HtmlUtils
     public static List<String> getBadExternalSpacingLinks(String str)
     {
         List<String> messages = HtmlDocument.builder(str)
-            .withTags("p")
+            .withTags("p", "li")
             .build()
             .getBadExternalSpacingLinkMessages();
 

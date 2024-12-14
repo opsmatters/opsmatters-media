@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.order.contact.Contact;
+import com.opsmatters.media.model.order.contact.ContactPerson;
 
 /**
  * Class representing the list of contacts.
@@ -35,6 +36,8 @@ public class Contacts implements java.io.Serializable
     private static Map<String,Contact> idMap = new LinkedHashMap<String,Contact>();
     private static Map<String,Contact> nameMap = new TreeMap<String,Contact>();
     private static Map<String,Contact> emailMap = new LinkedHashMap<String,Contact>();
+    private static Map<String,ContactPerson> personNameMap = new TreeMap<String,ContactPerson>();
+    private static Map<String,ContactPerson> personEmailMap = new TreeMap<String,ContactPerson>();
 
     private static boolean initialised = false;
 
@@ -46,7 +49,7 @@ public class Contacts implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if contacts have been initialised.
+     * Returns <CODE>true</CODE> if contacts and persons have been initialised.
      */
     public static boolean isInitialised()
     {
@@ -54,9 +57,9 @@ public class Contacts implements java.io.Serializable
     }
 
     /**
-     * Loads the set of contacts.
+     * Loads the set of contacts and persons.
      */
-    public static void load(List<Contact> contacts)
+    public static void load(List<Contact> contacts, List<ContactPerson> persons)
     {
         initialised = false;
 
@@ -68,17 +71,26 @@ public class Contacts implements java.io.Serializable
 
         logger.info("Loaded "+size()+" contacts");
 
+        for(ContactPerson person : persons)
+        {
+            add(person);
+        }
+
+        logger.info("Loaded "+personNameMap.size()+" contact persons");
+
         initialised = true;
     }
 
     /**
-     * Clears the contacts.
+     * Clears the contacts and persons.
      */
     public static void clear()
     {
         idMap.clear();
         nameMap.clear();
         emailMap.clear();
+        personNameMap.clear();
+        personEmailMap.clear();
     }
 
     /**
@@ -106,7 +118,31 @@ public class Contacts implements java.io.Serializable
     }
 
     /**
-     * Adds the contact with the given name.
+     * Returns the contact person with the given name.
+     */
+    public static ContactPerson getPersonByName(String name)
+    {
+        return name != null ? personNameMap.get(name) : null;
+    }
+
+    /**
+     * Returns the contact person with the given email.
+     */
+    public static ContactPerson getPersonByEmail(String email)
+    {
+        return email != null ? personEmailMap.get(email) : null;
+    }
+
+    /**
+     * Returns the contact for the given person.
+     */
+    public static Contact getByPerson(ContactPerson person)
+    {
+        return person != null ? getById(person.getContactId()) : null;
+    }
+
+    /**
+     * Adds the given contact.
      */
     public static void add(Contact contact)
     {
@@ -116,13 +152,31 @@ public class Contacts implements java.io.Serializable
     }
 
     /**
-     * Removes the contact with the given name.
+     * Adds the given contact person.
+     */
+    public static void add(ContactPerson person)
+    {
+        personNameMap.put(person.getName(), person);
+        personEmailMap.put(person.getEmail(), person);
+    }
+
+    /**
+     * Removes the given contact.
      */
     public static void remove(Contact contact)
     {
         idMap.remove(contact.getId());
         nameMap.remove(contact.getName());
         emailMap.remove(contact.getBillingEmail());
+    }
+
+    /**
+     * Removes the given contact person.
+     */
+    public static void remove(ContactPerson person)
+    {
+        personNameMap.remove(person.getName());
+        personEmailMap.remove(person.getEmail());
     }
 
     /**
@@ -143,6 +197,21 @@ public class Contacts implements java.io.Serializable
         {
             if(contact.isActive())
                 ret.add(contact);
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the list of contact persons.
+     */
+    public static List<ContactPerson> listPersons()
+    {
+        List<ContactPerson> ret = new ArrayList<ContactPerson>();
+        for(ContactPerson person : personNameMap.values())
+        {
+            if(person.isEnabled())
+                ret.add(person);
         }
 
         return ret;
