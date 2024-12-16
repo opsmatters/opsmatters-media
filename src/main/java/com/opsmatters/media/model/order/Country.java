@@ -47,6 +47,7 @@ public enum Country
     ROMANIA("RO", "Romania"),
     SINGAPORE("SG", "Singapore"),
     SPAIN("ES", "Spain"),
+    ST_VINCENT("VC", "Saint Vincent"),
     SWEDEN("SE", "Sweden"),
     SWITZERLAND("CH", "Switzerland"),
     UAE("AE", "United Arab Emirates"),

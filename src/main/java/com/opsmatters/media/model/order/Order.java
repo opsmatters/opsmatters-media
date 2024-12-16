@@ -45,6 +45,8 @@ public class Order extends OwnedEntity
     private int week, month, year = -1;
     private PaymentMethod method = PaymentMethod.UNDEFINED;
     private PaymentMode mode = PaymentMode.UNDEFINED;
+    private PaymentTerm term = PaymentTerm.UNDEFINED;
+    private Currency currency = Currency.UNDEFINED;
     private String notes = "";
     private OrderStatus status = OrderStatus.NEW;
     private CancelReason reason = CancelReason.NONE;
@@ -68,6 +70,8 @@ public class Order extends OwnedEntity
         setCompanyId(contact.getCompanyId());
         setPaymentMethod(contact.getPaymentMethod());
         setPaymentMode(contact.getPaymentMode());
+        setPaymentTerm(contact.getPaymentTerm());
+        setCurrency(contact.getCurrency());
 
         LocalDate dt = SessionId.now().atZone(ZoneId.of("UTC")).toLocalDate();
         setWeek(dt.get(WeekFields.ISO.weekOfWeekBasedYear()));
@@ -101,12 +105,10 @@ public class Order extends OwnedEntity
 
             getInvoice().setEmail(email);
             getInvoice().setNote(note);
-            getInvoice().setCurrency(contact.getCurrency());
             getInvoice().setStatus(InvoiceStatus.NEW);
         }
         else
         {
-            getInvoice().setCurrency(Currency.UNDEFINED);
             getInvoice().setStatus(InvoiceStatus.NONE);
         }
     }
@@ -131,6 +133,8 @@ public class Order extends OwnedEntity
             setCompanyId(obj.getCompanyId());
             setPaymentMethod(obj.getPaymentMethod());
             setPaymentMode(obj.getPaymentMode());
+            setPaymentTerm(obj.getPaymentTerm());
+            setCurrency(obj.getCurrency());
             setNotes(obj.getNotes());
             setStatus(obj.getStatus());
             setReason(obj.getReason());
@@ -295,6 +299,54 @@ public class Order extends OwnedEntity
     public void setPaymentMode(PaymentMode mode)
     {
         this.mode = mode;
+    }
+
+    /**
+     * Returns the payment term.
+     */
+    public PaymentTerm getPaymentTerm()
+    {
+        return term;
+    }
+
+    /**
+     * Sets the payment term.
+     */
+    public void setPaymentTerm(String term)
+    {
+        setPaymentTerm(PaymentTerm.valueOf(term));
+    }
+
+    /**
+     * Sets the payment term.
+     */
+    public void setPaymentTerm(PaymentTerm term)
+    {
+        this.term = term;
+    }
+
+    /**
+     * Returns the payment currency.
+     */
+    public Currency getCurrency()
+    {
+        return currency;
+    }
+
+    /**
+     * Sets the payment currency.
+     */
+    public void setCurrency(String currency)
+    {
+        setCurrency(Currency.fromCode(currency));
+    }
+
+    /**
+     * Sets the payment currency.
+     */
+    public void setCurrency(Currency currency)
+    {
+        this.currency = currency;
     }
 
     /**

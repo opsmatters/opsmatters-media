@@ -21,6 +21,7 @@ import com.opsmatters.media.model.OwnedEntity;
 import com.opsmatters.media.model.order.Currency;
 import com.opsmatters.media.model.order.PaymentMethod;
 import com.opsmatters.media.model.order.PaymentMode;
+import com.opsmatters.media.model.order.PaymentTerm;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.admin.ParameterType.*;
@@ -42,6 +43,7 @@ public class Contact extends OwnedEntity
     private String notes = "";
     private PaymentMethod method = PaymentMethod.UNDEFINED;
     private PaymentMode mode = PaymentMode.UNDEFINED;
+    private PaymentTerm term = PaymentTerm.UNDEFINED;
     private Currency currency = Currency.UNDEFINED;
     private ContactStatus status = ContactStatus.NEW;
     private SuspendReason reason = SuspendReason.NONE;
@@ -64,6 +66,7 @@ public class Contact extends OwnedEntity
 
         setPaymentMethod(Parameters.get(ORDER, PAYMENT_METHOD).getValue());
         setPaymentMode(Parameters.get(ORDER, PAYMENT_MODE).getValue());
+        setPaymentTerm(Parameters.get(ORDER, PAYMENT_TERM).getValue());
         setCurrency(Parameters.get(ORDER, CURRENCY).getValue());
     }
 
@@ -92,6 +95,7 @@ public class Contact extends OwnedEntity
             setNotes(obj.getNotes());
             setPaymentMethod(obj.getPaymentMethod());
             setPaymentMode(obj.getPaymentMode());
+            setPaymentTerm(obj.getPaymentTerm());
             setCurrency(obj.getCurrency());
             setStatus(obj.getStatus());
             setReason(obj.getReason());
@@ -304,6 +308,30 @@ public class Contact extends OwnedEntity
     public void setPaymentMode(PaymentMode mode)
     {
         this.mode = mode;
+    }
+
+    /**
+     * Returns the payment term.
+     */
+    public PaymentTerm getPaymentTerm()
+    {
+        return term;
+    }
+
+    /**
+     * Sets the payment term.
+     */
+    public void setPaymentTerm(String term)
+    {
+        setPaymentTerm(PaymentTerm.valueOf(term));
+    }
+
+    /**
+     * Sets the payment term.
+     */
+    public void setPaymentTerm(PaymentTerm term)
+    {
+        this.term = term;
     }
 
     /**

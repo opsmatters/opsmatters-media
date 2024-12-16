@@ -27,7 +27,6 @@ public class Invoice
     private String email = "";
     private String url = "";
     private String note = "";
-    private Currency currency = Currency.UNDEFINED;
     private InvoiceStatus status = InvoiceStatus.NONE;
 
     /**
@@ -57,7 +56,6 @@ public class Invoice
             setEmail(obj.getEmail());
             setUrl(obj.getUrl());
             setNote(obj.getNote());
-            setCurrency(obj.getCurrency());
             setStatus(obj.getStatus());
         }
     }
@@ -156,30 +154,6 @@ public class Invoice
     public void setNote(String note)
     {
         this.note = note;
-    }
-
-    /**
-     * Returns the invoice currency.
-     */
-    public Currency getCurrency()
-    {
-        return currency;
-    }
-
-    /**
-     * Sets the invoice currency.
-     */
-    public void setCurrency(String currency)
-    {
-        setCurrency(Currency.fromCode(currency));
-    }
-
-    /**
-     * Sets the invoice currency.
-     */
-    public void setCurrency(Currency currency)
-    {
-        this.currency = currency;
     }
 
     /**

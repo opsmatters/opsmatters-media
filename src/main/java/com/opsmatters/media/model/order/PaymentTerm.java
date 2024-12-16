@@ -20,34 +20,35 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Represents the reason for an order cancellation.
+ * Represents the payment term.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum CancelReason
+public enum PaymentTerm
 {
-    NONE("None"),
-    ALREADY_PAID("Already Paid"),
-    WRONG_RECIPIENT("Wrong Recipient"),
-    INVOICE_REFUSED("Refused To Pay"),
-    CHANGED_MIND("Changed Mind"),
-    SENT_IN_ERROR("Sent In Error"),
-    ALL("All"); // Pseudo status
+    UNDEFINED("", "Undefined"),
+    ON_RECEIPT("DUE_ON_RECEIPT", "On Receipt"),
+    NET10("NET_10", "NET 10"),
+    NET30("NET_30", "NET 30"),
+    ALL("", "All"); // Pseudo status
 
+    private String code;
     private String value;
 
     /**
-     * Constructor that takes the reason value.
-     * @param value The value for the reason
+     * Constructor that takes the term value.
+     * @param code The value for the term
+     * @param value The value for the term
      */
-    CancelReason(String value)
+    PaymentTerm(String code, String value)
     {
+        this.code = code;
         this.value = value;
     }
 
     /**
-     * Returns the value of the reason.
-     * @return The value of the reason.
+     * Returns the value of the term.
+     * @return The value of the term.
      */
     public String toString()
     {
@@ -55,8 +56,17 @@ public enum CancelReason
     }
 
     /**
-     * Returns the value of the reason.
-     * @return The value of the reason.
+     * Returns the code of the term.
+     * @return The code of the term.
+     */
+    public String code()
+    {
+        return code;
+    }
+
+    /**
+     * Returns the value of the term.
+     * @return The value of the term.
      */
     public String value()
     {
@@ -68,10 +78,10 @@ public enum CancelReason
      * @param value The type value
      * @return The type for the given value
      */
-    public static CancelReason fromValue(String value)
+    public static PaymentTerm fromValue(String value)
     {
-        CancelReason[] types = values();
-        for(CancelReason type : types)
+        PaymentTerm[] types = values();
+        for(PaymentTerm type : types)
         {
             if(type.value().equals(value))
                 return type;
@@ -90,18 +100,16 @@ public enum CancelReason
     }
 
     /**
-     * Returns a list of the cancellation reasons.
+     * Returns a list of the payment terms.
      */
-    public static List<CancelReason> toList()
+    public static List<PaymentTerm> toList()
     {
-        List<CancelReason> ret = new ArrayList<CancelReason>();
+        List<PaymentTerm> ret = new ArrayList<PaymentTerm>();
 
-        ret.add(NONE);
-        ret.add(ALREADY_PAID);
-        ret.add(WRONG_RECIPIENT);
-        ret.add(INVOICE_REFUSED);
-        ret.add(CHANGED_MIND);
-        ret.add(SENT_IN_ERROR);
+        ret.add(UNDEFINED);
+        ret.add(ON_RECEIPT);
+        ret.add(NET10);
+        ret.add(NET30);
 
         return ret;
     }

@@ -36,6 +36,7 @@ public class Contacts implements java.io.Serializable
     private static Map<String,Contact> idMap = new LinkedHashMap<String,Contact>();
     private static Map<String,Contact> nameMap = new TreeMap<String,Contact>();
     private static Map<String,Contact> emailMap = new LinkedHashMap<String,Contact>();
+    private static Map<String,Map<String,ContactPerson>> personContactMap = new LinkedHashMap<String,Map<String,ContactPerson>>();
     private static Map<String,ContactPerson> personNameMap = new TreeMap<String,ContactPerson>();
     private static Map<String,ContactPerson> personEmailMap = new TreeMap<String,ContactPerson>();
 
@@ -89,6 +90,7 @@ public class Contacts implements java.io.Serializable
         idMap.clear();
         nameMap.clear();
         emailMap.clear();
+        personContactMap.clear();
         personNameMap.clear();
         personEmailMap.clear();
     }
@@ -156,6 +158,14 @@ public class Contacts implements java.io.Serializable
      */
     public static void add(ContactPerson person)
     {
+        Map<String,ContactPerson> persons = personContactMap.get(person.getContactId());
+        if(persons == null)
+        {
+            persons = new LinkedHashMap<String,ContactPerson>();
+            personContactMap.put(person.getContactId(), persons);
+        }
+
+        persons.put(person.getId(), person);
         personNameMap.put(person.getName(), person);
         personEmailMap.put(person.getEmail(), person);
     }
@@ -175,6 +185,7 @@ public class Contacts implements java.io.Serializable
      */
     public static void remove(ContactPerson person)
     {
+        personContactMap.get(person.getContactId()).remove(person.getId());
         personNameMap.remove(person.getName());
         personEmailMap.remove(person.getEmail());
     }
@@ -212,6 +223,58 @@ public class Contacts implements java.io.Serializable
         {
             if(person.isEnabled())
                 ret.add(person);
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the list of contact persons for the given contact.
+     */
+    public static List<ContactPerson> listPersons(Contact contact)
+    {
+        List<ContactPerson> ret = new ArrayList<ContactPerson>();
+        Map<String,ContactPerson> persons = personContactMap.get(contact.getId());
+        if(persons != null)
+        {
+            for(ContactPerson person : persons.values())
+            {
+                if(person.isEnabled())
+                    ret.add(person);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given name matches the given contact or its list of persons.
+     */
+    public static boolean matches(Contact contact, String name)
+    {
+        boolean ret = false;
+
+        name = name.toLowerCase();
+
+        if(contact.getName().toLowerCase().indexOf(name) != -1)
+        {
+            ret = true;
+        }
+        else // Next, check the persons for a match
+        {
+            Map<String,ContactPerson> persons = personContactMap.get(contact.getId());
+            if(persons != null)
+            {
+                for(ContactPerson person : persons.values())
+                {
+                    if(person.isEnabled()
+                        && person.getName().toLowerCase().indexOf(name) != -1)
+                    {
+                        ret = true;
+                        break;
+                    }
+                }
+            }
         }
 
         return ret;

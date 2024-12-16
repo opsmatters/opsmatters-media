@@ -56,10 +56,27 @@ public enum ParameterName
     MAX_CHANNEL_POST_AGE("max-channel-post-age"),
     MIN_WEBINAR_DURATION("min-webinar-duration"),
     SHUTDOWN("shutdown"),
-    INVOICE_NOTE("invoice-note"),
     PAYMENT_METHOD("payment-method"),
     PAYMENT_MODE("payment-mode"),
-    CURRENCY("currency");
+    PAYMENT_TERM("payment-term"),
+    CURRENCY("currency"),
+    SENDER_GIVEN_NAME("sender-given-name"),
+    SENDER_SURNAME("sender-surname"),
+    SENDER_BILLING_NAME("sender-billing-name"),
+    SENDER_BILLING_EMAIL("sender-billing-email"),
+    SENDER_ADDRESS_LINE_1("sender-address-line-1"),
+    SENDER_ADDRESS_LINE_2("sender-address-line-2"),
+    SENDER_ADDRESS_AREA_1("sender-address-area-1"),
+    SENDER_ADDRESS_AREA_2("sender-address-area-2"),
+    SENDER_POSTAL_CODE("sender-postal-code"),
+    SENDER_COUNTRY("sender-country"),
+    SENDER_PHONE_CODE("sender-phone-code"),
+    SENDER_PHONE_NUMBER("sender-phone-number"),
+    SENDER_WEBSITE("sender-website"),
+    SENDER_LOGO("sender-logo"),
+    SENDER_TAX_ID("sender-tax-id"),
+    SENDER_ADDITIONAL_NOTES("sender-additional-notes"),
+    INVOICE_NOTE("invoice-note");
 
     private String value;
 

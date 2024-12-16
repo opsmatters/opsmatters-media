@@ -40,7 +40,7 @@ public class ContactDAO extends BaseDAO
      * The query to use to select a contact from the CONTACTS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, WEBSITE, NOTES, PAYMENT_METHOD, PAYMENT_MODE, CURRENCY_CODE, STATUS, REASON, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, WEBSITE, NOTES, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, CREATED_BY "
       + "FROM CONTACTS WHERE ID=?";
 
     /**
@@ -48,22 +48,22 @@ public class ContactDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTACTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, WEBSITE, NOTES, PAYMENT_METHOD, PAYMENT_MODE, CURRENCY_CODE, STATUS, REASON, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, WEBSITE, NOTES, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a contact in the CONTACTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTACTS SET UPDATED_DATE=?, NAME=?, TYPE=?, CONTACT_EMAIL=?, BILLING_EMAIL=?, COMPANY_ID=?, WEBSITE=?, NOTES=?, PAYMENT_METHOD=?, PAYMENT_MODE=?, CURRENCY_CODE=?, STATUS=?, REASON=?, CREATED_BY=? "
+      "UPDATE CONTACTS SET UPDATED_DATE=?, NAME=?, TYPE=?, CONTACT_EMAIL=?, BILLING_EMAIL=?, COMPANY_ID=?, WEBSITE=?, NOTES=?, PAYMENT_METHOD=?, PAYMENT_MODE=?, PAYMENT_TERM=?, CURRENCY_CODE=?, STATUS=?, REASON=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the contacts from the CONTACTS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, WEBSITE, NOTES, PAYMENT_METHOD, PAYMENT_MODE, CURRENCY_CODE, STATUS, REASON, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, WEBSITE, NOTES, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, CREATED_BY "
       + "FROM CONTACTS ORDER BY CREATED_DATE";
 
     /**
@@ -104,6 +104,7 @@ public class ContactDAO extends BaseDAO
         table.addColumn("NOTES", Types.LONGVARCHAR, false);
         table.addColumn("PAYMENT_METHOD", Types.VARCHAR, 15, true);
         table.addColumn("PAYMENT_MODE", Types.VARCHAR, 15, true);
+        table.addColumn("PAYMENT_TERM", Types.VARCHAR, 15, true);
         table.addColumn("CURRENCY_CODE", Types.VARCHAR, 5, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("REASON", Types.VARCHAR, 15, false);
@@ -150,10 +151,11 @@ public class ContactDAO extends BaseDAO
                 contact.setNotes(rs.getString(10));
                 contact.setPaymentMethod(rs.getString(11));
                 contact.setPaymentMode(rs.getString(12));
-                contact.setCurrency(rs.getString(13));
-                contact.setStatus(rs.getString(14));
-                contact.setReason(rs.getString(15));
-                contact.setCreatedBy(rs.getString(16));
+                contact.setPaymentTerm(rs.getString(13));
+                contact.setCurrency(rs.getString(14));
+                contact.setStatus(rs.getString(15));
+                contact.setReason(rs.getString(16));
+                contact.setCreatedBy(rs.getString(17));
                 ret = contact;
             }
         }
@@ -200,10 +202,11 @@ public class ContactDAO extends BaseDAO
             insertStmt.setString(10, contact.getNotes());
             insertStmt.setString(11, contact.getPaymentMethod().name());
             insertStmt.setString(12, contact.getPaymentMode().name());
-            insertStmt.setString(13, contact.getCurrency().code());
-            insertStmt.setString(14, contact.getStatus().name());
-            insertStmt.setString(15, contact.getReason().name());
-            insertStmt.setString(16, contact.getCreatedBy());
+            insertStmt.setString(13, contact.getPaymentTerm().name());
+            insertStmt.setString(14, contact.getCurrency().code());
+            insertStmt.setString(15, contact.getStatus().name());
+            insertStmt.setString(16, contact.getReason().name());
+            insertStmt.setString(17, contact.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created contact '"+contact.getId()+"' in CONTACTS");
@@ -245,11 +248,12 @@ public class ContactDAO extends BaseDAO
         updateStmt.setString(8, contact.getNotes());
         updateStmt.setString(9, contact.getPaymentMethod().name());
         updateStmt.setString(10, contact.getPaymentMode().name());
-        updateStmt.setString(11, contact.getCurrency().code());
-        updateStmt.setString(12, contact.getStatus().name());
-        updateStmt.setString(13, contact.getReason().name());
-        updateStmt.setString(14, contact.getCreatedBy());
-        updateStmt.setString(15, contact.getId());
+        updateStmt.setString(11, contact.getPaymentTerm().name());
+        updateStmt.setString(12, contact.getCurrency().code());
+        updateStmt.setString(13, contact.getStatus().name());
+        updateStmt.setString(14, contact.getReason().name());
+        updateStmt.setString(15, contact.getCreatedBy());
+        updateStmt.setString(16, contact.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated contact '"+contact.getId()+"' in CONTACTS");
@@ -292,10 +296,11 @@ public class ContactDAO extends BaseDAO
                 contact.setNotes(rs.getString(10));
                 contact.setPaymentMethod(rs.getString(11));
                 contact.setPaymentMode(rs.getString(12));
-                contact.setCurrency(rs.getString(13));
-                contact.setStatus(rs.getString(14));
-                contact.setReason(rs.getString(15));
-                contact.setCreatedBy(rs.getString(16));
+                contact.setPaymentTerm(rs.getString(13));
+                contact.setCurrency(rs.getString(14));
+                contact.setStatus(rs.getString(15));
+                contact.setReason(rs.getString(16));
+                contact.setCreatedBy(rs.getString(17));
                 ret.add(contact);
             }
         }

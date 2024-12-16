@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.cache.order.contact.Contacts;
 import com.opsmatters.media.model.order.Order;
 import com.opsmatters.media.model.order.OrderItem;
+import com.opsmatters.media.model.order.Sender;
 import com.opsmatters.media.model.order.Invoice;
 import com.opsmatters.media.model.order.contact.Contact;
 import com.opsmatters.media.model.order.contact.Company;
@@ -38,31 +39,42 @@ public class PayPalInvoice extends JSONObject
     }
 
     /**
-     * Constructor that takes an order, order items and a company.
+     * Constructor that takes a sender, order, order items and an optional company.
      */
-    public PayPalInvoice(Order order, List<OrderItem> orderItems, Company company) 
+    public PayPalInvoice(Sender sender, Order order, List<OrderItem> orderItems, Company company) 
     {
         Invoice invoice = order.getInvoice();
 
-//GERALD: move somewhere else
         Invoicer invoicer = new Invoicer();
-        invoicer.setBusinessName("OpsMatters");
-//GERALD: Live
-        invoicer.setEmailAddress("gerald@opsmatters.com");
+        invoicer.setBusinessName(sender.getBillingName());
+        invoicer.setEmailAddress(sender.getBillingEmail());
 //GERALD: Test
 //        invoicer.setEmailAddress("sb-ctcos34599269@business.example.com");
-        invoicer.setWebsite("https://opsmatters.com");
-        invoicer.setLogoUrl("https://pics.paypal.com/00/s/MTc1WDgwMFhQTkc/p/MDQ3MTg0ZTktYjQ5Zi00MGIwLWIyYWMtNzc3MGIzZDFmNDAz/image_109.PNG");
-        invoicer.getAddress().setAddressLine1("43 Burnham Way");
-        invoicer.getAddress().setAddressLine2("Ealing");
-        invoicer.getAddress().setAdminArea2("London");
-        invoicer.getAddress().setPostalCode("W13 9YB");
-        invoicer.getAddress().setCountryCode("UK");
+        invoicer.getName().setGivenName(sender.getGivenName());
+        invoicer.getName().setSurname(sender.getSurname());
+        invoicer.getAddress().setAddressLine1(sender.getAddressLine1());
+        invoicer.getAddress().setAddressLine2(sender.getAddressLine2());
+        invoicer.getAddress().setAdminArea1(sender.getAddressArea1());
+        invoicer.getAddress().setAdminArea2(sender.getAddressArea2());
+        invoicer.getAddress().setPostalCode(sender.getPostalCode());
+        invoicer.getAddress().setCountryCode(sender.getCountry().code());
+        invoicer.setWebsite(sender.getWebsite());
+        invoicer.setLogoUrl(sender.getLogoUrl());
+        invoicer.setTaxId(sender.getTaxId());
+        invoicer.setAdditionalNotes(sender.getAdditionalNotes());
+
+        if(sender.hasPhoneCode())
+        {
+            Phone phone = new Phone();
+            phone.setCountryCode(sender.getPhoneCode());
+            phone.setNationalNumber(sender.getPhoneNumber());
+            invoicer.getPhones().put(phone);
+        }
+
         setInvoicer(invoicer);
 
         PrimaryRecipient recipient = new PrimaryRecipient();
         BillingInfo billingInfo = new BillingInfo();
-//GERALD; Live
         billingInfo.setEmailAddress(invoice.getEmail());
 //GERALD: Test
 //        billingInfo.setEmailAddress("sb-9izcs34623085@personal.example.com");
@@ -92,8 +104,8 @@ public class PayPalInvoice extends JSONObject
         getPrimaryRecipients().put(recipient);
 
         Detail detail = new Detail();
-        detail.setCurrencyCode(invoice.getCurrency().code());
-        detail.getPaymentTerm().setTermType("DUE_ON_RECEIPT");
+        detail.setCurrencyCode(order.getCurrency().code());
+        detail.getPaymentTerm().setTermType(order.getPaymentTerm().code());
         detail.setNote(invoice.getNote());
         setDetail(detail);
 
@@ -117,7 +129,7 @@ public class PayPalInvoice extends JSONObject
         Amount amount = new Amount();
         Shipping shipping = new Shipping();
         shipping.getAmount().setValue(String.format("%d.00", 0));
-        shipping.getAmount().setCurrencyCode(invoice.getCurrency().code());
+        shipping.getAmount().setCurrencyCode(order.getCurrency().code());
         amount.getBreakdown().setShipping(shipping);
         setAmount(amount);
     }

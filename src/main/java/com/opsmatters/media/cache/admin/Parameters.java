@@ -89,18 +89,6 @@ public class Parameters extends LinkedHashMap<ParameterType,Map>
     }
 
     /**
-     * Returns the list of parameters with the given type.
-     */
-    public static List<Parameter> get(ParameterType type)
-    {
-        List<Parameter> ret = new ArrayList<Parameter>();
-        Map<ParameterName,Parameter> map = types.get(type);
-        if(map != null)
-            ret.addAll(map.values());
-        return ret;
-    }
-
-    /**
      * Returns the parameter with the given type and name.
      */
     public static Parameter get(ParameterType type, ParameterName name)
@@ -146,5 +134,25 @@ public class Parameters extends LinkedHashMap<ParameterType,Map>
     public static void put(ParameterType type, ParameterName name, Instant value)
     {
         put(type, name, Long.toString(value.toEpochMilli()));
+    }
+
+    /**
+     * Returns the map of parameters with the given type.
+     */
+    public static Map<ParameterName,Parameter> map(ParameterType type)
+    {
+        return types.get(type);
+    }
+
+    /**
+     * Returns the list of parameters with the given type.
+     */
+    public static List<Parameter> list(ParameterType type)
+    {
+        List<Parameter> ret = new ArrayList<Parameter>();
+        Map<ParameterName,Parameter> map = types.get(type);
+        if(map != null)
+            ret.addAll(map.values());
+        return ret;
     }
 }
