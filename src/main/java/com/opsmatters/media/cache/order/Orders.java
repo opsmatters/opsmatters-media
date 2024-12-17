@@ -108,6 +108,22 @@ public class Orders implements java.io.Serializable
     }
 
     /**
+     * Returns the total amount of the items for the given order.
+     */
+    public static int getAmount(Order order)
+    {
+        int ret = 0;
+        Map<String,OrderItem> items = itemMap(order);
+        if(items != null)
+        {
+            for(OrderItem item : items.values())
+                ret += (item.getPrice() * item.getQuantity());
+        }
+
+        return ret;
+    }
+
+    /**
      * Adds the order with the given id.
      */
     public static void add(Order order)

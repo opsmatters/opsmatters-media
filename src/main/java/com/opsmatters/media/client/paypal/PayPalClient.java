@@ -239,6 +239,46 @@ public class PayPalClient extends ApiClient
     }
 
     /**
+     * Records a payment against the given invoice.
+     */
+    public String recordInvoicePayment(String invoiceId, PayPalPayment payment) throws IOException
+    {
+//GERALD
+System.out.println("recordInvoicePayment:1: url="+String.format("%s/v2/invoicing/invoices/%s/payments", BASE_URL, invoiceId)
+  +" payment="+payment);
+        String ret = null;
+        String response = post(String.format("%s/v2/invoicing/invoices/%s/payments",
+            BASE_URL, invoiceId), "application/json", payment.toString());
+        if(response.startsWith("{")) // Valid JSON
+        {
+//GERALD
+System.out.println("recordInvoicePayment:2: status="+getStatusLine());
+System.out.println("recordInvoicePayment:3: response="+response);
+            JSONObject obj = new JSONObject(response);
+//GERALD
+System.out.println("recordInvoicePayment:4: obj="+obj);
+            if(obj.has("payment_id"))
+            {
+                ret = obj.optString("payment_id");
+//GERALD
+System.out.println("recordInvoicePayment:5: ret="+ret);
+            }
+            else // Invoice id not found
+            {
+                logger.severe("Payment id not found for paypal record payment: "+response);
+            }
+        }
+        else // Invalid JSON response
+        {
+            logger.severe("Invalid JSON response for paypal record payment: "+response);
+        }
+
+//GERALD
+System.out.println("recordInvoicePayment:6: ret="+ret);
+        return ret;
+    }
+
+    /**
      * Returns a builder for the client.
      * @return The builder instance.
      */

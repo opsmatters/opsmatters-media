@@ -31,6 +31,7 @@ public enum PaymentMethod
     PAYONEER("Payoneer"),
     STRIPE("Stripe"),
     BANK_TRANSFER("Bank Transfer"),
+    OTHER("Other"),
     ALL("All"); // Pseudo status
 
     private String value;
