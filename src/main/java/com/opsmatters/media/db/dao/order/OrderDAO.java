@@ -183,7 +183,7 @@ public class OrderDAO extends BaseDAO
                 order.getInvoice().setUrl(rs.getString(19));
                 order.getInvoice().setNote(rs.getString(20));
                 order.getInvoice().setStatus(rs.getString(21));
-                order.setCreatedBy(rs.getString(21));
+                order.setCreatedBy(rs.getString(22));
                 ret = order;
             }
         }
@@ -343,7 +343,7 @@ public class OrderDAO extends BaseDAO
                 order.getInvoice().setUrl(rs.getString(19));
                 order.getInvoice().setNote(rs.getString(20));
                 order.getInvoice().setStatus(rs.getString(21));
-                order.setCreatedBy(rs.getString(21));
+                order.setCreatedBy(rs.getString(22));
                 ret.add(order);
             }
         }
@@ -411,7 +411,7 @@ public class OrderDAO extends BaseDAO
                 order.getInvoice().setUrl(rs.getString(19));
                 order.getInvoice().setNote(rs.getString(20));
                 order.getInvoice().setStatus(rs.getString(21));
-                order.setCreatedBy(rs.getString(21));
+                order.setCreatedBy(rs.getString(22));
                 ret.add(order);
             }
         }
@@ -480,7 +480,7 @@ public class OrderDAO extends BaseDAO
                 order.getInvoice().setUrl(rs.getString(19));
                 order.getInvoice().setNote(rs.getString(20));
                 order.getInvoice().setStatus(rs.getString(21));
-                order.setCreatedBy(rs.getString(21));
+                order.setCreatedBy(rs.getString(22));
                 ret.add(order);
             }
         }
