@@ -57,7 +57,7 @@ public class EventDAO extends ContentDAO<Event>
      * The query to use to update a event in the EVENTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE EVENTS SET UUID=?, PUBLISHED_DATE=?, START_DATE=?, TITLE=?, URL=?, EVENT_TYPE=?, TIMEZONE=?, PLATFORM=?, PUBLISHED=?, PROMOTE=?, STATUS=?, ATTRIBUTES=? "
+      "UPDATE EVENTS SET UUID=?, PUBLISHED_DATE=?, START_DATE=?, TITLE=?, URL=?, EVENT_TYPE=?, TIMEZONE=?, PLATFORM=?, PUBLISHED=?, PROMOTE=?, STATUS=?, CREATED_BY=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -264,12 +264,13 @@ public class EventDAO extends ContentDAO<Event>
             updateStmt.setBoolean(9, content.isPublished());
             updateStmt.setBoolean(10, content.isPromoted());
             updateStmt.setString(11, content.getStatus().name());
+            updateStmt.setString(12, content.getCreatedBy());
             String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(12, reader, attributes.length());
-            updateStmt.setString(13, content.getSiteId());
-            updateStmt.setString(14, content.getCode());
-            updateStmt.setInt(15, content.getId());
+            updateStmt.setCharacterStream(13, reader, attributes.length());
+            updateStmt.setString(14, content.getSiteId());
+            updateStmt.setString(15, content.getCode());
+            updateStmt.setInt(16, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 

@@ -64,7 +64,7 @@ public class OrganisationDAO extends BaseDAO
      * The query to use to update an organisation in the ORGANISATIONS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE ORGANISATIONS SET CODE=?, NAME=?, UPDATED_DATE=?, ATTRIBUTES=? "
+      "UPDATE ORGANISATIONS SET CODE=?, NAME=?, UPDATED_DATE=?, ATTRIBUTES=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
@@ -287,7 +287,8 @@ public class OrganisationDAO extends BaseDAO
             String attributes = organisation.getAttributes().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(4, reader, attributes.length());
-            updateStmt.setString(5, organisation.getId());
+            updateStmt.setString(5, organisation.getCreatedBy());
+            updateStmt.setString(6, organisation.getId());
             updateStmt.executeUpdate();
 
             logger.info("Updated organisation '"+organisation.getId()+"' in ORGANISATIONS");

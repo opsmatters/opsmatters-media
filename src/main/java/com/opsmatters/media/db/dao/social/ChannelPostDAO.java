@@ -66,7 +66,7 @@ public class ChannelPostDAO extends BaseDAO
      * The query to use to update a post in the CHANNEL_POSTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CHANNEL_POSTS SET UPDATED_DATE=?, MESSAGE=?, ATTRIBUTES=?, STATUS=?, SESSION_ID=? "
+      "UPDATE CHANNEL_POSTS SET UPDATED_DATE=?, MESSAGE=?, ATTRIBUTES=?, STATUS=?, CREATED_BY=?, SESSION_ID=? "
       + "WHERE ID=?";
 
     /**
@@ -320,8 +320,9 @@ public class ChannelPostDAO extends BaseDAO
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(3, reader, attributes.length());
             updateStmt.setString(4, post.getStatus().name());
-            updateStmt.setInt(5, SessionId.get());
-            updateStmt.setString(6, post.getId());
+            updateStmt.setString(5, post.getCreatedBy());
+            updateStmt.setInt(6, SessionId.get());
+            updateStmt.setString(7, post.getId());
             updateStmt.executeUpdate();
 
             logger.info("Updated post '"+post.getId()+"' in CHANNEL_POSTS");

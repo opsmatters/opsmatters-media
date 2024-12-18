@@ -112,7 +112,8 @@ public class Companies implements java.io.Serializable
     {
         idMap.put(company.getId(), company);
         nameMap.put(company.getName(), company);
-        emailMap.put(company.getBillingEmail(), company);
+        if(company.hasBillingEmail())
+            emailMap.put(company.getBillingEmail(), company);
     }
 
     /**

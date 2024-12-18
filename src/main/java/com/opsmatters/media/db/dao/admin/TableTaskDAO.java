@@ -55,7 +55,7 @@ public class TableTaskDAO extends BaseDAO
      * The query to use to update a task in the TABLE_TASKS table.
      */
     private static final String UPDATE_SQL =
-      "UPDATE TABLE_TASKS SET UPDATED_DATE=?, EXECUTED_DATE=?, NAME=?, TYPE=?, COUNT_QUERY=?, UPDATE_QUERY=?, \"INTERVAL\"=?, INTERVAL_UNIT=?, ENABLED=?, STATUS=?, ITEM_COUNT=? "
+      "UPDATE TABLE_TASKS SET UPDATED_DATE=?, EXECUTED_DATE=?, NAME=?, TYPE=?, COUNT_QUERY=?, UPDATE_QUERY=?, \"INTERVAL\"=?, INTERVAL_UNIT=?, ENABLED=?, STATUS=?, ITEM_COUNT=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
@@ -238,7 +238,8 @@ public class TableTaskDAO extends BaseDAO
         updateStmt.setBoolean(9, task.isEnabled());
         updateStmt.setString(10, task.getStatus().name());
         updateStmt.setInt(11, task.getItemCount());
-        updateStmt.setString(12, task.getId());
+        updateStmt.setString(12, task.getCreatedBy());
+        updateStmt.setString(13, task.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated task '"+task.getId()+"' in TABLE_TASKS");

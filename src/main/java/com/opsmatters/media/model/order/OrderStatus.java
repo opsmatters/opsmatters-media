@@ -31,6 +31,7 @@ public enum OrderStatus
     PENDING("Pending", "glyphicon-log-in", "status-warn"),
     COMPLETED("Completed", "glyphicon-ok-circle", "status-success"),
     CANCELLED("Cancelled", "glyphicon-trash", "status-error"),
+    ARCHIVED("Archived", "glyphicon-trash", "status-error"),
     ALL("All", "", ""); // Pseudo status
 
     private String value;
@@ -123,6 +124,7 @@ public enum OrderStatus
         ret.add(PENDING);
         ret.add(COMPLETED);
         ret.add(CANCELLED);
+        ret.add(ARCHIVED);
 
         return ret;
     }

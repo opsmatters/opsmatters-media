@@ -62,7 +62,7 @@ public class SocialChannelDAO extends BaseDAO
      * The query to use to update a channel in the SOCIAL_CHANNELS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE SOCIAL_CHANNELS SET UPDATED_DATE=?, CODE=?, NAME=?, PROVIDER=?, HANDLE=?, ICON=?, SITES=?, CONTENT_TYPES=?, DELAY=?, MAX_POSTS=?, STATUS=? "
+      "UPDATE SOCIAL_CHANNELS SET UPDATED_DATE=?, CODE=?, NAME=?, PROVIDER=?, HANDLE=?, ICON=?, SITES=?, CONTENT_TYPES=?, DELAY=?, MAX_POSTS=?, STATUS=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
@@ -305,7 +305,8 @@ public class SocialChannelDAO extends BaseDAO
         updateStmt.setInt(9, channel.getDelay());
         updateStmt.setInt(10, channel.getMaxPosts());
         updateStmt.setString(11, channel.getStatus().name());
-        updateStmt.setString(12, channel.getId());
+        updateStmt.setString(12, channel.getCreatedBy());
+        updateStmt.setString(13, channel.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated channel '"+channel.getId()+"' in SOCIAL_CHANNELS");

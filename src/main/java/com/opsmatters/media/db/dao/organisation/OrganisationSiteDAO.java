@@ -67,7 +67,7 @@ public class OrganisationSiteDAO extends BaseDAO
      * The query to use to update an organisation in the ORGANISATION_SITES table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE ORGANISATION_SITES SET CODE=?, UPDATED_DATE=?, ATTRIBUTES=?, SPONSOR=?, LISTING=?, STATUS=?, REASON=? "
+      "UPDATE ORGANISATION_SITES SET CODE=?, UPDATED_DATE=?, ATTRIBUTES=?, SPONSOR=?, LISTING=?, STATUS=?, REASON=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
@@ -324,7 +324,8 @@ public class OrganisationSiteDAO extends BaseDAO
             updateStmt.setBoolean(5, organisation.hasListing());
             updateStmt.setString(6, organisation.getStatus().name());
             updateStmt.setString(7, organisation.getReason() != null ? organisation.getReason().name() : ArchiveReason.NONE.name());
-            updateStmt.setString(8, organisation.getId());
+            updateStmt.setString(8, organisation.getCreatedBy());
+            updateStmt.setString(9, organisation.getId());
             updateStmt.executeUpdate();
 
             logger.info("Updated organisation site '"+organisation.getId()+"' in ORGANISATION_SITES");

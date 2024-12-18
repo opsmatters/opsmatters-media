@@ -155,7 +155,7 @@ public class Company extends OwnedEntity
      */
     public String getBillingEmail()
     {
-        return billingEmail;
+        return billingEmail != null ? billingEmail : "";
     }
 
     /**

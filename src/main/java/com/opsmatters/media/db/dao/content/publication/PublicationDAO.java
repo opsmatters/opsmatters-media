@@ -65,7 +65,7 @@ public class PublicationDAO extends ContentDAO<Publication>
      * The query to use to update a publication in the PUBLICATIONS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE PUBLICATIONS SET UUID=?, PUBLISHED_DATE=?, TITLE=?, URL=?, PUBLICATION_TYPE=?, PUBLISHED=?, PROMOTE=?, STATUS=?, ATTRIBUTES=? "
+      "UPDATE PUBLICATIONS SET UUID=?, PUBLISHED_DATE=?, TITLE=?, URL=?, PUBLICATION_TYPE=?, PUBLISHED=?, PROMOTE=?, STATUS=?, CREATED_BY=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -316,12 +316,13 @@ public class PublicationDAO extends ContentDAO<Publication>
             updateStmt.setBoolean(6, content.isPublished());
             updateStmt.setBoolean(7, content.isPromoted());
             updateStmt.setString(8, content.getStatus().name());
+            updateStmt.setString(9, content.getCreatedBy());
             String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(9, reader, attributes.length());
-            updateStmt.setString(10, content.getSiteId());
-            updateStmt.setString(11, content.getCode());
-            updateStmt.setInt(12, content.getId());
+            updateStmt.setCharacterStream(10, reader, attributes.length());
+            updateStmt.setString(11, content.getSiteId());
+            updateStmt.setString(12, content.getCode());
+            updateStmt.setInt(13, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 

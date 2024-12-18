@@ -128,6 +128,9 @@ public class Orders implements java.io.Serializable
      */
     public static void add(Order order)
     {
+        if(order.isArchived())
+            return;
+
         orderMap.put(order.getId(), order);
 
         List<Order> list = contactMap.get(order.getContactId());

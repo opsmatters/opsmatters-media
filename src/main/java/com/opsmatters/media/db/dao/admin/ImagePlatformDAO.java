@@ -55,7 +55,7 @@ public class ImagePlatformDAO extends BaseDAO
      * The query to use to update a platform in the IMAGE_PLATFORMS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE IMAGE_PLATFORMS SET UPDATED_DATE=?, CODE=?, NAME=?, TAG=?, FREE=?, STATUS=? "
+      "UPDATE IMAGE_PLATFORMS SET UPDATED_DATE=?, CODE=?, NAME=?, TAG=?, FREE=?, STATUS=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
@@ -219,7 +219,8 @@ public class ImagePlatformDAO extends BaseDAO
         updateStmt.setString(4, platform.getTag());
         updateStmt.setBoolean(5, platform.isFree());
         updateStmt.setString(6, platform.getStatus().name());
-        updateStmt.setString(7, platform.getId());
+        updateStmt.setString(7, platform.getCreatedBy());
+        updateStmt.setString(8, platform.getId());
         updateStmt.executeUpdate();
 
         logger.info(String.format("Updated platform %s in IMAGE_PLATFORMS", platform.getId()));

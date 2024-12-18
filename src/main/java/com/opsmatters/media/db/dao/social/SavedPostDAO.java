@@ -68,7 +68,7 @@ public class SavedPostDAO extends BaseDAO
      * The query to use to update a saved post in the SAVED_POSTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE SAVED_POSTS SET UPDATED_DATE=?, POSTED_DATE=?, SITE_ID=?, TITLE=?, CODE=?, CONTENT_TYPE=?, MESSAGE=?, SHORTEN_URL=?, PROPERTIES=?, STATUS=? "
+      "UPDATE SAVED_POSTS SET UPDATED_DATE=?, POSTED_DATE=?, SITE_ID=?, TITLE=?, CODE=?, CONTENT_TYPE=?, MESSAGE=?, SHORTEN_URL=?, PROPERTIES=?, STATUS=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
@@ -315,7 +315,8 @@ public class SavedPostDAO extends BaseDAO
             reader = new StringReader(properties);
             updateStmt.setCharacterStream(9, reader, properties.length());
             updateStmt.setString(10, post.getStatus().name());
-            updateStmt.setString(11, post.getId());
+            updateStmt.setString(11, post.getCreatedBy());
+            updateStmt.setString(12, post.getId());
             updateStmt.executeUpdate();
 
             logger.info("Updated saved post '"+post.getId()+"' in SAVED_POSTS");

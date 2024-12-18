@@ -7,6 +7,7 @@ import com.opsmatters.media.model.order.Order;
 import com.opsmatters.media.model.order.OrderItem;
 import com.opsmatters.media.model.order.Sender;
 import com.opsmatters.media.model.order.Invoice;
+import com.opsmatters.media.model.order.Country;
 import com.opsmatters.media.model.order.contact.Contact;
 import com.opsmatters.media.model.order.contact.Company;
 
@@ -57,7 +58,8 @@ public class PayPalInvoice extends JSONObject
         invoicer.getAddress().setAdminArea1(sender.getAddressArea1());
         invoicer.getAddress().setAdminArea2(sender.getAddressArea2());
         invoicer.getAddress().setPostalCode(sender.getPostalCode());
-        invoicer.getAddress().setCountryCode(sender.getCountry().code());
+        if(sender.getCountry() != Country.UNDEFINED)
+            invoicer.getAddress().setCountryCode(sender.getCountry().code());
         invoicer.setWebsite(sender.getWebsite());
         invoicer.setLogoUrl(sender.getLogoUrl());
         invoicer.setTaxId(sender.getTaxId());
@@ -89,7 +91,8 @@ public class PayPalInvoice extends JSONObject
             billingInfo.getAddress().setAdminArea1(company.getAddressArea1());
             billingInfo.getAddress().setAdminArea2(company.getAddressArea2());
             billingInfo.getAddress().setPostalCode(company.getPostalCode());
-            billingInfo.getAddress().setCountryCode(company.getCountry().code());
+            if(company.getCountry() != Country.UNDEFINED)
+                billingInfo.getAddress().setCountryCode(company.getCountry().code());
 
             if(company.hasPhoneCode())
             {

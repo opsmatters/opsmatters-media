@@ -63,7 +63,7 @@ public class ProjectDAO extends ContentDAO<Project>
      * The query to use to update a project in the PROJECTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE PROJECTS SET UUID=?, PUBLISHED_DATE=?, TITLE=?, URL=?, LICENSE=?, PUBLISHED=?, PROMOTE=?, STATUS=?, ATTRIBUTES=? "
+      "UPDATE PROJECTS SET UUID=?, PUBLISHED_DATE=?, TITLE=?, URL=?, LICENSE=?, PUBLISHED=?, PROMOTE=?, STATUS=?, CREATED_BY=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -250,12 +250,13 @@ public class ProjectDAO extends ContentDAO<Project>
             updateStmt.setBoolean(6, content.isPublished());
             updateStmt.setBoolean(7, content.isPromoted());
             updateStmt.setString(8, content.getStatus().name());
+            updateStmt.setString(9, content.getCreatedBy());
             String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(9, reader, attributes.length());
-            updateStmt.setString(10, content.getSiteId());
-            updateStmt.setString(11, content.getCode());
-            updateStmt.setInt(12, content.getId());
+            updateStmt.setCharacterStream(10, reader, attributes.length());
+            updateStmt.setString(11, content.getSiteId());
+            updateStmt.setString(12, content.getCode());
+            updateStmt.setInt(13, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 

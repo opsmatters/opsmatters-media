@@ -74,7 +74,7 @@ public class DraftPostDAO extends BaseDAO
      * The query to use to update a post in the DRAFT_POSTS table.
      */
     private static final String UPDATE_SQL =
-      "UPDATE DRAFT_POSTS SET UPDATED_DATE=?, SITE_ID=?, SOURCE_ID=?, TITLE=?, MESSAGE=?, PROPERTIES=?, ATTRIBUTES=?, STATUS=?, SESSION_ID=? "
+      "UPDATE DRAFT_POSTS SET UPDATED_DATE=?, SITE_ID=?, SOURCE_ID=?, TITLE=?, MESSAGE=?, PROPERTIES=?, ATTRIBUTES=?, STATUS=?, CREATED_BY=?, SESSION_ID=? "
       + "WHERE ID=?";
 
     /**
@@ -345,8 +345,9 @@ public class DraftPostDAO extends BaseDAO
             reader2 = new StringReader(attributes);
             updateStmt.setCharacterStream(7, reader2, attributes.length());
             updateStmt.setString(8, post.getStatus().name());
-            updateStmt.setInt(9, SessionId.get());
-            updateStmt.setString(10, post.getId());
+            updateStmt.setString(9, post.getCreatedBy());
+            updateStmt.setInt(10, SessionId.get());
+            updateStmt.setString(11, post.getId());
             updateStmt.executeUpdate();
 
             logger.info("Updated post '"+post.getId()+"' in DRAFT_POSTS");

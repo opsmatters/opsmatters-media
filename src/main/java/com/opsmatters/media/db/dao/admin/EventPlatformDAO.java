@@ -55,7 +55,7 @@ public class EventPlatformDAO extends BaseDAO
      * The query to use to update a platform in the EVENT_PLATFORMS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE EVENT_PLATFORMS SET UPDATED_DATE=?, CODE=?, NAME=?, DOMAIN=?, CONFIG=?, STATUS=? "
+      "UPDATE EVENT_PLATFORMS SET UPDATED_DATE=?, CODE=?, NAME=?, DOMAIN=?, CONFIG=?, STATUS=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
@@ -219,7 +219,8 @@ public class EventPlatformDAO extends BaseDAO
         updateStmt.setString(4, platform.getDomain());
         updateStmt.setString(5, platform.getConfig());
         updateStmt.setString(6, platform.getStatus().name());
-        updateStmt.setString(7, platform.getId());
+        updateStmt.setString(7, platform.getCreatedBy());
+        updateStmt.setString(8, platform.getId());
         updateStmt.executeUpdate();
 
         logger.info(String.format("Updated platform %s in EVENT_PLATFORMS", platform.getId()));

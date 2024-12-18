@@ -65,7 +65,7 @@ public class PostDAO extends ContentDAO<Post>
      */
     private static final String UPDATE_SQL =  
       "UPDATE POSTS SET UUID=?, PUBLISHED_DATE=?, TITLE=?, POST_TYPE=?, PUBLISHED=?, PROMOTE=?, NEWSLETTER=?, FEATURED=?, SPONSORED=?, "
-      + "AUTHOR=?, STATUS=?, ATTRIBUTES=? "
+      + "AUTHOR=?, STATUS=?, CREATED_BY=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -276,12 +276,13 @@ public class PostDAO extends ContentDAO<Post>
             updateStmt.setBoolean(9, content.isSponsored());
             updateStmt.setString(10, content.getAuthor());
             updateStmt.setString(11, content.getStatus().name());
+            updateStmt.setString(12, content.getCreatedBy());
             String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(12, reader, attributes.length());
-            updateStmt.setString(13, content.getSiteId());
-            updateStmt.setString(14, content.getCode());
-            updateStmt.setInt(15, content.getId());
+            updateStmt.setCharacterStream(13, reader, attributes.length());
+            updateStmt.setString(14, content.getSiteId());
+            updateStmt.setString(15, content.getCode());
+            updateStmt.setInt(16, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 

@@ -61,7 +61,7 @@ public class SocialTemplateDAO extends BaseDAO
      * The query to use to update a template in the SOCIAL_TEMPLATES table.
      */
     private static final String UPDATE_SQL =
-      "UPDATE SOCIAL_TEMPLATES SET UPDATED_DATE=?, NAME=?, CONTENT_TYPE=?, SITE_ID=?, MESSAGE=?, ATTRIBUTES=?, WEIGHT=?, SHORTEN_URL=?, STATUS=? "
+      "UPDATE SOCIAL_TEMPLATES SET UPDATED_DATE=?, NAME=?, CONTENT_TYPE=?, SITE_ID=?, MESSAGE=?, ATTRIBUTES=?, WEIGHT=?, SHORTEN_URL=?, STATUS=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
@@ -273,7 +273,8 @@ public class SocialTemplateDAO extends BaseDAO
             updateStmt.setInt(7, template.getWeight());
             updateStmt.setBoolean(8, template.isShortenUrl());
             updateStmt.setString(9, template.getStatus().name());
-            updateStmt.setString(10, template.getId());
+            updateStmt.setString(10, template.getCreatedBy());
+            updateStmt.setString(11, template.getId());
             updateStmt.executeUpdate();
 
             logger.info("Updated template '"+template.getId()+"' in SOCIAL_TEMPLATES");

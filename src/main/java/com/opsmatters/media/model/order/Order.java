@@ -374,6 +374,14 @@ public class Order extends OwnedEntity
     }
 
     /**
+     * Returns <CODE>true</CODE> if the order status is ARCHIVED.
+     */
+    public boolean isArchived()
+    {
+        return status == OrderStatus.ARCHIVED;
+    }
+
+    /**
      * Sets the order status.
      */
     public void setStatus(String status)

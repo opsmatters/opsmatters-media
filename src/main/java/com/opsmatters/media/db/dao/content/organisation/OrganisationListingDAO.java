@@ -87,7 +87,7 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO ORGANISATION_LISTINGS"
-      + "( UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, STATUS, ATTRIBUTES, CREATED_BY )"
+      + "( UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, STATUS, CREATED_BY, ATTRIBUTES )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
@@ -95,7 +95,7 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
      * The query to use to update an organisation listing in the ORGANISATION_LISTINGS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE ORGANISATION_LISTINGS SET UUID=?, PUBLISHED_DATE=?, CODE=?, TITLE=?, STATUS=?, ATTRIBUTES=? "
+      "UPDATE ORGANISATION_LISTINGS SET UUID=?, PUBLISHED_DATE=?, CODE=?, TITLE=?, STATUS=?, CREATED_BY=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND ID=?";
 
     /**
@@ -284,10 +284,10 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
             insertStmt.setTimestamp(5, new Timestamp(listing.getPublishedDateMillis()), UTC);
             insertStmt.setString(6, listing.getTitle());
             insertStmt.setString(7, listing.getStatus().name());
+            insertStmt.setString(8, listing.getCreatedBy());
             String attributes = listing.getAttributes().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(8, reader, attributes.length());
-            insertStmt.setString(9, listing.getCreatedBy());
+            insertStmt.setCharacterStream(9, reader, attributes.length());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s, code=%s)", 
@@ -339,11 +339,12 @@ public class OrganisationListingDAO extends ContentDAO<OrganisationListing>
             updateStmt.setString(3, listing.getCode());
             updateStmt.setString(4, listing.getTitle());
             updateStmt.setString(5, listing.getStatus().name());
+            updateStmt.setString(6, listing.getCreatedBy());
             String attributes = listing.getAttributes().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(6, reader, attributes.length());
-            updateStmt.setString(7, listing.getSiteId());
-            updateStmt.setInt(8, listing.getId());
+            updateStmt.setCharacterStream(7, reader, attributes.length());
+            updateStmt.setString(8, listing.getSiteId());
+            updateStmt.setInt(9, listing.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s, code=%s)", 

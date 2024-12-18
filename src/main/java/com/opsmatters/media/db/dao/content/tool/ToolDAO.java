@@ -56,7 +56,7 @@ public class ToolDAO extends ContentDAO<Tool>
      * The query to use to update a tool in the TOOLS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE TOOLS SET UUID=?, PUBLISHED_DATE=?, TITLE=?, PRICING=?, PUBLISHED=?, PROMOTE=?, STATUS=?, ATTRIBUTES=? "
+      "UPDATE TOOLS SET UUID=?, PUBLISHED_DATE=?, TITLE=?, PRICING=?, PUBLISHED=?, PROMOTE=?, STATUS=?, CREATED_BY=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -184,12 +184,13 @@ public class ToolDAO extends ContentDAO<Tool>
             updateStmt.setBoolean(5, content.isPublished());
             updateStmt.setBoolean(6, content.isPromoted());
             updateStmt.setString(7, content.getStatus().name());
+            updateStmt.setString(8, content.getCreatedBy());
             String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(8, reader, attributes.length());
-            updateStmt.setString(9, content.getSiteId());
-            updateStmt.setString(10, content.getCode());
-            updateStmt.setInt(11, content.getId());
+            updateStmt.setCharacterStream(9, reader, attributes.length());
+            updateStmt.setString(10, content.getSiteId());
+            updateStmt.setString(11, content.getCode());
+            updateStmt.setInt(12, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 
