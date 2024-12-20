@@ -69,6 +69,13 @@ public class OrderDAO extends BaseDAO
       + "FROM ORDERS ORDER BY CREATED_DATE";
 
     /**
+     * The query to use to select the orders from the ORDERS table by status.
+     */
+    private static final String LIST_BY_STATUS_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, COMPANY_ID, WEEK, MONTH, YEAR, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, NOTES, STATUS, REASON, INVOICE_ID, INVOICE_NUMBER, INVOICE_EMAIL, INVOICE_URL, INVOICE_NOTE, INVOICE_STATUS, CREATED_BY "
+      + "FROM ORDERS WHERE STATUS=? ORDER BY CREATED_DATE";
+
+    /**
      * The query to use to select the orders from the ORDERS table by contact.
      */
     private static final String LIST_BY_CONTACT_SQL =  
@@ -133,6 +140,7 @@ public class OrderDAO extends BaseDAO
         table.addColumn("SESSION_ID", Types.INTEGER, true);
         table.setPrimaryKey("ORDERS_PK", new String[] {"ID"});
         table.addIndex("ORDERS_CONTACT_IDX", new String[] {"CONTACT_ID"});
+        table.addIndex("ORDERS_STATUS_IDX", new String[] {"STATUS"});
         table.addIndex("ORDERS_SESSION_IDX", new String[] {"SESSION_ID"});
         table.setInitialised(true);
     }
@@ -318,6 +326,74 @@ public class OrderDAO extends BaseDAO
         {
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
+            ret = new ArrayList<Order>();
+            while(rs.next())
+            {
+                Order order = new Order();
+                order.setId(rs.getString(1));
+                order.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                order.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                order.setContactId(rs.getString(4));
+                order.setCompanyId(rs.getString(5));
+                order.setWeek(rs.getInt(6));
+                order.setMonth(rs.getInt(7));
+                order.setYear(rs.getInt(8));
+                order.setPaymentMethod(rs.getString(9));
+                order.setPaymentMode(rs.getString(10));
+                order.setPaymentTerm(rs.getString(11));
+                order.setCurrency(rs.getString(12));
+                order.setNotes(rs.getString(13));
+                order.setStatus(rs.getString(14));
+                order.setReason(rs.getString(15));
+                order.getInvoice().setId(rs.getString(16));
+                order.getInvoice().setNumber(rs.getString(17));
+                order.getInvoice().setEmail(rs.getString(18));
+                order.getInvoice().setUrl(rs.getString(19));
+                order.getInvoice().setNote(rs.getString(20));
+                order.getInvoice().setStatus(rs.getString(21));
+                order.setCreatedBy(rs.getString(22));
+                ret.add(order);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the orders from the ORDERS table by status.
+     */
+    public synchronized List<Order> list(OrderStatus status) throws SQLException
+    {
+        List<Order> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByStatusStmt == null)
+            listByStatusStmt = prepareStatement(getConnection(), LIST_BY_STATUS_SQL);
+        clearParameters(listByStatusStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByStatusStmt.setString(1, status.name());
+            listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByStatusStmt.executeQuery();
             ret = new ArrayList<Order>();
             while(rs.next())
             {
@@ -551,10 +627,12 @@ public class OrderDAO extends BaseDAO
         updateStmt = null;
         closeStatement(listStmt);
         listStmt = null;
+        closeStatement(listByStatusStmt);
+        listByStatusStmt = null;
         closeStatement(listByContactStmt);
         listByContactStmt = null;
         closeStatement(listByContactStatusStmt);
-        listByContactStmt = null;
+        listByContactStatusStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -565,6 +643,7 @@ public class OrderDAO extends BaseDAO
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
+    private PreparedStatement listByStatusStmt;
     private PreparedStatement listByContactStmt;
     private PreparedStatement listByContactStatusStmt;
     private PreparedStatement countStmt;

@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.order.Order;
 import com.opsmatters.media.model.order.OrderItem;
+import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.db.dao.BaseDAO;
 
 /**
@@ -74,6 +75,13 @@ public class OrderItemDAO extends BaseDAO
       + "FROM ORDER_ITEMS WHERE ORDER_ID=? ORDER BY CREATED_DATE";
 
     /**
+     * The query to use to select the items from the ORDER_ITEMS table by content.
+     */
+    private static final String LIST_BY_CONTENT_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORDER_ID, PRODUCT_CODE, SITE_ID, CONTENT_ID, CONTENT_TYPE, QUANTITY, PRICE, CURRENCY_CODE, NAME, DESCRIPTION, ENABLED "
+      + "FROM ORDER_ITEMS WHERE CONTENT_ID=? ORDER BY CREATED_DATE";
+
+    /**
      * The query to use to get the count of items from the ORDER_ITEMS table.
      */
     private static final String COUNT_SQL =  
@@ -115,6 +123,7 @@ public class OrderItemDAO extends BaseDAO
         table.addColumn("ENABLED", Types.BOOLEAN, true);
         table.setPrimaryKey("ORDER_ITEMS_PK", new String[] {"ID"});
         table.addIndex("ORDER_ITEMS_ORDER_IDX", new String[] {"ORDER_ID"});
+        table.addIndex("ORDER_ITEMS_CONTENT_IDX", new String[] {"CONTENT_ID"});
         table.setInitialised(true);
     }
 
@@ -373,6 +382,66 @@ public class OrderItemDAO extends BaseDAO
     }
 
     /**
+     * Returns the items from the ORDER_ITEMS table by content.
+     */
+    public synchronized List<OrderItem> list(Content content) throws SQLException
+    {
+        List<OrderItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByContentStmt == null)
+            listByContentStmt = prepareStatement(getConnection(), LIST_BY_CONTENT_SQL);
+        clearParameters(listByContentStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByContentStmt.setString(1, content.getUuid());
+            listByContentStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByContentStmt.executeQuery();
+            ret = new ArrayList<OrderItem>();
+            while(rs.next())
+            {
+                OrderItem item = new OrderItem();
+                item.setId(rs.getString(1));
+                item.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                item.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                item.setOrderId(rs.getString(4));
+                item.setProductCode(rs.getString(5));
+                item.setSiteId(rs.getString(6));
+                item.setContentId(rs.getString(7));
+                item.setContentType(rs.getString(8));
+                item.setQuantity(rs.getInt(9));
+                item.setPrice(rs.getInt(10));
+                item.setCurrency(rs.getString(11));
+                item.setName(rs.getString(12));
+                item.setDescription(rs.getString(13));
+                item.setEnabled(rs.getBoolean(14));
+                ret.add(item);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the count of items from the ORDER_ITEMS table.
      */
     public int count() throws SQLException
@@ -424,6 +493,8 @@ public class OrderItemDAO extends BaseDAO
         listStmt = null;
         closeStatement(listByOrderStmt);
         listByOrderStmt = null;
+        closeStatement(listByContentStmt);
+        listByContentStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -435,6 +506,7 @@ public class OrderItemDAO extends BaseDAO
     private PreparedStatement updateStmt;
     private PreparedStatement listStmt;
     private PreparedStatement listByOrderStmt;
+    private PreparedStatement listByContentStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }
