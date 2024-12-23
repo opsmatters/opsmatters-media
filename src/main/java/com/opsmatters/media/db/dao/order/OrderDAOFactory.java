@@ -19,6 +19,7 @@ import com.opsmatters.media.db.JDBCDatabaseDriver;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.db.dao.DAOFactory;
 import com.opsmatters.media.db.dao.order.product.ProductDAO;
+import com.opsmatters.media.db.dao.order.product.ProductTextDAO;
 import com.opsmatters.media.db.dao.order.contact.CompanyDAO;
 import com.opsmatters.media.db.dao.order.contact.ContactDAO;
 import com.opsmatters.media.db.dao.order.contact.ContactProductDAO;
@@ -39,6 +40,7 @@ public class OrderDAOFactory extends DAOFactory
         super(driver, conn);
 
         getProductDAO();
+        getProductTextDAO();
         getCompanyDAO();
         getContactDAO();
         getContactProductDAO();
@@ -55,6 +57,16 @@ public class OrderDAOFactory extends DAOFactory
         if(productDAO == null)
             productDAO = new ProductDAO(this);
         return productDAO;
+    }
+
+    /**
+     * Returns the product text DAO.
+     */
+    public ProductTextDAO getProductTextDAO()
+    {
+        if(productTextDAO == null)
+            productTextDAO = new ProductTextDAO(this);
+        return productTextDAO;
     }
 
     /**
@@ -125,6 +137,7 @@ public class OrderDAOFactory extends DAOFactory
     {
         super.close();
         productDAO = null;
+        productTextDAO = null;
         companyDAO = null;
         contactDAO = null;
         contactProductDAO = null;
@@ -134,6 +147,7 @@ public class OrderDAOFactory extends DAOFactory
     }
 
     private ProductDAO productDAO;
+    private ProductTextDAO productTextDAO;
     private CompanyDAO companyDAO;
     private ContactDAO contactDAO;
     private ContactProductDAO contactProductDAO;

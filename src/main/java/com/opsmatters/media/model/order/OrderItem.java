@@ -27,6 +27,8 @@ import com.opsmatters.media.model.order.product.Product;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.SessionId;
 
+import static com.opsmatters.media.model.order.product.TextKey.*;
+
 /**
  * Class representing an order item.
  * 
@@ -268,7 +270,9 @@ public class OrderItem extends BaseEntity
                 OrderItemProperties properties = new OrderItemProperties();
                 properties.setDate(SessionId.now());
                 properties.setSite(Sites.get(getSiteId()));
-                setName(new StringSubstitutor(properties).replace(product.getTemplate()));
+                String template = Products.getText(product, INVOICE_ITEM);
+                if(template != null)
+                    setName(new StringSubstitutor(properties).replace(template));
             }
         }
     }

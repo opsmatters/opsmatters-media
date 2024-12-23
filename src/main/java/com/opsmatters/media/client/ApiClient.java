@@ -25,6 +25,7 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.entity.StringEntity;
@@ -276,6 +277,27 @@ public class ApiClient extends Client
     public String post(String url, String contentType, String body) throws IOException
     {
         return post(url, contentType, body, true);
+    }
+
+    /**
+     * Executes a PUT operation with an optional content type and message body.
+     */
+    public String put(String url, String contentType, String body, boolean hasResponseEntity) throws IOException
+    {
+        HttpPut request = new HttpPut(url);
+        if(contentType != null)
+            request.addHeader("Content-Type", contentType);
+        if(body != null)
+            request.setEntity(new StringEntity(body));
+        return execute(request, hasResponseEntity);
+    }
+
+    /**
+     * Executes a PUT operation with an optional content type and message body.
+     */
+    public String put(String url, String contentType, String body) throws IOException
+    {
+        return put(url, contentType, body, true);
     }
 
     /**

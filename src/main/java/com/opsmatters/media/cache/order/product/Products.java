@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.order.product.Product;
+import com.opsmatters.media.model.order.product.ProductText;
+import com.opsmatters.media.model.order.product.TextKey;
 
 /**
  * Class representing the list of products.
@@ -32,6 +34,8 @@ public class Products implements java.io.Serializable
     private static final Logger logger = Logger.getLogger(Products.class.getName());
 
     private static Map<String,Product> codeMap = new LinkedHashMap<String,Product>();
+    private static Map<String,ProductText> textMap = new LinkedHashMap<String,ProductText>();
+    private static Map<String,Map<TextKey,ProductText>> textProductMap = new LinkedHashMap<String,Map<TextKey,ProductText>>();
 
     private static boolean initialised = false;
 
@@ -51,9 +55,9 @@ public class Products implements java.io.Serializable
     }
 
     /**
-     * Loads the set of products.
+     * Loads the set of products and texts.
      */
-    public static void load(List<Product> products)
+    public static void load(List<Product> products, List<ProductText> texts)
     {
         initialised = false;
 
@@ -65,6 +69,13 @@ public class Products implements java.io.Serializable
 
         logger.info("Loaded "+size()+" products");
 
+        for(ProductText text : texts)
+        {
+            add(text);
+        }
+
+        logger.info("Loaded "+textMap.size()+" product texts");
+
         initialised = true;
     }
 
@@ -74,6 +85,8 @@ public class Products implements java.io.Serializable
     public static void clear()
     {
         codeMap.clear();
+        textMap.clear();
+        textProductMap.clear();
     }
 
     /**
@@ -93,11 +106,36 @@ public class Products implements java.io.Serializable
     }
 
     /**
+     * Adds the given product text.
+     */
+    public static void add(ProductText text)
+    {
+        Map<TextKey,ProductText> texts = textProductMap.get(text.getProductId());
+        if(texts == null)
+        {
+            texts = new LinkedHashMap<TextKey,ProductText>();
+            textProductMap.put(text.getProductId(), texts);
+        }
+
+        texts.put(text.getKey(), text);
+        textMap.put(text.getId(), text);
+    }
+
+    /**
      * Removes the product with the given code.
      */
     public static void remove(Product product)
     {
         codeMap.remove(product.getCode());
+    }
+
+    /**
+     * Removes the given product text.
+     */
+    public static void remove(ProductText text)
+    {
+        textProductMap.get(text.getProductId()).remove(text.getKey());
+        textMap.remove(text.getId());
     }
 
     /**
@@ -118,6 +156,23 @@ public class Products implements java.io.Serializable
         {
             if(product.isActive())
                 ret.add(product);
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the text for the given product and key.
+     */
+    public static String getText(Product product, TextKey key)
+    {
+        String ret = null;
+        Map<TextKey,ProductText> texts = textProductMap.get(product.getId());
+        if(texts != null)
+        {
+            ProductText text = texts.get(key);
+            if(text != null)
+                ret = text.getValue();
         }
 
         return ret;

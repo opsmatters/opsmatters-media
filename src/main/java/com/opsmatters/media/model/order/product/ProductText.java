@@ -20,37 +20,37 @@ import com.opsmatters.media.model.OwnedEntity;
 import com.opsmatters.media.util.StringUtils;
 
 /**
- * Class representing a product.
+ * Class representing a product text.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Product extends OwnedEntity
+public class ProductText extends OwnedEntity
 {
-    private String code = "";
-    private String name = "";
-    private ProductStatus status = ProductStatus.NEW;
+    private String productId = "";
+    private TextKey key = TextKey.NONE;
+    private String value = "";
 
     /**
      * Default constructor.
      */
-    public Product()
+    public ProductText()
     {
     }
 
     /**
-     * Constructor that takes a code.
+     * Constructor that takes a product.
      */
-    public Product(String code)
+    public ProductText(Product product)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
-        setName(code);
+        setProductId(product.getId());
     }
 
     /**
      * Copy constructor.
      */
-    public Product(Product obj)
+    public ProductText(ProductText obj)
     {
         copyAttributes(obj);
     }
@@ -58,86 +58,78 @@ public class Product extends OwnedEntity
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(Product obj)
+    public void copyAttributes(ProductText obj)
     {
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setCode(obj.getCode());
-            setName(obj.getName());
-            setStatus(obj.getStatus());
+            setProductId(obj.getProductId());
+            setKey(obj.getKey());
+            setValue(obj.getValue());
         }
     }
 
     /**
-     * Returns the product name.
+     * Returns the text key.
      */
     public String toString()
     {
-        return getName();
+        return getKey().name();
     }
 
     /**
-     * Returns the product code.
+     * Returns the product id.
      */
-    public String getCode()
+    public String getProductId()
     {
-        return code;
+        return productId;
     }
 
     /**
-     * Sets the product code.
+     * Sets the product id.
      */
-    public void setCode(String code)
+    public void setProductId(String productId)
     {
-        this.code = code;
+        this.productId = productId;
     }
 
     /**
-     * Returns the product name.
+     * Returns the text key.
      */
-    public String getName()
+    public TextKey getKey()
     {
-        return name;
+        return key;
     }
 
     /**
-     * Sets the product name.
+     * Sets the text key.
      */
-    public void setName(String name)
+    public void setKey(String key)
     {
-        this.name = name;
+        setKey(TextKey.valueOf(key));
     }
 
     /**
-     * Returns the product status.
+     * Sets the text key.
      */
-    public ProductStatus getStatus()
+    public void setKey(TextKey key)
     {
-        return status;
+        this.key = key;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the product status is ACTIVE.
+     * Returns the text value.
      */
-    public boolean isActive()
+    public String getValue()
     {
-        return status == ProductStatus.ACTIVE;
+        return value;
     }
 
     /**
-     * Sets the product status.
+     * Sets the text value.
      */
-    public void setStatus(String status)
+    public void setValue(String value)
     {
-        setStatus(ProductStatus.valueOf(status));
-    }
-
-    /**
-     * Sets the product status.
-     */
-    public void setStatus(ProductStatus status)
-    {
-        this.status = status;
+        this.value = value;
     }
 }

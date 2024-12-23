@@ -169,13 +169,54 @@ public class PayPalClient extends ApiClient
         return getStatusLine().getStatusCode() == 200;
     }
 
+//GERALD
+    /**
+     * Updates the invoice with the given id.
+     */
+    public String updateInvoice(String invoiceId, PayPalInvoice invoice) throws IOException
+    {
+//GERALD
+System.out.println("updateInvoice:1: url="+String.format("%s/v2/invoicing/invoices/%s", BASE_URL, invoiceId)
+  +" invoice="+invoice);
+        String ret = null;
+        String response = put(String.format("%s/v2/invoicing/invoices/%s",
+            BASE_URL, invoiceId), "application/json", invoice.toString());
+        if(response.startsWith("{")) // Valid JSON
+        {
+//GERALD
+System.out.println("updateInvoice:2: status="+getStatusLine());
+System.out.println("updateInvoice:3: response="+response);
+            JSONObject obj = new JSONObject(response);
+//GERALD
+System.out.println("updateInvoice:4: obj="+obj);
+            if(obj.has("href"))
+            {
+                String href = obj.optString("href");
+                ret = href.substring(href.lastIndexOf("/")+1);
+//GERALD
+System.out.println("updateInvoice:5: ret="+ret);
+            }
+            else // Invoice id not found
+            {
+                logger.severe("Invoice id not found for paypal update invoice: "+response);
+            }
+        }
+        else // Invalid JSON response
+        {
+            logger.severe("Invalid JSON response for paypal update invoice: "+response);
+        }
+
+//GERALD
+System.out.println("updateInvoice:6: ret="+ret);
+        return ret;
+    }
+
     /**
      * Returns the invoice details for the given invoice id.
      */
     public PayPalInvoice getInvoiceDetails(String invoiceId) throws IOException
     {
         PayPalInvoice ret = null;
-
         String response = get(String.format("%s/v2/invoicing/invoices/%s",
             BASE_URL, invoiceId));
         if(response.startsWith("{")) // Valid JSON
@@ -204,7 +245,6 @@ public class PayPalClient extends ApiClient
     public InvoiceStatus getInvoiceStatus(String invoiceId) throws IOException
     {
         InvoiceStatus ret = InvoiceStatus.NONE;
-
         PayPalInvoice invoice = getInvoiceDetails(invoiceId);
         if(invoice != null)
         {
