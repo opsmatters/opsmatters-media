@@ -6,7 +6,7 @@ import com.opsmatters.media.util.TimeUtils;
 /**
  * Represents a payment used with PayPal.
  */
-public class PayPalPayment extends JSONObject
+public class PayPalPayment extends JSONObject implements java.io.Serializable
 {
     private static final String METHOD = "method";
     private static final String PAYMENT_DATE = "payment_date";

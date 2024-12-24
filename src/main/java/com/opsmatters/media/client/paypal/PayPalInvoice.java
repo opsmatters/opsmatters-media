@@ -14,7 +14,7 @@ import com.opsmatters.media.model.order.contact.Company;
 /**
  * Represents an invoice used with PayPal.
  */
-public class PayPalInvoice extends JSONObject
+public class PayPalInvoice extends JSONObject implements java.io.Serializable
 {
     private static final String ID = "id";
     private static final String STATUS = "status";
@@ -49,8 +49,6 @@ public class PayPalInvoice extends JSONObject
         Invoicer invoicer = new Invoicer();
         invoicer.setBusinessName(sender.getBillingName());
         invoicer.setEmailAddress(sender.getBillingEmail());
-//GERALD: Test
-//        invoicer.setEmailAddress("sb-ctcos34599269@business.example.com");
         invoicer.getName().setGivenName(sender.getGivenName());
         invoicer.getName().setSurname(sender.getSurname());
         invoicer.getAddress().setAddressLine1(sender.getAddressLine1());
@@ -78,8 +76,6 @@ public class PayPalInvoice extends JSONObject
         PrimaryRecipient recipient = new PrimaryRecipient();
         BillingInfo billingInfo = new BillingInfo();
         billingInfo.setEmailAddress(invoice.getEmail());
-//GERALD: Test
-//        billingInfo.setEmailAddress("sb-9izcs34623085@personal.example.com");
 
         if(company != null)
         {

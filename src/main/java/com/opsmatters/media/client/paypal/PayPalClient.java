@@ -17,13 +17,9 @@ public class PayPalClient extends ApiClient
 {
     private static final Logger logger = Logger.getLogger(PayPalClient.class.getName());
 
-//GERALD: temp
     public static final String SUFFIX = ".paypal";
-//    public static final String SUFFIX = ".paypal.test";
 
-//GERALD: temp
     private static final String BASE_URL = "https://api-m.paypal.com";
-//    private static final String BASE_URL = "https://api-m.sandbox.paypal.com";
 
     /**
      * Returns a new client using the given credentials.
@@ -169,32 +165,21 @@ public class PayPalClient extends ApiClient
         return getStatusLine().getStatusCode() == 200;
     }
 
-//GERALD
     /**
      * Updates the invoice with the given id.
      */
     public String updateInvoice(String invoiceId, PayPalInvoice invoice) throws IOException
     {
-//GERALD
-System.out.println("updateInvoice:1: url="+String.format("%s/v2/invoicing/invoices/%s", BASE_URL, invoiceId)
-  +" invoice="+invoice);
         String ret = null;
         String response = put(String.format("%s/v2/invoicing/invoices/%s",
             BASE_URL, invoiceId), "application/json", invoice.toString());
         if(response.startsWith("{")) // Valid JSON
         {
-//GERALD
-System.out.println("updateInvoice:2: status="+getStatusLine());
-System.out.println("updateInvoice:3: response="+response);
             JSONObject obj = new JSONObject(response);
-//GERALD
-System.out.println("updateInvoice:4: obj="+obj);
             if(obj.has("href"))
             {
                 String href = obj.optString("href");
                 ret = href.substring(href.lastIndexOf("/")+1);
-//GERALD
-System.out.println("updateInvoice:5: ret="+ret);
             }
             else // Invoice id not found
             {
@@ -206,8 +191,6 @@ System.out.println("updateInvoice:5: ret="+ret);
             logger.severe("Invalid JSON response for paypal update invoice: "+response);
         }
 
-//GERALD
-System.out.println("updateInvoice:6: ret="+ret);
         return ret;
     }
 
@@ -283,25 +266,15 @@ System.out.println("updateInvoice:6: ret="+ret);
      */
     public String recordInvoicePayment(String invoiceId, PayPalPayment payment) throws IOException
     {
-//GERALD
-System.out.println("recordInvoicePayment:1: url="+String.format("%s/v2/invoicing/invoices/%s/payments", BASE_URL, invoiceId)
-  +" payment="+payment);
         String ret = null;
         String response = post(String.format("%s/v2/invoicing/invoices/%s/payments",
             BASE_URL, invoiceId), "application/json", payment.toString());
         if(response.startsWith("{")) // Valid JSON
         {
-//GERALD
-System.out.println("recordInvoicePayment:2: status="+getStatusLine());
-System.out.println("recordInvoicePayment:3: response="+response);
             JSONObject obj = new JSONObject(response);
-//GERALD
-System.out.println("recordInvoicePayment:4: obj="+obj);
             if(obj.has("payment_id"))
             {
                 ret = obj.optString("payment_id");
-//GERALD
-System.out.println("recordInvoicePayment:5: ret="+ret);
             }
             else // Invoice id not found
             {
@@ -313,8 +286,6 @@ System.out.println("recordInvoicePayment:5: ret="+ret);
             logger.severe("Invalid JSON response for paypal record payment: "+response);
         }
 
-//GERALD
-System.out.println("recordInvoicePayment:6: ret="+ret);
         return ret;
     }
 
