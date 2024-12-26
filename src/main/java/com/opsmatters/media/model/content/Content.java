@@ -57,7 +57,7 @@ public abstract class Content<D extends ContentDetails>
     private String createdBy = "";
     private String canonicalUrl = "";
     private ContentStatus status = NEW;
-    private String otherSites = "";
+    private String otherSites = null;
 
     /**
      * Default constructor.

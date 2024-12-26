@@ -79,6 +79,22 @@ public class PostItem extends ArticleItem<Post>
     }
 
     /**
+     * Returns the URL of the post.
+     */
+    public String getUrl()
+    {
+        return content.getUrl();
+    }
+
+    /**
+     * Sets the URL of the post.
+     */
+    public void setUrl(String url)
+    {
+        content.setUrl(url);
+    }
+
+    /**
      * Returns the post type.
      */
     public String getPostType()

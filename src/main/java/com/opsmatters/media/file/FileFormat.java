@@ -171,4 +171,28 @@ public enum FileFormat
         FileFormat format = fromFilename(filename);
         return format != null && format.isSupportedWebImage();
     }
+
+    /**
+     * Returns <CODE>true</CODE> if the given text contains a supported web image file.
+     * @param text The text to be checked
+     * @return <CODE>true</CODE> if the given text contains a PNG, JPG, GIF, WEBP or SVG file
+     */
+    public static boolean containsImage(String text)
+    {
+        boolean ret = false;
+        FileFormat[] formats = new FileFormat[] { JPG, JPEG, PNG, GIF, WEBP, SVG };
+        if(text != null)
+        {
+            for(FileFormat format : formats)
+            {
+                if(text.indexOf("."+format.value()) != -1)
+                {
+                    ret = true;
+                    break;
+                }
+            }
+        }
+
+        return ret;
+    }
 }

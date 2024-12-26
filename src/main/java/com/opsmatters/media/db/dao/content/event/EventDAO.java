@@ -109,6 +109,7 @@ public class EventDAO extends ContentDAO<Event>
         table.addIndex("EVENTS_ID_IDX", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("EVENTS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
         table.addIndex("EVENTS_URL_IDX", new String[] {"SITE_ID","CODE","URL"});
+        table.addIndex("EVENTS_CODE_URL_IDX", new String[] {"CODE","URL"});
         table.addIndex("EVENTS_STATUS_IDX", new String[] {"STATUS"});
         table.addIndex("EVENTS_SESSION_IDX", new String[] {"SESSION_ID"});
         table.setInitialised(true);

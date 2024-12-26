@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import com.opsmatters.media.file.FileFormat;
 
 /**
  * A set of utility methods to perform miscellaneous tasks related to HTML links.
@@ -1363,11 +1364,14 @@ public class HtmlDocument
 
             content = removeMarkup(content);
 
-            Matcher sourceMatcher = SOURCE_PATTERN.matcher(content.toLowerCase());
-            if(sourceMatcher.find())
-                messages.add(String.format("image source: %s", StringUtils.normalise(whole)));
-            else if(content.startsWith("https://") && content.indexOf("<") == -1) // No markup, just text
-                messages.add(String.format("image source: %s", StringUtils.normalise(whole)));
+            if(FileFormat.containsImage(content.toLowerCase()))
+            {
+                Matcher sourceMatcher = SOURCE_PATTERN.matcher(content.toLowerCase());
+                if(sourceMatcher.find())
+                    messages.add(String.format("image source: %s", StringUtils.normalise(whole)));
+                else if(content.startsWith("https://") && content.indexOf("<") == -1) // No markup, just text
+                    messages.add(String.format("image source: %s", StringUtils.normalise(whole)));
+            }
         }
     }
 
@@ -1421,14 +1425,17 @@ public class HtmlDocument
 
             content = removeMarkup(content);
 
-            Matcher sourceMatcher = SOURCE_PATTERN.matcher(content.toLowerCase());
-            if(sourceMatcher.find())
+            if(FileFormat.containsImage(content.toLowerCase()))
             {
-                ret = true;
-            }
-            else if(!ret && content.startsWith("https://") && content.indexOf("<") == -1) // No markup, just text
-            {
-                ret = true;
+                Matcher sourceMatcher = SOURCE_PATTERN.matcher(content.toLowerCase());
+                if(sourceMatcher.find())
+                {
+                    ret = true;
+                }
+                else if(!ret && content.startsWith("https://") && content.indexOf("<") == -1) // No markup, just text
+                {
+                    ret = true;
+                }
             }
         }
 

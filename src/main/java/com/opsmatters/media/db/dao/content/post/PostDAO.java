@@ -47,39 +47,46 @@ public class PostDAO extends ContentDAO<Post>
      * The query to use to select a roundup from the ROUNDUPS table by URL.
      */
     private static final String GET_BY_URL_SQL =  
-      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, ATTRIBUTES, STATUS, CREATED_BY "
-      + "FROM POSTS WHERE SITE_ID=? AND CODE=? AND ATTRIBUTES LIKE ? ";
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM POSTS WHERE SITE_ID=? AND CODE=? AND URL=? ";
 
     /**
      * The query to use to insert a post into the POSTS table.
      */
     private static final String INSERT_SQL =  
       "INSERT INTO POSTS"
-      + "( UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, "
+      + "( UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, "
       +   "AUTHOR, STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a post in the POSTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE POSTS SET UUID=?, PUBLISHED_DATE=?, TITLE=?, POST_TYPE=?, PUBLISHED=?, PROMOTE=?, NEWSLETTER=?, FEATURED=?, SPONSORED=?, "
+      "UPDATE POSTS SET UUID=?, PUBLISHED_DATE=?, TITLE=?, URL=?, POST_TYPE=?, PUBLISHED=?, PROMOTE=?, NEWSLETTER=?, FEATURED=?, SPONSORED=?, "
       + "AUTHOR=?, STATUS=?, CREATED_BY=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
+
+    /**
+     * The query to use to select the posts from the table.
+     */
+    private static final String LIST_SQL =
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM POSTS ORDER BY ID";
 
     /**
      * The query to use to select the post items from the table by organisation code.
      */
     private static final String LIST_ITEMS_BY_CODE_SQL =
-      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
       + "FROM POSTS WHERE SITE_ID=? AND CODE=? ORDER BY ID";
 
     /**
      * The query to use to select the post items from the table by published date.
      */
     private static final String LIST_ITEMS_BY_DATE_SQL =  
-      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
       + "FROM POSTS WHERE SITE_ID=? AND PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
 
     /**
@@ -102,6 +109,7 @@ public class PostDAO extends ContentDAO<Post>
         table.addColumn("ID", Types.INTEGER, true);
         table.addColumn("PUBLISHED_DATE", Types.TIMESTAMP, true);
         table.addColumn("TITLE", Types.VARCHAR, 256, true);
+        table.addColumn("URL", Types.VARCHAR, 256, true);
         table.addColumn("POST_TYPE", Types.VARCHAR, 30, true);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
         table.addColumn("PROMOTE", Types.BOOLEAN, true);
@@ -116,6 +124,7 @@ public class PostDAO extends ContentDAO<Post>
         table.setPrimaryKey("POSTS_PK", new String[] {"UUID"});
         table.addIndex("POSTS_ID_IDX", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("POSTS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
+        table.addIndex("POSTS_URL_IDX", new String[] {"SITE_ID","CODE","URL"});
         table.addIndex("POSTS_STATUS_IDX", new String[] {"STATUS"});
         table.addIndex("POSTS_SESSION_IDX", new String[] {"SESSION_ID"});
         table.setInitialised(true);
@@ -142,7 +151,7 @@ public class PostDAO extends ContentDAO<Post>
         {
             getByUrlStmt.setString(1, siteId);
             getByUrlStmt.setString(2, code);
-            getByUrlStmt.setString(3, "%"+urlAlias+"%");
+            getByUrlStmt.setString(3, urlAlias);
             getByUrlStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByUrlStmt.executeQuery();
             while(rs.next())
@@ -154,15 +163,16 @@ public class PostDAO extends ContentDAO<Post>
                 content.setId(rs.getInt(4));
                 content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
                 content.setTitle(rs.getString(6));
-                content.setPostType(rs.getString(7));
-                content.setPublished(rs.getBoolean(8));
-                content.setPromoted(rs.getBoolean(9));
-                content.setNewsletter(rs.getBoolean(10));
-                content.setFeatured(rs.getBoolean(11));
-                content.setSponsored(rs.getBoolean(12));
-                content.setAttributes(new JSONObject(getClob(rs, 13)));
-                content.setStatus(rs.getString(14));
-                content.setCreatedBy(rs.getString(15));
+                content.setUrl(rs.getString(7));
+                content.setPostType(rs.getString(8));
+                content.setPublished(rs.getBoolean(9));
+                content.setPromoted(rs.getBoolean(10));
+                content.setNewsletter(rs.getBoolean(11));
+                content.setFeatured(rs.getBoolean(12));
+                content.setSponsored(rs.getBoolean(13));
+                content.setAttributes(new JSONObject(getClob(rs, 14)));
+                content.setStatus(rs.getString(15));
+                content.setCreatedBy(rs.getString(16));
                 ret = content;
             }
         }
@@ -208,19 +218,20 @@ public class PostDAO extends ContentDAO<Post>
             insertStmt.setInt(4, content.getId());
             insertStmt.setTimestamp(5, new Timestamp(content.getPublishedDateMillis()), UTC);
             insertStmt.setString(6, content.getTitle());
-            insertStmt.setString(7, content.getPostType());
-            insertStmt.setBoolean(8, content.isPublished());
-            insertStmt.setBoolean(9, content.isPromoted());
-            insertStmt.setBoolean(10, content.isNewsletter());
-            insertStmt.setBoolean(11, content.isFeatured());
-            insertStmt.setBoolean(12, content.isSponsored());
-            insertStmt.setString(13, content.getAuthor());
-            insertStmt.setString(14, content.getStatus().name());
-            insertStmt.setString(15, content.getCreatedBy());
+            insertStmt.setString(7, content.getUrl());
+            insertStmt.setString(8, content.getPostType());
+            insertStmt.setBoolean(9, content.isPublished());
+            insertStmt.setBoolean(10, content.isPromoted());
+            insertStmt.setBoolean(11, content.isNewsletter());
+            insertStmt.setBoolean(12, content.isFeatured());
+            insertStmt.setBoolean(13, content.isSponsored());
+            insertStmt.setString(14, content.getAuthor());
+            insertStmt.setString(15, content.getStatus().name());
+            insertStmt.setString(16, content.getCreatedBy());
             String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
-            insertStmt.setCharacterStream(16, reader, attributes.length());
-            insertStmt.setInt(17, SessionId.get());
+            insertStmt.setCharacterStream(17, reader, attributes.length());
+            insertStmt.setInt(18, SessionId.get());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created %s '%s' in %s (GUID=%s)", 
@@ -268,21 +279,22 @@ public class PostDAO extends ContentDAO<Post>
             updateStmt.setString(1, content.getUuid());
             updateStmt.setTimestamp(2, new Timestamp(content.getPublishedDateMillis()), UTC);
             updateStmt.setString(3, content.getTitle());
-            updateStmt.setString(4, content.getPostType());
-            updateStmt.setBoolean(5, content.isPublished());
-            updateStmt.setBoolean(6, content.isPromoted());
-            updateStmt.setBoolean(7, content.isNewsletter());
-            updateStmt.setBoolean(8, content.isFeatured());
-            updateStmt.setBoolean(9, content.isSponsored());
-            updateStmt.setString(10, content.getAuthor());
-            updateStmt.setString(11, content.getStatus().name());
-            updateStmt.setString(12, content.getCreatedBy());
+            updateStmt.setString(4, content.getUrl());
+            updateStmt.setString(5, content.getPostType());
+            updateStmt.setBoolean(6, content.isPublished());
+            updateStmt.setBoolean(7, content.isPromoted());
+            updateStmt.setBoolean(8, content.isNewsletter());
+            updateStmt.setBoolean(9, content.isFeatured());
+            updateStmt.setBoolean(10, content.isSponsored());
+            updateStmt.setString(11, content.getAuthor());
+            updateStmt.setString(12, content.getStatus().name());
+            updateStmt.setString(13, content.getCreatedBy());
             String attributes = content.getAttributes().toString();
             reader = new StringReader(attributes);
-            updateStmt.setCharacterStream(13, reader, attributes.length());
-            updateStmt.setString(14, content.getSiteId());
-            updateStmt.setString(15, content.getCode());
-            updateStmt.setInt(16, content.getId());
+            updateStmt.setCharacterStream(14, reader, attributes.length());
+            updateStmt.setString(15, content.getSiteId());
+            updateStmt.setString(16, content.getCode());
+            updateStmt.setInt(17, content.getId());
             updateStmt.executeUpdate();
 
             logger.info(String.format("Updated %s '%s' in %s (GUID=%s)", 
@@ -293,6 +305,64 @@ public class PostDAO extends ContentDAO<Post>
             if(reader != null)
                 reader.close();
         }
+    }
+
+    public synchronized List<Post> list() throws SQLException
+    {
+        List<Post> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listStmt == null)
+            listStmt = prepareStatement(getConnection(), LIST_SQL);
+        clearParameters(listStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listStmt.executeQuery();
+            ret = new ArrayList<Post>();
+            while(rs.next())
+            {
+                Post content = new Post();
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setTitle(rs.getString(6));
+                content.setUrl(rs.getString(7));
+                content.setPostType(rs.getString(8));
+                content.setPublished(rs.getBoolean(9));
+                content.setPromoted(rs.getBoolean(10));
+                content.setNewsletter(rs.getBoolean(11));
+                content.setFeatured(rs.getBoolean(12));
+                content.setSponsored(rs.getBoolean(13));
+                content.setAttributes(new JSONObject(getClob(rs, 14)));
+                content.setStatus(rs.getString(15));
+                content.setCreatedBy(rs.getString(16));
+                ret.add(content);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
     }
 
     /**
@@ -328,14 +398,15 @@ public class PostDAO extends ContentDAO<Post>
                 post.setId(rs.getInt(4));
                 post.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
                 post.setTitle(rs.getString(6));
-                post.setPostType(rs.getString(7));
-                post.setPublished(rs.getBoolean(8));
-                post.setPromoted(rs.getBoolean(9));
-                post.setNewsletter(rs.getBoolean(10));
-                post.setFeatured(rs.getBoolean(11));
-                post.setSponsored(rs.getBoolean(12));
-                post.setAuthor(rs.getString(13));
-                post.setStatus(rs.getString(14));
+                post.setUrl(rs.getString(7));
+                post.setPostType(rs.getString(8));
+                post.setPublished(rs.getBoolean(9));
+                post.setPromoted(rs.getBoolean(10));
+                post.setNewsletter(rs.getBoolean(11));
+                post.setFeatured(rs.getBoolean(12));
+                post.setSponsored(rs.getBoolean(13));
+                post.setAuthor(rs.getString(14));
+                post.setStatus(rs.getString(15));
                 ret.add(post);
             }
         }
@@ -389,14 +460,15 @@ public class PostDAO extends ContentDAO<Post>
                 post.setId(rs.getInt(4));
                 post.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
                 post.setTitle(rs.getString(6));
-                post.setPostType(rs.getString(7));
-                post.setPublished(rs.getBoolean(8));
-                post.setPromoted(rs.getBoolean(9));
-                post.setNewsletter(rs.getBoolean(10));
-                post.setFeatured(rs.getBoolean(11));
-                post.setSponsored(rs.getBoolean(12));
-                post.setAuthor(rs.getString(13));
-                post.setStatus(rs.getString(14));
+                post.setUrl(rs.getString(7));
+                post.setPostType(rs.getString(8));
+                post.setPublished(rs.getBoolean(9));
+                post.setPromoted(rs.getBoolean(10));
+                post.setNewsletter(rs.getBoolean(11));
+                post.setFeatured(rs.getBoolean(12));
+                post.setSponsored(rs.getBoolean(13));
+                post.setAuthor(rs.getString(14));
+                post.setStatus(rs.getString(15));
                 ret.add(post);
             }
         }
@@ -429,6 +501,8 @@ public class PostDAO extends ContentDAO<Post>
         insertStmt = null;
         closeStatement(updateStmt);
         updateStmt = null;
+        closeStatement(listStmt);
+        listStmt = null;
         closeStatement(listByCodeStmt);
         listByCodeStmt = null;
         closeStatement(listByDateStmt);
@@ -438,6 +512,7 @@ public class PostDAO extends ContentDAO<Post>
     private PreparedStatement getByUrlStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
+    private PreparedStatement listStmt;
     private PreparedStatement listByCodeStmt;
     private PreparedStatement listByDateStmt;
 }

@@ -511,6 +511,14 @@ public class Post extends Article<PostDetails>
     }
 
     /**
+     * Returns <CODE>true</CODE> if the post url has been set.
+     */
+    public boolean hasUrl()
+    {
+        return getUrl() != null && getUrl().length() > 0;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if this content has metatags to set.
      */
     @Override

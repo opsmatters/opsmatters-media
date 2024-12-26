@@ -114,6 +114,7 @@ public class PublicationDAO extends ContentDAO<Publication>
         table.addIndex("PUBLICATIONS_ID_IDX", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("PUBLICATIONS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
         table.addIndex("PUBLICATIONS_URL_IDX", new String[] {"SITE_ID","CODE","URL"});
+        table.addIndex("PUBLICATIONS_CODE_URL_IDX", new String[] {"CODE","URL"});
         table.addIndex("PUBLICATIONS_STATUS_IDX", new String[] {"STATUS"});
         table.addIndex("PUBLICATIONS_SESSION_IDX", new String[] {"SESSION_ID"});
         table.setInitialised(true);

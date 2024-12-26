@@ -126,6 +126,7 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
         table.addIndex("ROUNDUPS_ID_IDX", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("ROUNDUPS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
         table.addIndex("ROUNDUPS_URL_IDX", new String[] {"SITE_ID","CODE","URL"});
+        table.addIndex("ROUNDUPS_CODE_URL_IDX", new String[] {"CODE","URL"});
         table.addIndex("ROUNDUPS_STATUS_IDX", new String[] {"STATUS"});
         table.addIndex("ROUNDUPS_SESSION_IDX", new String[] {"SESSION_ID"});
         table.setInitialised(true);
