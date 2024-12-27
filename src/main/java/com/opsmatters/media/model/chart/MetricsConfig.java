@@ -96,8 +96,8 @@ public class MetricsConfig<N extends Number>
         private MetricsConfig<N> config = new MetricsConfig<N>();
 
         /**
-         * Sets the data to use with the config.
-         * @param data The data
+         * Sets the metric to use with the config.
+         * @param metric The metric
          * @return This object
          */
         public Builder addMetric(MetricConfig<N> metric)

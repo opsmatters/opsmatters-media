@@ -26,5 +26,6 @@ public enum ChartParameterType
     LOCAL_DATE,
     LOCAL_DATE_TIME,
     STRING,
+    LABEL,
     INTEGER;
 }

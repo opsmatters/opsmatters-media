@@ -43,6 +43,10 @@ public class ChartFactory
         {
             return MetricChart.builder(id);
         }
+        else if(type.equals(ListChart.TYPE))
+        {
+            return ListChart.builder(id);
+        }
         else if(type.equals(PIE.name()) || type.equals(DOUGHNUT.name())
             || type.equals(RADAR.name()) || type.equals(POLAR_AREA.name()))
         {

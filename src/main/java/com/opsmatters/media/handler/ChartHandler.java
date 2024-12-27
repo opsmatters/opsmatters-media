@@ -31,6 +31,10 @@ import com.opsmatters.media.model.chart.MetricChart;
 import com.opsmatters.media.model.chart.MetricConfig;
 import com.opsmatters.media.model.chart.MetricsConfig;
 import com.opsmatters.media.model.chart.ChartMetric;
+import com.opsmatters.media.model.chart.ListChart;
+import com.opsmatters.media.model.chart.ListConfig;
+import com.opsmatters.media.model.chart.ChartColumn;
+
 
 /**
  * Handler to create chart config for charts.
@@ -47,6 +51,7 @@ public class ChartHandler<E extends Serializable>
     private ChartParameters parameters = null;
     private SimpleChartJsConfigBuilder<E> chartJsConfig = null;
     private MetricsConfig.Builder<Number> metricsConfig = null;
+    private ListConfig.Builder<E> listConfig = null;
 
     /**
      * Default constructor.
@@ -136,6 +141,14 @@ public class ChartHandler<E extends Serializable>
     }
 
     /**
+     * Returns the list config for the handler.
+     */
+    public ListConfig<E> getListConfig()
+    {
+        return listConfig != null ? listConfig.build() : null;
+    }
+
+    /**
      * Gets the config for the handler.
      */
     private void configure() throws Exception
@@ -184,6 +197,29 @@ public class ChartHandler<E extends Serializable>
                         metric.configure(metricsConfig,
                             source.getDataPoints(metric.getSource(), getParameters()));
                     }
+                }
+            }
+            else if(chart instanceof ListChart)
+            {
+                ListChart<E> listChart = (ListChart<E>)chart;
+                listConfig = listChart.configure();
+
+                for(ChartColumn column : listChart.getColumns())
+                {
+                    column.configure(listConfig);
+                }
+
+                DataSource<E> source = null;
+                if(listChart.getSource() != null)
+                {
+                    if(listChart.getSource().getType() == SourceType.DATABASE)
+                        source = new DatabaseDataSource<E>(conn, site);
+                }
+
+                if(source != null)
+                {
+                    listChart.configure(listConfig,
+                        source.getDataPoints(listChart.getSource(), getParameters()));
                 }
             }
         }

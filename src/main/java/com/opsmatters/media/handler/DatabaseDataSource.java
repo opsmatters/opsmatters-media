@@ -195,7 +195,15 @@ public class DatabaseDataSource<E extends Serializable> implements DataSource<E>
                 ret = new ArrayList<E>();
                 while(rs.next())
                 {
-                    if(types.size() == 2) // X,Y co-ordinates
+                    // List of columns where the 1st column is the label
+                    if(types.size() > 0 && types.get(0) == LABEL)
+                    {
+                        List<E> row = new ArrayList<E>();
+                        for(int i = 0; i < types.size(); i++)
+                            row.add((E)getResult(i+1, types.get(i), rs));
+                        ret.add((E)row);
+                    }
+                    else if(types.size() == 2) // X,Y co-ordinates
                     {
                         Serializable x = getResult(1, types.get(0), rs);
                         Serializable y = getResult(2, types.get(1), rs);
@@ -243,6 +251,7 @@ public class DatabaseDataSource<E extends Serializable> implements DataSource<E>
                 return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneOffset.UTC);
             }
             case STRING:
+            case LABEL:
             {
                 return rs.getString(idx);
             }
