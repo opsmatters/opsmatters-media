@@ -27,7 +27,8 @@ public enum DashboardId
     DIRECTOR_SUMMARY("DIR-SM", "Director Summary"),
     PUBLISHER_STATUS("PUB-ST", "Publisher Status"),
     PUBLISHER_SUMMARY("PUB-SM", "Publisher Summary"),
-    ORDER_STATUS("ORD-ST", "Order Status");
+    ORDER_STATUS("ORD-ST", "Order Status"),
+    ORDER_SUMMARY("ORD-SM", "Order Summary");
 
     private String code;
     private String value;

@@ -145,4 +145,27 @@ public class ImagePlatforms implements java.io.Serializable
     {
         return platformMap.size();
     }
+
+    /**
+     * Returns <CODE>true</CODE> if the given text contains a supported web image file.
+     * @param text The text to be checked
+     * @return <CODE>true</CODE> if the given text contains a PNG, JPG, GIF, WEBP or SVG file
+     */
+    public static boolean containsImage(String text)
+    {
+        boolean ret = false;
+        if(text != null)
+        {
+            for(ImagePlatform platform : platformMap.values())
+            {
+                if(text.indexOf(platform.getTag()) != -1)
+                {
+                    ret = true;
+                    break;
+                }
+            }
+        }
+
+        return ret;
+    }
 }
