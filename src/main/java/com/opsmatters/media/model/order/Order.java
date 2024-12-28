@@ -47,7 +47,6 @@ public class Order extends OwnedEntity
     private PaymentMode mode = PaymentMode.UNDEFINED;
     private PaymentTerm term = PaymentTerm.UNDEFINED;
     private Currency currency = Currency.UNDEFINED;
-    private String notes = "";
     private OrderStatus status = OrderStatus.NEW;
     private CancelReason reason = CancelReason.NONE;
     private Invoice invoice = new Invoice();
@@ -135,7 +134,6 @@ public class Order extends OwnedEntity
             setPaymentMode(obj.getPaymentMode());
             setPaymentTerm(obj.getPaymentTerm());
             setCurrency(obj.getCurrency());
-            setNotes(obj.getNotes());
             setStatus(obj.getStatus());
             setReason(obj.getReason());
             setWeek(obj.getWeek());
@@ -347,22 +345,6 @@ public class Order extends OwnedEntity
     public void setCurrency(Currency currency)
     {
         this.currency = currency;
-    }
-
-    /**
-     * Returns the notes.
-     */
-    public String getNotes()
-    {
-        return notes;
-    }
-
-    /**
-     * Sets the notes.
-     */
-    public void setNotes(String notes)
-    {
-        this.notes = notes;
     }
 
     /**

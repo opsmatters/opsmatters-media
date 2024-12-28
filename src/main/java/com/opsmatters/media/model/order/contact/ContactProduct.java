@@ -36,7 +36,6 @@ public class ContactProduct extends BaseEntity
     private String siteId = "";
     private int price = 0;
     private Currency currency = Currency.UNDEFINED;
-    private String notes = "";
 
     /**
      * Default constructor.
@@ -77,7 +76,6 @@ public class ContactProduct extends BaseEntity
             setSiteId(obj.getSiteId());
             setPrice(obj.getPrice());
             setCurrency(obj.getCurrency());
-            setNotes(obj.getNotes());
         }
     }
 
@@ -179,21 +177,5 @@ public class ContactProduct extends BaseEntity
     public void setCurrency(Currency currency)
     {
         this.currency = currency;
-    }
-
-    /**
-     * Returns the notes.
-     */
-    public String getNotes()
-    {
-        return notes;
-    }
-
-    /**
-     * Sets the notes.
-     */
-    public void setNotes(String notes)
-    {
-        this.notes = notes;
     }
 }
