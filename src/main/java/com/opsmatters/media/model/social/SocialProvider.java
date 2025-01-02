@@ -49,6 +49,14 @@ public enum SocialProvider
         "/feed/hashtag/?keywords=%%23%s",
         "images/linkedin-thumb.png",
         1300,
+        -1),
+    BLUESKY("BS",
+        "Bluesky",
+        "https://bsky.app/",
+        "/profile/%s",
+        "/hashtag/%s",
+        "images/bluesky-thumb.png",
+        300,
         -1);
 
     private String code;
@@ -201,6 +209,7 @@ public enum SocialProvider
         ret.add(TWITTER);
         ret.add(FACEBOOK);
         ret.add(LINKEDIN);
+        ret.add(BLUESKY);
 
         return ret;
     }

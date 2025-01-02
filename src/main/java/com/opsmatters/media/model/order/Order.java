@@ -74,8 +74,13 @@ public class Order extends OwnedEntity
 
         LocalDate dt = SessionId.now().atZone(ZoneId.of("UTC")).toLocalDate();
         setWeek(dt.get(WeekFields.ISO.weekOfWeekBasedYear()));
-        setMonth(dt.getMonth().getValue());
-        setYear(dt.getYear());
+        setYear(dt.get(WeekFields.ISO.weekBasedYear()));
+
+        // Allow for partial week at end of year
+        int month = dt.getMonth().getValue();
+        if(month == 12 && dt.get(WeekFields.ISO.weekBasedYear()) > dt.getYear())
+            month = 1;
+        setMonth(month);
 
         // Set the email and additional info for an invoice
         if(getPaymentMode() == PaymentMode.INVOICE)

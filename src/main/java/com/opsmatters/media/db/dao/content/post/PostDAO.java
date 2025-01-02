@@ -125,6 +125,7 @@ public class PostDAO extends ContentDAO<Post>
         table.addIndex("POSTS_ID_IDX", new String[] {"SITE_ID","CODE","ID"});
         table.addIndex("POSTS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
         table.addIndex("POSTS_URL_IDX", new String[] {"SITE_ID","CODE","URL"});
+        table.addIndex("POSTS_PUBLISHED_DATE_IDX", new String[] {"SITE_ID","PUBLISHED_DATE"});
         table.addIndex("POSTS_STATUS_IDX", new String[] {"STATUS"});
         table.addIndex("POSTS_SESSION_IDX", new String[] {"SESSION_ID"});
         table.setInitialised(true);

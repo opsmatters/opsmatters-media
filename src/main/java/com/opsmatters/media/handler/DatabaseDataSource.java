@@ -127,11 +127,17 @@ public class DatabaseDataSource<E extends Serializable> implements DataSource<E>
 
                                 // Replace the month default with the session month
                                 if(str == CURRENT_MONTH.name())
-                                    str = Integer.toString(dt.getMonth().getValue());
+                                {
+                                    // Allow for partial week at end of year
+                                    int month = dt.getMonth().getValue();
+                                    if(month == 12 && dt.get(WeekFields.ISO.weekBasedYear()) > dt.getYear())
+                                        month = 1;
+                                    str = Integer.toString(month);
+                                }
 
                                 // Replace the year default with the session year
                                 if(str == CURRENT_YEAR.name())
-                                    str = Integer.toString(dt.getYear());
+                                    str = Integer.toString(dt.get(WeekFields.ISO.weekBasedYear()));
 
                                 if(str == null || str.length() == 0)
                                 {

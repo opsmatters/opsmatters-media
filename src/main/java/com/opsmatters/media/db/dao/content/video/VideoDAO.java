@@ -127,6 +127,7 @@ public class VideoDAO extends ContentDAO<Video>
         table.addIndex("VIDEOS_TITLE_IDX", new String[] {"SITE_ID","CODE","TITLE"});
         table.addIndex("VIDEOS_VIDEO_ID_IDX", new String[] {"SITE_ID","CODE","VIDEO_ID"});
         table.addIndex("VIDEOS_CODE_VIDEO_ID_IDX", new String[] {"CODE","VIDEO_ID"});
+        table.addIndex("VIDEOS_PUBLISHED_DATE_IDX", new String[] {"SITE_ID","PUBLISHED_DATE"});
         table.addIndex("VIDEOS_STATUS_IDX", new String[] {"STATUS"});
         table.addIndex("VIDEOS_SESSION_IDX", new String[] {"SESSION_ID"});
         table.setInitialised(true);

@@ -51,6 +51,8 @@ public class SocialClientFactory
                 return FacebookClient.newClient(channel);
             case LINKEDIN:
                 return LinkedInClient.newClient(channel);
+            case BLUESKY:
+                return BlueskyClient.newClient(channel);
         }
 
         throw new IllegalArgumentException("Social provider not found: "+provider);

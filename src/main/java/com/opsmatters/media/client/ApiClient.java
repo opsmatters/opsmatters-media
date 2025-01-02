@@ -1,6 +1,7 @@
 package com.opsmatters.media.client;
 
 import java.net.URL;
+import java.net.URISyntaxException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -29,6 +31,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.util.EntityUtils;
 
 /**
@@ -207,6 +210,27 @@ public class ApiClient extends Client
     }
 
     /**
+     * Executes a GET operation with a set of url-encoded parameters.
+     */
+    public String get(String url, Map<String,String> params) throws IOException, URISyntaxException
+    {
+        HttpGet request = new HttpGet(url);
+
+        if(params != null)
+        {
+            URIBuilder builder = new URIBuilder(request.getURI());
+            for(Map.Entry<String,String> param : params.entrySet())
+                builder = builder.addParameter(param.getKey(), param.getValue());
+            request.setURI(builder.build());
+        }
+
+        if(bearer != null)
+            request.addHeader("Authorization", String.format("Bearer %s", bearer));
+
+        return execute(request, true);
+    }
+
+    /**
      * Executes a GET operation.
      */
     public String get(String url) throws IOException
@@ -247,7 +271,7 @@ public class ApiClient extends Client
      */
     public String post(String url) throws IOException
     {
-        return post(url, null, null);
+        return post(url, null, (String)null);
     }
 
     /**
@@ -255,7 +279,7 @@ public class ApiClient extends Client
      */
     public String post(String url, String contentType) throws IOException
     {
-        return post(url, contentType, null);
+        return post(url, contentType, (String)null);
     }
 
     /**
@@ -266,6 +290,8 @@ public class ApiClient extends Client
         HttpPost request = new HttpPost(url);
         if(contentType != null)
             request.addHeader("Content-Type", contentType);
+        if(bearer != null)
+            request.addHeader("Authorization", String.format("Bearer %s", bearer));
         if(body != null)
             request.setEntity(new StringEntity(body));
         return execute(request, hasResponseEntity);
@@ -280,6 +306,29 @@ public class ApiClient extends Client
     }
 
     /**
+     * Executes a POST operation with an optional content type and byte array.
+     */
+    public String post(String url, String contentType, byte[] bytes, boolean hasResponseEntity) throws IOException
+    {
+        HttpPost request = new HttpPost(url);
+        if(contentType != null)
+            request.addHeader("Content-Type", contentType);
+        if(bearer != null)
+            request.addHeader("Authorization", String.format("Bearer %s", bearer));
+        if(bytes != null)
+            request.setEntity(new ByteArrayEntity(bytes));
+        return execute(request, hasResponseEntity);
+    }
+
+    /**
+     * Executes a POST operation with an optional content type and byte array.
+     */
+    public String post(String url, String contentType, byte[] bytes) throws IOException
+    {
+        return post(url, contentType, bytes, true);
+    }
+
+    /**
      * Executes a PUT operation with an optional content type and message body.
      */
     public String put(String url, String contentType, String body, boolean hasResponseEntity) throws IOException
@@ -287,6 +336,8 @@ public class ApiClient extends Client
         HttpPut request = new HttpPut(url);
         if(contentType != null)
             request.addHeader("Content-Type", contentType);
+        if(bearer != null)
+            request.addHeader("Authorization", String.format("Bearer %s", bearer));
         if(body != null)
             request.setEntity(new StringEntity(body));
         return execute(request, hasResponseEntity);

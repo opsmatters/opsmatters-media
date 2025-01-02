@@ -254,7 +254,7 @@ public class SocialChannelDAO extends BaseDAO
             insertStmt.setTimestamp(3, new Timestamp(channel.getUpdatedDateMillis()), UTC);
             insertStmt.setString(4, channel.getCode());
             insertStmt.setString(5, channel.getName());
-            insertStmt.setString(6, channel.getProvider().code());
+            insertStmt.setString(6, channel.getProvider() != null ? channel.getProvider().code() : "");
             insertStmt.setString(7, channel.getHandle());
             insertStmt.setString(8, channel.getIcon());
             insertStmt.setString(9, channel.getSites());
@@ -297,7 +297,7 @@ public class SocialChannelDAO extends BaseDAO
         updateStmt.setTimestamp(1, new Timestamp(channel.getUpdatedDateMillis()), UTC);
         updateStmt.setString(2, channel.getCode());
         updateStmt.setString(3, channel.getName());
-        updateStmt.setString(4, channel.getProvider().code());
+        updateStmt.setString(4, channel.getProvider() != null ? channel.getProvider().code() : "");
         updateStmt.setString(5, channel.getHandle());
         updateStmt.setString(6, channel.getIcon());
         updateStmt.setString(7, channel.getSites());

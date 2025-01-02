@@ -68,6 +68,40 @@ public class PayPalClient extends ApiClient
     }
 
     /**
+     * Create the client using the configured credentials.
+     */
+    @Override
+    public boolean create() throws IOException
+    {
+        if(debug())
+            logger.info("Creating PayPal client");
+
+        if(!super.create())
+        {
+            logger.severe("Unable to create PayPal client");
+            return false;
+        }
+
+        clearBearer();
+
+        Map<String,String> params = new HashMap<String,String>();
+        params.put("grant_type", "client_credentials");
+        String response = post(String.format("%s/v1/oauth2/token", BASE_URL), params);
+
+        if(response.startsWith("{")) // Valid JSON
+        {
+            JSONObject obj = new JSONObject(response);
+            setBearer(obj.optString("access_token"));
+        }
+        else // Invalid JSON response
+        {
+            logger.severe("Invalid JSON response for PayPal authenticate: "+response);
+        }
+
+        return hasBearer();
+    }
+
+    /**
      * Returns the client ID for the client.
      */
     public String getClientId() 
@@ -97,30 +131,6 @@ public class PayPalClient extends ApiClient
     public void setSecretKey(String secretKey) 
     {
         setPassword(secretKey);
-    }
-
-    /**
-     * Authenticate the client to get a new bearer token.
-     */
-    public boolean authenticate() throws IOException
-    {
-        clearBearer();
-
-        Map<String,String> params = new HashMap<String,String>();
-        params.put("grant_type", "client_credentials");
-        String response = post(String.format("%s/v1/oauth2/token", BASE_URL), params);
-
-        if(response.startsWith("{")) // Valid JSON
-        {
-            JSONObject obj = new JSONObject(response);
-            setBearer(obj.optString("access_token"));
-        }
-        else // Invalid JSON response
-        {
-            logger.severe("Invalid JSON response for paypal authenticate: "+response);
-        }
-
-        return hasBearer();
     }
 
     /**

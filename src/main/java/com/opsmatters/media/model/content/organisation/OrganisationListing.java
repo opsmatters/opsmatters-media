@@ -54,6 +54,7 @@ public class OrganisationListing extends Content
     private String facebook = "";
     private String twitter = "";
     private String linkedin = "";
+    private String bluesky = "";
     private String instagram = "";
     private String youtube = "";
     private String vimeo = "";
@@ -98,6 +99,7 @@ public class OrganisationListing extends Content
         setFacebook(new String(obj.getFacebook() != null ? obj.getFacebook() : ""));
         setTwitter(new String(obj.getTwitter() != null ? obj.getTwitter() : ""));
         setLinkedIn(new String(obj.getLinkedIn() != null ? obj.getLinkedIn() : ""));
+        setBluesky(new String(obj.getBluesky() != null ? obj.getBluesky() : ""));
         setInstagram(new String(obj.getInstagram() != null ? obj.getInstagram() : ""));
         setYouTube(new String(obj.getYouTube() != null ? obj.getYouTube() : ""));
         setVimeo(new String(obj.getVimeo() != null ? obj.getVimeo() : ""));
@@ -127,6 +129,7 @@ public class OrganisationListing extends Content
         ret.putOpt(FACEBOOK.value(), getFacebook());
         ret.putOpt(TWITTER.value(), getTwitter());
         ret.putOpt(LINKEDIN.value(), getLinkedIn());
+        ret.putOpt(BLUESKY.value(), getBluesky());
         ret.putOpt(INSTAGRAM.value(), getInstagram());
         ret.putOpt(YOUTUBE.value(), getYouTube());
         ret.putOpt(VIMEO.value(), getVimeo());
@@ -157,6 +160,7 @@ public class OrganisationListing extends Content
         setFacebook(obj.optString(FACEBOOK.value()));
         setTwitter(obj.optString(TWITTER.value()));
         setLinkedIn(obj.optString(LINKEDIN.value()));
+        setBluesky(obj.optString(BLUESKY.value()));
         setInstagram(obj.optString(INSTAGRAM.value()));
         setYouTube(obj.optString(YOUTUBE.value()));
         setVimeo(obj.optString(VIMEO.value()));
@@ -187,6 +191,7 @@ public class OrganisationListing extends Content
         ret.put(FACEBOOK, getFacebook());
         ret.put(TWITTER, getTwitter());
         ret.put(LINKEDIN, getLinkedIn());
+        ret.put(BLUESKY, getBluesky());
         ret.put(INSTAGRAM, getInstagram());
         ret.put(YOUTUBE, getYouTube());
         ret.put(VIMEO, getVimeo());
@@ -531,6 +536,30 @@ public class OrganisationListing extends Content
     public boolean hasLinkedIn()
     {
         return linkedin != null && linkedin.length() > 0;
+    }
+
+    /**
+     * Returns the organisation's bluesky address.
+     */
+    public String getBluesky()
+    {
+        return bluesky;
+    }
+
+    /**
+     * Sets the organisation's bluesky address.
+     */
+    public void setBluesky(String bluesky)
+    {
+        this.bluesky = bluesky;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this organisation has a bluesky address.
+     */
+    public boolean hasBluesky()
+    {
+        return bluesky != null && bluesky.length() > 0;
     }
 
     /**

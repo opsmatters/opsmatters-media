@@ -91,6 +91,7 @@ public enum FieldName
     FACEBOOK("facebook"),
     TWITTER("twitter"),
     LINKEDIN("linkedin"),
+    BLUESKY("bluesky"),
     INSTAGRAM("instagram"),
     YOUTUBE("youtube"),
     VIMEO("vimeo"),

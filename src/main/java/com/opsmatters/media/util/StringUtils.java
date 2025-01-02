@@ -54,6 +54,10 @@ public class StringUtils
     private static final String URL_REGEX = "\\(?\\b(https?://|www[.])[-A-Za-z0-9+&amp;@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&amp;@#/%=~_()|]";
     private static final Pattern urlPattern = Pattern.compile(URL_REGEX);
 
+    // Pattern to detect hashtags in strings
+    private static final String HASHTAG_REGEX = "#\\w+";
+    private static final Pattern hashtagPattern = Pattern.compile(HASHTAG_REGEX);
+
     // Pattern to detect properties in strings
     private static final String PROPERTY_REGEX = "\\$\\{\\w+\\}";
     private static final Pattern propertyPattern = Pattern.compile(PROPERTY_REGEX);
@@ -977,6 +981,30 @@ public class StringUtils
     {
         Matcher m = urlPattern.matcher(text);
         return m.find() ? m.group() : null;
+    }
+
+    /**
+     * Returns the URLs extracted from the given text.
+     */
+    public static List<String> extractUrls(String text)
+    {
+        List<String> ret = new ArrayList<String>();
+        Matcher m = urlPattern.matcher(text);
+        while(m.find())
+            ret.add(m.group());
+        return ret;
+    }
+
+    /**
+     * Returns the hashtags extracted from the given text.
+     */
+    public static List<String> extractHashtags(String text)
+    {
+        List<String> ret = new ArrayList<String>();
+        Matcher m = hashtagPattern.matcher(text);
+        while(m.find())
+            ret.add(m.group());
+        return ret;
     }
 
     static class Match
