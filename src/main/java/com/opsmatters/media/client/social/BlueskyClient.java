@@ -39,6 +39,7 @@ import com.opsmatters.media.client.ApiClient;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.util.Match;
 
 /**
  * Class that represents a connection to Bluesky for social media posts.
@@ -90,25 +91,21 @@ public class BlueskyClient extends ApiClient implements SocialClient
         FacetType type;
         int start = -1;
         int end = -1;
-        String value = null;
+        String text = null;
 
-        Facet(FacetType type, String str, String substr)
+        Facet(FacetType type, Match match)
         {
             this.type = type;
-            int pos = str.indexOf(substr);
-            if(pos != -1)
-            {
-                this.start = pos;
-                this.end = pos + substr.length();
-                value = substr;
-                if(type == FacetType.MENTION || type == FacetType.HASHTAG)
-                    value = substr.substring(1); // Strip # or @
-            }
+            this.start = match.getStart();
+            this.end = match.getEnd();
+            text = match.getText();
+            if(type == FacetType.MENTION || type == FacetType.HASHTAG)
+                text = text.substring(1); // Strip # or @
         }
 
-        String value()
+        String text()
         {
-            return value;
+            return text;
         }
     }
 
@@ -195,13 +192,9 @@ public class BlueskyClient extends ApiClient implements SocialClient
         params.put("identifier", getIdentifier());
         params.put("password", getPassword());
 
-//GERALD
-//System.out.println("BlueskyClient.create:1: url="+String.format("%s/xrpc/com.atproto.server.createSession", BASE_URL));
         String response = post(String.format("%s/xrpc/com.atproto.server.createSession", BASE_URL),
             "application/json", params.toString());
 
-//GERALD
-//System.out.println("BlueskyClient.create:2: response="+response);
         int statusCode = getStatusLine().getStatusCode();
         if(response.startsWith("{")) // Valid JSON
         {
@@ -210,15 +203,11 @@ public class BlueskyClient extends ApiClient implements SocialClient
             {
                 logger.severe(String.format("Error response for bluesky authenticate: %d %s",
                     statusCode, obj));
-//GERALD
-//System.out.println("BlueskyClient.sendPost:3:error: obj="+obj);
                 throw new BlueskyException(statusCode, response);
             }
             else
             {
                 setBearer(obj.optString("accessJwt"));
-//GERALD
-//System.out.println("BlueskyClient.create:4: bearer="+hasBearer());
             }
         }
         else // Invalid JSON response
@@ -315,14 +304,15 @@ public class BlueskyClient extends ApiClient implements SocialClient
     {
         String cid = null;
 
-        List<String> hashtags = StringUtils.extractHashtags(text);
-        List<String> links = StringUtils.extractUrls(text);
+        text = StringUtils.convertToAscii(text, false);
+        List<Match> hashtags = StringUtils.extractHashtags(text);
+        List<Match> links = StringUtils.extractUrls(text);
 
         if(links.size() == 0)
             throw new IllegalArgumentException("missing url");
 
-        JSONArray facets = getFacets(text, hashtags, links);
-        JSONObject embed = getEmbed(links.get(0));
+        JSONArray facets = getFacets(hashtags, links);
+        JSONObject embed = getEmbed(links.get(0).getText());
 
         JSONObject record = new JSONObject();
         record.put("$type", "app.bsky.feed.post");
@@ -338,14 +328,9 @@ public class BlueskyClient extends ApiClient implements SocialClient
         request.put("collection", "app.bsky.feed.post");
         request.put("record", record);
 
-//GERALD
-System.out.println("BlueskyClient.sendPost:1: url="+String.format("%s/xrpc/com.atproto.repo.createRecord", BASE_URL)
-  +" request="+request);
         String response = post(String.format("%s/xrpc/com.atproto.repo.createRecord", BASE_URL),
             "application/json", request.toString());
 
-//GERALD
-System.out.println("BlueskyClient.sendPost:2: response="+response);
         int statusCode = getStatusLine().getStatusCode();
         if(response.startsWith("{")) // Valid JSON
         {
@@ -354,15 +339,11 @@ System.out.println("BlueskyClient.sendPost:2: response="+response);
             {
                 logger.severe(String.format("Error response for bluesky send post: %d %s",
                     statusCode, obj));
-//GERALD
-System.out.println("BlueskyClient.sendPost:3:error: obj="+obj);
                 throw new BlueskyException(statusCode, response);
             }
             else
             {
                 cid = obj.optString("cid");
-//GERALD
-System.out.println("BlueskyClient.sendPost:4: cid="+cid);
             }
         }
         else // Invalid JSON response
@@ -392,23 +373,14 @@ System.out.println("BlueskyClient.sendPost:4: cid="+cid);
         String title = getMetatag(tags, "og:title");
         String description = getMetatag(tags, "og:description");
         String imageUrl = getMetatag(tags, "og:image");
-
         String filename = imageUrl.substring(imageUrl.lastIndexOf("/")+1);
         String mimeType = String.format("image/%s",
             com.opsmatters.media.util.FileUtils.getExtension(filename));
         byte[] bytes = getBytes(imageUrl);
 
-//GERALD
-System.out.println("BlueskyClient.getEmbed:1: imageUrl="+imageUrl+" filename="+filename
-  +" mimeType="+mimeType+" bytes="+bytes.length);
-
-//GERALD
-System.out.println("BlueskyClient.getEmbed:2: url="+String.format("%s/xrpc/com.atproto.repo.uploadBlob", BASE_URL));
         String response = post(String.format("%s/xrpc/com.atproto.repo.uploadBlob", BASE_URL),
             mimeType, bytes);
 
-//GERALD
-System.out.println("BlueskyClient.getEmbed:3: response="+response);
         int statusCode = getStatusLine().getStatusCode();
         if(response.startsWith("{")) // Valid JSON
         {
@@ -417,8 +389,6 @@ System.out.println("BlueskyClient.getEmbed:3: response="+response);
             {
                 logger.severe(String.format("Error response for bluesky upload blob: %d %s",
                     statusCode, obj));
-//GERALD
-System.out.println("BlueskyClient.getEmbed:4:error: obj="+obj);
                 throw new BlueskyException(statusCode, response);
             }
             else if(obj.has("blob"))
@@ -431,8 +401,6 @@ System.out.println("BlueskyClient.getEmbed:4:error: obj="+obj);
                 external.put("description", description);
                 external.put("thumb", obj.get("blob"));
                 ret.put("external", external);
-//GERALD
-System.out.println("BlueskyClient.getEmbed:5: ret="+ret);
             }
             else // Missing blob
             {
@@ -447,27 +415,24 @@ System.out.println("BlueskyClient.getEmbed:5: ret="+ret);
             throw new IOException("Invalid JSON response: "+response);
         }
 
-//GERALD
-System.out.println("BlueskyClient.getEmbed:6: ret="+ret);
         return ret;
     }
 
     /**
      * Get the array of facets for the given hashtags and links.
      *
-     * @param text The text of the post.
      * @param hashtags The list of hashtags.
      * @param links The list of links.
      * @return The facets array in JSON format.
      */
-    private JSONArray getFacets(String text, List<String> hashtags, List<String> links) throws IOException
+    private JSONArray getFacets(List<Match> hashtags, List<Match> links) throws IOException
     {
         JSONArray ret = null;
         List<Facet> facets = new ArrayList<Facet>();
-        for(String link : links)
-            facets.add(new Facet(FacetType.LINK, text, link));
-        for(String hashtag : hashtags)
-            facets.add(new Facet(FacetType.HASHTAG, text, hashtag));
+        for(Match link : links)
+            facets.add(new Facet(FacetType.LINK, link));
+        for(Match hashtag : hashtags)
+            facets.add(new Facet(FacetType.HASHTAG, hashtag));
 
         if(facets.size() > 0)
         {
@@ -486,7 +451,7 @@ System.out.println("BlueskyClient.getEmbed:6: ret="+ret);
                     JSONArray features = new JSONArray();
                     JSONObject feature = new JSONObject();
                     feature.put("$type", "app.bsky.richtext.facet#"+facet.type.value());
-                    feature.put(facet.type.attr(), facet.value());
+                    feature.put(facet.type.attr(), facet.text());
                     features.put(feature);
 
                     obj.put("features", features);
@@ -562,13 +527,9 @@ System.out.println("BlueskyClient.getEmbed:6: ret="+ret);
         request.put("collection", "app.bsky.feed.post");
         request.put("swapRecord", cid);
 
-//GERALD
-System.out.println("BlueskyClient.deletePost:1: url="+String.format("%s/xrpc/com.atproto.repo.deleteRecord", BASE_URL));
         String response = post(String.format("%s/xrpc/com.atproto.server.deleteSession", BASE_URL),
             "application/json", request.toString());
 
-//GERALD
-System.out.println("BlueskyClient.deletePost:2: response="+response);
         int statusCode = getStatusLine().getStatusCode();
         if(response.startsWith("{")) // Valid JSON
         {
@@ -577,15 +538,11 @@ System.out.println("BlueskyClient.deletePost:2: response="+response);
             {
                 logger.severe(String.format("Error response for bluesky delete post: %d %s",
                     statusCode, obj));
-//GERALD
-System.out.println("BlueskyClient.getEmbed:3:error: obj="+obj);
                 throw new BlueskyException(statusCode, response);
             }
             else
             {
                 cid = obj.optString("cid");
-//GERALD
-System.out.println("BlueskyClient.deletePost:4: cid="+cid);
             }
         }
         else // Invalid JSON response

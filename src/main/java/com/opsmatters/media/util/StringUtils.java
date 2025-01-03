@@ -984,51 +984,39 @@ public class StringUtils
     }
 
     /**
-     * Returns the URLs extracted from the given text.
+     * Returns the list of URLs extracted from the given text.
      */
-    public static List<String> extractUrls(String text)
+    public static List<Match> extractUrls(String text)
     {
-        List<String> ret = new ArrayList<String>();
+        List<Match> ret = new ArrayList<Match>();
         Matcher m = urlPattern.matcher(text);
         while(m.find())
-            ret.add(m.group());
+            ret.add(new Match(m.start(), m.end(), m.group()));
         return ret;
     }
 
     /**
-     * Returns the hashtags extracted from the given text.
+     * Returns the list of hashtags extracted from the given text.
      */
-    public static List<String> extractHashtags(String text)
+    public static List<Match> extractHashtags(String text)
     {
-        List<String> ret = new ArrayList<String>();
+        List<Match> ret = new ArrayList<Match>();
         Matcher m = hashtagPattern.matcher(text);
         while(m.find())
-            ret.add(m.group());
+            ret.add(new Match(m.start(), m.end(), m.group()));
         return ret;
     }
 
-    static class Match
-    {
-        Match(int start, int end, String text)
-        {
-            this.start = start;
-            this.end = end;
-            this.text = text;
-        }
-
-        int start;
-        int end;
-        String text;
-    }
-
     /**
-     * Replaces all URLs in the given text with hyperlinks.
+     * Replaces all URLs in the given string with hyperlinks.
      */
-    public static String replaceUrls(String text)
+    public static String replaceUrls(String str)
     {
+        String ret = str;
+
         // Get a list of the URL matches
         List<Match> matches = new ArrayList<Match>();
-        Matcher m = urlPattern.matcher(text);
+        Matcher m = urlPattern.matcher(str);
         while(m.find())
             matches.add(new Match(m.start(), m.end(), m.group()));
 
@@ -1038,13 +1026,14 @@ public class StringUtils
         // Replace each URL match in the text with a hyperlink
         for(Match match : matches)
         {
-            int pos = match.text.indexOf("?");
-            String value = pos != -1 ? match.text.substring(0, pos) : match.text; // Remove query parameters
-            String replacement = String.format("<a href=\"%s\" target=\"_blank\" rel=\"nofollow\">%s</a>", match.text, value);
-            text = new StringBuilder(text).replace(match.start, match.end, replacement).toString();
+            String text = match.getText();
+            int pos = text.indexOf("?");
+            String value = pos != -1 ? text.substring(0, pos) : text; // Remove query parameters
+            String replacement = String.format("<a href=\"%s\" target=\"_blank\" rel=\"nofollow\">%s</a>", text, value);
+            ret = new StringBuilder(ret).replace(match.getStart(), match.getEnd(), replacement).toString();
         }
 
-        return text;
+        return ret;
     }
 
     /**
