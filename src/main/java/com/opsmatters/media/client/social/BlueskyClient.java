@@ -54,7 +54,7 @@ public class BlueskyClient extends ApiClient implements SocialClient
 
     private static final String BASE_URL = "https://bsky.social";
 
-    private static final int READ_TIMEOUT = 10000;
+    private static final int READ_TIMEOUT = 15000;
 
     private String identifier = "";
     private String password = "";

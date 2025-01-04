@@ -40,6 +40,7 @@ public class Contact extends OwnedEntity
     private String billingEmail = "";
     private String companyId = "";
     private String website = "";
+    private String salutation = "";
     private String notes = "";
     private PaymentMethod method = PaymentMethod.UNDEFINED;
     private PaymentMode mode = PaymentMode.UNDEFINED;
@@ -63,6 +64,7 @@ public class Contact extends OwnedEntity
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setName(name);
+        setSalutation();
 
         setPaymentMethod(Parameters.get(ORDER, PAYMENT_METHOD).getValue());
         setPaymentMode(Parameters.get(ORDER, PAYMENT_MODE).getValue());
@@ -92,6 +94,7 @@ public class Contact extends OwnedEntity
             setBillingEmail(obj.getBillingEmail());
             setCompanyId(obj.getCompanyId());
             setWebsite(obj.getWebsite());
+            setSalutation(obj.getSalutation());
             setNotes(obj.getNotes());
             setPaymentMethod(obj.getPaymentMethod());
             setPaymentMode(obj.getPaymentMode());
@@ -124,6 +127,48 @@ public class Contact extends OwnedEntity
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    /**
+     * Returns the contact salutation.
+     */
+    public String getSalutation()
+    {
+        return salutation;
+    }
+
+    /**
+     * Sets the contact salutation.
+     */
+    public void setSalutation(String salutation)
+    {
+        this.salutation = salutation;
+    }
+
+    /**
+     * Sets the default contact salutation.
+     */
+    public void setSalutation()
+    {
+        String salutation = "Hello";
+        if(getType() != ContactType.AGENCY)
+        {
+            String name = getName();
+            int idx = name.indexOf(" ");
+            if(idx != -1)
+                name = name.substring(0, idx);
+            salutation = String.format("Hi %s", name);
+        }
+
+        setSalutation(salutation);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the contact salutation has been set.
+     */
+    public boolean hasSalutation()
+    {
+        return getSalutation() != null && getSalutation().length() > 0;
     }
 
     /**

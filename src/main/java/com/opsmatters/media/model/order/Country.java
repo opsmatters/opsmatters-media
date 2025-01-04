@@ -33,6 +33,7 @@ public enum Country
     CANADA("CA", "Canada"),
     CHINA("CN", "China"),
     CYPRUS("CY", "Cyprus"),
+    CZECH_REPUBLIC("CZ", "Czech Republic"),
     ESTONIA("EE", "Estonia"),
     GEORGIA("GE", "Georgia"),
     GERMANY("DE", "Germany"),

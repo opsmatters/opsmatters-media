@@ -64,7 +64,7 @@ public class LinkedInClient extends Client implements SocialClient
     public static final String SUFFIX = ".social";
     public static final String OAUTH_SUFFIX = ".linkedin";
 
-    private static final int READ_TIMEOUT = 10000;
+    private static final int READ_TIMEOUT = 15000;
     private static final int CONNECT_TIMEOUT = 5000;
 
     private Organization organization;

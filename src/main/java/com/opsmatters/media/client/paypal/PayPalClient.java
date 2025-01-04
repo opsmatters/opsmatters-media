@@ -140,7 +140,7 @@ public class PayPalClient extends ApiClient
     {
         String ret = null;
         String response = post(String.format("%s/v2/invoicing/invoices", BASE_URL),
-            "application/json", invoice.toString());
+            "application/json", invoice.toString().getBytes("UTF-8"));
         if(response.startsWith("{")) // Valid JSON
         {
             JSONObject obj = new JSONObject(response);
