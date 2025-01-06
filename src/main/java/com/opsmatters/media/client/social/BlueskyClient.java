@@ -60,55 +60,6 @@ public class BlueskyClient extends ApiClient implements SocialClient
     private String password = "";
     private SocialChannel channel;
 
-    enum FacetType
-    {
-        MENTION("mention", "did"),
-        HASHTAG("tag", "tag"),
-        LINK("link", "uri");
-
-        String value;
-        String attr;
-
-        FacetType(String value, String attr)
-        {
-            this.value = value;
-            this.attr = attr;
-        }
-
-        String value()
-        {
-            return value;
-        }
-
-        String attr()
-        {
-            return attr;
-        }
-    }
-
-    class Facet
-    {
-        FacetType type;
-        int start = -1;
-        int end = -1;
-        String text = null;
-
-        Facet(FacetType type, Match match)
-        {
-            this.type = type;
-            this.start = match.getStart();
-            this.end = match.getEnd();
-            text = match.getText();
-            if(type == FacetType.MENTION || type == FacetType.HASHTAG)
-                text = text.substring(1); // Strip # or @
-        }
-
-        String text()
-        {
-            return text;
-        }
-    }
-
     /**
      * Private constructor.
      */
@@ -304,14 +255,13 @@ public class BlueskyClient extends ApiClient implements SocialClient
     {
         String cid = null;
 
-        text = StringUtils.convertToAscii(text, false);
         List<Match> hashtags = StringUtils.extractHashtags(text);
         List<Match> links = StringUtils.extractUrls(text);
 
         if(links.size() == 0)
             throw new IllegalArgumentException("missing url");
 
-        JSONArray facets = getFacets(hashtags, links);
+        JSONArray facets = getFacets(text, hashtags, links);
         JSONObject embed = getEmbed(links.get(0).getText());
 
         JSONObject record = new JSONObject();
@@ -421,37 +371,38 @@ public class BlueskyClient extends ApiClient implements SocialClient
     /**
      * Get the array of facets for the given hashtags and links.
      *
+     * @param text The text of the post.
      * @param hashtags The list of hashtags.
      * @param links The list of links.
      * @return The facets array in JSON format.
      */
-    private JSONArray getFacets(List<Match> hashtags, List<Match> links) throws IOException
+    private JSONArray getFacets(String text, List<Match> hashtags, List<Match> links) throws IOException
     {
         JSONArray ret = null;
-        List<Facet> facets = new ArrayList<Facet>();
-        for(Match link : links)
-            facets.add(new Facet(FacetType.LINK, link));
-        for(Match hashtag : hashtags)
-            facets.add(new Facet(FacetType.HASHTAG, hashtag));
 
+        FacetParser parser = new FacetParser(text);
+        parser.addHashtags(hashtags);
+        parser.addLinks(links);
+
+        List<Facet> facets = parser.getFacets();
         if(facets.size() > 0)
         {
             ret = new JSONArray();
             for(Facet facet : facets)
             {
-                if(facet.start > 0)
+                if(facet.getStart() > 0)
                 {
                     JSONObject obj = new JSONObject();
 
                     JSONObject index = new JSONObject();
-                    index.put("byteStart", facet.start);
-                    index.put("byteEnd", facet.end);
+                    index.put("byteStart", facet.getStart());
+                    index.put("byteEnd", facet.getEnd());
                     obj.put("index", index);
 
                     JSONArray features = new JSONArray();
                     JSONObject feature = new JSONObject();
-                    feature.put("$type", "app.bsky.richtext.facet#"+facet.type.value());
-                    feature.put(facet.type.attr(), facet.text());
+                    feature.put("$type", "app.bsky.richtext.facet#"+facet.getType().value());
+                    feature.put(facet.getType().attr(), facet.getText());
                     features.put(feature);
 
                     obj.put("features", features);
