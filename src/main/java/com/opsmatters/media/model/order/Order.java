@@ -41,6 +41,7 @@ public class Order extends OwnedEntity
 {
     private String contactId = "";
     private String contactName = ""; // Used as a filter
+    private String contactPersonId = "";
     private String companyId = "";
     private int week, month, year = -1;
     private PaymentMethod method = PaymentMethod.UNDEFINED;
@@ -66,6 +67,8 @@ public class Order extends OwnedEntity
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setContactId(contact.getId());
+        if(person != null)
+            setContactPersonId(person.getId());
         setCompanyId(contact.getCompanyId());
         setPaymentMethod(contact.getPaymentMethod());
         setPaymentMode(contact.getPaymentMode());
@@ -100,7 +103,7 @@ public class Order extends OwnedEntity
                 }
             }
 
-            // Otherwise look for an email in the given person
+            // Otherwise look for an email for the given person
             if(email == null || email.length() == 0)
             {
                 if(person != null)
@@ -134,6 +137,7 @@ public class Order extends OwnedEntity
         {
             super.copyAttributes(obj);
             setContactId(obj.getContactId());
+            setContactPersonId(obj.getContactPersonId());
             setCompanyId(obj.getCompanyId());
             setPaymentMethod(obj.getPaymentMethod());
             setPaymentMode(obj.getPaymentMode());
@@ -182,6 +186,22 @@ public class Order extends OwnedEntity
     public void setContactName(String contactName)
     {
         this.contactName = contactName;
+    }
+
+    /**
+     * Returns the contact person id.
+     */
+    public String getContactPersonId()
+    {
+        return contactPersonId;
+    }
+
+    /**
+     * Sets the contact person id.
+     */
+    public void setContactPersonId(String contactPersonId)
+    {
+        this.contactPersonId = contactPersonId;
     }
 
     /**

@@ -70,7 +70,7 @@ public class SocialChannelDAO extends BaseDAO
      */
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, PROVIDER, HANDLE, ICON, SITES, CONTENT_TYPES, DELAY, MAX_POSTS, STATUS, CREATED_BY "
-      + "FROM SOCIAL_CHANNELS ORDER BY CREATED_DATE";
+      + "FROM SOCIAL_CHANNELS ORDER BY PROVIDER";
 
     /**
      * The query to use to get the count of channels from the SOCIAL_CHANNELS table.

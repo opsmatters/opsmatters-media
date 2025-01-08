@@ -259,4 +259,22 @@ public class FormatUtils
 
         return ret;
     }
+
+    /**
+     * Returns the salutation for the given name.
+     */
+    public static String getSalutation(String name)
+    {
+        String ret = "Hello";
+
+        if(name != null && name.length() > 0)
+        {
+            int idx = name.indexOf(" ");
+            if(idx != -1)
+                name = name.substring(0, idx);
+            ret = String.format("Hi %s", name);
+        }
+
+        return ret;
+    }
 }

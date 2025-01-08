@@ -279,7 +279,7 @@ public class BlueskyClient extends ApiClient implements SocialClient
         request.put("record", record);
 
         String response = post(String.format("%s/xrpc/com.atproto.repo.createRecord", BASE_URL),
-            "application/json", request.toString());
+            "application/json", request.toString().getBytes("UTF-8"));
 
         int statusCode = getStatusLine().getStatusCode();
         if(response.startsWith("{")) // Valid JSON

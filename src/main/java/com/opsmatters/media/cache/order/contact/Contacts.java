@@ -36,9 +36,10 @@ public class Contacts implements java.io.Serializable
     private static Map<String,Contact> idMap = new LinkedHashMap<String,Contact>();
     private static Map<String,Contact> nameMap = new TreeMap<String,Contact>();
     private static Map<String,Contact> emailMap = new LinkedHashMap<String,Contact>();
-    private static Map<String,Map<String,ContactPerson>> personContactMap = new LinkedHashMap<String,Map<String,ContactPerson>>();
+    private static Map<String,ContactPerson> personIdMap = new TreeMap<String,ContactPerson>();
     private static Map<String,ContactPerson> personNameMap = new TreeMap<String,ContactPerson>();
     private static Map<String,ContactPerson> personEmailMap = new TreeMap<String,ContactPerson>();
+    private static Map<String,Map<String,ContactPerson>> personContactMap = new LinkedHashMap<String,Map<String,ContactPerson>>();
 
     private static boolean initialised = false;
 
@@ -90,9 +91,10 @@ public class Contacts implements java.io.Serializable
         idMap.clear();
         nameMap.clear();
         emailMap.clear();
-        personContactMap.clear();
+        personIdMap.clear();
         personNameMap.clear();
         personEmailMap.clear();
+        personContactMap.clear();
     }
 
     /**
@@ -117,6 +119,14 @@ public class Contacts implements java.io.Serializable
     public static Contact getByEmail(String email)
     {
         return email != null ? emailMap.get(email) : null;
+    }
+
+    /**
+     * Returns the contact person with the given id.
+     */
+    public static ContactPerson getPersonById(String id)
+    {
+        return id != null ? personIdMap.get(id) : null;
     }
 
     /**
@@ -158,6 +168,10 @@ public class Contacts implements java.io.Serializable
      */
     public static void add(ContactPerson person)
     {
+        personIdMap.put(person.getId(), person);
+        personNameMap.put(person.getName(), person);
+        personEmailMap.put(person.getEmail(), person);
+
         Map<String,ContactPerson> persons = personContactMap.get(person.getContactId());
         if(persons == null)
         {
@@ -166,8 +180,6 @@ public class Contacts implements java.io.Serializable
         }
 
         persons.put(person.getId(), person);
-        personNameMap.put(person.getName(), person);
-        personEmailMap.put(person.getEmail(), person);
     }
 
     /**
@@ -185,9 +197,10 @@ public class Contacts implements java.io.Serializable
      */
     public static void remove(ContactPerson person)
     {
-        personContactMap.get(person.getContactId()).remove(person.getId());
+        personIdMap.remove(person.getId());
         personNameMap.remove(person.getName());
         personEmailMap.remove(person.getEmail());
+        personContactMap.get(person.getContactId()).remove(person.getId());
     }
 
     /**

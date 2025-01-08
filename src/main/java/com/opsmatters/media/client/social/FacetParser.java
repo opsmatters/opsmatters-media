@@ -41,7 +41,24 @@ public class FacetParser
         for(int i = 0; i <= chars.length; i++)
         {
             if(i > 0)
-                index += new String(chars, i-1, 1).getBytes(StandardCharsets.UTF_8).length;
+            {
+                int len = 1;
+                int cp = (int)chars[i-1];
+                if(cp > 255)
+                {
+                    if(cp > 0xD800) // emoji
+                    {
+                        len = 2;
+                    }
+                    else // unicode
+                    {
+                        len = new String(chars, i-1, 1).getBytes(StandardCharsets.UTF_8).length;
+                    }
+                }
+
+                index += len;
+            }
+
             indices[i] = index;
         }
     }

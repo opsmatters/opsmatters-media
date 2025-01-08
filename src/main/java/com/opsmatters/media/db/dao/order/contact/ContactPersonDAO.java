@@ -41,7 +41,7 @@ public class ContactPersonDAO extends BaseDAO
      * The query to use to select a person from the CONTACT_PERSONS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, EMAIL, ENABLED  "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, EMAIL, SALUTATION, ENABLED  "
       + "FROM CONTACT_PERSONS WHERE ID=?";
 
     /**
@@ -49,29 +49,29 @@ public class ContactPersonDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTACT_PERSONS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, EMAIL, ENABLED )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, EMAIL, SALUTATION, ENABLED )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a person in the CONTACT_PERSONS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTACT_PERSONS SET UPDATED_DATE=?, NAME=?, EMAIL=?, ENABLED=? "
+      "UPDATE CONTACT_PERSONS SET UPDATED_DATE=?, NAME=?, EMAIL=?, SALUTATION=?, ENABLED=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the persons from the CONTACT_PERSONS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, EMAIL, ENABLED  "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, EMAIL, SALUTATION, ENABLED  "
       + "FROM CONTACT_PERSONS ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the persons from the CONTACT_PERSONS table by contact.
      */
     private static final String LIST_BY_CONTACT_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, EMAIL, ENABLED  "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, EMAIL, SALUTATION, ENABLED  "
       + "FROM CONTACT_PERSONS WHERE CONTACT_ID=? ORDER BY CREATED_DATE";
 
     /**
@@ -106,6 +106,7 @@ public class ContactPersonDAO extends BaseDAO
         table.addColumn("CONTACT_ID", Types.VARCHAR, 36, true);
         table.addColumn("NAME", Types.VARCHAR, 50, true);
         table.addColumn("EMAIL", Types.VARCHAR, 50, true);
+        table.addColumn("SALUTATION", Types.VARCHAR, 30, false);
         table.addColumn("ENABLED", Types.BOOLEAN, true);
         table.setPrimaryKey("CONTACT_PERSONS_PK", new String[] {"ID"});
         table.addIndex("CONTACT_PERSONS_CONTACT_IDX", new String[] {"CONTACT_ID"});
@@ -143,7 +144,8 @@ public class ContactPersonDAO extends BaseDAO
                 person.setContactId(rs.getString(4));
                 person.setName(rs.getString(5));
                 person.setEmail(rs.getString(6));
-                person.setEnabled(rs.getBoolean(7));
+                person.setSalutation(rs.getString(7));
+                person.setEnabled(rs.getBoolean(8));
                 ret = person;
             }
         }
@@ -184,7 +186,8 @@ public class ContactPersonDAO extends BaseDAO
             insertStmt.setString(4, person.getContactId());
             insertStmt.setString(5, person.getName());
             insertStmt.setString(6, person.getEmail());
-            insertStmt.setBoolean(7, person.isEnabled());
+            insertStmt.setString(7, person.getSalutation());
+            insertStmt.setBoolean(8, person.isEnabled());
             insertStmt.executeUpdate();
 
             logger.info("Created contact person '"+person.getId()+"' in CONTACT_PERSONS");
@@ -219,8 +222,9 @@ public class ContactPersonDAO extends BaseDAO
         updateStmt.setTimestamp(1, new Timestamp(person.getUpdatedDateMillis()), UTC);
         updateStmt.setString(2, person.getName());
         updateStmt.setString(3, person.getEmail());
-        updateStmt.setBoolean(4, person.isEnabled());
-        updateStmt.setString(5, person.getId());
+        updateStmt.setString(4, person.getSalutation());
+        updateStmt.setBoolean(5, person.isEnabled());
+        updateStmt.setString(6, person.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated contact person '"+person.getId()+"' in CONTACT_PERSONS");
@@ -257,7 +261,8 @@ public class ContactPersonDAO extends BaseDAO
                 person.setContactId(rs.getString(4));
                 person.setName(rs.getString(5));
                 person.setEmail(rs.getString(6));
-                person.setEnabled(rs.getBoolean(7));
+                person.setSalutation(rs.getString(7));
+                person.setEnabled(rs.getBoolean(8));
                 ret.add(person);
             }
         }
@@ -310,7 +315,8 @@ public class ContactPersonDAO extends BaseDAO
                 person.setContactId(rs.getString(4));
                 person.setName(rs.getString(5));
                 person.setEmail(rs.getString(6));
-                person.setEnabled(rs.getBoolean(7));
+                person.setSalutation(rs.getString(7));
+                person.setEnabled(rs.getBoolean(8));
                 ret.add(person);
             }
         }

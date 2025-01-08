@@ -23,6 +23,7 @@ import com.opsmatters.media.model.order.PaymentMethod;
 import com.opsmatters.media.model.order.PaymentMode;
 import com.opsmatters.media.model.order.PaymentTerm;
 import com.opsmatters.media.util.StringUtils;
+import com.opsmatters.media.util.FormatUtils;
 
 import static com.opsmatters.media.model.admin.ParameterType.*;
 import static com.opsmatters.media.model.admin.ParameterName.*;
@@ -150,17 +151,7 @@ public class Contact extends OwnedEntity
      */
     public void setSalutation()
     {
-        String salutation = "Hello";
-        if(getType() != ContactType.AGENCY)
-        {
-            String name = getName();
-            int idx = name.indexOf(" ");
-            if(idx != -1)
-                name = name.substring(0, idx);
-            salutation = String.format("Hi %s", name);
-        }
-
-        setSalutation(salutation);
+        setSalutation(FormatUtils.getSalutation(getName()));
     }
 
     /**
