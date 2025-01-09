@@ -208,8 +208,6 @@ public class OrganisationSites
         if(organisation != null)
         {
             ret = organisation.getSettings(type);
-            if(ret == null && type != ContentType.ORGANISATION)
-                logger.warning("Unable to find organisation content type for "+code+": "+type);
         }
 
         return ret;

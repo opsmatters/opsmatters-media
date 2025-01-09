@@ -140,7 +140,15 @@ public class ConfigGeneratorFields implements java.io.Serializable
         }
         else
         {
-            setPosts(true);
+            if(organisation.hasSettings())
+            {
+                setPosts(organisation.hasPostConfig());
+                setFields(organisation, organisationSite.getSiteId());
+            }
+            else
+            {
+                setPosts(true);
+            }
         }
     }
 
@@ -244,6 +252,29 @@ public class ConfigGeneratorFields implements java.io.Serializable
             setBlogUrl(blogUrl);
         if(features != null)
             setFeatures(features);
+        if(tags != null)
+            setTags(tags);
+    }
+
+    /**
+     * Set the fields for post content.
+     */
+    private void setFields(Organisation organisation, String siteId)
+    {
+        String tags = null;
+
+        if(organisation.hasPostConfig())
+        {
+            PostConfig posts = organisation.getPostConfig();
+
+            ContentSiteSettings settings = OrganisationSites.getSettings(siteId, posts);
+            if(settings != null)
+            {
+                if(tags == null)
+                    tags = settings.getTags();
+            }
+        }
+
         if(tags != null)
             setTags(tags);
     }

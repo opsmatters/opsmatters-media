@@ -26,22 +26,6 @@ import java.util.ArrayList;
  */
 public enum SocialProvider
 {
-    TWITTER("TW",
-        "Twitter",
-        "https://twitter.com",
-        "/%s",
-        "/hashtag/%s",
-        "images/twitter-thumb.png",
-        280,
-        23),
-    FACEBOOK("FB",
-        "Facebook",
-        "https://www.facebook.com",
-        "/%s",
-        "/hashtag/%s",
-        "images/facebook-thumb.png",
-        2000,
-        -1),
     LINKEDIN("LI",
         "LinkedIn",
         "https://www.linkedin.com",
@@ -57,6 +41,22 @@ public enum SocialProvider
         "/hashtag/%s",
         "images/bluesky-thumb.png",
         300,
+        -1),
+    TWITTER("TW",
+        "Twitter",
+        "https://twitter.com",
+        "/%s",
+        "/hashtag/%s",
+        "images/twitter-thumb.png",
+        280,
+        23),
+    FACEBOOK("FB",
+        "Facebook",
+        "https://www.facebook.com",
+        "/%s",
+        "/hashtag/%s",
+        "images/facebook-thumb.png",
+        2000,
         -1);
 
     private String code;
@@ -206,10 +206,10 @@ public enum SocialProvider
     {
         List<SocialProvider> ret = new ArrayList<SocialProvider>();
 
-        ret.add(TWITTER);
-        ret.add(FACEBOOK);
         ret.add(LINKEDIN);
         ret.add(BLUESKY);
+        ret.add(TWITTER);
+        ret.add(FACEBOOK);
 
         return ret;
     }
