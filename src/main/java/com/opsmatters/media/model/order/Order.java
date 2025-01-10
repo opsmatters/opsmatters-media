@@ -205,6 +205,14 @@ public class Order extends OwnedEntity
     }
 
     /**
+     * Returns <CODE>true</CODE> if the contact person id has been set.
+     */
+    public boolean hasContactPersonId()
+    {
+        return getContactPersonId() != null && getContactPersonId().length() > 0;
+    }
+
+    /**
      * Returns the company id.
      */
     public String getCompanyId()

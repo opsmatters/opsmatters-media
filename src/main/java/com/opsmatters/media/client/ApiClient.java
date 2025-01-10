@@ -352,6 +352,29 @@ public class ApiClient extends Client
     }
 
     /**
+     * Executes a PUT operation with an optional content type and byte array.
+     */
+    public String put(String url, String contentType, byte[] bytes, boolean hasResponseEntity) throws IOException
+    {
+        HttpPut request = new HttpPut(url);
+        if(contentType != null)
+            request.addHeader("Content-Type", contentType);
+        if(bearer != null)
+            request.addHeader("Authorization", String.format("Bearer %s", bearer));
+        if(bytes != null)
+            request.setEntity(new ByteArrayEntity(bytes));
+        return execute(request, hasResponseEntity);
+    }
+
+    /**
+     * Executes a PUT operation with an optional content type and byte array.
+     */
+    public String put(String url, String contentType, byte[] bytes) throws IOException
+    {
+        return put(url, contentType, bytes, true);
+    }
+
+    /**
      * Executes a DELETE operation without a message body.
      */
     public String delete(String url) throws IOException

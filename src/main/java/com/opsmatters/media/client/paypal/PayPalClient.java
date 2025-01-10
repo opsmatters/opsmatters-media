@@ -170,8 +170,8 @@ public class PayPalClient extends ApiClient
         JSONObject obj = new JSONObject();
         obj.put("send_to_invoicer", true);
 
-        String response = post(String.format("%s/v2/invoicing/invoices/%s/send",
-            BASE_URL, invoiceId), "application/json", obj.toString());
+        String response = post(String.format("%s/v2/invoicing/invoices/%s/send", BASE_URL, invoiceId),
+            "application/json", obj.toString());
         return getStatusLine().getStatusCode() == 200;
     }
 
@@ -181,8 +181,8 @@ public class PayPalClient extends ApiClient
     public String updateInvoice(String invoiceId, PayPalInvoice invoice) throws IOException
     {
         String ret = null;
-        String response = put(String.format("%s/v2/invoicing/invoices/%s",
-            BASE_URL, invoiceId), "application/json", invoice.toString());
+        String response = put(String.format("%s/v2/invoicing/invoices/%s", BASE_URL, invoiceId),
+            "application/json", invoice.toString().getBytes("UTF-8"));
         if(response.startsWith("{")) // Valid JSON
         {
             JSONObject obj = new JSONObject(response);
@@ -210,8 +210,7 @@ public class PayPalClient extends ApiClient
     public PayPalInvoice getInvoiceDetails(String invoiceId) throws IOException
     {
         PayPalInvoice ret = null;
-        String response = get(String.format("%s/v2/invoicing/invoices/%s",
-            BASE_URL, invoiceId));
+        String response = get(String.format("%s/v2/invoicing/invoices/%s", BASE_URL, invoiceId));
         if(response.startsWith("{")) // Valid JSON
         {
             JSONObject obj = new JSONObject(response);
@@ -266,8 +265,8 @@ public class PayPalClient extends ApiClient
         obj.put("send_to_invoicer", true);
         obj.put("send_to_recipient", true);
 
-        post(String.format("%s/v2/invoicing/invoices/%s/cancel",
-            BASE_URL, invoiceId), "application/json", obj.toString(), false);
+        post(String.format("%s/v2/invoicing/invoices/%s/cancel", BASE_URL, invoiceId),
+            "application/json", obj.toString(), false);
         return getStatusLine().getStatusCode() == 204;
     }
 
@@ -277,8 +276,8 @@ public class PayPalClient extends ApiClient
     public String recordInvoicePayment(String invoiceId, PayPalPayment payment) throws IOException
     {
         String ret = null;
-        String response = post(String.format("%s/v2/invoicing/invoices/%s/payments",
-            BASE_URL, invoiceId), "application/json", payment.toString());
+        String response = post(String.format("%s/v2/invoicing/invoices/%s/payments", BASE_URL, invoiceId),
+            "application/json", payment.toString());
         if(response.startsWith("{")) // Valid JSON
         {
             JSONObject obj = new JSONObject(response);
