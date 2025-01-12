@@ -50,6 +50,8 @@ public class StringUtils
 
     public static final String EMPTY = "<p></p>";
 
+    private static final String SESSION_ERROR = "(Session info:";
+
     // Pattern to detect URLs in strings
     private static final String URL_REGEX = "\\(?\\b(https?://|www[.])[-A-Za-z0-9+&amp;@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&amp;@#/%=~_()|]";
     private static final Pattern urlPattern = Pattern.compile(URL_REGEX);
@@ -809,6 +811,12 @@ public class StringUtils
         {
             ret = ret.replaceAll("\r|\n", ""); // Remove LFs
             ret = ret.replaceAll("\\\\", ""); // Replace backslashes
+
+            // Remove chrome session error and version
+            int pos = ret.indexOf(SESSION_ERROR);
+            if(pos != -1)
+                ret = ret.substring(0, pos-1);
+
             if(ret.length() > MAX_ERROR_MESSAGE)
                 ret = ret.substring(0, MAX_ERROR_MESSAGE-1);
         }

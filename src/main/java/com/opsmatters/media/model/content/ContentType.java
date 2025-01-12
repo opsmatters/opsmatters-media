@@ -265,7 +265,7 @@ public enum ContentType
     {
         if(isArticleType())
             return 750;
-        return 600;
+        return 650;
     }
 
     /**
@@ -275,7 +275,7 @@ public enum ContentType
     {
         if(isArticleType())
             return 640;
-        return 500;
+        return 540;
     }
 
     /**
