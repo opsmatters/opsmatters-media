@@ -238,7 +238,7 @@ public class PlatformConfig extends ConfigStore
                 {
                     for(Map.Entry<String,Object> entry : config.entrySet())
                     {
-                        ret.addEnvironment(Environment.builder(entry.getKey(), null)
+                        ret.addEnvironment(Environment.builder(entry.getKey())
                             .parse((Map<String,Object>)entry.getValue()).build());
                     }
                 }

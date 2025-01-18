@@ -23,31 +23,33 @@ import com.opsmatters.media.model.platform.aws.Ec2Config;
 import com.opsmatters.media.model.platform.aws.RdsConfig;
 
 /**
- * Represents the configuration of a site environment.
+ * Represents the configuration of an environment.
  * 
  * @author Gerald Curley (opsmatters)
  */
 public class Environment implements ConfigElement
 {
     private EnvironmentId id;
-    private Site site;
     private String url = "";
-    private String ping = "";
     private String base = "";
-    private FeedsConfig feeds;
     private DatabaseConfig database;
     private Ec2Config ec2;
     private RdsConfig rds;
     private SshConfig ssh;
-    private boolean stopInstanceWhenIdle = false;
+
+    /**
+     * Default constructor.
+     */
+    protected Environment()
+    {
+    }
 
     /**
      * Constructor that takes an id.
      */
-    protected Environment(EnvironmentId id, Site site)
+    protected Environment(EnvironmentId id)
     {
         setId(id);
-        setSite(site);
     }
 
     /**
@@ -66,11 +68,8 @@ public class Environment implements ConfigElement
         if(obj != null)
         {
             setId(obj.getId());
-            setSite(obj.getSite());
             setUrl(obj.getUrl());
-            setPing(obj.getPing());
             setBase(obj.getBase());
-            setFeedsConfig(new FeedsConfig(obj.getFeedsConfig()));
             setDatabaseConfig(new DatabaseConfig(obj.getDatabaseConfig()));
             setEc2Config(new Ec2Config(obj.getEc2Config()));
             setRdsConfig(new RdsConfig(obj.getRdsConfig()));
@@ -99,7 +98,7 @@ public class Environment implements ConfigElement
      */
     public String getDisplayName()
     {
-        return site != null ? String.format("%s %s", site.getTitle(), id.value()) : id.value();
+        return id.value();
     }
 
     /**
@@ -127,29 +126,10 @@ public class Environment implements ConfigElement
     }
 
     /**
-     * Returns the site of the environment.
-     */
-    public Site getSite()
-    {
-        return site;
-    }
-
-    /**
-     * Sets the site of the environment.
-     */
-    public void setSite(Site site)
-    {
-        this.site = site;
-    }
-
-    /**
      * Returns the key of the environment.
      */
     public String getKey()
     {
-        if(site != null)
-            return String.format("%s-%s",
-                getSite().getId().toLowerCase(), getId().code());
         return getId().code();
     }
 
@@ -170,22 +150,6 @@ public class Environment implements ConfigElement
     }
 
     /**
-     * Returns the uri to ping for the environment.
-     */
-    public String getPing()
-    {
-        return ping;
-    }
-
-    /**
-     * Sets the uri to ping for the environment.
-     */
-    public void setPing(String ping)
-    {
-        this.ping = ping;
-    }
-
-    /**
      * Returns the base path of the environment.
      */
     public String getBase()
@@ -199,22 +163,6 @@ public class Environment implements ConfigElement
     public void setBase(String base)
     {
         this.base = base;
-    }
-
-    /**
-     * Returns the feeds configuration for the environment.
-     */
-    public FeedsConfig getFeedsConfig()
-    {
-        return feeds;
-    }
-
-    /**
-     * Sets the feeds configuration for the environment.
-     */
-    public void setFeedsConfig(FeedsConfig feeds)
-    {
-        this.feeds = feeds;
     }
 
     /**
@@ -282,30 +230,13 @@ public class Environment implements ConfigElement
     }
 
     /**
-     * Returns <CODE>true</CODE> if the instance for this environment should stop when feeds complete.
-     */
-    public boolean stopInstanceWhenIdle()
-    {
-        return stopInstanceWhenIdle;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the instance for this environment should stop when feeds complete.
-     */
-    public void setStopInstanceWhenIdle(boolean stopInstanceWhenIdle)
-    {
-        this.stopInstanceWhenIdle = stopInstanceWhenIdle;
-    }
-
-    /**
      * Returns a builder for the environment.
      * @param id The id of the environment
-     * @param site The site of the environment
      * @return The builder instance.
      */
-    public static Builder builder(String id, Site site)
+    public static Builder builder(String id)
     {
-        return new Builder(EnvironmentId.valueOf(id), site);
+        return new Builder(EnvironmentId.valueOf(id));
     }
 
     /**
@@ -315,9 +246,7 @@ public class Environment implements ConfigElement
     {
         // The config attribute names
         private static final String URL = "url";
-        private static final String PING = "ping";
         private static final String BASE = "base";
-        private static final String FEEDS = "feeds";
         private static final String DATABASE = "database";
         private static final String EC2 = "ec2";
         private static final String RDS = "rds";
@@ -326,13 +255,28 @@ public class Environment implements ConfigElement
         private Environment ret = null;
 
         /**
+         * Default constructor.
+         */
+        public Builder()
+        {
+        }
+
+        /**
          * Constructor that takes a name.
          * @param id The id for the environment
-         * @param site The site for the environment
          */
-        public Builder(EnvironmentId id, Site site)
+        public Builder(EnvironmentId id)
         {
-            ret = new Environment(id, site);
+            ret = new Environment(id);
+        }
+
+        /**
+         * Sets the environment.
+         * @param environment The environment
+         */
+        protected void set(Environment environment)
+        {
+            ret = environment;
         }
 
         /**
@@ -345,16 +289,10 @@ public class Environment implements ConfigElement
         {
             if(map.containsKey(URL))
                 ret.setUrl((String)map.get(URL));
-            if(map.containsKey(PING))
-                ret.setPing((String)map.get(PING));
             if(map.containsKey(BASE))
                 ret.setBase((String)map.get(BASE));
 
             String name = ret.getName();
-
-            if(map.containsKey(FEEDS))
-                ret.setFeedsConfig(FeedsConfig.builder(name)
-                    .parse((Map<String,Object>)map.get(FEEDS)).build());
 
             if(map.containsKey(DATABASE))
                 ret.setDatabaseConfig(DatabaseConfig.builder(name)

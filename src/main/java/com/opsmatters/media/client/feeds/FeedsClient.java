@@ -3,8 +3,8 @@ package com.opsmatters.media.client.feeds;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
+import org.json.JSONObject;
 import org.apache.commons.io.FileUtils;
-import com.opsmatters.media.model.platform.FeedsConfig;
 import com.opsmatters.media.client.ApiClient;
 
 /**
@@ -19,13 +19,12 @@ public class FeedsClient extends ApiClient
     /**
      * Returns a new client using the given config.
      */
-    static public FeedsClient newClient(String key, String url, FeedsConfig config) 
+    static public FeedsClient newClient(String key, String url) 
         throws IOException
     {
         FeedsClient ret = FeedsClient._builder()
             .env(key)
             .url(url)
-            .username(config.getUsername())
             .build();
 
         // Configure and create the feeds client
@@ -47,12 +46,14 @@ public class FeedsClient extends ApiClient
         File file = new File(directory, getEnv()+SUFFIX);
         try
         {
-            // Read password from auth directory
-            setPassword(FileUtils.readFileToString(file, "UTF-8"));
+            // Read file from auth directory
+            JSONObject obj = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
+            setUsername(obj.optString("username"));
+            setPassword(obj.optString("password"));
         }
         catch(IOException e)
         {
-            logger.severe("Unable to read feeds password file: "+e.getClass().getName()+": "+e.getMessage());
+            logger.severe("Unable to read feeds auth file: "+e.getClass().getName()+": "+e.getMessage());
         }
 
         if(debug())
@@ -94,17 +95,6 @@ public class FeedsClient extends ApiClient
         public Builder env(String env)
         {
             client.setEnv(env);
-            return this;
-        }
-
-        /**
-         * Sets the username for the client.
-         * @param username The username for the client
-         * @return This object
-         */
-        public Builder username(String username)
-        {
-            client.setUsername(username);
             return this;
         }
 

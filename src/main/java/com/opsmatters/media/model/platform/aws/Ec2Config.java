@@ -19,6 +19,8 @@ package com.opsmatters.media.model.platform.aws;
 import java.util.Map;
 import com.opsmatters.media.model.ConfigParser;
 
+import static com.opsmatters.media.model.platform.aws.InstanceStatus.*;
+
 /**
  * Represents the EC2 configuration.
  * 
@@ -27,6 +29,7 @@ import com.opsmatters.media.model.ConfigParser;
 public class Ec2Config extends AwsConfig
 {
     private String instanceId = "";
+    private InstanceStatus status = UNKNOWN;
 
     /**
      * Constructor that takes an id.
@@ -69,6 +72,22 @@ public class Ec2Config extends AwsConfig
     public void setInstanceId(String instanceId)
     {
         this.instanceId = instanceId;
+    }
+
+    /**
+     * Returns the status of the instance.
+     */
+    public InstanceStatus getStatus()
+    {
+        return status;
+    }
+
+    /**
+     * Sets the status of the instance.
+     */
+    public void setStatus(InstanceStatus status)
+    {
+        this.status = status;
     }
 
     /**

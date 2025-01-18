@@ -26,8 +26,8 @@ import com.opsmatters.media.model.ConfigParser;
  */
 public class S3Config extends AwsConfig
 {
-    private String config = "";
-    private String content = "";
+    private String configBucket = "";
+    private String contentBucket = "";
 
     /**
      * Constructor that takes an id.
@@ -62,15 +62,15 @@ public class S3Config extends AwsConfig
      */
     public String getConfigBucket()
     {
-        return config;
+        return configBucket;
     }
 
     /**
      * Sets the config bucket for the S3 configuration.
      */
-    public void setConfigBucket(String config)
+    public void setConfigBucket(String configBucket)
     {
-        this.config = config;
+        this.configBucket = configBucket;
     }
 
     /**
@@ -78,15 +78,15 @@ public class S3Config extends AwsConfig
      */
     public String getContentBucket()
     {
-        return content;
+        return contentBucket;
     }
 
     /**
      * Sets the content bucket for the S3 configuration.
      */
-    public void setContentBucket(String content)
+    public void setContentBucket(String contentBucket)
     {
-        this.content = content;
+        this.contentBucket = contentBucket;
     }
 
     /**
@@ -106,8 +106,8 @@ public class S3Config extends AwsConfig
     {
         // The config attribute names
         private static final String REGION = "region";
-        private static final String CONFIG = "config";
-        private static final String CONTENT = "content";
+        private static final String CONFIG_BUCKET = "config-bucket";
+        private static final String CONTENT_BUCKET = "content-bucket";
 
         private S3Config ret = null;
 
@@ -130,10 +130,10 @@ public class S3Config extends AwsConfig
         {
             if(map.containsKey(REGION))
                 ret.setRegion((String)map.get(REGION));
-            if(map.containsKey(CONFIG))
-                ret.setConfigBucket((String)map.get(CONFIG));
-            if(map.containsKey(CONTENT))
-                ret.setContentBucket((String)map.get(CONTENT));
+            if(map.containsKey(CONFIG_BUCKET))
+                ret.setConfigBucket((String)map.get(CONFIG_BUCKET));
+            if(map.containsKey(CONTENT_BUCKET))
+                ret.setContentBucket((String)map.get(CONTENT_BUCKET));
 
             return this;
         }

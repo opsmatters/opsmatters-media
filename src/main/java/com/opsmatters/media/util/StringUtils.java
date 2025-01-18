@@ -50,7 +50,8 @@ public class StringUtils
 
     public static final String EMPTY = "<p></p>";
 
-    private static final String SESSION_ERROR = "(Session info:";
+    private static final String SESSION_INFO = "(Session info:";
+    private static final String BUILD_INFO = "Build info:";
 
     // Pattern to detect URLs in strings
     private static final String URL_REGEX = "\\(?\\b(https?://|www[.])[-A-Za-z0-9+&amp;@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&amp;@#/%=~_()|]";
@@ -604,7 +605,7 @@ public class StringUtils
                     else if(c == 8230)         // Replace ellipsis
                         buff.append("...");
                     else if(c == 8364)         // Replace Euro
-                        buff.append("Euro");
+                        buff.append("€");
                     else if(c <= 255)          // ISO Latin 1 (128-255)
                         buff.append((char)c);
                     else if(c <= 383)          // ISO Latin 1 Extended  Diacritics (256-383)
@@ -812,14 +813,43 @@ public class StringUtils
             ret = ret.replaceAll("\r|\n", ""); // Remove LFs
             ret = ret.replaceAll("\\\\", ""); // Replace backslashes
 
-            // Remove chrome session error and version
-            int pos = ret.indexOf(SESSION_ERROR);
+/* GERALD
+            // Remove chrome session info
+            int pos = ret.indexOf(SESSION_INFO);
             if(pos != -1)
                 ret = ret.substring(0, pos-1);
+
+//GERALD
+            // Remove selenium build info
+            pos = ret.indexOf(BUILD_INFO);
+            if(pos != -1)
+                ret = ret.substring(0, pos-1);
+*/
+//GERALD
+ret = getMessageWithout(ret, SESSION_INFO);
+ret = getMessageWithout(ret, BUILD_INFO);
 
             if(ret.length() > MAX_ERROR_MESSAGE)
                 ret = ret.substring(0, MAX_ERROR_MESSAGE-1);
         }
+
+        return ret;
+    }
+
+//GERALD
+    /**
+     * Remove the given text from the end of the feedback message.
+     */
+    private static String getMessageWithout(String str, String remove)
+    {
+        String ret = str;
+        if(ret != null)
+        {
+            int pos = ret.indexOf(remove);
+            if(pos != -1)
+                ret = ret.substring(0, pos-1);
+        }
+
         return ret;
     }
 

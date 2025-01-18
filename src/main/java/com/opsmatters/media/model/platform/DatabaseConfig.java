@@ -32,7 +32,6 @@ public class DatabaseConfig implements ConfigElement
     private String type = "";
     private String hostname = "";
     private int port = -1;
-    private String username = "";
     private String parameters = "";
     private int connectTimeout = 10;
     private long pingDelay = -1L;
@@ -66,7 +65,6 @@ public class DatabaseConfig implements ConfigElement
             setType(obj.getType());
             setHostname(obj.getHostname());
             setPort(obj.getPort());
-            setUsername(obj.getUsername());
             setParameters(obj.getParameters());
             setConnectTimeout(obj.getConnectTimeout());
             setPingDelay(obj.getPingDelay());
@@ -163,22 +161,6 @@ public class DatabaseConfig implements ConfigElement
     }
 
     /**
-     * Returns the username for the database configuration.
-     */
-    public String getUsername()
-    {
-        return username;
-    }
-
-    /**
-     * Sets the username for the database configuration.
-     */
-    public void setUsername(String username)
-    {
-        this.username = username;
-    }
-
-    /**
      * Returns the parameters for the database configuration.
      */
     public String getParameters()
@@ -262,7 +244,6 @@ public class DatabaseConfig implements ConfigElement
         private static final String TYPE = "type";
         private static final String HOSTNAME = "hostname";
         private static final String PORT = "port";
-        private static final String USERNAME = "username";
         private static final String PARAMETERS = "parameters";
         private static final String CONNECT_TIMEOUT = "connect-timeout";
         private static final String PING_DELAY = "ping-delay";
@@ -295,8 +276,6 @@ public class DatabaseConfig implements ConfigElement
                 ret.setHostname((String)map.get(HOSTNAME));
             if(map.containsKey(PORT))
                 ret.setPort((Integer)map.get(PORT));
-            if(map.containsKey(USERNAME))
-                ret.setUsername((String)map.get(USERNAME));
             if(map.containsKey(PARAMETERS))
                 ret.setParameters((String)map.get(PARAMETERS));
             if(map.containsKey(CONNECT_TIMEOUT))

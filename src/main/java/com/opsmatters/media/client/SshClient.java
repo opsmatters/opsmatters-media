@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.logging.Logger;
+import org.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
@@ -67,7 +68,6 @@ public class SshClient extends Client
             .env(key)
             .hostname(config.getHostname())
             .port(config.getPort())
-            .username(config.getUsername())
             .keyfile(key+KEY)
             .build();
 
@@ -96,12 +96,14 @@ public class SshClient extends Client
         File file = new File(directory, env+SUFFIX);
         try
         {
-            // Read password from auth directory
-            password = FileUtils.readFileToString(file, "UTF-8");
+            // Read file from auth directory
+            JSONObject obj = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
+            setUsername(obj.optString("username"));
+            setPassword(obj.optString("password"));
         }
         catch(IOException e)
         {
-            logger.severe("Unable to read SSH password file: "+e.getClass().getName()+": "+e.getMessage());
+            logger.severe("Unable to read SSH auth file: "+e.getClass().getName()+": "+e.getMessage());
         }
 
         // Use the auth directory for the keyfile if no path was given
@@ -402,28 +404,6 @@ public class SshClient extends Client
         public Builder port(int port)
         {
             client.setPort(port);
-            return this;
-        }
-
-        /**
-         * Sets the username for the client.
-         * @param username The username for the client
-         * @return This object
-         */
-        public Builder username(String username)
-        {
-            client.setUsername(username);
-            return this;
-        }
-
-        /**
-         * Sets the password for the client.
-         * @param password The password for the client
-         * @return This object
-         */
-        public Builder password(String password)
-        {
-            client.setPassword(password);
             return this;
         }
 

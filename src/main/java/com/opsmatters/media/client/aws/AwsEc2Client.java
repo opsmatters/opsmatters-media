@@ -45,10 +45,10 @@ import software.amazon.awssdk.services.ec2.model.Reservation;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import com.opsmatters.media.client.Client;
 import com.opsmatters.media.model.platform.EnvironmentId;
-import com.opsmatters.media.model.platform.EnvironmentStatus;
 import com.opsmatters.media.model.platform.aws.Ec2Config;
+import com.opsmatters.media.model.platform.aws.InstanceStatus;
 
-import static com.opsmatters.media.model.platform.EnvironmentStatus.*;
+import static com.opsmatters.media.model.platform.aws.InstanceStatus.*;
 
 /**
  * Class that represents a connection to AWS EC2 servers.
@@ -255,9 +255,9 @@ public class AwsEc2Client extends Client
     /**
      * Returns the status of the given EC2 instance.
      */
-    public EnvironmentStatus getStatus(String instanceId)
+    public InstanceStatus getStatus(String instanceId)
     {
-        EnvironmentStatus ret = UNKNOWN;
+        InstanceStatus ret = UNKNOWN;
         Instance instance = describeInstance(instanceId);
         if(instance != null)
         {

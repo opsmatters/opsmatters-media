@@ -104,17 +104,16 @@ public class BlueskyClient extends ApiClient implements SocialClient
         String directory = System.getProperty("app.auth", ".");
 
         File file = new File(directory, channel.getCode().toLowerCase()+SUFFIX);
-        JSONObject obj = null;
         try
         {
             // Read file from auth directory
-            obj = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
+            JSONObject obj = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
             setIdentifier(obj.optString("identifier"));
             setPassword(obj.optString("password"));
         }
         catch(IOException e)
         {
-            logger.severe("Unable to read default bluesky auth file: "
+            logger.severe("Unable to read bluesky auth file: "
                 +e.getClass().getName()+": "+e.getMessage());
         }
 

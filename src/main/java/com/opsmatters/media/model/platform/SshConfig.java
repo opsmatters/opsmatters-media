@@ -30,7 +30,6 @@ public class SshConfig implements ConfigElement
     private String id = "";
     private String hostname = "";
     private int port = -1;
-    private String username = "";
 
     /**
      * Constructor that takes an id.
@@ -58,7 +57,6 @@ public class SshConfig implements ConfigElement
             setId(obj.getId());
             setHostname(obj.getHostname());
             setPort(obj.getPort());
-            setUsername(obj.getUsername());
         }
     }
 
@@ -119,22 +117,6 @@ public class SshConfig implements ConfigElement
     }
 
     /**
-     * Returns the username for the SSH configuration.
-     */
-    public String getUsername()
-    {
-        return username;
-    }
-
-    /**
-     * Sets the username for the SSH configuration.
-     */
-    public void setUsername(String username)
-    {
-        this.username = username;
-    }
-
-    /**
      * Returns a builder for the configuration.
      * @param id The id of the configuration
      * @return The builder instance.
@@ -152,7 +134,6 @@ public class SshConfig implements ConfigElement
         // The config attribute names
         private static final String HOSTNAME = "hostname";
         private static final String PORT = "port";
-        private static final String USERNAME = "username";
 
         private SshConfig ret = null;
 
@@ -177,8 +158,6 @@ public class SshConfig implements ConfigElement
                 ret.setHostname((String)map.get(HOSTNAME));
             if(map.containsKey(PORT))
                 ret.setPort((Integer)map.get(PORT));
-            if(map.containsKey(USERNAME))
-                ret.setUsername((String)map.get(USERNAME));
 
             return this;
         }

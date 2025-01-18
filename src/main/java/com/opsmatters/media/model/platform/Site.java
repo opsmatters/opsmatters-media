@@ -39,7 +39,7 @@ public class Site implements ConfigElement
     private boolean enabled = false;
     private S3Config s3;
     private NewsletterConfig newsletter;
-    private Map<EnvironmentId,Environment> environments = new LinkedHashMap<EnvironmentId,Environment>();
+    private Map<EnvironmentId,SiteEnvironment> environments = new LinkedHashMap<EnvironmentId,SiteEnvironment>();
 
     /**
      * Constructor that takes an id.
@@ -72,8 +72,8 @@ public class Site implements ConfigElement
             setEnabled(obj.isEnabled());
             setNewsletterConfig(new NewsletterConfig(obj.getNewsletterConfig()));
             setS3Config(new S3Config(obj.getS3Config()));
-            for(Environment environment : obj.getEnvironments().values())
-                addEnvironment(new Environment(environment));
+            for(SiteEnvironment environment : obj.getEnvironments().values())
+                addEnvironment(new SiteEnvironment(environment));
         }
     }
 
@@ -216,7 +216,7 @@ public class Site implements ConfigElement
     /**
      * Adds a environment to the environments for the site.
      */
-    public Map<EnvironmentId,Environment> getEnvironments()
+    public Map<EnvironmentId,SiteEnvironment> getEnvironments()
     {
         return this.environments;
     }
@@ -224,7 +224,7 @@ public class Site implements ConfigElement
     /**
      * Adds an environment to the environments for the site.
      */
-    public void addEnvironment(Environment environment)
+    public void addEnvironment(SiteEnvironment environment)
     {
         this.environments.put(environment.getId(), environment);
     }
@@ -240,7 +240,7 @@ public class Site implements ConfigElement
     /**
      * Returns the environment with the given name.
      */
-    public Environment getEnvironment(EnvironmentId id)
+    public SiteEnvironment getEnvironment(EnvironmentId id)
     {
         return environments.get(id);
     }
@@ -318,7 +318,7 @@ public class Site implements ConfigElement
                 {
                     for(Map.Entry<String,Object> entry : config.entrySet())
                     {
-                        ret.addEnvironment(Environment.builder(entry.getKey(), ret)
+                        ret.addEnvironment(SiteEnvironment.builder(entry.getKey(), ret)
                             .parse((Map<String,Object>)entry.getValue()).build());
                     }
                 }

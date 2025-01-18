@@ -45,10 +45,10 @@ import software.amazon.awssdk.services.rds.model.DBCluster;
 import software.amazon.awssdk.services.rds.model.DBInstance;
 import software.amazon.awssdk.services.rds.model.Filter;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.model.platform.EnvironmentStatus;
 import com.opsmatters.media.model.platform.aws.RdsConfig;
+import com.opsmatters.media.model.platform.aws.DatabaseStatus;
 
-import static com.opsmatters.media.model.platform.EnvironmentStatus.*;
+import static com.opsmatters.media.model.platform.aws.DatabaseStatus.*;
 
 /**
  * Class that represents a connection to AWS RDS databases.
@@ -260,9 +260,9 @@ public class AwsRdsClient extends Client
     /**
      * Returns the status of the given RDS cluster.
      */
-    public EnvironmentStatus getClusterStatus(String clusterId)
+    public DatabaseStatus getClusterStatus(String clusterId)
     {
-        EnvironmentStatus ret = UNKNOWN;
+        DatabaseStatus ret = UNKNOWN;
         DBCluster cluster = describeCluster(clusterId);
         if(cluster != null)
         {
@@ -299,9 +299,9 @@ public class AwsRdsClient extends Client
     /**
      * Returns the status of the first instance in the given RDS cluster.
      */
-    public EnvironmentStatus getInstanceStatus(String clusterId)
+    public DatabaseStatus getInstanceStatus(String clusterId)
     {
-        EnvironmentStatus ret = UNKNOWN;
+        DatabaseStatus ret = UNKNOWN;
         DBInstance instance = describeInstance(clusterId);
         if(instance != null)
         {
@@ -344,10 +344,10 @@ public class AwsRdsClient extends Client
     /**
      * Returns the status of the given RDS cluster.
      */
-    public EnvironmentStatus getStatus(String clusterId)
+    public DatabaseStatus getStatus(String clusterId)
     {
-        EnvironmentStatus ret = getClusterStatus(clusterId);
-        if(ret == EnvironmentStatus.RUNNING)
+        DatabaseStatus ret = getClusterStatus(clusterId);
+        if(ret == RUNNING)
         {
             ret = getInstanceStatus(clusterId);
         }
