@@ -813,21 +813,8 @@ public class StringUtils
             ret = ret.replaceAll("\r|\n", ""); // Remove LFs
             ret = ret.replaceAll("\\\\", ""); // Replace backslashes
 
-/* GERALD
-            // Remove chrome session info
-            int pos = ret.indexOf(SESSION_INFO);
-            if(pos != -1)
-                ret = ret.substring(0, pos-1);
-
-//GERALD
-            // Remove selenium build info
-            pos = ret.indexOf(BUILD_INFO);
-            if(pos != -1)
-                ret = ret.substring(0, pos-1);
-*/
-//GERALD
-ret = getMessageWithout(ret, SESSION_INFO);
-ret = getMessageWithout(ret, BUILD_INFO);
+            ret = getMessageWithout(ret, SESSION_INFO);
+            ret = getMessageWithout(ret, BUILD_INFO);
 
             if(ret.length() > MAX_ERROR_MESSAGE)
                 ret = ret.substring(0, MAX_ERROR_MESSAGE-1);
@@ -836,7 +823,6 @@ ret = getMessageWithout(ret, BUILD_INFO);
         return ret;
     }
 
-//GERALD
     /**
      * Remove the given text from the end of the feedback message.
      */

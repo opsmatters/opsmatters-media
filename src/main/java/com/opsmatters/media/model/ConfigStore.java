@@ -27,6 +27,11 @@ import com.opsmatters.media.file.YamlFileReader;
 public abstract class ConfigStore implements ConfigElement
 {
     /**
+     * Returns the type of the store.
+     */
+    public abstract ConfigType getType();
+
+    /**
      * Returns the name of the store file.
      */
     public abstract String getFilename();

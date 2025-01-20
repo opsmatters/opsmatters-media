@@ -23,8 +23,10 @@ package com.opsmatters.media.model;
  */
 public enum ConfigType
 {
-    CHART("Chart", "chart"),
-    PLATFORM("Platform", "platform");
+    BOOTSTRAP("Bootstrap", "bootstrap"),
+    PLATFORM("Platform", "platform"),
+    PLATFORM_SITES("Platform Sites", "platform-sites"),
+    CHARTS("Charts", "charts");
 
     private String value;
     private String tag;
@@ -65,6 +67,15 @@ public enum ConfigType
     public String tag()
     {
         return tag;
+    }
+
+    /**
+     * Returns the config filename.
+     * @return The config filename.
+     */
+    public String filename()
+    {
+        return tag + ".yml";
     }
 
     /**

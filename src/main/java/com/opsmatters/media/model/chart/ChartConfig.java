@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import com.opsmatters.media.model.ConfigType;
 import com.opsmatters.media.model.ConfigStore;
 import com.opsmatters.media.model.ConfigElement;
 import com.opsmatters.media.model.ConfigParser;
@@ -34,7 +35,8 @@ public class ChartConfig extends ConfigStore
 {
     private static final Logger logger = Logger.getLogger(ChartConfig.class.getName());
 
-    public static final String FILENAME = "charts.yml";
+    public static final ConfigType TYPE = ConfigType.CHARTS;
+    public static final String FILENAME = TYPE.filename();
 
     private List<Chart> charts = new ArrayList<Chart>();
     private List<Dashboard> dashboards = new ArrayList<Dashboard>();
@@ -66,6 +68,15 @@ public class ChartConfig extends ConfigStore
             for(Dashboard dashboard : obj.getDashboards())
                 addDashboard(new Dashboard(dashboard));
         }
+    }
+
+    /**
+     * Returns the type of the config.
+     */
+    @Override
+    public ConfigType getType()
+    {
+        return TYPE;
     }
 
     /**

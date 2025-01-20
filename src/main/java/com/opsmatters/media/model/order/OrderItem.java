@@ -269,7 +269,7 @@ public class OrderItem extends BaseEntity
             {
                 OrderItemProperties properties = new OrderItemProperties();
                 properties.setDate(SessionId.now());
-                properties.setSite(Sites.get(getSiteId()));
+                properties.setDomain(Sites.get(getSiteId()));
                 String template = Products.getText(product, INVOICE_ITEM);
                 if(template != null)
                     setName(new StringSubstitutor(properties).replace(template));

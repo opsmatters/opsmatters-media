@@ -16,30 +16,39 @@
 
 package com.opsmatters.media.model.platform;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.LinkedHashMap;
-import com.opsmatters.media.model.ConfigElement;
-import com.opsmatters.media.model.ConfigParser;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
 import com.opsmatters.media.model.platform.aws.S3Config;
+import com.opsmatters.media.model.OwnedEntity;
 
 /**
  * Represents a site containing environments.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Site implements ConfigElement
+public class Site extends OwnedEntity
 {
-    private String id = "";
     private String name = "";
-    private String title = "";
     private String icon = "";
+    private String domain = "";
     private String shortDomain = "";
+    private int newsletterDay = -1;
+    private int newsletterHour = -1;
     private boolean enabled = false;
+
     private S3Config s3;
-    private NewsletterConfig newsletter;
     private Map<EnvironmentId,SiteEnvironment> environments = new LinkedHashMap<EnvironmentId,SiteEnvironment>();
+
+    /**
+     * Default constructor.
+     */
+    public Site()
+    {
+    }
 
     /**
      * Constructor that takes an id.
@@ -47,6 +56,7 @@ public class Site implements ConfigElement
     public Site(String id)
     {
         setId(id);
+        setCreatedDate(Instant.now());
     }
 
     /**
@@ -64,13 +74,14 @@ public class Site implements ConfigElement
     {
         if(obj != null)
         {
-            setId(obj.getId());
+            super.copyAttributes(obj);
             setName(obj.getName());
-            setTitle(obj.getTitle());
             setIcon(obj.getIcon());
+            setDomain(obj.getDomain());
             setShortDomain(obj.getShortDomain());
+            setNewsletterDay(obj.getNewsletterDay());
+            setNewsletterHour(obj.getNewsletterHour());
             setEnabled(obj.isEnabled());
-            setNewsletterConfig(new NewsletterConfig(obj.getNewsletterConfig()));
             setS3Config(new S3Config(obj.getS3Config()));
             for(SiteEnvironment environment : obj.getEnvironments().values())
                 addEnvironment(new SiteEnvironment(environment));
@@ -82,23 +93,7 @@ public class Site implements ConfigElement
      */
     public String toString()
     {
-        return getTitle();
-    }
-
-    /**
-     * Returns the id of the site.
-     */
-    public String getId()
-    {
-        return id;
-    }
-
-    /**
-     * Sets the id for the site.
-     */
-    public void setId(String id)
-    {
-        this.id = id;
+        return getName();
     }
 
     /**
@@ -118,22 +113,6 @@ public class Site implements ConfigElement
     }
 
     /**
-     * Returns the title of the site.
-     */
-    public String getTitle()
-    {
-        return title;
-    }
-
-    /**
-     * Sets the title for the site.
-     */
-    public void setTitle(String title)
-    {
-        this.title = title;
-    }
-
-    /**
      * Returns the site icon.
      */
     public String getIcon()
@@ -147,6 +126,22 @@ public class Site implements ConfigElement
     public void setIcon(String icon)
     {
         this.icon = icon;
+    }
+
+    /**
+     * Returns the domain of the site.
+     */
+    public String getDomain()
+    {
+        return domain;
+    }
+
+    /**
+     * Sets the domain for the site.
+     */
+    public void setDomain(String domain)
+    {
+        this.domain = domain;
     }
 
     /**
@@ -166,11 +161,65 @@ public class Site implements ConfigElement
     }
 
     /**
+     * Returns the newsletter day for the site.
+     */
+    public int getNewsletterDay()
+    {
+        return newsletterDay;
+    }
+
+    /**
+     * Sets the newsletter day for the site.
+     */
+    public void setNewsletterDay(int newsletterDay)
+    {
+        this.newsletterDay = newsletterDay;
+    }
+
+    /**
+     * Returns the newsletter hour for the site.
+     */
+    public int getNewsletterHour()
+    {
+        return newsletterHour;
+    }
+
+    /**
+     * Sets the newsletter hour for the site.
+     */
+    public void setNewsletterHour(int newsletterHour)
+    {
+        this.newsletterHour = newsletterHour;
+    }
+
+    /**
+     * Returns the next from date for the newsletter settings.
+     */
+    public LocalDateTime getNewsletterFromDate()
+    {
+        LocalDateTime ret = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC)
+            .withHour(newsletterHour).withMinute(0).withSecond(0);
+        LocalDateTime next = ret.with(ChronoField.DAY_OF_WEEK, newsletterDay)
+            .withHour(newsletterHour).withMinute(0).withSecond(0);
+        if(next.equals(ret) || next.isAfter(ret))
+            ret = ret.minusDays(7); // If the from date is in the future, go back a week
+        return ret.with(ChronoField.DAY_OF_WEEK, newsletterDay);
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the site is enabled.
      */
     public boolean isEnabled()
     {
         return enabled;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this site is enabled.
+     */
+    public Boolean getEnabledObject()
+    {
+        return Boolean.valueOf(isEnabled());
     }
 
     /**
@@ -182,19 +231,20 @@ public class Site implements ConfigElement
     }
 
     /**
-     * Returns the newsletter configuration for the site.
+     * Set to <CODE>true</CODE> if this site is enabled.
      */
-    public NewsletterConfig getNewsletterConfig()
+    public void setEnabledObject(Boolean enabled)
     {
-        return newsletter;
+        setEnabled(enabled != null && enabled.booleanValue());
     }
 
     /**
-     * Sets the newsletter configuration for the site.
+     * Sets the configuration for the site.
      */
-    public void setNewsletterConfig(NewsletterConfig newsletter)
+    public void setConfig(SiteConfig config)
     {
-        this.newsletter = newsletter;
+        setS3Config(config.getS3Config());
+        setEnvironments(config.getEnvironments());
     }
 
     /**
@@ -246,94 +296,11 @@ public class Site implements ConfigElement
     }
 
     /**
-     * Returns a builder for the site.
-     * @param name The name of the site
-     * @return The builder instance.
+     * Sets the environments for the site.
      */
-    public static Builder builder(String id)
+    public void setEnvironments(Map<EnvironmentId,SiteEnvironment> environments)
     {
-        return new Builder(id);
-    }
-
-    /**
-     * Builder to make site construction easier.
-     */
-    public static class Builder implements ConfigParser<Site>
-    {
-        // The config attribute names
-        private static final String ID = "id";
-        private static final String NAME = "name";
-        private static final String TITLE = "title";
-        private static final String ICON = "icon";
-        private static final String SHORT_DOMAIN = "short-domain";
-        private static final String ENABLED = "enabled";
-        private static final String S3 = "s3";
-        private static final String NEWSLETTER = "newsletter";
-        private static final String ENVIRONMENTS = "environments";
-
-        private Site ret = null;
-
-        /**
-         * Constructor that takes an id.
-         * @param id The id for the site
-         */
-        public Builder(String id)
-        {
-            ret = new Site(id);
-        }
-
-        /**
-         * Parse the configuration using the given attribute map.
-         * @param map The map of attributes
-         * @return This object
-         */
-        @Override
-        public Builder parse(Map<String, Object> map)
-        {
-            if(map.containsKey(NAME))
-                ret.setName((String)map.get(NAME));
-            if(map.containsKey(TITLE))
-                ret.setTitle((String)map.get(TITLE));
-            if(map.containsKey(ICON))
-                ret.setIcon((String)map.get(ICON));
-            if(map.containsKey(SHORT_DOMAIN))
-                ret.setShortDomain((String)map.get(SHORT_DOMAIN));
-            if(map.containsKey(ENABLED))
-                ret.setEnabled((Boolean)map.get(ENABLED));
-
-            String id = ret.getId();
-
-            if(map.containsKey(NEWSLETTER))
-                ret.setNewsletterConfig(NewsletterConfig.builder(id)
-                    .parse((Map<String,Object>)map.get(NEWSLETTER)).build());
-
-            if(map.containsKey(S3))
-                ret.setS3Config(S3Config.builder(id)
-                    .parse((Map<String,Object>)map.get(S3)).build());
-
-            if(map.containsKey(ENVIRONMENTS))
-            {
-                List<Map<String,Object>> environments = (List<Map<String,Object>>)map.get(ENVIRONMENTS);
-                for(Map<String,Object> config : environments)
-                {
-                    for(Map.Entry<String,Object> entry : config.entrySet())
-                    {
-                        ret.addEnvironment(SiteEnvironment.builder(entry.getKey(), ret)
-                            .parse((Map<String,Object>)entry.getValue()).build());
-                    }
-                }
-            }
-
-            return this;
-        }
-
-        /**
-         * Returns the configured site instance
-         * @return The site instance
-         */
-        public Site build()
-        {
-            return ret;
-        }
+        this.environments.clear();
+        this.environments.putAll(environments);
     }
 }

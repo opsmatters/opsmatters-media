@@ -31,9 +31,7 @@ import org.apache.commons.text.StringSubstitutor;
 import com.google.common.io.Files;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
-import com.opsmatters.media.model.platform.PlatformConfig;
 import com.opsmatters.media.model.platform.Environment;
-import com.opsmatters.media.model.platform.aws.S3Config;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.client.SshClient;
 import com.opsmatters.media.client.aws.AwsS3Client;
@@ -68,6 +66,7 @@ public class ContentHandler
     private String workingDir = "";
     private String dateFormat = Formats.CONTENT_DATE_FORMAT;
     private File file;
+    private String region;
 
     /**
      * Default constructor.
@@ -164,6 +163,22 @@ public class ContentHandler
     public void setOutput(Map<String,String> output)
     {
         this.output = output;
+    }
+
+    /**
+     * Returns the AWS region to use for content with S3.
+     */
+    public String getRegion()
+    {
+        return region;
+    }
+
+    /**
+     * Sets the AWS region to use for content with S3.
+     */
+    public void setRegion(String region)
+    {
+        this.region = region;
     }
 
     /**
@@ -397,10 +412,11 @@ public class ContentHandler
         InputStream is = null;
         boolean ret = false;
 
-        S3Config s3Config = PlatformConfig.getS3Config();
+        if(region == null || region.length() == 0)
+            throw new IllegalArgumentException("region missing");
 
         if(bucket == null || bucket.length() == 0)
-            throw new IllegalArgumentException("bucket empty");
+            throw new IllegalArgumentException("bucket missing");
 
         try
         {
@@ -408,7 +424,7 @@ public class ContentHandler
             client = s3client;
             if(client == null)
             {
-                client = AwsS3Client.newClient(s3Config);
+                client = AwsS3Client.newClient(region);
                 s3client = client;
             }
 
@@ -744,14 +760,15 @@ public class ContentHandler
      */
     public boolean copyFileToBucket(String filename, String bucket) throws IOException
     {
+        if(region == null || region.length() == 0)
+            throw new IllegalArgumentException("target region missing");
+
         if(bucket == null || bucket.length() == 0)
-            throw new IllegalArgumentException("target bucket null");
+            throw new IllegalArgumentException("target bucket missing");
 
         AwsS3Client client = null;
         InputStream is = null;
         boolean ret = false;
-
-        S3Config s3Config = PlatformConfig.getS3Config();
 
         try
         {
@@ -759,7 +776,7 @@ public class ContentHandler
             client = s3client;
             if(client == null)
             {
-                client = AwsS3Client.newClient(s3Config);
+                client = AwsS3Client.newClient(region);
                 s3client = client;
             }
 
@@ -863,6 +880,17 @@ public class ContentHandler
         public Builder withOutput(Map<String,String> output)
         {
             handler.setOutput(output);
+            return this;
+        }
+
+        /**
+         * Sets the AWS region for the handler.
+         * @param region The AWS  for the handler
+         * @return This object
+         */
+        public Builder withRegion(String region)
+        {
+            handler.setRegion(region);
             return this;
         }
 

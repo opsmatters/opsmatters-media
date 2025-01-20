@@ -49,7 +49,6 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Object;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.model.platform.aws.S3Config;
 
 /**
  * Class that represents a connection to AWS S3 buckets.
@@ -69,12 +68,12 @@ public class AwsS3Client extends Client
     private String bucket = "";
 
     /**
-     * Returns a new AWS S3 client using the S3 configuration.
+     * Returns a new AWS S3 client using the region.
      */
-    static public AwsS3Client newClient(S3Config config) throws IOException
+    static public AwsS3Client newClient(String region) throws IOException
     {
         AwsS3Client ret = AwsS3Client.builder()
-            .region(config.getRegion())
+            .region(region)
             .build();
 
         // Configure and create the S3 client

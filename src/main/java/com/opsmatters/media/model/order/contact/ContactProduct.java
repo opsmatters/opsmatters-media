@@ -88,7 +88,7 @@ public class ContactProduct extends BaseEntity
         Site site = Sites.get(getSiteId());
         return String.format("%s / %s",
             product != null ? product.getName() : "-",
-            site != null ? site.getTitle() : "-");
+            site != null ? site.getName() : "-");
     }
 
     /**

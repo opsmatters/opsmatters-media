@@ -24,35 +24,33 @@ import java.util.logging.Logger;
 import com.opsmatters.media.model.ConfigType;
 import com.opsmatters.media.model.ConfigStore;
 import com.opsmatters.media.model.ConfigParser;
-import com.opsmatters.media.model.platform.aws.SesConfig;
 
 /**
- * Class that represents the configuration for the core curator platform.
+ * Class that represents the configuration for curator platform sites.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PlatformConfig extends ConfigStore
+public class PlatformSiteConfig extends ConfigStore
 {
-    private static final Logger logger = Logger.getLogger(PlatformConfig.class.getName());
+    private static final Logger logger = Logger.getLogger(PlatformSiteConfig.class.getName());
 
-    public static final ConfigType TYPE = ConfigType.PLATFORM;
+    public static final ConfigType TYPE = ConfigType.PLATFORM_SITES;
     public static final String FILENAME = TYPE.filename();
 
-    private SesConfig ses;
-    private List<Environment> environments = new ArrayList<Environment>();
+    private List<SiteConfig> sites = new ArrayList<SiteConfig>();
 
 
     /**
      * Default constructor.
      */
-    protected PlatformConfig()
+    protected PlatformSiteConfig()
     {
     }
 
     /**
      * Copy constructor.
      */
-    public PlatformConfig(PlatformConfig obj)
+    public PlatformSiteConfig(PlatformSiteConfig obj)
     {
         copyAttributes(obj);
     }
@@ -60,13 +58,12 @@ public class PlatformConfig extends ConfigStore
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(PlatformConfig obj)
+    public void copyAttributes(PlatformSiteConfig obj)
     {
         if(obj != null)
         {
-            setSesConfig(new SesConfig(obj.getSesConfig()));
-            for(Environment environment : obj.getEnvironments())
-                addEnvironment(new Environment(environment));
+            for(SiteConfig site : obj.getSiteConfigs())
+                addSiteConfig(new SiteConfig(site));
         }
     }
 
@@ -89,47 +86,47 @@ public class PlatformConfig extends ConfigStore
     }
 
     /**
-     * Returns the SES configuration.
+     * Returns the site configs for this configuration.
      */
-    public SesConfig getSesConfig()
+    public List<SiteConfig> getSiteConfigs()
     {
-        return ses;
+        return sites;
     }
 
     /**
-     * Sets the SES configuration.
+     * Sets the site configs for this configuration.
      */
-    public void setSesConfig(SesConfig ses)
+    public void setSiteConfigs(List<SiteConfig> sites)
     {
-        this.ses = ses;
+        this.sites = sites;
     }
 
     /**
-     * Returns the list of environments.
+     * Adds a site config for this configuration.
      */
-    public List<Environment> getEnvironments()
+    public void addSiteConfig(SiteConfig site)
     {
-        return environments;
+        this.sites.add(site);
     }
 
     /**
-     * Adds an environment to the list of environments.
+     * Returns the number of site configs.
      */
-    public void addEnvironment(Environment environment)
+    public int numSiteConfigs()
     {
-        this.environments.add(environment);
+        return sites.size();
     }
 
     /**
-     * Returns the number of environments.
+     * Returns the site config at the given index.
      */
-    public int numEnvironments()
+    public SiteConfig getSiteConfig(int i)
     {
-        return environments.size();
+        return sites.get(i);
     }
 
     /**
-     * Returns a builder for the platform config.
+     * Returns a builder for the platform site config.
      * @return The builder instance.
      */
     public static Builder builder()
@@ -138,17 +135,16 @@ public class PlatformConfig extends ConfigStore
     }
 
     /**
-     * Builder to make platform config construction easier.
+     * Builder to make site config construction easier.
      */
     public static class Builder
-        extends ConfigStore.Builder<PlatformConfig,Builder>
-        implements ConfigParser<PlatformConfig>
+        extends ConfigStore.Builder<PlatformSiteConfig,Builder>
+        implements ConfigParser<PlatformSiteConfig>
     {
         // The config attribute names
-        private static final String SES = "ses";
-        private static final String ENVIRONMENTS = "environments";
+        private static final String SITES = "sites";
 
-        private PlatformConfig ret = new PlatformConfig();
+        private PlatformSiteConfig ret = new PlatformSiteConfig();
 
         /**
          * Default constructor.
@@ -166,20 +162,14 @@ public class PlatformConfig extends ConfigStore
         @Override
         public Builder parse(Map<String, Object> map)
         {
-            String id = TYPE.tag();
-
-            if(map.containsKey(SES))
-                ret.setSesConfig(SesConfig.builder(id)
-                    .parse((Map<String,Object>)map.get(SES)).build());
-
-            if(map.containsKey(ENVIRONMENTS))
+            if(map.containsKey(SITES))
             {
-                List<Map<String,Object>> environments = (List<Map<String,Object>>)map.get(ENVIRONMENTS);
-                for(Map<String,Object> config : environments)
+                List<Map<String,Object>> sites = (List<Map<String,Object>>)map.get(SITES);
+                for(Map<String,Object> config : sites)
                 {
                     for(Map.Entry<String,Object> entry : config.entrySet())
                     {
-                        ret.addEnvironment(Environment.builder(entry.getKey())
+                        ret.addSiteConfig(SiteConfig.builder(entry.getKey())
                             .parse((Map<String,Object>)entry.getValue()).build());
                     }
                 }
@@ -199,11 +189,11 @@ public class PlatformConfig extends ConfigStore
         }
 
         /**
-         * Returns the configured platform config instance
-         * @return The platform config instance
+         * Returns the configured site config instance
+         * @return The site config instance
          */
         @Override
-        public PlatformConfig build() throws IOException
+        public PlatformSiteConfig build() throws IOException
         {
             read(this);
             return ret;

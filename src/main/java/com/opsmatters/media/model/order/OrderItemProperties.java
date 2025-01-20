@@ -87,10 +87,10 @@ public class OrderItemProperties extends LinkedHashMap<String,String>
     }
 
     /**
-     * Sets the value of the SITE property using the given site.
+     * Sets the value of the DOMAIN property using the given site.
      */
-    public void setSite(Site site)
+    public void setDomain(Site site)
     {
-        put(SITE, site.getTitle());
+        put(DOMAIN, site.getDomain());
     }
 }

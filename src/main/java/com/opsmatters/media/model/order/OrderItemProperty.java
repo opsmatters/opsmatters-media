@@ -24,7 +24,7 @@ package com.opsmatters.media.model.order;
 public enum OrderItemProperty
 {
     DATE("date"),
-    SITE("site");
+    DOMAIN("domain");
 
     private String value;
 

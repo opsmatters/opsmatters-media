@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.platform.SiteConfig;
 
 /**
  * Class representing the set of sites.
@@ -61,11 +62,28 @@ public class Sites
 
         clear();
         for(Site site : sites)
+        {
             add(site);
+        }
 
         logger.info("Loaded "+size()+" sites");
 
         initialised = true;
+    }
+
+    /**
+     * Loads the set of site configs.
+     */
+    public static void loadConfigs(List<SiteConfig> configs)
+    {
+        int count = 0;
+        for(SiteConfig config : configs)
+        {
+            add(config);
+            ++count;
+        }
+
+        logger.info("Loaded "+count+" site configs");
     }
 
     /**
@@ -81,11 +99,24 @@ public class Sites
     /**
      * Adds the given site.
      */
-    private static void add(Site site)
+    public static void add(Site site)
     {
+        Site existing = siteMap.get(site.getId());
         siteMap.put(site.getId(), site);
+        if(existing != null)
+            siteList.remove(existing);
         siteList.add(site);
         idList.add(site.getId());
+    }
+
+    /**
+     * Adds the given site config.
+     */
+    public static void add(SiteConfig config)
+    {
+        Site site = siteMap.get(config.getId());
+        if(site != null)
+            site.setConfig(config);
     }
 
     /**
@@ -130,6 +161,20 @@ public class Sites
     public static List<String> listIds()
     {
         return idList;
+    }
+
+    /**
+     * Removes the site with the given id.
+     */
+    public static void remove(Site site)
+    {
+        Site existing = siteMap.get(site.getId());
+        if(existing != null)
+        {
+            siteMap.remove(existing.getId());
+            siteList.remove(existing);
+            idList.remove(existing.getId());
+        }
     }
 
     /**

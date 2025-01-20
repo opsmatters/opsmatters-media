@@ -16,12 +16,7 @@
 
 package com.opsmatters.media.model.platform;
 
-//GERALD: check
 import java.util.Map;
-//import com.opsmatters.media.model.ConfigElement;
-//import com.opsmatters.media.model.ConfigParser;
-//import com.opsmatters.media.model.platform.aws.Ec2Config;
-//import com.opsmatters.media.model.platform.aws.RdsConfig;
 
 /**
  * Represents the configuration of a site environment.
@@ -30,15 +25,7 @@ import java.util.Map;
  */
 public class SiteEnvironment extends Environment
 {
-//GERALD
-//    private EnvironmentId id;
     private Site site;
-//    private String url = "";
-//    private String base = "";
-//    private DatabaseConfig database;
-//    private Ec2Config ec2;
-//    private RdsConfig rds;
-//    private SshConfig ssh;
     private boolean stopInstanceWhenIdle = false;
 
     /**
@@ -46,8 +33,6 @@ public class SiteEnvironment extends Environment
      */
     protected SiteEnvironment(EnvironmentId id, Site site)
     {
-//GERALD
-//        setId(id);
         super(id);
         setSite(site);
     }
@@ -67,45 +52,17 @@ public class SiteEnvironment extends Environment
     {
         if(obj != null)
         {
-//GERALD
-super.copyAttributes(obj);
-//            setId(obj.getId());
+            super.copyAttributes(obj);
             setSite(obj.getSite());
-//            setUrl(obj.getUrl());
-//            setBase(obj.getBase());
-//            setDatabaseConfig(new DatabaseConfig(obj.getDatabaseConfig()));
-//            setEc2Config(new Ec2Config(obj.getEc2Config()));
-//            setRdsConfig(new RdsConfig(obj.getRdsConfig()));
-//            setSshConfig(new SshConfig(obj.getSshConfig()));
         }
     }
 
-    /**
-     * Returns the name of the environment.
-     */
-/* GERALD
-    public String toString()
-    {
-        return getName();
-    }
-*/
-    /**
-     * Returns the id of the environment.
-     */
-/* GERALD
-    public String getName()
-    {
-        return getId().name();
-    }
-*/
     /**
      * Returns the display name of the environment.
      */
     public String getDisplayName()
     {
-//GERALD
-//        return site != null ? String.format("%s %s", site.getTitle(), id.value()) : id.value();
-        return String.format("%s %s", site.getTitle(), getId().value());
+        return String.format("%s %s", site.getName(), getId().value());
     }
 
     /**
@@ -129,11 +86,7 @@ super.copyAttributes(obj);
      */
     public String getKey()
     {
-//GERALD
-//        if(site != null)
-            return String.format("%s-%s",
-                getSite().getId().toLowerCase(), getId().code());
-//        return getId().code();
+        return String.format("%s-%s", getSite().getId().toLowerCase(), getId().code());
     }
 
     /**
@@ -166,20 +119,8 @@ super.copyAttributes(obj);
     /**
      * Builder to make environment construction easier.
      */
-//GERALD
-//    public static class Builder implements ConfigParser<SiteEnvironment>
-//    public static class Builder extends Environment.Builder<SiteEnvironment, Builder>
     public static class Builder extends Environment.Builder
     {
-        // The config attribute names
-/* GERALD
-        private static final String URL = "url";
-        private static final String BASE = "base";
-        private static final String DATABASE = "database";
-        private static final String EC2 = "ec2";
-        private static final String RDS = "rds";
-        private static final String SSH = "ssh";
-*/
         private SiteEnvironment ret = null;
 
         /**
@@ -190,7 +131,6 @@ super.copyAttributes(obj);
         public Builder(EnvironmentId id, Site site)
         {
             ret = new SiteEnvironment(id, site);
-//GERALD
             super.set(ret);
         }
 
@@ -203,21 +143,9 @@ super.copyAttributes(obj);
         public Builder parse(Map<String, Object> map)
         {
             super.parse(map);
-
             return this;
         }
 
-        /**
-         * Returns this object.
-         * @return This object
-         */
-/* GERALD
-        @Override
-        protected Builder self()
-        {
-            return this;
-        }
-*/
         /**
          * Returns the configured environment instance
          * @return The environment instance
