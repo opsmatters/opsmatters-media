@@ -219,7 +219,7 @@ public class Contacts implements java.io.Serializable
         List<Contact> ret = new ArrayList<Contact>();
         for(Contact contact : nameMap.values())
         {
-            if(contact.isActive())
+            if(contact.isActive() || contact.isSuspended())
                 ret.add(contact);
         }
 
@@ -261,9 +261,43 @@ public class Contacts implements java.io.Serializable
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given email matches the given contact or its list of persons.
+     */
+    public static boolean matchesEmail(Contact contact, String email)
+    {
+        boolean ret = false;
+
+        email = email.toLowerCase();
+
+        if((contact.hasContactEmail() && contact.getContactEmail().toLowerCase().indexOf(email) != -1)
+            || (contact.hasBillingEmail() && contact.getBillingEmail().toLowerCase().indexOf(email) != -1))
+        {
+            ret = true;
+        }
+        else // Next, check the persons for a match
+        {
+            Map<String,ContactPerson> persons = personContactMap.get(contact.getId());
+            if(persons != null)
+            {
+                for(ContactPerson person : persons.values())
+                {
+                    if(person.isEnabled()
+                        && person.getEmail().toLowerCase().indexOf(email) != -1)
+                    {
+                        ret = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the given name matches the given contact or its list of persons.
      */
-    public static boolean matches(Contact contact, String name)
+    public static boolean matchesName(Contact contact, String name)
     {
         boolean ret = false;
 

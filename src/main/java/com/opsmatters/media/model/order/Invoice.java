@@ -117,6 +117,14 @@ public class Invoice
     }
 
     /**
+     * Returns <CODE>true</CODE> if the invoice email has been set.
+     */
+    public boolean hasEmail()
+    {
+        return getEmail() != null && getEmail().length() > 0;
+    }
+
+    /**
      * Returns the invoice URL.
      */
     public String getUrl()

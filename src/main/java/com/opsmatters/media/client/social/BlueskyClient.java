@@ -53,12 +53,19 @@ public class BlueskyClient extends ApiClient implements SocialClient
     public static final String SUFFIX = ".social";
 
     private static final String BASE_URL = "https://bsky.social";
+    private static final String EXPIRED_TOKEN = "ExpiredToken";
+    private static final String RATE_LIMIT_EXCEEDED = "RateLimitExceeded";
+    private static final String UPSTREAM_FAILURE = "UpstreamFailure";
 
     private static final int READ_TIMEOUT = 15000;
+    private static final int REFRESH_RETRIES = 3;
 
     private String identifier = "";
     private String password = "";
     private SocialChannel channel;
+
+    private static String accessToken;
+    private static String refreshToken;
 
     /**
      * Private constructor.
@@ -110,6 +117,8 @@ public class BlueskyClient extends ApiClient implements SocialClient
             JSONObject obj = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
             setIdentifier(obj.optString("identifier"));
             setPassword(obj.optString("password"));
+            setAccessToken(obj.optString("accessToken"));
+            setRefreshToken(obj.optString("refreshToken"));
         }
         catch(IOException e)
         {
@@ -136,41 +145,59 @@ public class BlueskyClient extends ApiClient implements SocialClient
             return false;
         }
 
-        clearBearer();
+        clearBearerToken();
 
-        JSONObject params = new JSONObject();
-        params.put("identifier", getIdentifier());
-        params.put("password", getPassword());
-
-        String response = post(String.format("%s/xrpc/com.atproto.server.createSession", BASE_URL),
-            "application/json", params.toString());
-
-        int statusCode = getStatusLine().getStatusCode();
-        if(response.startsWith("{")) // Valid JSON
+        if(!hasAccessToken())
         {
-            JSONObject obj = new JSONObject(response);
-            if(obj.has("error"))
+            if(hasRefreshToken())
             {
-                logger.severe(String.format("Error response for bluesky authenticate: %d %s",
-                    statusCode, obj));
-                throw new BlueskyException(statusCode, response);
+                // Try to refresh the session
+                if(refreshSession())
+                {
+                    writeCredentials();
+                }
             }
             else
             {
-                setBearer(obj.optString("accessJwt"));
+                // Otherwise create a new session
+                if(createSession())
+                {
+                    writeCredentials();
+                }
             }
         }
-        else // Invalid JSON response
-        {
-            logger.severe(String.format("Invalid JSON response for bluesky authenticate: %d %s",
-                statusCode, response));
-            throw new IOException("Invalid JSON response: "+response);
-        }
+
+        setBearerToken(getAccessToken());
 
         if(debug())
             logger.info("Created bluesky client successfully: "+channel.getCode());
 
-        return hasBearer();
+        return hasBearerToken();
+    }
+
+    /**
+     * Write the credentials when the tokens change.
+     */
+    private void writeCredentials()
+    {
+        String directory = System.getProperty("app.auth", ".");
+
+        File file = new File(directory, channel.getCode().toLowerCase()+SUFFIX);
+        try
+        {
+            // Write file to auth directory
+            JSONObject obj = new JSONObject();
+            obj.put("identifier", getIdentifier());
+            obj.put("password", getPassword());
+            obj.put("accessToken", getAccessToken());
+            obj.put("refreshToken", getRefreshToken());
+            FileUtils.writeStringToFile(file, obj.toString(), "UTF-8");
+        }
+        catch(IOException e)
+        {
+            logger.severe("Unable to write bluesky auth file: "
+                +e.getClass().getName()+": "+e.getMessage());
+        }
     }
 
     /**
@@ -230,11 +257,223 @@ public class BlueskyClient extends ApiClient implements SocialClient
     }
 
     /**
+     * Returns the access token for the client.
+     */
+    public static String getAccessToken() 
+    {
+        return accessToken;
+    }
+
+    /**
+     * Sets the access token for the client.
+     */
+    public static void setAccessToken(String accessToken) 
+    {
+        BlueskyClient.accessToken = accessToken;
+    }
+
+    /**
+     * Clears the access token for the client.
+     */
+    public static void clearAccessToken() 
+    {
+        setAccessToken(null);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the access token for the client has been set.
+     */
+    public static boolean hasAccessToken() 
+    {
+        return getAccessToken() != null && getAccessToken().length() > 0;
+    }
+
+    /**
+     * Returns the refresh token for the client.
+     */
+    public static String getRefreshToken() 
+    {
+        return refreshToken;
+    }
+
+    /**
+     * Sets the refresh token for the client.
+     */
+    public static void setRefreshToken(String refreshToken) 
+    {
+        BlueskyClient.refreshToken = refreshToken;
+    }
+
+    /**
+     * Clears the refresh token for the client.
+     */
+    public static void clearRefreshToken() 
+    {
+        setRefreshToken(null);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the refresh token for the client has been set.
+     */
+    public static boolean hasRefreshToken() 
+    {
+        return getRefreshToken() != null && getRefreshToken().length() > 0;
+    }
+
+    /**
      * Returns the handle.
      */
     public String getName()
     {
         return getIdentifier();
+    }
+
+    /**
+     * Create a new session and get the access tokens.
+     */
+    private boolean createSession() throws BlueskyException
+    {
+        boolean ret = false;
+
+        try
+        {
+                JSONObject params = new JSONObject();
+                params.put("identifier", getIdentifier());
+                params.put("password", getPassword());
+
+                String response = post(String.format("%s/xrpc/com.atproto.server.createSession", BASE_URL),
+                    "application/json", params.toString());
+
+                int statusCode = getStatusLine().getStatusCode();
+
+//GERALD: temp
+logger.info("BlueskyClient: createSession");
+logHeaders(null);
+
+                if(response.startsWith("{")) // Valid JSON
+                {
+                    JSONObject obj = new JSONObject(response);
+                    if(obj.has("error"))
+                    {
+                        logger.severe(String.format("Error response for bluesky create session: %d %s",
+                            statusCode, obj));
+                        processErrorResponse(statusCode, obj);
+                    }
+                    else
+                    {
+                        setAccessToken(obj.optString("accessJwt"));
+                        setRefreshToken(obj.optString("refreshJwt"));
+                        logger.info("Created bluesky session successfully");
+                        ret = true;
+                    }
+                }
+                else // Invalid JSON response
+                {
+                    logger.severe(String.format("Invalid JSON response for bluesky create session: %d %s",
+                        statusCode, response));
+                    throw new IOException("Invalid JSON response: "+response);
+                }
+        }
+        catch(IOException e)
+        {
+            throw new BlueskyException(e);
+        }
+
+        return ret;
+    }
+
+    /**
+     * Refresh a session to get new access tokens.
+     */
+    private boolean refreshSession() throws BlueskyException
+    {
+        boolean ret = false;
+
+        try
+        {
+            String response = null;
+            Exception ex = null;
+
+            setBearerToken(getRefreshToken());
+            for(int i = 0; i < REFRESH_RETRIES; i++)
+            {
+                try
+                {
+                    if(i > 0)
+                    {
+                        logger.info("Retrying bluesky session refresh...");
+                        Thread.sleep(1000);
+                    }
+
+                    response = post(String.format("%s/xrpc/com.atproto.server.refreshSession", BASE_URL));
+                    ex = null;
+                    break;
+                }
+                catch(Exception e)
+                {
+                    logger.severe(String.format("Bluesky session refresh attempt %d failed: %s",
+                        i+1, e.getMessage()));
+                    ex = e;
+                }
+            }
+
+            // Retries exhausted without success
+            if(ex != null)
+            {
+                logger.severe("Bluesky session refresh attempts failed");
+                logger.severe(StringUtils.serialize(ex));
+                throw new BlueskyException(ex);
+            }
+
+                int statusCode = getStatusLine().getStatusCode();
+
+//GERALD: temp
+logger.info("BlueskyClient: refreshSession");
+logHeaders(null);
+
+                if(response.startsWith("{")) // Valid JSON
+                {
+                    JSONObject obj = new JSONObject(response);
+                    if(obj.has("error"))
+                    {
+                        logger.severe(String.format("Error response for bluesky refresh session: %d %s",
+                            statusCode, obj));
+
+                        String message = obj.optString("message");
+                        if(message != null && message.indexOf("revoked") != -1)
+                        {
+                            // Clear the tokens if the refresh token has been revoked
+                            clearAccessToken();
+                            clearRefreshToken();
+                            writeCredentials();
+                            logger.info("Cleared refresh token as it has been revoked");
+                        }
+                        else
+                        {
+                            processErrorResponse(statusCode, obj);
+                        }
+                    }
+                    else
+                    {
+                        setAccessToken(obj.optString("accessJwt"));
+                        setRefreshToken(obj.optString("refreshJwt"));
+                        logger.info("Refreshed bluesky session successfully");
+                        ret = true;
+                    }
+                }
+                else // Invalid JSON response
+                {
+                    logger.severe(String.format("Invalid JSON response for bluesky refresh session: %d %s",
+                        statusCode, response));
+                    throw new IOException("Invalid JSON response: "+response);
+                }
+        }
+        catch(IOException e)
+        {
+            throw new BlueskyException(e);
+        }
+
+        return ret;
     }
 
     /**
@@ -252,6 +491,9 @@ public class BlueskyClient extends ApiClient implements SocialClient
      */
     public ChannelPost sendPost(String text) throws IOException
     {
+        if(!hasBearerToken())
+            throw new IllegalArgumentException("missing access token");
+
         String cid = null;
 
         List<Match> hashtags = StringUtils.extractHashtags(text);
@@ -288,7 +530,7 @@ public class BlueskyClient extends ApiClient implements SocialClient
             {
                 logger.severe(String.format("Error response for bluesky send post: %d %s",
                     statusCode, obj));
-                throw new BlueskyException(statusCode, response);
+                processErrorResponse(statusCode, obj);
             }
             else
             {
@@ -338,7 +580,7 @@ public class BlueskyClient extends ApiClient implements SocialClient
             {
                 logger.severe(String.format("Error response for bluesky upload blob: %d %s",
                     statusCode, obj));
-                throw new BlueskyException(statusCode, response);
+                processErrorResponse(statusCode, obj);
             }
             else if(obj.has("blob"))
             {
@@ -488,7 +730,7 @@ public class BlueskyClient extends ApiClient implements SocialClient
             {
                 logger.severe(String.format("Error response for bluesky delete post: %d %s",
                     statusCode, obj));
-                throw new BlueskyException(statusCode, response);
+                processErrorResponse(statusCode, obj);
             }
             else
             {
@@ -526,7 +768,7 @@ public class BlueskyClient extends ApiClient implements SocialClient
             {
                 logger.severe(String.format("Error response for bluesky get posts: %d %s",
                     statusCode, obj));
-                throw new BlueskyException(statusCode, response);
+                processErrorResponse(statusCode, obj);
             }
             else
             {
@@ -552,12 +794,56 @@ public class BlueskyClient extends ApiClient implements SocialClient
     }
 
     /**
+     * Process an error response from the bluesky API.
+     */
+    private void processErrorResponse(int statusCode, JSONObject obj)
+        throws BlueskyException
+    {
+        String error = obj.optString("error");
+        if(error != null)
+        {
+            if(error.equals(EXPIRED_TOKEN))
+            {
+                clearAccessToken();
+                writeCredentials();
+                logger.info("Cleared access token as it has expired");
+            }
+
+            if(error.equals(RATE_LIMIT_EXCEEDED))
+            {
+                logHeaders("RateLimit");
+            }
+        }
+
+        throw new BlueskyException(statusCode, obj);
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the given error is recoverable.
      */
     public boolean isRecoverable(Exception e)
     {
-        int errorCode = getErrorCode(e);
-        return errorCode != 200;
+        boolean ret = true;
+
+        if(e instanceof BlueskyException)
+        {
+            BlueskyException ex = (BlueskyException)e;
+            if(ex.getError().equals(EXPIRED_TOKEN))
+            {
+                // Bluesky tokens expire after 2 hours
+                ret = true;
+            }
+            else if(ex.getError().equals(UPSTREAM_FAILURE))
+            {
+                ret = true;
+            }
+            else if(ex.getCode() != 200)
+            {
+                ret = false;
+            }
+        }
+
+        return ret;
     }
 
     /**

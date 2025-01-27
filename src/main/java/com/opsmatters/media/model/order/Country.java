@@ -37,6 +37,7 @@ public enum Country
     ESTONIA("EE", "Estonia"),
     GEORGIA("GE", "Georgia"),
     GERMANY("DE", "Germany"),
+    HUNGARY("HU", "Hungary"),
     INDIA("IN", "India"),
     IRELAND("IE", "Ireland"),
     LITHUANIA("LT", "Lithuania"),

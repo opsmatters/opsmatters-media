@@ -27,7 +27,7 @@ import java.util.ArrayList;
 public enum SuspendReason
 {
     NONE("None"),
-    UNCONTACTABLE("Uncontactable"),
+    UNPAID_INVOICE("Unpaid Invoice"),
     REFUSED_INVOICE("Refused Invoice"),
     REFUSED_RATE("Refused Rate"),
     BAD_PAYER("Bad Payer"),
@@ -96,7 +96,7 @@ public enum SuspendReason
         List<SuspendReason> ret = new ArrayList<SuspendReason>();
 
         ret.add(NONE);
-        ret.add(UNCONTACTABLE);
+        ret.add(UNPAID_INVOICE);
         ret.add(REFUSED_INVOICE);
         ret.add(REFUSED_RATE);
         ret.add(BAD_PAYER);

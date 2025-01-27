@@ -27,24 +27,28 @@ import org.json.JSONObject;
 public class BlueskyException extends IOException
 {
     private int code;
-    private String error;
-    private String message;
+    private String error = "";
+    private String message = "";
 
     /**
-     * Constructor that takes a status code and response.
+     * Constructor that takes a status code and JSON response.
      */
-    public BlueskyException(int code, String response)
+    public BlueskyException(int code, JSONObject obj)
     {
-        super(response);
+        super(obj.toString());
 
         this.code = code;
+        this.error = obj.optString("error");
+        this.message = obj.optString("message");
+    }
 
-        if(response.startsWith("{"))
-        {
-            JSONObject obj = new JSONObject(response);
-            this.error = obj.optString("error");
-            this.message = obj.optString("message");
-        }
+    /**
+     * Constructor that takes an exception.
+     */
+    public BlueskyException(Throwable e)
+    {
+        super(e);
+        this.message = e.getMessage();
     }
 
     public int getCode()

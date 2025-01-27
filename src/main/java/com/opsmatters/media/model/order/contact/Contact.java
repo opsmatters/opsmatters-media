@@ -411,6 +411,14 @@ public class Contact extends OwnedEntity
     }
 
     /**
+     * Returns <CODE>true</CODE> if the contact status is SUSPENDED.
+     */
+    public boolean isSuspended()
+    {
+        return status == ContactStatus.SUSPENDED;
+    }
+
+    /**
      * Sets the contact status.
      */
     public void setStatus(String status)

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -48,7 +49,8 @@ public class ApiClient extends Client
     private HttpClient client;
     private HttpClientContext context;
     private StatusLine status;
-    private String bearer = null;
+    private Header[] headers;
+    private String bearerToken = null;
 
     /**
      * Returns a new client that does not use authentication.
@@ -188,25 +190,25 @@ public class ApiClient extends Client
     /**
      * Sets the bearer token for the client.
      */
-    public void setBearer(String bearer)
+    public void setBearerToken(String bearerToken)
     {
-        this.bearer = bearer;
+        this.bearerToken = bearerToken;
     }
 
     /**
      * Clears the bearer token for the client.
      */
-    public void clearBearer()
+    public void clearBearerToken()
     {
-        setBearer(null);
+        setBearerToken(null);
     }
 
     /**
      * Returns <CODE>true</CODE> if the bearer token for the client has been set.
      */
-    public boolean hasBearer()
+    public boolean hasBearerToken()
     {
-        return bearer != null && bearer.length() > 0;
+        return bearerToken != null && bearerToken.length() > 0;
     }
 
     /**
@@ -224,8 +226,8 @@ public class ApiClient extends Client
             request.setURI(builder.build());
         }
 
-        if(bearer != null)
-            request.addHeader("Authorization", String.format("Bearer %s", bearer));
+        if(bearerToken != null)
+            request.addHeader("Authorization", String.format("Bearer %s", bearerToken));
 
         return execute(request, true);
     }
@@ -236,8 +238,8 @@ public class ApiClient extends Client
     public String get(String url) throws IOException
     {
         HttpGet request = new HttpGet(url);
-        if(bearer != null)
-            request.addHeader("Authorization", String.format("Bearer %s", bearer));
+        if(bearerToken != null)
+            request.addHeader("Authorization", String.format("Bearer %s", bearerToken));
         return execute(request, true);
     }
 
@@ -251,8 +253,8 @@ public class ApiClient extends Client
             paramList.add(new BasicNameValuePair(param.getKey(), param.getValue()));
 
         HttpPost request = new HttpPost(url);
-        if(bearer != null)
-            request.addHeader("Authorization", String.format("Bearer %s", bearer));
+        if(bearerToken != null)
+            request.addHeader("Authorization", String.format("Bearer %s", bearerToken));
         request.addHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setEntity(new UrlEncodedFormEntity(paramList));
         return execute(request, hasResponseEntity);
@@ -267,31 +269,15 @@ public class ApiClient extends Client
     }
 
     /**
-     * Executes a POST operation with no message body.
-     */
-    public String post(String url) throws IOException
-    {
-        return post(url, null, (String)null);
-    }
-
-    /**
-     * Executes a POST operation with a content type.
-     */
-    public String post(String url, String contentType) throws IOException
-    {
-        return post(url, contentType, (String)null);
-    }
-
-    /**
      * Executes a POST operation with an optional content type and message body.
      */
     public String post(String url, String contentType, String body, boolean hasResponseEntity) throws IOException
     {
         HttpPost request = new HttpPost(url);
+        if(bearerToken != null)
+            request.addHeader("Authorization", String.format("Bearer %s", bearerToken));
         if(contentType != null)
             request.addHeader("Content-Type", contentType);
-        if(bearer != null)
-            request.addHeader("Authorization", String.format("Bearer %s", bearer));
         if(body != null)
             request.setEntity(new StringEntity(body));
         return execute(request, hasResponseEntity);
@@ -306,15 +292,31 @@ public class ApiClient extends Client
     }
 
     /**
+     * Executes a POST operation with a content type.
+     */
+    public String post(String url, String contentType) throws IOException
+    {
+        return post(url, contentType, (String)null);
+    }
+
+    /**
+     * Executes a POST operation with no message body.
+     */
+    public String post(String url) throws IOException
+    {
+        return post(url, null, (String)null);
+    }
+
+    /**
      * Executes a POST operation with an optional content type and byte array.
      */
     public String post(String url, String contentType, byte[] bytes, boolean hasResponseEntity) throws IOException
     {
         HttpPost request = new HttpPost(url);
+        if(bearerToken != null)
+            request.addHeader("Authorization", String.format("Bearer %s", bearerToken));
         if(contentType != null)
             request.addHeader("Content-Type", contentType);
-        if(bearer != null)
-            request.addHeader("Authorization", String.format("Bearer %s", bearer));
         if(bytes != null)
             request.setEntity(new ByteArrayEntity(bytes));
         return execute(request, hasResponseEntity);
@@ -334,10 +336,10 @@ public class ApiClient extends Client
     public String put(String url, String contentType, String body, boolean hasResponseEntity) throws IOException
     {
         HttpPut request = new HttpPut(url);
+        if(bearerToken != null)
+            request.addHeader("Authorization", String.format("Bearer %s", bearerToken));
         if(contentType != null)
             request.addHeader("Content-Type", contentType);
-        if(bearer != null)
-            request.addHeader("Authorization", String.format("Bearer %s", bearer));
         if(body != null)
             request.setEntity(new StringEntity(body));
         return execute(request, hasResponseEntity);
@@ -357,10 +359,10 @@ public class ApiClient extends Client
     public String put(String url, String contentType, byte[] bytes, boolean hasResponseEntity) throws IOException
     {
         HttpPut request = new HttpPut(url);
+        if(bearerToken != null)
+            request.addHeader("Authorization", String.format("Bearer %s", bearerToken));
         if(contentType != null)
             request.addHeader("Content-Type", contentType);
-        if(bearer != null)
-            request.addHeader("Authorization", String.format("Bearer %s", bearer));
         if(bytes != null)
             request.setEntity(new ByteArrayEntity(bytes));
         return execute(request, hasResponseEntity);
@@ -394,6 +396,7 @@ public class ApiClient extends Client
             // Execute the API call
             HttpResponse response = client.execute(request, context);
             status = response.getStatusLine();
+            headers = response.getAllHeaders();
             if(hasResponseEntity)
                 ret = EntityUtils.toString(response.getEntity(), "UTF-8");
         }
@@ -407,11 +410,47 @@ public class ApiClient extends Client
     }
 
     /**
-     * Returns the status line for the last call.
+     * Returns the status line from the last call.
      */
     public StatusLine getStatusLine()
     {
         return status;
+    }
+
+    /**
+     * Returns the HTTP headers from the last call.
+     */
+    public Header[] getHeaders()
+    {
+        return headers;
+    }
+
+    /**
+     * Logs the HTTP headers from the last call.
+     */
+    public void logHeaders(String filter)
+    {
+        if(getHeaders() != null)
+        {
+            // Filter the headers
+            List<Header> headers = new ArrayList<Header>();
+            for(Header header : getHeaders())
+            {
+                if(filter == null || header.getName().indexOf(filter) != -1)
+                    headers.add(header);
+            }
+
+            // Log the headers
+            StringBuilder buff = new StringBuilder();
+            buff.append(String.format("Headers: (%d)", headers.size()));
+            for(Header header : headers)
+            {
+                buff.append(String.format("\n  %s=[%s]",
+                    header.getName(), header.getValue()));
+            }
+
+            logger.info(buff.toString());
+        }
     }
 
     /**

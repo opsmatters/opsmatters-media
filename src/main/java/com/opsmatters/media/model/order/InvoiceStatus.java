@@ -30,7 +30,7 @@ public enum InvoiceStatus
     NEW("New", "glyphicon-unchecked", ""),
     DRAFT("Draft", "glyphicon-edit", ""),
     SENT("Sent", "glyphicon-send", "status-warn"),
-    PENDING("Pending", "glyphicon-hourglass", "status-warn"),
+    PAYMENT_PENDING("Pending", "glyphicon-hourglass", "status-warn"),
     PAID("Paid", "glyphicon-ok-circle", "status-success"),
     MARKED_AS_PAID("Marked As Paid", "glyphicon-ok-sign", "status-success"),
     CANCELLED("Cancelled", "glyphicon-trash", "status-error"),
@@ -127,7 +127,7 @@ public enum InvoiceStatus
         ret.add(NEW);
         ret.add(DRAFT);
         ret.add(SENT);
-        ret.add(PENDING);
+        ret.add(PAYMENT_PENDING);
         ret.add(PAID);
         ret.add(MARKED_AS_PAID);
         ret.add(CANCELLED);

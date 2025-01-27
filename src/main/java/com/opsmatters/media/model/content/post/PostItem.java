@@ -95,6 +95,22 @@ public class PostItem extends ArticleItem<Post>
     }
 
     /**
+     * Returns the URL alias of the post.
+     */
+    public String getUrlAlias()
+    {
+        return content.getUrlAlias();
+    }
+
+    /**
+     * Sets the URL alias of the post.
+     */
+    public void setUrlAlias(String urlAlias)
+    {
+        content.setUrlAlias(urlAlias);
+    }
+
+    /**
      * Returns the post type.
      */
     public String getPostType()

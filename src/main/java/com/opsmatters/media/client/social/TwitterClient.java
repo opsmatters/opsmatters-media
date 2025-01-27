@@ -278,7 +278,7 @@ public class TwitterClient extends Client implements SocialClient
             File file = new File(directory, channel.getCode().toLowerCase()+SUFFIX);
             try
             {
-                // Read file from auth directory
+                // Write file to auth directory
                 JSONObject obj = new JSONObject();
                 obj.put("clientId", getClientId());
                 obj.put("clientSecret", getClientSecret());
