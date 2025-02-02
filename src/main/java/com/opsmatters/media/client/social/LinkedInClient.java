@@ -18,6 +18,7 @@ package com.opsmatters.media.client.social;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -347,18 +348,42 @@ public class LinkedInClient extends Client implements SocialClient
         if(link == null)
             throw new IllegalArgumentException("missing url");
 
-        // Crawl the link's page to get the metatags
         URL url = new URL(link);
-        Document doc = Jsoup.parse(url, READ_TIMEOUT);
-        List<Element> tags = doc.getElementsByTag("meta");
-        String title = getMetatag(tags, "og:title");
-        String description = getMetatag(tags, "og:description");
-        String image = getMetatag(tags, "og:image");
 
-        // Download the image file
-        String filename = image.substring(image.lastIndexOf("/")+1);
-        File file = File.createTempFile("image-", null);
-        FileUtils.copyURLToFile(new URL(image), file, CONNECT_TIMEOUT, READ_TIMEOUT);
+        String title = null;
+        String description = null;
+        String imageUrl = null;
+
+        try
+        {
+            // Crawl the link's page to get the metatags
+            Document doc = Jsoup.parse(url, READ_TIMEOUT);
+            List<Element> tags = doc.getElementsByTag("meta");
+            title = getMetatag(tags, "og:title");
+            description = getMetatag(tags, "og:description");
+            imageUrl = getMetatag(tags, "og:image");
+        }
+        catch(SocketTimeoutException e)
+        {
+            logger.severe("Error crawling page for linkedin send post: "+url);
+            throw new SocialTimeoutException("Error crawling page for url: "+url, e);
+        }
+
+        String filename = null;
+        File file = null;
+
+        try
+        {
+            // Download the image file
+            filename = imageUrl.substring(imageUrl.lastIndexOf("/")+1);
+            file = File.createTempFile("image-", null);
+            FileUtils.copyURLToFile(new URL(imageUrl), file, CONNECT_TIMEOUT, READ_TIMEOUT);
+        }
+        catch(SocketTimeoutException e)
+        {
+            logger.severe("Error downloading image for linkedin send post: "+imageUrl);
+            throw new SocialTimeoutException("Error downloading image: "+imageUrl, e);
+        }
 
         // Upload the image file and delete the downloaded file
         InitializeUploadRequest request = new InitializeUploadRequest(organizationURN);

@@ -158,6 +158,10 @@ public class Contacts implements java.io.Serializable
      */
     public static void add(Contact contact)
     {
+        Contact existing = getById(contact.getId());
+        if(existing != null)
+            remove(existing);
+
         idMap.put(contact.getId(), contact);
         nameMap.put(contact.getName(), contact);
         emailMap.put(contact.getBillingEmail(), contact);
@@ -168,6 +172,10 @@ public class Contacts implements java.io.Serializable
      */
     public static void add(ContactPerson person)
     {
+        ContactPerson existing = getPersonById(person.getId());
+        if(existing != null)
+            remove(existing);
+
         personIdMap.put(person.getId(), person);
         personNameMap.put(person.getName(), person);
         personEmailMap.put(person.getEmail(), person);

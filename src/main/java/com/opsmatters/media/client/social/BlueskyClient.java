@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.net.URISyntaxException;
+import java.net.SocketTimeoutException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -337,6 +338,9 @@ public class BlueskyClient extends ApiClient implements SocialClient
 
         try
         {
+                if(debug())
+                    logger.info("bluesky createSession");
+
                 JSONObject params = new JSONObject();
                 params.put("identifier", getIdentifier());
                 params.put("password", getPassword());
@@ -346,9 +350,8 @@ public class BlueskyClient extends ApiClient implements SocialClient
 
                 int statusCode = getStatusLine().getStatusCode();
 
-//GERALD: temp
-logger.info("BlueskyClient: createSession");
-logHeaders(null);
+                if(debug())
+                    logHeaders();
 
                 if(response.startsWith("{")) // Valid JSON
                 {
@@ -391,6 +394,9 @@ logHeaders(null);
 
         try
         {
+            if(debug())
+                logger.info("bluesky refreshSession");
+
             String response = null;
             Exception ex = null;
 
@@ -425,48 +431,47 @@ logHeaders(null);
                 throw new BlueskyException(ex);
             }
 
-                int statusCode = getStatusLine().getStatusCode();
+            int statusCode = getStatusLine().getStatusCode();
 
-//GERALD: temp
-logger.info("BlueskyClient: refreshSession");
-logHeaders(null);
+            if(debug())
+                logHeaders();
 
-                if(response.startsWith("{")) // Valid JSON
+            if(response.startsWith("{")) // Valid JSON
+            {
+                JSONObject obj = new JSONObject(response);
+                if(obj.has("error"))
                 {
-                    JSONObject obj = new JSONObject(response);
-                    if(obj.has("error"))
-                    {
-                        logger.severe(String.format("Error response for bluesky refresh session: %d %s",
-                            statusCode, obj));
+                    logger.severe(String.format("Error response for bluesky refresh session: %d %s",
+                        statusCode, obj));
 
-                        String message = obj.optString("message");
-                        if(message != null && message.indexOf("revoked") != -1)
-                        {
-                            // Clear the tokens if the refresh token has been revoked
-                            clearAccessToken();
-                            clearRefreshToken();
-                            writeCredentials();
-                            logger.info("Cleared refresh token as it has been revoked");
-                        }
-                        else
-                        {
-                            processErrorResponse(statusCode, obj);
-                        }
+                    String message = obj.optString("message");
+                    if(message != null && message.indexOf("revoked") != -1)
+                    {
+                        // Clear the tokens if the refresh token has been revoked
+                        clearAccessToken();
+                        clearRefreshToken();
+                        writeCredentials();
+                        logger.info("Cleared refresh token as it has been revoked");
                     }
                     else
                     {
-                        setAccessToken(obj.optString("accessJwt"));
-                        setRefreshToken(obj.optString("refreshJwt"));
-                        logger.info("Refreshed bluesky session successfully");
-                        ret = true;
+                        processErrorResponse(statusCode, obj);
                     }
                 }
-                else // Invalid JSON response
+                else
                 {
-                    logger.severe(String.format("Invalid JSON response for bluesky refresh session: %d %s",
-                        statusCode, response));
-                    throw new IOException("Invalid JSON response: "+response);
+                    setAccessToken(obj.optString("accessJwt"));
+                    setRefreshToken(obj.optString("refreshJwt"));
+                    logger.info("Refreshed bluesky session successfully");
+                    ret = true;
                 }
+            }
+            else // Invalid JSON response
+            {
+                logger.severe(String.format("Invalid JSON response for bluesky refresh session: %d %s",
+                    statusCode, response));
+                throw new IOException("Invalid JSON response: "+response);
+            }
         }
         catch(IOException e)
         {
@@ -493,6 +498,9 @@ logHeaders(null);
     {
         if(!hasBearerToken())
             throw new IllegalArgumentException("missing access token");
+
+        if(debug())
+            logger.info("bluesky sendPost");
 
         String cid = null;
 
@@ -523,6 +531,10 @@ logHeaders(null);
             "application/json", request.toString().getBytes("UTF-8"));
 
         int statusCode = getStatusLine().getStatusCode();
+
+        if(debug())
+            logHeaders();
+
         if(response.startsWith("{")) // Valid JSON
         {
             JSONObject obj = new JSONObject(response);
@@ -558,21 +570,55 @@ logHeaders(null);
     {
         JSONObject ret = null;
 
+        if(debug())
+            logger.info("bluesky getEmbed");
+
         URL url = new URL(link);
-        Document doc = Jsoup.parse(url, READ_TIMEOUT);
-        List<Element> tags = doc.getElementsByTag("meta");
-        String title = getMetatag(tags, "og:title");
-        String description = getMetatag(tags, "og:description");
-        String imageUrl = getMetatag(tags, "og:image");
-        String filename = imageUrl.substring(imageUrl.lastIndexOf("/")+1);
-        String mimeType = String.format("image/%s",
-            com.opsmatters.media.util.FileUtils.getExtension(filename));
-        byte[] bytes = getBytes(imageUrl);
+
+        String title = null;
+        String description = null;
+        String imageUrl = null;
+
+        try
+        {
+            // Crawl the link's page to get the metatags
+            Document doc = Jsoup.parse(url, READ_TIMEOUT);
+            List<Element> tags = doc.getElementsByTag("meta");
+            title = getMetatag(tags, "og:title");
+            description = getMetatag(tags, "og:description");
+            imageUrl = getMetatag(tags, "og:image");
+        }
+        catch(SocketTimeoutException e)
+        {
+            logger.severe("Error crawling page for bluesky send post: "+url);
+            throw new SocialTimeoutException("Error crawling page for url: "+url, e);
+        }
+
+        String mimeType = null;
+        byte[] bytes = null;
+
+        try
+        {
+            // Download the image file
+            String filename = imageUrl.substring(imageUrl.lastIndexOf("/")+1);
+            mimeType = String.format("image/%s",
+                com.opsmatters.media.util.FileUtils.getExtension(filename));
+            bytes = getBytes(imageUrl);
+        }
+        catch(SocketTimeoutException e)
+        {
+            logger.severe("Error downloading image for bluesky send post: "+imageUrl);
+            throw new SocialTimeoutException("Error downloading image: "+imageUrl, e);
+        }
 
         String response = post(String.format("%s/xrpc/com.atproto.repo.uploadBlob", BASE_URL),
             mimeType, bytes);
 
         int statusCode = getStatusLine().getStatusCode();
+
+        if(debug())
+            logHeaders();
+
         if(response.startsWith("{")) // Valid JSON
         {
             JSONObject obj = new JSONObject(response);
@@ -713,6 +759,9 @@ logHeaders(null);
      */
     public ChannelPost deletePost(String cid) throws IOException
     {
+        if(debug())
+            logger.info("bluesky deletePost");
+
         ChannelPost ret = null;
         JSONObject request = new JSONObject();
         request.put("repo", getIdentifier());
@@ -723,6 +772,10 @@ logHeaders(null);
             "application/json", request.toString());
 
         int statusCode = getStatusLine().getStatusCode();
+
+        if(debug())
+            logHeaders();
+
         if(response.startsWith("{")) // Valid JSON
         {
             JSONObject obj = new JSONObject(response);

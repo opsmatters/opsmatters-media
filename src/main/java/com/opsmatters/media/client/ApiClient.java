@@ -426,7 +426,7 @@ public class ApiClient extends Client
     }
 
     /**
-     * Logs the HTTP headers from the last call.
+     * Logs the HTTP headers from the last call using the filter on header name.
      */
     public void logHeaders(String filter)
     {
@@ -442,6 +442,7 @@ public class ApiClient extends Client
 
             // Log the headers
             StringBuilder buff = new StringBuilder();
+            buff.append(String.format("Status: %s", getStatusLine()));
             buff.append(String.format("Headers: (%d)", headers.size()));
             for(Header header : headers)
             {
@@ -451,6 +452,14 @@ public class ApiClient extends Client
 
             logger.info(buff.toString());
         }
+    }
+
+    /**
+     * Logs the HTTP headers from the last call.
+     */
+    public void logHeaders()
+    {
+        logHeaders(null);
     }
 
     /**

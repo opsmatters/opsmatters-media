@@ -230,16 +230,19 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostDetails>
                 }
                 catch(DateTimeParseException e)
                 {
-                    logger.severe(StringUtils.serialize(e));
-                    logger.severe(String.format("Unparseable %s published date: %s code=%s",
-                        category.tag(), publishedDate, config.getCode()));
+                    if(!field.isOptional())
+                    {
+                        logger.severe(StringUtils.serialize(e));
+                        logger.severe(String.format("Unparseable %s published date: %s code=%s",
+                            category.tag(), publishedDate, config.getCode()));
 
-                    log.add(log.warn(E_PARSE_DATE, category)
-                        .message(String.format("Unparseable %s published date: %s",
-                            category.tag(), publishedDate))
-                        .location(this)
-                        .entity(config, getPage())
-                        .exception(e));
+                        log.add(log.warn(E_PARSE_DATE, category)
+                            .message(String.format("Unparseable %s published date: %s",
+                                category.tag(), publishedDate))
+                            .location(this)
+                            .entity(config, getPage())
+                            .exception(e));
+                    }
                 }
             }
         }

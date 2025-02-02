@@ -313,16 +313,19 @@ public class EventCrawler extends WebPageCrawler<EventDetails>
                 }
                 catch(DateTimeParseException e)
                 {
-                    logger.severe(StringUtils.serialize(e));
-                    logger.severe(String.format("Unparseable %s start date: %s code=%s",
-                        category.tag(), startDate, config.getCode()));
+                    if(!field.isOptional())
+                    {
+                        logger.severe(StringUtils.serialize(e));
+                        logger.severe(String.format("Unparseable %s start date: %s code=%s",
+                            category.tag(), startDate, config.getCode()));
 
-                    log.add(log.warn(E_PARSE_DATE, category)
-                        .message(String.format("Unparseable %s start date: %s",
-                            category.tag(), startDate))
-                        .location(this)
-                        .entity(config, getPage())
-                        .exception(e));
+                        log.add(log.warn(E_PARSE_DATE, category)
+                            .message(String.format("Unparseable %s start date: %s",
+                                category.tag(), startDate))
+                            .location(this)
+                            .entity(config, getPage())
+                            .exception(e));
+                    }
                 }
             }
         }

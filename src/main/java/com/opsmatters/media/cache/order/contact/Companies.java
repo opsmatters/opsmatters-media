@@ -110,6 +110,10 @@ public class Companies implements java.io.Serializable
      */
     public static void add(Company company)
     {
+        Company existing = getById(company.getId());
+        if(existing != null)
+            remove(existing);
+
         idMap.put(company.getId(), company);
         nameMap.put(company.getName(), company);
         if(company.hasBillingEmail())

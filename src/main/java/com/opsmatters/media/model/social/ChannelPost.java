@@ -22,8 +22,6 @@ import java.time.format.DateTimeParseException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.cache.social.SocialChannels;
-import com.opsmatters.media.client.social.SocialClient;
-import com.opsmatters.media.client.social.SocialClientFactory;
 import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.model.DeliveryStatus;
 import com.opsmatters.media.model.platform.Site;
@@ -32,6 +30,9 @@ import com.opsmatters.media.model.admin.EmailBody;
 import com.opsmatters.media.model.content.FieldName;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.client.social.SocialClient;
+import com.opsmatters.media.client.social.SocialClientFactory;
+import com.opsmatters.media.client.social.SocialTimeoutException;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
@@ -587,9 +588,18 @@ public class ChannelPost extends SocialPost
         }
         catch(SocketTimeoutException e)
         {
-            setStatus(DeliveryStatus.ERROR);
             setErrorMessage(e.getMessage());
-            logger.severe(StringUtils.serialize(e));
+
+            // A timeout while crawling an internal page is recoverable
+            if(e instanceof SocialTimeoutException)
+            {
+                throw e;
+            }
+            else
+            {
+                setStatus(DeliveryStatus.ERROR);
+                logger.severe(StringUtils.serialize(e));
+            }
         }
         catch(Exception e)
         {
@@ -597,10 +607,15 @@ public class ChannelPost extends SocialPost
             {
                 setErrorCode(client.getErrorCode(e));
                 setErrorMessage(client.getErrorMessage(e));
-                if(!client.isRecoverable(e))
-                    setStatus(DeliveryStatus.ERROR);
-                else
+                if(client.isRecoverable(e))
+                {
                     throw e;
+                }
+                else
+                {
+                    setStatus(DeliveryStatus.ERROR);
+                    logger.severe(StringUtils.serialize(e));
+                }
             }
             else // eg. OAuth token expired
             {
