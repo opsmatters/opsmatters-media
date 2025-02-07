@@ -31,6 +31,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.jsoup.parser.Parser;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.By;
@@ -47,6 +48,8 @@ import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.crawler.ContentRequest;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
+import com.opsmatters.media.model.content.crawler.CrawlerBrowser;
+import com.opsmatters.media.model.content.crawler.DocumentFormat;
 import com.opsmatters.media.model.content.crawler.MoreLink;
 import com.opsmatters.media.model.content.crawler.ErrorPage;
 import com.opsmatters.media.model.content.crawler.field.Field;
@@ -66,7 +69,7 @@ import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.crawler.CrawlerStatus.*;
-import static com.opsmatters.media.model.content.crawler.field.ElementOutput.*;
+import static com.opsmatters.media.model.content.crawler.DocumentFormat.*;
 import static com.opsmatters.media.model.content.crawler.field.FieldProtocol.*;
 import static com.opsmatters.media.model.logging.LogEventType.*;
 import static com.opsmatters.media.model.logging.LogEventCategory.*;
@@ -91,6 +94,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     private TraceObject traceObject = TraceObject.NONE;
     private ContentConfig config;
     private CrawlerWebPage page;
+    private DocumentFormat format;
     private String imagePrefix = "";
     private String lastUrl;
 
@@ -118,6 +122,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         if(driver == null)
             driver = WebDriverPool.getDriver(request.getBrowser(), request.isHeadless());
         this.browser = request.getBrowser();
+        this.format = request.getFormat();
         WebDriverPool.setDebug(debug());
     }
 
@@ -148,21 +153,25 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
 
         try
         {
-            ret = driver.findElement(By.tagName(root)).getAttribute("outerHTML");
+            if(root != null)
+                ret = driver.findElement(By.tagName(root)).getAttribute("outerHTML");
+            else // XML
+                ret = driver.getPageSource();
         }
         catch(RuntimeException e)
         {
-            logger.severe("Unable to get page source for "+root);
+            logger.severe(String.format("Unable to get %s page source for %s",
+                getFormat().value(), root));
 
             log.add(log.error(E_MISSING_SOURCE, category)
-                .message(String.format("Unable to get page source for %s", root))
+                .message(String.format("Unable to get %s page source for %s",
+                    getFormat().value(), root))
                 .location(this)
                 .entity(config, page)
                 .exception(e));
         }
 
         return ret;
-
     }
 
     /**
@@ -170,7 +179,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
      */
     protected String getPageSource(LogEventCategory category)
     {
-        return getPageSource("html", category);
+        return getPageSource(getFormat() == HTML ? "html" : null, category);
     }
 
     /**
@@ -220,6 +229,14 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     public CrawlerWebPage getPage()
     {
         return page;
+    }
+
+    /**
+     * Returns the document format of the crawler.
+     */
+    public DocumentFormat getFormat()
+    {
+        return format;
     }
 
     /**
@@ -285,7 +302,22 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     @Override
     public String getTitle()
     {
-        return driver != null ? driver.getTitle() : null;
+        String ret = null;
+        if(driver != null)
+        {
+            if(getFormat() == HTML)
+            {
+                ret = driver.getTitle();
+            }
+            else if(getFormat() == RSS)
+            {
+                WebElement title = driver.findElement(By.xpath("//rss/channel/title"));
+                if(title != null)
+                    ret = title.getText();
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -619,8 +651,17 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
 
                 if(getErrorCode() != E_ERROR_PAGE)
                 {
-                    Document doc = Jsoup.parse(getPageSource("body", TEASER));
-                    doc.outputSettings().prettyPrint(false);
+                    // Parse the page into a document
+                    Document doc = null;
+                    if(getFormat() == HTML)
+                    {
+                        doc = Jsoup.parse(getPageSource("body", TEASER));
+                        doc.outputSettings().prettyPrint(false);
+                    }
+                    else // XML
+                    {
+                        doc = Jsoup.parse(getPageSource(TEASER), Parser.xmlParser());
+                    }
 
                     // Process the teaser selections
                     int count = 0;
@@ -874,9 +915,9 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     protected String getText(Element element, ElementOutput output)
     {
         String ret = "";
-        if(output == HTML)
+        if(output == ElementOutput.HTML)
             ret = element.html();
-        else if(output == OWN_TEXT)
+        else if(output == ElementOutput.OWN_TEXT)
             ret = element.ownText();
         else // "text"
             ret = element.text();

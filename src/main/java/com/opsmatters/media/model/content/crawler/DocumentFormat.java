@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Gerald Curley
+ * Copyright 2025 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,32 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.crawler;
+package com.opsmatters.media.model.content.crawler;
 
 /**
- * Represents a content crawler browser.
+ * Represents a content document format.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum CrawlerBrowser
+public enum DocumentFormat
 {
-    HTMLUNIT("htmlunit"),
-    CHROME("chrome"),
-    FIREFOX("firefox");
+    HTML("html"),
+    RSS("rss");
 
     private String value;
 
     /**
-     * Constructor that takes the browser value.
-     * @param value The value for the browser
+     * Constructor that takes the format value.
+     * @param value The value for the format
      */
-    CrawlerBrowser(String value)
+    DocumentFormat(String value)
     {
         this.value = value;
     }
 
     /**
-     * Returns the value of the browser
-     * @return The value of the browser.
+     * Returns the value of the format
+     * @return The value of the format.
      */
     public String value()
     {
@@ -52,14 +51,15 @@ public enum CrawlerBrowser
      * @param value The type value
      * @return The type for the given value
      */
-    public static CrawlerBrowser fromValue(String value)
+    public static DocumentFormat fromValue(String value)
     {
-        CrawlerBrowser[] types = values();
-        for(CrawlerBrowser type : types)
+        DocumentFormat[] types = values();
+        for(DocumentFormat type : types)
         {
             if(type.value().equals(value))
                 return type;
         }
+
         return null;
     }
 

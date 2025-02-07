@@ -300,6 +300,14 @@ public class ContentReview extends ContentEvent
     }
 
     /**
+     * Returns <CODE>true</CODE> if this review has been COMPLETED.
+     */
+    public boolean isCompleted()
+    {
+        return getStatus() == ReviewStatus.COMPLETED;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if this review has been CLOSED.
      */
     public boolean isClosed()

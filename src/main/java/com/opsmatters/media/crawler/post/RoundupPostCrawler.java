@@ -38,6 +38,7 @@ import com.opsmatters.media.model.logging.LogError;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.FormatUtils;
 
+import static com.opsmatters.media.model.content.crawler.DocumentFormat.*;
 import static com.opsmatters.media.model.logging.LogEventCategory.*;
 import static com.opsmatters.media.model.logging.ErrorCode.*;
 
@@ -96,7 +97,13 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostDetails>
             if(fields.hasUrl())
             {
                 Field field = fields.getUrl();
-                String url = getAnchor(field, root, TEASER, field.removeParameters());
+
+                String url = null;
+                if(getFormat() == HTML)
+                    url = getAnchor(field, root, TEASER, field.removeParameters());
+                else
+                    url = getElements(field, root, TEASER);
+
                 if(url != null)
                     teaser.setUrl(url, field.removeParameters());
             }

@@ -1,4 +1,4 @@
-package com.opsmatters.media.client.feeds;
+package com.opsmatters.media.client.feed;
 
 import java.io.File;
 import java.io.IOException;

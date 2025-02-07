@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
-import com.opsmatters.media.crawler.CrawlerBrowser;
 
 /**
  * Class that represents a YAML configuration for a web page crawler.

@@ -32,8 +32,9 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.opsmatters.media.model.content.crawler.CrawlerBrowser;
 
-import static com.opsmatters.media.crawler.CrawlerBrowser.*;
+import static com.opsmatters.media.model.content.crawler.CrawlerBrowser.*;
 
 /**
  * Class representing a pool of Selenium WebDriver objects.

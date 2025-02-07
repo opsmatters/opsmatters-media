@@ -45,6 +45,7 @@ public enum Country
     MONTENEGRO("ME", "Montenegro"),
     NETHERLANDS("NL", "Netherlands"),
     PANAMA("PA", "Panama"),
+    PHILIPPINES("PH", "The Philippines"),
     POLAND("PL", "Poland"),
     ROMANIA("RO", "Romania"),
     SINGAPORE("SG", "Singapore"),

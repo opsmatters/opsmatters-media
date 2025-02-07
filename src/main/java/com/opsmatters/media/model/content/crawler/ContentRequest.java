@@ -21,7 +21,8 @@ import java.util.List;
 import java.util.ArrayList;
 import com.opsmatters.media.model.ConfigElement;
 import com.opsmatters.media.model.ConfigParser;
-import com.opsmatters.media.crawler.CrawlerBrowser;
+
+import static com.opsmatters.media.model.content.crawler.DocumentFormat.*;
 
 /**
  * Class that represents a YAML configuration for a web page request.
@@ -31,6 +32,7 @@ import com.opsmatters.media.crawler.CrawlerBrowser;
 public class ContentRequest implements ConfigElement
 {
     private CrawlerBrowser browser;
+    private DocumentFormat format = HTML;
     private List<String> urls = new ArrayList<String>();
     private Map<String,String> headers; // not used yet
     private String basePath = "";
@@ -62,6 +64,7 @@ public class ContentRequest implements ConfigElement
         if(obj != null)
         {
             setBrowser(obj.getBrowser());
+            setFormat(obj.getFormat());
             setUrls(obj.getUrls());
             if(obj.getHeaders() != null)
                 setHeaders(new HashMap<String,String>(obj.getHeaders()));
@@ -95,6 +98,30 @@ public class ContentRequest implements ConfigElement
     public void setBrowser(CrawlerBrowser browser)
     {
         this.browser = browser;
+    }
+
+    /**
+     * Returns the document format for this configuration.
+     */
+    public DocumentFormat getFormat()
+    {
+        return format;
+    }
+
+    /**
+     * Sets the document format for this configuration.
+     */
+    public void setFormat(String format)
+    {
+        setFormat(DocumentFormat.fromValue(format));
+    }
+
+    /**
+     * Sets the document format for this configuration.
+     */
+    public void setFormat(DocumentFormat format)
+    {
+        this.format = format;
     }
 
     /**
@@ -260,6 +287,7 @@ public class ContentRequest implements ConfigElement
     {
         // The config attribute names
         private static final String BROWSER = "browser";
+        private static final String FORMAT = "format";
         private static final String URL = "url";
         private static final String URLS = "urls";
         private static final String HEADERS = "headers";
@@ -281,6 +309,8 @@ public class ContentRequest implements ConfigElement
         {
             if(map.containsKey(BROWSER))
                 ret.setBrowser((String)map.get(BROWSER));
+            if(map.containsKey(FORMAT))
+                ret.setFormat((String)map.get(FORMAT));
             if(map.containsKey(URL))
                 ret.addUrl((String)map.get(URL));
             if(map.containsKey(URLS))

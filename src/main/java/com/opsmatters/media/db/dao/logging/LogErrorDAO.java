@@ -253,8 +253,9 @@ public class LogErrorDAO extends BaseDAO
     /**
      * Stores the given error in the LOG_ERRORS table if an error with the same entity does not already exist.
      */
-    public void add(LogError error, boolean checkDuplicate) throws SQLException
+    public boolean add(LogError error, boolean checkDuplicate) throws SQLException
     {
+        boolean ret = false;
         boolean found = false;
 
         if(checkDuplicate && error.hasEntityCode())
@@ -274,14 +275,21 @@ public class LogErrorDAO extends BaseDAO
         }
 
         if(!found)
+        {
             add(error);
+            ret = true;
+        }
+
+        return ret;
     }
 
     /**
      * Stores the errors from the given log in the LOG_ERRORS table.
      */
-    public void addAll(List<LogEvent> events) throws SQLException
+    public List<LogError> addAll(List<LogEvent> events) throws SQLException
     {
+        List<LogError> ret = new ArrayList<LogError>();
+
         for(LogEvent event : events)
         {
             // Ignore user-generated events
@@ -300,17 +308,20 @@ public class LogErrorDAO extends BaseDAO
                 if(!error.isPersistent())
                     continue;
 
-                add(error, true);
+                if(add(error, true))
+                    ret.add(error);
             }
         }
+
+        return ret;
     }
 
     /**
      * Stores the errors from the given log in the LOG_ERRORS table.
      */
-    public void addAll(Log log) throws SQLException
+    public List<LogError> addAll(Log log) throws SQLException
     {
-        addAll(log.getEvents());
+        return addAll(log.getEvents());
     }
 
     /**
