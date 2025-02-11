@@ -92,6 +92,13 @@ public class LogErrorDAO extends BaseDAO
       + "FROM LOG_ERRORS WHERE CODE=? ORDER BY CREATED_DATE";
 
     /**
+     * The query to use to select the error items from the LOG_ERRORS table by entity code.
+     */
+    private static final String LIST_ITEMS_BY_ENTITY_CODE_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, CATEGORY, LEVEL, ENTITY_CODE, ENTITY_TYPE, ENTITY_NAME, STATUS "
+      + "FROM LOG_ERRORS WHERE ENTITY_CODE=? ORDER BY CREATED_DATE";
+
+    /**
      * The query to use to get the count of errors from the LOG_ERRORS table.
      */
     private static final String COUNT_SQL =  
@@ -132,6 +139,7 @@ public class LogErrorDAO extends BaseDAO
         table.addColumn("SESSION_ID", Types.INTEGER, true);
         table.setPrimaryKey("LOG_ERRORS_PK", new String[] {"ID"});
         table.addIndex("LOG_ERRORS_CODE_IDX", new String[] {"CODE"});
+        table.addIndex("LOG_ERRORS_ENTITY_CODE_IDX", new String[] {"ENTITY_CODE"});
         table.addIndex("LOG_ERRORS_STATUS_IDX", new String[] {"STATUS"});
         table.addIndex("LOG_ERRORS_SESSION_IDX", new String[] {"SESSION_ID"});
         table.setInitialised(true);
@@ -552,6 +560,63 @@ public class LogErrorDAO extends BaseDAO
     }
 
     /**
+     * Returns the error items from the LOG_ERRORS table by entity code.
+     */
+    public synchronized List<LogErrorItem> listItems(String entityCode) throws SQLException
+    {
+        List<LogErrorItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listItemsByEntityCodeStmt == null)
+            listItemsByEntityCodeStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_ENTITY_CODE_SQL);
+        clearParameters(listItemsByEntityCodeStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listItemsByEntityCodeStmt.setString(1, entityCode);
+            listItemsByEntityCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listItemsByEntityCodeStmt.executeQuery();
+            ret = new ArrayList<LogErrorItem>();
+            while(rs.next())
+            {
+                LogErrorItem error = new LogErrorItem();
+                error.setId(rs.getString(1));
+                error.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                error.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                error.setCode(rs.getString(4));
+                error.setType(rs.getString(5));
+                error.setCategory(rs.getString(6));
+                error.setLevel(rs.getString(7));
+                error.setEntityCode(rs.getString(8));
+                error.setEntityType(rs.getString(9));
+                error.setEntityName(rs.getString(10));
+                error.setStatus(rs.getString(11));
+                ret.add(error);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the count of errors from the LOG_ERRORS table.
      */
     public int count() throws SQLException
@@ -606,6 +671,8 @@ public class LogErrorDAO extends BaseDAO
         listItemsStmt = null;
         closeStatement(listByCodeStmt);
         listByCodeStmt = null;
+        closeStatement(listItemsByEntityCodeStmt);
+        listItemsByEntityCodeStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -618,6 +685,7 @@ public class LogErrorDAO extends BaseDAO
     private PreparedStatement listStmt;
     private PreparedStatement listItemsStmt;
     private PreparedStatement listByCodeStmt;
+    private PreparedStatement listItemsByEntityCodeStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }

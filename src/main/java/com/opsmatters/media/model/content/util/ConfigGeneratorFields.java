@@ -466,7 +466,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
     /**
      * Returns <CODE>true</CODE> if the given content type is enabled.
      */
-    private Boolean hasType(ContentType type)
+    public Boolean hasType(ContentType type)
     {
         return types.containsKey(type);
     }
@@ -605,7 +605,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
     /**
      * Returns <CODE>true</CODE> if the given video provider is enabled.
      */
-    private Boolean hasProvider(VideoProvider provider)
+    public Boolean hasProvider(VideoProvider provider)
     {
         return videos.containsKey(provider);
     }

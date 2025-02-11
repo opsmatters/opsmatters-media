@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.model.monitor.ContentReview;
 import com.opsmatters.media.model.monitor.ContentReviewItem;
 import com.opsmatters.media.model.monitor.ReviewStatus;
+import com.opsmatters.media.model.monitor.ContentMonitor;
 import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.util.SessionId;
 
@@ -86,6 +87,14 @@ public class ContentReviewDAO extends BaseDAO
       "SELECT ID, CREATED_DATE, UPDATED_DATE, REVIEW_DATE, CODE, REASON, ATTRIBUTES, STATUS, MONITOR_ID, CREATED_BY, SESSION_ID "
       + "FROM CONTENT_REVIEWS "
       + "WHERE CODE=? ORDER BY CREATED_DATE";
+
+    /**
+     * The query to use to select the reviews from the CONTENT_REVIEWS table by monitor.
+     */
+    private static final String LIST_BY_MONITOR_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, REVIEW_DATE, CODE, REASON, ATTRIBUTES, STATUS, MONITOR_ID, CREATED_BY, SESSION_ID "
+      + "FROM CONTENT_REVIEWS "
+      + "WHERE MONITOR_ID=? ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the review items from the CONTENT_REVIEWS table by status.
@@ -451,6 +460,63 @@ public class ContentReviewDAO extends BaseDAO
     }
 
     /**
+     * Returns the reviews from the CONTENT_REVIEWS table by monitor.
+     */
+    public synchronized List<ContentReview> list(ContentMonitor monitor) throws SQLException
+    {
+        List<ContentReview> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByMonitorStmt == null)
+            listByMonitorStmt = prepareStatement(getConnection(), LIST_BY_MONITOR_SQL);
+        clearParameters(listByMonitorStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByMonitorStmt.setString(1, monitor.getId());
+            listByMonitorStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByMonitorStmt.executeQuery();
+            ret = new ArrayList<ContentReview>();
+            while(rs.next())
+            {
+                ContentReview review = new ContentReview();
+                review.setId(rs.getString(1));
+                review.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                review.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                review.setReviewDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                review.setCode(rs.getString(5));
+                review.setReason(rs.getString(6));
+                review.setAttributes(new JSONObject(getClob(rs, 7)));
+                review.setStatus(rs.getString(8));
+                review.setMonitorId(rs.getString(9));
+                review.setCreatedBy(rs.getString(10));
+                review.setSessionId(rs.getInt(11));
+                ret.add(review);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the review items from the CONTENT_REVIEWS table by status.
      */
     public synchronized List<ContentReviewItem> listItems(ReviewStatus status) throws SQLException
@@ -558,6 +624,8 @@ public class ContentReviewDAO extends BaseDAO
         listItemsStmt = null;
         closeStatement(listByCodeStmt);
         listByCodeStmt = null;
+        closeStatement(listByMonitorStmt);
+        listByMonitorStmt = null;
         closeStatement(listItemsByStatusStmt);
         listItemsByStatusStmt = null;
         closeStatement(countStmt);
@@ -572,6 +640,7 @@ public class ContentReviewDAO extends BaseDAO
     private PreparedStatement listStmt;
     private PreparedStatement listItemsStmt;
     private PreparedStatement listByCodeStmt;
+    private PreparedStatement listByMonitorStmt;
     private PreparedStatement listItemsByStatusStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;

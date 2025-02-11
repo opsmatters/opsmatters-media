@@ -26,26 +26,29 @@ import java.util.ArrayList;
  */
 public enum LogEventLevel
 {
-    ERROR("Error", 2, "glyphicon-exclamation-sign", "level-error"),
-    WARN("Warn", 1, "glyphicon-exclamation-sign", "level-warn"),
-    INFO("Info", 0, "glyphicon-info-sign", "level-info"),
-    DEBUG("Debug", -1, "glyphicon-info-sign", "level-debug");
+    ERROR("Error", "error", 2, "glyphicon-exclamation-sign", "level-error"),
+    WARN("Warn", "warning", 1, "glyphicon-exclamation-sign", "level-warn"),
+    INFO("Info", "information", 0, "glyphicon-info-sign", "level-info"),
+    DEBUG("Debug", "debug", -1, "glyphicon-info-sign", "level-debug");
 
     private String value;
+    private String tag;
     private int precedence;
     private String icon;
     private String css;
 
     /**
-     * Constructor that takes the level value, precedence, icon and css.
+     * Constructor that takes the level value, tag, precedence, icon and css.
      * @param value The value for the level
+     * @param tag The tag for the level
      * @param precedence The precedence for the level
      * @param icon The glyphicon for the level
      * @param css The css class for the level
      */
-    LogEventLevel(String value, int precedence, String icon, String css)
+    LogEventLevel(String value, String tag, int precedence, String icon, String css)
     {
         this.value = value;
+        this.tag = tag;
         this.precedence = precedence;
         this.icon = icon;
         this.css = css;
@@ -67,6 +70,15 @@ public enum LogEventLevel
     public String value()
     {
         return value;
+    }
+
+    /**
+     * Returns the tag of the level.
+     * @return The tag of the level.
+     */
+    public String tag()
+    {
+        return tag;
     }
 
     /**
