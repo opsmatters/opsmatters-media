@@ -736,6 +736,12 @@ media.built.on=${TODAY}
     <version>1.7.36</version>
   </dependency>
 
+  <dependency>
+    <groupId>com.samskivert</groupId>
+    <artifactId>jmustache</artifactId>
+    <version>1.16</version>
+  </dependency>
+
 </dependencies>
 
 <repositories>

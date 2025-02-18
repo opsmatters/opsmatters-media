@@ -101,6 +101,14 @@ public class Invoice
     }
 
     /**
+     * Returns <CODE>true</CODE> if the invoice number has been set.
+     */
+    public boolean hasNumber()
+    {
+        return getNumber() != null && getNumber().length() > 0;
+    }
+
+    /**
      * Returns the invoice email.
      */
     public String getEmail()

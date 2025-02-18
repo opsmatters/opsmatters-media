@@ -67,7 +67,7 @@ public class ContentSiteSettings extends BaseEntity
     public ContentSiteSettings(OrganisationSite organisation, List<? extends Content> content)
     {
         setId(StringUtils.getUUID(null));
-        setCreatedDate(organisation.getCreatedDate());
+        setCreatedDate(Instant.now());
         setSiteId(organisation.getSiteId());
         setCode(organisation.getCode());
         setContent(content);

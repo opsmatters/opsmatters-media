@@ -99,7 +99,7 @@ public class ConfigGenerator
 
         try
         {
-            in = cl.getResourceAsStream(String.format("generator/%s", filename));
+            in = cl.getResourceAsStream(String.format("template/content/%s", filename));
             ret = IOUtils.toString(in, StandardCharsets.UTF_8.name());
         }
         finally
@@ -142,8 +142,6 @@ public class ConfigGenerator
      */
     public void generate() throws IOException
     {
-        configMap.clear();
-
         for(ContentType type : ContentType.toList())
         {
             if(fields.getContentTypes().contains(type))
@@ -167,13 +165,6 @@ public class ConfigGenerator
                             VideoProvider provider = VideoProvider.fromValue(entry.getKey());
                             if(provider != null)
                                 providers.put(provider, entry.getKey());
-
-                            // Exclude the section if the field has been deselected
-                            if(provider == null || fields.getVideoProviders().contains(provider))
-                            {
-                                buff.append("\r\n");
-                                buff.append(entry.getValue());
-                            }
                         }
                     }
 

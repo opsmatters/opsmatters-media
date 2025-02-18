@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import com.opsmatters.media.model.order.Order;
 import com.opsmatters.media.model.order.OrderItem;
 import com.opsmatters.media.model.order.contact.Contact;
+import com.opsmatters.media.model.order.product.Product;
 
 /**
  * Class representing the list of orders.
@@ -105,6 +106,47 @@ public class Orders implements java.io.Serializable
     public static Map<String,OrderItem> itemMap(Order order)
     {
         return itemMap.get(order.getId());
+    }
+
+    /**
+     * Returns the number of items for the given order.
+     */
+    public static int getItemCount(Order order)
+    {
+        int ret = -1;
+        Map<String,OrderItem> items = itemMap(order);
+        if(items != null)
+            ret = items.size();
+        return ret;
+    }
+
+    /**
+     * Returns the list of items for the given order and product.
+     */
+    public static List<OrderItem> listItems(Order order, Product product)
+    {
+        List<OrderItem> ret = new ArrayList<OrderItem>();
+        Map<String,OrderItem> items = itemMap(order);
+        if(items != null)
+        {
+            for(OrderItem item : items.values())
+            {
+                if(product == null || item.getProductCode().equals(product.getCode()))
+                {
+                    ret.add(item);
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the list of items for the given order.
+     */
+    public static List<OrderItem> listItems(Order order)
+    {
+        return listItems(order, null);
     }
 
     /**

@@ -22,6 +22,8 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.order.contact.Contact;
 import com.opsmatters.media.model.order.Order;
@@ -572,6 +574,27 @@ public class OrderDAO extends BaseDAO
         }
 
         postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the aging orders from the ORDERS table by contact.
+     */
+    public List<Order> listAging(Contact contact, int days) throws SQLException
+    {
+        List<Order> ret = new ArrayList<Order>();
+
+        Instant now = Instant.now();
+        List<Order> orders = list(contact.getId(), OrderStatus.PENDING);
+        for(Order order : orders)
+        {
+            // Add the pending invoices more than "days" old
+            if(ChronoUnit.DAYS.between(order.getCreatedDate(), now) > days)
+            {
+                ret.add(order);
+            }
+        }
 
         return ret;
     }

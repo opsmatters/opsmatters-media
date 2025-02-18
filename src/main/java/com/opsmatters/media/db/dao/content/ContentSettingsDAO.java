@@ -317,6 +317,27 @@ public class ContentSettingsDAO extends BaseDAO
     }
 
     /**
+     * Adds or updates the given settings in the CONTENT_SETTINGS table.
+     */
+    public boolean upsert(ContentSettings settings) throws SQLException
+    {
+        boolean ret = false;
+
+        ContentSettings existing = getById(settings.getId());
+        if(existing != null)
+        {
+            update(settings);
+        }
+        else
+        {
+            add(settings);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the settings from the CONTENT_SETTINGS table.
      */
     public synchronized List<ContentSettings> list() throws SQLException

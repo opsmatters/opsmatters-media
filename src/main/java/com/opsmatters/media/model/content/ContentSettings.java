@@ -69,7 +69,7 @@ public class ContentSettings extends BaseEntity
     public ContentSettings(Organisation organisation, ContentType type)
     {
         setId(StringUtils.getUUID(null));
-        setCreatedDate(organisation.getCreatedDate());
+        setCreatedDate(Instant.now());
         setCode(organisation.getCode());
         setType(type);
     }

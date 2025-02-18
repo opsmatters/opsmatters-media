@@ -273,7 +273,7 @@ public class HashtagDAO extends BaseDAO
     }
 
     /**
-     * Adds or Updates the given feed in the HASHTAGS table.
+     * Adds or updates the given hashtag in the HASHTAGS table.
      */
     public boolean upsert(Hashtag hashtag) throws SQLException
     {
