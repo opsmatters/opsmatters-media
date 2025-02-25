@@ -859,6 +859,8 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                 break;
         }
 
+        setResult(field, ret != null);
+
         if(ret == null && !field.isOptional())
         {
             logger.warning(String.format("Elements not found for %s field: %s",
@@ -1047,6 +1049,8 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                 break;
         }
 
+        setResult(field, ret != null);
+
         if(ret == null && !field.isOptional())
         {
             logger.warning(String.format("Anchor not found for %s field: %s",
@@ -1147,6 +1151,8 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                 break;
         }
 
+        setResult(field, ret != null);
+
         if(ret == null && !field.isOptional())
         {
             logger.warning(String.format("Body summary not found for %s field: %s",
@@ -1238,6 +1244,8 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
             if(found)
                 break;
         }
+
+        setResult(field, ret != null);
 
         if(ret == null && !field.isOptional())
         {

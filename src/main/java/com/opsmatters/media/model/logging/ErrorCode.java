@@ -27,6 +27,7 @@ public enum ErrorCode
     E_NONE(false),
     E_EXCEPTION(true),
     E_ERROR_PAGE(false),
+    E_BAD_PAGE(false),
     E_PARSE_DATE(true),
     E_EMPTY_ROOT(true),
     E_MISSING_SOURCE(false),

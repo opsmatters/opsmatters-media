@@ -31,6 +31,7 @@ import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.WordUtils;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentDetails;
+import com.opsmatters.media.model.content.FieldName;
 import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerTarget;
 import com.opsmatters.media.model.content.crawler.CrawlerContent;
@@ -45,6 +46,7 @@ import com.opsmatters.media.model.logging.LogEvent;
 import com.opsmatters.media.model.logging.LogEventCategory;
 import com.opsmatters.media.model.logging.ErrorCode;
 
+import static com.opsmatters.media.model.content.FieldName.*;
 import static com.opsmatters.media.model.content.crawler.CrawlerStatus.*;
 import static com.opsmatters.media.model.logging.LogEventType.*;
 import static com.opsmatters.media.model.logging.ErrorCode.*;
@@ -71,8 +73,10 @@ public abstract class ContentCrawler<D extends ContentDetails>
     private CrawlerStatus status = NEW;
     private ErrorCode error = E_NONE;
 
-    private Map<String, Object> properties = new HashMap<String, Object>();
     protected Log log = new Log(CRAWLER);
+    private Map<String, Object> properties = new HashMap<String, Object>();
+    private Map<String,Field> successFields = new HashMap<String,Field>();
+    private Map<String,Field> errorFields = new HashMap<String,Field>();
 
     /**
      * Constructor that takes a target.
@@ -201,6 +205,92 @@ public abstract class ContentCrawler<D extends ContentDetails>
             setStatus(ERROR);
 
         this.error = error;
+    }
+
+    /**
+     * Returns the successful fields for the crawler.
+     */
+    private Map<String,Field> getSuccessFields()
+    {
+        return successFields;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if there exists a successful field with the given name.
+     */
+    private boolean hasSuccessField(FieldName name)
+    {
+        return successFields.containsKey(name.value());
+    }
+
+    /**
+     * Returns the error fields for the crawler.
+     */
+    private Map<String,Field> getErrorFields()
+    {
+        return errorFields;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if there exists an error field with the given name.
+     */
+    private boolean hasErrorField(FieldName name)
+    {
+        return errorFields.containsKey(name.value());
+    }
+
+    /**
+     * Sets a field result for the crawler.
+     */
+    protected void setResult(Field field, boolean success)
+    {
+        clearResult(field);
+
+        if(success)
+            successFields.put(field.getName(), field);
+        else
+            errorFields.put(field.getName(), field);
+    }
+
+    /**
+     * Clears the result for the given field.
+     */
+    private void clearResult(Field field)
+    {
+        successFields.remove(field.getName());
+        errorFields.remove(field.getName());
+    }
+
+    /**
+     * Clears the field results for the crawler.
+     */
+    protected void clearResults()
+    {
+        successFields.clear();
+        errorFields.clear();
+    }
+
+    /**
+     * Returns <CODE>true</CODE>if the crawler attempted a bad page.
+     */
+    protected boolean isBadPage()
+    {
+        int sucesses = getSuccessFields().size();
+        int errors = getErrorFields().size();
+
+        if(errors > 0)
+        {
+            // All crawler fields failed
+            if(sucesses == 0)
+                return true;
+
+            // Only the title field succeeded
+            //   (often it's set to "h1" which will work on most pages)
+            if(sucesses == 1 && hasSuccessField(TITLE))
+                return true;
+        }
+
+        return false;
     }
 
     /**

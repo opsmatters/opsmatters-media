@@ -42,9 +42,10 @@ public class HtmlDocument
 
     private static final String NBSP_CHAR = "\u00a0";
     private static final String NBSP_ENTITY = "&nbsp;";
-    private static final String LF_ENTITY = "&#013;";
+    private static final String LF_CHAR = "\n";
+    private static final String CR_CHAR = "\r";
 
-    private static final String BEFORE_CHARS = " ('\"“"+NBSP_CHAR+LF_ENTITY;
+    private static final String BEFORE_CHARS = " ('\"“"+NBSP_CHAR+CR_CHAR+LF_CHAR;
     private static final String AFTER_CHARS = " !:;,.'\"”?)"+NBSP_CHAR;
     private static final String BEFORE_ENTITIES = "&ldquo;"+NBSP_ENTITY;
     private static final String AFTER_ENTITIES = "&rdquo;"+NBSP_ENTITY;
@@ -69,6 +70,7 @@ public class HtmlDocument
     private static Pattern SPAN_PATTERN = Pattern.compile(OPEN_SPAN, Pattern.DOTALL);
     private static Pattern DIV_CONTENT_PATTERN = Pattern.compile("<div>(.+?)</div>", Pattern.DOTALL);
     private static Pattern SECTION_CONTENT_PATTERN = Pattern.compile("<section>(.+?)</section>", Pattern.DOTALL);
+    private static Pattern UNDERLINE_CONTENT_PATTERN = Pattern.compile("<u.*?>(.*?<a.*?>.*?</a>.*?)</u>", Pattern.DOTALL);
     private static Pattern H1_CONTENT_PATTERN = Pattern.compile("<h1.*?>(.+?)</h1>", Pattern.DOTALL);
     private static Pattern OL_ATTR_CONTENT_PATTERN = Pattern.compile("<ol(.*?)>(.*?)</ol>", Pattern.DOTALL);
     private static Pattern LI_PATTERN = Pattern.compile("<li>", Pattern.DOTALL);
@@ -517,7 +519,7 @@ public class HtmlDocument
     {
         String ret = str;
 
-        ret = ret.replaceAll("<br[ ]*/>", LF_ENTITY);
+        ret = ret.replaceAll("<br[ ]*/>", CR_CHAR);
         ret = ret.replaceAll("<\\w+.*?>", "");
         ret = ret.replaceAll("</\\w+>", "");
 
@@ -717,6 +719,24 @@ public class HtmlDocument
         doc = doc.replaceAll("^<section>\\s*", ""); // <section> at start of doc
         doc = doc.replaceAll("\\s*<section>", "");
         doc = doc.replaceAll("\\s*</section>", "");
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the HTML document contains a "&lt;u&gt;" tag containing an anchor.
+     * @param doc The HTML document to search
+     * @return <CODE>true</CODE> if the HTML document contains a "&lt;u&gt;" tag containing an anchor.
+     */
+    public static boolean hasUnderline(String doc)
+    {
+        return UNDERLINE_CONTENT_PATTERN.matcher(doc).find();
+    }
+
+    /**
+     * Removes "&lt;u&gt;" tags in the HTML document containing an anchor.
+     */
+    private void removeUnderlines()
+    {
+        doc = UNDERLINE_CONTENT_PATTERN.matcher(doc).replaceAll("$1");
     }
 
     /**
@@ -1634,6 +1654,16 @@ public class HtmlDocument
         public Builder removeSections()
         {
             ret.removeSections();
+            return this;
+        }
+
+        /**
+         * Removes "&lt;u&gt;" tags in the HTML document containing an anchor.
+         * @return This object
+         */
+        public Builder removeUnderlines()
+        {
+            ret.removeUnderlines();
             return this;
         }
 

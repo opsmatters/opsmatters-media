@@ -419,6 +419,28 @@ public class HtmlUtils
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given string contains a "&lt;u&gt;" tag containing an anchor.
+     * @param str The string to search
+     * @return <CODE>true</CODE> if the given string contains a "&lt;u&gt;" tag containing an anchor.
+     */
+    public static boolean hasUnderline(String str)
+    {
+        return HtmlDocument.hasUnderline(str);
+    }
+
+    /**
+     * Removes "&lt;u&gt;" tags in the given string containing an anchor.
+     * @param str The string to amend
+     * @return The amended string.
+     */
+    public static String removeUnderlines(String str)
+    {
+        return HtmlDocument.builder(str)
+            .removeUnderlines()
+            .get();
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the given string contains a &lt;h1&gt; tag.
      * @param str The string to search
      * @return <CODE>true</CODE> if the given string contains a &lt;h1&gt; tag.

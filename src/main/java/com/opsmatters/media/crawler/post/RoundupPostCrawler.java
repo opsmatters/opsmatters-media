@@ -38,6 +38,7 @@ import com.opsmatters.media.model.logging.LogError;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.FormatUtils;
 
+import static com.opsmatters.media.model.content.crawler.CrawlerStatus.*;
 import static com.opsmatters.media.model.content.crawler.DocumentFormat.*;
 import static com.opsmatters.media.model.logging.LogEventCategory.*;
 import static com.opsmatters.media.model.logging.ErrorCode.*;
@@ -128,6 +129,9 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostDetails>
     public RoundupPostDetails getDetails(RoundupPostDetails teaser)
         throws IOException, IllegalArgumentException, DateTimeParseException
     {
+        clearResults();
+        setStatus(EXECUTING);
+
         RoundupPostDetails content = new RoundupPostDetails(teaser);
         List<Fields> articles = getPage().getArticles().getFields(getErrorCode() == E_MISSING_ROOT);
 
@@ -179,7 +183,16 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostDetails>
                 }
 
                 if(root != null)
+                {
+                    if(isBadPage())
+                    {
+                        setStatus(ERROR);
+                        setErrorCode(E_BAD_PAGE);
+                        throw new IllegalArgumentException("Unable to crawl roundup article page");
+                    }
+
                     break;
+                }
             }
 
             if(root == null)
@@ -190,6 +203,9 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostDetails>
 
             Teasers.update(getPage().getTeasers().getUrls(), content);
         }
+
+        if(getErrorCode() == E_NONE)
+            setStatus(COMPLETED);
 
         return content;
     }
@@ -237,6 +253,8 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostDetails>
                 }
                 catch(DateTimeParseException e)
                 {
+                    setResult(field, false);
+
                     if(!field.isOptional())
                     {
                         logger.severe(StringUtils.serialize(e));
