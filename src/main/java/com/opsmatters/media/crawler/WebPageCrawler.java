@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import java.time.format.DateTimeParseException;
 import org.apache.commons.logging.LogFactory;
 import com.google.common.net.UrlEscapers;
@@ -90,7 +91,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     public static final String ROOT = "<root>";
 
     private CrawlerBrowser browser;
-    private WebDriver driver;
+    private WebDriverInstance instance;
     private TraceObject traceObject = TraceObject.NONE;
     private ContentConfig config;
     private CrawlerWebPage page;
@@ -119,8 +120,14 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
      */
     private void initWebDriver(ContentRequest request)
     {
-        if(driver == null)
-            driver = WebDriverPool.getDriver(request.getBrowser(), request.isHeadless());
+        if(instance == null)
+        {
+            if(request.canCache())
+                instance = WebDriverPool.getInstance(request);
+            else
+                instance = new WebDriverInstance(request, false);
+        }
+
         this.browser = request.getBrowser();
         this.format = request.getFormat();
         WebDriverPool.setDebug(debug());
@@ -131,9 +138,15 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
      */
     public void close()
     {
-        if(driver != null)
-            WebDriverPool.releaseDriver(driver);
-        driver = null;
+        if(instance != null)
+        {
+            if(instance.isCached())
+                WebDriverPool.releaseInstance(instance);
+            else
+                instance.close();
+        }
+
+        instance = null;
     }
 
     /**
@@ -141,7 +154,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
      */
     protected WebDriver getDriver()
     {
-        return driver;
+        return instance != null ? instance.getDriver() : null;
     }
 
     /**
@@ -154,9 +167,9 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         try
         {
             if(root != null)
-                ret = driver.findElement(By.tagName(root)).getAttribute("outerHTML");
+                ret = getDriver().findElement(By.tagName(root)).getAttribute("outerHTML");
             else // XML
-                ret = driver.getPageSource();
+                ret = getDriver().getPageSource();
         }
         catch(RuntimeException e)
         {
@@ -303,15 +316,16 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     public String getTitle()
     {
         String ret = null;
-        if(driver != null)
+
+        if(getDriver() != null)
         {
             if(getFormat() == HTML)
             {
-                ret = driver.getTitle();
+                ret = getDriver().getTitle();
             }
             else if(getFormat() == RSS)
             {
-                WebElement title = driver.findElement(By.xpath("//rss/channel/title"));
+                WebElement title = getDriver().findElement(By.xpath("//rss/channel/title"));
                 if(title != null)
                     ret = title.getText();
             }
@@ -330,10 +344,10 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         if(request.hasTrailingSlash())
             url += "/";
 
-        driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+        getDriver().manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
 
         logger.info("Loading page: "+url);
-        driver.get(url);
+        getDriver().get(url);
 
         String title = getTitle();
         if(isErrorPage(title))
@@ -455,7 +469,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         {
             if(debug())
                 logger.info("Looking for More link: "+selector);
-            List<WebElement> links = driver.findElements(By.cssSelector(selector));
+            List<WebElement> links = getDriver().findElements(By.cssSelector(selector));
             if(links.size() > 0)
             {
                 if(debug())
@@ -467,7 +481,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
                 {
                     if(debug())
                         logger.info("Set explicit wait before More link click: "+max);
-                    WebDriverWait waiter = new WebDriverWait(driver, max, interval); 
+                    WebDriverWait waiter = new WebDriverWait(getDriver(), Duration.ofSeconds(max), Duration.ofSeconds(interval)); 
                     WebElement element = waiter.until(ExpectedConditions.elementToBeClickable(By.cssSelector(selector)));
                     if(element != null)
                         element.click();
@@ -497,7 +511,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         long wait = loading.getWait();
         if(debug())
             logger.info("Set implicit wait: "+wait);
-        driver.manage().timeouts().implicitlyWait(wait, TimeUnit.MILLISECONDS);
+        getDriver().manage().timeouts().implicitlyWait(wait, TimeUnit.MILLISECONDS);
     }
 
     protected void configureExplicitWait(ContentLoading loading)
@@ -513,7 +527,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         {
             if(debug())
                 logger.info(String.format("Set explicit wait: max-wait=%d interval=%d selector=%s", max, interval, selector));
-            WebDriverWait waiter = new WebDriverWait(driver, max, interval); 
+            WebDriverWait waiter = new WebDriverWait(getDriver(), Duration.ofSeconds(max), Duration.ofSeconds(interval)); 
             waiter.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector)));
         }
     }

@@ -75,6 +75,7 @@ public enum ParameterName
     SENDER_WEBSITE("sender-website"),
     SENDER_LOGO("sender-logo"),
     SENDER_TAX_ID("sender-tax-id"),
+    SENDER_COMPANY_NOTES("sender-company-notes"),
     SENDER_ADDITIONAL_NOTES("sender-additional-notes"),
     INVOICE_NOTE("invoice-note");
 

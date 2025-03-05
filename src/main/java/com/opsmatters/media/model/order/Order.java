@@ -97,7 +97,7 @@ public class Order extends OwnedEntity
                 if(company != null)
                 {
                     if(company.hasAdditionalInfo())
-                        note = String.format("%s\n\n%s", company.getAdditionalInfo(), note);
+                        note = String.format("%s\n%s", note, company.getAdditionalInfo());
                     if(company.hasBillingEmail())
                         email = company.getBillingEmail();
                 }

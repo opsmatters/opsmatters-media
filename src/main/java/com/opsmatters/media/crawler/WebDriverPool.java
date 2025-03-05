@@ -21,23 +21,12 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
 import java.util.logging.Logger;
-import java.time.Instant;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.PageLoadStrategy;
-import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
-import com.gargoylesoftware.htmlunit.WebClient;
 import com.opsmatters.media.model.content.crawler.CrawlerBrowser;
-
-import static com.opsmatters.media.model.content.crawler.CrawlerBrowser.*;
+import com.opsmatters.media.model.content.crawler.ContentRequest;
 
 /**
- * Class representing a pool of Selenium WebDriver objects.
+ * Class representing a pool of Selenium WebDriverInstance objects.
  * 
  * @author Gerald Curley (opsmatters)
  */
@@ -45,14 +34,12 @@ public class WebDriverPool
 {
     private static final Logger logger = Logger.getLogger(WebDriverPool.class.getName());
 
-    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36";
     private static final int CAPACITY = 5;
 
     private static WebDriverPool _pool;
 
-    private Map<CrawlerBrowser,List<WebDriver>> waiting = Collections.synchronizedMap(new HashMap<CrawlerBrowser,List<WebDriver>>(CAPACITY));
-    private List<WebDriver> used = Collections.synchronizedList(new ArrayList<WebDriver>(CAPACITY));
-    private Map<String,WebDriverInstance> instances = new HashMap<String,WebDriverInstance>(CAPACITY);
+    private Map<CrawlerBrowser,List<WebDriverInstance>> waiting = Collections.synchronizedMap(new HashMap<CrawlerBrowser,List<WebDriverInstance>>(CAPACITY));
+    private List<WebDriverInstance> used = Collections.synchronizedList(new ArrayList<WebDriverInstance>(CAPACITY));
     private boolean debug = false;
 
     private static void checkInstance()
@@ -61,22 +48,22 @@ public class WebDriverPool
             _pool = new WebDriverPool();
     }
 
-    public synchronized static WebDriver getDriver(CrawlerBrowser browser, boolean headless)
+    public synchronized static WebDriverInstance getInstance(ContentRequest request)
     {
         checkInstance();
-        return _pool.get(browser, headless);
+        return _pool.get(request);
     }
 
-    public synchronized static void releaseDriver(WebDriver driver)
+    public synchronized static void releaseInstance(WebDriverInstance instance)
     {
         if(_pool != null)
-            _pool.release(driver);
+            _pool.release(instance);
     }
 
     public synchronized static void close()
     {
         if(_pool != null)
-            _pool.closeDrivers();
+            _pool.closeInstances();
     }
 
     public static void setDebug(boolean debug)
@@ -88,62 +75,50 @@ public class WebDriverPool
     /**
      * Returns the next available driver for the given browser.
      */
-    private WebDriver get(CrawlerBrowser browser, boolean headless)
+    private WebDriverInstance get(ContentRequest request)
     {
+        CrawlerBrowser browser = request.getBrowser();
         if(browser == null)
-            browser = HTMLUNIT;
+            browser = CrawlerBrowser.HTMLUNIT;
 
-        WebDriver ret = null;
+        WebDriverInstance ret = null;
+
         do
         {
-            List<WebDriver> drivers = waiting.get(browser);
-            if(drivers == null)
+            List<WebDriverInstance> instances = waiting.get(browser);
+            if(instances == null)
             {
-                drivers = new ArrayList<WebDriver>(CAPACITY);
-                waiting.put(browser, drivers);
+                instances = new ArrayList<WebDriverInstance>(CAPACITY);
+                waiting.put(browser, instances);
             }
 
-            WebDriver driver = null;
+            if(instances.size() == 0)
+                instances.add(new WebDriverInstance(request, true));
+
             WebDriverInstance instance = null;
-
-            if(drivers.size() == 0)
-            {
-                if(browser == CHROME)
-                    driver = newChromeDriver(headless);
-                else if(browser == FIREFOX)
-                    driver = newFirefoxDriver(headless);
-                else // Defaults to HtmlUnit
-                    driver = newHtmlUnitDriver();
-
-                drivers.add(driver);
-                instance = new WebDriverInstance(driver, headless);
-                instances.put(instance.getHandle(), instance);
-            }
 
             try
             {
-                // Get the next driver
-                driver = drivers.remove(0);
-                instance = instances.get(driver.getWindowHandle());
+                // Get the next instance
+                instance = instances.remove(0);
 
                 // Check if the driver can be used
-                if(instance.renew()
-                    || !isAlive(driver)
-                    || instance.isHeadless() != headless)
+                if(instance.renew() || !instance.isAlive())
                 {
-                    closeDriver(driver);
+                    instance.close();
                 }
-                else // use the driver
+                else // use the instance
                 {
-                    used.add(driver);
+                    used.add(instance);
                     instance.use();
-                    ret = driver;
+                    ret = instance;
                 }
             }
             catch(WebDriverException e)
             {
                 // Browser has gone away
-                closeDriver(driver);
+                if(instance != null)
+                    instance.close();
             }
         }
         while(ret == null);
@@ -151,131 +126,36 @@ public class WebDriverPool
         return ret;
     }
 
-    private boolean isAlive(WebDriver driver)
+    /**
+     * Releases the given instance back to the pool.
+     */
+    private void release(WebDriverInstance instance)
     {
-        try
-        {
-            return driver.getWindowHandles().size() > 0;
-        }
-        catch(UnhandledAlertException ex)
-        {
-            return true;
-        }
-        catch(WebDriverException ex)
-        {
-            return false;
-        }
-    }
-
-    private WebDriver newHtmlUnitDriver()
-    {
-        return new HtmlUnitDriver()
-        {
-            @Override
-            protected WebClient modifyWebClient(WebClient webClient)
-            {
-                final WebClient client = super.modifyWebClient(webClient);
-
-                client.setJavaScriptTimeout(30000);
-                client.getOptions().setTimeout(60000);
-                client.getOptions().setRedirectEnabled(true);
-                client.getOptions().setThrowExceptionOnFailingStatusCode(false);
-                client.getOptions().setThrowExceptionOnScriptError(false);
-                client.getOptions().setCssEnabled(false);
-                client.getOptions().setPrintContentOnFailingStatusCode(false);
-                client.getCookieManager().setCookiesEnabled(false);
-                client.getOptions().setUseInsecureSSL(true);
-
-                return client;
-            }
-        };
-    }
-
-    private WebDriver newChromeDriver(boolean headless)
-    {
-       ChromeOptions options = new ChromeOptions();
-        options.addArguments("--no-sandbox");
-        options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"}); 
-        options.addArguments("--disable-blink-features=AutomationControlled"); // prevents some 403 errors
-        options.addArguments("--disable-extensions");
-        options.setPageLoadStrategy(PageLoadStrategy.EAGER);
-        options.addArguments("--window-size=1920,1080");
-        options.addArguments("--user-agent="+USER_AGENT);
-        options.addArguments("--no-proxy-server");
-        options.addArguments("--proxy-server='direct://'");
-        options.addArguments("--proxy-bypass-list=*");
-        options.setHeadless(headless);
-        return new ChromeDriver(options);
-    }
-
-    private WebDriver newFirefoxDriver(boolean headless)
-    {
-        FirefoxOptions options = new FirefoxOptions();
-        options.setPageLoadStrategy(PageLoadStrategy.EAGER);
-        options.addArguments("--window-size=1920,1080");
-        options.addArguments("--user-agent="+USER_AGENT);
-        options.addArguments("--no-proxy-server");
-        options.addArguments("--proxy-server='direct://'");
-        options.addArguments("--proxy-bypass-list=*");
-        options.setHeadless(headless);
-        return new FirefoxDriver(options);
+        used.remove(instance);
+        waiting.get(instance.getBrowser()).add(instance);
     }
 
     /**
-     * Releases the given driver back to the pool.
+     * Close the instances and release resources.
      */
-    private void release(WebDriver driver)
+    public void closeInstances()
     {
-        used.remove(driver);
-        if(driver instanceof ChromeDriver)
-            waiting.get(CHROME).add(driver);
-        else if(driver instanceof FirefoxDriver)
-            waiting.get(FIREFOX).add(driver);
-        else // Defaults to HtmlUnit
-            waiting.get(HTMLUNIT).add(driver);       
-    }
-
-    /**
-     * Close the drivers and release resources.
-     */
-    public void closeDrivers()
-    {
-        logger.info("Closing web drivers");
-        closeDrivers(waiting.get(HTMLUNIT));
-        closeDrivers(waiting.get(CHROME));
-        closeDrivers(waiting.get(FIREFOX));
-        closeDrivers(used);
+        logger.info("Closing web driver instances");
+        for(CrawlerBrowser browser : CrawlerBrowser.values())
+            closeInstances(waiting.get(browser));
+        closeInstances(used);
         waiting.clear();
     }
 
     /**
-     * Close the drivers in the given list.
+     * Close the instances in the given list.
      */
-    private void closeDrivers(List<WebDriver> drivers)
+    private void closeInstances(List<WebDriverInstance> instances)
     {
-        if(drivers != null)
+        if(instances != null)
         {
-            for(WebDriver driver : drivers)
-                closeDriver(driver);
-        }
-    }
-
-    /**
-     * Close the given driver.
-     */
-    private void closeDriver(WebDriver driver)
-    {
-        try
-        {
-            if(driver != null)
-            {
-                String handle = driver.getWindowHandle();
-                driver.quit();
-                instances.remove(handle);
-            }
-        }
-        catch(WebDriverException e)
-        {
+            for(WebDriverInstance instance : instances)
+                instance.close();
         }
     }
 }

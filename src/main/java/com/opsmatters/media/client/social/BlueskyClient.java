@@ -57,6 +57,7 @@ public class BlueskyClient extends ApiClient implements SocialClient
     private static final String EXPIRED_TOKEN = "ExpiredToken";
     private static final String RATE_LIMIT_EXCEEDED = "RateLimitExceeded";
     private static final String UPSTREAM_FAILURE = "UpstreamFailure";
+    private static final String UPSTREAM_TIMEOUT = "UpstreamTimeout";
 
     private static final int READ_TIMEOUT = 15000;
     private static final int REFRESH_RETRIES = 3;
@@ -146,7 +147,7 @@ public class BlueskyClient extends ApiClient implements SocialClient
             return false;
         }
 
-        clearBearerToken();
+        clearToken();
 
         if(!hasAccessToken())
         {
@@ -168,12 +169,12 @@ public class BlueskyClient extends ApiClient implements SocialClient
             }
         }
 
-        setBearerToken(getAccessToken());
+        setToken(getAccessToken());
 
         if(debug())
             logger.info("Created bluesky client successfully: "+channel.getCode());
 
-        return hasBearerToken();
+        return hasToken();
     }
 
     /**
@@ -400,7 +401,7 @@ public class BlueskyClient extends ApiClient implements SocialClient
             String response = null;
             Exception ex = null;
 
-            setBearerToken(getRefreshToken());
+            setToken(getRefreshToken());
             for(int i = 0; i < REFRESH_RETRIES; i++)
             {
                 try
@@ -496,7 +497,7 @@ public class BlueskyClient extends ApiClient implements SocialClient
      */
     public ChannelPost sendPost(String text) throws IOException
     {
-        if(!hasBearerToken())
+        if(!hasToken())
             throw new IllegalArgumentException("missing access token");
 
         if(debug())
@@ -886,7 +887,8 @@ public class BlueskyClient extends ApiClient implements SocialClient
                 // Bluesky tokens expire after 2 hours
                 ret = true;
             }
-            else if(ex.getError().equals(UPSTREAM_FAILURE))
+            else if(ex.getError().equals(UPSTREAM_FAILURE)
+                || ex.getError().equals(UPSTREAM_TIMEOUT))
             {
                 ret = true;
             }

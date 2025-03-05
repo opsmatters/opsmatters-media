@@ -106,6 +106,7 @@ public class PayPalInvoice extends JSONObject implements java.io.Serializable
         detail.setCurrencyCode(order.getCurrency().code());
         detail.getPaymentTerm().setTermType(order.getPaymentTerm().code());
         detail.setNote(invoice.getNote());
+        detail.setTermsAndConditions(sender.getCompanyNotes());
         setDetail(detail);
 
         for(OrderItem orderItem : orderItems)

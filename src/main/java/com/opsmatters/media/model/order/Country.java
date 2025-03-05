@@ -29,6 +29,7 @@ public enum Country
     UNDEFINED("??", "Undefined"),
     ARMENIA("AM", "Armenia"),
     AUSTRALIA("AU", "Australia"),
+    AUSTRIA("AT", "Austria"),
     BULGARIA("BG", "Bulgaria"),
     CANADA("CA", "Canada"),
     CHINA("CN", "China"),

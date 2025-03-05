@@ -50,7 +50,7 @@ public class ApiClient extends Client
     private HttpClientContext context;
     private StatusLine status;
     private Header[] headers;
-    private String bearerToken = null;
+    private String token = null;
 
     /**
      * Returns a new client that does not use authentication.
@@ -188,27 +188,35 @@ public class ApiClient extends Client
     }
 
     /**
-     * Sets the bearer token for the client.
+     * Returns the token name for the client.
      */
-    public void setBearerToken(String bearerToken)
+    public String getTokenName()
     {
-        this.bearerToken = bearerToken;
+        return "Bearer";
     }
 
     /**
-     * Clears the bearer token for the client.
+     * Sets the token for the client.
      */
-    public void clearBearerToken()
+    public void setToken(String token)
     {
-        setBearerToken(null);
+        this.token = token;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the bearer token for the client has been set.
+     * Clears the token for the client.
      */
-    public boolean hasBearerToken()
+    public void clearToken()
     {
-        return bearerToken != null && bearerToken.length() > 0;
+        setToken(null);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the token for the client has been set.
+     */
+    public boolean hasToken()
+    {
+        return token != null && token.length() > 0;
     }
 
     /**
@@ -226,8 +234,8 @@ public class ApiClient extends Client
             request.setURI(builder.build());
         }
 
-        if(bearerToken != null)
-            request.addHeader("Authorization", String.format("Bearer %s", bearerToken));
+        if(token != null)
+            request.addHeader("Authorization", String.format("%s %s", getTokenName(), token));
 
         return execute(request, true);
     }
@@ -238,8 +246,8 @@ public class ApiClient extends Client
     public String get(String url) throws IOException
     {
         HttpGet request = new HttpGet(url);
-        if(bearerToken != null)
-            request.addHeader("Authorization", String.format("Bearer %s", bearerToken));
+        if(token != null)
+            request.addHeader("Authorization", String.format("%s %s", getTokenName(), token));
         return execute(request, true);
     }
 
@@ -253,8 +261,8 @@ public class ApiClient extends Client
             paramList.add(new BasicNameValuePair(param.getKey(), param.getValue()));
 
         HttpPost request = new HttpPost(url);
-        if(bearerToken != null)
-            request.addHeader("Authorization", String.format("Bearer %s", bearerToken));
+        if(token != null)
+            request.addHeader("Authorization", String.format("%s %s", getTokenName(), token));
         request.addHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setEntity(new UrlEncodedFormEntity(paramList));
         return execute(request, hasResponseEntity);
@@ -274,8 +282,8 @@ public class ApiClient extends Client
     public String post(String url, String contentType, String body, boolean hasResponseEntity) throws IOException
     {
         HttpPost request = new HttpPost(url);
-        if(bearerToken != null)
-            request.addHeader("Authorization", String.format("Bearer %s", bearerToken));
+        if(token != null)
+            request.addHeader("Authorization", String.format("%s %s", getTokenName(), token));
         if(contentType != null)
             request.addHeader("Content-Type", contentType);
         if(body != null)
@@ -313,8 +321,8 @@ public class ApiClient extends Client
     public String post(String url, String contentType, byte[] bytes, boolean hasResponseEntity) throws IOException
     {
         HttpPost request = new HttpPost(url);
-        if(bearerToken != null)
-            request.addHeader("Authorization", String.format("Bearer %s", bearerToken));
+        if(token != null)
+            request.addHeader("Authorization", String.format("%s %s", getTokenName(), token));
         if(contentType != null)
             request.addHeader("Content-Type", contentType);
         if(bytes != null)
@@ -336,8 +344,8 @@ public class ApiClient extends Client
     public String put(String url, String contentType, String body, boolean hasResponseEntity) throws IOException
     {
         HttpPut request = new HttpPut(url);
-        if(bearerToken != null)
-            request.addHeader("Authorization", String.format("Bearer %s", bearerToken));
+        if(token != null)
+            request.addHeader("Authorization", String.format("%s %s", getTokenName(), token));
         if(contentType != null)
             request.addHeader("Content-Type", contentType);
         if(body != null)
@@ -359,8 +367,8 @@ public class ApiClient extends Client
     public String put(String url, String contentType, byte[] bytes, boolean hasResponseEntity) throws IOException
     {
         HttpPut request = new HttpPut(url);
-        if(bearerToken != null)
-            request.addHeader("Authorization", String.format("Bearer %s", bearerToken));
+        if(token != null)
+            request.addHeader("Authorization", String.format("%s %s", getTokenName(), token));
         if(contentType != null)
             request.addHeader("Content-Type", contentType);
         if(bytes != null)

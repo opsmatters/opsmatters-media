@@ -47,6 +47,7 @@ public class Sender
     private String website = "";
     private String logoUrl = "";
     private String taxId = "";
+    private String companyNotes = "";
     private String additionalNotes = "";
 
     /**
@@ -104,6 +105,8 @@ public class Sender
             setLogoUrl(map.get(SENDER_LOGO).getValue());
         if(map.containsKey(SENDER_TAX_ID))
             setTaxId(map.get(SENDER_TAX_ID).getValue());
+        if(map.containsKey(SENDER_COMPANY_NOTES))
+            setCompanyNotes(map.get(SENDER_COMPANY_NOTES).getValue());
         if(map.containsKey(SENDER_ADDITIONAL_NOTES))
             setAdditionalNotes(map.get(SENDER_ADDITIONAL_NOTES).getValue());
     }
@@ -138,6 +141,7 @@ public class Sender
             setWebsite(obj.getWebsite());
             setLogoUrl(obj.getLogoUrl());
             setTaxId(obj.getTaxId());
+            setCompanyNotes(obj.getCompanyNotes());
             setAdditionalNotes(obj.getAdditionalNotes());
         }
     }
@@ -436,6 +440,22 @@ public class Sender
     public void setTaxId(String taxId)
     {
         this.taxId = taxId;
+    }
+
+    /**
+     * Returns the company registration notes.
+     */
+    public String getCompanyNotes()
+    {
+        return companyNotes;
+    }
+
+    /**
+     * Sets the company registration notes.
+     */
+    public void setCompanyNotes(String companyNotes)
+    {
+        this.companyNotes = companyNotes;
     }
 
     /**

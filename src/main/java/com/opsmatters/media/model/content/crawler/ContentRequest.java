@@ -39,6 +39,7 @@ public class ContentRequest implements ConfigElement
     private boolean removeParameters = true;
     private boolean trailingSlash = false;
     private boolean headless = true;
+    private boolean proxy = false;
     private boolean antiCache = false;
 
     /**
@@ -69,9 +70,10 @@ public class ContentRequest implements ConfigElement
             if(obj.getHeaders() != null)
                 setHeaders(new HashMap<String,String>(obj.getHeaders()));
             setBasePath(obj.getBasePath());
-            setHeadless(obj.isHeadless());
             setRemoveParameters(obj.removeParameters());
             setTrailingSlash(obj.hasTrailingSlash());
+            setHeadless(obj.isHeadless());
+            setProxy(obj.useProxy());
             setAntiCache(obj.isAntiCache());
         }
     }
@@ -208,22 +210,6 @@ public class ContentRequest implements ConfigElement
     }
 
     /**
-     * Returns <CODE>true</CODE> if the browser is headless.
-     */
-    public boolean isHeadless()
-    {
-        return headless;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the browser is headless.
-     */
-    public void setHeadless(boolean headless)
-    {
-        this.headless = headless;
-    }
-
-    /**
      * Returns <CODE>true</CODE> if query parameters should be removed from the URL.
      */
     public boolean removeParameters()
@@ -256,6 +242,38 @@ public class ContentRequest implements ConfigElement
     }
 
     /**
+     * Returns <CODE>true</CODE> if the browser is headless.
+     */
+    public boolean isHeadless()
+    {
+        return headless;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the browser is headless.
+     */
+    public void setHeadless(boolean headless)
+    {
+        this.headless = headless;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the browser should use a proxy.
+     */
+    public boolean useProxy()
+    {
+        return proxy;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the browser should use a proxy.
+     */
+    public void setProxy(boolean proxy)
+    {
+        this.proxy = proxy;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if a timestamp parameter should be appended to the URL to prevent caching.
      */
     public boolean isAntiCache()
@@ -269,6 +287,14 @@ public class ContentRequest implements ConfigElement
     public void setAntiCache(boolean antiCache)
     {
         this.antiCache = antiCache;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if instances created from this request can be cached.
+     */
+    public boolean canCache()
+    {
+        return isHeadless() && !useProxy();
     }
 
     /**
@@ -295,6 +321,7 @@ public class ContentRequest implements ConfigElement
         private static final String REMOVE_PARAMETERS = "remove-parameters";
         private static final String TRAILING_SLASH = "trailing-slash";
         private static final String HEADLESS = "headless";
+        private static final String PROXY = "proxy";
         private static final String ANTI_CACHE = "anti-cache";
 
         private ContentRequest ret = new ContentRequest();
@@ -325,6 +352,8 @@ public class ContentRequest implements ConfigElement
                 ret.setTrailingSlash((Boolean)map.get(TRAILING_SLASH));
             if(map.containsKey(HEADLESS))
                 ret.setHeadless((Boolean)map.get(HEADLESS));
+            if(map.containsKey(PROXY))
+                ret.setProxy((Boolean)map.get(PROXY));
             if(map.containsKey(ANTI_CACHE))
                 ret.setAntiCache((Boolean)map.get(ANTI_CACHE));
 

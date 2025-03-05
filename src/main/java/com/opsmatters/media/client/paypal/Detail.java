@@ -12,7 +12,7 @@ public class Detail extends JSONObject
     private static final String REFERENCE = "reference";
     private static final String INVOICE_DATE = "invoice_date";
     private static final String NOTE = "note";
-    private static final String TERM = "term";
+    private static final String TERMS_AND_CONDITIONS = "terms_and_conditions";
     private static final String MEMO = "memo";
     private static final String PAYMENT_TERM = "payment_term";
     private static final String METADATA = "metadata";
@@ -42,8 +42,8 @@ public class Detail extends JSONObject
             setInvoiceDate(obj.optString(INVOICE_DATE));
         if(obj.has(NOTE))
             setNote(obj.optString(NOTE));
-        if(obj.has(TERM))
-            setTerm(obj.optString(TERM));
+        if(obj.has(TERMS_AND_CONDITIONS))
+            setTermsAndConditions(obj.optString(TERMS_AND_CONDITIONS));
         if(obj.has(MEMO))
             setMemo(obj.optString(MEMO));
 
@@ -172,19 +172,19 @@ public class Detail extends JSONObject
     }
 
     /**
-     * Returns the term.
+     * Returns the terms and conditions.
      */
-    public String getTerm() 
+    public String getTermsAndConditions() 
     {
-        return optString(TERM);
+        return optString(TERMS_AND_CONDITIONS);
     }
 
     /**
-     * Sets the term.
+     * Sets the terms and conditions.
      */
-    public void setTerm(String term) 
+    public void setTermsAndConditions(String termsAndConditions) 
     {
-        put(TERM, term);
+        put(TERMS_AND_CONDITIONS, termsAndConditions);
     }
 
     /**

@@ -16,7 +16,25 @@
 package com.opsmatters.media.crawler;
 
 import java.time.Instant;
+import java.util.logging.Logger;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.Proxy;
+import org.openqa.selenium.UnhandledAlertException;
+import org.openqa.selenium.PageLoadStrategy;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.ProxyConfig;
+import com.opsmatters.media.cache.content.util.ContentProxies;
+import com.opsmatters.media.model.content.crawler.CrawlerBrowser;
+import com.opsmatters.media.model.content.crawler.ContentRequest;
+import com.opsmatters.media.model.content.util.ContentProxy;
+
+import static com.opsmatters.media.model.content.crawler.CrawlerBrowser.*;
 
 /**
  * Class representing a pool of Selenium WebDriver objects.
@@ -25,25 +43,57 @@ import org.openqa.selenium.WebDriver;
  */
 public class WebDriverInstance
 {
+    private static final Logger logger = Logger.getLogger(WebDriverInstance.class.getName());
+
+    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36";
+
     private static final int MAX_USES = 10;
 
+    private CrawlerBrowser browser;
     private WebDriver driver;
     private String handle;
+    private boolean cached;
     private boolean headless = false;
+    private boolean useProxy = false;
+    private ContentProxy proxy = null;
     private Instant started;
     private int uses = 0;
+    private int maxUses = -1;
 
-    public WebDriverInstance(WebDriver driver, boolean headless)
+    public WebDriverInstance(ContentRequest request, boolean cached)
     {
-        this.driver = driver;
+        setBrowser(request.getBrowser());
+        setHeadless(request.isHeadless());
+        setProxy(request.useProxy());
+        setCached(cached);
+
+        CrawlerBrowser browser = getBrowser();
+        if(browser == CHROME)
+            driver = newChromeDriver();
+        else if(browser == FIREFOX)
+            driver = newFirefoxDriver();
+        else // Defaults to HtmlUnit
+            driver = newHtmlUnitDriver();
+
         this.handle = driver.getWindowHandle();
-        this.headless = headless;
         started = Instant.now();
     }
 
     public String toString()
     {
         return getHandle();
+    }
+
+    public CrawlerBrowser getBrowser()
+    {
+        return browser;
+    }
+
+    public void setBrowser(CrawlerBrowser browser)
+    {
+        if(browser == null)
+            browser = HTMLUNIT;
+        this.browser = browser;
     }
 
     public WebDriver getDriver()
@@ -56,9 +106,39 @@ public class WebDriverInstance
         return handle;
     }
 
+    public boolean isCached()
+    {
+        return cached;
+    }
+
+    public void setCached(boolean cached)
+    {
+        this.cached = cached;
+    }
+
     public boolean isHeadless()
     {
         return headless;
+    }
+
+    public void setHeadless(boolean headless)
+    {
+        this.headless = headless;
+    }
+
+    public boolean useProxy()
+    {
+        return useProxy;
+    }
+
+    public void setProxy(boolean useProxy)
+    {
+        this.useProxy = useProxy;
+    }
+
+    public ContentProxy getProxy()
+    {
+        return proxy;
     }
 
     public int getUses()
@@ -74,5 +154,165 @@ public class WebDriverInstance
     public boolean renew()
     {
         return uses >= MAX_USES;
+    }
+
+    private WebDriver newHtmlUnitDriver()
+    {
+        return new HtmlUnitDriver()
+        {
+            @Override
+            protected WebClient modifyWebClient(WebClient webClient)
+            {
+                final WebClient client = super.modifyWebClient(webClient);
+
+                client.setJavaScriptTimeout(30000);
+                client.getOptions().setTimeout(60000);
+                client.getOptions().setRedirectEnabled(true);
+                client.getOptions().setThrowExceptionOnFailingStatusCode(false);
+                client.getOptions().setThrowExceptionOnScriptError(false);
+                client.getOptions().setCssEnabled(false);
+                client.getOptions().setPrintContentOnFailingStatusCode(false);
+                client.getCookieManager().setCookiesEnabled(false);
+                client.getOptions().setUseInsecureSSL(true);
+
+//GERALD
+System.out.println("WebDriverInstance.newHtmlUnitDriver:1: useProxy="+useProxy);
+                if(useProxy)
+                {
+                    proxy = ContentProxies.next();
+                    if(proxy != null)
+                    {
+//GERALD
+System.out.println("WebDriverInstance.newHtmlUnitDriver:2: proxy="+proxy);
+                        ProxyConfig proxyConfig = new ProxyConfig(proxy.getHost(), proxy.getPort(), null);
+                        client.getOptions().setProxyConfig(proxyConfig);
+                    }
+                    else
+                    {
+                        logger.severe("Unable to find next proxy for htmlunit");
+                    }
+                }
+
+                return client;
+            }
+        };
+    }
+
+    private WebDriver newChromeDriver()
+    {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox");
+        options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"}); 
+        options.addArguments("--disable-blink-features=AutomationControlled"); // prevents some 403 errors
+        options.addArguments("--disable-extensions");
+        options.setPageLoadStrategy(PageLoadStrategy.EAGER);
+        options.addArguments("--window-size=1920,1080");
+        options.addArguments("--user-agent="+USER_AGENT);
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--remote-debugging-pipe");
+        if(headless)
+            options.addArguments("--headless=new");
+
+//GERALD
+System.out.println("WebDriverInstance.newChromeDriver:1: useProxy="+useProxy+" headless="+headless);
+        if(useProxy)
+        {
+            proxy = ContentProxies.next();
+            if(proxy != null)
+            {
+//GERALD
+System.out.println("WebDriverInstance.newChromeDriver:2: proxy="+proxy);
+                Proxy p = new Proxy();
+                p.setHttpProxy(proxy.getHostPort());
+                p.setSslProxy(proxy.getHostPort());
+                options.setCapability("proxy", p);
+            }
+            else
+            {
+                logger.severe("Unable to find next proxy for chrome");
+            }
+        }
+
+        if(proxy == null)
+        {
+            options.addArguments("--no-proxy-server");
+            options.addArguments("--proxy-server='direct://'");
+            options.addArguments("--proxy-bypass-list=*");
+        }
+
+        return new ChromeDriver(options);
+    }
+
+    private WebDriver newFirefoxDriver()
+    {
+        FirefoxOptions options = new FirefoxOptions();
+        options.setPageLoadStrategy(PageLoadStrategy.EAGER);
+        options.addArguments("--window-size=1920,1080");
+        options.addArguments("--user-agent="+USER_AGENT);
+
+        if(headless)
+            options.addArguments("--headless");
+
+//GERALD
+System.out.println("WebDriverInstance.newFirefoxDriver:1: useProxy="+useProxy+" headless="+headless);
+        if(useProxy)
+        {
+            proxy = ContentProxies.next();
+            if(proxy != null)
+            {
+//GERALD
+System.out.println("WebDriverInstance.newFirefoxDriver:2: proxy="+proxy);
+                Proxy p = new Proxy();
+                p.setHttpProxy(proxy.getHostPort());
+                p.setSslProxy(proxy.getHostPort());
+                options.setCapability("proxy", p);
+            }
+            else
+            {
+                logger.severe("Unable to find next proxy for firefox");
+            }
+        }
+
+        if(proxy == null)
+        {
+            options.addArguments("--no-proxy-server");
+            options.addArguments("--proxy-server='direct://'");
+            options.addArguments("--proxy-bypass-list=*");
+        }
+
+        return new FirefoxDriver(options);
+    }
+
+    public boolean isAlive()
+    {
+        try
+        {
+            return driver.getWindowHandles().size() > 0;
+        }
+        catch(UnhandledAlertException ex)
+        {
+            return true;
+        }
+        catch(WebDriverException ex)
+        {
+            return false;
+        }
+    }
+
+    /**
+     * Close the driver.
+     */
+    public void close()
+    {
+        try
+        {
+//GERALD
+System.out.println("WebDriverInstance.close:1: browser="+browser+" useProxy="+useProxy+" headless="+headless+" cached="+cached);
+            if(driver != null)
+                driver.quit();
+        }
+        catch(WebDriverException e)
+        {
+        }
     }
 }

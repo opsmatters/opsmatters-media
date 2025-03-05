@@ -463,25 +463,31 @@ media.built.on=${TODAY}
   <dependency>
     <groupId>org.seleniumhq.selenium</groupId>
     <artifactId>selenium-chrome-driver</artifactId>
-    <version>3.141.59</version>
+    <version>4.29.0</version>
   </dependency>
 
   <dependency>
     <groupId>org.seleniumhq.selenium</groupId>
     <artifactId>selenium-firefox-driver</artifactId>
-    <version>3.141.59</version>
+    <version>4.29.0</version>
   </dependency>
 
   <dependency>
     <groupId>org.seleniumhq.selenium</groupId>
     <artifactId>htmlunit-driver</artifactId>
-    <version>2.52.0</version>
+    <version>4.13.0</version>
   </dependency>
 
   <dependency>
     <groupId>org.seleniumhq.selenium</groupId>
     <artifactId>selenium-support</artifactId>
-    <version>3.141.59</version>
+    <version>4.29.0</version>
+  </dependency>
+
+  <dependency>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-devtools-v133</artifactId>
+    <version>4.29.0</version>
   </dependency>
 
   <dependency>

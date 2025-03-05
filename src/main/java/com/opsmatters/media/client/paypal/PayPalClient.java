@@ -82,7 +82,7 @@ public class PayPalClient extends ApiClient
             return false;
         }
 
-        clearBearerToken();
+        clearToken();
 
         Map<String,String> params = new HashMap<String,String>();
         params.put("grant_type", "client_credentials");
@@ -91,14 +91,14 @@ public class PayPalClient extends ApiClient
         if(response.startsWith("{")) // Valid JSON
         {
             JSONObject obj = new JSONObject(response);
-            setBearerToken(obj.optString("access_token"));
+            setToken(obj.optString("access_token"));
         }
         else // Invalid JSON response
         {
             logger.severe("Invalid JSON response for PayPal authenticate: "+response);
         }
 
-        return hasBearerToken();
+        return hasToken();
     }
 
     /**
