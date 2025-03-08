@@ -25,6 +25,7 @@ public enum CrawlerBrowser
 {
     HTMLUNIT("htmlunit"),
     CHROME("chrome"),
+    UNDETECTED_CHROME("undetected-chrome"),
     FIREFOX("firefox");
 
     private String value;

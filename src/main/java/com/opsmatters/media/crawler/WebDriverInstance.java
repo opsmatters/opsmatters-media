@@ -29,6 +29,7 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.ProxyConfig;
+import com.frogking.chromedriver.ChromeDriverBuilder;
 import com.opsmatters.media.cache.content.util.ContentProxies;
 import com.opsmatters.media.model.content.crawler.CrawlerBrowser;
 import com.opsmatters.media.model.content.crawler.ContentRequest;
@@ -68,7 +69,7 @@ public class WebDriverInstance
         setCached(cached);
 
         CrawlerBrowser browser = getBrowser();
-        if(browser == CHROME)
+        if(browser == CHROME || browser == UNDETECTED_CHROME)
             driver = newChromeDriver();
         else if(browser == FIREFOX)
             driver = newFirefoxDriver();
@@ -176,14 +177,14 @@ public class WebDriverInstance
                 client.getOptions().setUseInsecureSSL(true);
 
 //GERALD
-System.out.println("WebDriverInstance.newHtmlUnitDriver:1: useProxy="+useProxy);
+System.out.println("WebDriverInstance.newHtmlUnitDriver:1: browser="+browser+" useProxy="+useProxy);
                 if(useProxy)
                 {
                     proxy = ContentProxies.next();
                     if(proxy != null)
                     {
 //GERALD
-System.out.println("WebDriverInstance.newHtmlUnitDriver:2: proxy="+proxy);
+System.out.println("WebDriverInstance.newHtmlUnitDriver:2: browser="+browser+" proxy="+proxy);
                         ProxyConfig proxyConfig = new ProxyConfig(proxy.getHost(), proxy.getPort(), null);
                         client.getOptions().setProxyConfig(proxyConfig);
                     }
@@ -201,27 +202,33 @@ System.out.println("WebDriverInstance.newHtmlUnitDriver:2: proxy="+proxy);
     private WebDriver newChromeDriver()
     {
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--no-sandbox");
-        options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"}); 
-        options.addArguments("--disable-blink-features=AutomationControlled"); // prevents some 403 errors
-        options.addArguments("--disable-extensions");
-        options.setPageLoadStrategy(PageLoadStrategy.EAGER);
         options.addArguments("--window-size=1920,1080");
-        options.addArguments("--user-agent="+USER_AGENT);
-        options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--remote-debugging-pipe");
+
+        // Settings for chromedriver (Untected ChromeDriver has its own settings)
+        if(browser == CHROME)
+        {
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-blink-features=AutomationControlled"); // prevents some 403 errors
+            options.addArguments("--disable-extensions");
+            options.addArguments("--user-agent="+USER_AGENT);
+            options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--remote-debugging-pipe");
+            options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"}); 
+            options.setPageLoadStrategy(PageLoadStrategy.EAGER);
+        }
+
         if(headless)
             options.addArguments("--headless=new");
 
 //GERALD
-System.out.println("WebDriverInstance.newChromeDriver:1: useProxy="+useProxy+" headless="+headless);
+System.out.println("WebDriverInstance.newChromeDriver:1: browser="+browser+" useProxy="+useProxy+" headless="+headless);
         if(useProxy)
         {
             proxy = ContentProxies.next();
             if(proxy != null)
             {
 //GERALD
-System.out.println("WebDriverInstance.newChromeDriver:2: proxy="+proxy);
+System.out.println("WebDriverInstance.newChromeDriver:2: browser="+browser+" proxy="+proxy);
                 Proxy p = new Proxy();
                 p.setHttpProxy(proxy.getHostPort());
                 p.setSslProxy(proxy.getHostPort());
@@ -240,7 +247,11 @@ System.out.println("WebDriverInstance.newChromeDriver:2: proxy="+proxy);
             options.addArguments("--proxy-bypass-list=*");
         }
 
-        return new ChromeDriver(options);
+        if(browser == UNDETECTED_CHROME)
+            return new ChromeDriverBuilder().build(options,
+                System.getProperty("webdriver.chrome.driver"));
+        else
+            return new ChromeDriver(options);
     }
 
     private WebDriver newFirefoxDriver()
@@ -254,14 +265,14 @@ System.out.println("WebDriverInstance.newChromeDriver:2: proxy="+proxy);
             options.addArguments("--headless");
 
 //GERALD
-System.out.println("WebDriverInstance.newFirefoxDriver:1: useProxy="+useProxy+" headless="+headless);
+System.out.println("WebDriverInstance.newFirefoxDriver:1: browser="+browser+" useProxy="+useProxy+" headless="+headless);
         if(useProxy)
         {
             proxy = ContentProxies.next();
             if(proxy != null)
             {
 //GERALD
-System.out.println("WebDriverInstance.newFirefoxDriver:2: proxy="+proxy);
+System.out.println("WebDriverInstance.newFirefoxDriver:2: browser="+browser+" proxy="+proxy);
                 Proxy p = new Proxy();
                 p.setHttpProxy(proxy.getHostPort());
                 p.setSslProxy(proxy.getHostPort());

@@ -41,6 +41,7 @@ public enum Country
     HUNGARY("HU", "Hungary"),
     INDIA("IN", "India"),
     IRELAND("IE", "Ireland"),
+    ISRAEL("IL", "Israel"),
     LITHUANIA("LT", "Lithuania"),
     MALTA("MT", "Malta"),
     MONTENEGRO("ME", "Montenegro"),
