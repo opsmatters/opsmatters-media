@@ -25,7 +25,7 @@ public enum EventType
 {
     CHANGE("Change"),
     ALERT("Alert"),
-    REVIEW("Review");
+    FAILURE("Failure");
 
     private String value;
 
@@ -69,6 +69,7 @@ public enum EventType
             if(type.value().equals(value))
                 return type;
         }
+
         return null;
     }
 

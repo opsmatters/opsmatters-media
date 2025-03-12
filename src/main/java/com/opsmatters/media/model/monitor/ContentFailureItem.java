@@ -18,18 +18,18 @@ package com.opsmatters.media.model.monitor;
 import java.time.Instant;
 
 /**
- * Class representing a content review item.
+ * Class representing a content failure item.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentReviewItem extends ContentEventItem<ContentReview>
+public class ContentFailureItem extends ContentEventItem<ContentFailure>
 {
-    private ContentReview content = new ContentReview();
+    private ContentFailure content = new ContentFailure();
 
     /**
      * Default constructor.
      */
-    public ContentReviewItem()
+    public ContentFailureItem()
     {
         super.set(content);
     }
@@ -37,16 +37,16 @@ public class ContentReviewItem extends ContentEventItem<ContentReview>
     /**
      * Copy constructor.
      */
-    public ContentReviewItem(ContentReviewItem obj)
+    public ContentFailureItem(ContentFailureItem obj)
     {
         super.set(content);
         copyAttributes(obj);
     }
 
     /**
-     * Constructor that takes a content review.
+     * Constructor that takes a content failure.
      */
-    public ContentReviewItem(ContentReview obj)
+    public ContentFailureItem(ContentFailure obj)
     {
         super.set(content);
         copyAttributes(obj);
@@ -55,7 +55,7 @@ public class ContentReviewItem extends ContentEventItem<ContentReview>
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ContentReviewItem obj)
+    public void copyAttributes(ContentFailureItem obj)
     {
         copyAttributes(obj.get());
     }
@@ -64,7 +64,7 @@ public class ContentReviewItem extends ContentEventItem<ContentReview>
      * Copies the attributes of the given object.
      */
     @Override
-    public void copyAttributes(ContentReview obj)
+    public void copyAttributes(ContentFailure obj)
     {
         content.copyAttributes(obj);
     }
@@ -72,13 +72,13 @@ public class ContentReviewItem extends ContentEventItem<ContentReview>
     /**
      * Returns the content object.
      */
-    public ContentReview get()
+    public ContentFailure get()
     {
         return content;
     }
 
     /**
-     * Returns the date the entity was reviewed.
+     * Returns the date the failure was reviewed.
      */
     public Instant getReviewDate()
     {
@@ -86,7 +86,7 @@ public class ContentReviewItem extends ContentEventItem<ContentReview>
     }
 
     /**
-     * Returns the date the entity was reviewed.
+     * Returns the date the failure was reviewed.
      */
     public long getReviewDateMillis()
     {
@@ -94,7 +94,7 @@ public class ContentReviewItem extends ContentEventItem<ContentReview>
     }
 
     /**
-     * Sets the date the entity was reviewed.
+     * Sets the date the failure was reviewed.
      */
     public void setReviewDate(Instant reviewDate)
     {
@@ -102,7 +102,7 @@ public class ContentReviewItem extends ContentEventItem<ContentReview>
     }
 
     /**
-     * Sets the date the entity was reviewed.
+     * Sets the date the failure was reviewed.
      */
     public void setReviewDateMillis(long millis)
     {
@@ -110,15 +110,15 @@ public class ContentReviewItem extends ContentEventItem<ContentReview>
     }
 
     /**
-     * Returns the review reason.
+     * Returns the failure reason.
      */
-    public ReviewReason getReason()
+    public FailureReason getReason()
     {
         return content.getReason();
     }
 
     /**
-     * Sets the review reason.
+     * Sets the failure reason.
      */
     public void setReason(String reason)
     {
@@ -126,23 +126,23 @@ public class ContentReviewItem extends ContentEventItem<ContentReview>
     }
 
     /**
-     * Sets the review reason.
+     * Sets the failure reason.
      */
-    public void setReason(ReviewReason reason)
+    public void setReason(FailureReason reason)
     {
         content.setReason(reason);
     }
 
     /**
-     * Returns the review status.
+     * Returns the failure status.
      */
-    public ReviewStatus getStatus()
+    public FailureStatus getStatus()
     {
         return content.getStatus();
     }
 
     /**
-     * Sets the review status.
+     * Sets the failure status.
      */
     public void setStatus(String status)
     {
@@ -150,9 +150,9 @@ public class ContentReviewItem extends ContentEventItem<ContentReview>
     }
 
     /**
-     * Sets the review status.
+     * Sets the failure status.
      */
-    public void setStatus(ReviewStatus status)
+    public void setStatus(FailureStatus status)
     {
         content.setStatus(status);
     }

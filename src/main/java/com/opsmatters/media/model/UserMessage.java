@@ -14,7 +14,7 @@ public enum UserMessage
     CHANGED("Changed", false),
     CHANGE("Change", false),
     ALERT("Alert", false),
-    REVIEW("Review", false),
+    FAILURE("Failure", false),
     ARCHIVED("Archived", false),
     SYNC("Sync", false),
     ERROR("Error", false);

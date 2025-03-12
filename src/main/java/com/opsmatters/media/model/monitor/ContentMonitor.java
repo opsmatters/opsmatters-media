@@ -442,26 +442,26 @@ public class ContentMonitor<T extends ContentDetails> extends BaseEntity
     }
 
     /**
-     * Set the monitor status to REVIEW.
+     * Set the monitor status to FAILURE.
      */
-    public void setReview(ContentReview review)
+    public void setFailure(ContentFailure failure)
     {
-        if(getStatus() != MonitorStatus.REVIEW)
+        if(getStatus() != MonitorStatus.FAILURE)
         {
-            setStatus(MonitorStatus.REVIEW);
+            setStatus(MonitorStatus.FAILURE);
             setUpdatedDate(Instant.now());
-            setEvent(review);
+            setEvent(failure);
         }
     }
 
     /**
-     * Clear the monitor status after REVIEW.
+     * Clear the monitor status after FAILURE.
      */
-    public void clearReview(ContentReview review)
+    public void clearFailure(ContentFailure failure)
     {
-        if(review == null || getEventId().equals(review.getId()))
+        if(failure == null || getEventId().equals(failure.getId()))
         {
-            if(getStatus() == MonitorStatus.REVIEW)
+            if(getStatus() == MonitorStatus.FAILURE)
             {
                 setStatus(MonitorStatus.RESUMING);
                 setUpdatedDate(Instant.now());

@@ -25,107 +25,107 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
-import com.opsmatters.media.model.monitor.ContentReview;
-import com.opsmatters.media.model.monitor.ContentReviewItem;
-import com.opsmatters.media.model.monitor.ReviewStatus;
+import com.opsmatters.media.model.monitor.ContentFailure;
+import com.opsmatters.media.model.monitor.ContentFailureItem;
+import com.opsmatters.media.model.monitor.FailureStatus;
 import com.opsmatters.media.model.monitor.ContentMonitor;
 import com.opsmatters.media.db.dao.BaseDAO;
 import com.opsmatters.media.util.SessionId;
 
 /**
- * DAO that provides operations on the CONTENT_REVIEWS table in the database.
+ * DAO that provides operations on the CONTENT_FAILURES table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentReviewDAO extends BaseDAO
+public class ContentFailureDAO extends BaseDAO
 {
-    private static final Logger logger = Logger.getLogger(ContentReviewDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(ContentFailureDAO.class.getName());
 
     /**
-     * The query to use to select a review from the CONTENT_REVIEWS table by id.
+     * The query to use to select a failure from the CONTENT_FAILURES table by id.
      */
     private static final String GET_BY_ID_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, REVIEW_DATE, CODE, REASON, ATTRIBUTES, STATUS, MONITOR_ID, CREATED_BY, SESSION_ID "
-      + "FROM CONTENT_REVIEWS WHERE ID=?";
+      + "FROM CONTENT_FAILURES WHERE ID=?";
 
     /**
-     * The query to use to insert a review into the CONTENT_REVIEWS table.
+     * The query to use to insert a failure into the CONTENT_FAILURES table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO CONTENT_REVIEWS"
+      "INSERT INTO CONTENT_FAILURES"
       + "( ID, CREATED_DATE, UPDATED_DATE, REVIEW_DATE, CODE, REASON, ATTRIBUTES, STATUS, MONITOR_ID, CREATED_BY, SESSION_ID )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update a review in the CONTENT_REVIEWS table.
+     * The query to use to update a failure in the CONTENT_FAILURES table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTENT_REVIEWS SET UPDATED_DATE=?, REVIEW_DATE=?, REASON=?, ATTRIBUTES=?, STATUS=?, CREATED_BY=?, SESSION_ID=? "
+      "UPDATE CONTENT_FAILURES SET UPDATED_DATE=?, REVIEW_DATE=?, REASON=?, ATTRIBUTES=?, STATUS=?, CREATED_BY=?, SESSION_ID=? "
       + "WHERE ID=?";
 
     /**
-     * The query to use to select the reviews from the CONTENT_REVIEWS table.
+     * The query to use to select the failures from the CONTENT_FAILURES table.
      */
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, REVIEW_DATE, CODE, REASON, ATTRIBUTES, STATUS, MONITOR_ID, CREATED_BY, SESSION_ID "
-      + "FROM CONTENT_REVIEWS "
-      + "WHERE CREATED_DATE >= (NOW() + INTERVAL -30 DAY) OR STATUS='NEW' ORDER BY CREATED_DATE";
+      + "FROM CONTENT_FAILURES "
+      + "ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to select the review items from the CONTENT_REVIEWS table.
+     * The query to use to select the failure items from the CONTENT_FAILURES table.
      */
     private static final String LIST_ITEMS_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, REVIEW_DATE, CODE, REASON, STATUS, MONITOR_ID "
-      + "FROM CONTENT_REVIEWS "
-      + "WHERE CREATED_DATE >= (NOW() + INTERVAL -30 DAY) OR STATUS='NEW' ORDER BY CREATED_DATE";
+      + "FROM CONTENT_FAILURES "
+      + "ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to select the reviews from the CONTENT_REVIEWS table by organisation.
+     * The query to use to select the failures from the CONTENT_FAILURES table by organisation.
      */
     private static final String LIST_BY_CODE_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, REVIEW_DATE, CODE, REASON, ATTRIBUTES, STATUS, MONITOR_ID, CREATED_BY, SESSION_ID "
-      + "FROM CONTENT_REVIEWS "
+      + "FROM CONTENT_FAILURES "
       + "WHERE CODE=? ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to select the reviews from the CONTENT_REVIEWS table by monitor.
+     * The query to use to select the failures from the CONTENT_FAILURES table by monitor.
      */
     private static final String LIST_BY_MONITOR_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, REVIEW_DATE, CODE, REASON, ATTRIBUTES, STATUS, MONITOR_ID, CREATED_BY, SESSION_ID "
-      + "FROM CONTENT_REVIEWS "
+      + "FROM CONTENT_FAILURES "
       + "WHERE MONITOR_ID=? ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to select the review items from the CONTENT_REVIEWS table by status.
+     * The query to use to select the failure items from the CONTENT_FAILURES table by status.
      */
     private static final String LIST_ITEMS_BY_STATUS_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, REVIEW_DATE, CODE, REASON, STATUS, MONITOR_ID "
-      + "FROM CONTENT_REVIEWS "
-      + "WHERE STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -30 DAY) OR STATUS='NEW') ORDER BY CREATED_DATE";
+      + "FROM CONTENT_FAILURES "
+      + "WHERE STATUS=? ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to get the count of reviews from the CONTENT_REVIEWS table.
+     * The query to use to get the count of failures from the CONTENT_FAILURES table.
      */
     private static final String COUNT_SQL =  
-      "SELECT COUNT(*) FROM CONTENT_REVIEWS";
+      "SELECT COUNT(*) FROM CONTENT_FAILURES";
 
     /**
-     * The query to use to delete a review from the CONTENT_REVIEWS table.
+     * The query to use to delete a failure from the CONTENT_FAILURES table.
      */
     private static final String DELETE_SQL =  
-      "DELETE FROM CONTENT_REVIEWS WHERE ID=?";
+      "DELETE FROM CONTENT_FAILURES WHERE ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public ContentReviewDAO(MonitorDAOFactory factory)
+    public ContentFailureDAO(MonitorDAOFactory factory)
     {
-        super(factory, "CONTENT_REVIEWS");
+        super(factory, "CONTENT_FAILURES");
     }
 
     /**
-     * Defines the columns and indices for the CONTENT_REVIEWS table.
+     * Defines the columns and indices for the CONTENT_FAILURES table.
      */
     @Override
     protected void defineTable()
@@ -141,18 +141,18 @@ public class ContentReviewDAO extends BaseDAO
         table.addColumn("MONITOR_ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("SESSION_ID", Types.INTEGER, true);
-        table.setPrimaryKey("CONTENT_REVIEWS_PK", new String[] {"ID"});
-        table.addIndex("CONTENT_REVIEWS_STATUS_IDX", new String[] {"STATUS"});
-        table.addIndex("CONTENT_REVIEWS_SESSION_IDX", new String[] {"SESSION_ID"});
+        table.setPrimaryKey("CONTENT_FAILURES_PK", new String[] {"ID"});
+        table.addIndex("CONTENT_FAILURES_STATUS_IDX", new String[] {"STATUS"});
+        table.addIndex("CONTENT_FAILURES_SESSION_IDX", new String[] {"SESSION_ID"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns an review from the CONTENT_REVIEWS table by id.
+     * Returns an failure from the CONTENT_FAILURES table by id.
      */
-    public synchronized ContentReview getById(String id) throws SQLException
+    public synchronized ContentFailure getById(String id) throws SQLException
     {
-        ContentReview ret = null;
+        ContentFailure ret = null;
 
         if(!hasConnection())
             return ret;
@@ -171,19 +171,19 @@ public class ContentReviewDAO extends BaseDAO
             rs = getByIdStmt.executeQuery();
             while(rs.next())
             {
-                ContentReview review = new ContentReview();
-                review.setId(rs.getString(1));
-                review.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                review.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                review.setReviewDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
-                review.setCode(rs.getString(5));
-                review.setReason(rs.getString(6));
-                review.setAttributes(new JSONObject(getClob(rs, 7)));
-                review.setStatus(rs.getString(8));
-                review.setMonitorId(rs.getString(9));
-                review.setCreatedBy(rs.getString(10));
-                review.setSessionId(rs.getInt(11));
-                ret = review;
+                ContentFailure failure = new ContentFailure();
+                failure.setId(rs.getString(1));
+                failure.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                failure.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                failure.setReviewDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                failure.setCode(rs.getString(5));
+                failure.setReason(rs.getString(6));
+                failure.setAttributes(new JSONObject(getClob(rs, 7)));
+                failure.setStatus(rs.getString(8));
+                failure.setMonitorId(rs.getString(9));
+                failure.setCreatedBy(rs.getString(10));
+                failure.setSessionId(rs.getInt(11));
+                ret = failure;
             }
         }
         finally
@@ -204,11 +204,11 @@ public class ContentReviewDAO extends BaseDAO
     }
 
     /**
-     * Stores the given review in the CONTENT_REVIEWS table.
+     * Stores the given failure in the CONTENT_FAILURES table.
      */
-    public synchronized void add(ContentReview review) throws SQLException
+    public synchronized void add(ContentFailure failure) throws SQLException
     {
-        if(!hasConnection() || review == null)
+        if(!hasConnection() || failure == null)
             return;
 
         if(insertStmt == null)
@@ -219,22 +219,22 @@ public class ContentReviewDAO extends BaseDAO
 
         try
         {
-            insertStmt.setString(1, review.getId());
-            insertStmt.setTimestamp(2, new Timestamp(review.getCreatedDateMillis()), UTC);
-            insertStmt.setTimestamp(3, new Timestamp(review.getUpdatedDateMillis()), UTC);
-            insertStmt.setTimestamp(4, new Timestamp(review.getReviewDateMillis()), UTC);
-            insertStmt.setString(5, review.getCode());
-            insertStmt.setString(6, review.getReason().name());
-            String attributes = review.getAttributes().toString();
+            insertStmt.setString(1, failure.getId());
+            insertStmt.setTimestamp(2, new Timestamp(failure.getCreatedDateMillis()), UTC);
+            insertStmt.setTimestamp(3, new Timestamp(failure.getUpdatedDateMillis()), UTC);
+            insertStmt.setTimestamp(4, new Timestamp(failure.getReviewDateMillis()), UTC);
+            insertStmt.setString(5, failure.getCode());
+            insertStmt.setString(6, failure.getReason().name());
+            String attributes = failure.getAttributes().toString();
             reader = new StringReader(attributes);
             insertStmt.setCharacterStream(7, reader, attributes.length());
-            insertStmt.setString(8, review.getStatus().name());
-            insertStmt.setString(9, review.getMonitorId());
-            insertStmt.setString(10, review.getCreatedBy());
-            insertStmt.setInt(11, review.getSessionId());
+            insertStmt.setString(8, failure.getStatus().name());
+            insertStmt.setString(9, failure.getMonitorId());
+            insertStmt.setString(10, failure.getCreatedBy());
+            insertStmt.setInt(11, failure.getSessionId());
             insertStmt.executeUpdate();
 
-            logger.info("Created review '"+review.getId()+"' in CONTENT_REVIEWS");
+            logger.info("Created failure '"+failure.getId()+"' in CONTENT_FAILURES");
         }
         catch(SQLException ex)
         {
@@ -245,7 +245,7 @@ public class ContentReviewDAO extends BaseDAO
                 insertStmt = null;
             }
 
-            // Unique constraint violated means that the review already exists
+            // Unique constraint violated means that the failure already exists
             if(!getDriver().isConstraintViolation(ex))
                 throw ex;
         }
@@ -257,11 +257,11 @@ public class ContentReviewDAO extends BaseDAO
     }
 
     /**
-     * Updates the given review in the CONTENT_REVIEWS table.
+     * Updates the given failure in the CONTENT_FAILURES table.
      */
-    public synchronized void update(ContentReview review) throws SQLException
+    public synchronized void update(ContentFailure failure) throws SQLException
     {
-        if(!hasConnection() || review == null)
+        if(!hasConnection() || failure == null)
             return;
 
         if(updateStmt == null)
@@ -272,19 +272,19 @@ public class ContentReviewDAO extends BaseDAO
 
         try
         {
-            updateStmt.setTimestamp(1, new Timestamp(review.getUpdatedDateMillis()), UTC);
-            updateStmt.setTimestamp(2, new Timestamp(review.getReviewDateMillis()), UTC);
-            updateStmt.setString(3, review.getReason().name());
-            String attributes = review.getAttributes().toString();
+            updateStmt.setTimestamp(1, new Timestamp(failure.getUpdatedDateMillis()), UTC);
+            updateStmt.setTimestamp(2, new Timestamp(failure.getReviewDateMillis()), UTC);
+            updateStmt.setString(3, failure.getReason().name());
+            String attributes = failure.getAttributes().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(4, reader, attributes.length());
-            updateStmt.setString(5, review.getStatus().name());
-            updateStmt.setString(6, review.getCreatedBy());
-            updateStmt.setInt(7, review.getSessionId());
-            updateStmt.setString(8, review.getId());
+            updateStmt.setString(5, failure.getStatus().name());
+            updateStmt.setString(6, failure.getCreatedBy());
+            updateStmt.setInt(7, failure.getSessionId());
+            updateStmt.setString(8, failure.getId());
             updateStmt.executeUpdate();
 
-            logger.info("Updated review '"+review.getId()+"' in CONTENT_REVIEWS");
+            logger.info("Updated failure '"+failure.getId()+"' in CONTENT_FAILURES");
         }
         finally
         {
@@ -294,11 +294,11 @@ public class ContentReviewDAO extends BaseDAO
     }
 
     /**
-     * Returns the reviews from the CONTENT_REVIEWS table.
+     * Returns the failures from the CONTENT_FAILURES table.
      */
-    public synchronized List<ContentReview> list() throws SQLException
+    public synchronized List<ContentFailure> list() throws SQLException
     {
-        List<ContentReview> ret = null;
+        List<ContentFailure> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -314,22 +314,22 @@ public class ContentReviewDAO extends BaseDAO
         {
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
-            ret = new ArrayList<ContentReview>();
+            ret = new ArrayList<ContentFailure>();
             while(rs.next())
             {
-                ContentReview review = new ContentReview();
-                review.setId(rs.getString(1));
-                review.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                review.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                review.setReviewDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
-                review.setCode(rs.getString(5));
-                review.setReason(rs.getString(6));
-                review.setAttributes(new JSONObject(getClob(rs, 7)));
-                review.setStatus(rs.getString(8));
-                review.setMonitorId(rs.getString(9));
-                review.setCreatedBy(rs.getString(10));
-                review.setSessionId(rs.getInt(11));
-                ret.add(review);
+                ContentFailure failure = new ContentFailure();
+                failure.setId(rs.getString(1));
+                failure.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                failure.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                failure.setReviewDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                failure.setCode(rs.getString(5));
+                failure.setReason(rs.getString(6));
+                failure.setAttributes(new JSONObject(getClob(rs, 7)));
+                failure.setStatus(rs.getString(8));
+                failure.setMonitorId(rs.getString(9));
+                failure.setCreatedBy(rs.getString(10));
+                failure.setSessionId(rs.getInt(11));
+                ret.add(failure);
             }
         }
         finally
@@ -350,11 +350,11 @@ public class ContentReviewDAO extends BaseDAO
     }
 
     /**
-     * Returns the review items from the CONTENT_REVIEWS table.
+     * Returns the failure items from the CONTENT_FAILURES table.
      */
-    public synchronized List<ContentReviewItem> listItems() throws SQLException
+    public synchronized List<ContentFailureItem> listItems() throws SQLException
     {
-        List<ContentReviewItem> ret = null;
+        List<ContentFailureItem> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -370,19 +370,19 @@ public class ContentReviewDAO extends BaseDAO
         {
             listItemsStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listItemsStmt.executeQuery();
-            ret = new ArrayList<ContentReviewItem>();
+            ret = new ArrayList<ContentFailureItem>();
             while(rs.next())
             {
-                ContentReviewItem review = new ContentReviewItem();
-                review.setId(rs.getString(1));
-                review.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                review.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                review.setReviewDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
-                review.setCode(rs.getString(5));
-                review.setReason(rs.getString(6));
-                review.setStatus(rs.getString(7));
-                review.setMonitorId(rs.getString(8));
-                ret.add(review);
+                ContentFailureItem failure = new ContentFailureItem();
+                failure.setId(rs.getString(1));
+                failure.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                failure.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                failure.setReviewDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                failure.setCode(rs.getString(5));
+                failure.setReason(rs.getString(6));
+                failure.setStatus(rs.getString(7));
+                failure.setMonitorId(rs.getString(8));
+                ret.add(failure);
             }
         }
         finally
@@ -403,11 +403,11 @@ public class ContentReviewDAO extends BaseDAO
     }
 
     /**
-     * Returns the reviews from the CONTENT_REVIEWS table by organisation.
+     * Returns the failures from the CONTENT_FAILURES table by organisation.
      */
-    public synchronized List<ContentReview> list(String code) throws SQLException
+    public synchronized List<ContentFailure> list(String code) throws SQLException
     {
-        List<ContentReview> ret = null;
+        List<ContentFailure> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -424,22 +424,22 @@ public class ContentReviewDAO extends BaseDAO
             listByCodeStmt.setString(1, code);
             listByCodeStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByCodeStmt.executeQuery();
-            ret = new ArrayList<ContentReview>();
+            ret = new ArrayList<ContentFailure>();
             while(rs.next())
             {
-                ContentReview review = new ContentReview();
-                review.setId(rs.getString(1));
-                review.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                review.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                review.setReviewDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
-                review.setCode(rs.getString(5));
-                review.setReason(rs.getString(6));
-                review.setAttributes(new JSONObject(getClob(rs, 7)));
-                review.setStatus(rs.getString(8));
-                review.setMonitorId(rs.getString(9));
-                review.setCreatedBy(rs.getString(10));
-                review.setSessionId(rs.getInt(11));
-                ret.add(review);
+                ContentFailure failure = new ContentFailure();
+                failure.setId(rs.getString(1));
+                failure.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                failure.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                failure.setReviewDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                failure.setCode(rs.getString(5));
+                failure.setReason(rs.getString(6));
+                failure.setAttributes(new JSONObject(getClob(rs, 7)));
+                failure.setStatus(rs.getString(8));
+                failure.setMonitorId(rs.getString(9));
+                failure.setCreatedBy(rs.getString(10));
+                failure.setSessionId(rs.getInt(11));
+                ret.add(failure);
             }
         }
         finally
@@ -460,11 +460,11 @@ public class ContentReviewDAO extends BaseDAO
     }
 
     /**
-     * Returns the reviews from the CONTENT_REVIEWS table by monitor.
+     * Returns the failures from the CONTENT_FAILURES table by monitor.
      */
-    public synchronized List<ContentReview> list(ContentMonitor monitor) throws SQLException
+    public synchronized List<ContentFailure> list(ContentMonitor monitor) throws SQLException
     {
-        List<ContentReview> ret = null;
+        List<ContentFailure> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -481,22 +481,22 @@ public class ContentReviewDAO extends BaseDAO
             listByMonitorStmt.setString(1, monitor.getId());
             listByMonitorStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByMonitorStmt.executeQuery();
-            ret = new ArrayList<ContentReview>();
+            ret = new ArrayList<ContentFailure>();
             while(rs.next())
             {
-                ContentReview review = new ContentReview();
-                review.setId(rs.getString(1));
-                review.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                review.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                review.setReviewDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
-                review.setCode(rs.getString(5));
-                review.setReason(rs.getString(6));
-                review.setAttributes(new JSONObject(getClob(rs, 7)));
-                review.setStatus(rs.getString(8));
-                review.setMonitorId(rs.getString(9));
-                review.setCreatedBy(rs.getString(10));
-                review.setSessionId(rs.getInt(11));
-                ret.add(review);
+                ContentFailure failure = new ContentFailure();
+                failure.setId(rs.getString(1));
+                failure.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                failure.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                failure.setReviewDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                failure.setCode(rs.getString(5));
+                failure.setReason(rs.getString(6));
+                failure.setAttributes(new JSONObject(getClob(rs, 7)));
+                failure.setStatus(rs.getString(8));
+                failure.setMonitorId(rs.getString(9));
+                failure.setCreatedBy(rs.getString(10));
+                failure.setSessionId(rs.getInt(11));
+                ret.add(failure);
             }
         }
         finally
@@ -517,11 +517,11 @@ public class ContentReviewDAO extends BaseDAO
     }
 
     /**
-     * Returns the review items from the CONTENT_REVIEWS table by status.
+     * Returns the failure items from the CONTENT_FAILURES table by status.
      */
-    public synchronized List<ContentReviewItem> listItems(ReviewStatus status) throws SQLException
+    public synchronized List<ContentFailureItem> listItems(FailureStatus status) throws SQLException
     {
-        List<ContentReviewItem> ret = null;
+        List<ContentFailureItem> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -538,19 +538,19 @@ public class ContentReviewDAO extends BaseDAO
             listItemsByStatusStmt.setString(1, status.name());
             listItemsByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listItemsByStatusStmt.executeQuery();
-            ret = new ArrayList<ContentReviewItem>();
+            ret = new ArrayList<ContentFailureItem>();
             while(rs.next())
             {
-                ContentReviewItem review = new ContentReviewItem();
-                review.setId(rs.getString(1));
-                review.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                review.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
-                review.setReviewDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
-                review.setCode(rs.getString(5));
-                review.setReason(rs.getString(6));
-                review.setStatus(rs.getString(7));
-                review.setMonitorId(rs.getString(8));
-                ret.add(review);
+                ContentFailureItem failure = new ContentFailureItem();
+                failure.setId(rs.getString(1));
+                failure.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                failure.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                failure.setReviewDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                failure.setCode(rs.getString(5));
+                failure.setReason(rs.getString(6));
+                failure.setStatus(rs.getString(7));
+                failure.setMonitorId(rs.getString(8));
+                ret.add(failure);
             }
         }
         finally
@@ -571,7 +571,7 @@ public class ContentReviewDAO extends BaseDAO
     }
 
     /**
-     * Returns the count of reviews from the table.
+     * Returns the count of failures from the table.
      */
     public int count() throws SQLException
     {
@@ -589,21 +589,21 @@ public class ContentReviewDAO extends BaseDAO
     }
 
     /**
-     * Removes the given review from the CONTENT_REVIEWS table.
+     * Removes the given failure from the CONTENT_FAILURES table.
      */
-    public synchronized void delete(ContentReview review) throws SQLException
+    public synchronized void delete(ContentFailure failure) throws SQLException
     {
-        if(!hasConnection() || review == null)
+        if(!hasConnection() || failure == null)
             return;
 
         if(deleteStmt == null)
             deleteStmt = prepareStatement(getConnection(), DELETE_SQL);
         clearParameters(deleteStmt);
 
-        deleteStmt.setString(1, review.getId());
+        deleteStmt.setString(1, failure.getId());
         deleteStmt.executeUpdate();
 
-        logger.info("Deleted review '"+review.getId()+"' in CONTENT_REVIEWS");
+        logger.info("Deleted failure '"+failure.getId()+"' in CONTENT_FAILURES");
     }
 
     /**

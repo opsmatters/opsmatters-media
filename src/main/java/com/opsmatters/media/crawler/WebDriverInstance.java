@@ -176,15 +176,11 @@ public class WebDriverInstance
                 client.getCookieManager().setCookiesEnabled(false);
                 client.getOptions().setUseInsecureSSL(true);
 
-//GERALD
-System.out.println("WebDriverInstance.newHtmlUnitDriver:1: browser="+browser+" useProxy="+useProxy);
                 if(useProxy)
                 {
                     proxy = ContentProxies.next();
                     if(proxy != null)
                     {
-//GERALD
-System.out.println("WebDriverInstance.newHtmlUnitDriver:2: browser="+browser+" proxy="+proxy);
                         ProxyConfig proxyConfig = new ProxyConfig(proxy.getHost(), proxy.getPort(), null);
                         client.getOptions().setProxyConfig(proxyConfig);
                     }
@@ -220,15 +216,11 @@ System.out.println("WebDriverInstance.newHtmlUnitDriver:2: browser="+browser+" p
         if(headless)
             options.addArguments("--headless=new");
 
-//GERALD
-System.out.println("WebDriverInstance.newChromeDriver:1: browser="+browser+" useProxy="+useProxy+" headless="+headless);
         if(useProxy)
         {
             proxy = ContentProxies.next();
             if(proxy != null)
             {
-//GERALD
-System.out.println("WebDriverInstance.newChromeDriver:2: browser="+browser+" proxy="+proxy);
                 Proxy p = new Proxy();
                 p.setHttpProxy(proxy.getHostPort());
                 p.setSslProxy(proxy.getHostPort());
@@ -264,15 +256,11 @@ System.out.println("WebDriverInstance.newChromeDriver:2: browser="+browser+" pro
         if(headless)
             options.addArguments("--headless");
 
-//GERALD
-System.out.println("WebDriverInstance.newFirefoxDriver:1: browser="+browser+" useProxy="+useProxy+" headless="+headless);
         if(useProxy)
         {
             proxy = ContentProxies.next();
             if(proxy != null)
             {
-//GERALD
-System.out.println("WebDriverInstance.newFirefoxDriver:2: browser="+browser+" proxy="+proxy);
                 Proxy p = new Proxy();
                 p.setHttpProxy(proxy.getHostPort());
                 p.setSslProxy(proxy.getHostPort());
@@ -317,8 +305,6 @@ System.out.println("WebDriverInstance.newFirefoxDriver:2: browser="+browser+" pr
     {
         try
         {
-//GERALD
-System.out.println("WebDriverInstance.close:1: browser="+browser+" useProxy="+useProxy+" headless="+headless+" cached="+cached);
             if(driver != null)
                 driver.quit();
         }

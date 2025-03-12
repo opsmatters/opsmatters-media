@@ -16,18 +16,22 @@
 
 package com.opsmatters.media.model.monitor;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
- * Represents the status of a content monitor review.
+ * Represents the status of a content monitor failure.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ReviewStatus
+public enum FailureStatus
 {
     NEW("New", "glyphicon-unchecked", ""),
-    WAITING("Waiting", "glyphicon-hourglass", ""),
-    COMPLETED("Completed", "glyphicon-ok-circle", "status-success"),
-    SKIPPED("Skipped", "glyphicon-remove-circle", "status-info"),
-    CLOSED("Closed", "glyphicon-stop", "status-success"),
+    FUNCTIONAL("Functional", "glyphicon-cog", "status-warn"),
+    TRIAGE("Triage", "glyphicon-wrench", "status-warn"),
+    BROKEN("Broken", "glyphicon-ban-circle", "status-error"),
+    RESOLVED("Resolved", "glyphicon-ok-circle", "status-success"),
+    SKIPPED("Skipped", "", ""), // Pseudo status
     ALL("All", "", ""); // Pseudo status
 
     private String value;
@@ -40,7 +44,7 @@ public enum ReviewStatus
      * @param icon The glyphicon for the status
      * @param css The css class for the status
      */
-    ReviewStatus(String value, String icon, String css)
+    FailureStatus(String value, String icon, String css)
     {
         this.value = value;
         this.icon = icon;
@@ -88,14 +92,15 @@ public enum ReviewStatus
      * @param value The type value
      * @return The type for the given value
      */
-    public static ReviewStatus fromValue(String value)
+    public static FailureStatus fromValue(String value)
     {
-        ReviewStatus[] types = values();
-        for(ReviewStatus type : types)
+        FailureStatus[] types = values();
+        for(FailureStatus type : types)
         {
             if(type.value().equals(value))
                 return type;
         }
+
         return null;
     }
 
@@ -107,5 +112,21 @@ public enum ReviewStatus
     public static boolean contains(String value)
     {
         return valueOf(value) != null;
+    }
+
+    /**
+     * Returns a list of the failure statuses.
+     */
+    public static List<FailureStatus> toList()
+    {
+        List<FailureStatus> ret = new ArrayList<FailureStatus>();
+
+        ret.add(NEW);
+        ret.add(FUNCTIONAL);
+        ret.add(TRIAGE);
+        ret.add(BROKEN);
+        ret.add(RESOLVED);
+
+        return ret;
     }
 }

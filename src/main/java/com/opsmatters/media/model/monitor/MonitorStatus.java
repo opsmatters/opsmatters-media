@@ -35,7 +35,7 @@ public enum MonitorStatus
     DISABLED("Disabled", "glyphicon-ban-circle", "status-error", -1),
     CHANGE("Change", "glyphicon-adjust", "status-warn", 0),
     ALERT("Alert", "glyphicon-alert", "status-warn", 0),
-    REVIEW("Review", "glyphicon-bookmark", "status-warn", 0),
+    FAILURE("Failure", "glyphicon-exclamation-sign", "status-warn", 0),
     PENDING("Pending", "", "", 0), // Pseudo status
     RUNNING("Running", "", "", 1), // Pseudo status
     ALL("All", "", "", 0); // Pseudo status
@@ -156,7 +156,7 @@ public enum MonitorStatus
         ret.add(DISABLED);
         ret.add(CHANGE);
         ret.add(ALERT);
-        ret.add(REVIEW);
+        ret.add(FAILURE);
 
         return ret;
     }

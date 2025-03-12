@@ -20,17 +20,18 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Represents the reason for a content monitor review.
+ * Represents the reason for a content monitor failure.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ReviewReason
+public enum FailureReason
 {
     UNDEFINED("Undefined"),
-    UNRELIABLE("Unreliable"),
-    BROKEN("Broken"),
-    BLOCKED("Blocked"),
+    INTERMITTENT("Intermittent"),
+    ACCESS_DENIED("Access Denied"),
     VERIFICATION("Verification"),
+    DEFECTIVE("Defective"),
+    HANGING("Hanging"),
     ALL("All"); // Pseudo status
 
     private String value;
@@ -39,7 +40,7 @@ public enum ReviewReason
      * Constructor that takes the reason value.
      * @param value The value for the reason
      */
-    ReviewReason(String value)
+    FailureReason(String value)
     {
         this.value = value;
     }
@@ -67,14 +68,15 @@ public enum ReviewReason
      * @param value The type value
      * @return The type for the given value
      */
-    public static ReviewReason fromValue(String value)
+    public static FailureReason fromValue(String value)
     {
-        ReviewReason[] types = values();
-        for(ReviewReason type : types)
+        FailureReason[] types = values();
+        for(FailureReason type : types)
         {
             if(type.value().equals(value))
                 return type;
         }
+
         return null;
     }
 
@@ -89,17 +91,18 @@ public enum ReviewReason
     }
 
     /**
-     * Returns a list of the review reasons.
+     * Returns a list of the failure reasons.
      */
-    public static List<ReviewReason> toList()
+    public static List<FailureReason> toList()
     {
-        List<ReviewReason> ret = new ArrayList<ReviewReason>();
+        List<FailureReason> ret = new ArrayList<FailureReason>();
 
         ret.add(UNDEFINED);
-        ret.add(UNRELIABLE);
-        ret.add(BROKEN);
-        ret.add(BLOCKED);
+        ret.add(INTERMITTENT);
+        ret.add(ACCESS_DENIED);
         ret.add(VERIFICATION);
+        ret.add(DEFECTIVE);
+        ret.add(HANGING);
 
         return ret;
     }

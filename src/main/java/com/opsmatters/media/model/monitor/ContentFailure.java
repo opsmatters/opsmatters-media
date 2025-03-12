@@ -24,44 +24,44 @@ import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
 
 /**
- * Class representing a content monitor review.
+ * Class representing a content monitor failure.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentReview extends ContentEvent
+public class ContentFailure extends ContentEvent
 {
     public static final String NOTES = "notes";
 
     private Instant reviewDate;
-    private ReviewReason reason;
+    private FailureReason reason;
     private String notes = "";
-    private ReviewStatus status;
+    private FailureStatus status;
     private int sessionId = 0;
 
     /**
      * Default constructor.
      */
-    public ContentReview()
+    public ContentFailure()
     {
     }
 
     /**
      * Constructor that takes a monitor.
      */
-    public ContentReview(ContentMonitor monitor)
+    public ContentFailure(ContentMonitor monitor)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setCode(monitor.getCode());
-        setReason(ReviewReason.UNDEFINED);
-        setStatus(ReviewStatus.NEW);
+        setReason(FailureReason.UNDEFINED);
+        setStatus(FailureStatus.NEW);
         setMonitorId(monitor.getId());
     }
 
     /**
      * Copy constructor.
      */
-    public ContentReview(ContentReview obj)
+    public ContentFailure(ContentFailure obj)
     {
         copyAttributes(obj);
     }
@@ -69,7 +69,7 @@ public class ContentReview extends ContentEvent
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ContentReview obj)
+    public void copyAttributes(ContentFailure obj)
     {
         if(obj != null)
         {
@@ -108,11 +108,11 @@ public class ContentReview extends ContentEvent
     @Override
     public EventType getType()
     {
-        return EventType.REVIEW;
+        return EventType.FAILURE;
     }
 
     /**
-     * Returns the review review date.
+     * Returns the failure review date.
      */
     public Instant getReviewDate()
     {
@@ -120,7 +120,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Returns the review review date.
+     * Returns the failure review date.
      */
     public long getReviewDateMillis()
     {
@@ -128,7 +128,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Returns the review review date.
+     * Returns the failure review date.
      */
     public LocalDateTime getReviewDateUTC()
     {
@@ -136,7 +136,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Returns the review review date.
+     * Returns the failure review date.
      */
     public String getReviewDateAsString(String pattern)
     {
@@ -144,7 +144,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Returns the review review date.
+     * Returns the failure review date.
      */
     public String getReviewDateAsString(String pattern, String timezone)
     {
@@ -152,7 +152,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Returns the review review date.
+     * Returns the failure review date.
      */
     public String getReviewDateAsString()
     {
@@ -160,7 +160,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Sets the review review date.
+     * Sets the failure review date.
      */
     public void setReviewDate(Instant reviewDate)
     {
@@ -168,7 +168,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Sets the review review date.
+     * Sets the failure review date.
      */
     public void setReviewDateMillis(long millis)
     {
@@ -177,7 +177,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Sets the review review date.
+     * Sets the failure review date.
      */
     public void setReviewDateAsString(String str, String pattern) throws DateTimeParseException
     {
@@ -185,7 +185,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Sets the review review date.
+     * Sets the failure review date.
      */
     public void setReviewDateAsString(String str) throws DateTimeParseException
     {
@@ -193,7 +193,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Sets the review review date.
+     * Sets the failure review date.
      */
     public void setReviewDateUTC(LocalDateTime reviewDate)
     {
@@ -202,31 +202,31 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Returns the review reason.
+     * Returns the failure reason.
      */
-    public ReviewReason getReason()
+    public FailureReason getReason()
     {
         return reason;
     }
 
     /**
-     * Sets the review reason.
+     * Sets the failure reason.
      */
     public void setReason(String reason)
     {
-        setReason(ReviewReason.valueOf(reason));
+        setReason(FailureReason.valueOf(reason));
     }
 
     /**
-     * Sets the review reason.
+     * Sets the failure reason.
      */
-    public void setReason(ReviewReason reason)
+    public void setReason(FailureReason reason)
     {
         this.reason = reason;
     }
 
     /**
-     * Returns the review notes.
+     * Returns the failure notes.
      */
     public String getNotes()
     {
@@ -234,7 +234,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Sets the review notes.
+     * Sets the failure notes.
      */
     public void setNotes(String notes)
     {
@@ -242,33 +242,33 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Returns the review status.
+     * Returns the failure status.
      */
-    public ReviewStatus getStatus()
+    public FailureStatus getStatus()
     {
         return status;
     }
 
     /**
-     * Sets the review status.
+     * Sets the failure status.
      */
     public void setStatus(String status)
     {
-        setStatus(ReviewStatus.valueOf(status));
+        setStatus(FailureStatus.valueOf(status));
     }
 
     /**
-     * Sets the review status.
+     * Sets the failure status.
      */
-    public void setStatus(ReviewStatus status)
+    public void setStatus(FailureStatus status)
     {
         this.status = status;
     }
 
     /**
-     * Sets the review status by the given user.
+     * Sets the failure status by the given user.
      */
-    public void setStatus(ReviewStatus status, String username)
+    public void setStatus(FailureStatus status, String username)
     {
         setStatus(status);
         setUpdatedDate(Instant.now());
@@ -276,47 +276,23 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Returns <CODE>true</CODE> if this review is NEW.
+     * Returns <CODE>true</CODE> if the status of this failure is NEW.
      */
     public boolean isNew()
     {
-        return getStatus() == ReviewStatus.NEW;
+        return getStatus() == FailureStatus.NEW;
     }
 
     /**
-     * Returns <CODE>true</CODE> if this review is WAITING.
+     * Returns <CODE>true</CODE> if this failure has been RESOLVED.
      */
-    public boolean isWaiting()
+    public boolean isResolved()
     {
-        return getStatus() == ReviewStatus.WAITING;
+        return getStatus() == FailureStatus.RESOLVED;
     }
 
     /**
-     * Returns <CODE>true</CODE> if this review has been SKIPPED.
-     */
-    public boolean isSkipped()
-    {
-        return getStatus() == ReviewStatus.SKIPPED;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if this review has been COMPLETED.
-     */
-    public boolean isCompleted()
-    {
-        return getStatus() == ReviewStatus.COMPLETED;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if this review has been CLOSED.
-     */
-    public boolean isClosed()
-    {
-        return getStatus() == ReviewStatus.CLOSED;
-    }
-
-    /**
-     * Returns the review session id.
+     * Returns the failure session id.
      */
     public int getSessionId()
     {
@@ -324,7 +300,7 @@ public class ContentReview extends ContentEvent
     }
 
     /**
-     * Sets the review session id.
+     * Sets the failure session id.
      */
     public void setSessionId(int sessionId)
     {

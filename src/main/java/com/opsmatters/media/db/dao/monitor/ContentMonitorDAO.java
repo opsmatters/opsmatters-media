@@ -609,14 +609,14 @@ public class ContentMonitorDAO extends BaseDAO
     }
 
     /**
-     * Returns the count of monitors from the CONTENT_MONITORS table with a status of REVIEW.
+     * Returns the count of monitors from the CONTENT_MONITORS table with a status of FAILURE.
      */
-    public List<ContentMonitor> getReviews(String code, String name, ContentType type) throws SQLException
+    public List<ContentMonitor> getFailures(String code, String name, ContentType type) throws SQLException
     {
         List<ContentMonitor> ret = new ArrayList<ContentMonitor>();
         for(ContentMonitor monitor : list(code, name, type))
         {
-            if(monitor.getStatus() == MonitorStatus.REVIEW)
+            if(monitor.getStatus() == MonitorStatus.FAILURE)
                 ret.add(monitor);
         }
 
