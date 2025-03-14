@@ -158,6 +158,9 @@ public class Contacts implements java.io.Serializable
      */
     public static void add(Contact contact)
     {
+        // To prevent sharing of cached objects with UI components
+        contact = new Contact(contact);
+
         Contact existing = getById(contact.getId());
         if(existing != null)
             remove(existing);

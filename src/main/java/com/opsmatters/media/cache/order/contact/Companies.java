@@ -110,9 +110,12 @@ public class Companies implements java.io.Serializable
      */
     public static void add(Company company)
     {
+        // To prevent sharing of cached objects with UI components
+        company = new Company(company);
+
         Company existing = getById(company.getId());
         if(existing != null)
-            remove(existing);
+            remove(existing);   
 
         idMap.put(company.getId(), company);
         nameMap.put(company.getName(), company);
