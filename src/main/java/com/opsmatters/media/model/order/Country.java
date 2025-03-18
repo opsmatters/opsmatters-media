@@ -38,6 +38,8 @@ public enum Country
     ESTONIA("EE", "Estonia"),
     GEORGIA("GE", "Georgia"),
     GERMANY("DE", "Germany"),
+    GIBRALTAR("GI", "Gibraltar"),
+    HONG_KONG("HK", "Hong Kong"),
     HUNGARY("HU", "Hungary"),
     INDIA("IN", "India"),
     IRELAND("IE", "Ireland"),
