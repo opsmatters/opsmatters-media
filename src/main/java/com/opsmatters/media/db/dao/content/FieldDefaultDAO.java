@@ -24,77 +24,77 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.ContentDefault;
+import com.opsmatters.media.model.content.FieldDefault;
 import com.opsmatters.media.db.dao.BaseDAO;
 
 /**
- * DAO that provides operations on the CONTENT_DEFAULTS table in the database.
+ * DAO that provides operations on the FIELD_DEFAULTS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentDefaultDAO extends BaseDAO
+public class FieldDefaultDAO extends BaseDAO
 {
-    private static final Logger logger = Logger.getLogger(ContentDefaultDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(FieldDefaultDAO.class.getName());
 
     /**
-     * The query to use to select defaults from the CONTENT_DEFAULTS table by id.
+     * The query to use to select defaults from the FIELD_DEFAULTS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, NAME, VALUE, ENABLED "
-      + "FROM CONTENT_DEFAULTS WHERE ID=?";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, NAME, VALUE, ENABLED, CREATED_BY "
+      + "FROM FIELD_DEFAULTS WHERE ID=?";
 
     /**
-     * The query to use to insert defaults into the CONTENT_DEFAULTS table.
+     * The query to use to insert defaults into the FIELD_DEFAULTS table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO CONTENT_DEFAULTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, TYPE, NAME, VALUE, ENABLED )"
+      "INSERT INTO FIELD_DEFAULTS"
+      + "( ID, CREATED_DATE, UPDATED_DATE, TYPE, NAME, VALUE, ENABLED, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update defaults in the CONTENT_DEFAULTS table.
+     * The query to use to update defaults in the FIELD_DEFAULTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTENT_DEFAULTS SET UPDATED_DATE=?, NAME=?, VALUE=?, ENABLED=? "
+      "UPDATE FIELD_DEFAULTS SET UPDATED_DATE=?, NAME=?, VALUE=?, ENABLED=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
-     * The query to use to select the defaults from the CONTENT_DEFAULTS table.
+     * The query to use to select the defaults from the FIELD_DEFAULTS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, NAME, VALUE, ENABLED "
-      + "FROM CONTENT_DEFAULTS";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, NAME, VALUE, ENABLED, CREATED_BY "
+      + "FROM FIELD_DEFAULTS";
 
     /**
-     * The query to use to select the defaults from the CONTENT_DEFAULTS table by type.
+     * The query to use to select the defaults from the FIELD_DEFAULTS table by type.
      */
     private static final String LIST_BY_TYPE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, NAME, VALUE, ENABLED "
-      + "FROM CONTENT_DEFAULTS WHERE TYPE=?";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, NAME, VALUE, ENABLED, CREATED_BY "
+      + "FROM FIELD_DEFAULTS WHERE TYPE=?";
 
     /**
-     * The query to use to get the count of defaults from the CONTENT_DEFAULTS table.
+     * The query to use to get the count of defaults from the FIELD_DEFAULTS table.
      */
     private static final String COUNT_SQL =  
-      "SELECT COUNT(*) FROM CONTENT_DEFAULTS";
+      "SELECT COUNT(*) FROM FIELD_DEFAULTS";
 
     /**
-     * The query to use to delete defaults from the CONTENT_DEFAULTS table.
+     * The query to use to delete defaults from the FIELD_DEFAULTS table.
      */
     private static final String DELETE_SQL =  
-      "DELETE FROM CONTENT_DEFAULTS WHERE ID=?";
+      "DELETE FROM FIELD_DEFAULTS WHERE ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public ContentDefaultDAO(ContentDAOFactory factory)
+    public FieldDefaultDAO(ContentDAOFactory factory)
     {
-        super(factory, "CONTENT_DEFAULTS");
+        super(factory, "FIELD_DEFAULTS");
     }
 
     /**
-     * Defines the defaults and indices for the CONTENT_DEFAULTS table.
+     * Defines the defaults and indices for the FIELD_DEFAULTS table.
      */
     @Override
     protected void defineTable()
@@ -106,17 +106,18 @@ public class ContentDefaultDAO extends BaseDAO
         table.addColumn("NAME", Types.VARCHAR, 30, true);
         table.addColumn("VALUE", Types.VARCHAR, 128, true);
         table.addColumn("ENABLED", Types.BOOLEAN, true);
-        table.setPrimaryKey("CONTENT_DEFAULTS_PK", new String[] {"ID"});
-        table.addIndex("CONTENT_DEFAULTS_TYPE_IDX", new String[] {"TYPE"});
+        table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
+        table.setPrimaryKey("FIELD_DEFAULTS_PK", new String[] {"ID"});
+        table.addIndex("FIELD_DEFAULTS_TYPE_IDX", new String[] {"TYPE"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns defaults from the CONTENT_DEFAULTS table by id.
+     * Returns defaults from the FIELD_DEFAULTS table by id.
      */
-    public synchronized ContentDefault getById(String id) throws SQLException
+    public synchronized FieldDefault getById(String id) throws SQLException
     {
-        ContentDefault ret = null;
+        FieldDefault ret = null;
 
         if(!hasConnection())
             return ret;
@@ -135,7 +136,7 @@ public class ContentDefaultDAO extends BaseDAO
             rs = getByIdStmt.executeQuery();
             while(rs.next())
             {
-                ContentDefault _default = new ContentDefault();
+                FieldDefault _default = new FieldDefault();
                 _default.setId(rs.getString(1));
                 _default.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 _default.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
@@ -143,6 +144,7 @@ public class ContentDefaultDAO extends BaseDAO
                 _default.setName(rs.getString(5));
                 _default.setValue(rs.getString(6));
                 _default.setEnabled(rs.getBoolean(7));
+                _default.setCreatedBy(rs.getString(8));
                 ret = _default;
             }
         }
@@ -164,9 +166,9 @@ public class ContentDefaultDAO extends BaseDAO
     }
 
     /**
-     * Stores the given default in the CONTENT_DEFAULTS table.
+     * Stores the given default in the FIELD_DEFAULTS table.
      */
-    public synchronized void add(ContentDefault _default) throws SQLException
+    public synchronized void add(FieldDefault _default) throws SQLException
     {
         if(!hasConnection() || _default == null)
             return;
@@ -184,9 +186,10 @@ public class ContentDefaultDAO extends BaseDAO
             insertStmt.setString(5, _default.getName());
             insertStmt.setString(6, _default.getValue());
             insertStmt.setBoolean(7, _default.isEnabled());
+            insertStmt.setString(8, _default.getCreatedBy());
             insertStmt.executeUpdate();
 
-            logger.info("Created default '"+_default.getId()+"' in CONTENT_DEFAULTS");
+            logger.info("Created default '"+_default.getId()+"' in FIELD_DEFAULTS");
         }
         catch(SQLException ex)
         {
@@ -204,9 +207,9 @@ public class ContentDefaultDAO extends BaseDAO
     }
 
     /**
-     * Updates the given default in the CONTENT_DEFAULTS table.
+     * Updates the given default in the FIELD_DEFAULTS table.
      */
-    public synchronized void update(ContentDefault _default) throws SQLException
+    public synchronized void update(FieldDefault _default) throws SQLException
     {
         if(!hasConnection() || _default == null)
             return;
@@ -219,18 +222,19 @@ public class ContentDefaultDAO extends BaseDAO
         updateStmt.setString(2, _default.getName());
         updateStmt.setString(3, _default.getValue());
         updateStmt.setBoolean(4, _default.isEnabled());
-        updateStmt.setString(5, _default.getId());
+        updateStmt.setString(5, _default.getCreatedBy());
+        updateStmt.setString(6, _default.getId());
         updateStmt.executeUpdate();
 
-        logger.info("Updated default '"+_default.getId()+"' in CONTENT_DEFAULTS");
+        logger.info("Updated default '"+_default.getId()+"' in FIELD_DEFAULTS");
     }
 
     /**
-     * Returns the defaults from the CONTENT_DEFAULTS table.
+     * Returns the defaults from the FIELD_DEFAULTS table.
      */
-    public synchronized List<ContentDefault> list() throws SQLException
+    public synchronized List<FieldDefault> list() throws SQLException
     {
-        List<ContentDefault> ret = null;
+        List<FieldDefault> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -246,10 +250,10 @@ public class ContentDefaultDAO extends BaseDAO
         {
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
-            ret = new ArrayList<ContentDefault>();
+            ret = new ArrayList<FieldDefault>();
             while(rs.next())
             {
-                ContentDefault _default = new ContentDefault();
+                FieldDefault _default = new FieldDefault();
                 _default.setId(rs.getString(1));
                 _default.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 _default.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
@@ -257,6 +261,7 @@ public class ContentDefaultDAO extends BaseDAO
                 _default.setName(rs.getString(5));
                 _default.setValue(rs.getString(6));
                 _default.setEnabled(rs.getBoolean(7));
+                _default.setCreatedBy(rs.getString(8));
                 ret.add(_default);
             }
         }
@@ -278,11 +283,11 @@ public class ContentDefaultDAO extends BaseDAO
     }
 
     /**
-     * Returns the defaults from the CONTENT_DEFAULTS table by type.
+     * Returns the defaults from the FIELD_DEFAULTS table by type.
      */
-    public synchronized List<ContentDefault> list(ContentType type) throws SQLException
+    public synchronized List<FieldDefault> list(ContentType type) throws SQLException
     {
-        List<ContentDefault> ret = null;
+        List<FieldDefault> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -299,10 +304,10 @@ public class ContentDefaultDAO extends BaseDAO
             listByTypeStmt.setString(1, type.name());
             listByTypeStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByTypeStmt.executeQuery();
-            ret = new ArrayList<ContentDefault>();
+            ret = new ArrayList<FieldDefault>();
             while(rs.next())
             {
-                ContentDefault _default = new ContentDefault();
+                FieldDefault _default = new FieldDefault();
                 _default.setId(rs.getString(1));
                 _default.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 _default.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
@@ -310,6 +315,7 @@ public class ContentDefaultDAO extends BaseDAO
                 _default.setName(rs.getString(5));
                 _default.setValue(rs.getString(6));
                 _default.setEnabled(rs.getBoolean(7));
+                _default.setCreatedBy(rs.getString(8));
                 ret.add(_default);
             }
         }
@@ -349,9 +355,9 @@ public class ContentDefaultDAO extends BaseDAO
     }
 
     /**
-     * Removes the given default from the CONTENT_DEFAULTS table.
+     * Removes the given default from the FIELD_DEFAULTS table.
      */
-    public synchronized void delete(ContentDefault _default) throws SQLException
+    public synchronized void delete(FieldDefault _default) throws SQLException
     {
         if(!hasConnection() || _default == null)
             return;
@@ -363,7 +369,7 @@ public class ContentDefaultDAO extends BaseDAO
         deleteStmt.setString(1, _default.getId());
         deleteStmt.executeUpdate();
 
-        logger.info("Deleted default '"+_default.getId()+"' in CONTENT_DEFAULTS");
+        logger.info("Deleted default '"+_default.getId()+"' in FIELD_DEFAULTS");
     }
 
     /**

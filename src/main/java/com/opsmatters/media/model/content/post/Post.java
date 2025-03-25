@@ -111,8 +111,8 @@ public class Post extends Article<PostDetails>
         String imageText = values[9];
         String imageTitle = values[10];
         String author = values[11];
-        String authorLink = values[12];
-        String creatorEmail = values[13];
+        String authorUrl = values[12];
+        String authorEmail = values[13];
         String createdBy = values[14];
         String published = values[15];
         String promote = values[16];
@@ -135,8 +135,8 @@ public class Post extends Article<PostDetails>
         setTags(tags);
         setImage(image);
         setAuthor(author);
-        setAuthorLink(authorLink);
-        setCreatorEmail(creatorEmail);
+        setAuthorUrl(authorUrl);
+        setAuthorEmail(authorEmail);
         setCreatedBy(createdBy);
         setPublished(published != null && published.equals("1"));
         setPromoted(promote != null && promote.equals("1"));
@@ -160,7 +160,7 @@ public class Post extends Article<PostDetails>
         ret.putOpt(IMAGE.value(), getImage());
         ret.putOpt(IMAGE_SOURCE.value(), getImageSource());
         ret.putOpt(AUTHOR.value(), getAuthor());
-        ret.putOpt(AUTHOR_LINK.value(), getAuthorLink());
+        ret.putOpt(AUTHOR_URL.value(), getAuthorUrl());
 
         return ret;
     }
@@ -180,7 +180,10 @@ public class Post extends Article<PostDetails>
         setImage(obj.optString(IMAGE.value()));
         setImageSource(obj.optString(IMAGE_SOURCE.value()));
         setAuthor(obj.optString(AUTHOR.value()));
-        setAuthorLink(obj.optString(AUTHOR_LINK.value()));
+        if(obj.has(AUTHOR_URL.value()))
+            setAuthorUrl(obj.optString(AUTHOR_URL.value()));
+        else
+            setAuthorUrl(obj.optString(AUTHOR_LINK.value())); // deprecated
     }
 
     /**
@@ -194,7 +197,7 @@ public class Post extends Article<PostDetails>
         ret.put(POST_TYPE, getPostType());
         ret.put(DESCRIPTION, EmojiParser.parseToHtmlDecimal(getDescription()));
         ret.put(AUTHOR, getAuthor());
-        ret.put(AUTHOR_LINK, getAuthorLink());
+        ret.put(AUTHOR_URL, getAuthorUrl());
         ret.put(URL, getUrlAlias());
         ret.put(CANONICAL_URL, getCanonicalUrl());
         ret.put(IMAGE, getImage());
@@ -239,7 +242,7 @@ public class Post extends Article<PostDetails>
     {
         super.init(organisation, organisationSite, config);
 
-        setCreatorEmail(organisation.getEmail());
+        setAuthorEmail(organisation.getEmail());
 
         if(organisationSite != null)
         {
@@ -272,9 +275,9 @@ public class Post extends Article<PostDetails>
         if(config.hasField(AUTHOR) && getAuthor().length() == 0)
             setAuthor(config.getField(AUTHOR));
 
-        // Use the default author link if a content author link wasn't found
-        if(config.hasField(AUTHOR_LINK) && getAuthorLink().length() == 0)
-            setAuthorLink(config.getField(AUTHOR_LINK));
+        // Use the default author URL if a content author URL wasn't found
+        if(config.hasField(AUTHOR_URL) && getAuthorUrl().length() == 0)
+            setAuthorUrl(config.getField(AUTHOR_URL));
 
         // Use the default image if a content image wasn't found
         ContentImage image = ContentImages.get(ImageType.BANNER, config.getCode());
@@ -304,7 +307,7 @@ public class Post extends Article<PostDetails>
             setImageSource(new String(obj.getImageSource() != null ? obj.getImageSource() : ""));
             setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
             setAuthor(new String(obj.getAuthor() != null ? obj.getAuthor() : ""));
-            setAuthorLink(new String(obj.getAuthorLink() != null ? obj.getAuthorLink() : ""));
+            setAuthorUrl(new String(obj.getAuthorUrl() != null ? obj.getAuthorUrl() : ""));
         }
     }
 
@@ -554,26 +557,26 @@ public class Post extends Article<PostDetails>
     }
 
     /**
-     * Returns the author link of the post.
+     * Returns the author URL of the post.
      */
-    public String getAuthorLink()
+    public String getAuthorUrl()
     {
-        return getDetails().getAuthorLink();
+        return getDetails().getAuthorUrl();
     }
 
     /**
-     * Sets the author link of the post.
+     * Sets the author URL of the post.
      */
-    public void setAuthorLink(String authorLink)
+    public void setAuthorUrl(String authorUrl)
     {
-        getDetails().setAuthorLink(authorLink);
+        getDetails().setAuthorUrl(authorUrl);
     }
 
     /**
-     * Returns <CODE>true</CODE> if the author link has been set.
+     * Returns <CODE>true</CODE> if the author URL has been set.
      */
-    public boolean hasAuthorLink()
+    public boolean hasAuthorUrl()
     {
-        return getAuthorLink() != null && getAuthorLink().length() > 0;
+        return getAuthorUrl() != null && getAuthorUrl().length() > 0;
     }
 }

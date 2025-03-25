@@ -21,7 +21,7 @@ import com.opsmatters.media.db.dao.DAOFactory;
 import com.opsmatters.media.db.dao.content.ContentSettingsDAO;
 import com.opsmatters.media.db.dao.content.ContentSiteSettingsDAO;
 import com.opsmatters.media.db.dao.content.OutputColumnDAO;
-import com.opsmatters.media.db.dao.content.ContentDefaultDAO;
+import com.opsmatters.media.db.dao.content.FieldDefaultDAO;
 import com.opsmatters.media.db.dao.content.crawler.ErrorPageDAO;
 import com.opsmatters.media.db.dao.content.organisation.OrganisationListingDAO;
 import com.opsmatters.media.db.dao.content.video.VideoDAO;
@@ -57,7 +57,7 @@ public class ContentDAOFactory extends DAOFactory
         getContentSettingsDAO();
         getContentSiteSettingsDAO();
         getOutputColumnDAO();
-        getContentDefaultDAO();
+        getFieldDefaultDAO();
         getErrorPageDAO();
     }
 
@@ -172,13 +172,13 @@ public class ContentDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the ContentDefault DAO.
+     * Returns the FieldDefault DAO.
      */
-    public ContentDefaultDAO getContentDefaultDAO()
+    public FieldDefaultDAO getFieldDefaultDAO()
     {
-        if(contentDefaultDAO == null)
-            contentDefaultDAO = new ContentDefaultDAO(this);
-        return contentDefaultDAO;
+        if(fieldDefaultDAO == null)
+            fieldDefaultDAO = new FieldDefaultDAO(this);
+        return fieldDefaultDAO;
     }
 
     /**
@@ -209,7 +209,7 @@ public class ContentDAOFactory extends DAOFactory
         contentSettingsDAO = null;
         contentSiteSettingsDAO = null;
         outputColumnDAO = null;
-        contentDefaultDAO = null;
+        fieldDefaultDAO = null;
         errorPageDAO = null;
     }
 
@@ -224,6 +224,6 @@ public class ContentDAOFactory extends DAOFactory
     private ContentSettingsDAO contentSettingsDAO;
     private ContentSiteSettingsDAO contentSiteSettingsDAO;
     private OutputColumnDAO outputColumnDAO;
-    private ContentDefaultDAO contentDefaultDAO;
+    private FieldDefaultDAO fieldDefaultDAO;
     private ErrorPageDAO errorPageDAO;
 }

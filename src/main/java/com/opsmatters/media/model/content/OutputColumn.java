@@ -17,7 +17,7 @@ package com.opsmatters.media.model.content;
 
 import java.time.Instant;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.BaseEntity;
+import com.opsmatters.media.model.OwnedEntity;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -25,7 +25,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OutputColumn extends BaseEntity
+public class OutputColumn extends OwnedEntity
 {
     private static final Logger logger = Logger.getLogger(OutputColumn.class.getName());
 
@@ -50,6 +50,8 @@ public class OutputColumn extends BaseEntity
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setName(name);
+        setType(ContentType.ROUNDUP);
+        setEnabled(true);
     }
 
     /**
@@ -125,6 +127,14 @@ public class OutputColumn extends BaseEntity
     }
 
     /**
+     * Returns the value of the type of the column.
+     */
+    public String getTypeValue()
+    {
+        return type != null ? type.value() : "";
+    }
+
+    /**
      * Sets the type of the column.
      */
     public void setType(ContentType type)
@@ -138,6 +148,14 @@ public class OutputColumn extends BaseEntity
     public void setType(String type)
     {
         setType(ContentType.valueOf(type));
+    }
+
+    /**
+     * Sets the type of the column from a value.
+     */
+    public void setTypeValue(String type)
+    {
+        setType(ContentType.fromValue(type));
     }
 
     /**
@@ -165,10 +183,26 @@ public class OutputColumn extends BaseEntity
     }
 
     /**
+     * Returns <CODE>true</CODE> if this column is enabled.
+     */
+    public Boolean getEnabledObject()
+    {
+        return Boolean.valueOf(isEnabled());
+    }
+
+    /**
      * Set to <CODE>true</CODE> if the column is enabled.
      */
     public void setEnabled(boolean enabled)
     {
         this.enabled = enabled;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this column is enabled.
+     */
+    public void setEnabledObject(Boolean enabled)
+    {
+        setEnabled(enabled != null && enabled.booleanValue());
     }
 }

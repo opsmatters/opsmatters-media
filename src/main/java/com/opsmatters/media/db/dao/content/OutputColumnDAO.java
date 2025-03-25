@@ -40,7 +40,7 @@ public class OutputColumnDAO extends BaseDAO
      * The query to use to select columns from the OUTPUT_COLUMNS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, NAME, VALUE, POSITION, ENABLED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, NAME, VALUE, POSITION, ENABLED, CREATED_BY "
       + "FROM OUTPUT_COLUMNS WHERE ID=?";
 
     /**
@@ -48,29 +48,29 @@ public class OutputColumnDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO OUTPUT_COLUMNS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, TYPE, NAME, VALUE, POSITION, ENABLED )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, TYPE, NAME, VALUE, POSITION, ENABLED, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update columns in the OUTPUT_COLUMNS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE OUTPUT_COLUMNS SET UPDATED_DATE=?, NAME=?, VALUE=?, POSITION=?, ENABLED=? "
+      "UPDATE OUTPUT_COLUMNS SET UPDATED_DATE=?, NAME=?, VALUE=?, POSITION=?, ENABLED=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the columns from the OUTPUT_COLUMNS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, NAME, VALUE, POSITION, ENABLED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, NAME, VALUE, POSITION, ENABLED, CREATED_BY "
       + "FROM OUTPUT_COLUMNS ORDER BY POSITION";
 
     /**
      * The query to use to select the columns from the OUTPUT_COLUMNS table by type.
      */
     private static final String LIST_BY_TYPE_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, NAME, VALUE, POSITION, ENABLED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, NAME, VALUE, POSITION, ENABLED, CREATED_BY "
       + "FROM OUTPUT_COLUMNS WHERE TYPE=? ORDER BY POSITION";
 
     /**
@@ -107,6 +107,7 @@ public class OutputColumnDAO extends BaseDAO
         table.addColumn("VALUE", Types.VARCHAR, 128, true);
         table.addColumn("POSITION", Types.INTEGER, true);
         table.addColumn("ENABLED", Types.BOOLEAN, true);
+        table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("OUTPUT_COLUMNS_PK", new String[] {"ID"});
         table.addIndex("OUTPUT_COLUMNS_TYPE_IDX", new String[] {"TYPE"});
         table.setInitialised(true);
@@ -145,6 +146,7 @@ public class OutputColumnDAO extends BaseDAO
                 column.setValue(rs.getString(6));
                 column.setPosition(rs.getInt(7));
                 column.setEnabled(rs.getBoolean(8));
+                column.setCreatedBy(rs.getString(9));
                 ret = column;
             }
         }
@@ -187,6 +189,7 @@ public class OutputColumnDAO extends BaseDAO
             insertStmt.setString(6, column.getValue());
             insertStmt.setInt(7, column.getPosition());
             insertStmt.setBoolean(8, column.isEnabled());
+            insertStmt.setString(9, column.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created column '"+column.getId()+"' in OUTPUT_COLUMNS");
@@ -223,7 +226,8 @@ public class OutputColumnDAO extends BaseDAO
         updateStmt.setString(3, column.getValue());
         updateStmt.setInt(4, column.getPosition());
         updateStmt.setBoolean(5, column.isEnabled());
-        updateStmt.setString(6, column.getId());
+        updateStmt.setString(6, column.getCreatedBy());
+        updateStmt.setString(7, column.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated column '"+column.getId()+"' in OUTPUT_COLUMNS");
@@ -262,6 +266,7 @@ public class OutputColumnDAO extends BaseDAO
                 column.setValue(rs.getString(6));
                 column.setPosition(rs.getInt(7));
                 column.setEnabled(rs.getBoolean(8));
+                column.setCreatedBy(rs.getString(9));
                 ret.add(column);
             }
         }
@@ -316,6 +321,7 @@ public class OutputColumnDAO extends BaseDAO
                 column.setValue(rs.getString(6));
                 column.setPosition(rs.getInt(7));
                 column.setEnabled(rs.getBoolean(8));
+                column.setCreatedBy(rs.getString(9));
                 ret.add(column);
             }
         }

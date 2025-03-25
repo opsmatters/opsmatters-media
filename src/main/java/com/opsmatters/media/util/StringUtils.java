@@ -846,6 +846,28 @@ public class StringUtils
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given path is a valid URL.
+     */
+    public static boolean isUrl(String url)
+    {
+        boolean ret = false;
+
+        if(url != null && url.length() > 0)
+        {
+            try
+            {
+                new URL(url);
+                ret = true;
+            }
+            catch(MalformedURLException e)
+            {
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the last context of the given URL.
      */
     public static String getUrlContext(String url)

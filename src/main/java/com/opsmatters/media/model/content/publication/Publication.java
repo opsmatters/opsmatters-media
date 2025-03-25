@@ -45,7 +45,7 @@ public class Publication extends Resource<PublicationDetails>
 {
     private String publicationType = "";
     private String tags = "";
-    private String creatorEmail = "";
+    private String authorEmail = "";
 
     /**
      * Default constructor.
@@ -84,7 +84,7 @@ public class Publication extends Resource<PublicationDetails>
         setContentDetails(obj.getDetails());
         setPublicationType(new String(obj.getPublicationType() != null ? obj.getPublicationType() : ""));
         setTags(new String(obj.getTags() != null ? obj.getTags() : ""));
-        setCreatorEmail(new String(obj.getCreatorEmail() != null ? obj.getCreatorEmail() : ""));
+        setAuthorEmail(new String(obj.getAuthorEmail() != null ? obj.getAuthorEmail() : ""));
     }
 
     /**
@@ -118,8 +118,8 @@ public class Publication extends Resource<PublicationDetails>
         String thumbnail = values[13];
         String thumbnailText = values[14];
         String thumbnailTitle = values[15];
-        String creator = values[16];
-        String creatorEmail = values[17];
+        String author = values[16];
+        String authorEmail = values[17];
         String createdBy = values[18];
         String published = values[19];
         String promote = values[20];
@@ -140,7 +140,7 @@ public class Publication extends Resource<PublicationDetails>
         setLinkText(linkText);
         setPublicationType(publicationType);
         setTags(tags);
-        setCreatorEmail(creatorEmail);
+        setAuthorEmail(authorEmail);
         setCreatedBy(createdBy);
         setPublished(published != null && published.equals("1"));
         setPromoted(promote != null && promote.equals("1"));
@@ -157,7 +157,7 @@ public class Publication extends Resource<PublicationDetails>
 
         ret.putOpt(PUBLICATION_TYPE.value(), getPublicationType());
         ret.putOpt(TAGS.value(), getTags());
-        ret.putOpt(EMAIL.value(), getCreatorEmail());
+        ret.putOpt(EMAIL.value(), getAuthorEmail());
         ret.putOpt(CANONICAL_URL.value(), getCanonicalUrl());
         ret.putOpt(IMAGE.value(), getImage());
         ret.putOpt(IMAGE_SOURCE.value(), getImageSource());
@@ -175,7 +175,7 @@ public class Publication extends Resource<PublicationDetails>
 
         setPublicationType(obj.optString(PUBLICATION_TYPE.value()));
         setTags(obj.optString(TAGS.value()));
-        setCreatorEmail(obj.optString(EMAIL.value()));
+        setAuthorEmail(obj.optString(EMAIL.value()));
         setCanonicalUrl(obj.optString(CANONICAL_URL.value()));
         setImage(obj.optString(IMAGE.value()));
         setImageSource(obj.optString(IMAGE_SOURCE.value()));
@@ -191,7 +191,7 @@ public class Publication extends Resource<PublicationDetails>
 
         ret.put(PUBLICATION_TYPE, getPublicationType());
         ret.put(TAGS, getTags());
-        ret.put(EMAIL, getCreatorEmail());
+        ret.put(EMAIL, getAuthorEmail());
         ret.put(CANONICAL_URL, getCanonicalUrl());
         ret.put(IMAGE, getImage());
         ret.put(METATAGS, getMetatags());
@@ -223,7 +223,7 @@ public class Publication extends Resource<PublicationDetails>
     {
         super.init(organisation, organisationSite, config);
 
-        setCreatorEmail(organisation.getEmail());
+        setAuthorEmail(organisation.getEmail());
 
         if(organisationSite != null)
         {
@@ -371,19 +371,19 @@ public class Publication extends Resource<PublicationDetails>
     }
 
     /**
-     * Returns the creator email.
+     * Returns the author email.
      */
-    public String getCreatorEmail()
+    public String getAuthorEmail()
     {
-        return creatorEmail;
+        return authorEmail;
     }
 
     /**
-     * Sets the creator email.
+     * Sets the author email.
      */
-    public void setCreatorEmail(String creatorEmail)
+    public void setAuthorEmail(String authorEmail)
     {
-        this.creatorEmail = creatorEmail;
+        this.authorEmail = authorEmail;
     }
 
     /**

@@ -280,12 +280,12 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostDetails>
                 teaser.setAuthor(author);
         }
 
-        if(fields.hasAuthorLink())
+        if(fields.hasAuthorUrl())
         {
-            Field field = fields.getAuthorLink();
-            String authorLink = getAnchor(field, root, category, field.removeParameters());
-            if(authorLink != null && authorLink.length() > 0)
-                teaser.setAuthorLink(authorLink);
+            Field field = fields.getAuthorUrl();
+            String authorUrl = getAnchor(field, root, category, field.removeParameters());
+            if(authorUrl != null && authorUrl.length() > 0)
+                teaser.setAuthorUrl(authorUrl);
         }
 
         if(fields.hasImage())

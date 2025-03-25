@@ -19,11 +19,12 @@ package com.opsmatters.media.model.content;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 import java.sql.SQLException;
 import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.cache.organisation.OrganisationSites;
+import com.opsmatters.media.cache.content.FieldDefaults;
+import com.opsmatters.media.cache.content.OutputColumns;
 import com.opsmatters.media.cache.content.util.ContentImages;
 import com.opsmatters.media.cache.platform.Environments;
 import com.opsmatters.media.model.platform.Site;
@@ -50,9 +51,6 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
 {
     private static final Logger logger = Logger.getLogger(ContentConfig.class.getName());
 
-    private static Map<ContentType,FieldMap> defaultMap = new LinkedHashMap<ContentType,FieldMap>();
-    private static Map<ContentType,Map<String,String>> outputMap = new LinkedHashMap<ContentType,Map<String,String>>();
-
     private ContentSource source = getType().source();
     private FieldMap fields = new FieldMap();
 
@@ -62,7 +60,7 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     protected ContentConfig(String code)
     {
         // Add the default fields
-        addFields(getDefaults(getType()));
+        addFields(FieldDefaults.get(getType()));
 
         fields.put(CODE, code);
     }
@@ -205,107 +203,6 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     }
 
     /**
-     * Returns the defaults for the given type.
-     */
-    private static FieldMap getDefaults(ContentType type)
-    {
-        return defaultMap.get(type);
-    }
-
-    /**
-     * Sets the defaults.
-     */
-    public static void setDefaults(List<ContentDefault> defaults)
-    {
-        defaultMap.clear();
-        for(ContentDefault _default : defaults)
-        {
-            if(_default.isEnabled())
-                addDefault(_default);
-        }
-
-        int count = 0;
-        for(ContentType type : ContentType.values())
-        {
-            if(getDefaults(type) != null)
-            {
-                int size = getDefaults(type).size();
-                logger.info(String.format("Loaded %d defaults for %s",
-                    size, type.tag()));
-                count += size;
-            }
-        }
-
-        logger.info(String.format("Loaded %d defaults", count));
-    }
-
-    /**
-     * Adds the given default.
-     */
-    private static void addDefault(ContentDefault _default)
-    {
-        FieldMap defaults = defaultMap.get(_default.getType());
-        if(defaults == null)
-        {
-            defaults = new FieldMap();
-            defaults.put(TYPE, _default.getType().code()); // Add the type code
-            defaultMap.put(_default.getType(), defaults);
-        }
-      
-        defaults.put(_default.getName(), _default.getValue());
-    }
-
-    /**
-     * Returns the output columns for the given type.
-     */
-    public static Map<String,String> getOutput(ContentType type)
-    {
-        return outputMap.get(type);
-    }
-
-    /**
-     * Sets the output columns.
-     */
-    public static void setOutputColumns(List<OutputColumn> columns)
-    {
-        outputMap.clear();
-        for(OutputColumn column : columns)
-        {
-            if(column.isEnabled())
-                addOutputColumn(column);
-        }
-
-        int count = 0;
-        for(ContentType type : ContentType.values())
-        {
-            if(getOutput(type) != null)
-            {
-                int size = getOutput(type).size();
-                logger.info(String.format("Loaded %d output columns for %s",
-                    size, type.tag()));
-                count += size;
-            }
-        }
-
-        logger.info(String.format("Loaded %d output columns", count));
-    }
-
-    /**
-     * Adds the given output column.
-     */
-    private static void addOutputColumn(OutputColumn column)
-    {
-        Map<String,String> output = outputMap.get(column.getType());
-        if(output == null)
-        {
-            output = new LinkedHashMap<String,String>();
-            outputMap.put(column.getType(), output);
-        }
-      
-        output.put(column.getName(), column.getValue());
-    }
-
-    /**
      * Returns the list of HTML fields that need to be escaped.
      */
     public String[] getHtmlFields()
@@ -321,7 +218,7 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     {
         ContentHandler handler = ContentHandler.builder()
             .useConfig(this)
-            .withOutput(getOutput(getType()))
+            .withOutput(OutputColumns.get(getType()))
             .withWorkingDirectory(System.getProperty("app.working"))
             .initFile()
             .build();

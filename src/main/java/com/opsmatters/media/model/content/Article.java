@@ -35,7 +35,7 @@ public abstract class Article<D extends ArticleDetails> extends Content<D>
     private String organisation = "";
     private String revisedTitle = "";
     private String tags = "";
-    private String creatorEmail = "";
+    private String authorEmail = "";
     private boolean promote = false;
     private boolean newsletter = false;
     private boolean featured = false;
@@ -58,7 +58,7 @@ public abstract class Article<D extends ArticleDetails> extends Content<D>
         setOrganisation(new String(obj.getOrganisation() != null ? obj.getOrganisation() : ""));
         setRevisedTitle(new String(obj.getRevisedTitle() != null ? obj.getRevisedTitle() : ""));
         setTags(new String(obj.getTags() != null ? obj.getTags() : ""));
-        setCreatorEmail(new String(obj.getCreatorEmail() != null ? obj.getCreatorEmail() : ""));
+        setAuthorEmail(new String(obj.getAuthorEmail() != null ? obj.getAuthorEmail() : ""));
         setPromoted(obj.isPromoted());
         setNewsletter(obj.isNewsletter());
         setFeatured(obj.isFeatured());
@@ -74,7 +74,7 @@ public abstract class Article<D extends ArticleDetails> extends Content<D>
         JSONObject ret = super.getAttributes();
 
         ret.putOpt(TAGS.value(), getTags());
-        ret.putOpt(EMAIL.value(), getCreatorEmail());
+        ret.putOpt(EMAIL.value(), getAuthorEmail());
         ret.put(PROMOTE.value(), isPromoted());
         ret.put(NEWSLETTER.value(), isNewsletter());
         ret.put(FEATURED.value(), isFeatured());
@@ -92,7 +92,7 @@ public abstract class Article<D extends ArticleDetails> extends Content<D>
         super.setAttributes(obj);
 
         setTags(obj.optString(TAGS.value()));
-        setCreatorEmail(obj.optString(EMAIL.value()));
+        setAuthorEmail(obj.optString(EMAIL.value()));
         setPromoted(obj.optBoolean(PROMOTE.value(), false));
         setNewsletter(obj.optBoolean(NEWSLETTER.value(), false));
         setFeatured(obj.optBoolean(FEATURED.value(), false));
@@ -108,7 +108,7 @@ public abstract class Article<D extends ArticleDetails> extends Content<D>
         FieldMap ret = super.toFields();
 
         ret.put(TAGS, getTags());
-        ret.put(EMAIL, getCreatorEmail());
+        ret.put(EMAIL, getAuthorEmail());
         ret.put(PROMOTE, isPromoted() ? "1" : "0");
         ret.put(NEWSLETTER, isNewsletter() ? "1" : "0");
         ret.put(FEATURED, isFeatured() ? "1" : "0");
@@ -255,19 +255,19 @@ public abstract class Article<D extends ArticleDetails> extends Content<D>
     }
 
     /**
-     * Returns the creator email.
+     * Returns the author email.
      */
-    public String getCreatorEmail()
+    public String getAuthorEmail()
     {
-        return creatorEmail;
+        return authorEmail;
     }
 
     /**
-     * Sets the creator email.
+     * Sets the author email.
      */
-    public void setCreatorEmail(String creatorEmail)
+    public void setAuthorEmail(String authorEmail)
     {
-        this.creatorEmail = creatorEmail;
+        this.authorEmail = authorEmail;
     }
 
     /**

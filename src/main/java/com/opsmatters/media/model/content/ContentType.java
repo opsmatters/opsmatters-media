@@ -341,8 +341,8 @@ public enum ContentType
     {
         List<ContentType> ret = new ArrayList<ContentType>();
 
-        ret.add(VIDEO);
         ret.add(ROUNDUP);
+        ret.add(VIDEO);
         ret.add(POST);
         ret.add(EVENT);
         ret.add(PUBLICATION);

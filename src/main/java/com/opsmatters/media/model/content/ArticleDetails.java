@@ -25,7 +25,7 @@ import com.opsmatters.media.util.FormatUtils;
 public abstract class ArticleDetails extends ContentDetails
 {
     private String author = "";
-    private String authorLink = "";
+    private String authorUrl = "";
 
     /**
      * Default constructor.
@@ -51,7 +51,7 @@ public abstract class ArticleDetails extends ContentDetails
         {
             super.copyAttributes(obj);
             setAuthor(obj.getAuthor());
-            setAuthorLink(obj.getAuthorLink());
+            setAuthorUrl(obj.getAuthorUrl());
         }
     }
 
@@ -72,30 +72,30 @@ public abstract class ArticleDetails extends ContentDetails
     }
 
     /**
-     * Returns the author link of the content.
+     * Returns the author URL of the content.
      */
-    public String getAuthorLink()
+    public String getAuthorUrl()
     {
-        return authorLink;
+        return authorUrl;
     }
 
     /**
-     * Sets the author link of the content.
+     * Sets the author URL of the content.
      */
-    public void setAuthorLink(String authorLink)
+    public void setAuthorUrl(String authorUrl)
     {
-        setAuthorLink("", authorLink, false);
+        setAuthorUrl("", authorUrl, false);
     }
 
     /**
-     * Sets the author link of the content.
+     * Sets the author URL of the content.
      */
-    public void setAuthorLink(String basePath, String authorLink, boolean removeParameters)
+    public void setAuthorUrl(String basePath, String authorUrl, boolean removeParameters)
     {
-        this.authorLink = FormatUtils.getFormattedUrl(basePath, authorLink, removeParameters);
+        this.authorUrl = FormatUtils.getFormattedUrl(basePath, authorUrl, removeParameters);
 
         // Excape spaces in the URL
-        if(this.authorLink != null)
-            this.authorLink = this.authorLink.replaceAll(" ", "%20");
+        if(this.authorUrl != null)
+            this.authorUrl = this.authorUrl.replaceAll(" ", "%20");
     }
 }

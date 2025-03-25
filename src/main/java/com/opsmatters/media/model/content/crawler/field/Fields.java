@@ -33,7 +33,7 @@ public class Fields implements ConfigElement
     private Field validator;
     private Field title;
     private Field author;
-    private Field authorLink;
+    private Field authorUrl;
     private Field publishedDate;
     private Field startDate;
     private Field startTime;
@@ -73,8 +73,8 @@ public class Fields implements ConfigElement
                 setTitle(new Field(obj.getTitle()));
             if(obj.getAuthor() != null)
                 setAuthor(new Field(obj.getAuthor()));
-            if(obj.getAuthorLink() != null)
-                setAuthorLink(new Field(obj.getAuthorLink()));
+            if(obj.getAuthorUrl() != null)
+                setAuthorUrl(new Field(obj.getAuthorUrl()));
             if(obj.getPublishedDate() != null)
                 setPublishedDate(new Field(obj.getPublishedDate()));
             if(obj.getStartDate() != null)
@@ -109,8 +109,8 @@ public class Fields implements ConfigElement
             ret = title;
         else if(name == AUTHOR)
             ret = author;
-        else if(name == AUTHOR_LINK)
-            ret = authorLink;
+        else if(name == AUTHOR_URL)
+            ret = authorUrl;
         else if(name == PUBLISHED_DATE)
             ret = publishedDate;
         else if(name == START_DATE)
@@ -228,27 +228,27 @@ public class Fields implements ConfigElement
     }
 
     /**
-     * Returns the link to the author for this configuration.
+     * Returns the author URL for this configuration.
      */
-    public Field getAuthorLink()
+    public Field getAuthorUrl()
     {
-        return authorLink;
+        return authorUrl;
     }
 
     /**
-     * Sets the link to the author for this configuration.
+     * Sets the author URL for this configuration.
      */
-    public void setAuthorLink(Field authorLink)
+    public void setAuthorUrl(Field authorUrl)
     {
-        this.authorLink = authorLink;
+        this.authorUrl = authorUrl;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the link to the author has been set.
+     * Returns <CODE>true</CODE> if the author URL has been set.
      */
-    public boolean hasAuthorLink()
+    public boolean hasAuthorUrl()
     {
-        return authorLink != null && authorLink.hasSelectors();
+        return authorUrl != null && authorUrl.hasSelectors();
     }
 
     /**
@@ -486,7 +486,7 @@ public class Fields implements ConfigElement
         private static final String VALIDATOR = "validator";
         public static final String TITLE = "title";
         private static final String AUTHOR = "author";
-        private static final String AUTHOR_LINK = "author-link";
+        private static final String AUTHOR_URL = "author-url";
         public static final String PUBLISHED_DATE = "published-date";
         private static final String START_DATE = "start-date";
         private static final String START_TIME = "start-time";
@@ -515,8 +515,8 @@ public class Fields implements ConfigElement
                 ret.setTitle(createField(TITLE, map.get(TITLE)));
             if(map.containsKey(AUTHOR))
                 ret.setAuthor(createField(AUTHOR, map.get(AUTHOR)));
-            if(map.containsKey(AUTHOR_LINK))
-                ret.setAuthorLink(createField(AUTHOR_LINK, map.get(AUTHOR_LINK)));
+            if(map.containsKey(AUTHOR_URL))
+                ret.setAuthorUrl(createField(AUTHOR_URL, map.get(AUTHOR_URL)));
             if(map.containsKey(PUBLISHED_DATE))
                 ret.setPublishedDate(createField(PUBLISHED_DATE, map.get(PUBLISHED_DATE)));
             if(map.containsKey(START_DATE))

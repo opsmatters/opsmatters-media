@@ -17,7 +17,7 @@ package com.opsmatters.media.model.content;
 
 import java.time.Instant;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.BaseEntity;
+import com.opsmatters.media.model.OwnedEntity;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -25,9 +25,9 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentDefault extends BaseEntity
+public class FieldDefault extends OwnedEntity
 {
-    private static final Logger logger = Logger.getLogger(ContentDefault.class.getName());
+    private static final Logger logger = Logger.getLogger(FieldDefault.class.getName());
 
     private String name = "";
     private String value = "";
@@ -37,24 +37,26 @@ public class ContentDefault extends BaseEntity
     /**
      * Default constructor.
      */
-    public ContentDefault()
+    public FieldDefault()
     {
     }
 
     /**
      * Constructor that takes a name.
      */
-    public ContentDefault(String name)
+    public FieldDefault(String name)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setName(name);
+        setType(ContentType.ROUNDUP);
+        setEnabled(true);
     }
 
     /**
      * Copy constructor.
      */
-    public ContentDefault(ContentDefault obj)
+    public FieldDefault(FieldDefault obj)
     {
         copyAttributes(obj);
     }
@@ -62,7 +64,7 @@ public class ContentDefault extends BaseEntity
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ContentDefault obj)
+    public void copyAttributes(FieldDefault obj)
     {
         if(obj != null)
         {
@@ -123,6 +125,14 @@ public class ContentDefault extends BaseEntity
     }
 
     /**
+     * Returns the value of the type of the default.
+     */
+    public String getTypeValue()
+    {
+        return type != null ? type.value() : "";
+    }
+
+    /**
      * Sets the type of the default.
      */
     public void setType(ContentType type)
@@ -139,6 +149,14 @@ public class ContentDefault extends BaseEntity
     }
 
     /**
+     * Sets the type of the default from a value.
+     */
+    public void setTypeValue(String type)
+    {
+        setType(ContentType.fromValue(type));
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the default is enabled.
      */
     public boolean isEnabled()
@@ -147,10 +165,26 @@ public class ContentDefault extends BaseEntity
     }
 
     /**
+     * Returns <CODE>true</CODE> if this default is enabled.
+     */
+    public Boolean getEnabledObject()
+    {
+        return Boolean.valueOf(isEnabled());
+    }
+
+    /**
      * Set to <CODE>true</CODE> if the default is enabled.
      */
     public void setEnabled(boolean enabled)
     {
         this.enabled = enabled;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this default is enabled.
+     */
+    public void setEnabledObject(Boolean enabled)
+    {
+        setEnabled(enabled != null && enabled.booleanValue());
     }
 }

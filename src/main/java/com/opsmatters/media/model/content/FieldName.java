@@ -70,11 +70,11 @@ public enum FieldName
     TAGS("tags"),
     LINK("link"),
     LINK_TEXT("link-text"),
-    CREATOR_LINK("creator-link"),
     EMAIL("email"),
     WEBSITE("website"),
     AUTHOR("author"),
-    AUTHOR_LINK("author-link"),
+    AUTHOR_LINK("author-link"), // deprecated
+    AUTHOR_URL("author-url"),
     PUBLISHED("published"),
     PROMOTE("promote"),
     NEWSLETTER("newsletter"),
