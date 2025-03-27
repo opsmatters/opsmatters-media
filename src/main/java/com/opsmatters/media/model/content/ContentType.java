@@ -26,14 +26,14 @@ import java.util.ArrayList;
  */
 public enum ContentType
 {
-    ORGANISATION("ORG", "Organisation", "organisations", "glyphicon-th-list"),
-    VIDEO("VD", "Video", "videos", "glyphicon-film"),
     ROUNDUP("RP", "Roundup", "roundups", "glyphicon-file"),
+    VIDEO("VD", "Video", "videos", "glyphicon-film"),
     POST("PO", "Post", "posts", "glyphicon-file"),
     EVENT("EV", "Event", "events", "glyphicon-calendar"),
     PUBLICATION("PB", "Publication", "publications", "glyphicon-book"),
     PROJECT("PR", "Project", "projects", "glyphicon-tasks"),
     TOOL("TL", "Tool", "tools", "glyphicon-wrench"),
+    ORGANISATION("ORG", "Organisation", "organisations", "glyphicon-th-list"),
     ARTICLE("", "Article"); // pseudo type
 
     private String code;
@@ -121,6 +121,15 @@ public enum ContentType
     public String icon()
     {
         return icon;
+    }
+
+    /**
+     * Returns the default type.
+     * @return The default type.
+     */
+    public static ContentType getDefault()
+    {
+        return ROUNDUP;
     }
 
     /**
@@ -341,13 +350,11 @@ public enum ContentType
     {
         List<ContentType> ret = new ArrayList<ContentType>();
 
-        ret.add(ROUNDUP);
-        ret.add(VIDEO);
-        ret.add(POST);
-        ret.add(EVENT);
-        ret.add(PUBLICATION);
-        ret.add(PROJECT);
-        ret.add(TOOL);
+        for(ContentType type : ContentType.values())
+        {
+            if(type.code().length() > 0)
+                ret.add(type);
+        }
 
         return ret;
     }

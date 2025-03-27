@@ -49,7 +49,7 @@ public class FieldDefault extends OwnedEntity
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setName(name);
-        setType(ContentType.ROUNDUP);
+        setType(ContentType.getDefault());
         setEnabled(true);
     }
 
@@ -125,14 +125,6 @@ public class FieldDefault extends OwnedEntity
     }
 
     /**
-     * Returns the value of the type of the default.
-     */
-    public String getTypeValue()
-    {
-        return type != null ? type.value() : "";
-    }
-
-    /**
      * Sets the type of the default.
      */
     public void setType(ContentType type)
@@ -146,14 +138,6 @@ public class FieldDefault extends OwnedEntity
     public void setType(String type)
     {
         setType(ContentType.valueOf(type));
-    }
-
-    /**
-     * Sets the type of the default from a value.
-     */
-    public void setTypeValue(String type)
-    {
-        setType(ContentType.fromValue(type));
     }
 
     /**

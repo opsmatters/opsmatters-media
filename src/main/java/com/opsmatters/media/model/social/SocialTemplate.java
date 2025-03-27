@@ -156,14 +156,6 @@ public class SocialTemplate extends SocialPost
     }
 
     /**
-     * Returns the content type value.
-     */
-    public String getContentTypeValue()
-    {
-        return contentType != null ? contentType.value() : "";
-    }
-
-    /**
      * Sets the content type.
      */
     public void setContentType(String contentType)
@@ -184,14 +176,6 @@ public class SocialTemplate extends SocialPost
     public void setContentType(ContentType contentType)
     {
         this.contentType = contentType;
-    }
-
-    /**
-     * Sets the content type from a value.
-     */
-    public void setContentTypeValue(String contentType)
-    {
-        setContentType(ContentType.fromValue(contentType));
     }
 
     /**

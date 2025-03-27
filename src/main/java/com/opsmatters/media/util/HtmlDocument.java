@@ -70,7 +70,7 @@ public class HtmlDocument
     private static Pattern SPAN_PATTERN = Pattern.compile(OPEN_SPAN, Pattern.DOTALL);
     private static Pattern DIV_CONTENT_PATTERN = Pattern.compile("<div>(.+?)</div>", Pattern.DOTALL);
     private static Pattern SECTION_CONTENT_PATTERN = Pattern.compile("<section>(.+?)</section>", Pattern.DOTALL);
-    private static Pattern UNDERLINE_CONTENT_PATTERN = Pattern.compile("<u.*?>(.*?<a.*?>.*?</a>.*?)</u>", Pattern.DOTALL);
+    private static Pattern UNDERLINE_CONTENT_PATTERN = Pattern.compile("<u>(.*?<a.*?>.*?</a>.*?)</u>", Pattern.DOTALL);
     private static Pattern H1_CONTENT_PATTERN = Pattern.compile("<h1.*?>(.+?)</h1>", Pattern.DOTALL);
     private static Pattern OL_ATTR_CONTENT_PATTERN = Pattern.compile("<ol(.*?)>(.*?)</ol>", Pattern.DOTALL);
     private static Pattern LI_PATTERN = Pattern.compile("<li>", Pattern.DOTALL);

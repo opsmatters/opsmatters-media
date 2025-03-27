@@ -154,14 +154,6 @@ public class SavedContentPost extends SavedPost
     }
 
     /**
-     * Returns the post content type value.
-     */
-    public String getContentTypeValue()
-    {
-        return contentType != null ? contentType.value() : "";
-    }
-
-    /**
      * Sets the post content type.
      */
     public void setContentType(String contentType)
@@ -182,13 +174,5 @@ public class SavedContentPost extends SavedPost
     public void setContentType(ContentType contentType)
     {
         this.contentType = contentType;
-    }
-
-    /**
-     * Sets the post content type from a value.
-     */
-    public void setContentTypeValue(String contentType)
-    {
-        setContentType(ContentType.fromValue(contentType));
     }
 }
