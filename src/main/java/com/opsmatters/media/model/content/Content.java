@@ -56,6 +56,7 @@ public abstract class Content<D extends ContentDetails>
     private String tracking = "";
     private String createdBy = "";
     private String canonicalUrl = "";
+    private String metaTitle = "";
     private ContentStatus status = NEW;
     private String otherSites = null;
 
@@ -98,6 +99,7 @@ public abstract class Content<D extends ContentDetails>
         setTracking(new String(obj.getTracking() != null ? obj.getTracking() : ""));
         setCreatedBy(new String(obj.getCreatedBy() != null ? obj.getCreatedBy() : ""));
         setCanonicalUrl(new String(obj.getCanonicalUrl() != null ? obj.getCanonicalUrl() : ""));
+        setMetaTitle(new String(obj.getMetaTitle() != null ? obj.getMetaTitle() : ""));
         setStatus(obj.getStatus());
         setOtherSites(obj.getOtherSites());
     }
@@ -612,6 +614,26 @@ public abstract class Content<D extends ContentDetails>
     }
 
     /**
+     * Returns the image text.
+     * <P>
+     * Always returns <CODE>null</CODE>.
+     */
+    public String getImageText()
+    {
+        return null;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the image text has been set.
+     * <P>
+     * Always returns <CODE>false</CODE>.
+     */
+    public boolean hasImageText()
+    {
+        return false;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if this content should be published.
      */
     public boolean isPublished()
@@ -745,6 +767,30 @@ public abstract class Content<D extends ContentDetails>
     public boolean hasCanonicalUrl()
     {
         return canonicalUrl != null && canonicalUrl.length() > 0;
+    }
+
+    /**
+     * Returns the meta title for the post.
+     */
+    public String getMetaTitle()
+    {
+        return metaTitle;
+    }
+
+    /**
+     * Sets the meta title for the post.
+     */
+    public void setMetaTitle(String metaTitle)
+    {
+        this.metaTitle = metaTitle;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the meta title for the post has been set.
+     */
+    public boolean hasMetaTitle()
+    {
+        return metaTitle != null && metaTitle.length() > 0;
     }
 
     /**

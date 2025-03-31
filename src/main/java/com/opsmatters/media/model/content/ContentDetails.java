@@ -35,6 +35,7 @@ public abstract class ContentDetails implements java.io.Serializable
     private String summary = "";
     private String image = "";
     private String imageSource = "";
+    private String imageText = "";
     private boolean valid = true;
 
     /**
@@ -65,6 +66,7 @@ public abstract class ContentDetails implements java.io.Serializable
             setSummary(obj.getSummary());
             setImage(obj.getImage());
             setImageSource(obj.getImageSource());
+            setImageText(obj.getImageText());
         }
     }
 
@@ -340,6 +342,30 @@ public abstract class ContentDetails implements java.io.Serializable
 
         setImage(path);
         setImage(FormatUtils.getFormattedImageFilename(getImage()));
+    }
+
+    /**
+     * Returns the content image text.
+     */
+    public String getImageText()
+    {
+        return imageText;
+    }
+
+    /**
+     * Sets the content image text.
+     */
+    public void setImageText(String imageText)
+    {
+        this.imageText = imageText;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the image text has been set.
+     */
+    public boolean hasImageText()
+    {
+        return imageText != null && imageText.length() > 0;
     }
 
     /**

@@ -1205,6 +1205,18 @@ public class HtmlDocument
                 ret.add(String.format("link with anchor text with bad spacing: %s", StringUtils.normalise(whole)));
             else if(content.startsWith(",") || content.endsWith(","))
                 ret.add(String.format("link with anchor text with comma: %s", StringUtils.normalise(whole)));
+
+            Matcher hrefMatcher = HREF_PATTERN.matcher(attr);
+            if(hrefMatcher.find())
+            {
+                String href = hrefMatcher.group(1);
+
+                if(!href.startsWith("/") // local link
+                    && !href.startsWith(HTTP_PROTOCOL) && !href.startsWith(HTTPS_PROTOCOL)) // invalid protocol
+                {
+                    ret.add(String.format("bad link: %s", StringUtils.normalise(whole)));
+                }
+            }
         }
 
         return ret;

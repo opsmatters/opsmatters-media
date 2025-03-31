@@ -30,6 +30,7 @@ public enum FieldName
     PUBDATE("pubdate"),
     TITLE("title"),
     LAST_TITLE("last-title"),
+    META_TITLE("meta-title"),
     SUMMARY("summary"),
     SUMMARY_REJECTS("summary-rejects"),
     DESCRIPTION("description"),

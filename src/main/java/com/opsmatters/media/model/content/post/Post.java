@@ -102,8 +102,6 @@ public class Post extends Article<PostDetails>
         String title = values[2];
         String summary = values[3];
         String description = values[4];
-//        String link = values[5];
-//        String linkText = values[6];
         String canonicalUrl = values[5];
         String organisation = values[6];
         String tags = values[7];
@@ -119,7 +117,7 @@ public class Post extends Article<PostDetails>
         String newsletter = values[17];
         String featured = values.length > 18 ? values[18] : null;
         String sponsored = values.length > 19 ? values[19] : null;
-
+        String metaTitle = values.length > 20 ? values[20] : null;
 
         // Remove feeds path from image
         if(image.indexOf("/") != -1)
@@ -134,6 +132,7 @@ public class Post extends Article<PostDetails>
         setCanonicalUrl(canonicalUrl);
         setTags(tags);
         setImage(image);
+        setImageText(imageText);
         setAuthor(author);
         setAuthorUrl(authorUrl);
         setAuthorEmail(authorEmail);
@@ -143,6 +142,7 @@ public class Post extends Article<PostDetails>
         setNewsletter(newsletter != null && newsletter.equals("1"));
         setFeatured(featured != null && featured.equals("1"));
         setSponsored(sponsored != null && sponsored.equals("1"));
+        setMetaTitle(metaTitle);
     }
 
     /**
@@ -153,12 +153,14 @@ public class Post extends Article<PostDetails>
     {
         JSONObject ret = super.getAttributes();
 
+        ret.putOpt(META_TITLE.value(), getMetaTitle());
         ret.putOpt(POST_TYPE.value(), getPostType());
         ret.putOpt(DESCRIPTION.value(), EmojiParser.parseToAliases(getDescription()));
         ret.putOpt(URL.value(), getUrlAlias());
         ret.putOpt(CANONICAL_URL.value(), getCanonicalUrl());
         ret.putOpt(IMAGE.value(), getImage());
         ret.putOpt(IMAGE_SOURCE.value(), getImageSource());
+        ret.putOpt(IMAGE_TEXT.value(), getImageText());
         ret.putOpt(AUTHOR.value(), getAuthor());
         ret.putOpt(AUTHOR_URL.value(), getAuthorUrl());
 
@@ -173,12 +175,14 @@ public class Post extends Article<PostDetails>
     {
         super.setAttributes(obj);
 
+        setMetaTitle(obj.optString(META_TITLE.value()));
         setPostType(obj.optString(POST_TYPE.value()));
         setDescription(EmojiParser.parseToUnicode(obj.optString(DESCRIPTION.value())));
         setUrlAlias(obj.optString(URL.value()));
         setCanonicalUrl(obj.optString(CANONICAL_URL.value()));
         setImage(obj.optString(IMAGE.value()));
         setImageSource(obj.optString(IMAGE_SOURCE.value()));
+        setImageText(obj.optString(IMAGE_TEXT.value()));
         setAuthor(obj.optString(AUTHOR.value()));
         if(obj.has(AUTHOR_URL.value()))
             setAuthorUrl(obj.optString(AUTHOR_URL.value()));
@@ -194,6 +198,7 @@ public class Post extends Article<PostDetails>
     {
         FieldMap ret = super.toFields();
 
+        ret.put(META_TITLE, getMetaTitle());
         ret.put(POST_TYPE, getPostType());
         ret.put(DESCRIPTION, EmojiParser.parseToHtmlDecimal(getDescription()));
         ret.put(AUTHOR, getAuthor());
@@ -201,6 +206,7 @@ public class Post extends Article<PostDetails>
         ret.put(URL, getUrlAlias());
         ret.put(CANONICAL_URL, getCanonicalUrl());
         ret.put(IMAGE, getImage());
+        ret.put(IMAGE_TEXT, getImageText());
         ret.put(METATAGS, getMetatags());
 
         return ret;
@@ -243,6 +249,11 @@ public class Post extends Article<PostDetails>
         super.init(organisation, organisationSite, config);
 
         setAuthorEmail(organisation.getEmail());
+
+        if(organisation != null)
+        {
+            setImageText(organisation.getImageText());
+        }
 
         if(organisationSite != null)
         {
@@ -306,6 +317,7 @@ public class Post extends Article<PostDetails>
         {
             setImageSource(new String(obj.getImageSource() != null ? obj.getImageSource() : ""));
             setImage(new String(obj.getImage() != null ? obj.getImage() : ""));
+            setImageText(new String(obj.getImageText() != null ? obj.getImageText() : ""));
             setAuthor(new String(obj.getAuthor() != null ? obj.getAuthor() : ""));
             setAuthorUrl(new String(obj.getAuthorUrl() != null ? obj.getAuthorUrl() : ""));
         }
@@ -426,8 +438,6 @@ public class Post extends Article<PostDetails>
 
     /**
      * Returns the post image source.
-     * <p>
-     * Always returns <CODE>null</CODE>.
      */
     @Override
     public String getImageSource()
@@ -445,13 +455,37 @@ public class Post extends Article<PostDetails>
 
     /**
      * Returns <CODE>true</CODE> if the post image source has been set.
-     * <p>
-     * Always returns <CODE>false</CODE>.
      */
     @Override
     public boolean hasImageSource()
     {
         return getDetails().hasImageSource();
+    }
+
+    /**
+     * Returns the post image text.
+     */
+    @Override
+    public String getImageText()
+    {
+        return getDetails().getImageText();
+    }
+
+    /**
+     * Sets the image text.
+     */
+    public void setImageText(String imageText)
+    {
+        getDetails().setImageText(imageText);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the post image text has been set.
+     */
+    @Override
+    public boolean hasImageText()
+    {
+        return getDetails().hasImageText();
     }
 
     /**
@@ -527,7 +561,7 @@ public class Post extends Article<PostDetails>
     @Override
     public boolean hasMetatags()
     {
-        return hasCanonicalUrl();
+        return hasCanonicalUrl() || hasMetaTitle();
     }
 
     /**
@@ -538,6 +572,12 @@ public class Post extends Article<PostDetails>
     {
         if(hasCanonicalUrl())
             obj.putOpt("canonical_url", getCanonicalUrl());
+        if(hasMetaTitle())
+        {
+            obj.putOpt("title",
+                String.format("%s | [site:name]", getMetaTitle()));
+            obj.putOpt("og_title", getMetaTitle());
+        }
     }
 
     /**

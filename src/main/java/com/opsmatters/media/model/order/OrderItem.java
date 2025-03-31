@@ -302,6 +302,18 @@ public class OrderItem extends BaseEntity
     }
 
     /**
+     * Returns the URL from the item description.
+     */
+    public String getDescriptionUrl()
+    {
+        String ret = description;
+        int pos = ret.indexOf("\r");
+        if(pos != -1)
+            ret = ret.substring(0, pos);
+        return ret;
+    }
+
+    /**
      * Sets the item description.
      */
     public void setDescription(String description)
