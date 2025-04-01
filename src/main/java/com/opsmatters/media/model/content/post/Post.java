@@ -28,6 +28,7 @@ import com.opsmatters.media.model.content.Article;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentSiteSettings;
+import com.opsmatters.media.model.content.Metatag;
 import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
 import com.opsmatters.media.util.TimeUtils;
@@ -102,22 +103,21 @@ public class Post extends Article<PostDetails>
         String title = values[2];
         String summary = values[3];
         String description = values[4];
-        String canonicalUrl = values[5];
-        String organisation = values[6];
-        String tags = values[7];
-        String image = values[8];
-        String imageText = values[9];
-        String imageTitle = values[10];
-        String author = values[11];
-        String authorUrl = values[12];
-        String authorEmail = values[13];
-        String createdBy = values[14];
-        String published = values[15];
-        String promote = values[16];
-        String newsletter = values[17];
-        String featured = values.length > 18 ? values[18] : null;
-        String sponsored = values.length > 19 ? values[19] : null;
-        String metaTitle = values.length > 20 ? values[20] : null;
+        String organisation = values[5];
+        String tags = values[6];
+        String image = values[7];
+        String imageText = values[8];
+        String imageTitle = values[9];
+        String author = values[10];
+        String authorUrl = values[11];
+        String authorEmail = values[12];
+        String createdBy = values[13];
+        String published = values[14];
+        String promote = values[15];
+        String newsletter = values[16];
+        String featured = values.length > 17 ? values[17] : null;
+        String sponsored = values.length > 18 ? values[18] : null;
+        String metatags = values.length > 19 ? values[19] : null;
 
         // Remove feeds path from image
         if(image.indexOf("/") != -1)
@@ -129,7 +129,6 @@ public class Post extends Article<PostDetails>
         setTitle(title);
         setSummary(summary);
         setDescription(description);
-        setCanonicalUrl(canonicalUrl);
         setTags(tags);
         setImage(image);
         setImageText(imageText);
@@ -142,7 +141,15 @@ public class Post extends Article<PostDetails>
         setNewsletter(newsletter != null && newsletter.equals("1"));
         setFeatured(featured != null && featured.equals("1"));
         setSponsored(sponsored != null && sponsored.equals("1"));
-        setMetaTitle(metaTitle);
+
+        // Set the metatag fields
+        if(metatags != null && metatags.length() > 0)
+        {
+            JSONObject obj = new JSONObject(metatags);
+            setMetaTitle(obj.optString(Metatag.TITLE.value()));
+            setMetaDescription(obj.optString(Metatag.DESCRIPTION.value()));
+            setCanonicalUrl(obj.optString(Metatag.CANONICAL_URL.value()));
+        }
     }
 
     /**
@@ -153,7 +160,6 @@ public class Post extends Article<PostDetails>
     {
         JSONObject ret = super.getAttributes();
 
-        ret.putOpt(META_TITLE.value(), getMetaTitle());
         ret.putOpt(POST_TYPE.value(), getPostType());
         ret.putOpt(DESCRIPTION.value(), EmojiParser.parseToAliases(getDescription()));
         ret.putOpt(URL.value(), getUrlAlias());
@@ -163,6 +169,8 @@ public class Post extends Article<PostDetails>
         ret.putOpt(IMAGE_TEXT.value(), getImageText());
         ret.putOpt(AUTHOR.value(), getAuthor());
         ret.putOpt(AUTHOR_URL.value(), getAuthorUrl());
+        ret.putOpt(META_TITLE.value(), getMetaTitle());
+        ret.putOpt(META_DESCRIPTION.value(), getMetaDescription());
 
         return ret;
     }
@@ -175,7 +183,6 @@ public class Post extends Article<PostDetails>
     {
         super.setAttributes(obj);
 
-        setMetaTitle(obj.optString(META_TITLE.value()));
         setPostType(obj.optString(POST_TYPE.value()));
         setDescription(EmojiParser.parseToUnicode(obj.optString(DESCRIPTION.value())));
         setUrlAlias(obj.optString(URL.value()));
@@ -188,6 +195,8 @@ public class Post extends Article<PostDetails>
             setAuthorUrl(obj.optString(AUTHOR_URL.value()));
         else
             setAuthorUrl(obj.optString(AUTHOR_LINK.value())); // deprecated
+        setMetaTitle(obj.optString(META_TITLE.value()));
+        setMetaDescription(obj.optString(META_DESCRIPTION.value()));
     }
 
     /**
@@ -198,13 +207,11 @@ public class Post extends Article<PostDetails>
     {
         FieldMap ret = super.toFields();
 
-        ret.put(META_TITLE, getMetaTitle());
         ret.put(POST_TYPE, getPostType());
         ret.put(DESCRIPTION, EmojiParser.parseToHtmlDecimal(getDescription()));
         ret.put(AUTHOR, getAuthor());
         ret.put(AUTHOR_URL, getAuthorUrl());
         ret.put(URL, getUrlAlias());
-        ret.put(CANONICAL_URL, getCanonicalUrl());
         ret.put(IMAGE, getImage());
         ret.put(IMAGE_TEXT, getImageText());
         ret.put(METATAGS, getMetatags());
@@ -561,7 +568,7 @@ public class Post extends Article<PostDetails>
     @Override
     public boolean hasMetatags()
     {
-        return hasCanonicalUrl() || hasMetaTitle();
+        return hasMetaTitle() || hasMetaDescription() || hasCanonicalUrl();
     }
 
     /**
@@ -570,13 +577,26 @@ public class Post extends Article<PostDetails>
     @Override
     protected void addMetatags(JSONObject obj)
     {
-        if(hasCanonicalUrl())
-            obj.putOpt("canonical_url", getCanonicalUrl());
         if(hasMetaTitle())
         {
-            obj.putOpt("title",
+            obj.putOpt(Metatag.TITLE.value(),
                 String.format("%s | [site:name]", getMetaTitle()));
-            obj.putOpt("og_title", getMetaTitle());
+            obj.putOpt(Metatag.OG_TITLE.value(),
+                getMetaTitle());
+        }
+
+        if(hasMetaDescription())
+        {
+            obj.putOpt(Metatag.DESCRIPTION.value(),
+                getMetaDescription());
+            obj.putOpt(Metatag.OG_DESCRIPTION.value(),
+                getMetaDescription());
+        }
+
+        if(hasCanonicalUrl())
+        {
+            obj.putOpt(Metatag.CANONICAL_URL.value(),
+                getCanonicalUrl());
         }
     }
 

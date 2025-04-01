@@ -30,7 +30,6 @@ public enum FieldName
     PUBDATE("pubdate"),
     TITLE("title"),
     LAST_TITLE("last-title"),
-    META_TITLE("meta-title"),
     SUMMARY("summary"),
     SUMMARY_REJECTS("summary-rejects"),
     DESCRIPTION("description"),
@@ -128,7 +127,9 @@ public enum FieldName
     SCHEDULED_DATE("scheduled-date"),
     EXTERNAL_ID("external-id"),
     ERROR_CODE("error-code"),
-    ERROR_MESSAGE("error-message");
+    ERROR_MESSAGE("error-message"),
+    META_TITLE("meta-title"),
+    META_DESCRIPTION("meta-description");
 
     private String value;
 

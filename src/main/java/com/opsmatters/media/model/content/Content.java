@@ -55,8 +55,9 @@ public abstract class Content<D extends ContentDetails>
     private boolean published = false;
     private String tracking = "";
     private String createdBy = "";
-    private String canonicalUrl = "";
     private String metaTitle = "";
+    private String metaDescription = "";
+    private String canonicalUrl = "";
     private ContentStatus status = NEW;
     private String otherSites = null;
 
@@ -98,8 +99,9 @@ public abstract class Content<D extends ContentDetails>
         setPublished(obj.isPublished());
         setTracking(new String(obj.getTracking() != null ? obj.getTracking() : ""));
         setCreatedBy(new String(obj.getCreatedBy() != null ? obj.getCreatedBy() : ""));
-        setCanonicalUrl(new String(obj.getCanonicalUrl() != null ? obj.getCanonicalUrl() : ""));
         setMetaTitle(new String(obj.getMetaTitle() != null ? obj.getMetaTitle() : ""));
+        setMetaDescription(new String(obj.getMetaDescription() != null ? obj.getMetaDescription() : ""));
+        setCanonicalUrl(new String(obj.getCanonicalUrl() != null ? obj.getCanonicalUrl() : ""));
         setStatus(obj.getStatus());
         setOtherSites(obj.getOtherSites());
     }
@@ -746,30 +748,6 @@ public abstract class Content<D extends ContentDetails>
     }
 
     /**
-     * Returns the canonical URL for the post.
-     */
-    public String getCanonicalUrl()
-    {
-        return canonicalUrl;
-    }
-
-    /**
-     * Sets the canonical URL for the post.
-     */
-    public void setCanonicalUrl(String canonicalUrl)
-    {
-        this.canonicalUrl = canonicalUrl;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the canonical URL for the post has been set.
-     */
-    public boolean hasCanonicalUrl()
-    {
-        return canonicalUrl != null && canonicalUrl.length() > 0;
-    }
-
-    /**
      * Returns the meta title for the post.
      */
     public String getMetaTitle()
@@ -791,6 +769,54 @@ public abstract class Content<D extends ContentDetails>
     public boolean hasMetaTitle()
     {
         return metaTitle != null && metaTitle.length() > 0;
+    }
+
+    /**
+     * Returns the meta description for the post.
+     */
+    public String getMetaDescription()
+    {
+        return metaDescription;
+    }
+
+    /**
+     * Sets the meta description for the post.
+     */
+    public void setMetaDescription(String metaDescription)
+    {
+        this.metaDescription = metaDescription;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the meta description for the post has been set.
+     */
+    public boolean hasMetaDescription()
+    {
+        return metaDescription != null && metaDescription.length() > 0;
+    }
+
+    /**
+     * Returns the canonical URL for the post.
+     */
+    public String getCanonicalUrl()
+    {
+        return canonicalUrl;
+    }
+
+    /**
+     * Sets the canonical URL for the post.
+     */
+    public void setCanonicalUrl(String canonicalUrl)
+    {
+        this.canonicalUrl = canonicalUrl;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the canonical URL for the post has been set.
+     */
+    public boolean hasCanonicalUrl()
+    {
+        return canonicalUrl != null && canonicalUrl.length() > 0;
     }
 
     /**
