@@ -537,6 +537,21 @@ public class HtmlUtils
     }
 
     /**
+     * Returns the list of local link messages for the given string.
+     * @param str The string to search
+     * @return the list of local link messages for the given string
+     */
+    public static List<String> getLocalLinks(String str)
+    {
+        List<String> messages = HtmlDocument.getLocalLinkMessages(str);
+
+        for(String message : messages)
+            logger.info("Found "+message);
+
+        return messages;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the given string contains a link using "http:".
      * @param str The string to search
      * @return <CODE>true</CODE> if the given string contains a link using "http:"

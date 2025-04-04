@@ -81,9 +81,15 @@ public class ConfigGenerator
     private void init() throws IOException
     {
         for(ContentType type : ContentType.toList())
-            contentTypeTemplates.put(type, getContents(String.format("%s.yml", type.tag())));
+        {
+            if(type != ContentType.ORGANISATION)
+                contentTypeTemplates.put(type, getContents(String.format("%s.yml", type.tag())));
+        }
+
         for(VideoProvider provider : VideoProvider.toList())
+        {
             videoTemplates.put(provider, getContents(String.format("videos-%s.yml", provider.tag())));
+        }
 
         initialised = true;
     }
@@ -144,6 +150,9 @@ public class ConfigGenerator
     {
         for(ContentType type : ContentType.toList())
         {
+            if(type == ContentType.ORGANISATION)
+                continue;
+
             if(fields.getContentTypes().contains(type))
             {
                 StringBuffer buff = new StringBuffer();

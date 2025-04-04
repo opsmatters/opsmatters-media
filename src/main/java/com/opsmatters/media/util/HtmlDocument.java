@@ -52,6 +52,7 @@ public class HtmlDocument
 
     private static final String HTTP_PROTOCOL = "http:";
     private static final String HTTPS_PROTOCOL = "https:";
+    private static final String MAILTO_PROTOCOL = "mailto:";
 
     private static final String LINE_BREAKS = "(<br[ /]*>){2,}";
     private static final String NEW_PARAGRAPH = "</p>\n<p>";
@@ -1212,9 +1213,44 @@ public class HtmlDocument
                 String href = hrefMatcher.group(1);
 
                 if(!href.startsWith("/") // local link
-                    && !href.startsWith(HTTP_PROTOCOL) && !href.startsWith(HTTPS_PROTOCOL)) // invalid protocol
+                    && !href.startsWith("#") // bookmark
+                    && !href.startsWith(HTTP_PROTOCOL)
+                    && !href.startsWith(HTTPS_PROTOCOL)
+                    && !href.startsWith(MAILTO_PROTOCOL)) // valid protocols
                 {
                     ret.add(String.format("bad link: %s", StringUtils.normalise(whole)));
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the list of local link messages for the HTML document.
+     * @return The list of local link messages for the HTML document
+     */
+    public static List<String> getLocalLinkMessages(String doc)
+    {
+        List<String> ret = new ArrayList<String>();
+
+        Matcher m = ANCHOR_ATTR_CONTENT_PATTERN.matcher(doc);
+
+        while(m.find())
+        {
+            String whole = m.group(0);
+            String attr = m.group(1);
+            String content = m.group(2);
+
+            Matcher hrefMatcher = HREF_PATTERN.matcher(attr);
+            if(hrefMatcher.find())
+            {
+                String href = hrefMatcher.group(1);
+
+                if(href.startsWith("/") // local link
+                    || href.startsWith("#")) // bookmark
+                {
+                    ret.add(String.format("local link: %s", StringUtils.normalise(whole)));
                 }
             }
         }
