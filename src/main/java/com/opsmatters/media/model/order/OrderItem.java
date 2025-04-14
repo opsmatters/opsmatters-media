@@ -184,6 +184,14 @@ public class OrderItem extends BaseEntity
     }
 
     /**
+     * Returns <CODE>true</CODE> if the content type has been set.
+     */
+    public boolean hasContentType()
+    {
+        return contentType != null;
+    }
+
+    /**
      * Sets the content id and type using the given content.
      */
     public void setContent(Content content)

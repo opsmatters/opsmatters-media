@@ -58,8 +58,7 @@ public enum FeedStatus
     public boolean idle()
     {
         return this == NEW
-            || this == COMPLETED
-            || this == ERROR;
+            || this == COMPLETED;
     }
 
     /**

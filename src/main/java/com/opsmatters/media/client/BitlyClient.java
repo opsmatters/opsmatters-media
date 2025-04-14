@@ -124,10 +124,24 @@ public class BitlyClient extends Client
     }
 
     /**
-     * Shortens the given URL using the given short domain name.
+     * Shortens the given URL using the short domain name.
      */
     public String shortenUrl(String longUrl) throws IOException
     {
         return client.bitlinks().shorten(longUrl, getDomain()).get().getLink();
+    }
+
+    /**
+     * Expands the given shortened URL to return the original long URL.
+     */
+    public String expandUrl(String shortUrl) throws IOException
+    {
+        // Remove protocol before expanding to make bitlink
+        String link = shortUrl;
+        if(link.startsWith("https://"))
+          link = link.substring(link.indexOf("/")+2);
+
+        // Bitlink should be in the format: <domain>/<path>
+        return client.bitlinks().expand(link).get().getLongUrl();
     }
 }

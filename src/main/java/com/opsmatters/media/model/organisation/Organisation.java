@@ -510,7 +510,7 @@ public class Organisation extends OwnedEntity implements FieldSource
      */
     public RoundupPostConfig getRoundupPostConfig()
     {
-        return getSettings(ROUNDUP).getRoundupPostConfig();
+        return hasRoundupPostConfig() ? getSettings(ROUNDUP).getRoundupPostConfig() : null;
     }
 
     /**
@@ -526,7 +526,7 @@ public class Organisation extends OwnedEntity implements FieldSource
      */
     public VideoConfig getVideoConfig()
     {
-        return getSettings(VIDEO).getVideoConfig();
+        return hasVideoConfig() ? getSettings(VIDEO).getVideoConfig() : null;
     }
 
     /**
@@ -542,7 +542,7 @@ public class Organisation extends OwnedEntity implements FieldSource
      */
     public EventConfig getEventConfig()
     {
-        return getSettings(EVENT).getEventConfig();
+        return hasEventConfig() ? getSettings(EVENT).getEventConfig() : null;
     }
 
     /**
@@ -558,7 +558,7 @@ public class Organisation extends OwnedEntity implements FieldSource
      */
     public PublicationConfig getPublicationConfig()
     {
-        return getSettings(PUBLICATION).getPublicationConfig();
+        return hasPublicationConfig() ? getSettings(PUBLICATION).getPublicationConfig() : null;
     }
 
     /**
@@ -574,7 +574,7 @@ public class Organisation extends OwnedEntity implements FieldSource
      */
     public PostConfig getPostConfig()
     {
-        return getSettings(POST).getPostConfig();
+        return hasPostConfig() ? getSettings(POST).getPostConfig() : null;
     }
 
     /**
@@ -590,7 +590,7 @@ public class Organisation extends OwnedEntity implements FieldSource
      */
     public ProjectConfig getProjectConfig()
     {
-        return getSettings(PROJECT).getProjectConfig();
+        return hasProjectConfig() ? getSettings(PROJECT).getProjectConfig() : null;
     }
 
     /**
@@ -606,6 +606,6 @@ public class Organisation extends OwnedEntity implements FieldSource
      */
     public ToolConfig getToolConfig()
     {
-        return getSettings(TOOL).getToolConfig();
+        return hasToolConfig() ? getSettings(TOOL).getToolConfig() : null;
     }
 }
