@@ -167,11 +167,37 @@ public class PayPalClient extends ApiClient
      */
     public boolean sendInvoice(String invoiceId) throws IOException
     {
-        JSONObject obj = new JSONObject();
-        obj.put("send_to_invoicer", true);
+        JSONObject request = new JSONObject();
+        request.put("send_to_invoicer", true);
 
         String response = post(String.format("%s/v2/invoicing/invoices/%s/send", BASE_URL, invoiceId),
-            "application/json", obj.toString());
+            "application/json", request.toString());
+//GERALD
+System.out.println("PayPalClient.sendInvoice:1: response="+response);
+//GERALD: test
+        if(response.startsWith("{")) // Valid JSON
+        {
+            JSONObject obj = new JSONObject(response);
+//GERALD
+System.out.println("PayPalClient.sendInvoice:2: obj="+obj);
+            if(obj.has("href"))
+            {
+                String href = obj.optString("href");
+//GERALD
+//                ret = href.substring(href.lastIndexOf("/")+1);
+//GERALD
+System.out.println("PayPalClient.sendInvoice:3: href="+href);
+            }
+            else // Invoice id not found
+            {
+                logger.severe("Invoice id not found for paypal send invoice: "+response);
+            }
+        }
+        else // Invalid JSON response
+        {
+            logger.severe("Invalid JSON response for paypal send invoice: "+response);
+        }
+
         return getStatusLine().getStatusCode() == 200;
     }
 
@@ -261,12 +287,12 @@ public class PayPalClient extends ApiClient
      */
     public boolean cancelSentInvoice(String invoiceId) throws IOException
     {
-        JSONObject obj = new JSONObject();
-        obj.put("send_to_invoicer", true);
-        obj.put("send_to_recipient", true);
+        JSONObject request = new JSONObject();
+        request.put("send_to_invoicer", true);
+        request.put("send_to_recipient", true);
 
         post(String.format("%s/v2/invoicing/invoices/%s/cancel", BASE_URL, invoiceId),
-            "application/json", obj.toString(), false);
+            "application/json", request.toString(), false);
         return getStatusLine().getStatusCode() == 204;
     }
 

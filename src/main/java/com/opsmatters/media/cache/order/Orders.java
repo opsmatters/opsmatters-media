@@ -159,7 +159,10 @@ public class Orders implements java.io.Serializable
         if(items != null)
         {
             for(OrderItem item : items.values())
-                ret += (item.getPrice() * item.getQuantity());
+            {
+                if(item.isEnabled())
+                    ret += (item.getPrice() * item.getQuantity());
+            }
         }
 
         return ret;

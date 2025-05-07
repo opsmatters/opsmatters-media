@@ -106,7 +106,7 @@ public enum FileFormat
      */
     public boolean isSupportedWebImage()
     {
-        return this == PNG || this.isJPEG();
+        return this == PNG || this.isJPEG() || this == GIF;
     }
 
     /**

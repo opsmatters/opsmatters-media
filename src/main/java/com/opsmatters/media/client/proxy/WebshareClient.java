@@ -206,7 +206,7 @@ public class WebshareClient extends ApiClient
 
         String currentIP = getIPAddress();
         List<String> authorizations = listIPAuthorizations();
-        if(!authorizations.contains(currentIP))
+        if(authorizations != null && !authorizations.contains(currentIP))
         {
             createIPAuthorization(currentIP);
             logger.info(String.format("Added IP authorization for current IP address: %s", ret));
