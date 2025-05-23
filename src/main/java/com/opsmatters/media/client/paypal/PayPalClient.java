@@ -165,28 +165,23 @@ public class PayPalClient extends ApiClient
     /**
      * Sends the draft invoice with the given id.
      */
-    public boolean sendInvoice(String invoiceId) throws IOException
+    public String sendInvoice(String invoiceId) throws IOException
     {
+        String ret = null;
+
         JSONObject request = new JSONObject();
         request.put("send_to_invoicer", true);
 
         String response = post(String.format("%s/v2/invoicing/invoices/%s/send", BASE_URL, invoiceId),
             "application/json", request.toString());
-//GERALD
-System.out.println("PayPalClient.sendInvoice:1: response="+response);
-//GERALD: test
         if(response.startsWith("{")) // Valid JSON
         {
             JSONObject obj = new JSONObject(response);
-//GERALD
-System.out.println("PayPalClient.sendInvoice:2: obj="+obj);
             if(obj.has("href"))
             {
                 String href = obj.optString("href");
-//GERALD
-//                ret = href.substring(href.lastIndexOf("/")+1);
-//GERALD
-System.out.println("PayPalClient.sendInvoice:3: href="+href);
+                if(getStatusLine().getStatusCode() == 200)
+                    ret = href.substring(href.lastIndexOf("/")+2); // Also remove leading '#'
             }
             else // Invoice id not found
             {
@@ -198,7 +193,7 @@ System.out.println("PayPalClient.sendInvoice:3: href="+href);
             logger.severe("Invalid JSON response for paypal send invoice: "+response);
         }
 
-        return getStatusLine().getStatusCode() == 200;
+        return ret;
     }
 
     /**

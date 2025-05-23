@@ -51,7 +51,7 @@
 		<aws.sdk.version>2.29.45</aws.sdk.version>
 		<twelvemonkeys.imageio.version>3.8.2</twelvemonkeys.imageio.version>
 		<chartjs.version>2.3.1-SNAPSHOT</chartjs.version>
-		<selenium.webdriver.version>4.29.0</selenium.webdriver.version>
+		<selenium.webdriver.version>4.32.0</selenium.webdriver.version>
   </properties>
 
   <distributionManagement>

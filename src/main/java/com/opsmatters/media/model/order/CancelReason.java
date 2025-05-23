@@ -28,9 +28,10 @@ public enum CancelReason
 {
     NONE("None"),
     ALREADY_PAID("Already Paid"),
+    MOVED_ITEMS("Moved item(s)"),
     WRONG_RECIPIENT("Wrong Recipient"),
-    CHANGED_MIND("Changed Mind"),
     SENT_IN_ERROR("Sent In Error"),
+    CHANGED_MIND("Changed Mind"),
     NO_RESPONSE("No Response"),
     INVOICE_REFUSED("Refused To Pay"),
     ALL("All"); // Pseudo status
@@ -99,9 +100,10 @@ public enum CancelReason
 
         ret.add(NONE);
         ret.add(ALREADY_PAID);
+        ret.add(MOVED_ITEMS);
         ret.add(WRONG_RECIPIENT);
-        ret.add(CHANGED_MIND);
         ret.add(SENT_IN_ERROR);
+        ret.add(CHANGED_MIND);
         ret.add(NO_RESPONSE);
         ret.add(INVOICE_REFUSED);
 

@@ -419,15 +419,15 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
             }
         }
 
-        // Trace to see the teaser page
-        if(trace(getDriver()))
-            logger.info("teaser-page="+getPageSource(TEASER));
-
         // Scroll the page if configured
         configureMovement(loading, TEASER);
 
         // Wait for the page to load
         configureSleep(loading);
+
+        // Trace to see the teaser page
+        if(trace(getDriver()))
+            logger.info("teaser-page="+getPageSource(TEASER));
 
         if(debug())
             logger.info("Loaded page in: "+(System.currentTimeMillis()-now)+"ms");

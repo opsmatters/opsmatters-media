@@ -46,7 +46,7 @@ public class HtmlDocument
     private static final String CR_CHAR = "\r";
 
     private static final String BEFORE_CHARS = " ('\"“"+NBSP_CHAR+CR_CHAR+LF_CHAR;
-    private static final String AFTER_CHARS = " !:;,.'’\"”?)®"+NBSP_CHAR;
+    private static final String AFTER_CHARS = " !:;,.'’\"”?)®"+NBSP_CHAR+CR_CHAR+LF_CHAR;
     private static final String BEFORE_ENTITIES = "&ldquo;"+NBSP_ENTITY;
     private static final String AFTER_ENTITIES = "&rdquo;"+NBSP_ENTITY;
 
