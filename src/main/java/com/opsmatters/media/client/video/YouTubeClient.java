@@ -220,7 +220,7 @@ public class YouTubeClient extends Client implements VideoClient
                     }
                     catch(NullPointerException e)
                     {
-                        ret.put(DURATION.value(), -1);
+                        ret.put(DURATION.value(), 0);
                     }
                 }
             }

@@ -116,6 +116,10 @@ public class Order extends OwnedEntity
         }
         else
         {
+            if(contact.isAutoComplete())
+                setStatus(OrderStatus.COMPLETED);
+            else
+                setStatus(OrderStatus.PENDING);
             getInvoice().setStatus(InvoiceStatus.NONE);
         }
     }

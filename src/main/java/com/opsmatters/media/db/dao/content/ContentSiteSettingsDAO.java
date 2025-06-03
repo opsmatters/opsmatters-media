@@ -236,6 +236,14 @@ public class ContentSiteSettingsDAO extends BaseDAO
     }
 
     /**
+     * Returns settings from the CONTENT_SITE_SETTINGS table for the given content item.
+     */
+    public ContentSiteSettings get(Content content) throws SQLException
+    {
+        return get(Sites.get(content.getSiteId()), content.getCode(), content.getType());
+    }
+
+    /**
      * Stores the given settings in the CONTENT_SITE_SETTINGS table.
      */
     public synchronized void add(ContentSiteSettings settings) throws SQLException

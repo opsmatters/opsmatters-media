@@ -49,6 +49,7 @@ public class Contact extends OwnedEntity
     private Currency currency = Currency.UNDEFINED;
     private ContactStatus status = ContactStatus.NEW;
     private SuspendReason reason = SuspendReason.NONE;
+    private boolean autoComplete = false;
 
     /**
      * Default constructor.
@@ -103,6 +104,7 @@ public class Contact extends OwnedEntity
             setCurrency(obj.getCurrency());
             setStatus(obj.getStatus());
             setReason(obj.getReason());
+            setAutoComplete(obj.isAutoComplete());
         }
     }
 
@@ -456,5 +458,37 @@ public class Contact extends OwnedEntity
     public void setReason(SuspendReason reason)
     {
         this.reason = reason;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if auto-complete is enabled for orders for this contact.
+     */
+    public boolean isAutoComplete()
+    {
+        return autoComplete;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if auto-complete is enabled for orders for this contact.
+     */
+    public Boolean getAutoCompleteObject()
+    {
+        return Boolean.valueOf(isAutoComplete());
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if auto-complete is enabled for orders for this contact.
+     */
+    public void setAutoComplete(boolean autoComplete)
+    {
+        this.autoComplete = autoComplete;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if auto-complete is enabled for orders for this contact.
+     */
+    public void setAutoCompleteObject(Boolean autoComplete)
+    {
+        setAutoComplete(autoComplete != null && autoComplete.booleanValue());
     }
 }
