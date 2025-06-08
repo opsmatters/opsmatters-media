@@ -40,7 +40,7 @@ public class ContactDAO extends BaseDAO
      * The query to use to select a contact from the CONTACTS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, WEBSITE, SALUTATION, NOTES, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, AUTO_COMPLETE, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, WEBSITE, SALUTATION, NOTES, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, RATING, AUTO_COMPLETE, CREATED_BY "
       + "FROM CONTACTS WHERE ID=?";
 
     /**
@@ -48,22 +48,22 @@ public class ContactDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTACTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, WEBSITE, SALUTATION, NOTES, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, AUTO_COMPLETE, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, WEBSITE, SALUTATION, NOTES, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, RATING, AUTO_COMPLETE, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a contact in the CONTACTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTACTS SET UPDATED_DATE=?, NAME=?, TYPE=?, CONTACT_EMAIL=?, BILLING_EMAIL=?, COMPANY_ID=?, WEBSITE=?, SALUTATION=?, NOTES=?, PAYMENT_METHOD=?, PAYMENT_MODE=?, PAYMENT_TERM=?, CURRENCY_CODE=?, STATUS=?, REASON=?, AUTO_COMPLETE=?, CREATED_BY=? "
+      "UPDATE CONTACTS SET UPDATED_DATE=?, NAME=?, TYPE=?, CONTACT_EMAIL=?, BILLING_EMAIL=?, COMPANY_ID=?, WEBSITE=?, SALUTATION=?, NOTES=?, PAYMENT_METHOD=?, PAYMENT_MODE=?, PAYMENT_TERM=?, CURRENCY_CODE=?, STATUS=?, REASON=?, RATING=?, AUTO_COMPLETE=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the contacts from the CONTACTS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, WEBSITE, SALUTATION, NOTES, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, AUTO_COMPLETE, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, WEBSITE, SALUTATION, NOTES, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, RATING, AUTO_COMPLETE, CREATED_BY "
       + "FROM CONTACTS ORDER BY CREATED_DATE";
 
     /**
@@ -109,6 +109,7 @@ public class ContactDAO extends BaseDAO
         table.addColumn("CURRENCY_CODE", Types.VARCHAR, 5, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("REASON", Types.VARCHAR, 15, false);
+        table.addColumn("RATING", Types.VARCHAR, 15, true);
         table.addColumn("AUTO_COMPLETE", Types.BOOLEAN, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("CONTACTS_PK", new String[] {"ID"});
@@ -158,8 +159,9 @@ public class ContactDAO extends BaseDAO
                 contact.setCurrency(rs.getString(15));
                 contact.setStatus(rs.getString(16));
                 contact.setReason(rs.getString(17));
-                contact.setAutoComplete(rs.getBoolean(18));
-                contact.setCreatedBy(rs.getString(19));
+                contact.setRating(rs.getString(18));
+                contact.setAutoComplete(rs.getBoolean(19));
+                contact.setCreatedBy(rs.getString(20));
                 ret = contact;
             }
         }
@@ -211,8 +213,9 @@ public class ContactDAO extends BaseDAO
             insertStmt.setString(15, contact.getCurrency().code());
             insertStmt.setString(16, contact.getStatus().name());
             insertStmt.setString(17, contact.getReason().name());
-            insertStmt.setBoolean(18, contact.isAutoComplete());
-            insertStmt.setString(19, contact.getCreatedBy());
+            insertStmt.setString(18, contact.getRating().name());
+            insertStmt.setBoolean(19, contact.isAutoComplete());
+            insertStmt.setString(20, contact.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created contact '"+contact.getId()+"' in CONTACTS");
@@ -259,9 +262,10 @@ public class ContactDAO extends BaseDAO
         updateStmt.setString(13, contact.getCurrency().code());
         updateStmt.setString(14, contact.getStatus().name());
         updateStmt.setString(15, contact.getReason().name());
-        updateStmt.setBoolean(16, contact.isAutoComplete());
-        updateStmt.setString(17, contact.getCreatedBy());
-        updateStmt.setString(18, contact.getId());
+        updateStmt.setString(16, contact.getRating().name());
+        updateStmt.setBoolean(17, contact.isAutoComplete());
+        updateStmt.setString(18, contact.getCreatedBy());
+        updateStmt.setString(19, contact.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated contact '"+contact.getId()+"' in CONTACTS");
@@ -309,8 +313,9 @@ public class ContactDAO extends BaseDAO
                 contact.setCurrency(rs.getString(15));
                 contact.setStatus(rs.getString(16));
                 contact.setReason(rs.getString(17));
-                contact.setAutoComplete(rs.getBoolean(18));
-                contact.setCreatedBy(rs.getString(19));
+                contact.setRating(rs.getString(18));
+                contact.setAutoComplete(rs.getBoolean(19));
+                contact.setCreatedBy(rs.getString(20));
                 ret.add(contact);
             }
         }

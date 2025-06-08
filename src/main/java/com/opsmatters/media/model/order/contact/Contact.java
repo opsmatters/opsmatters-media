@@ -49,6 +49,7 @@ public class Contact extends OwnedEntity
     private Currency currency = Currency.UNDEFINED;
     private ContactStatus status = ContactStatus.NEW;
     private SuspendReason reason = SuspendReason.NONE;
+    private ContactRating rating = ContactRating.UNDEFINED;
     private boolean autoComplete = false;
 
     /**
@@ -72,6 +73,7 @@ public class Contact extends OwnedEntity
         setPaymentMode(Parameters.get(ORDER, PAYMENT_MODE).getValue());
         setPaymentTerm(Parameters.get(ORDER, PAYMENT_TERM).getValue());
         setCurrency(Parameters.get(ORDER, CURRENCY).getValue());
+        setRating(ContactRating.NEUTRAL);
     }
 
     /**
@@ -104,6 +106,7 @@ public class Contact extends OwnedEntity
             setCurrency(obj.getCurrency());
             setStatus(obj.getStatus());
             setReason(obj.getReason());
+            setRating(obj.getRating());
             setAutoComplete(obj.isAutoComplete());
         }
     }
@@ -301,6 +304,20 @@ public class Contact extends OwnedEntity
     }
 
     /**
+     * Adds a note to the notes.
+     */
+    public void addNote(String note)
+    {
+        String notes = getNotes();
+        if(notes == null)
+            notes = "";
+        else if(notes.length() > 0)
+            notes += "\n";
+        notes += note;
+        setNotes(notes);
+    }
+
+    /**
      * Returns the payment method.
      */
     public PaymentMethod getPaymentMethod()
@@ -458,6 +475,30 @@ public class Contact extends OwnedEntity
     public void setReason(SuspendReason reason)
     {
         this.reason = reason;
+    }
+
+    /**
+     * Returns the rating.
+     */
+    public ContactRating getRating()
+    {
+        return rating;
+    }
+
+    /**
+     * Sets the rating.
+     */
+    public void setRating(String rating)
+    {
+        setRating(ContactRating.valueOf(rating));
+    }
+
+    /**
+     * Sets the rating.
+     */
+    public void setRating(ContactRating rating)
+    {
+        this.rating = rating;
     }
 
     /**

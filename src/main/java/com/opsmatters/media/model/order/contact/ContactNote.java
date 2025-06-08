@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Gerald Curley
+ * Copyright 2025 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,34 +18,37 @@ package com.opsmatters.media.model.order.contact;
 
 import java.util.List;
 import java.util.ArrayList;
+import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.util.TimeUtils;
 
 /**
- * Represents the reason for a contact suspension.
+ * Represents a contact note.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum SuspendReason
+public enum ContactNote
 {
-    NONE("None"),
-    UNPAID_INVOICE("Unpaid Invoice"),
-    REFUSED_INVOICE("Refused Invoice"),
-    REFUSED_RATE("Refused Rate"),
-    ALL("All"); // Pseudo status
+    REMINDER("Reminder Sent", "Sent email reminder for unpaid invoice"),
+    SUSPENDED("Suspended", "Suspended due to non-payment"),
+    RATING_CHANGE("Rating Change", "Rating changed to '%s'");
 
     private String value;
+    private String text;
 
     /**
-     * Constructor that takes the reason value.
-     * @param value The value for the reason
+     * Constructor that takes the type value and text.
+     * @param value The value for the type
+     * @param text The text for the type
      */
-    SuspendReason(String value)
+    ContactNote(String value, String text)
     {
         this.value = value;
+        this.text = text;
     }
 
     /**
-     * Returns the value of the reason.
-     * @return The value of the reason.
+     * Returns the value of the type.
+     * @return The value of the type.
      */
     public String toString()
     {
@@ -53,8 +56,8 @@ public enum SuspendReason
     }
 
     /**
-     * Returns the value of the reason.
-     * @return The value of the reason.
+     * Returns the value of the type.
+     * @return The value of the type.
      */
     public String value()
     {
@@ -62,18 +65,39 @@ public enum SuspendReason
     }
 
     /**
+     * Returns the text of the type.
+     * @return The text of the type.
+     */
+    public String text()
+    {
+        return text;
+    }
+
+    /**
+     * Returns the formatted text of the type.
+     * @return The formatted text of the type.
+     */
+    public String format(String... params)
+    {
+        return String.format("%s: %s",
+            TimeUtils.toStringUTC(Formats.DATE_FORMAT),
+            String.format(text(), params));
+    }
+
+    /**
      * Returns the type for the given value.
      * @param value The type value
      * @return The type for the given value
      */
-    public static SuspendReason fromValue(String value)
+    public static ContactNote fromValue(String value)
     {
-        SuspendReason[] types = values();
-        for(SuspendReason type : types)
+        ContactNote[] types = values();
+        for(ContactNote type : types)
         {
             if(type.value().equals(value))
                 return type;
         }
+
         return null;
     }
 
@@ -88,17 +112,15 @@ public enum SuspendReason
     }
 
     /**
-     * Returns a list of the suspension reasons.
+     * Returns a list of the contact types.
      */
-    public static List<SuspendReason> toList()
+    public static List<ContactNote> toList()
     {
-        List<SuspendReason> ret = new ArrayList<SuspendReason>();
+        List<ContactNote> ret = new ArrayList<ContactNote>();
 
-        ret.add(NONE);
-        ret.add(UNPAID_INVOICE);
-        ret.add(REFUSED_INVOICE);
-        ret.add(REFUSED_RATE);
-
+        ret.add(REMINDER);
+        ret.add(SUSPENDED);
+ 
         return ret;
     }
 }
