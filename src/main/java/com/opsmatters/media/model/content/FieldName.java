@@ -129,7 +129,8 @@ public enum FieldName
     ERROR_CODE("error-code"),
     ERROR_MESSAGE("error-message"),
     META_TITLE("meta-title"),
-    META_DESCRIPTION("meta-description");
+    META_DESCRIPTION("meta-description"),
+    ATTRIBUTION("attribution");
 
     private String value;
 

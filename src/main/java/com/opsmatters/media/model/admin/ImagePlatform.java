@@ -23,7 +23,8 @@ package com.opsmatters.media.model.admin;
 public class ImagePlatform extends ExternalPlatform
 {
     private String tag = "";
-    private boolean free = false;
+    private ImagePlatformType type;
+    private String attribution = "";
 
     /**
      * Default constructor.
@@ -38,6 +39,7 @@ public class ImagePlatform extends ExternalPlatform
     public ImagePlatform(String name)
     {
         super(name);
+        setType(ImagePlatformType.FREE);
     }
 
     /**
@@ -57,7 +59,8 @@ public class ImagePlatform extends ExternalPlatform
         {
             super.copyAttributes(obj);
             setTag(obj.getTag());
-            setFree(obj.isFree());
+            setType(obj.getType());
+            setAttribution(obj.getAttribution());
         }
     }
 
@@ -78,34 +81,58 @@ public class ImagePlatform extends ExternalPlatform
     }
 
     /**
-     * Returns <CODE>true</CODE> if the platform provides free images.
+     * Returns <CODE>true</CODE> if the given the tag for the platform has been set.
      */
-    public boolean isFree()
+    public boolean hasTag()
     {
-        return free;
+        return getTag() != null && getTag().length() > 0;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the platform provides free images.
+     * Returns <CODE>true</CODE> if the given filename contains the platform tag.
      */
-    public Boolean getFreeObject()
+    public boolean matchesFilename(String filename)
     {
-        return Boolean.valueOf(free);
+        return hasTag() && filename != null && filename.indexOf(getTag()) != -1;
     }
 
     /**
-     * Set to <CODE>true</CODE> if the platform provides free images.
+     * Returns the platform type.
      */
-    public void setFree(boolean free)
+    public ImagePlatformType getType()
     {
-        this.free = free;
+        return type;
     }
 
     /**
-     * Set to <CODE>true</CODE> if the platform provides free images.
+     * Sets the platform type.
      */
-    public void setFreeObject(Boolean free)
+    public void setType(ImagePlatformType type)
     {
-        this.free = free != null && free.booleanValue();
+        this.type = type;
+    }
+
+    /**
+     * Sets the platform type.
+     */
+    public void setType(String type)
+    {
+        setType(ImagePlatformType.valueOf(type));
+    }
+
+    /**
+     * Returns the attribution for the platform.
+     */
+    public String getAttribution()
+    {
+        return attribution;
+    }
+
+    /**
+     * Sets the attribution for the platform.
+     */
+    public void setAttribution(String attribution)
+    {
+        this.attribution = attribution;
     }
 }

@@ -56,7 +56,7 @@ public class OutputColumnDAO extends BaseDAO
      * The query to use to update columns in the OUTPUT_COLUMNS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE OUTPUT_COLUMNS SET UPDATED_DATE=?, NAME=?, VALUE=?, POSITION=?, ENABLED=?, CREATED_BY=? "
+      "UPDATE OUTPUT_COLUMNS SET UPDATED_DATE=?, TYPE=?, NAME=?, VALUE=?, POSITION=?, ENABLED=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
@@ -222,12 +222,13 @@ public class OutputColumnDAO extends BaseDAO
         clearParameters(updateStmt);
 
         updateStmt.setTimestamp(1, new Timestamp(column.getUpdatedDateMillis()), UTC);
-        updateStmt.setString(2, column.getName());
-        updateStmt.setString(3, column.getValue());
-        updateStmt.setInt(4, column.getPosition());
-        updateStmt.setBoolean(5, column.isEnabled());
-        updateStmt.setString(6, column.getCreatedBy());
-        updateStmt.setString(7, column.getId());
+        updateStmt.setString(2, column.getType().name());
+        updateStmt.setString(3, column.getName());
+        updateStmt.setString(4, column.getValue());
+        updateStmt.setInt(5, column.getPosition());
+        updateStmt.setBoolean(6, column.isEnabled());
+        updateStmt.setString(7, column.getCreatedBy());
+        updateStmt.setString(8, column.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated column '"+column.getId()+"' in OUTPUT_COLUMNS");

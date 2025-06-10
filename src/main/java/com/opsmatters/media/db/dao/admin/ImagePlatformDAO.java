@@ -39,7 +39,7 @@ public class ImagePlatformDAO extends BaseDAO
      * The query to use to select a platform from the IMAGE_PLATFORMS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, TAG, FREE, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, TAG, TYPE, ATTRIBUTION, STATUS, CREATED_BY "
       + "FROM IMAGE_PLATFORMS WHERE ID=?";
 
     /**
@@ -47,22 +47,22 @@ public class ImagePlatformDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO IMAGE_PLATFORMS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, TAG, FREE, STATUS, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, TAG, TYPE, ATTRIBUTION, STATUS, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a platform in the IMAGE_PLATFORMS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE IMAGE_PLATFORMS SET UPDATED_DATE=?, CODE=?, NAME=?, TAG=?, FREE=?, STATUS=?, CREATED_BY=? "
+      "UPDATE IMAGE_PLATFORMS SET UPDATED_DATE=?, CODE=?, NAME=?, TAG=?, TYPE=?, ATTRIBUTION=?, STATUS=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the platforms from the IMAGE_PLATFORMS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, TAG, FREE, STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, TAG, TYPE, ATTRIBUTION, STATUS, CREATED_BY "
       + "FROM IMAGE_PLATFORMS";
 
     /**
@@ -97,7 +97,8 @@ public class ImagePlatformDAO extends BaseDAO
         table.addColumn("CODE", Types.VARCHAR, 15, true);
         table.addColumn("NAME", Types.VARCHAR, 30, true);
         table.addColumn("TAG", Types.VARCHAR, 15, true);
-        table.addColumn("FREE", Types.BOOLEAN, true);
+        table.addColumn("TYPE", Types.VARCHAR, 15, true);
+        table.addColumn("ATTRIBUTION", Types.VARCHAR, 128, false);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("IMAGE_PLATFORMS_PK", new String[] {"ID"});
@@ -136,9 +137,10 @@ public class ImagePlatformDAO extends BaseDAO
                 platform.setCode(rs.getString(4));
                 platform.setName(rs.getString(5));
                 platform.setTag(rs.getString(6));
-                platform.setFree(rs.getBoolean(7));
-                platform.setStatus(rs.getString(8));
-                platform.setCreatedBy(rs.getString(9));
+                platform.setType(rs.getString(7));
+                platform.setAttribution(rs.getString(8));
+                platform.setStatus(rs.getString(9));
+                platform.setCreatedBy(rs.getString(10));
                 ret = platform;
             }
         }
@@ -179,9 +181,10 @@ public class ImagePlatformDAO extends BaseDAO
             insertStmt.setString(4, platform.getCode());
             insertStmt.setString(5, platform.getName());
             insertStmt.setString(6, platform.getTag());
-            insertStmt.setBoolean(7, platform.isFree());
-            insertStmt.setString(8, platform.getStatus().name());
-            insertStmt.setString(9, platform.getCreatedBy());
+            insertStmt.setString(7, platform.getType().name());
+            insertStmt.setString(8, platform.getAttribution());
+            insertStmt.setString(9, platform.getStatus().name());
+            insertStmt.setString(10, platform.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created platform %s in IMAGE_PLATFORMS", platform.getId()));
@@ -217,10 +220,11 @@ public class ImagePlatformDAO extends BaseDAO
         updateStmt.setString(2, platform.getCode());
         updateStmt.setString(3, platform.getName());
         updateStmt.setString(4, platform.getTag());
-        updateStmt.setBoolean(5, platform.isFree());
-        updateStmt.setString(6, platform.getStatus().name());
-        updateStmt.setString(7, platform.getCreatedBy());
-        updateStmt.setString(8, platform.getId());
+        updateStmt.setString(5, platform.getType().name());
+        updateStmt.setString(6, platform.getAttribution());
+        updateStmt.setString(7, platform.getStatus().name());
+        updateStmt.setString(8, platform.getCreatedBy());
+        updateStmt.setString(9, platform.getId());
         updateStmt.executeUpdate();
 
         logger.info(String.format("Updated platform %s in IMAGE_PLATFORMS", platform.getId()));
@@ -257,9 +261,10 @@ public class ImagePlatformDAO extends BaseDAO
                 platform.setCode(rs.getString(4));
                 platform.setName(rs.getString(5));
                 platform.setTag(rs.getString(6));
-                platform.setFree(rs.getBoolean(7));
-                platform.setStatus(rs.getString(8));
-                platform.setCreatedBy(rs.getString(9));
+                platform.setType(rs.getString(7));
+                platform.setAttribution(rs.getString(8));
+                platform.setStatus(rs.getString(9));
+                platform.setCreatedBy(rs.getString(10));
                 ret.add(platform);
             }
         }

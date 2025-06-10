@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.admin.ImagePlatform;
+import com.opsmatters.media.model.admin.ImagePlatformType;
 
 /**
  * Class representing the list of image platforms.
@@ -119,15 +120,14 @@ public class ImagePlatforms implements java.io.Serializable
     }
 
     /**
-     * Returns the list of free or paid image platforms.
+     * Returns the list of image platforms for the given type.
      */
-    public static List<ImagePlatform> list(boolean free)
+    public static List<ImagePlatform> list(ImagePlatformType type)
     {
         List<ImagePlatform> ret = new ArrayList<ImagePlatform>();
         for(ImagePlatform platform : platformMap.values())
         {
-            if(platform.isFree() == free
-                && platform.isActive())
+            if(platform.getType() == type && platform.isActive())
             {
                 ret.add(platform);
             }
@@ -147,25 +147,35 @@ public class ImagePlatforms implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given text contains a supported web image file.
-     * @param text The text to be checked
-     * @return <CODE>true</CODE> if the given text contains a PNG, JPG, GIF, WEBP or SVG file
+     * Returns the platform for the given filename.
+     * @param filename The filename to be checked
+     * @return the platform for the given filename
      */
-    public static boolean containsImage(String text)
+    public static ImagePlatform getByFilename(String filename)
     {
-        boolean ret = false;
-        if(text != null)
+        ImagePlatform ret = null;
+        if(filename != null)
         {
             for(ImagePlatform platform : platformMap.values())
             {
-                if(text.indexOf(platform.getTag()) != -1)
+                if(platform.matchesFilename(filename))
                 {
-                    ret = true;
+                    ret = platform;
                     break;
                 }
             }
         }
 
         return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given filename matches an image platform.
+     * @param text The filename to be checked
+     * @return <CODE>true</CODE> if the given filename matches an image platform
+     */
+    public static boolean matchesFilename(String filename)
+    {
+        return getByFilename(filename) != null;
     }
 }

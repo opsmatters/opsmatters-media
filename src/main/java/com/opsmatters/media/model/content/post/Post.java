@@ -18,9 +18,12 @@ package com.opsmatters.media.model.content.post;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
+import com.opsmatters.media.cache.admin.ImagePlatforms;
 import com.opsmatters.media.cache.content.util.ContentImages;
 import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.admin.ImagePlatform;
+import com.opsmatters.media.model.admin.ImagePlatformType;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.FieldMap;
@@ -47,6 +50,7 @@ public class Post extends Article<PostDetails>
     private String postType = "";
     private String urlAlias = "";
     private String basePath = "";
+    private String attribution = "";
 
     /**
      * Default constructor.
@@ -86,6 +90,7 @@ public class Post extends Article<PostDetails>
         setPostType(new String(obj.getPostType() != null ? obj.getPostType() : ""));
         setBasePath(obj.getBasePath());
         setUrlAlias(new String(obj.getUrlAlias() != null ? obj.getUrlAlias() : ""));
+        setAttribution(obj.getAttribution());
     }
 
     /**
@@ -118,6 +123,7 @@ public class Post extends Article<PostDetails>
         String featured = values.length > 17 ? values[17] : null;
         String sponsored = values.length > 18 ? values[18] : null;
         String metatags = values.length > 19 ? values[19] : null;
+        String attribution = values.length > 20 ? values[20] : null;
 
         // Remove feeds path from image
         if(image.indexOf("/") != -1)
@@ -141,6 +147,7 @@ public class Post extends Article<PostDetails>
         setNewsletter(newsletter != null && newsletter.equals("1"));
         setFeatured(featured != null && featured.equals("1"));
         setSponsored(sponsored != null && sponsored.equals("1"));
+        setAttribution(attribution);
 
         // Set the metatag fields
         if(metatags != null && metatags.length() > 0)
@@ -171,6 +178,7 @@ public class Post extends Article<PostDetails>
         ret.putOpt(AUTHOR_URL.value(), getAuthorUrl());
         ret.putOpt(META_TITLE.value(), getMetaTitle());
         ret.putOpt(META_DESCRIPTION.value(), getMetaDescription());
+        ret.putOpt(ATTRIBUTION.value(), getAttribution());
 
         return ret;
     }
@@ -197,6 +205,7 @@ public class Post extends Article<PostDetails>
             setAuthorUrl(obj.optString(AUTHOR_LINK.value())); // deprecated
         setMetaTitle(obj.optString(META_TITLE.value()));
         setMetaDescription(obj.optString(META_DESCRIPTION.value()));
+        setAttribution(obj.optString(ATTRIBUTION.value()));
     }
 
     /**
@@ -215,6 +224,7 @@ public class Post extends Article<PostDetails>
         ret.put(IMAGE, getImage());
         ret.put(IMAGE_TEXT, getImageText());
         ret.put(METATAGS, getMetatags());
+        ret.put(ATTRIBUTION, getAttribution());
 
         return ret;
     }
@@ -638,5 +648,42 @@ public class Post extends Article<PostDetails>
     public boolean hasAuthorUrl()
     {
         return getAuthorUrl() != null && getAuthorUrl().length() > 0;
+    }
+
+    /**
+     * Returns the attribution of the post.
+     */
+    public String getAttribution()
+    {
+        return attribution;
+    }
+
+    /**
+     * Sets the attribution of the post.
+     */
+    public void setAttribution(String attribution)
+    {
+        this.attribution = attribution;
+    }
+
+    /**
+     * Sets the attribution of the post using the image filename.
+     */
+    public void setAttribution()
+    {
+        if(!hasAttribution())
+        {
+            ImagePlatform platform = ImagePlatforms.getByFilename(getImage());
+            if(platform != null && platform.getType() == ImagePlatformType.ATTRIBUTED)
+                setAttribution(platform.getAttribution());
+        }
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the attribution has been set.
+     */
+    public boolean hasAttribution()
+    {
+        return getAttribution() != null && getAttribution().length() > 0;
     }
 }

@@ -1432,7 +1432,7 @@ public class HtmlDocument
 
             content = removeMarkup(content);
 
-            if(ImagePlatforms.containsImage(content.toLowerCase()))
+            if(ImagePlatforms.matchesFilename(content.toLowerCase()))
             {
                 Matcher sourceMatcher = SOURCE_PATTERN.matcher(content.toLowerCase());
                 if(sourceMatcher.find())
@@ -1493,7 +1493,7 @@ public class HtmlDocument
 
             content = removeMarkup(content);
 
-            if(ImagePlatforms.containsImage(content.toLowerCase()))
+            if(ImagePlatforms.matchesFilename(content.toLowerCase()))
             {
                 Matcher sourceMatcher = SOURCE_PATTERN.matcher(content.toLowerCase());
                 if(sourceMatcher.find())
