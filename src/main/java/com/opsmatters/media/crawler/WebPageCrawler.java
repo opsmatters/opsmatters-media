@@ -121,16 +121,9 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     private void initWebDriver(ContentRequest request)
     {
         if(instance == null)
-        {
-            if(request.canCache())
-                instance = WebDriverPool.getInstance(request);
-            else
-                instance = new WebDriverInstance(request, false);
-        }
-
+            instance = new WebDriverInstance(request, false);
         this.browser = request.getBrowser();
         this.format = request.getFormat();
-        WebDriverPool.setDebug(debug());
     }
 
     /**
@@ -139,13 +132,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
     public void close()
     {
         if(instance != null)
-        {
-            if(instance.isCached())
-                WebDriverPool.releaseInstance(instance);
-            else
-                instance.close();
-        }
-
+            instance.close();
         instance = null;
     }
 

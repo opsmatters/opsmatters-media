@@ -34,8 +34,6 @@ public enum ContactRating
     UNDEFINED("Undefined", 0),
     OCCASIONAL("Occasional", 1),
     REGULAR("Regular", 10),
-//GERALD: is this needed?
-//    GOOD_PAYER("Good Payer", 11),
 //GERALD: are these needed?
 //    GOOD("Good"), // Pseudo status
 //    VERY_GOOD("Very Good"), // Pseudo status
@@ -190,8 +188,6 @@ public enum ContactRating
         ret.add(NEUTRAL);
         ret.add(OCCASIONAL);
         ret.add(REGULAR);
-//GERALD
-//        ret.add(GOOD_PAYER);
  
         return ret;
     }

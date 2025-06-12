@@ -142,21 +142,6 @@ public class WebDriverInstance
         return proxy;
     }
 
-    public int getUses()
-    {
-        return uses;
-    }
-
-    public void use()
-    {
-        ++uses;
-    }
-
-    public boolean renew()
-    {
-        return uses >= MAX_USES;
-    }
-
     private WebDriver newHtmlUnitDriver()
     {
         return new HtmlUnitDriver()
