@@ -28,7 +28,6 @@ public enum MessageFormat
     DECODED("Decoded");
 
     private String value;
-    private String prefix;
 
     /**
      * Constructor that takes the format value.
