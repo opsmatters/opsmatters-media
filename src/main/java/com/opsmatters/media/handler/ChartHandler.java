@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 import nl.crashdata.chartjs.data.simple.SimpleChartJsConfig;
 import nl.crashdata.chartjs.data.simple.builder.SimpleChartJsConfigBuilder;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
-import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.chart.Chart;
 import com.opsmatters.media.model.chart.ChartJsChart;
 import com.opsmatters.media.model.chart.ChartDataset;

@@ -26,7 +26,7 @@ import java.sql.SQLException;
 import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 import org.json.JSONObject;
-import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.model.content.event.Event;
 import com.opsmatters.media.model.content.event.EventItem;

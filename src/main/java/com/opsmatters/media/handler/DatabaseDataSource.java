@@ -34,7 +34,7 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import nl.crashdata.chartjs.data.simple.SimpleChartJsXYDataPoint;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
-import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.chart.SourceType;
 import com.opsmatters.media.model.chart.ChartSource;
 import com.opsmatters.media.model.chart.ChartParameter;

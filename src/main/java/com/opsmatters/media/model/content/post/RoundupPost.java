@@ -19,7 +19,7 @@ import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.OrganisationSites;
 import com.opsmatters.media.cache.content.util.ContentImages;
-import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.FieldMap;

@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.platform;
+package com.opsmatters.media.model.system.aws;
 
 import java.util.Map;
-import com.opsmatters.media.model.ConfigElement;
 import com.opsmatters.media.model.ConfigParser;
 
 /**
- * Represents the configuration for an SSH connection.
+ * Represents the RDS configuration.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SshConfig implements ConfigElement
+public class RdsConfig extends AwsConfig
 {
-    private String id = "";
-    private String hostname = "";
-    private int port = -1;
+    private String clusterId = "";
 
     /**
      * Constructor that takes an id.
      */
-    protected SshConfig(String id)
+    protected RdsConfig(String id)
     {
         setId(id);
     }
@@ -42,7 +39,7 @@ public class SshConfig implements ConfigElement
     /**
      * Copy constructor.
      */
-    public SshConfig(SshConfig obj)
+    public RdsConfig(RdsConfig obj)
     {
         copyAttributes(obj);
     }
@@ -50,70 +47,28 @@ public class SshConfig implements ConfigElement
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(SshConfig obj)
+    public void copyAttributes(RdsConfig obj)
     {
         if(obj != null)
         {
-            setId(obj.getId());
-            setHostname(obj.getHostname());
-            setPort(obj.getPort());
+            setClusterId(obj.getClusterId());
         }
     }
 
     /**
-     * Returns the id of the SSH configuration.
+     * Returns the cluster id for the RDS configuration.
      */
-    public String toString()
+    public String getClusterId()
     {
-        return getId();
+        return clusterId;
     }
 
     /**
-     * Returns the id of the SSH configuration.
+     * Sets the cluster id for the RDS configuration.
      */
-    public String getId()
+    public void setClusterId(String clusterId)
     {
-        return id;
-    }
-
-    /**
-     * Sets the id for the SSH configuration.
-     */
-    public void setId(String id)
-    {
-        this.id = id;
-    }
-
-    /**
-     * Returns the hostname for the SSH configuration.
-     */
-    public String getHostname()
-    {
-        return hostname;
-    }
-
-    /**
-     * Sets the hostname for the SSH configuration.
-     */
-    public void setHostname(String hostname)
-    {
-        this.hostname = hostname;
-    }
-
-    /**
-     * Returns the port for the SSH configuration.
-     */
-    public int getPort()
-    {
-        return port;
-    }
-
-    /**
-     * Sets the port for the SSH configuration.
-     */
-    public void setPort(int port)
-    {
-        this.port = port;
+        this.clusterId = clusterId;
     }
 
     /**
@@ -129,13 +84,13 @@ public class SshConfig implements ConfigElement
     /**
      * Builder to make configuration construction easier.
      */
-    public static class Builder implements ConfigParser<SshConfig>
+    public static class Builder implements ConfigParser<RdsConfig>
     {
         // The config attribute names
-        private static final String HOSTNAME = "hostname";
-        private static final String PORT = "port";
+        private static final String REGION = "region";
+        private static final String CLUSTER_ID = "cluster-id";
 
-        private SshConfig ret = null;
+        private RdsConfig ret = null;
 
         /**
          * Constructor that takes an id.
@@ -143,7 +98,7 @@ public class SshConfig implements ConfigElement
          */
         public Builder(String id)
         {
-            ret = new SshConfig(id);
+            ret = new RdsConfig(id);
         }
 
         /**
@@ -154,10 +109,10 @@ public class SshConfig implements ConfigElement
         @Override
         public Builder parse(Map<String, Object> map)
         {
-            if(map.containsKey(HOSTNAME))
-                ret.setHostname((String)map.get(HOSTNAME));
-            if(map.containsKey(PORT))
-                ret.setPort((Integer)map.get(PORT));
+            if(map.containsKey(REGION))
+                ret.setRegion((String)map.get(REGION));
+            if(map.containsKey(CLUSTER_ID))
+                ret.setClusterId((String)map.get(CLUSTER_ID));
 
             return this;
         }
@@ -166,7 +121,7 @@ public class SshConfig implements ConfigElement
          * Returns the configured configuration instance
          * @return The configuration instance
          */
-        public SshConfig build()
+        public RdsConfig build()
         {
             return ret;
         }

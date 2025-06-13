@@ -42,17 +42,17 @@ public enum ContactRating
     ALL("All"); // Pseudo status
 
     private String value;
-    private int score;
+    private int precedence;
 
     /**
-     * Constructor that takes the type value and score.
+     * Constructor that takes the type value and precedence.
      * @param value The value for the type
-     * @param score The score for the type
+     * @param precedence The precedence for the type
      */
-    ContactRating(String value, int score)
+    ContactRating(String value, int precedence)
     {
         this.value = value;
-        this.score = score;
+        this.precedence = precedence;
     }
 
     /**
@@ -83,48 +83,48 @@ public enum ContactRating
     }
 
     /**
-     * Returns the score of the type.
-     * @return The score of the type.
+     * Returns the precedence of the type.
+     * @return The precedence of the type.
      */
-    public int score()
+    public int precedence()
     {
-        return score;
+        return precedence;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the score is positive.
-     * @return <CODE>true</CODE> if the score is positive
+     * Returns <CODE>true</CODE> if the precedence is positive.
+     * @return <CODE>true</CODE> if the precedence is positive
      */
     public boolean good()
     {
-        return score > 0;
+        return precedence > 0;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the score is very positive.
-     * @return <CODE>true</CODE> if the score is very positive
+     * Returns <CODE>true</CODE> if the precedence is very positive.
+     * @return <CODE>true</CODE> if the precedence is very positive
      */
     public boolean veryGood()
     {
-        return score >= 10;
+        return precedence >= 10;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the score is negative.
-     * @return <CODE>true</CODE> if the score is negative
+     * Returns <CODE>true</CODE> if the precedence is negative.
+     * @return <CODE>true</CODE> if the precedence is negative
      */
     public boolean bad()
     {
-        return score < 0;
+        return precedence < 0;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the score is very negative.
-     * @return <CODE>true</CODE> if the score is very negative
+     * Returns <CODE>true</CODE> if the precedence is very negative.
+     * @return <CODE>true</CODE> if the precedence is very negative
      */
     public boolean veryBad()
     {
-        return score <= -10;
+        return precedence <= -10;
     }
 
     /**

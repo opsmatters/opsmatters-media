@@ -24,8 +24,8 @@ package com.opsmatters.media.model;
 public enum ConfigType
 {
     BOOTSTRAP("Bootstrap", "bootstrap"),
-    PLATFORM("Platform", "platform"),
-    PLATFORM_SITES("Platform Sites", "platform-sites"),
+    SYSTEM("System", "system"),
+    SYSTEM_SITES("System Sites", "system-sites"),
     CHARTS("Charts", "charts");
 
     private String value;

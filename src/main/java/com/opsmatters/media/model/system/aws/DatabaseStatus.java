@@ -14,18 +14,37 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.platform.aws;
+package com.opsmatters.media.model.system.aws;
 
 /**
- * Represents the status of an EC2 instance.
+ * Represents the status of an RDS database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum InstanceStatus
+public enum DatabaseStatus
 {
     UNKNOWN,
     STARTING,
     RUNNING,
     STOPPING,
-    STOPPED;
+    STOPPED,
+    BACKING_UP,
+    UPGRADING,
+    REBOOTING,
+    CONFIGURING,
+    MODIFYING;
+
+    /**
+     * Returns <CODE>true</CODE> if the environment has a busy status.
+     * @return <CODE>true</CODE> if environment has a busy status
+     */
+    public boolean busy()
+    {
+        return this == STARTING
+            || this == BACKING_UP
+            || this == UPGRADING
+            || this == REBOOTING
+            || this == CONFIGURING
+            || this == MODIFYING;
+    }
 }

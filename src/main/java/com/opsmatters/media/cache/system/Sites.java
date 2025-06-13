@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.cache.platform;
+package com.opsmatters.media.cache.system;
 
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.platform.Site;
-import com.opsmatters.media.model.platform.SiteConfig;
+import com.opsmatters.media.model.system.Site;
+import com.opsmatters.media.model.system.SiteConfig;
 
 /**
  * Class representing the set of sites.

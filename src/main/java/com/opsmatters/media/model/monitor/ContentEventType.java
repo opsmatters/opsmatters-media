@@ -21,7 +21,7 @@ package com.opsmatters.media.model.monitor;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum EventType
+public enum ContentEventType
 {
     CHANGE("Change"),
     ALERT("Alert"),
@@ -33,7 +33,7 @@ public enum EventType
      * Constructor that takes the event value.
      * @param value The value for the event
      */
-    EventType(String value)
+    ContentEventType(String value)
     {
         this.value = value;
     }
@@ -61,10 +61,10 @@ public enum EventType
      * @param value The type value
      * @return The type for the given value
      */
-    public static EventType fromValue(String value)
+    public static ContentEventType fromValue(String value)
     {
-        EventType[] types = values();
-        for(EventType type : types)
+        ContentEventType[] types = values();
+        for(ContentEventType type : types)
         {
             if(type.value().equals(value))
                 return type;

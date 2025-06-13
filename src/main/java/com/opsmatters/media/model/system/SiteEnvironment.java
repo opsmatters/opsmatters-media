@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.platform;
+package com.opsmatters.media.model.system;
 
 import java.util.Map;
 

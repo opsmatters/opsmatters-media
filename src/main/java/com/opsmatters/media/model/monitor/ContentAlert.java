@@ -111,9 +111,9 @@ public class ContentAlert extends ContentEvent
      * Returns the type of the event.
      */
     @Override
-    public EventType getType()
+    public ContentEventType getType()
     {
-        return EventType.ALERT;
+        return ContentEventType.ALERT;
     }
 
     /**

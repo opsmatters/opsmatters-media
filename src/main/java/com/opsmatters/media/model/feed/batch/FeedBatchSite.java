@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.system.Site;
 
 /**
  * Class representing a list of feeds to be executed for a given site.

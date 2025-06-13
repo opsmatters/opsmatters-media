@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.platform;
+package com.opsmatters.media.model.system;
 
 /**
- * Represents the environments for a platform.
+ * Represents the environments for a system.
  * 
  * @author Gerald Curley (opsmatters)
  */

@@ -19,7 +19,7 @@ package com.opsmatters.media.client.email;
 import java.io.IOException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.admin.EmailProvider;
-import com.opsmatters.media.model.platform.aws.SesConfig;
+import com.opsmatters.media.model.system.aws.SesConfig;
 import com.opsmatters.media.client.aws.AwsSesClient;
 
 /**

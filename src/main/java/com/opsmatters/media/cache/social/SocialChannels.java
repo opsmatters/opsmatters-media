@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.social.SocialChannel;
 
 /**

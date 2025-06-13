@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.platform.aws;
+package com.opsmatters.media.model.system;
 
 import java.util.Map;
+import com.opsmatters.media.model.ConfigElement;
 import com.opsmatters.media.model.ConfigParser;
 
 /**
- * Represents the RDS configuration.
+ * Represents the configuration for an SSH connection.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class RdsConfig extends AwsConfig
+public class SshConfig implements ConfigElement
 {
-    private String clusterId = "";
+    private String id = "";
+    private String hostname = "";
+    private int port = -1;
 
     /**
      * Constructor that takes an id.
      */
-    protected RdsConfig(String id)
+    protected SshConfig(String id)
     {
         setId(id);
     }
@@ -39,7 +42,7 @@ public class RdsConfig extends AwsConfig
     /**
      * Copy constructor.
      */
-    public RdsConfig(RdsConfig obj)
+    public SshConfig(SshConfig obj)
     {
         copyAttributes(obj);
     }
@@ -47,28 +50,70 @@ public class RdsConfig extends AwsConfig
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(RdsConfig obj)
+    public void copyAttributes(SshConfig obj)
     {
         if(obj != null)
         {
-            setClusterId(obj.getClusterId());
+            setId(obj.getId());
+            setHostname(obj.getHostname());
+            setPort(obj.getPort());
         }
     }
 
     /**
-     * Returns the cluster id for the RDS configuration.
+     * Returns the id of the SSH configuration.
      */
-    public String getClusterId()
+    public String toString()
     {
-        return clusterId;
+        return getId();
     }
 
     /**
-     * Sets the cluster id for the RDS configuration.
+     * Returns the id of the SSH configuration.
      */
-    public void setClusterId(String clusterId)
+    public String getId()
     {
-        this.clusterId = clusterId;
+        return id;
+    }
+
+    /**
+     * Sets the id for the SSH configuration.
+     */
+    public void setId(String id)
+    {
+        this.id = id;
+    }
+
+    /**
+     * Returns the hostname for the SSH configuration.
+     */
+    public String getHostname()
+    {
+        return hostname;
+    }
+
+    /**
+     * Sets the hostname for the SSH configuration.
+     */
+    public void setHostname(String hostname)
+    {
+        this.hostname = hostname;
+    }
+
+    /**
+     * Returns the port for the SSH configuration.
+     */
+    public int getPort()
+    {
+        return port;
+    }
+
+    /**
+     * Sets the port for the SSH configuration.
+     */
+    public void setPort(int port)
+    {
+        this.port = port;
     }
 
     /**
@@ -84,13 +129,13 @@ public class RdsConfig extends AwsConfig
     /**
      * Builder to make configuration construction easier.
      */
-    public static class Builder implements ConfigParser<RdsConfig>
+    public static class Builder implements ConfigParser<SshConfig>
     {
         // The config attribute names
-        private static final String REGION = "region";
-        private static final String CLUSTER_ID = "cluster-id";
+        private static final String HOSTNAME = "hostname";
+        private static final String PORT = "port";
 
-        private RdsConfig ret = null;
+        private SshConfig ret = null;
 
         /**
          * Constructor that takes an id.
@@ -98,7 +143,7 @@ public class RdsConfig extends AwsConfig
          */
         public Builder(String id)
         {
-            ret = new RdsConfig(id);
+            ret = new SshConfig(id);
         }
 
         /**
@@ -109,10 +154,10 @@ public class RdsConfig extends AwsConfig
         @Override
         public Builder parse(Map<String, Object> map)
         {
-            if(map.containsKey(REGION))
-                ret.setRegion((String)map.get(REGION));
-            if(map.containsKey(CLUSTER_ID))
-                ret.setClusterId((String)map.get(CLUSTER_ID));
+            if(map.containsKey(HOSTNAME))
+                ret.setHostname((String)map.get(HOSTNAME));
+            if(map.containsKey(PORT))
+                ret.setPort((Integer)map.get(PORT));
 
             return this;
         }
@@ -121,7 +166,7 @@ public class RdsConfig extends AwsConfig
          * Returns the configured configuration instance
          * @return The configuration instance
          */
-        public RdsConfig build()
+        public SshConfig build()
         {
             return ret;
         }

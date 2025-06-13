@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.platform;
+package com.opsmatters.media.model.system;
 
 import java.util.List;
 import java.util.Map;
 import java.util.LinkedHashMap;
-import com.opsmatters.media.cache.platform.Sites;
+import com.opsmatters.media.cache.system.Sites;
 import com.opsmatters.media.model.ConfigElement;
 import com.opsmatters.media.model.ConfigParser;
-import com.opsmatters.media.model.platform.aws.S3Config;
+import com.opsmatters.media.model.system.aws.S3Config;
 
 /**
  * Represents a site config containing environments.

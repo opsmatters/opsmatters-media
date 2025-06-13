@@ -29,7 +29,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.cache.organisation.OrganisationSites;
 import com.opsmatters.media.model.BaseEntity;
-import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailBody;
 import com.opsmatters.media.model.organisation.Organisation;
@@ -77,7 +77,7 @@ public class ContentMonitor<T extends ContentDetails> extends BaseEntity
     private MonitorStatus status;
     private String url = "";
     private String snapshot = "";
-    private EventType eventType;
+    private ContentEventType eventType;
     private String eventId = "";
     private int interval = -1;
     private String errorMessage = "";
@@ -753,7 +753,7 @@ public class ContentMonitor<T extends ContentDetails> extends BaseEntity
     /**
      * Returns the event type.
      */
-    public EventType getEventType()
+    public ContentEventType getEventType()
     {
         return eventType;
     }
@@ -761,7 +761,7 @@ public class ContentMonitor<T extends ContentDetails> extends BaseEntity
     /**
      * Sets the event type.
      */
-    public void setEventType(EventType eventType)
+    public void setEventType(ContentEventType eventType)
     {
         this.eventType = eventType;
     }
@@ -772,7 +772,7 @@ public class ContentMonitor<T extends ContentDetails> extends BaseEntity
     public void setEventType(String eventType)
     {
         if(eventType != null && eventType.length() > 0)
-            setEventType(EventType.valueOf(eventType));
+            setEventType(ContentEventType.valueOf(eventType));
     }
 
     /**

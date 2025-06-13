@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.cache.platform;
+package com.opsmatters.media.cache.system;
 
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.platform.Site;
-import com.opsmatters.media.model.platform.Environment;
-import com.opsmatters.media.model.platform.EnvironmentId;
+import com.opsmatters.media.model.system.Site;
+import com.opsmatters.media.model.system.Environment;
+import com.opsmatters.media.model.system.EnvironmentId;
 
-import static com.opsmatters.media.model.platform.EnvironmentId.*;
+import static com.opsmatters.media.model.system.EnvironmentId.*;
 
 /**
  * Class representing the set of environments.

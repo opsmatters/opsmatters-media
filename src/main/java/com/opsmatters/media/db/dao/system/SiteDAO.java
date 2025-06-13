@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.db.dao.platform;
+package com.opsmatters.media.db.dao.system;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.db.dao.BaseDAO;
 
 /**
@@ -80,7 +80,7 @@ public class SiteDAO extends BaseDAO
     /**
      * Constructor that takes a DAO factory.
      */
-    public SiteDAO(PlatformDAOFactory factory)
+    public SiteDAO(SystemDAOFactory factory)
     {
         super(factory, "SITES");
     }

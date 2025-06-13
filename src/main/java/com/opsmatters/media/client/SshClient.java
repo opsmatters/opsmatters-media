@@ -27,7 +27,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
-import com.opsmatters.media.model.platform.SshConfig;
+import com.opsmatters.media.model.system.SshConfig;
 import com.opsmatters.media.util.StringUtils;
 
 /**

@@ -19,10 +19,10 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
-import com.opsmatters.media.cache.platform.Sites;
+import com.opsmatters.media.cache.system.Sites;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.feed.ContentFeed;
-import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.system.Site;
 
 /**
  * Class representing a list of feeds to be executed.

@@ -100,9 +100,9 @@ public class ContentChange extends ContentEvent
      * Returns the type of the event.
      */
     @Override
-    public EventType getType()
+    public ContentEventType getType()
     {
-        return EventType.CHANGE;
+        return ContentEventType.CHANGE;
     }
 
     /**

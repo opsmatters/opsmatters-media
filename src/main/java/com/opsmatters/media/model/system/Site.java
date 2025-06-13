@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.platform;
+package com.opsmatters.media.model.system;
 
 import java.util.Map;
 import java.util.LinkedHashMap;
@@ -22,7 +22,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
-import com.opsmatters.media.model.platform.aws.S3Config;
+import com.opsmatters.media.model.system.aws.S3Config;
 import com.opsmatters.media.model.OwnedEntity;
 
 /**

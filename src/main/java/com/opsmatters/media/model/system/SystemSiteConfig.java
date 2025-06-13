@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.platform;
+package com.opsmatters.media.model.system;
 
 import java.io.IOException;
 import java.util.Map;
@@ -26,15 +26,15 @@ import com.opsmatters.media.model.ConfigStore;
 import com.opsmatters.media.model.ConfigParser;
 
 /**
- * Class that represents the configuration for curator platform sites.
+ * Class that represents the configuration for curator system sites.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PlatformSiteConfig extends ConfigStore
+public class SystemSiteConfig extends ConfigStore
 {
-    private static final Logger logger = Logger.getLogger(PlatformSiteConfig.class.getName());
+    private static final Logger logger = Logger.getLogger(SystemSiteConfig.class.getName());
 
-    public static final ConfigType TYPE = ConfigType.PLATFORM_SITES;
+    public static final ConfigType TYPE = ConfigType.SYSTEM_SITES;
     public static final String FILENAME = TYPE.filename();
 
     private List<SiteConfig> sites = new ArrayList<SiteConfig>();
@@ -43,14 +43,14 @@ public class PlatformSiteConfig extends ConfigStore
     /**
      * Default constructor.
      */
-    protected PlatformSiteConfig()
+    protected SystemSiteConfig()
     {
     }
 
     /**
      * Copy constructor.
      */
-    public PlatformSiteConfig(PlatformSiteConfig obj)
+    public SystemSiteConfig(SystemSiteConfig obj)
     {
         copyAttributes(obj);
     }
@@ -58,7 +58,7 @@ public class PlatformSiteConfig extends ConfigStore
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(PlatformSiteConfig obj)
+    public void copyAttributes(SystemSiteConfig obj)
     {
         if(obj != null)
         {
@@ -126,7 +126,7 @@ public class PlatformSiteConfig extends ConfigStore
     }
 
     /**
-     * Returns a builder for the platform site config.
+     * Returns a builder for the system site config.
      * @return The builder instance.
      */
     public static Builder builder()
@@ -138,13 +138,13 @@ public class PlatformSiteConfig extends ConfigStore
      * Builder to make site config construction easier.
      */
     public static class Builder
-        extends ConfigStore.Builder<PlatformSiteConfig,Builder>
-        implements ConfigParser<PlatformSiteConfig>
+        extends ConfigStore.Builder<SystemSiteConfig,Builder>
+        implements ConfigParser<SystemSiteConfig>
     {
         // The config attribute names
         private static final String SITES = "sites";
 
-        private PlatformSiteConfig ret = new PlatformSiteConfig();
+        private SystemSiteConfig ret = new SystemSiteConfig();
 
         /**
          * Default constructor.
@@ -193,7 +193,7 @@ public class PlatformSiteConfig extends ConfigStore
          * @return The site config instance
          */
         @Override
-        public PlatformSiteConfig build() throws IOException
+        public SystemSiteConfig build() throws IOException
         {
             read(this);
             return ret;

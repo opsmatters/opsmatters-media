@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.time.Instant;
 import com.opsmatters.media.model.BaseEntity;
-import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.util.StringUtils;
 
 /**

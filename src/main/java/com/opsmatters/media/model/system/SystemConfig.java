@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.platform;
+package com.opsmatters.media.model.system;
 
 import java.io.IOException;
 import java.util.Map;
@@ -24,18 +24,18 @@ import java.util.logging.Logger;
 import com.opsmatters.media.model.ConfigType;
 import com.opsmatters.media.model.ConfigStore;
 import com.opsmatters.media.model.ConfigParser;
-import com.opsmatters.media.model.platform.aws.SesConfig;
+import com.opsmatters.media.model.system.aws.SesConfig;
 
 /**
- * Class that represents the configuration for the core curator platform.
+ * Class that represents the configuration for the core curator system.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PlatformConfig extends ConfigStore
+public class SystemConfig extends ConfigStore
 {
-    private static final Logger logger = Logger.getLogger(PlatformConfig.class.getName());
+    private static final Logger logger = Logger.getLogger(SystemConfig.class.getName());
 
-    public static final ConfigType TYPE = ConfigType.PLATFORM;
+    public static final ConfigType TYPE = ConfigType.SYSTEM;
     public static final String FILENAME = TYPE.filename();
 
     private SesConfig ses;
@@ -45,14 +45,14 @@ public class PlatformConfig extends ConfigStore
     /**
      * Default constructor.
      */
-    protected PlatformConfig()
+    protected SystemConfig()
     {
     }
 
     /**
      * Copy constructor.
      */
-    public PlatformConfig(PlatformConfig obj)
+    public SystemConfig(SystemConfig obj)
     {
         copyAttributes(obj);
     }
@@ -60,7 +60,7 @@ public class PlatformConfig extends ConfigStore
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(PlatformConfig obj)
+    public void copyAttributes(SystemConfig obj)
     {
         if(obj != null)
         {
@@ -129,7 +129,7 @@ public class PlatformConfig extends ConfigStore
     }
 
     /**
-     * Returns a builder for the platform config.
+     * Returns a builder for the system config.
      * @return The builder instance.
      */
     public static Builder builder()
@@ -138,17 +138,17 @@ public class PlatformConfig extends ConfigStore
     }
 
     /**
-     * Builder to make platform config construction easier.
+     * Builder to make system config construction easier.
      */
     public static class Builder
-        extends ConfigStore.Builder<PlatformConfig,Builder>
-        implements ConfigParser<PlatformConfig>
+        extends ConfigStore.Builder<SystemConfig,Builder>
+        implements ConfigParser<SystemConfig>
     {
         // The config attribute names
         private static final String SES = "ses";
         private static final String ENVIRONMENTS = "environments";
 
-        private PlatformConfig ret = new PlatformConfig();
+        private SystemConfig ret = new SystemConfig();
 
         /**
          * Default constructor.
@@ -199,11 +199,11 @@ public class PlatformConfig extends ConfigStore
         }
 
         /**
-         * Returns the configured platform config instance
-         * @return The platform config instance
+         * Returns the configured system config instance
+         * @return The system config instance
          */
         @Override
-        public PlatformConfig build() throws IOException
+        public SystemConfig build() throws IOException
         {
             read(this);
             return ret;

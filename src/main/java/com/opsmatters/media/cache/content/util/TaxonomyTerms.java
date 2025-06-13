@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.content.util.TaxonomyTerm;
 import com.opsmatters.media.model.content.util.TaxonomyType;
 

@@ -18,7 +18,7 @@ package com.opsmatters.media.model.order;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.time.Instant;
-import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.Formats;
 

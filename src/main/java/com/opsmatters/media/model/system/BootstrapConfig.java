@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.platform;
+package com.opsmatters.media.model.system;
 
 import java.io.IOException;
 import java.util.Map;
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 import com.opsmatters.media.model.ConfigType;
 import com.opsmatters.media.model.ConfigStore;
 import com.opsmatters.media.model.ConfigParser;
-import com.opsmatters.media.model.platform.aws.S3Config;
+import com.opsmatters.media.model.system.aws.S3Config;
 
 /**
  * Class that represents the minimum configuration to boostrap the application.

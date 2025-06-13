@@ -38,7 +38,7 @@ import com.opsmatters.media.client.email.EmailClient;
 import com.opsmatters.media.model.admin.EmailProvider;
 import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailFormat;
-import com.opsmatters.media.model.platform.aws.SesConfig;
+import com.opsmatters.media.model.system.aws.SesConfig;
 
 /**
  * Class that represents a connection to AWS SES for emails.

@@ -23,7 +23,7 @@ import java.time.Instant;
 import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.model.OwnedEntity;
-import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.FieldName;
 import com.opsmatters.media.model.content.FieldSource;

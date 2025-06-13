@@ -17,7 +17,7 @@ package com.opsmatters.media.model.social;
 
 import java.time.Instant;
 import com.opsmatters.media.cache.organisation.Organisations;
-import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.StringUtils;

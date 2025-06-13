@@ -44,11 +44,11 @@ import software.amazon.awssdk.services.ec2.model.StopInstancesResponse;
 import software.amazon.awssdk.services.ec2.model.Reservation;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.model.platform.EnvironmentId;
-import com.opsmatters.media.model.platform.aws.Ec2Config;
-import com.opsmatters.media.model.platform.aws.InstanceStatus;
+import com.opsmatters.media.model.system.EnvironmentId;
+import com.opsmatters.media.model.system.aws.Ec2Config;
+import com.opsmatters.media.model.system.aws.InstanceStatus;
 
-import static com.opsmatters.media.model.platform.aws.InstanceStatus.*;
+import static com.opsmatters.media.model.system.aws.InstanceStatus.*;
 
 /**
  * Class that represents a connection to AWS EC2 servers.

@@ -21,7 +21,7 @@ import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.cache.admin.ImagePlatforms;
 import com.opsmatters.media.cache.content.util.ContentImages;
 import com.opsmatters.media.crawler.parser.BodyParser;
-import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.admin.ImagePlatform;
 import com.opsmatters.media.model.admin.ImagePlatformType;
 import com.opsmatters.media.model.organisation.Organisation;

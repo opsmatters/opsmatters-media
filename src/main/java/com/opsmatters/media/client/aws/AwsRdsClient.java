@@ -45,10 +45,10 @@ import software.amazon.awssdk.services.rds.model.DBCluster;
 import software.amazon.awssdk.services.rds.model.DBInstance;
 import software.amazon.awssdk.services.rds.model.Filter;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.model.platform.aws.RdsConfig;
-import com.opsmatters.media.model.platform.aws.DatabaseStatus;
+import com.opsmatters.media.model.system.aws.RdsConfig;
+import com.opsmatters.media.model.system.aws.DatabaseStatus;
 
-import static com.opsmatters.media.model.platform.aws.DatabaseStatus.*;
+import static com.opsmatters.media.model.system.aws.DatabaseStatus.*;
 
 /**
  * Class that represents a connection to AWS RDS databases.

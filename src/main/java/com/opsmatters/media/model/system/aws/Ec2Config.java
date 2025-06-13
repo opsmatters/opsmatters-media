@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.platform.aws;
+package com.opsmatters.media.model.system.aws;
 
 import java.util.Map;
 import com.opsmatters.media.model.ConfigParser;
 
-import static com.opsmatters.media.model.platform.aws.InstanceStatus.*;
+import static com.opsmatters.media.model.system.aws.InstanceStatus.*;
 
 /**
  * Represents the EC2 configuration.

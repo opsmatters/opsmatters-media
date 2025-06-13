@@ -62,7 +62,7 @@ public abstract class ContentEvent extends OwnedEntity
     /**
      * Returns the type of the event.
      */
-    public abstract EventType getType();
+    public abstract ContentEventType getType();
 
     /**
      * Returns the monitor organisation.

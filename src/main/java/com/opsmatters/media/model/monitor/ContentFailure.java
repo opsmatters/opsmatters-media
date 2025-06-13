@@ -106,9 +106,9 @@ public class ContentFailure extends ContentEvent
      * Returns the type of the event.
      */
     @Override
-    public EventType getType()
+    public ContentEventType getType()
     {
-        return EventType.FAILURE;
+        return ContentEventType.FAILURE;
     }
 
     /**

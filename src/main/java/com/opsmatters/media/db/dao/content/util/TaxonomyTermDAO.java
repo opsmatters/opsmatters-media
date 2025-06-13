@@ -23,7 +23,7 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.content.util.TaxonomyTerm;
 import com.opsmatters.media.model.content.util.TaxonomyType;
 import com.opsmatters.media.db.dao.BaseDAO;

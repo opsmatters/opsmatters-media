@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.db.dao.platform;
+package com.opsmatters.media.db.dao.system;
 
 import com.opsmatters.media.db.JDBCDatabaseDriver;
 import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.db.dao.DAOFactory;
 
 /**
- * The class for all platform data access object factories.
+ * The class for all system data access object factories.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class PlatformDAOFactory extends DAOFactory
+public class SystemDAOFactory extends DAOFactory
 {
     /**
      * Constructor that takes a database driver and connection.
      */
-    public PlatformDAOFactory(JDBCDatabaseDriver driver, JDBCDatabaseConnection conn)
+    public SystemDAOFactory(JDBCDatabaseDriver driver, JDBCDatabaseConnection conn)
     {
         super(driver, conn);
 

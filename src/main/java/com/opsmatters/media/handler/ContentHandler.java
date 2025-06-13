@@ -31,7 +31,7 @@ import org.apache.commons.text.StringSubstitutor;
 import com.google.common.io.Files;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
-import com.opsmatters.media.model.platform.Environment;
+import com.opsmatters.media.model.system.Environment;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.client.SshClient;
 import com.opsmatters.media.client.aws.AwsS3Client;

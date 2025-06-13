@@ -49,7 +49,7 @@ public abstract class ContentEventItem<T extends ContentEvent> extends BaseEntit
     /**
      * Returns the event type.
      */
-    public EventType getType()
+    public ContentEventType getType()
     {
         return content.getType();
     }

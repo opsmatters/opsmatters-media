@@ -17,7 +17,7 @@ package com.opsmatters.media.model.order;
 
 import java.time.Instant;
 import org.apache.commons.text.StringSubstitutor;
-import com.opsmatters.media.cache.platform.Sites;
+import com.opsmatters.media.cache.system.Sites;
 import com.opsmatters.media.cache.order.product.Products;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.content.Content;

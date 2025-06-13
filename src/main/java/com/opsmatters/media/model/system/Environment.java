@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.platform;
+package com.opsmatters.media.model.system;
 
 import java.util.Map;
 import com.opsmatters.media.model.ConfigElement;
 import com.opsmatters.media.model.ConfigParser;
-import com.opsmatters.media.model.platform.aws.Ec2Config;
-import com.opsmatters.media.model.platform.aws.RdsConfig;
+import com.opsmatters.media.model.system.aws.Ec2Config;
+import com.opsmatters.media.model.system.aws.RdsConfig;
 
 /**
  * Represents the configuration of an environment.

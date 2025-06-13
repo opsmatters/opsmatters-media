@@ -19,7 +19,7 @@ import java.util.List;
 import java.sql.SQLException;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentConfig;
-import com.opsmatters.media.model.platform.Site;
+import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 
 /**
