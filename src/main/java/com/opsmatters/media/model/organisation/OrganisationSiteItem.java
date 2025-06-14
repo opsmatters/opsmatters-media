@@ -16,7 +16,7 @@
 package com.opsmatters.media.model.organisation;
 
 import java.util.Map;
-import com.opsmatters.media.model.BaseEntityItem;
+import com.opsmatters.media.model.ManagedEntityItem;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentSiteSettings;
 
@@ -25,7 +25,7 @@ import com.opsmatters.media.model.content.ContentSiteSettings;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrganisationSiteItem extends BaseEntityItem<OrganisationSite>
+public class OrganisationSiteItem extends ManagedEntityItem<OrganisationSite>
 {
     private OrganisationSite content = new OrganisationSite();
 

@@ -19,7 +19,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.format.DateTimeParseException;
-import com.opsmatters.media.model.OwnedEntity;
+import com.opsmatters.media.model.ManagedEntity;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
@@ -28,7 +28,7 @@ import com.opsmatters.media.util.TimeUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class Task extends OwnedEntity
+public abstract class Task extends ManagedEntity
 {
     private Instant executedDate;
     private String name = "";

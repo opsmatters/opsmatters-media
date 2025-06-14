@@ -16,7 +16,7 @@
 package com.opsmatters.media.model.content.crawler;
 
 import java.time.Instant;
-import com.opsmatters.media.model.OwnedEntity;
+import com.opsmatters.media.model.ManagedEntity;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -24,7 +24,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ErrorPage extends OwnedEntity
+public class ErrorPage extends ManagedEntity
 {
     private String name = "";
     private String title = "";

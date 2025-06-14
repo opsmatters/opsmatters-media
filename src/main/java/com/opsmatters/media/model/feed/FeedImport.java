@@ -16,7 +16,7 @@
 package com.opsmatters.media.model.feed;
 
 import java.time.Instant;
-import com.opsmatters.media.model.BaseEntity;
+import com.opsmatters.media.model.ManagedEntity;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -24,7 +24,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class FeedImport extends BaseEntity
+public class FeedImport extends ManagedEntity
 {
     private String feedId = "";
     private long executionTime = -1L;

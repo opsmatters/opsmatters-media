@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Gerald Curley
+ * Copyright 2025 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,39 +16,57 @@
 package com.opsmatters.media.model;
 
 /**
- * Class representing an entity with an owner.
+ * Class representing an entity managed by the system.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class OwnedEntity extends BaseEntity
+public abstract class ManagedEntity extends BaseEntity
 {
-    private String createdBy = "";
+    private String id = "";
 
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(OwnedEntity obj)
+    public void copyAttributes(ManagedEntity obj)
     {
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setCreatedBy(obj.getCreatedBy());
+            setId(obj.getId());
+//            setCreatedDate(obj.getCreatedDate());
+//            setUpdatedDate(obj.getUpdatedDate());
         }
     }
 
     /**
-     * Returns the user that changed the entity.
+     * Returns the entity id.
      */
-    public String getCreatedBy()
+    public String toString()
     {
-        return createdBy;
+        return getId();
     }
 
     /**
-     * Sets the user that changed the entity.
+     * Returns the entity id.
      */
-    public void setCreatedBy(String createdBy)
+    public String getId()
     {
-        this.createdBy = createdBy;
+        return id;
+    }
+
+    /**
+     * Sets the entity id.
+     */
+    public void setId(String id)
+    {
+        this.id = id;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the entity id has been set.
+     */
+    public boolean hasId()
+    {
+        return id != null && id.length() > 0;
     }
 }

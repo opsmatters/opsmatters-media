@@ -18,7 +18,7 @@ package com.opsmatters.media.model.drupal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-import com.opsmatters.media.model.BaseEntity;
+import com.opsmatters.media.model.ManagedEntity;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
@@ -27,7 +27,7 @@ import com.opsmatters.media.util.TimeUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class FeedsFeed extends BaseEntity
+public class FeedsFeed extends ManagedEntity
 {
     private String title = "";
     private String type = "";

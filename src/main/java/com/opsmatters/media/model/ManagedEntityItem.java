@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Gerald Curley
+ * Copyright 2025 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.social;
-
-import com.opsmatters.media.model.ManagedEntityItem;
+package com.opsmatters.media.model;
 
 /**
- * Class representing a social media post list item.
+ * Class representing a managed list item.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class SocialPostItem<T extends SocialPost> extends ManagedEntityItem<T>
+public abstract class ManagedEntityItem<T extends ManagedEntity> extends BaseEntityItem<T>
 {
     private T content;
+
+    /**
+     * Default constructor.
+     */
+    public ManagedEntityItem()
+    {
+        super.set(content);
+    }
 
     /**
      * Returns the content object.
@@ -35,7 +41,7 @@ public abstract class SocialPostItem<T extends SocialPost> extends ManagedEntity
     }
 
     /**
-     * Sets the content object.
+     * Sets the object.
      */
     protected void set(T content)
     {
@@ -44,34 +50,26 @@ public abstract class SocialPostItem<T extends SocialPost> extends ManagedEntity
     }
 
     /**
-     * Returns the post type.
+     * Returns the id.
      */
-    public SocialPostType getType()
+    public String toString()
     {
-        return content.getType();
+        return getId();
     }
 
     /**
-     * Returns the post site.
+     * Returns the entity id.
      */
-    public String getSiteId()
+    public String getId()
     {
-        return content.getSiteId();
+        return content.getId();
     }
 
     /**
-     * Sets the post site.
+     * Sets the entity id.
      */
-    public void setSiteId(String siteId)
+    public void setId(String id)
     {
-        content.setSiteId(siteId);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the site has been set.
-     */
-    public boolean hasSiteId()
-    {
-        return content.hasSiteId();
+        content.setId(id);
     }
 }

@@ -40,35 +40,11 @@ public abstract class BaseEntityItem<T extends BaseEntity> implements java.io.Se
     }
 
     /**
-     * Returns the object.
+     * Sets the object.
      */
     protected void set(T content)
     {
         this.content = content;
-    }
-
-    /**
-     * Returns the title.
-     */
-    public String toString()
-    {
-        return getId();
-    }
-
-    /**
-     * Returns the entity id.
-     */
-    public String getId()
-    {
-        return content.getId();
-    }
-
-    /**
-     * Sets the entity id.
-     */
-    public void setId(String id)
-    {
-        content.setId(id);
     }
 
     /**

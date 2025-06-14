@@ -110,7 +110,7 @@ public class Environment implements ConfigElement
     }
 
     /**
-     * Sets the id for the environment.
+     * Sets the id of the environment.
      */
     public void setId(EnvironmentId id)
     {
@@ -118,7 +118,7 @@ public class Environment implements ConfigElement
     }
 
     /**
-     * Sets the id for the environment.
+     * Sets the id of the environment.
      */
     public void setId(String id)
     {

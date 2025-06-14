@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.time.Instant;
 import org.json.JSONObject;
-import com.opsmatters.media.model.OwnedEntity;
+import com.opsmatters.media.model.ManagedEntity;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.FieldName;
 import com.opsmatters.media.model.content.FieldSource;
@@ -44,7 +44,7 @@ import static com.opsmatters.media.model.content.ContentType.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Organisation extends OwnedEntity implements FieldSource
+public class Organisation extends ManagedEntity implements FieldSource
 {
     public static final String DEFAULT_CODE = "???";
 

@@ -15,14 +15,14 @@
  */
 package com.opsmatters.media.model.logging;
 
-import com.opsmatters.media.model.BaseEntityItem;
+import com.opsmatters.media.model.ManagedEntityItem;
 
 /**
  * Class representing a log event list item.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class LogEventItem<T extends LogEvent> extends BaseEntityItem<T>
+public abstract class LogEventItem<T extends LogEvent> extends ManagedEntityItem<T>
 {
     private T content;
 

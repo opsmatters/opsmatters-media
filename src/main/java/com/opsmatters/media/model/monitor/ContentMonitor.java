@@ -28,7 +28,7 @@ import java.sql.SQLException;
 import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.cache.organisation.OrganisationSites;
-import com.opsmatters.media.model.BaseEntity;
+import com.opsmatters.media.model.ManagedEntity;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailBody;
@@ -48,7 +48,7 @@ import com.opsmatters.media.util.SnapshotDiff;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentMonitor<T extends ContentDetails> extends BaseEntity
+public class ContentMonitor<T extends ContentDetails> extends ManagedEntity
 {
     private static final Logger logger = Logger.getLogger(ContentMonitor.class.getName());
 

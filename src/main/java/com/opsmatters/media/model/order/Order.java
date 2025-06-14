@@ -22,7 +22,7 @@ import java.time.temporal.WeekFields;
 import com.opsmatters.media.cache.admin.Parameters;
 import com.opsmatters.media.cache.order.contact.Contacts;
 import com.opsmatters.media.cache.order.contact.Companies;
-import com.opsmatters.media.model.OwnedEntity;
+import com.opsmatters.media.model.ManagedEntity;
 import com.opsmatters.media.model.order.contact.Contact;
 import com.opsmatters.media.model.order.contact.ContactPerson;
 import com.opsmatters.media.model.order.contact.Company;
@@ -37,7 +37,7 @@ import static com.opsmatters.media.model.admin.ParameterName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Order extends OwnedEntity
+public class Order extends ManagedEntity
 {
     private String contactId = "";
     private String contactName = ""; // Used as a filter

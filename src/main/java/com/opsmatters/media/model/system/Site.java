@@ -23,14 +23,14 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
 import com.opsmatters.media.model.system.aws.S3Config;
-import com.opsmatters.media.model.OwnedEntity;
+import com.opsmatters.media.model.ManagedEntity;
 
 /**
  * Represents a site containing environments.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Site extends OwnedEntity
+public class Site extends ManagedEntity
 {
     private String name = "";
     private String icon = "";

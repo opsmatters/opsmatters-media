@@ -17,7 +17,7 @@
 package com.opsmatters.media.model.logging;
 
 import java.time.Instant;
-import com.opsmatters.media.model.OwnedEntity;
+import com.opsmatters.media.model.ManagedEntity;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -25,7 +25,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class LogEvent extends OwnedEntity
+public class LogEvent extends ManagedEntity
 {
     private LogEventType type;
     private LogEventCategory category;

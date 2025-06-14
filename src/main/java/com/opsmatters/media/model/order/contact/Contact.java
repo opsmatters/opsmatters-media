@@ -17,7 +17,7 @@ package com.opsmatters.media.model.order.contact;
 
 import java.time.Instant;
 import com.opsmatters.media.cache.admin.Parameters;
-import com.opsmatters.media.model.OwnedEntity;
+import com.opsmatters.media.model.ManagedEntity;
 import com.opsmatters.media.model.order.Currency;
 import com.opsmatters.media.model.order.PaymentMethod;
 import com.opsmatters.media.model.order.PaymentMode;
@@ -33,7 +33,7 @@ import static com.opsmatters.media.model.admin.ParameterName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Contact extends OwnedEntity
+public class Contact extends ManagedEntity
 {
     private String name = "";
     private ContactType type = ContactType.INDIVIDUAL;

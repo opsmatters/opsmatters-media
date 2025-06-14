@@ -16,7 +16,7 @@
 package com.opsmatters.media.model.admin;
 
 import java.time.Instant;
-import com.opsmatters.media.model.BaseEntity;
+import com.opsmatters.media.model.ManagedEntity;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -24,7 +24,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Notification extends BaseEntity
+public class Notification extends ManagedEntity
 {
     private String code = "";
     private String summary = "";

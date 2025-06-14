@@ -17,7 +17,7 @@
 package com.opsmatters.media.model.system;
 
 /**
- * Represents the environments for a system.
+ * Represents the environments for the system.
  * 
  * @author Gerald Curley (opsmatters)
  */
@@ -86,9 +86,9 @@ public enum EnvironmentId
     }
 
     /**
-     * Returns the environment name for the given value.
+     * Returns the environment id for the given value.
      * @param value The environment value
-     * @return The environment name for the given value
+     * @return The environment id for the given value
      */
     public static EnvironmentId fromValue(String value)
     {

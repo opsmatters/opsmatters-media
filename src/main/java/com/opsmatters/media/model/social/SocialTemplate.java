@@ -18,7 +18,6 @@ package com.opsmatters.media.model.social;
 import java.util.List;
 import java.time.Instant;
 import org.json.JSONObject;
-import com.opsmatters.media.model.OwnedEntity;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.StringUtils;
 
