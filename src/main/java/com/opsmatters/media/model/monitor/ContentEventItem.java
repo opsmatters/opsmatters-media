@@ -15,7 +15,7 @@
  */
 package com.opsmatters.media.model.monitor;
 
-import com.opsmatters.media.model.ManagedEntityItem;
+import com.opsmatters.media.model.BaseEntityItem;
 
 import com.opsmatters.media.cache.monitor.ContentMonitors;
 import com.opsmatters.media.model.content.ContentType;
@@ -25,7 +25,7 @@ import com.opsmatters.media.model.content.ContentType;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ContentEventItem<T extends ContentEvent> extends ManagedEntityItem<T>
+public abstract class ContentEventItem<T extends ContentEvent> extends BaseEntityItem<T>
 {
     private T content;
 

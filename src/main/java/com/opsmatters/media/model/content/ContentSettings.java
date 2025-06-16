@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.List;
 import org.json.JSONObject;
 import org.yaml.snakeyaml.Yaml;
-import com.opsmatters.media.model.ManagedEntity;
+import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.content.video.VideoConfig;
 import com.opsmatters.media.model.content.event.EventConfig;
@@ -39,7 +39,7 @@ import static com.opsmatters.media.model.content.ContentType.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentSettings extends ManagedEntity
+public class ContentSettings extends BaseEntity
 {
     private String code = "";
     private ContentType type;

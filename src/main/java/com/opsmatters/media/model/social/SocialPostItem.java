@@ -15,14 +15,14 @@
  */
 package com.opsmatters.media.model.social;
 
-import com.opsmatters.media.model.ManagedEntityItem;
+import com.opsmatters.media.model.BaseEntityItem;
 
 /**
  * Class representing a social media post list item.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class SocialPostItem<T extends SocialPost> extends ManagedEntityItem<T>
+public abstract class SocialPostItem<T extends SocialPost> extends BaseEntityItem<T>
 {
     private T content;
 

@@ -16,14 +16,14 @@
 package com.opsmatters.media.model.social;
 
 import com.vdurmont.emoji.EmojiParser;
-import com.opsmatters.media.model.ManagedEntity;
+import com.opsmatters.media.model.BaseEntity;
 
 /**
  * Class representing a social media post.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class SocialPost extends ManagedEntity
+public abstract class SocialPost extends BaseEntity
 {
     private String siteId = "";
     private String message = "";

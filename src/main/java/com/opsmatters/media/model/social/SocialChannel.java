@@ -18,7 +18,7 @@ package com.opsmatters.media.model.social;
 import java.time.Instant;
 import java.util.List;
 import java.util.ArrayList;
-import com.opsmatters.media.model.ManagedEntity;
+import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.StringUtils;
@@ -28,7 +28,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialChannel extends ManagedEntity
+public class SocialChannel extends BaseEntity
 {
     private String code = "";
     private String name = "";

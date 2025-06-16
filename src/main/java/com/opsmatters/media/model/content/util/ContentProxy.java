@@ -15,7 +15,7 @@
  */
 package com.opsmatters.media.model.content.util;
 
-import com.opsmatters.media.model.ManagedEntity;
+import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.client.proxy.WebshareProxy;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.Formats;
@@ -25,7 +25,7 @@ import com.opsmatters.media.util.Formats;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentProxy extends ManagedEntity
+public class ContentProxy extends BaseEntity
 {
     private String host = "";
     private int port = -1;

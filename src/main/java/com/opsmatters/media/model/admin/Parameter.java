@@ -16,14 +16,14 @@
 package com.opsmatters.media.model.admin;
 
 import java.time.Instant;
-import com.opsmatters.media.model.ManagedEntity;
+import com.opsmatters.media.model.BaseEntity;
 
 /**
  * Class representing an application parameter.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Parameter extends ManagedEntity
+public class Parameter extends BaseEntity
 {
     private ParameterType type;
     private ParameterName name;

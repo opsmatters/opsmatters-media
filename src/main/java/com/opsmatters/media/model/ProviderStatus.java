@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.admin;
+package com.opsmatters.media.model;
 
 import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Represents the status of an external platform.
+ * Represents the status of an external provider.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum PlatformStatus
+public enum ProviderStatus
 {
     ACTIVE("Active", "glyphicon-ok-circle", "status-success"),
     DISABLED("Disabled", "glyphicon-ban-circle", "status-error"),
@@ -40,7 +40,7 @@ public enum PlatformStatus
      * @param icon The glyphicon for the status
      * @param css The css class for the status
      */
-    PlatformStatus(String value, String icon, String css)
+    ProviderStatus(String value, String icon, String css)
     {
         this.value = value;
         this.icon = icon;
@@ -88,14 +88,15 @@ public enum PlatformStatus
      * @param value The type value
      * @return The type for the given value
      */
-    public static PlatformStatus fromValue(String value)
+    public static ProviderStatus fromValue(String value)
     {
-        PlatformStatus[] types = values();
-        for(PlatformStatus type : types)
+        ProviderStatus[] types = values();
+        for(ProviderStatus type : types)
         {
             if(type.value().equals(value))
                 return type;
         }
+
         return null;
     }
 
@@ -110,11 +111,11 @@ public enum PlatformStatus
     }
 
     /**
-     * Returns a list of the platform statuses.
+     * Returns a list of the provider statuses.
      */
-    public static List<PlatformStatus> toList()
+    public static List<ProviderStatus> toList()
     {
-        List<PlatformStatus> ret = new ArrayList<PlatformStatus>();
+        List<ProviderStatus> ret = new ArrayList<ProviderStatus>();
 
         ret.add(ACTIVE);
         ret.add(DISABLED);

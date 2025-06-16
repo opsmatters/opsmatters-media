@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.time.Instant;
 import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.Organisations;
-import com.opsmatters.media.model.ManagedEntity;
+import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.FieldName;
@@ -38,7 +38,7 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrganisationSite extends ManagedEntity implements FieldSource
+public class OrganisationSite extends BaseEntity implements FieldSource
 {
     private String siteId = "";
     private String code = "";

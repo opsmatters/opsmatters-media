@@ -16,7 +16,7 @@
 package com.opsmatters.media.model.order.contact;
 
 import java.time.Instant;
-import com.opsmatters.media.model.ManagedEntity;
+import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.order.Country;
 import com.opsmatters.media.util.StringUtils;
 
@@ -25,7 +25,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Company extends ManagedEntity
+public class Company extends BaseEntity
 {
     private String name = "";
     private String billingName = "";

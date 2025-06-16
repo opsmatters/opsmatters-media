@@ -13,35 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.admin;
-
-import com.opsmatters.media.model.ManagedEntity;
+package com.opsmatters.media.model;
 
 import java.time.Instant;
 import com.opsmatters.media.util.StringUtils;
 
 /**
- * Class that represents an external platform.
+ * Class that represents an external provider.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ExternalPlatform extends ManagedEntity
+public abstract class ExternalProvider extends BaseEntity
 {
     private String code = "";
     private String name = "";
-    private PlatformStatus status = PlatformStatus.ACTIVE;
+    private ProviderStatus status = ProviderStatus.ACTIVE;
 
     /**
      * Default constructor.
      */
-    public ExternalPlatform()
+    public ExternalProvider()
     {
     }
 
     /**
      * Constructor that takes a name.
      */
-    public ExternalPlatform(String name)
+    public ExternalProvider(String name)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
@@ -51,7 +49,7 @@ public abstract class ExternalPlatform extends ManagedEntity
     /**
      * Copy constructor.
      */
-    public ExternalPlatform(ExternalPlatform obj)
+    public ExternalProvider(ExternalProvider obj)
     {
         copyAttributes(obj);
     }
@@ -59,7 +57,7 @@ public abstract class ExternalPlatform extends ManagedEntity
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ExternalPlatform obj)
+    public void copyAttributes(ExternalProvider obj)
     {
         if(obj != null)
         {
@@ -71,7 +69,7 @@ public abstract class ExternalPlatform extends ManagedEntity
     }
 
     /**
-     * Returns the platform code.
+     * Returns the provider code.
      */
     public String toString()
     {
@@ -79,7 +77,7 @@ public abstract class ExternalPlatform extends ManagedEntity
     }
 
     /**
-     * Returns the code for the platform.
+     * Returns the code for the provider.
      */
     public String getCode()
     {
@@ -87,7 +85,7 @@ public abstract class ExternalPlatform extends ManagedEntity
     }
 
     /**
-     * Sets the code for the platform.
+     * Sets the code for the provider.
      */
     public void setCode(String code)
     {
@@ -95,7 +93,7 @@ public abstract class ExternalPlatform extends ManagedEntity
     }
 
     /**
-     * Returns the name for the platform.
+     * Returns the name for the provider.
      */
     public String getName()
     {
@@ -103,7 +101,7 @@ public abstract class ExternalPlatform extends ManagedEntity
     }
 
     /**
-     * Sets the name for the platform.
+     * Sets the name for the provider.
      */
     public void setName(String name)
     {
@@ -111,34 +109,34 @@ public abstract class ExternalPlatform extends ManagedEntity
     }
 
     /**
-     * Returns the platform status.
+     * Returns the provider status.
      */
-    public PlatformStatus getStatus()
+    public ProviderStatus getStatus()
     {
         return status;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the platform status is ACTIVE.
+     * Returns <CODE>true</CODE> if the provider status is ACTIVE.
      */
     public boolean isActive()
     {
-        return status == PlatformStatus.ACTIVE;
+        return status == ProviderStatus.ACTIVE;
     }
 
     /**
-     * Sets the platform status.
+     * Sets the provider status.
      */
-    public void setStatus(PlatformStatus status)
+    public void setStatus(ProviderStatus status)
     {
         this.status = status;
     }
 
     /**
-     * Sets the platform status.
+     * Sets the provider status.
      */
     public void setStatus(String status)
     {
-        setStatus(PlatformStatus.valueOf(status));
+        setStatus(ProviderStatus.valueOf(status));
     }
 }

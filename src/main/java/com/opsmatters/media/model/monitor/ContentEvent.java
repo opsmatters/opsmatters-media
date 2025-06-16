@@ -16,7 +16,7 @@
 package com.opsmatters.media.model.monitor;
 
 import com.opsmatters.media.cache.organisation.Organisations;
-import com.opsmatters.media.model.ManagedEntity;
+import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.organisation.Organisation;
 
 /**
@@ -24,7 +24,7 @@ import com.opsmatters.media.model.organisation.Organisation;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ContentEvent extends ManagedEntity
+public abstract class ContentEvent extends BaseEntity
 {
     private String code = "";
     private String organisation = "";

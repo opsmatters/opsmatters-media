@@ -39,8 +39,8 @@ public class AdminDAOFactory extends DAOFactory
         getParameterDAO();
         getTableTaskDAO();
         getTaskExecutionDAO();
-        getEventPlatformDAO();
-        getImagePlatformDAO();
+        getEventProviderDAO();
+        getImageProviderDAO();
     }
 
     /**
@@ -104,23 +104,23 @@ public class AdminDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the event platform DAO.
+     * Returns the event provider DAO.
      */
-    public EventPlatformDAO getEventPlatformDAO()
+    public EventProviderDAO getEventProviderDAO()
     {
-        if(eventPlatformDAO == null)
-            eventPlatformDAO = new EventPlatformDAO(this);
-        return eventPlatformDAO;
+        if(eventProviderDAO == null)
+            eventProviderDAO = new EventProviderDAO(this);
+        return eventProviderDAO;
     }
 
     /**
-     * Returns the image platform DAO.
+     * Returns the image provider DAO.
      */
-    public ImagePlatformDAO getImagePlatformDAO()
+    public ImageProviderDAO getImageProviderDAO()
     {
-        if(imagePlatformDAO == null)
-            imagePlatformDAO = new ImagePlatformDAO(this);
-        return imagePlatformDAO;
+        if(imageProviderDAO == null)
+            imageProviderDAO = new ImageProviderDAO(this);
+        return imageProviderDAO;
     }
 
     /**
@@ -136,8 +136,8 @@ public class AdminDAOFactory extends DAOFactory
         parameterDAO = null;
         tableTaskDAO = null;
         taskExecutionDAO = null;
-        eventPlatformDAO = null;
-        imagePlatformDAO = null;
+        eventProviderDAO = null;
+        imageProviderDAO = null;
     }
 
     private UserDAO userDAO;
@@ -146,6 +146,6 @@ public class AdminDAOFactory extends DAOFactory
     private ParameterDAO parameterDAO;
     private TableTaskDAO tableTaskDAO;
     private TaskExecutionDAO taskExecutionDAO;
-    private EventPlatformDAO eventPlatformDAO;
-    private ImagePlatformDAO imagePlatformDAO;
+    private EventProviderDAO eventProviderDAO;
+    private ImageProviderDAO imageProviderDAO;
 }

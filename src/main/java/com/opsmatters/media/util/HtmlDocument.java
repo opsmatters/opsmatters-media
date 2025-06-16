@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import com.opsmatters.media.cache.admin.ImagePlatforms;
+import com.opsmatters.media.cache.admin.ImageProviders;
 
 /**
  * A set of utility methods to perform miscellaneous tasks related to HTML links.
@@ -1432,7 +1432,7 @@ public class HtmlDocument
 
             content = removeMarkup(content);
 
-            if(ImagePlatforms.matchesFilename(content.toLowerCase()))
+            if(ImageProviders.matchesFilename(content.toLowerCase()))
             {
                 Matcher sourceMatcher = SOURCE_PATTERN.matcher(content.toLowerCase());
                 if(sourceMatcher.find())
@@ -1493,7 +1493,7 @@ public class HtmlDocument
 
             content = removeMarkup(content);
 
-            if(ImagePlatforms.matchesFilename(content.toLowerCase()))
+            if(ImageProviders.matchesFilename(content.toLowerCase()))
             {
                 Matcher sourceMatcher = SOURCE_PATTERN.matcher(content.toLowerCase());
                 if(sourceMatcher.find())

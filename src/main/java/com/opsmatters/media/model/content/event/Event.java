@@ -141,7 +141,7 @@ public class Event extends Resource<EventDetails>
         ret.put(END_DATE.value(), getEndDateMillis());
         ret.putOpt(TIMEZONE.value(), getTimeZone());
         ret.putOpt(EVENT_TYPE.value(), getEventType());
-        ret.putOpt(PLATFORM.value(), getPlatform());
+        ret.putOpt(PROVIDER.value(), getProvider());
         ret.putOpt(LOCATION.value(), getLocation());
 
         return ret;
@@ -161,7 +161,7 @@ public class Event extends Resource<EventDetails>
             setPublishedDate(TimeUtils.truncateTimeUTC(getStartDate()));
         setTimeZone(obj.optString(TIMEZONE.value()));
         setEventType(obj.optString(EVENT_TYPE.value()));
-        setPlatform(obj.optString(PLATFORM.value()));
+        setProvider(obj.optString(PROVIDER.value()));
         setLocation(obj.optString(LOCATION.value()));
     }
 
@@ -277,7 +277,7 @@ public class Event extends Resource<EventDetails>
             setStartDate(obj.getStartDate());
             setEndDate(obj.getEndDate());
             setUrl(new String(obj.getUrl()), false);
-            setPlatform(obj.getPlatform());
+            setProvider(obj.getProvider());
         }
     }
 
@@ -517,19 +517,19 @@ public class Event extends Resource<EventDetails>
     }
 
     /**
-     * Returns the platform of the event.
+     * Returns the provider of the event.
      */
-    public String getPlatform()
+    public String getProvider()
     {
-        return getDetails().getPlatform();
+        return getDetails().getProvider();
     }
 
     /**
-     * Sets the platform of the event.
+     * Sets the provider of the event.
      */
-    public void setPlatform(String platform)
+    public void setProvider(String provider)
     {
-        getDetails().setPlatform(platform);
+        getDetails().setProvider(provider);
     }
 
     /**

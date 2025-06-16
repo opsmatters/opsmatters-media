@@ -23,70 +23,70 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.admin.EventPlatform;
+import com.opsmatters.media.model.admin.EventProvider;
 import com.opsmatters.media.db.dao.BaseDAO;
 
 /**
- * DAO that provides operations on the EVENT_PLATFORMS table in the database.
+ * DAO that provides operations on the EVENT_PROVIDERS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EventPlatformDAO extends BaseDAO
+public class EventProviderDAO extends BaseDAO
 {
-    private static final Logger logger = Logger.getLogger(EventPlatformDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(EventProviderDAO.class.getName());
 
     /**
-     * The query to use to select a platform from the EVENT_PLATFORMS table by id.
+     * The query to use to select a provider from the EVENT_PROVIDERS table by id.
      */
     private static final String GET_BY_ID_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, DOMAIN, CONFIG, STATUS, CREATED_BY "
-      + "FROM EVENT_PLATFORMS WHERE ID=?";
+      + "FROM EVENT_PROVIDERS WHERE ID=?";
 
     /**
-     * The query to use to insert a platform into the EVENT_PLATFORMS table.
+     * The query to use to insert a provider into the EVENT_PROVIDERS table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO EVENT_PLATFORMS"
+      "INSERT INTO EVENT_PROVIDERS"
       + "( ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, DOMAIN, CONFIG, STATUS, CREATED_BY )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update a platform in the EVENT_PLATFORMS table.
+     * The query to use to update a provider in the EVENT_PROVIDERS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE EVENT_PLATFORMS SET UPDATED_DATE=?, CODE=?, NAME=?, DOMAIN=?, CONFIG=?, STATUS=?, CREATED_BY=? "
+      "UPDATE EVENT_PROVIDERS SET UPDATED_DATE=?, CODE=?, NAME=?, DOMAIN=?, CONFIG=?, STATUS=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
-     * The query to use to select the platforms from the EVENT_PLATFORMS table.
+     * The query to use to select the providers from the EVENT_PROVIDERS table.
      */
     private static final String LIST_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, DOMAIN, CONFIG, STATUS, CREATED_BY "
-      + "FROM EVENT_PLATFORMS";
+      + "FROM EVENT_PROVIDERS";
 
     /**
-     * The query to use to get the count of platforms from the EVENT_PLATFORMS table.
+     * The query to use to get the count of providers from the EVENT_PROVIDERS table.
      */
     private static final String COUNT_SQL =  
-      "SELECT COUNT(*) FROM EVENT_PLATFORMS";
+      "SELECT COUNT(*) FROM EVENT_PROVIDERS";
 
     /**
-     * The query to use to delete a platform from the EVENT_PLATFORMS table.
+     * The query to use to delete a provider from the EVENT_PROVIDERS table.
      */
     private static final String DELETE_SQL =  
-      "DELETE FROM EVENT_PLATFORMS WHERE ID=?";
+      "DELETE FROM EVENT_PROVIDERS WHERE ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public EventPlatformDAO(AdminDAOFactory factory)
+    public EventProviderDAO(AdminDAOFactory factory)
     {
-        super(factory, "EVENT_PLATFORMS");
+        super(factory, "EVENT_PROVIDERS");
     }
 
     /**
-     * Defines the columns and indices for the EVENT_PLATFORMS table.
+     * Defines the columns and indices for the EVENT_PROVIDERS table.
      */
     @Override
     protected void defineTable()
@@ -100,17 +100,17 @@ public class EventPlatformDAO extends BaseDAO
         table.addColumn("CONFIG", Types.LONGVARCHAR, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
-        table.setPrimaryKey("EVENT_PLATFORMS_PK", new String[] {"ID"});
-        table.addIndex("EVENT_PLATFORMS_CODE_IDX", new String[] {"CODE"});
+        table.setPrimaryKey("EVENT_PROVIDERS_PK", new String[] {"ID"});
+        table.addIndex("EVENT_PROVIDERS_CODE_IDX", new String[] {"CODE"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns a platform from the EVENT_PLATFORMS table by id.
+     * Returns a provider from the EVENT_PROVIDERS table by id.
      */
-    public synchronized EventPlatform getById(String id) throws SQLException
+    public synchronized EventProvider getById(String id) throws SQLException
     {
-        EventPlatform ret = null;
+        EventProvider ret = null;
 
         if(!hasConnection())
             return ret;
@@ -129,17 +129,17 @@ public class EventPlatformDAO extends BaseDAO
             rs = getByIdStmt.executeQuery();
             while(rs.next())
             {
-                EventPlatform platform = new EventPlatform();
-                platform.setId(rs.getString(1));
-                platform.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                platform.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                platform.setCode(rs.getString(4));
-                platform.setName(rs.getString(5));
-                platform.setDomain(rs.getString(6));
-                platform.setConfig(rs.getString(7));
-                platform.setStatus(rs.getString(8));
-                platform.setCreatedBy(rs.getString(9));
-                ret = platform;
+                EventProvider provider = new EventProvider();
+                provider.setId(rs.getString(1));
+                provider.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                provider.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                provider.setCode(rs.getString(4));
+                provider.setName(rs.getString(5));
+                provider.setDomain(rs.getString(6));
+                provider.setConfig(rs.getString(7));
+                provider.setStatus(rs.getString(8));
+                provider.setCreatedBy(rs.getString(9));
+                ret = provider;
             }
         }
         finally
@@ -160,11 +160,11 @@ public class EventPlatformDAO extends BaseDAO
     }
 
     /**
-     * Stores the given platform in the EVENT_PLATFORMS table.
+     * Stores the given provider in the EVENT_PROVIDERS table.
      */
-    public synchronized void add(EventPlatform platform) throws SQLException
+    public synchronized void add(EventProvider provider) throws SQLException
     {
-        if(!hasConnection() || platform == null)
+        if(!hasConnection() || provider == null)
             return;
 
         if(insertStmt == null)
@@ -173,18 +173,18 @@ public class EventPlatformDAO extends BaseDAO
 
         try
         {
-            insertStmt.setString(1, platform.getId());
-            insertStmt.setTimestamp(2, new Timestamp(platform.getCreatedDateMillis()), UTC);
-            insertStmt.setTimestamp(3, new Timestamp(platform.getUpdatedDateMillis()), UTC);
-            insertStmt.setString(4, platform.getCode());
-            insertStmt.setString(5, platform.getName());
-            insertStmt.setString(6, platform.getDomain());
-            insertStmt.setString(7, platform.getConfig());
-            insertStmt.setString(8, platform.getStatus().name());
-            insertStmt.setString(9, platform.getCreatedBy());
+            insertStmt.setString(1, provider.getId());
+            insertStmt.setTimestamp(2, new Timestamp(provider.getCreatedDateMillis()), UTC);
+            insertStmt.setTimestamp(3, new Timestamp(provider.getUpdatedDateMillis()), UTC);
+            insertStmt.setString(4, provider.getCode());
+            insertStmt.setString(5, provider.getName());
+            insertStmt.setString(6, provider.getDomain());
+            insertStmt.setString(7, provider.getConfig());
+            insertStmt.setString(8, provider.getStatus().name());
+            insertStmt.setString(9, provider.getCreatedBy());
             insertStmt.executeUpdate();
 
-            logger.info(String.format("Created platform %s in EVENT_PLATFORMS", platform.getId()));
+            logger.info(String.format("Created provider %s in EVENT_PROVIDERS", provider.getId()));
         }
         catch(SQLException ex)
         {
@@ -195,43 +195,43 @@ public class EventPlatformDAO extends BaseDAO
                 insertStmt = null;
             }
 
-            // Unique constraint violated means that the platform already exists
+            // Unique constraint violated means that the provider already exists
             if(!getDriver().isConstraintViolation(ex))
                 throw ex;
         }
     }
 
     /**
-     * Updates the given platform in the EVENT_PLATFORMS table.
+     * Updates the given provider in the EVENT_PROVIDERS table.
      */
-    public synchronized void update(EventPlatform platform) throws SQLException
+    public synchronized void update(EventProvider provider) throws SQLException
     {
-        if(!hasConnection() || platform == null)
+        if(!hasConnection() || provider == null)
             return;
 
         if(updateStmt == null)
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
         clearParameters(updateStmt);
 
-        updateStmt.setTimestamp(1, new Timestamp(platform.getUpdatedDateMillis()), UTC);
-        updateStmt.setString(2, platform.getCode());
-        updateStmt.setString(3, platform.getName());
-        updateStmt.setString(4, platform.getDomain());
-        updateStmt.setString(5, platform.getConfig());
-        updateStmt.setString(6, platform.getStatus().name());
-        updateStmt.setString(7, platform.getCreatedBy());
-        updateStmt.setString(8, platform.getId());
+        updateStmt.setTimestamp(1, new Timestamp(provider.getUpdatedDateMillis()), UTC);
+        updateStmt.setString(2, provider.getCode());
+        updateStmt.setString(3, provider.getName());
+        updateStmt.setString(4, provider.getDomain());
+        updateStmt.setString(5, provider.getConfig());
+        updateStmt.setString(6, provider.getStatus().name());
+        updateStmt.setString(7, provider.getCreatedBy());
+        updateStmt.setString(8, provider.getId());
         updateStmt.executeUpdate();
 
-        logger.info(String.format("Updated platform %s in EVENT_PLATFORMS", platform.getId()));
+        logger.info(String.format("Updated provider %s in EVENT_PROVIDERS", provider.getId()));
     }
 
     /**
-     * Returns the platforms from the EVENT_PLATFORMS table.
+     * Returns the providers from the EVENT_PROVIDERS table.
      */
-    public synchronized List<EventPlatform> list() throws SQLException
+    public synchronized List<EventProvider> list() throws SQLException
     {
-        List<EventPlatform> ret = null;
+        List<EventProvider> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -247,20 +247,20 @@ public class EventPlatformDAO extends BaseDAO
         {
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
-            ret = new ArrayList<EventPlatform>();
+            ret = new ArrayList<EventProvider>();
             while(rs.next())
             {
-                EventPlatform platform = new EventPlatform();
-                platform.setId(rs.getString(1));
-                platform.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
-                platform.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
-                platform.setCode(rs.getString(4));
-                platform.setName(rs.getString(5));
-                platform.setDomain(rs.getString(6));
-                platform.setConfig(rs.getString(7));
-                platform.setStatus(rs.getString(8));
-                platform.setCreatedBy(rs.getString(9));
-                ret.add(platform);
+                EventProvider provider = new EventProvider();
+                provider.setId(rs.getString(1));
+                provider.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                provider.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                provider.setCode(rs.getString(4));
+                provider.setName(rs.getString(5));
+                provider.setDomain(rs.getString(6));
+                provider.setConfig(rs.getString(7));
+                provider.setStatus(rs.getString(8));
+                provider.setCreatedBy(rs.getString(9));
+                ret.add(provider);
             }
         }
         finally
@@ -281,7 +281,7 @@ public class EventPlatformDAO extends BaseDAO
     }
 
     /**
-     * Returns the count of platforms from the table.
+     * Returns the count of providers from the table.
      */
     public int count() throws SQLException
     {
@@ -299,21 +299,21 @@ public class EventPlatformDAO extends BaseDAO
     }
 
     /**
-     * Removes the given platform from the EVENT_PLATFORMS table.
+     * Removes the given provider from the EVENT_PROVIDERS table.
      */
-    public synchronized void delete(EventPlatform platform) throws SQLException
+    public synchronized void delete(EventProvider provider) throws SQLException
     {
-        if(!hasConnection() || platform == null)
+        if(!hasConnection() || provider == null)
             return;
 
         if(deleteStmt == null)
             deleteStmt = prepareStatement(getConnection(), DELETE_SQL);
         clearParameters(deleteStmt);
 
-        deleteStmt.setString(1, platform.getId());
+        deleteStmt.setString(1, provider.getId());
         deleteStmt.executeUpdate();
 
-        logger.info(String.format("Deleted platform %s in EVENT_PLATFORMS", platform.getId()));
+        logger.info(String.format("Deleted provider %s in EVENT_PROVIDERS", provider.getId()));
     }
 
     /**

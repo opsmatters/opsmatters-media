@@ -20,11 +20,11 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Represents the type of an image platform.
+ * Represents the type of an image provider.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ImagePlatformType
+public enum ImageProviderType
 {
     FREE("Free"),
     ATTRIBUTED("Attributed"),
@@ -37,7 +37,7 @@ public enum ImagePlatformType
      * Constructor that takes the type value.
      * @param value The value for the type
      */
-    ImagePlatformType(String value)
+    ImageProviderType(String value)
     {
         this.value = value;
     }
@@ -71,11 +71,11 @@ public enum ImagePlatformType
     }
 
     /**
-     * Returns a list of the platform types.
+     * Returns a list of the provider types.
      */
-    public static List<ImagePlatformType> toList()
+    public static List<ImageProviderType> toList()
     {
-        List<ImagePlatformType> ret = new ArrayList<ImagePlatformType>();
+        List<ImageProviderType> ret = new ArrayList<ImageProviderType>();
 
         ret.add(FREE);
         ret.add(ATTRIBUTED);

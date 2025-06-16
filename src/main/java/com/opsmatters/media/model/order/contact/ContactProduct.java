@@ -18,7 +18,7 @@ package com.opsmatters.media.model.order.contact;
 import java.time.Instant;
 import com.opsmatters.media.cache.order.product.Products;
 import com.opsmatters.media.cache.system.Sites;
-import com.opsmatters.media.model.ManagedEntity;
+import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.order.Currency;
 import com.opsmatters.media.model.order.product.Product;
@@ -29,7 +29,7 @@ import com.opsmatters.media.util.StringUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContactProduct extends ManagedEntity
+public class ContactProduct extends BaseEntity
 {
     private String contactId = "";
     private String productCode = "";

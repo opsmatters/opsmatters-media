@@ -34,7 +34,7 @@ public class EventDetails extends ResourceDetails
     private Instant startDate;
     private Instant endDate;
     private String timezone = "";
-    private String platform = "";
+    private String provider = "";
     private String location = "";
 
     /**
@@ -71,7 +71,7 @@ public class EventDetails extends ResourceDetails
             setStartDate(obj.getStartDate());
             setEndDate(obj.getEndDate());
             setTimeZone(obj.getTimeZone());
-            setPlatform(obj.getPlatform());
+            setProvider(obj.getProvider());
             setLocation(obj.getLocation());
         }
     }
@@ -269,18 +269,18 @@ public class EventDetails extends ResourceDetails
     }
 
     /**
-     * Returns the event platform.
+     * Returns the event provider.
      */
-    public String getPlatform()
+    public String getProvider()
     {
-        return platform;
+        return provider;
     }
 
     /**
-     * Sets the event platform.
+     * Sets the event provider.
      */
-    public void setPlatform(String platform)
+    public void setProvider(String provider)
     {
-        this.platform = platform;
+        this.provider = provider;
     }
 }

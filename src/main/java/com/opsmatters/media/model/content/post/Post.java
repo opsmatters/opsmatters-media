@@ -18,14 +18,12 @@ package com.opsmatters.media.model.content.post;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
-import com.opsmatters.media.cache.admin.ImagePlatforms;
+import com.opsmatters.media.cache.admin.ImageProviders;
 import com.opsmatters.media.cache.content.util.ContentImages;
 import com.opsmatters.media.crawler.parser.BodyParser;
+import com.opsmatters.media.model.admin.ImageProvider;
+import com.opsmatters.media.model.admin.ImageProviderType;
 import com.opsmatters.media.model.system.Site;
-import com.opsmatters.media.model.admin.ImagePlatform;
-import com.opsmatters.media.model.admin.ImagePlatformType;
-import com.opsmatters.media.model.organisation.Organisation;
-import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.Article;
 import com.opsmatters.media.model.content.Content;
@@ -34,6 +32,8 @@ import com.opsmatters.media.model.content.ContentSiteSettings;
 import com.opsmatters.media.model.content.Metatag;
 import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
+import com.opsmatters.media.model.organisation.Organisation;
+import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.SessionId;
 
@@ -673,9 +673,9 @@ public class Post extends Article<PostDetails>
     {
         if(!hasAttribution())
         {
-            ImagePlatform platform = ImagePlatforms.getByFilename(getImage());
-            if(platform != null && platform.getType() == ImagePlatformType.ATTRIBUTED)
-                setAttribution(platform.getAttribution());
+            ImageProvider provider = ImageProviders.getByFilename(getImage());
+            if(provider != null && provider.getType() == ImageProviderType.ATTRIBUTED)
+                setAttribution(provider.getAttribution());
         }
     }
 

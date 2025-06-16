@@ -19,7 +19,7 @@ import java.time.Instant;
 import org.apache.commons.text.StringSubstitutor;
 import com.opsmatters.media.cache.system.Sites;
 import com.opsmatters.media.cache.order.product.Products;
-import com.opsmatters.media.model.ManagedEntity;
+import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.order.contact.ContactProduct;
@@ -34,7 +34,7 @@ import static com.opsmatters.media.model.order.product.TextKey.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrderItem extends ManagedEntity
+public class OrderItem extends BaseEntity
 {
     private String orderId = "";
     private String productCode = "";

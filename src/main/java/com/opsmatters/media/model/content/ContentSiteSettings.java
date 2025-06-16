@@ -18,7 +18,7 @@ package com.opsmatters.media.model.content;
 import java.time.Instant;
 import java.util.List;
 import org.json.JSONObject;
-import com.opsmatters.media.model.ManagedEntity;
+import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.util.StringUtils;
@@ -30,7 +30,7 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentSiteSettings extends ManagedEntity
+public class ContentSiteSettings extends BaseEntity
 {
     private String siteId = "";
     private String code = "";

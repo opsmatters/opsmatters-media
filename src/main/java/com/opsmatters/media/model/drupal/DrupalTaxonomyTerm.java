@@ -15,14 +15,14 @@
  */
 package com.opsmatters.media.model.drupal;
 
-import com.opsmatters.media.model.ManagedEntity;
+import com.opsmatters.media.model.BaseEntity;
 
 /**
  * Class representing a drupal taxonomy term.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class DrupalTaxonomyTerm extends ManagedEntity
+public class DrupalTaxonomyTerm extends BaseEntity
 {
     private String name = "";
     private String type = "";

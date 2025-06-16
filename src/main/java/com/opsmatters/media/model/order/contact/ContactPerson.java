@@ -16,7 +16,7 @@
 package com.opsmatters.media.model.order.contact;
 
 import java.time.Instant;
-import com.opsmatters.media.model.ManagedEntity;
+import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.FormatUtils;
 
@@ -25,7 +25,7 @@ import com.opsmatters.media.util.FormatUtils;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContactPerson extends ManagedEntity
+public class ContactPerson extends BaseEntity
 {
     private String contactId = "";
     private String name = "";

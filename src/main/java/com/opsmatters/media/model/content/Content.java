@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
-import com.opsmatters.media.model.admin.ImagePlatform;
+import com.opsmatters.media.model.admin.ImageProvider;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.ContentSiteSettings;
@@ -572,12 +572,12 @@ public abstract class Content<D extends ContentDetails>
     }
 
     /**
-     * Adds the tag from the given platform to the image name.
+     * Adds the tag from the given provider to the image name.
      */
-    public void appendImageTag(ImagePlatform platform)
+    public void appendImageTag(ImageProvider provider)
     {
         String filename = getImage();
-        String tag = platform.getTag();
+        String tag = provider.getTag();
         if(filename != null && filename.indexOf(tag) == -1)
         {
             String name = FileUtils.getName(filename);

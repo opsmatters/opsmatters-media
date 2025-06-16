@@ -15,37 +15,39 @@
  */
 package com.opsmatters.media.model.admin;
 
+import com.opsmatters.media.model.ExternalProvider;
+
 /**
- * Class that represents an external image platform.
+ * Class that represents an external image provider.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ImagePlatform extends ExternalPlatform
+public class ImageProvider extends ExternalProvider
 {
     private String tag = "";
-    private ImagePlatformType type;
+    private ImageProviderType type;
     private String attribution = "";
 
     /**
      * Default constructor.
      */
-    public ImagePlatform()
+    public ImageProvider()
     {
     }
 
     /**
      * Constructor that takes a name.
      */
-    public ImagePlatform(String name)
+    public ImageProvider(String name)
     {
         super(name);
-        setType(ImagePlatformType.FREE);
+        setType(ImageProviderType.FREE);
     }
 
     /**
      * Copy constructor.
      */
-    public ImagePlatform(ImagePlatform obj)
+    public ImageProvider(ImageProvider obj)
     {
         copyAttributes(obj);
     }
@@ -53,7 +55,7 @@ public class ImagePlatform extends ExternalPlatform
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ImagePlatform obj)
+    public void copyAttributes(ImageProvider obj)
     {
         if(obj != null)
         {
@@ -65,7 +67,7 @@ public class ImagePlatform extends ExternalPlatform
     }
 
     /**
-     * Returns the tag for the platform.
+     * Returns the tag for the provider.
      */
     public String getTag()
     {
@@ -73,7 +75,7 @@ public class ImagePlatform extends ExternalPlatform
     }
 
     /**
-     * Sets the tag for the platform.
+     * Sets the tag for the provider.
      */
     public void setTag(String tag)
     {
@@ -81,7 +83,7 @@ public class ImagePlatform extends ExternalPlatform
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given the tag for the platform has been set.
+     * Returns <CODE>true</CODE> if the given the tag for the provider has been set.
      */
     public boolean hasTag()
     {
@@ -89,7 +91,7 @@ public class ImagePlatform extends ExternalPlatform
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given filename contains the platform tag.
+     * Returns <CODE>true</CODE> if the given filename contains the provider tag.
      */
     public boolean matchesFilename(String filename)
     {
@@ -97,31 +99,31 @@ public class ImagePlatform extends ExternalPlatform
     }
 
     /**
-     * Returns the platform type.
+     * Returns the provider type.
      */
-    public ImagePlatformType getType()
+    public ImageProviderType getType()
     {
         return type;
     }
 
     /**
-     * Sets the platform type.
+     * Sets the provider type.
      */
-    public void setType(ImagePlatformType type)
+    public void setType(ImageProviderType type)
     {
         this.type = type;
     }
 
     /**
-     * Sets the platform type.
+     * Sets the provider type.
      */
     public void setType(String type)
     {
-        setType(ImagePlatformType.valueOf(type));
+        setType(ImageProviderType.valueOf(type));
     }
 
     /**
-     * Returns the attribution for the platform.
+     * Returns the attribution for the provider.
      */
     public String getAttribution()
     {
@@ -129,7 +131,7 @@ public class ImagePlatform extends ExternalPlatform
     }
 
     /**
-     * Sets the attribution for the platform.
+     * Sets the attribution for the provider.
      */
     public void setAttribution(String attribution)
     {

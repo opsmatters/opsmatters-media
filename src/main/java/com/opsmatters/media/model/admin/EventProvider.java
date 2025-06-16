@@ -17,14 +17,15 @@ package com.opsmatters.media.model.admin;
 
 import java.util.Map;
 import org.yaml.snakeyaml.Yaml;
+import com.opsmatters.media.model.ExternalProvider;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 
 /**
- * Class that represents an external event platform.
+ * Class that represents an external event provider.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EventPlatform extends ExternalPlatform
+public class EventProvider extends ExternalProvider
 {
     private String domain = "";
     private String config = "";
@@ -33,14 +34,14 @@ public class EventPlatform extends ExternalPlatform
     /**
      * Default constructor.
      */
-    public EventPlatform()
+    public EventProvider()
     {
     }
 
     /**
      * Constructor that takes a name.
      */
-    public EventPlatform(String name)
+    public EventProvider(String name)
     {
         super(name);
     }
@@ -48,7 +49,7 @@ public class EventPlatform extends ExternalPlatform
     /**
      * Copy constructor.
      */
-    public EventPlatform(EventPlatform obj)
+    public EventProvider(EventProvider obj)
     {
         copyAttributes(obj);
     }
@@ -56,7 +57,7 @@ public class EventPlatform extends ExternalPlatform
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(EventPlatform obj)
+    public void copyAttributes(EventProvider obj)
     {
         if(obj != null)
         {
@@ -67,7 +68,7 @@ public class EventPlatform extends ExternalPlatform
     }
 
     /**
-     * Returns the domain for the platform.
+     * Returns the domain for the provider.
      */
     public String getDomain()
     {
@@ -75,7 +76,7 @@ public class EventPlatform extends ExternalPlatform
     }
 
     /**
-     * Sets the domain for the platform.
+     * Sets the domain for the provider.
      */
     public void setDomain(String domain)
     {
@@ -83,7 +84,7 @@ public class EventPlatform extends ExternalPlatform
     }
 
     /**
-     * Returns the config for the platform.
+     * Returns the config for the provider.
      */
     public String getConfig()
     {
@@ -91,7 +92,7 @@ public class EventPlatform extends ExternalPlatform
     }
 
     /**
-     * Sets the config for the platform.
+     * Sets the config for the provider.
      */
     public void setConfig(String config)
     {
@@ -101,7 +102,7 @@ public class EventPlatform extends ExternalPlatform
     }
 
     /**
-     * Returns <CODE>true</CODE> if the config for the platform has been set.
+     * Returns <CODE>true</CODE> if the config for the provider has been set.
      */
     public boolean hasConfig()
     {
@@ -109,7 +110,7 @@ public class EventPlatform extends ExternalPlatform
     }
 
     /**
-     * Returns the crawler page for the platform.
+     * Returns the crawler page for the provider.
      */
     public CrawlerWebPage getCrawlerPage()
     {
@@ -117,7 +118,7 @@ public class EventPlatform extends ExternalPlatform
     }
 
     /**
-     * Sets the crawler page for the platform.
+     * Sets the crawler page for the provider.
      */
     private void setCrawlerPage()
     {
@@ -132,7 +133,7 @@ public class EventPlatform extends ExternalPlatform
     }
 
     /**
-     * Returns <CODE>true</CODE> if the crawler page for the platform have been configured.
+     * Returns <CODE>true</CODE> if the crawler page for the provider have been configured.
      */
     public boolean hasCrawlerPage()
     {

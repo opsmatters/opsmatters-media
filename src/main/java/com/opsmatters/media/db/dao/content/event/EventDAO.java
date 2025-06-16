@@ -48,7 +48,7 @@ public class EventDAO extends ContentDAO<Event>
      */
     private static final String INSERT_SQL =  
       "INSERT INTO EVENTS"
-      + "( UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, START_DATE, TITLE, URL, EVENT_TYPE, TIMEZONE, PLATFORM, PUBLISHED, PROMOTE, "
+      + "( UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, START_DATE, TITLE, URL, EVENT_TYPE, TIMEZONE, PROVIDER, PUBLISHED, PROMOTE, "
       +   "STATUS, CREATED_BY, ATTRIBUTES, SESSION_ID )"
       + "VALUES"
       + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
@@ -57,7 +57,7 @@ public class EventDAO extends ContentDAO<Event>
      * The query to use to update a event in the EVENTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE EVENTS SET UUID=?, PUBLISHED_DATE=?, START_DATE=?, TITLE=?, URL=?, EVENT_TYPE=?, TIMEZONE=?, PLATFORM=?, PUBLISHED=?, PROMOTE=?, STATUS=?, CREATED_BY=?, ATTRIBUTES=? "
+      "UPDATE EVENTS SET UUID=?, PUBLISHED_DATE=?, START_DATE=?, TITLE=?, URL=?, EVENT_TYPE=?, TIMEZONE=?, PROVIDER=?, PUBLISHED=?, PROMOTE=?, STATUS=?, CREATED_BY=?, ATTRIBUTES=? "
       + "WHERE SITE_ID=? AND CODE=? AND ID=?";
 
     /**
@@ -98,7 +98,7 @@ public class EventDAO extends ContentDAO<Event>
         table.addColumn("URL", Types.VARCHAR, 512, true);
         table.addColumn("EVENT_TYPE", Types.VARCHAR, 30, true);
         table.addColumn("TIMEZONE", Types.VARCHAR, 8, true);
-        table.addColumn("PLATFORM", Types.VARCHAR, 15, false);
+        table.addColumn("PROVIDER", Types.VARCHAR, 15, false);
         table.addColumn("PUBLISHED", Types.BOOLEAN, true);
         table.addColumn("PROMOTE", Types.BOOLEAN, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
@@ -201,7 +201,7 @@ public class EventDAO extends ContentDAO<Event>
             insertStmt.setString(8, content.getUrl());
             insertStmt.setString(9, content.getEventType());
             insertStmt.setString(10, content.getTimeZone());
-            insertStmt.setString(11, content.getPlatform());
+            insertStmt.setString(11, content.getProvider());
             insertStmt.setBoolean(12, content.isPublished());
             insertStmt.setBoolean(13, content.isPromoted());
             insertStmt.setString(14, content.getStatus().name());
@@ -261,7 +261,7 @@ public class EventDAO extends ContentDAO<Event>
             updateStmt.setString(5, content.getUrl());
             updateStmt.setString(6, content.getEventType());
             updateStmt.setString(7, content.getTimeZone());
-            updateStmt.setString(8, content.getPlatform());
+            updateStmt.setString(8, content.getProvider());
             updateStmt.setBoolean(9, content.isPublished());
             updateStmt.setBoolean(10, content.isPromoted());
             updateStmt.setString(11, content.getStatus().name());

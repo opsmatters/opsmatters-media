@@ -28,6 +28,7 @@ import com.opsmatters.media.util.TimeUtils;
  */
 public abstract class BaseEntity implements java.io.Serializable
 {
+    private String id = "";
     private Instant createdDate;
     private Instant updatedDate;
     private String createdBy = "";
@@ -39,10 +40,43 @@ public abstract class BaseEntity implements java.io.Serializable
     {
         if(obj != null)
         {
+            setId(obj.getId());
             setCreatedDate(obj.getCreatedDate());
             setUpdatedDate(obj.getUpdatedDate());
             setCreatedBy(obj.getCreatedBy());
         }
+    }
+
+    /**
+     * Returns the entity id.
+     */
+    public String toString()
+    {
+        return getId();
+    }
+
+    /**
+     * Returns the entity id.
+     */
+    public String getId()
+    {
+        return id;
+    }
+
+    /**
+     * Sets the entity id.
+     */
+    public void setId(String id)
+    {
+        this.id = id;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the entity id has been set.
+     */
+    public boolean hasId()
+    {
+        return id != null && id.length() > 0;
     }
 
     /**

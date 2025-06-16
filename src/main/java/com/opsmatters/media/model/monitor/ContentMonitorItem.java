@@ -16,7 +16,7 @@
 package com.opsmatters.media.model.monitor;
 
 import java.time.Instant;
-import com.opsmatters.media.model.ManagedEntityItem;
+import com.opsmatters.media.model.BaseEntityItem;
 import com.opsmatters.media.model.content.ContentType;
 
 /**
@@ -24,7 +24,7 @@ import com.opsmatters.media.model.content.ContentType;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentMonitorItem extends ManagedEntityItem<ContentMonitor>
+public class ContentMonitorItem extends BaseEntityItem<ContentMonitor>
 {
     private ContentMonitor content = new ContentMonitor();
 
