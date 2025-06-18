@@ -19,13 +19,15 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import com.opsmatters.media.cache.admin.VideoProviders;
 import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.cache.organisation.OrganisationSites;
+import com.opsmatters.media.model.admin.VideoProviderId;
+import com.opsmatters.media.model.admin.VideoProvider;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.video.VideoConfig;
-import com.opsmatters.media.model.content.video.VideoProvider;
 import com.opsmatters.media.model.content.post.PostConfig;
 import com.opsmatters.media.model.content.post.RoundupPostConfig;
 import com.opsmatters.media.model.content.project.ProjectConfig;
@@ -37,7 +39,7 @@ import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
 import com.opsmatters.media.util.StringUtils;
 
-import static com.opsmatters.media.model.content.video.VideoProvider.*;
+import static com.opsmatters.media.model.admin.VideoProviderId.*;
 
 /**
  * Class that represents the set of field used to generate a config file.
@@ -56,7 +58,7 @@ public class ConfigGeneratorFields implements java.io.Serializable
     private String features = "";
 
     Map<ContentType,Boolean> types = new HashMap<ContentType,Boolean>();
-    Map<VideoProvider,Boolean> videos = new HashMap<VideoProvider,Boolean>();
+    Map<VideoProviderId,Boolean> videos = new HashMap<VideoProviderId,Boolean>();
 
     /**
      * Default constructor.
@@ -126,14 +128,16 @@ public class ConfigGeneratorFields implements java.io.Serializable
                 String youtube = listing.getYouTube();
                 if(youtube != null && youtube.length() > 0)
                 {
-                    setChannelId(YOUTUBE.getChannelId(youtube));
+                    VideoProvider provider = VideoProviders.get(YOUTUBE);
+                    setChannelId(provider.getChannelId(youtube));
                     setYoutube(true);
                 }
 
                 String vimeo = listing.getVimeo();
                 if(vimeo != null && vimeo.length() > 0)
                 {
-                    setChannelId(VIMEO.getChannelId(vimeo));
+                    VideoProvider provider = VideoProviders.get(VIMEO);
+                    setChannelId(provider.getChannelId(vimeo));
                     setVimeo(true);
                 }
             }
@@ -180,9 +184,9 @@ public class ConfigGeneratorFields implements java.io.Serializable
                 channelId = channel.getChannelId();
                 userId = channel.getUserId();
 
-                setYoutube(videos.hasChannel(YOUTUBE.value()));
-                setVimeo(videos.hasChannel(VIMEO.value()));
-                setWistia(videos.hasChannel(WISTIA.value()));
+                setYoutube(videos.hasChannel(VideoProviders.get(YOUTUBE).getName()));
+                setVimeo(videos.hasChannel(VideoProviders.get(VIMEO).getName()));
+                setWistia(videos.hasChannel(VideoProviders.get(WISTIA).getName()));
             }
         }
         else // Adding videos to existing config
@@ -597,28 +601,28 @@ public class ConfigGeneratorFields implements java.io.Serializable
     /**
      * Returns the list of video providers.
      */
-    public List<VideoProvider> getVideoProviders()
+    public List<VideoProviderId> getVideoProviders()
     {
-        return new ArrayList<VideoProvider>(videos.keySet());
+        return new ArrayList<VideoProviderId>(videos.keySet());
     }
 
     /**
      * Returns <CODE>true</CODE> if the given video provider is enabled.
      */
-    public Boolean hasProvider(VideoProvider provider)
+    public Boolean hasProvider(VideoProviderId providerId)
     {
-        return videos.containsKey(provider);
+        return videos.containsKey(providerId);
     }
 
     /**
      * Set to <CODE>true</CODE> if the given video provider is enabled.
      */
-    private void setProvider(boolean enabled, VideoProvider provider)
+    private void setProvider(boolean enabled, VideoProviderId providerId)
     {
         if(enabled)
-            videos.put(provider, Boolean.TRUE);
+            videos.put(providerId, Boolean.TRUE);
         else
-            videos.remove(provider);
+            videos.remove(providerId);
     }
 
     /**

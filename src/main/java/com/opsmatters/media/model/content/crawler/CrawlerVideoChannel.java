@@ -16,7 +16,8 @@
 package com.opsmatters.media.model.content.crawler;
 
 import java.util.Map;
-import com.opsmatters.media.model.content.video.VideoProvider;
+import com.opsmatters.media.cache.admin.VideoProviders;
+import com.opsmatters.media.model.admin.VideoProvider;
 import com.opsmatters.media.model.content.crawler.field.Fields;
 import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.util.Formats;
@@ -116,7 +117,7 @@ public class CrawlerVideoChannel extends CrawlerTarget
      */
     public VideoProvider getVideoProvider()
     {
-        return VideoProvider.fromTag(getProvider());
+        return VideoProviders.getByTag(getProvider());
     }
 
     /**
@@ -125,7 +126,10 @@ public class CrawlerVideoChannel extends CrawlerTarget
     public String getChannelUrl()
     {
         VideoProvider provider = getVideoProvider();
-        return provider != null ? provider.url()+String.format(provider.channelUrl(), channelId) : null;
+        String ret = null;
+        if(provider != null)
+            ret = provider.getUrl()+String.format(provider.getChannelUrl(), channelId);
+        return ret;
     }
 
     /**

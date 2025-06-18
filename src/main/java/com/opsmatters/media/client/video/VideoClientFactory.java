@@ -18,7 +18,8 @@ package com.opsmatters.media.client.video;
 
 import java.io.IOException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.content.video.VideoProvider;
+import com.opsmatters.media.model.admin.VideoProviderId;
+import com.opsmatters.media.model.admin.VideoProvider;
 
 /**
  * Factory class to create a client for a video provider.
@@ -39,9 +40,9 @@ public class VideoClientFactory
     /**
      * Returns a client for the given provider.
      */
-    public static VideoClient newClient(VideoProvider provider) throws IOException
+    public static VideoClient newClient(VideoProviderId providerId) throws IOException
     {
-        switch(provider)
+        switch(providerId)
         {
             case YOUTUBE:
                 return YouTubeClient.newClient();
@@ -51,6 +52,14 @@ public class VideoClientFactory
                 return WistiaClient.newClient();
         }
 
-        throw new IllegalArgumentException("Video provider not found: "+provider);
+        throw new IllegalArgumentException("Video provider id not found: "+providerId);
+    }
+
+    /**
+     * Returns a client for the given provider.
+     */
+    public static VideoClient newClient(VideoProvider provider) throws IOException
+    {
+        return newClient(provider.getProviderId());
     }
 }

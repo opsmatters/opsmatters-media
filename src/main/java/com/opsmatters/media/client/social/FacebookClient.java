@@ -30,10 +30,10 @@ import facebook4j.Post;
 import facebook4j.PostUpdate;
 import facebook4j.ResponseList;
 import facebook4j.auth.AccessToken;
-import com.opsmatters.media.client.Client;
-import com.opsmatters.media.model.social.SocialProvider;
+import com.opsmatters.media.model.admin.SocialProviderId;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.ChannelPost;
+import com.opsmatters.media.client.Client;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -81,9 +81,9 @@ public class FacebookClient extends Client implements SocialClient
     /**
      * Returns the provider for this client.
      */
-    public SocialProvider getProvider()
+    public SocialProviderId getProviderId()
     {
-        return SocialProvider.FACEBOOK;
+        return SocialProviderId.FACEBOOK;
     }
 
     /**

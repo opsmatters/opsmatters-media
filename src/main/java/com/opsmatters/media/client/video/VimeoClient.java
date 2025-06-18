@@ -28,7 +28,7 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.model.content.video.VideoProvider;
+import com.opsmatters.media.model.admin.VideoProviderId;
 import com.opsmatters.media.util.FormatUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;
@@ -67,9 +67,9 @@ public class VimeoClient extends Client implements VideoClient
     /**
      * Returns the provider for this client.
      */
-    public VideoProvider getProvider()
+    public VideoProviderId getProviderId()
     {
-        return VideoProvider.VIMEO;
+        return VideoProviderId.VIMEO;
     }
 
     /**
@@ -161,7 +161,7 @@ public class VimeoClient extends Client implements VideoClient
                 ret.put(DURATION.value(), item.optLong("duration"));
                 ret.put(CHANNEL_ID.value(), link.substring(link.lastIndexOf("/")+1));
                 ret.put(CHANNEL_TITLE.value(), user.optString("name"));
-                ret.put(PROVIDER.value(), VideoProvider.VIMEO.code());
+                ret.put(PROVIDER.value(), getProviderId().code());
             }
             else
             {
@@ -215,7 +215,7 @@ public class VimeoClient extends Client implements VideoClient
                     video.put(VIDEO_ID.value(), uri.substring(uri.lastIndexOf("/")+1));
                     video.put(TITLE.value(), item.optString("name"));
                     video.put(PUBLISHED_DATE.value(), item.optString("created_time"));
-                    video.put(PROVIDER.value(), VideoProvider.VIMEO.code());
+                    video.put(PROVIDER.value(), getProviderId().code());
 
                     list.add(video);
                 }

@@ -33,7 +33,7 @@ import org.json.JSONArray;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
-import com.opsmatters.media.model.social.SocialProvider;
+import com.opsmatters.media.model.admin.SocialProviderId;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.ChannelPost;
 import com.opsmatters.media.client.ApiClient;
@@ -96,9 +96,9 @@ public class BlueskyClient extends ApiClient implements SocialClient
     /**
      * Returns the provider for this client.
      */
-    public SocialProvider getProvider()
+    public SocialProviderId getProviderId()
     {
-        return SocialProvider.BLUESKY;
+        return SocialProviderId.BLUESKY;
     }
 
     /**

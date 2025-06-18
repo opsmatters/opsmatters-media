@@ -15,8 +15,6 @@
  */
 package com.opsmatters.media.model.admin;
 
-import com.opsmatters.media.model.ExternalProvider;
-
 /**
  * Class that represents an external image provider.
  * 

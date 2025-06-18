@@ -26,7 +26,7 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.model.content.video.VideoProvider;
+import com.opsmatters.media.model.admin.VideoProviderId;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.wistia.Wistia;
 import com.opsmatters.wistia.WistiaResponse;
@@ -65,9 +65,9 @@ public class WistiaClient extends Client implements VideoClient
     /**
      * Returns the provider for this client.
      */
-    public VideoProvider getProvider()
+    public VideoProviderId getProviderId()
     {
-        return VideoProvider.WISTIA;
+        return VideoProviderId.WISTIA;
     }
 
     /**
@@ -157,7 +157,7 @@ public class WistiaClient extends Client implements VideoClient
                 ret.put(DURATION.value(), item.optLong("duration"));
                 ret.put(CHANNEL_ID.value(), project.optString("hashed_id"));
                 ret.put(CHANNEL_TITLE.value(), project.optString("name"));
-                ret.put(PROVIDER.value(), VideoProvider.WISTIA.code());
+                ret.put(PROVIDER.value(), getProviderId().code());
             }
             else
             {
@@ -210,7 +210,7 @@ public class WistiaClient extends Client implements VideoClient
                     video.put(VIDEO_ID.value(), item.optString("hashed_id"));
                     video.put(TITLE.value(), item.optString("name"));
                     video.put(PUBLISHED_DATE.value(), item.optString("created"));
-                    video.put(PROVIDER.value(), VideoProvider.WISTIA.code());
+                    video.put(PROVIDER.value(), getProviderId().code());
 
                     list.add(video);
                 }

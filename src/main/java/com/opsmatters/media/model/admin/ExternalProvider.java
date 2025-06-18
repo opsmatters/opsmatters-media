@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model;
+package com.opsmatters.media.model.admin;
 
 import java.time.Instant;
+import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -73,7 +74,7 @@ public abstract class ExternalProvider extends BaseEntity
      */
     public String toString()
     {
-        return getCode();
+        return getName();
     }
 
     /**
@@ -90,6 +91,14 @@ public abstract class ExternalProvider extends BaseEntity
     public void setCode(String code)
     {
         this.code = code;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the code for the provider has been set.
+     */
+    public boolean hasCode()
+    {
+        return getCode() != null && getCode().length() > 0;
     }
 
     /**

@@ -15,6 +15,9 @@
  */
 package com.opsmatters.media.model.content.video;
 
+import com.opsmatters.media.cache.admin.VideoProviders;
+import com.opsmatters.media.model.admin.VideoProviderId;
+import com.opsmatters.media.model.admin.VideoProvider;
 import com.opsmatters.media.model.feed.video.YouTubeEntry;
 import com.opsmatters.media.model.content.ArticleDetails;
 import com.opsmatters.media.util.Formats;
@@ -28,7 +31,7 @@ import com.opsmatters.media.util.TimeUtils;
 public class VideoDetails extends ArticleDetails
 {
     private String videoId = "";
-    private VideoProvider provider;
+    private VideoProviderId providerId;
     private long duration = -1L;
     private String description = "";
     private String channelId = "";
@@ -66,7 +69,7 @@ public class VideoDetails extends ArticleDetails
         {
             super.copyAttributes(obj);
             setVideoId(obj.getVideoId());
-            setProvider(obj.getProvider());
+            setProviderId(obj.getProviderId());
             setDuration(obj.getDuration());
             setDescription(obj.getDescription());
             setChannelId(obj.getChannelId());
@@ -80,7 +83,7 @@ public class VideoDetails extends ArticleDetails
     public VideoDetails(YouTubeEntry entry)
     {
         setVideoId(entry.getVideoId());
-        setProvider(VideoProvider.YOUTUBE);
+        setProviderId(VideoProviderId.YOUTUBE);
         setTitle(entry.getTitle());
         if(entry.getUpdatedDate() != null)
             setPublishedDate(entry.getUpdatedDate());
@@ -132,25 +135,33 @@ public class VideoDetails extends ArticleDetails
     /**
      * Returns the video provider.
      */
+    public VideoProviderId getProviderId()
+    {
+        return providerId;
+    }
+
+    /**
+     * Sets the video provider.
+     */
+    public void setProviderId(VideoProviderId providerId)
+    {
+        this.providerId = providerId;
+    }
+
+    /**
+     * Sets the video provider.
+     */
+    public void setProviderId(String providerId)
+    {
+        setProviderId(VideoProviderId.fromCode(providerId));
+    }
+
+    /**
+     * Returns the video provider for this configuration.
+     */
     public VideoProvider getProvider()
     {
-        return provider;
-    }
-
-    /**
-     * Sets the video provider.
-     */
-    public void setProvider(VideoProvider provider)
-    {
-        this.provider = provider;
-    }
-
-    /**
-     * Sets the video provider.
-     */
-    public void setProvider(String provider)
-    {
-        setProvider(VideoProvider.fromCode(provider));
+        return VideoProviders.get(providerId);
     }
 
     /**
@@ -158,7 +169,11 @@ public class VideoDetails extends ArticleDetails
      */
     public String getVideoUrl()
     {
-        return provider != null ? provider.url()+String.format(provider.videoUrl(), videoId) : null;
+        VideoProvider provider = getProvider();
+        String ret = null;
+        if(provider != null)
+            ret = provider.getUrl()+String.format(provider.getVideoUrl(), videoId);
+        return ret;
     }
 
     /**
@@ -166,7 +181,11 @@ public class VideoDetails extends ArticleDetails
      */
     public String getEmbed(int width, int height, boolean autoplay)
     {
-        return provider != null ? String.format(provider.embed(), videoId, autoplay ? "1" : "0", width, height) : "";
+        VideoProvider provider = getProvider();
+        String ret = "";
+        if(provider != null)
+            ret = String.format(provider.getEmbed(), videoId, autoplay ? "1" : "0", width, height);
+        return ret;
     }
 
     /**
@@ -255,7 +274,11 @@ public class VideoDetails extends ArticleDetails
      */
     public String getChannelUrl()
     {
-        return getProvider() != null ? provider.url()+String.format(getProvider().channelUrl(), channelId) : null;
+        VideoProvider provider = getProvider();
+        String ret = null;
+        if(provider != null)
+            ret = provider.getUrl()+String.format(provider.getChannelUrl(), channelId);
+        return ret;
     }
 
     /**

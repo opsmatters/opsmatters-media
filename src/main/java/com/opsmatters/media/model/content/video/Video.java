@@ -20,7 +20,10 @@ import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.crawler.parser.BodyParser;
+import com.opsmatters.media.cache.admin.VideoProviders;
 import com.opsmatters.media.model.system.Site;
+import com.opsmatters.media.model.admin.VideoProviderId;
+import com.opsmatters.media.model.admin.VideoProvider;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.FieldMap;
@@ -113,7 +116,7 @@ public class Video extends Article<VideoDetails>
         String promote = values[16];
         String newsletter = values[17];
 
-        VideoProvider provider = VideoProvider.fromVideoUrl(videoUrl);
+        VideoProvider provider = VideoProviders.matchesTag(videoUrl);
 
         setCode(code);
         setId(Integer.parseInt(id.substring(id.lastIndexOf("-")+1)));
@@ -125,7 +128,7 @@ public class Video extends Article<VideoDetails>
         if(provider != null)
             setVideoId(provider.getVideoId(videoUrl));
         setVideoType(videoType);
-        setProvider(provider);
+        setProviderId(provider.getProviderId());
         setChannelTitle(channelTitle);
         if(provider != null)
             setChannelId(provider.getChannelId(channelUrl));
@@ -147,7 +150,7 @@ public class Video extends Article<VideoDetails>
             ret.putOpt(DESCRIPTION.value(), EmojiParser.parseToAliases(getDescription()));
         ret.putOpt(VIDEO_ID.value(), getVideoId());
         ret.putOpt(VIDEO_TYPE.value(), getVideoType());
-        ret.putOpt(PROVIDER.value(), getProvider().code());
+        ret.putOpt(PROVIDER.value(), getProviderId().code());
         if(getDuration() > 0L)
             ret.putOpt(DURATION.value(), getDuration());
         ret.putOpt(CHANNEL_TITLE.value(), getChannelTitle());
@@ -167,7 +170,7 @@ public class Video extends Article<VideoDetails>
         setDescription(EmojiParser.parseToUnicode(obj.optString(DESCRIPTION.value())));
         setVideoId(obj.optString(VIDEO_ID.value()));
         setVideoType(obj.optString(VIDEO_TYPE.value()));
-        setProvider(VideoProvider.fromCode(obj.optString(PROVIDER.value())));
+        setProviderId(VideoProviderId.fromCode(obj.optString(PROVIDER.value())));
         if(obj.has(DURATION.value()))
             setDuration(obj.optLong(DURATION.value()));
         setChannelTitle(obj.optString(CHANNEL_TITLE.value()));
@@ -284,7 +287,7 @@ public class Video extends Article<VideoDetails>
         if(obj != null)
         {
             setVideoId(new String(obj.getVideoId()));
-            setProvider(obj.getProvider());
+            setProviderId(obj.getProviderId());
             setDuration(obj.getDuration());
         }
     }
@@ -475,17 +478,17 @@ public class Video extends Article<VideoDetails>
     /**
      * Returns the provider of the video.
      */
-    public VideoProvider getProvider()
+    public VideoProviderId getProviderId()
     {
-        return getDetails().getProvider();
+        return getDetails().getProviderId();
     }
 
     /**
      * Sets the provider of the video.
      */
-    public void setProvider(VideoProvider provider)
+    public void setProviderId(VideoProviderId providerId)
     {
-        getDetails().setProvider(provider);
+        getDetails().setProviderId(providerId);
     }
 
     /**

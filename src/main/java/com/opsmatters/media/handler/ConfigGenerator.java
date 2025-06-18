@@ -29,8 +29,10 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StringSubstitutor;
+import com.opsmatters.media.cache.admin.VideoProviders;
+import com.opsmatters.media.model.admin.VideoProviderId;
+import com.opsmatters.media.model.admin.VideoProvider;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.content.video.VideoProvider;
 import com.opsmatters.media.model.content.project.RepositoryBranch;
 import com.opsmatters.media.model.content.util.ConfigGeneratorFields;
 
@@ -45,7 +47,7 @@ public class ConfigGenerator
 
     private static boolean initialised = false;
     private static Map<ContentType,String> contentTypeTemplates = new HashMap<ContentType,String>();
-    private static Map<VideoProvider,String> videoTemplates = new HashMap<VideoProvider,String>();
+    private static Map<VideoProviderId,String> videoTemplates = new HashMap<VideoProviderId,String>();
 
     private ConfigGeneratorFields fields;
     private Map<String, Object> properties = new HashMap<String, Object>();
@@ -86,9 +88,11 @@ public class ConfigGenerator
                 contentTypeTemplates.put(type, getContents(String.format("%s.yml", type.tag())));
         }
 
-        for(VideoProvider provider : VideoProvider.toList())
+        for(VideoProviderId providerId : VideoProviderId.toList())
         {
-            videoTemplates.put(provider, getContents(String.format("videos-%s.yml", provider.tag())));
+            VideoProvider provider = VideoProviders.get(providerId);
+            if(provider != null)
+                videoTemplates.put(providerId, getContents(String.format("videos-%s.yml", provider.getTag())));
         }
 
         initialised = true;
@@ -166,25 +170,25 @@ public class ConfigGenerator
                 if(type == ContentType.VIDEO)
                 {
                     // Go through the existing sections and map to providers
-                    Map<VideoProvider,String> providers = new HashMap<VideoProvider,String>();
+                    Map<VideoProviderId,String> providers = new HashMap<VideoProviderId,String>();
                     if(videos.size() > 0)
                     {
                         for(Map.Entry<String,String> entry : videos.entrySet())
                         {
-                            VideoProvider provider = VideoProvider.fromValue(entry.getKey());
+                            VideoProvider provider = VideoProviders.getByName(entry.getKey());
                             if(provider != null)
-                                providers.put(provider, entry.getKey());
+                                providers.put(provider.getProviderId(), entry.getKey());
                         }
                     }
 
                     // Output any other providers that were requested but don't exist yet
-                    for(VideoProvider provider : VideoProvider.toList())
+                    for(VideoProviderId providerId : VideoProviderId.toList())
                     {
-                        if(fields.getVideoProviders().contains(provider)
-                            && !providers.containsKey(provider))
+                        if(fields.getVideoProviders().contains(providerId)
+                            && !providers.containsKey(providerId))
                         {
                             buff.append("\r\n");
-                            buff.append(videoTemplates.get(provider));
+                            buff.append(videoTemplates.get(providerId));
                         }
                     }
                 }

@@ -18,8 +18,11 @@ package com.opsmatters.media.model.social;
 import java.time.Instant;
 import java.util.List;
 import java.util.ArrayList;
+import com.opsmatters.media.cache.admin.SocialProviders;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.system.Site;
+import com.opsmatters.media.model.admin.SocialProviderId;
+import com.opsmatters.media.model.admin.SocialProvider;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.StringUtils;
 
@@ -32,7 +35,7 @@ public class SocialChannel extends BaseEntity
 {
     private String code = "";
     private String name = "";
-    private SocialProvider provider;
+    private SocialProviderId providerId;
     private String handle = "";
     private String icon = "";
     private String sites = "";
@@ -80,7 +83,7 @@ public class SocialChannel extends BaseEntity
             setName(obj.getName());
             setHandle(obj.getHandle());
             setIcon(obj.getIcon());
-            setProvider(obj.getProvider());
+            setProviderId(obj.getProviderId());
             setSites(obj.getSites());
             setContentTypes(obj.getContentTypes());
             setDelay(obj.getDelay());
@@ -164,25 +167,33 @@ public class SocialChannel extends BaseEntity
     /**
      * Returns the provider for the channel.
      */
+    public SocialProviderId getProviderId()
+    {
+        return providerId;
+    }
+
+    /**
+     * Sets the provider for the channel.
+     */
+    public void setProviderId(String code)
+    {
+        setProviderId(SocialProviderId.fromCode(code));
+    }
+
+    /**
+     * Sets the provider for the channel.
+     */
+    public void setProviderId(SocialProviderId providerId)
+    {
+        this.providerId = providerId;
+    }
+
+    /**
+     * Returns the social provider for this configuration.
+     */
     public SocialProvider getProvider()
     {
-        return provider;
-    }
-
-    /**
-     * Sets the provider for the channel.
-     */
-    public void setProvider(String code)
-    {
-        setProvider(SocialProvider.fromCode(code));
-    }
-
-    /**
-     * Sets the provider for the channel.
-     */
-    public void setProvider(SocialProvider provider)
-    {
-        this.provider = provider;
+        return SocialProviders.get(providerId);
     }
 
     /**
@@ -395,5 +406,29 @@ public class SocialChannel extends BaseEntity
     public void setStatus(String status)
     {
         setStatus(SocialChannelStatus.valueOf(status));
+    }
+
+    /**
+     * Returns the handle URL for the channel.
+     */
+    public String getHandleUrl(String handle)
+    {
+        SocialProvider provider = getProvider();
+        String ret = null;
+        if(provider != null)
+            ret = provider.getUrl()+String.format(provider.getHandleUrl(), handle);
+        return ret;
+    }
+
+    /**
+     * Returns the hashtag URL for the channel.
+     */
+    public String getHashtagUrl(String hashtag)
+    {
+        SocialProvider provider = getProvider();
+        String ret = null;
+        if(provider != null)
+            ret = provider.getUrl()+String.format(provider.getHashtagUrl(), hashtag);
+        return ret;
     }
 }

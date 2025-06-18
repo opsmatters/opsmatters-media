@@ -21,12 +21,12 @@ import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.model.system.Site;
+import com.opsmatters.media.model.admin.SocialProviderId;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
-import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.SessionId;
@@ -50,7 +50,7 @@ public class OrganisationListing extends Content
     private String founded = "";
     private String location = "";
     private String stockSymbol = "";
-    private SocialProvider feedProvider;
+    private SocialProviderId feedProviderId;
     private String facebook = "";
     private String twitter = "";
     private String linkedin = "";
@@ -95,7 +95,7 @@ public class OrganisationListing extends Content
         setFounded(new String(obj.getFounded() != null ? obj.getFounded() : ""));
         setLocation(new String(obj.getLocation() != null ? obj.getLocation() : ""));
         setStockSymbol(new String(obj.getStockSymbol() != null ? obj.getStockSymbol() : ""));
-        setFeedProvider(obj.getFeedProvider());
+        setFeedProviderId(obj.getFeedProviderId());
         setFacebook(new String(obj.getFacebook() != null ? obj.getFacebook() : ""));
         setTwitter(new String(obj.getTwitter() != null ? obj.getTwitter() : ""));
         setLinkedIn(new String(obj.getLinkedIn() != null ? obj.getLinkedIn() : ""));
@@ -125,7 +125,7 @@ public class OrganisationListing extends Content
         ret.putOpt(FOUNDED.value(), getFounded());
         ret.putOpt(LOCATION.value(), getLocation());
         ret.putOpt(STOCK_SYMBOL.value(), getStockSymbol());
-        ret.putOpt(FEED_PROVIDER.value(), getFeedProvider().name());
+        ret.putOpt(FEED_PROVIDER.value(), getFeedProviderId().name());
         ret.putOpt(FACEBOOK.value(), getFacebook());
         ret.putOpt(TWITTER.value(), getTwitter());
         ret.putOpt(LINKEDIN.value(), getLinkedIn());
@@ -156,7 +156,7 @@ public class OrganisationListing extends Content
         setFounded(obj.optString(FOUNDED.value()));
         setLocation(obj.optString(LOCATION.value()));
         setStockSymbol(obj.optString(STOCK_SYMBOL.value()));
-        setFeedProvider(SocialProvider.valueOf(obj.optString(FEED_PROVIDER.value())));
+        setFeedProviderId(SocialProviderId.valueOf(obj.optString(FEED_PROVIDER.value())));
         setFacebook(obj.optString(FACEBOOK.value()));
         setTwitter(obj.optString(TWITTER.value()));
         setLinkedIn(obj.optString(LINKEDIN.value()));
@@ -187,7 +187,7 @@ public class OrganisationListing extends Content
         ret.put(FOUNDED, getFounded());
         ret.put(LOCATION, getLocation());
         ret.put(STOCK_SYMBOL, getStockSymbol());
-        ret.put(FEED_PROVIDER, getFeedProvider().name());
+        ret.put(FEED_PROVIDER, getFeedProviderId().name());
         ret.put(FACEBOOK, getFacebook());
         ret.put(TWITTER, getTwitter());
         ret.put(LINKEDIN, getLinkedIn());
@@ -219,7 +219,7 @@ public class OrganisationListing extends Content
         listing.setTitle(organisation.getName());
         listing.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.now(), config.getField(PUBLISHED_DATE)));
         listing.setFounded(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
-        listing.setFeedProvider(SocialProvider.TWITTER);
+        listing.setFeedProviderId(SocialProviderId.TWITTER);
 
         return listing;
     }
@@ -445,25 +445,25 @@ public class OrganisationListing extends Content
     /**
      * Returns the organisation's feed provider.
      */
-    public SocialProvider getFeedProvider()
+    public SocialProviderId getFeedProviderId()
     {
-        return feedProvider;
+        return feedProviderId;
     }
 
     /**
      * Sets the organisation's feed provider.
      */
-    public void setFeedProvider(String feedProvider)
+    public void setFeedProviderId(String feedProviderId)
     {
-        setFeedProvider(SocialProvider.valueOf(feedProvider));
+        setFeedProviderId(SocialProviderId.valueOf(feedProviderId));
     }
 
     /**
      * Sets the organisation's feed provider.
      */
-    public void setFeedProvider(SocialProvider feedProvider)
+    public void setFeedProviderId(SocialProviderId feedProviderId)
     {
-        this.feedProvider = feedProvider;
+        this.feedProviderId = feedProviderId;
     }
 
     /**

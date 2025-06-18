@@ -57,7 +57,7 @@ import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import com.google.common.collect.Lists;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.model.content.video.VideoProvider;
+import com.opsmatters.media.model.admin.VideoProviderId;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 
@@ -104,9 +104,9 @@ public class YouTubeClient extends Client implements VideoClient
     /**
      * Returns the provider for this client.
      */
-    public VideoProvider getProvider()
+    public VideoProviderId getProviderId()
     {
-        return VideoProvider.YOUTUBE;
+        return VideoProviderId.YOUTUBE;
     }
 
     /**
@@ -212,7 +212,7 @@ public class YouTubeClient extends Client implements VideoClient
                     ret.putOpt(DESCRIPTION.value(), snippet.getDescription());
                     ret.put(CHANNEL_ID.value(), snippet.getChannelId());
                     ret.put(CHANNEL_TITLE.value(), snippet.getChannelTitle());
-                    ret.put(PROVIDER.value(), VideoProvider.YOUTUBE.code());
+                    ret.put(PROVIDER.value(), getProviderId().code());
 
                     try
                     {
@@ -277,7 +277,7 @@ public class YouTubeClient extends Client implements VideoClient
                     video.put(VIDEO_ID.value(), resource.getVideoId());
                     video.put(TITLE.value(), snippet.getTitle());
                     video.put(PUBLISHED_DATE.value(), snippet.getPublishedAt().toString());
-                    video.put(PROVIDER.value(), VideoProvider.YOUTUBE.code());
+                    video.put(PROVIDER.value(), getProviderId().code());
 
                     list.add(video);
                 }
@@ -372,7 +372,7 @@ public class YouTubeClient extends Client implements VideoClient
                         video.put(TITLE.value(), snippet.getTitle());
                         video.put(PUBLISHED_DATE.value(), snippet.getPublishedAt().toString());
                         video.put(CHANNEL_TITLE.value(), snippet.getChannelTitle());
-                        video.put(PROVIDER.value(), VideoProvider.YOUTUBE.code());
+                        video.put(PROVIDER.value(), getProviderId().code());
 
                         list.add(video);
                     }
@@ -411,7 +411,7 @@ public class YouTubeClient extends Client implements VideoClient
                         video.put(TITLE.value(), snippet.getTitle());
                         video.put(PUBLISHED_DATE.value(), snippet.getPublishedAt().toString());
                         video.put(CHANNEL_TITLE.value(), snippet.getChannelTitle());
-                        video.put(PROVIDER.value(), VideoProvider.YOUTUBE.code());
+                        video.put(PROVIDER.value(), getProviderId().code());
 
                         list.add(video);
                     }

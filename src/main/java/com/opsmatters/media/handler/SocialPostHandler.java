@@ -24,8 +24,8 @@ import org.apache.commons.text.StringSubstitutor;
 import com.vdurmont.emoji.EmojiParser;
 import com.twitter.twittertext.TwitterTextParser;
 import com.opsmatters.media.util.StringUtils;
+import com.opsmatters.media.model.admin.SocialProviderId;
 import com.opsmatters.media.model.social.SocialChannel;
-import com.opsmatters.media.model.social.SocialProvider;
 import com.opsmatters.media.model.social.SocialPostProperty;
 import com.opsmatters.media.model.social.SocialPostProperties;
 import com.opsmatters.media.model.social.Hashtag;
@@ -658,8 +658,8 @@ public class SocialPostHandler
         @Override
         String getMarkup(SocialChannel channel)
         {
-            String url = String.format(channel.getProvider().hashtagUrl(), getValue());
-            return String.format("<a class=\"link\" target=\"_blank\" href=\"%s\">%s</a>", url, toString());
+            return String.format("<a class=\"link\" target=\"_blank\" href=\"%s\">%s</a>",
+                channel.getHashtagUrl(getValue()), toString());
         }
     }
 
@@ -709,8 +709,8 @@ public class SocialPostHandler
         @Override
         String getMarkup(SocialChannel channel)
         {
-            String url = String.format(channel.getProvider().handleUrl(), getValue());
-            return String.format("<a class=\"link\" target=\"_blank\" href=\"%s\">%s</a>", url, toString());
+            return String.format("<a class=\"link\" target=\"_blank\" href=\"%s\">%s</a>",
+                channel.getHandleUrl(getValue()), toString());
         }
     }
 
@@ -742,8 +742,8 @@ public class SocialPostHandler
         @Override
         public int length(SocialChannel channel)
         {
-            if(channel != null && channel.getProvider().urlLength() != -1)
-                return channel.getProvider().urlLength();
+            if(channel != null && channel.getProvider().getUrlLength() != -1)
+                return channel.getProvider().getUrlLength();
             else
                 return super.length(channel);
         }
@@ -800,7 +800,7 @@ public class SocialPostHandler
             {
                 // Exclude @mentions for LinkedIn
                 if(channel == null
-                    || channel.getProvider() != SocialProvider.LINKEDIN)
+                    || channel.getProviderId() != SocialProviderId.LINKEDIN)
                 {
                     message.append(token.toString());
                     length += token.length(channel);
@@ -825,7 +825,7 @@ public class SocialPostHandler
         this.hashtagCount = hashtagCount;
 
         // Use the official parser to get the tweet length
-        if(channel != null && channel.getProvider() == SocialProvider.TWITTER)
+        if(channel != null && channel.getProviderId() == SocialProviderId.TWITTER)
             this.messageLength = TwitterTextParser.parseTweet(this.message).weightedLength;
     }
 
@@ -838,7 +838,7 @@ public class SocialPostHandler
 
         if(channel != null && ret != null)
         {
-            if(channel.getProvider() == SocialProvider.LINKEDIN)
+            if(channel.getProviderId() == SocialProviderId.LINKEDIN)
             {
                 // Fix the message text for "input string format is invalid" errors
                 ret = ret.replaceAll("\\[", "(").replaceAll("\\]", ")"); // replace square brackets

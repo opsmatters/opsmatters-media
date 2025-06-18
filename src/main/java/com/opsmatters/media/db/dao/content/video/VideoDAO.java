@@ -271,7 +271,7 @@ public class VideoDAO extends ContentDAO<Video>
             insertStmt.setString(7, content.getVideoId());
             insertStmt.setString(8, content.getVideoType());
             insertStmt.setLong(9, content.getDuration());
-            insertStmt.setString(10, content.getProvider().code());
+            insertStmt.setString(10, content.getProviderId().code());
             insertStmt.setBoolean(11, content.isPublished());
             insertStmt.setBoolean(12, content.isPromoted());
             insertStmt.setBoolean(13, content.isNewsletter());
@@ -331,7 +331,7 @@ public class VideoDAO extends ContentDAO<Video>
             updateStmt.setString(4, content.getVideoId());
             updateStmt.setString(5, content.getVideoType());
             updateStmt.setLong(6, content.getDuration());
-            updateStmt.setString(7, content.getProvider().code());
+            updateStmt.setString(7, content.getProviderId().code());
             updateStmt.setBoolean(8, content.isPublished());
             updateStmt.setBoolean(9, content.isPromoted());
             updateStmt.setBoolean(10, content.isNewsletter());

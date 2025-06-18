@@ -17,7 +17,7 @@
 package com.opsmatters.media.client.social;
 
 import java.util.logging.Logger;
-import com.opsmatters.media.model.social.SocialProvider;
+import com.opsmatters.media.model.admin.SocialProviderId;
 import com.opsmatters.media.model.social.SocialChannel;
 
 /**
@@ -41,9 +41,9 @@ public class SocialClientFactory
      */
     public static SocialClient newClient(SocialChannel channel) throws Exception
     {
-        SocialProvider provider = channel.getProvider();
+        SocialProviderId providerId = channel.getProviderId();
 
-        switch(provider)
+        switch(providerId)
         {
             case TWITTER:
                 return TwitterClient.newClient(channel);
@@ -55,6 +55,6 @@ public class SocialClientFactory
                 return BlueskyClient.newClient(channel);
         }
 
-        throw new IllegalArgumentException("Social provider not found: "+provider);
+        throw new IllegalArgumentException("Social provider id not found: "+providerId);
     }
 }

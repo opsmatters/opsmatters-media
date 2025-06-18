@@ -20,7 +20,9 @@ import java.util.HashMap;
 import java.io.StringReader;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.text.diff.StringsComparator;
-import com.opsmatters.media.model.content.video.VideoProvider;
+import com.opsmatters.media.cache.admin.VideoProviders;
+import com.opsmatters.media.model.admin.VideoProviderId;
+import com.opsmatters.media.model.admin.VideoProvider;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 
@@ -53,6 +55,7 @@ public class SnapshotDiff
         LineIterator iterator2 = new LineIterator(reader2);
 
         TextCommandVisitor textVisitor = new TextCommandVisitor();
+        VideoProvider youtube = VideoProviders.get(VideoProviderId.YOUTUBE);
 
         try
         {
@@ -71,7 +74,7 @@ public class SnapshotDiff
                     if(leftProperty.equals(URL.value()))
                         leftUrl = left;
                     else if(leftProperty.equals(VIDEO_ID.value()))
-                        leftUrl = VideoProvider.YOUTUBE.url()+String.format(VideoProvider.YOUTUBE.videoUrl(), left);
+                        leftUrl = youtube.getUrl()+String.format(youtube.getVideoUrl(), left);
                     leftProperty = NAMES.get(leftProperty);
                 }
 
@@ -84,7 +87,7 @@ public class SnapshotDiff
                     if(rightProperty.equals(URL.value()))
                         rightUrl = right;
                     else if(rightProperty.equals(VIDEO_ID.value()))
-                        rightUrl = VideoProvider.YOUTUBE.url()+String.format(VideoProvider.YOUTUBE.videoUrl(), right);
+                        rightUrl = youtube.getUrl()+String.format(youtube.getVideoUrl(), right);
                     rightProperty = NAMES.get(rightProperty);
                 }
 

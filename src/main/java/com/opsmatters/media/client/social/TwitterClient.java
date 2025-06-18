@@ -36,10 +36,10 @@ import com.twitter.clientlib.model.TweetCreateRequest;
 import com.twitter.clientlib.model.TweetCreateResponse;
 import com.twitter.clientlib.model.TweetDeleteResponse;
 import com.github.scribejava.core.model.OAuth2AccessToken;
-import com.opsmatters.media.client.Client;
-import com.opsmatters.media.model.social.SocialProvider;
+import com.opsmatters.media.model.admin.SocialProviderId;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.ChannelPost;
+import com.opsmatters.media.client.Client;
 
 /**
  * Class that represents a connection to the Twitter v2 API for social media posts.
@@ -90,9 +90,9 @@ public class TwitterClient extends Client implements SocialClient
     /**
      * Returns the provider for this client.
      */
-    public SocialProvider getProvider()
+    public SocialProviderId getProviderId()
     {
-        return SocialProvider.TWITTER;
+        return SocialProviderId.TWITTER;
     }
 
     /**

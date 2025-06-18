@@ -147,7 +147,7 @@ public class SocialChannelDAO extends BaseDAO
                 channel.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 channel.setCode(rs.getString(4));
                 channel.setName(rs.getString(5));
-                channel.setProvider(rs.getString(6));
+                channel.setProviderId(rs.getString(6));
                 channel.setHandle(rs.getString(7));
                 channel.setIcon(rs.getString(8));
                 channel.setSites(rs.getString(9));
@@ -206,7 +206,7 @@ public class SocialChannelDAO extends BaseDAO
                 channel.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 channel.setCode(rs.getString(4));
                 channel.setName(rs.getString(5));
-                channel.setProvider(rs.getString(6));
+                channel.setProviderId(rs.getString(6));
                 channel.setHandle(rs.getString(7));
                 channel.setIcon(rs.getString(8));
                 channel.setSites(rs.getString(9));
@@ -254,7 +254,7 @@ public class SocialChannelDAO extends BaseDAO
             insertStmt.setTimestamp(3, new Timestamp(channel.getUpdatedDateMillis()), UTC);
             insertStmt.setString(4, channel.getCode());
             insertStmt.setString(5, channel.getName());
-            insertStmt.setString(6, channel.getProvider() != null ? channel.getProvider().code() : "");
+            insertStmt.setString(6, channel.getProviderId() != null ? channel.getProviderId().code() : "");
             insertStmt.setString(7, channel.getHandle());
             insertStmt.setString(8, channel.getIcon());
             insertStmt.setString(9, channel.getSites());
@@ -297,7 +297,7 @@ public class SocialChannelDAO extends BaseDAO
         updateStmt.setTimestamp(1, new Timestamp(channel.getUpdatedDateMillis()), UTC);
         updateStmt.setString(2, channel.getCode());
         updateStmt.setString(3, channel.getName());
-        updateStmt.setString(4, channel.getProvider() != null ? channel.getProvider().code() : "");
+        updateStmt.setString(4, channel.getProviderId() != null ? channel.getProviderId().code() : "");
         updateStmt.setString(5, channel.getHandle());
         updateStmt.setString(6, channel.getIcon());
         updateStmt.setString(7, channel.getSites());
@@ -342,7 +342,7 @@ public class SocialChannelDAO extends BaseDAO
                 channel.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 channel.setCode(rs.getString(4));
                 channel.setName(rs.getString(5));
-                channel.setProvider(rs.getString(6));
+                channel.setProviderId(rs.getString(6));
                 channel.setHandle(rs.getString(7));
                 channel.setIcon(rs.getString(8));
                 channel.setSites(rs.getString(9));

@@ -255,7 +255,7 @@ public class VideoCrawler extends ContentCrawler<VideoDetails>
     private void populateTeaserFields(JSONObject video, Fields fields, VideoDetails teaser, String type)
     {
         teaser.setVideoId(video.getString(VIDEO_ID.value()));
-        teaser.setProvider(video.getString(PROVIDER.value()));
+        teaser.setProviderId(video.getString(PROVIDER.value()));
         if(video.has(DURATION.value()))
             teaser.setDuration(video.getInt(DURATION.value()));
 

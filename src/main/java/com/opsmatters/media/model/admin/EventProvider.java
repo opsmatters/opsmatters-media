@@ -17,7 +17,6 @@ package com.opsmatters.media.model.admin;
 
 import java.util.Map;
 import org.yaml.snakeyaml.Yaml;
-import com.opsmatters.media.model.ExternalProvider;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 
 /**

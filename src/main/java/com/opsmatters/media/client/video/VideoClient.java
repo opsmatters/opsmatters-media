@@ -19,7 +19,7 @@ package com.opsmatters.media.client.video;
 import java.io.IOException;
 import java.util.List;
 import org.json.JSONObject;
-import com.opsmatters.media.model.content.video.VideoProvider;
+import com.opsmatters.media.model.admin.VideoProviderId;
 
 /**
  * Methods to interact with a user's video channel.
@@ -46,7 +46,7 @@ public interface VideoClient
     /**
      * Returns the provider for this client.
      */
-    public VideoProvider getProvider();
+    public VideoProviderId getProviderId();
 
     /**
      * Returns the details of the video for the given video ID.
