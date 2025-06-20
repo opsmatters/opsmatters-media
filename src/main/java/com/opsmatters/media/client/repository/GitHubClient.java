@@ -32,11 +32,11 @@ import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHContent;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHLicense;
-import com.opsmatters.media.client.Client;
+import com.opsmatters.media.model.admin.RepositoryProviderId;
 import com.opsmatters.media.model.content.project.ProjectConfig;
 import com.opsmatters.media.model.content.project.ProjectDetails;
-import com.opsmatters.media.model.content.project.RepositoryProvider;
 import com.opsmatters.media.model.content.project.OpenSourceLicense;
+import com.opsmatters.media.client.Client;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -81,9 +81,9 @@ public class GitHubClient extends Client implements RepositoryClient
     /**
      * Returns the provider for this client.
      */
-    public RepositoryProvider getProvider()
+    public RepositoryProviderId getProviderId()
     {
-        return RepositoryProvider.GITHUB;
+        return RepositoryProviderId.GITHUB;
     }
 
     /**
@@ -182,8 +182,8 @@ public class GitHubClient extends Client implements RepositoryClient
     {
         if(url == null || url.length() == 0)
             throw new IllegalArgumentException("missing repo URL");
-        RepositoryProvider provider = RepositoryProvider.fromUrl(url);
-        return getRepository(provider.getRepoUser(url), provider.getRepoName(url));
+        RepositoryProviderId providerId = RepositoryProviderId.fromUrl(url);
+        return getRepository(providerId.getRepoUser(url), providerId.getRepoName(url));
     }
 
     /**
@@ -267,7 +267,7 @@ public class GitHubClient extends Client implements RepositoryClient
             project.setWebsite(repository.getHomepage());
             project.setFounded(getFounded(repository));
 
-            String repoUrl = String.format("%s/%s", getProvider().url(), repository.getFullName());
+            String repoUrl = String.format("%s/%s", getProviderId().url(), repository.getFullName());
             project.setLinks(String.format(LINKS, repoUrl, branch));
 
             GHLicense license = repository.getLicense();

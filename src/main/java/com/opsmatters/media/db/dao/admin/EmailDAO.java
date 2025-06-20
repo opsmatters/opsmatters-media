@@ -146,7 +146,7 @@ public class EmailDAO extends BaseDAO
                 email.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 email.setSubject(rs.getString(4));
                 email.setAttributes(new JSONObject(getClob(rs, 5)));
-                email.setProvider(rs.getString(6));
+                email.setProviderId(rs.getString(6));
                 email.setMessageId(rs.getString(7));
                 email.setStatus(rs.getString(8));
                 email.setType(rs.getString(9));
@@ -242,7 +242,7 @@ public class EmailDAO extends BaseDAO
             String attributes = email.getAttributes().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(3, reader, attributes.length());
-            updateStmt.setString(4, email.getProvider() != null ? email.getProvider().code() : null);
+            updateStmt.setString(4, email.getProviderId() != null ? email.getProviderId().code() : null);
             updateStmt.setString(5, email.getMessageId());
             updateStmt.setString(6, email.getStatus().name());
             updateStmt.setString(7, email.getId());
@@ -287,7 +287,7 @@ public class EmailDAO extends BaseDAO
                 email.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 email.setSubject(rs.getString(4));
                 email.setAttributes(new JSONObject(getClob(rs, 5)));
-                email.setProvider(rs.getString(6));
+                email.setProviderId(rs.getString(6));
                 email.setMessageId(rs.getString(7));
                 email.setStatus(rs.getString(8));
                 email.setType(rs.getString(9));
@@ -343,7 +343,7 @@ public class EmailDAO extends BaseDAO
                 email.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 email.setSubject(rs.getString(4));
                 email.setAttributes(new JSONObject(getClob(rs, 5)));
-                email.setProvider(rs.getString(6));
+                email.setProviderId(rs.getString(6));
                 email.setMessageId(rs.getString(7));
                 email.setStatus(rs.getString(8));
                 email.setType(rs.getString(9));

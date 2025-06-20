@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.client.email;
+package com.opsmatters.media.client.system;
 
 import java.io.IOException;
-import com.opsmatters.media.model.admin.EmailProvider;
+import com.opsmatters.media.model.admin.EmailProviderId;
 import com.opsmatters.media.model.admin.Email;
 
 /**
@@ -45,7 +45,7 @@ public interface EmailClient
     /**
      * Returns the provider for this client.
      */
-    public EmailProvider getProvider();
+    public EmailProviderId getProviderId();
 
     /**
      * Sends the given email.

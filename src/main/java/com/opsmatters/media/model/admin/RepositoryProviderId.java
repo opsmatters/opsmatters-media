@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.content.project;
+package com.opsmatters.media.model.admin;
 
 /**
  * Represents a repository provider.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum RepositoryProvider
+public enum RepositoryProviderId
 {
     GITHUB("GTH", "GitHub", "https://github.com"),
     GITLAB("GTL", "GitLab", "https://gitlab.com");
@@ -36,7 +36,7 @@ public enum RepositoryProvider
      * @param value The value of the provider
      * @param url The base URL for the provider
      */
-    RepositoryProvider(String code, String value, String url)
+    RepositoryProviderId(String code, String value, String url)
     {
         this.code = code;
         this.value = value;
@@ -84,14 +84,15 @@ public enum RepositoryProvider
      * @param code The type code
      * @return The type for the given code
      */
-    public static RepositoryProvider fromCode(String code)
+    public static RepositoryProviderId fromCode(String code)
     {
-        RepositoryProvider[] types = values();
-        for(RepositoryProvider type : types)
+        RepositoryProviderId[] types = values();
+        for(RepositoryProviderId type : types)
         {
             if(type.code().equals(code))
                 return type;
         }
+
         return null;
     }
 
@@ -100,14 +101,15 @@ public enum RepositoryProvider
      * @param url The url
      * @return The type for the given url
      */
-    public static RepositoryProvider fromUrl(String url)
+    public static RepositoryProviderId fromUrl(String url)
     {
-        RepositoryProvider[] types = values();
-        for(RepositoryProvider type : types)
+        RepositoryProviderId[] types = values();
+        for(RepositoryProviderId type : types)
         {
             if(url.startsWith(type.url()))
                 return type;
         }
+
         return null;
     }
 

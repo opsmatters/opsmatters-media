@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.client.aws;
+package com.opsmatters.media.client.system.aws;
 
 import java.io.File;
 import java.io.InputStream;

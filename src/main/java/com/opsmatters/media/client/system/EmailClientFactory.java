@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.client.email;
+package com.opsmatters.media.client.system;
 
 import java.io.IOException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.admin.EmailProvider;
+import com.opsmatters.media.model.admin.EmailProviderId;
 import com.opsmatters.media.model.system.aws.SesConfig;
-import com.opsmatters.media.client.aws.AwsSesClient;
+import com.opsmatters.media.client.system.aws.AwsSesClient;
 
 /**
  * Factory class to create a client for an email provider.
@@ -41,14 +41,14 @@ public class EmailClientFactory
     /**
      * Returns a client for the given provider.
      */
-    public static EmailClient newClient(EmailProvider provider, SesConfig config) throws IOException
+    public static EmailClient newClient(EmailProviderId providerId, SesConfig config) throws IOException
     {
-        switch(provider)
+        switch(providerId)
         {
             case SES:
                 return AwsSesClient.newClient(config);
         }
 
-        throw new IllegalArgumentException("Email provider not found: "+provider);
+        throw new IllegalArgumentException("Email provider id not found: "+providerId);
     }
 }

@@ -18,8 +18,8 @@ package com.opsmatters.media.client.repository;
 
 import java.io.IOException;
 import java.util.logging.Logger;
+import com.opsmatters.media.model.admin.RepositoryProviderId;
 import com.opsmatters.media.model.content.project.ProjectConfig;
-import com.opsmatters.media.model.content.project.RepositoryProvider;
 
 /**
  * Factory class to create a client for a repository provider.
@@ -40,14 +40,15 @@ public class RepositoryClientFactory
     /**
      * Returns a client for the given provider.
      */
-    public static RepositoryClient newClient(RepositoryProvider provider, ProjectConfig config) throws IOException
+    public static RepositoryClient newClient(RepositoryProviderId providerId, ProjectConfig config)
+        throws IOException
     {
-        switch(provider)
+        switch(providerId)
         {
             case GITHUB:
                 return GitHubClient.newClient(config);
         }
 
-        throw new IllegalArgumentException("Repository provider not found: "+provider);
+        throw new IllegalArgumentException("Repository provider id not found: "+providerId);
     }
 }

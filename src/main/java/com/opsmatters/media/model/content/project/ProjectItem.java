@@ -15,6 +15,7 @@
  */
 package com.opsmatters.media.model.content.project;
 
+import com.opsmatters.media.model.admin.RepositoryProviderId;
 import com.opsmatters.media.model.content.ResourceItem;
 
 /**
@@ -81,9 +82,9 @@ public class ProjectItem extends ResourceItem<Project>
     /**
      * Returns the provider of the project.
      */
-    public RepositoryProvider getProvider()
+    public RepositoryProviderId getProviderId()
     {
-        return content.getProvider();
+        return content.getProviderId();
     }
 
     /**

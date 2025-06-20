@@ -21,7 +21,7 @@ package com.opsmatters.media.model.admin;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum EmailProvider
+public enum EmailProviderId
 {
     SES("SES", "SES");
 
@@ -33,7 +33,7 @@ public enum EmailProvider
      * @param code The code for the provider
      * @param value The value of the provider
      */
-    EmailProvider(String code, String value)
+    EmailProviderId(String code, String value)
     {
         this.code = code;
         this.value = value;
@@ -71,14 +71,15 @@ public enum EmailProvider
      * @param code The type code
      * @return The type for the given code
      */
-    public static EmailProvider fromCode(String code)
+    public static EmailProviderId fromCode(String code)
     {
-        EmailProvider[] types = values();
-        for(EmailProvider type : types)
+        EmailProviderId[] types = values();
+        for(EmailProviderId type : types)
         {
             if(type.code().equals(code))
                 return type;
         }
+
         return null;
     }
 

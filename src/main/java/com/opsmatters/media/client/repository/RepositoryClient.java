@@ -17,8 +17,8 @@
 package com.opsmatters.media.client.repository;
 
 import java.io.IOException;
+import com.opsmatters.media.model.admin.RepositoryProviderId;
 import com.opsmatters.media.model.content.project.ProjectDetails;
-import com.opsmatters.media.model.content.project.RepositoryProvider;
 
 /**
  * Methods to interact with a repository provider.
@@ -45,7 +45,7 @@ public interface RepositoryClient
     /**
      * Returns the provider for this client.
      */
-    public RepositoryProvider getProvider();
+    public RepositoryProviderId getProviderId();
 
     /**
      * Returns the name of the current account.

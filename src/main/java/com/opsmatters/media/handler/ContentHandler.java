@@ -34,7 +34,7 @@ import com.jcraft.jsch.SftpException;
 import com.opsmatters.media.model.system.Environment;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.client.SshClient;
-import com.opsmatters.media.client.aws.AwsS3Client;
+import com.opsmatters.media.client.system.aws.AwsS3Client;
 import com.opsmatters.media.file.InputFileReader;
 import com.opsmatters.media.file.OutputFileWriter;
 import com.opsmatters.media.file.FileFormat;

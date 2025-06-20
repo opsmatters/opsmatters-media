@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.client.aws;
+package com.opsmatters.media.client.system.aws;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,12 +33,12 @@ import software.amazon.awssdk.services.ses.model.Destination;
 import software.amazon.awssdk.services.ses.model.Message;
 import software.amazon.awssdk.services.ses.model.Content;
 import software.amazon.awssdk.services.ses.model.Body;
-import com.opsmatters.media.client.Client;
-import com.opsmatters.media.client.email.EmailClient;
-import com.opsmatters.media.model.admin.EmailProvider;
+import com.opsmatters.media.model.admin.EmailProviderId;
 import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailFormat;
 import com.opsmatters.media.model.system.aws.SesConfig;
+import com.opsmatters.media.client.Client;
+import com.opsmatters.media.client.system.EmailClient;
 
 /**
  * Class that represents a connection to AWS SES for emails.
@@ -76,9 +76,9 @@ public class AwsSesClient extends Client implements EmailClient
     /**
      * Returns the provider for this client.
      */
-    public EmailProvider getProvider()
+    public EmailProviderId getProviderId()
     {
-        return EmailProvider.SES;
+        return EmailProviderId.SES;
     }
 
     /**
