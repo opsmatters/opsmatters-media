@@ -30,7 +30,7 @@ import facebook4j.Post;
 import facebook4j.PostUpdate;
 import facebook4j.ResponseList;
 import facebook4j.auth.AccessToken;
-import com.opsmatters.media.model.admin.SocialProviderId;
+import com.opsmatters.media.model.provider.SocialProviderId;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.ChannelPost;
 import com.opsmatters.media.client.Client;

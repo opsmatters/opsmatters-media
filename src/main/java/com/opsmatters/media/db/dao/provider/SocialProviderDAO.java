@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.db.dao.admin;
+package com.opsmatters.media.db.dao.provider;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -23,70 +23,70 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.admin.VideoProvider;
+import com.opsmatters.media.model.provider.SocialProvider;
 import com.opsmatters.media.db.dao.BaseDAO;
 
 /**
- * DAO that provides operations on the VIDEO_PROVIDERS table in the database.
+ * DAO that provides operations on the SOCIAL_PROVIDERS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class VideoProviderDAO extends BaseDAO
+public class SocialProviderDAO extends BaseDAO
 {
-    private static final Logger logger = Logger.getLogger(VideoProviderDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(SocialProviderDAO.class.getName());
 
     /**
-     * The query to use to select a provider from the VIDEO_PROVIDERS table by id.
+     * The query to use to select a provider from the SOCIAL_PROVIDERS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, TAG, URL, CHANNEL_URL, VIDEO_URL, EMBED, STATUS, CREATED_BY "
-      + "FROM VIDEO_PROVIDERS WHERE ID=?";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, URL, HANDLE_URL, HASHTAG_URL, THUMBNAIL, MAX_LENGTH, URL_LENGTH, STATUS, CREATED_BY "
+      + "FROM SOCIAL_PROVIDERS WHERE ID=?";
 
     /**
-     * The query to use to insert a provider into the VIDEO_PROVIDERS table.
+     * The query to use to insert a provider into the SOCIAL_PROVIDERS table.
      */
     private static final String INSERT_SQL =  
-      "INSERT INTO VIDEO_PROVIDERS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, TAG, URL, CHANNEL_URL, VIDEO_URL, EMBED, STATUS, CREATED_BY )"
+      "INSERT INTO SOCIAL_PROVIDERS"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, URL, HANDLE_URL, HASHTAG_URL, THUMBNAIL, MAX_LENGTH, URL_LENGTH, STATUS, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
-     * The query to use to update a provider in the VIDEO_PROVIDERS table.
+     * The query to use to update a provider in the SOCIAL_PROVIDERS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE VIDEO_PROVIDERS SET UPDATED_DATE=?, CODE=?, NAME=?, TAG=?, URL=?, CHANNEL_URL=?, VIDEO_URL=?, EMBED=?, STATUS=?, CREATED_BY=? "
+      "UPDATE SOCIAL_PROVIDERS SET UPDATED_DATE=?, CODE=?, NAME=?, URL=?, HANDLE_URL=?, HASHTAG_URL=?, THUMBNAIL=?, MAX_LENGTH=?, URL_LENGTH=?, STATUS=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
-     * The query to use to select the providers from the VIDEO_PROVIDERS table.
+     * The query to use to select the providers from the SOCIAL_PROVIDERS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, TAG, URL, CHANNEL_URL, VIDEO_URL, EMBED, STATUS, CREATED_BY "
-      + "FROM VIDEO_PROVIDERS";
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, NAME, URL, HANDLE_URL, HASHTAG_URL, THUMBNAIL, MAX_LENGTH, URL_LENGTH, STATUS, CREATED_BY "
+      + "FROM SOCIAL_PROVIDERS";
 
     /**
-     * The query to use to get the count of providers from the VIDEO_PROVIDERS table.
+     * The query to use to get the count of providers from the SOCIAL_PROVIDERS table.
      */
     private static final String COUNT_SQL =  
-      "SELECT COUNT(*) FROM VIDEO_PROVIDERS";
+      "SELECT COUNT(*) FROM SOCIAL_PROVIDERS";
 
     /**
-     * The query to use to delete a provider from the VIDEO_PROVIDERS table.
+     * The query to use to delete a provider from the SOCIAL_PROVIDERS table.
      */
     private static final String DELETE_SQL =  
-      "DELETE FROM VIDEO_PROVIDERS WHERE ID=?";
+      "DELETE FROM SOCIAL_PROVIDERS WHERE ID=?";
 
     /**
      * Constructor that takes a DAO factory.
      */
-    public VideoProviderDAO(AdminDAOFactory factory)
+    public SocialProviderDAO(ProviderDAOFactory factory)
     {
-        super(factory, "VIDEO_PROVIDERS");
+        super(factory, "SOCIAL_PROVIDERS");
     }
 
     /**
-     * Defines the columns and indices for the VIDEO_PROVIDERS table.
+     * Defines the columns and indices for the SOCIAL_PROVIDERS table.
      */
     @Override
     protected void defineTable()
@@ -96,24 +96,25 @@ public class VideoProviderDAO extends BaseDAO
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("CODE", Types.VARCHAR, 15, true);
         table.addColumn("NAME", Types.VARCHAR, 30, true);
-        table.addColumn("TAG", Types.VARCHAR, 15, true);
         table.addColumn("URL", Types.VARCHAR, 50, true);
-        table.addColumn("CHANNEL_URL", Types.VARCHAR, 50, false);
-        table.addColumn("VIDEO_URL", Types.VARCHAR, 50, false);
-        table.addColumn("EMBED", Types.VARCHAR, 384, false);
+        table.addColumn("HANDLE_URL", Types.VARCHAR, 50, false);
+        table.addColumn("HASHTAG_URL", Types.VARCHAR, 50, false);
+        table.addColumn("THUMBNAIL", Types.VARCHAR, 50, true);
+        table.addColumn("MAX_LENGTH", Types.INTEGER, true);
+        table.addColumn("URL_LENGTH", Types.INTEGER, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
-        table.setPrimaryKey("VIDEO_PROVIDERS_PK", new String[] {"ID"});
-        table.addIndex("VIDEO_PROVIDERS_CODE_IDX", new String[] {"CODE"});
+        table.setPrimaryKey("SOCIAL_PROVIDERS_PK", new String[] {"ID"});
+        table.addIndex("SOCIAL_PROVIDERS_CODE_IDX", new String[] {"CODE"});
         table.setInitialised(true);
     }
 
     /**
-     * Returns a provider from the VIDEO_PROVIDERS table by id.
+     * Returns a provider from the SOCIAL_PROVIDERS table by id.
      */
-    public synchronized VideoProvider getById(String id) throws SQLException
+    public synchronized SocialProvider getById(String id) throws SQLException
     {
-        VideoProvider ret = null;
+        SocialProvider ret = null;
 
         if(!hasConnection())
             return ret;
@@ -132,19 +133,20 @@ public class VideoProviderDAO extends BaseDAO
             rs = getByIdStmt.executeQuery();
             while(rs.next())
             {
-                VideoProvider provider = new VideoProvider();
+                SocialProvider provider = new SocialProvider();
                 provider.setId(rs.getString(1));
                 provider.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 provider.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 provider.setCode(rs.getString(4));
                 provider.setName(rs.getString(5));
-                provider.setTag(rs.getString(6));
-                provider.setUrl(rs.getString(7));
-                provider.setChannelUrl(rs.getString(8));
-                provider.setVideoUrl(rs.getString(9));
-                provider.setEmbed(rs.getString(10));
-                provider.setStatus(rs.getString(11));
-                provider.setCreatedBy(rs.getString(12));
+                provider.setUrl(rs.getString(6));
+                provider.setHandleUrl(rs.getString(7));
+                provider.setHashtagUrl(rs.getString(8));
+                provider.setThumbnail(rs.getString(9));
+                provider.setMaxPostLength(rs.getInt(10));
+                provider.setUrlLength(rs.getInt(11));
+                provider.setStatus(rs.getString(12));
+                provider.setCreatedBy(rs.getString(13));
                 ret = provider;
             }
         }
@@ -166,9 +168,9 @@ public class VideoProviderDAO extends BaseDAO
     }
 
     /**
-     * Stores the given provider in the VIDEO_PROVIDERS table.
+     * Stores the given provider in the SOCIAL_PROVIDERS table.
      */
-    public synchronized void add(VideoProvider provider) throws SQLException
+    public synchronized void add(SocialProvider provider) throws SQLException
     {
         if(!hasConnection() || provider == null)
             return;
@@ -184,16 +186,17 @@ public class VideoProviderDAO extends BaseDAO
             insertStmt.setTimestamp(3, new Timestamp(provider.getUpdatedDateMillis()), UTC);
             insertStmt.setString(4, provider.getCode());
             insertStmt.setString(5, provider.getName());
-            insertStmt.setString(6, provider.getTag());
-            insertStmt.setString(7, provider.getUrl());
-            insertStmt.setString(8, provider.getChannelUrl());
-            insertStmt.setString(9, provider.getVideoUrl());
-            insertStmt.setString(10, provider.getEmbed());
-            insertStmt.setString(11, provider.getStatus().name());
-            insertStmt.setString(12, provider.getCreatedBy());
+            insertStmt.setString(6, provider.getUrl());
+            insertStmt.setString(7, provider.getHandleUrl());
+            insertStmt.setString(8, provider.getHashtagUrl());
+            insertStmt.setString(9, provider.getThumbnail());
+            insertStmt.setInt(10, provider.getMaxPostLength());
+            insertStmt.setInt(11, provider.getUrlLength());
+            insertStmt.setString(12, provider.getStatus().name());
+            insertStmt.setString(13, provider.getCreatedBy());
             insertStmt.executeUpdate();
 
-            logger.info(String.format("Created provider %s in VIDEO_PROVIDERS", provider.getId()));
+            logger.info(String.format("Created provider %s in SOCIAL_PROVIDERS", provider.getId()));
         }
         catch(SQLException ex)
         {
@@ -211,9 +214,9 @@ public class VideoProviderDAO extends BaseDAO
     }
 
     /**
-     * Updates the given provider in the VIDEO_PROVIDERS table.
+     * Updates the given provider in the SOCIAL_PROVIDERS table.
      */
-    public synchronized void update(VideoProvider provider) throws SQLException
+    public synchronized void update(SocialProvider provider) throws SQLException
     {
         if(!hasConnection() || provider == null)
             return;
@@ -225,25 +228,26 @@ public class VideoProviderDAO extends BaseDAO
         updateStmt.setTimestamp(1, new Timestamp(provider.getUpdatedDateMillis()), UTC);
         updateStmt.setString(2, provider.getCode());
         updateStmt.setString(3, provider.getName());
-        updateStmt.setString(4, provider.getTag());
-        updateStmt.setString(5, provider.getUrl());
-        updateStmt.setString(6, provider.getChannelUrl());
-        updateStmt.setString(7, provider.getVideoUrl());
-        updateStmt.setString(8, provider.getEmbed());
-        updateStmt.setString(9, provider.getStatus().name());
-        updateStmt.setString(10, provider.getCreatedBy());
-        updateStmt.setString(11, provider.getId());
+        updateStmt.setString(4, provider.getUrl());
+        updateStmt.setString(5, provider.getHandleUrl());
+        updateStmt.setString(6, provider.getHashtagUrl());
+        updateStmt.setString(7, provider.getThumbnail());
+        updateStmt.setInt(8, provider.getMaxPostLength());
+        updateStmt.setInt(9, provider.getUrlLength());
+        updateStmt.setString(10, provider.getStatus().name());
+        updateStmt.setString(11, provider.getCreatedBy());
+        updateStmt.setString(12, provider.getId());
         updateStmt.executeUpdate();
 
-        logger.info(String.format("Updated provider %s in VIDEO_PROVIDERS", provider.getId()));
+        logger.info(String.format("Updated provider %s in SOCIAL_PROVIDERS", provider.getId()));
     }
 
     /**
-     * Returns the providers from the VIDEO_PROVIDERS table.
+     * Returns the providers from the SOCIAL_PROVIDERS table.
      */
-    public synchronized List<VideoProvider> list() throws SQLException
+    public synchronized List<SocialProvider> list() throws SQLException
     {
-        List<VideoProvider> ret = null;
+        List<SocialProvider> ret = null;
 
         if(!hasConnection())
             return ret;
@@ -259,22 +263,23 @@ public class VideoProviderDAO extends BaseDAO
         {
             listStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listStmt.executeQuery();
-            ret = new ArrayList<VideoProvider>();
+            ret = new ArrayList<SocialProvider>();
             while(rs.next())
             {
-                VideoProvider provider = new VideoProvider();
+                SocialProvider provider = new SocialProvider();
                 provider.setId(rs.getString(1));
                 provider.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 provider.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 provider.setCode(rs.getString(4));
                 provider.setName(rs.getString(5));
-                provider.setTag(rs.getString(6));
-                provider.setUrl(rs.getString(7));
-                provider.setChannelUrl(rs.getString(8));
-                provider.setVideoUrl(rs.getString(9));
-                provider.setEmbed(rs.getString(10));
-                provider.setStatus(rs.getString(11));
-                provider.setCreatedBy(rs.getString(12));
+                provider.setUrl(rs.getString(6));
+                provider.setHandleUrl(rs.getString(7));
+                provider.setHashtagUrl(rs.getString(8));
+                provider.setThumbnail(rs.getString(9));
+                provider.setMaxPostLength(rs.getInt(10));
+                provider.setUrlLength(rs.getInt(11));
+                provider.setStatus(rs.getString(12));
+                provider.setCreatedBy(rs.getString(13));
                 ret.add(provider);
             }
         }
@@ -314,9 +319,9 @@ public class VideoProviderDAO extends BaseDAO
     }
 
     /**
-     * Removes the given provider from the VIDEO_PROVIDERS table.
+     * Removes the given provider from the SOCIAL_PROVIDERS table.
      */
-    public synchronized void delete(VideoProvider provider) throws SQLException
+    public synchronized void delete(SocialProvider provider) throws SQLException
     {
         if(!hasConnection() || provider == null)
             return;
@@ -328,7 +333,7 @@ public class VideoProviderDAO extends BaseDAO
         deleteStmt.setString(1, provider.getId());
         deleteStmt.executeUpdate();
 
-        logger.info(String.format("Deleted provider %s in VIDEO_PROVIDERS", provider.getId()));
+        logger.info(String.format("Deleted provider %s in SOCIAL_PROVIDERS", provider.getId()));
     }
 
     /**

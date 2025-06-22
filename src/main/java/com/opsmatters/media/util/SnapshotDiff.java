@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.io.StringReader;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.text.diff.StringsComparator;
-import com.opsmatters.media.cache.admin.VideoProviders;
-import com.opsmatters.media.model.admin.VideoProviderId;
-import com.opsmatters.media.model.admin.VideoProvider;
+import com.opsmatters.media.cache.provider.VideoProviders;
+import com.opsmatters.media.model.provider.VideoProviderId;
+import com.opsmatters.media.model.provider.VideoProvider;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 

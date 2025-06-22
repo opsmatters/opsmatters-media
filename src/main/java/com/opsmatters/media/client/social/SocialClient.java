@@ -18,7 +18,7 @@ package com.opsmatters.media.client.social;
 
 import java.io.IOException;
 import java.util.List;
-import com.opsmatters.media.model.admin.SocialProviderId;
+import com.opsmatters.media.model.provider.SocialProviderId;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.ChannelPost;
 

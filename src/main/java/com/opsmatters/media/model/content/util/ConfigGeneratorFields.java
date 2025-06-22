@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
-import com.opsmatters.media.cache.admin.VideoProviders;
+import com.opsmatters.media.cache.provider.VideoProviders;
 import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.cache.organisation.OrganisationSites;
-import com.opsmatters.media.model.admin.VideoProviderId;
-import com.opsmatters.media.model.admin.VideoProvider;
+import com.opsmatters.media.model.provider.VideoProviderId;
+import com.opsmatters.media.model.provider.VideoProvider;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.ContentType;
@@ -39,7 +39,7 @@ import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
 import com.opsmatters.media.util.StringUtils;
 
-import static com.opsmatters.media.model.admin.VideoProviderId.*;
+import static com.opsmatters.media.model.provider.VideoProviderId.*;
 
 /**
  * Class that represents the set of field used to generate a config file.

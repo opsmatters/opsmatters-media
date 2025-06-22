@@ -20,7 +20,7 @@ import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.model.system.Site;
-import com.opsmatters.media.model.admin.RepositoryProviderId;
+import com.opsmatters.media.model.provider.RepositoryProviderId;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.Resource;
 import com.opsmatters.media.model.content.ContentType;

@@ -33,7 +33,7 @@ import software.amazon.awssdk.services.ses.model.Destination;
 import software.amazon.awssdk.services.ses.model.Message;
 import software.amazon.awssdk.services.ses.model.Content;
 import software.amazon.awssdk.services.ses.model.Body;
-import com.opsmatters.media.model.admin.EmailProviderId;
+import com.opsmatters.media.model.provider.EmailProviderId;
 import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailFormat;
 import com.opsmatters.media.model.system.aws.SesConfig;

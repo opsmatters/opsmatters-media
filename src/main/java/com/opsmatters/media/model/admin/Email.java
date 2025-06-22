@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.DeliveryStatus;
 import com.opsmatters.media.model.system.aws.SesConfig;
+import com.opsmatters.media.model.provider.EmailProviderId;
 import com.opsmatters.media.client.system.EmailClient;
 import com.opsmatters.media.client.system.EmailClientFactory;
 import com.opsmatters.media.util.StringUtils;

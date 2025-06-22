@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.cache.admin;
+package com.opsmatters.media.cache.provider;
 
 import java.util.Map;
 import java.util.LinkedHashMap;
@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.admin.ImageProvider;
-import com.opsmatters.media.model.admin.ImageProviderType;
+import com.opsmatters.media.model.provider.ImageProvider;
+import com.opsmatters.media.model.provider.ImageProviderType;
 
 /**
  * Class representing the list of image providers.

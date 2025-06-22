@@ -17,7 +17,7 @@
 package com.opsmatters.media.client.system;
 
 import java.io.IOException;
-import com.opsmatters.media.model.admin.EmailProviderId;
+import com.opsmatters.media.model.provider.EmailProviderId;
 import com.opsmatters.media.model.admin.Email;
 
 /**

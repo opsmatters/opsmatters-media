@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.admin;
+package com.opsmatters.media.model.provider;
 
 /**
  * Class that represents a social media provider.

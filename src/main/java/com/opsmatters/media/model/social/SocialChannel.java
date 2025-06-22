@@ -18,11 +18,11 @@ package com.opsmatters.media.model.social;
 import java.time.Instant;
 import java.util.List;
 import java.util.ArrayList;
-import com.opsmatters.media.cache.admin.SocialProviders;
+import com.opsmatters.media.cache.provider.SocialProviders;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.system.Site;
-import com.opsmatters.media.model.admin.SocialProviderId;
-import com.opsmatters.media.model.admin.SocialProvider;
+import com.opsmatters.media.model.provider.SocialProviderId;
+import com.opsmatters.media.model.provider.SocialProvider;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.StringUtils;
 

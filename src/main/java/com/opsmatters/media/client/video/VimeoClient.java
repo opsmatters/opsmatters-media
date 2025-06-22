@@ -28,7 +28,7 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.model.admin.VideoProviderId;
+import com.opsmatters.media.model.provider.VideoProviderId;
 import com.opsmatters.media.util.FormatUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;

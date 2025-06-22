@@ -16,8 +16,8 @@
 package com.opsmatters.media.model.content.crawler;
 
 import java.util.Map;
-import com.opsmatters.media.cache.admin.VideoProviders;
-import com.opsmatters.media.model.admin.VideoProvider;
+import com.opsmatters.media.cache.provider.VideoProviders;
+import com.opsmatters.media.model.provider.VideoProvider;
 import com.opsmatters.media.model.content.crawler.field.Fields;
 import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.util.Formats;

@@ -18,7 +18,7 @@ package com.opsmatters.media.client.system;
 
 import java.io.IOException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.admin.EmailProviderId;
+import com.opsmatters.media.model.provider.EmailProviderId;
 import com.opsmatters.media.model.system.aws.SesConfig;
 import com.opsmatters.media.client.system.aws.AwsSesClient;
 

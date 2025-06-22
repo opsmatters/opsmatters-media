@@ -15,7 +15,7 @@
  */
 package com.opsmatters.media.model.content.project;
 
-import com.opsmatters.media.model.admin.RepositoryProviderId;
+import com.opsmatters.media.model.provider.RepositoryProviderId;
 import com.opsmatters.media.model.content.ResourceItem;
 
 /**

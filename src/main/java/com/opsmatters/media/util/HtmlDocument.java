@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import com.opsmatters.media.cache.admin.ImageProviders;
+import com.opsmatters.media.cache.provider.ImageProviders;
 
 /**
  * A set of utility methods to perform miscellaneous tasks related to HTML links.

@@ -24,7 +24,7 @@ import org.apache.commons.text.StringSubstitutor;
 import com.vdurmont.emoji.EmojiParser;
 import com.twitter.twittertext.TwitterTextParser;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.model.admin.SocialProviderId;
+import com.opsmatters.media.model.provider.SocialProviderId;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.SocialPostProperty;
 import com.opsmatters.media.model.social.SocialPostProperties;

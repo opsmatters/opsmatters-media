@@ -45,7 +45,7 @@ import com.echobox.api.linkedin.exception.LinkedInAPIException;
 import com.echobox.api.linkedin.exception.LinkedInQueryParseException;
 import com.echobox.api.linkedin.exception.LinkedInResourceNotFoundException;
 import com.echobox.api.linkedin.util.PostUtils;
-import com.opsmatters.media.model.admin.SocialProviderId;
+import com.opsmatters.media.model.provider.SocialProviderId;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.ChannelPost;
 import com.opsmatters.media.client.Client;

@@ -57,7 +57,7 @@ import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import com.google.common.collect.Lists;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.model.admin.VideoProviderId;
+import com.opsmatters.media.model.provider.VideoProviderId;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 

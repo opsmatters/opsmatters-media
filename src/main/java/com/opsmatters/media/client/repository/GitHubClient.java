@@ -32,7 +32,7 @@ import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHContent;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHLicense;
-import com.opsmatters.media.model.admin.RepositoryProviderId;
+import com.opsmatters.media.model.provider.RepositoryProviderId;
 import com.opsmatters.media.model.content.project.ProjectConfig;
 import com.opsmatters.media.model.content.project.ProjectDetails;
 import com.opsmatters.media.model.content.project.OpenSourceLicense;

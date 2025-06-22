@@ -39,10 +39,6 @@ public class AdminDAOFactory extends DAOFactory
         getParameterDAO();
         getTableTaskDAO();
         getTaskExecutionDAO();
-        getEventProviderDAO();
-        getImageProviderDAO();
-        getVideoProviderDAO();
-        getSocialProviderDAO();
     }
 
     /**
@@ -106,46 +102,6 @@ public class AdminDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the event provider DAO.
-     */
-    public EventProviderDAO getEventProviderDAO()
-    {
-        if(eventProviderDAO == null)
-            eventProviderDAO = new EventProviderDAO(this);
-        return eventProviderDAO;
-    }
-
-    /**
-     * Returns the image provider DAO.
-     */
-    public ImageProviderDAO getImageProviderDAO()
-    {
-        if(imageProviderDAO == null)
-            imageProviderDAO = new ImageProviderDAO(this);
-        return imageProviderDAO;
-    }
-
-    /**
-     * Returns the video provider DAO.
-     */
-    public VideoProviderDAO getVideoProviderDAO()
-    {
-        if(videoProviderDAO == null)
-            videoProviderDAO = new VideoProviderDAO(this);
-        return videoProviderDAO;
-    }
-
-    /**
-     * Returns the social provider DAO.
-     */
-    public SocialProviderDAO getSocialProviderDAO()
-    {
-        if(socialProviderDAO == null)
-            socialProviderDAO = new SocialProviderDAO(this);
-        return socialProviderDAO;
-    }
-
-    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
@@ -158,10 +114,6 @@ public class AdminDAOFactory extends DAOFactory
         parameterDAO = null;
         tableTaskDAO = null;
         taskExecutionDAO = null;
-        eventProviderDAO = null;
-        imageProviderDAO = null;
-        videoProviderDAO = null;
-        socialProviderDAO = null;
     }
 
     private UserDAO userDAO;
@@ -170,8 +122,4 @@ public class AdminDAOFactory extends DAOFactory
     private ParameterDAO parameterDAO;
     private TableTaskDAO tableTaskDAO;
     private TaskExecutionDAO taskExecutionDAO;
-    private EventProviderDAO eventProviderDAO;
-    private ImageProviderDAO imageProviderDAO;
-    private VideoProviderDAO videoProviderDAO;
-    private SocialProviderDAO socialProviderDAO;
 }

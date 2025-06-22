@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.admin;
+package com.opsmatters.media.model.provider;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -21,7 +21,7 @@ import com.opsmatters.media.client.video.YouTubeClient;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.UserMessage.*;
-import static com.opsmatters.media.model.admin.VideoProviderId.*;
+import static com.opsmatters.media.model.provider.VideoProviderId.*;
 
 /**
  * Class that represents a video provider.

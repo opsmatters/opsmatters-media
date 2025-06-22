@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Gerald Curley
+ * Copyright 2018 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,33 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.admin;
+package com.opsmatters.media.model.provider;
 
 /**
- * Represents an email provider.
+ * Represents a repository provider.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum EmailProviderId
+public enum RepositoryProviderId
 {
-    SES("SES", "SES");
+    GITHUB("GTH", "GitHub", "https://github.com"),
+    GITLAB("GTL", "GitLab", "https://gitlab.com");
 
     private String code;
     private String value;
+    private String url;
 
     /**
      * Constructor that takes the code and name.
      * @param code The code for the provider
      * @param value The value of the provider
+     * @param url The base URL for the provider
      */
-    EmailProviderId(String code, String value)
+    RepositoryProviderId(String code, String value, String url)
     {
         this.code = code;
         this.value = value;
+        this.url = url;
     }
 
     /**
@@ -67,20 +71,74 @@ public enum EmailProviderId
     }
 
     /**
+     * Returns the base URL.
+     * @return The base URL.
+     */
+    public String url()
+    {
+        return url;
+    }
+
+    /**
      * Returns the type for the given code.
      * @param code The type code
      * @return The type for the given code
      */
-    public static EmailProviderId fromCode(String code)
+    public static RepositoryProviderId fromCode(String code)
     {
-        EmailProviderId[] types = values();
-        for(EmailProviderId type : types)
+        RepositoryProviderId[] types = values();
+        for(RepositoryProviderId type : types)
         {
             if(type.code().equals(code))
                 return type;
         }
 
         return null;
+    }
+
+    /**
+     * Returns the type for the given url.
+     * @param url The url
+     * @return The type for the given url
+     */
+    public static RepositoryProviderId fromUrl(String url)
+    {
+        RepositoryProviderId[] types = values();
+        for(RepositoryProviderId type : types)
+        {
+            if(url.startsWith(type.url()))
+                return type;
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the user for the given url.
+     * @param url The url
+     * @return The user for the given url
+     */
+    public String getRepoUser(String url)
+    {
+        String ret = url.substring(this.url.length()+1);
+        int pos = ret.indexOf("/");
+        if(pos != -1)
+            ret = ret.substring(0, pos);
+        return ret;
+    }
+
+    /**
+     * Returns the repo name for the given url.
+     * @param url The url
+     * @return The repo name for the given url
+     */
+    public String getRepoName(String url)
+    {
+        String ret = url;
+        int pos = url.lastIndexOf("/");
+        if(pos != -1)
+            ret = ret.substring(pos+1);
+        return ret;
     }
 
     /**

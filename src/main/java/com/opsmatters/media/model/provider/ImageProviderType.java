@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.admin;
+package com.opsmatters.media.model.provider;
 
 import java.util.List;
 import java.util.ArrayList;

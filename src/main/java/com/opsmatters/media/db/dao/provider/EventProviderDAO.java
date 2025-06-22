@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.db.dao.admin;
+package com.opsmatters.media.db.dao.provider;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.admin.EventProvider;
+import com.opsmatters.media.model.provider.EventProvider;
 import com.opsmatters.media.db.dao.BaseDAO;
 
 /**
@@ -80,7 +80,7 @@ public class EventProviderDAO extends BaseDAO
     /**
      * Constructor that takes a DAO factory.
      */
-    public EventProviderDAO(AdminDAOFactory factory)
+    public EventProviderDAO(ProviderDAOFactory factory)
     {
         super(factory, "EVENT_PROVIDERS");
     }

@@ -15,9 +15,9 @@
  */
 package com.opsmatters.media.model.content.video;
 
-import com.opsmatters.media.cache.admin.VideoProviders;
-import com.opsmatters.media.model.admin.VideoProviderId;
-import com.opsmatters.media.model.admin.VideoProvider;
+import com.opsmatters.media.cache.provider.VideoProviders;
+import com.opsmatters.media.model.provider.VideoProviderId;
+import com.opsmatters.media.model.provider.VideoProvider;
 import com.opsmatters.media.model.feed.video.YouTubeEntry;
 import com.opsmatters.media.model.content.ArticleDetails;
 import com.opsmatters.media.util.Formats;

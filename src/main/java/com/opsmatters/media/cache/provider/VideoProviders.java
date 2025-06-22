@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.cache.admin;
+package com.opsmatters.media.cache.provider;
 
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.admin.VideoProvider;
-import com.opsmatters.media.model.admin.VideoProviderId;
+import com.opsmatters.media.model.provider.VideoProvider;
+import com.opsmatters.media.model.provider.VideoProviderId;
 
 /**
  * Class representing the list of video providers.
