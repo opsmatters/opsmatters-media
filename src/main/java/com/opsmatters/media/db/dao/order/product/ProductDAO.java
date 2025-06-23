@@ -219,6 +219,27 @@ public class ProductDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given product in the PRODUCTS table.
+     */
+    public boolean upsert(Product product) throws SQLException
+    {
+        boolean ret = false;
+
+        Product existing = getById(product.getId());
+        if(existing != null)
+        {
+            update(product);
+        }
+        else
+        {
+            add(product);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the products from the PRODUCTS table.
      */
     public synchronized List<Product> list() throws SQLException

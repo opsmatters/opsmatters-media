@@ -361,6 +361,27 @@ public class UserDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given user in the USERS table.
+     */
+    public boolean upsert(User user) throws SQLException
+    {
+        boolean ret = false;
+
+        User existing = getById(user.getId());
+        if(existing != null)
+        {
+            update(user);
+        }
+        else
+        {
+            add(user);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the users from the USERS table.
      */
     public synchronized List<User> list() throws SQLException

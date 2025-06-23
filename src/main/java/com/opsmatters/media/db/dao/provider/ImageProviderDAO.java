@@ -231,6 +231,27 @@ public class ImageProviderDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given provider in the IMAGE_PROVIDERS table.
+     */
+    public boolean upsert(ImageProvider provider) throws SQLException
+    {
+        boolean ret = false;
+
+        ImageProvider existing = getById(provider.getId());
+        if(existing != null)
+        {
+            update(provider);
+        }
+        else
+        {
+            add(provider);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the providers from the IMAGE_PROVIDERS table.
      */
     public synchronized List<ImageProvider> list() throws SQLException

@@ -362,6 +362,27 @@ public class DraftPostDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given post in the DRAFT_POSTS table.
+     */
+    public boolean upsert(DraftPost post) throws SQLException
+    {
+        boolean ret = false;
+
+        DraftPost existing = getById(post.getId());
+        if(existing != null)
+        {
+            update(post);
+        }
+        else
+        {
+            add(post);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the post items from the DRAFT_POSTS table by type and interval.
      */
     public synchronized List<DraftPostItem> listItems(SocialPostType type, int interval) throws SQLException

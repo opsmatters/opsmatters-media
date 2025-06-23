@@ -234,6 +234,27 @@ public class SiteDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given site in the SITES table.
+     */
+    public boolean upsert(Site site) throws SQLException
+    {
+        boolean ret = false;
+
+        Site existing = getById(site.getId());
+        if(existing != null)
+        {
+            update(site);
+        }
+        else
+        {
+            add(site);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the sites from the SITES table.
      */
     public synchronized List<Site> list() throws SQLException

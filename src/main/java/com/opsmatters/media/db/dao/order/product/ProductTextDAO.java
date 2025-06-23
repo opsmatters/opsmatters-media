@@ -222,6 +222,27 @@ public class ProductTextDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given text in the PRODUCT_TEXTS table.
+     */
+    public boolean upsert(ProductText text) throws SQLException
+    {
+        boolean ret = false;
+
+        ProductText existing = getById(text.getId());
+        if(existing != null)
+        {
+            update(text);
+        }
+        else
+        {
+            add(text);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the texts from the PRODUCT_TEXTS table.
      */
     public synchronized List<ProductText> list() throws SQLException

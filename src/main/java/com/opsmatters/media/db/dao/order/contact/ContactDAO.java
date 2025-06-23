@@ -272,6 +272,27 @@ public class ContactDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given contact in the CONTACTS table.
+     */
+    public boolean upsert(Contact contact) throws SQLException
+    {
+        boolean ret = false;
+
+        Contact existing = getById(contact.getId());
+        if(existing != null)
+        {
+            update(contact);
+        }
+        else
+        {
+            add(contact);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the contacts from the CONTACTS table.
      */
     public synchronized List<Contact> list() throws SQLException

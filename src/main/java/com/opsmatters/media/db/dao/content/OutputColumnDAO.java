@@ -235,6 +235,27 @@ public class OutputColumnDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given column in the OUTPUT_COLUMNS table.
+     */
+    public boolean upsert(OutputColumn column) throws SQLException
+    {
+        boolean ret = false;
+
+        OutputColumn existing = getById(column.getId());
+        if(existing != null)
+        {
+            update(column);
+        }
+        else
+        {
+            add(column);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the columns from the OUTPUT_COLUMNS table.
      */
     public synchronized List<OutputColumn> list() throws SQLException

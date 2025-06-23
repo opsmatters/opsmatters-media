@@ -263,6 +263,27 @@ public class OrderItemDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given item in the ORDER_ITEMS table.
+     */
+    public boolean upsert(OrderItem item) throws SQLException
+    {
+        boolean ret = false;
+
+        OrderItem existing = getById(item.getId());
+        if(existing != null)
+        {
+            update(item);
+        }
+        else
+        {
+            add(item);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the items from the ORDER_ITEMS table.
      */
     public synchronized List<OrderItem> list() throws SQLException

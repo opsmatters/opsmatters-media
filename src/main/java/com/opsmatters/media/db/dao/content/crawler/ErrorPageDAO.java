@@ -226,6 +226,27 @@ public class ErrorPageDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given error page in the ERROR_PAGES table.
+     */
+    public boolean upsert(ErrorPage page) throws SQLException
+    {
+        boolean ret = false;
+
+        ErrorPage existing = getById(page.getId());
+        if(existing != null)
+        {
+            update(page);
+        }
+        else
+        {
+            add(page);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the error pages from the ERROR_PAGES table.
      */
     public synchronized List<ErrorPage> list() throws SQLException

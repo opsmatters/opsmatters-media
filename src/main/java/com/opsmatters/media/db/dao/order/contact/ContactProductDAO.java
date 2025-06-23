@@ -224,6 +224,27 @@ public class ContactProductDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given product in the CONTACT_PRODUCTS table.
+     */
+    public boolean upsert(ContactProduct product) throws SQLException
+    {
+        boolean ret = false;
+
+        ContactProduct existing = getById(product.getId());
+        if(existing != null)
+        {
+            update(product);
+        }
+        else
+        {
+            add(product);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the products from the CONTACT_PRODUCTS table by contact.
      */
     public synchronized List<ContactProduct> list(String contactId) throws SQLException

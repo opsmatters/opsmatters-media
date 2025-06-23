@@ -267,6 +267,27 @@ public class CompanyDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given company in the COMPANIES table.
+     */
+    public boolean upsert(Company company) throws SQLException
+    {
+        boolean ret = false;
+
+        Company existing = getById(company.getId());
+        if(existing != null)
+        {
+            update(company);
+        }
+        else
+        {
+            add(company);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the companies from the COMPANIES table.
      */
     public synchronized List<Company> list() throws SQLException

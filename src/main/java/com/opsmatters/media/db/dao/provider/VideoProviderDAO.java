@@ -239,6 +239,27 @@ public class VideoProviderDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given provider in the VIDEO_PROVIDERS table.
+     */
+    public boolean upsert(VideoProvider provider) throws SQLException
+    {
+        boolean ret = false;
+
+        VideoProvider existing = getById(provider.getId());
+        if(existing != null)
+        {
+            update(provider);
+        }
+        else
+        {
+            add(provider);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the providers from the VIDEO_PROVIDERS table.
      */
     public synchronized List<VideoProvider> list() throws SQLException

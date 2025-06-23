@@ -40,7 +40,7 @@ import com.opsmatters.media.db.dao.BaseDAO;
 import static com.opsmatters.media.model.social.SocialPostType.*;
 
 /**
- * DAO that provides operations on the SAVED_POST table in the database.
+ * DAO that provides operations on the SAVED_POSTS table in the database.
  * 
  * @author Gerald Curley (opsmatters)
  */
@@ -326,6 +326,27 @@ public class SavedPostDAO extends BaseDAO
             if(reader != null)
                 reader.close();
           }
+    }
+
+    /**
+     * Adds or Updates the given post in the SAVED_POSTS table.
+     */
+    public boolean upsert(SavedPost post) throws SQLException
+    {
+        boolean ret = false;
+
+        SavedPost existing = getById(post.getId());
+        if(existing != null)
+        {
+            update(post);
+        }
+        else
+        {
+            add(post);
+            ret = true;
+        }
+
+        return ret;
     }
 
     /**

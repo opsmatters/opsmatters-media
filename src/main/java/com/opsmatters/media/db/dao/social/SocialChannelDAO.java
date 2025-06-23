@@ -313,6 +313,27 @@ public class SocialChannelDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given channel in the SOCIAL_CHANNELS table.
+     */
+    public boolean upsert(SocialChannel channel) throws SQLException
+    {
+        boolean ret = false;
+
+        SocialChannel existing = getById(channel.getId());
+        if(existing != null)
+        {
+            update(channel);
+        }
+        else
+        {
+            add(channel);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the channels from the SOCIAL_CHANNELS table.
      */
     public synchronized List<SocialChannel> list() throws SQLException

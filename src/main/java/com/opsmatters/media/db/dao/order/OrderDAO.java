@@ -307,6 +307,27 @@ public class OrderDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given order in the ORDERS table.
+     */
+    public boolean upsert(Order order) throws SQLException
+    {
+        boolean ret = false;
+
+        Order existing = getById(order.getId());
+        if(existing != null)
+        {
+            update(order);
+        }
+        else
+        {
+            add(order);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the orders from the ORDERS table.
      */
     public synchronized List<Order> list() throws SQLException

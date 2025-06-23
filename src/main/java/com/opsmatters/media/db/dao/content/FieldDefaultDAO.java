@@ -230,6 +230,27 @@ public class FieldDefaultDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given default in the FIELD_DEFAULTS table.
+     */
+    public boolean upsert(FieldDefault _default) throws SQLException
+    {
+        boolean ret = false;
+
+        FieldDefault existing = getById(_default.getId());
+        if(existing != null)
+        {
+            update(_default);
+        }
+        else
+        {
+            add(_default);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the defaults from the FIELD_DEFAULTS table.
      */
     public synchronized List<FieldDefault> list() throws SQLException

@@ -246,6 +246,27 @@ public class TableTaskDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given task in the TABLE_TASKS table.
+     */
+    public boolean upsert(TableTask task) throws SQLException
+    {
+        boolean ret = false;
+
+        TableTask existing = getById(task.getId());
+        if(existing != null)
+        {
+            update(task);
+        }
+        else
+        {
+            add(task);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the tasks from the TABLE_TASKS table.
      */
     public synchronized List<TableTask> list() throws SQLException

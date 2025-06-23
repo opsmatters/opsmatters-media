@@ -227,6 +227,27 @@ public class EventProviderDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given provider in the EVENT_PROVIDERS table.
+     */
+    public boolean upsert(EventProvider provider) throws SQLException
+    {
+        boolean ret = false;
+
+        EventProvider existing = getById(provider.getId());
+        if(existing != null)
+        {
+            update(provider);
+        }
+        else
+        {
+            add(provider);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the providers from the EVENT_PROVIDERS table.
      */
     public synchronized List<EventProvider> list() throws SQLException

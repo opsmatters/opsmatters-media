@@ -287,6 +287,27 @@ public class SocialTemplateDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given template in the SOCIAL_TEMPLATES table.
+     */
+    public boolean upsert(SocialTemplate template) throws SQLException
+    {
+        boolean ret = false;
+
+        SocialTemplate existing = getById(template.getId());
+        if(existing != null)
+        {
+            update(template);
+        }
+        else
+        {
+            add(template);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the templates from the SOCIAL_TEMPLATES table.
      */
     public synchronized List<SocialTemplate> list() throws SQLException

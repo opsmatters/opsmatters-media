@@ -243,6 +243,27 @@ public class SocialProviderDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given provider in the SOCIAL_PROVIDERS table.
+     */
+    public boolean upsert(SocialProvider provider) throws SQLException
+    {
+        boolean ret = false;
+
+        SocialProvider existing = getById(provider.getId());
+        if(existing != null)
+        {
+            update(provider);
+        }
+        else
+        {
+            add(provider);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the providers from the SOCIAL_PROVIDERS table.
      */
     public synchronized List<SocialProvider> list() throws SQLException

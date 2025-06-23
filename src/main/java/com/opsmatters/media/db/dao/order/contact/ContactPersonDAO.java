@@ -231,6 +231,27 @@ public class ContactPersonDAO extends BaseDAO
     }
 
     /**
+     * Adds or Updates the given person in the CONTACT_PERSONS table.
+     */
+    public boolean upsert(ContactPerson person) throws SQLException
+    {
+        boolean ret = false;
+
+        ContactPerson existing = getById(person.getId());
+        if(existing != null)
+        {
+            update(person);
+        }
+        else
+        {
+            add(person);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the persons from the CONTACT_PERSONS table.
      */
     public synchronized List<ContactPerson> list() throws SQLException
