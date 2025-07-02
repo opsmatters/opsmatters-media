@@ -403,6 +403,33 @@ public class OrderItemDAO extends BaseDAO
     }
 
     /**
+     * Returns the items from the ORDER_ITEMS table by order.
+     */
+    public List<OrderItem> list(Order order) throws SQLException
+    {
+        return list(order.getId());
+    }
+
+    /**
+     * Returns the item from the ORDER_ITEMS table for the given content item.
+     */
+    public OrderItem getByTitle(Order order, Content content) throws SQLException
+    {
+        OrderItem ret = null;
+        List<OrderItem> items = list(order);
+        for(OrderItem item : items)
+        {
+            if(item.getDescription().equals(content.getTitle()))
+            {
+                ret = item;
+                break;
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the items from the ORDER_ITEMS table by content.
      */
     public synchronized List<OrderItem> list(Content content) throws SQLException

@@ -50,7 +50,9 @@ public class Contact extends BaseEntity
     private ContactStatus status = ContactStatus.NEW;
     private SuspendReason reason = SuspendReason.NONE;
     private ContactRating rating = ContactRating.UNDEFINED;
-    private boolean autoComplete = false;
+    private boolean prePayment = false;
+    private boolean deliveryEmail = false;
+    private boolean completionEmail = false;
 
     /**
      * Default constructor.
@@ -74,6 +76,8 @@ public class Contact extends BaseEntity
         setPaymentTerm(Parameters.get(ORDER, PAYMENT_TERM).getValue());
         setCurrency(Parameters.get(ORDER, CURRENCY).getValue());
         setRating(ContactRating.NEUTRAL);
+        setDeliveryEmail(true);
+        setCompletionEmail(true);
     }
 
     /**
@@ -107,7 +111,9 @@ public class Contact extends BaseEntity
             setStatus(obj.getStatus());
             setReason(obj.getReason());
             setRating(obj.getRating());
-            setAutoComplete(obj.isAutoComplete());
+            setPrePayment(obj.hasPrePayment());
+            setDeliveryEmail(obj.hasDeliveryEmail());
+            setCompletionEmail(obj.hasCompletionEmail());
         }
     }
 
@@ -502,34 +508,98 @@ public class Contact extends BaseEntity
     }
 
     /**
-     * Returns <CODE>true</CODE> if auto-complete is enabled for orders for this contact.
+     * Returns <CODE>true</CODE> if pre-payment is enabled for orders for this contact.
      */
-    public boolean isAutoComplete()
+    public boolean hasPrePayment()
     {
-        return autoComplete;
+        return prePayment;
     }
 
     /**
-     * Returns <CODE>true</CODE> if auto-complete is enabled for orders for this contact.
+     * Returns <CODE>true</CODE> if pre-payment is enabled for orders for this contact.
      */
-    public Boolean getAutoCompleteObject()
+    public Boolean getPrePaymentObject()
     {
-        return Boolean.valueOf(isAutoComplete());
+        return Boolean.valueOf(hasPrePayment());
     }
 
     /**
-     * Set to <CODE>true</CODE> if auto-complete is enabled for orders for this contact.
+     * Set to <CODE>true</CODE> if pre-payment is enabled for orders for this contact.
      */
-    public void setAutoComplete(boolean autoComplete)
+    public void setPrePayment(boolean prePayment)
     {
-        this.autoComplete = autoComplete;
+        this.prePayment = prePayment;
     }
 
     /**
-     * Set to <CODE>true</CODE> if auto-complete is enabled for orders for this contact.
+     * Set to <CODE>true</CODE> if pre-payment is enabled for orders for this contact.
      */
-    public void setAutoCompleteObject(Boolean autoComplete)
+    public void setPrePaymentObject(Boolean prePayment)
     {
-        setAutoComplete(autoComplete != null && autoComplete.booleanValue());
+        setPrePayment(prePayment != null && prePayment.booleanValue());
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this contact requires a delivery email.
+     */
+    public boolean hasDeliveryEmail()
+    {
+        return deliveryEmail;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this contact requires a delivery email.
+     */
+    public Boolean getDeliveryEmailObject()
+    {
+        return Boolean.valueOf(deliveryEmail);
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this contact requires a delivery email.
+     */
+    public void setDeliveryEmail(boolean deliveryEmail)
+    {
+        this.deliveryEmail = deliveryEmail;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this contact requires a delivery email.
+     */
+    public void setDeliveryEmailObject(Boolean deliveryEmail)
+    {
+        setDeliveryEmail(deliveryEmail != null && deliveryEmail.booleanValue());
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this contact sends a completion email.
+     */
+    public boolean hasCompletionEmail()
+    {
+        return completionEmail;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this contact sends a completion email.
+     */
+    public Boolean getCompletionEmailObject()
+    {
+        return Boolean.valueOf(completionEmail);
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this contact sends a completion email.
+     */
+    public void setCompletionEmail(boolean completionEmail)
+    {
+        this.completionEmail = completionEmail;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this contact sends a completion email.
+     */
+    public void setCompletionEmailObject(Boolean completionEmail)
+    {
+        setCompletionEmail(completionEmail != null && completionEmail.booleanValue());
     }
 }

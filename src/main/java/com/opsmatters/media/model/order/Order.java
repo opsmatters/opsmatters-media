@@ -116,10 +116,12 @@ public class Order extends BaseEntity
         }
         else
         {
-            if(contact.isAutoComplete())
-                setStatus(OrderStatus.COMPLETED);
-            else
+            if(contact.hasDeliveryEmail())
                 setStatus(OrderStatus.PENDING);
+            else if(contact.hasCompletionEmail())
+                setStatus(OrderStatus.DELIVERED);
+            else
+                setStatus(OrderStatus.COMPLETED);
             getInvoice().setStatus(InvoiceStatus.NONE);
         }
     }

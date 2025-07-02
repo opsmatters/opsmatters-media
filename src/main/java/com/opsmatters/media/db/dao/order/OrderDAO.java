@@ -607,10 +607,10 @@ public class OrderDAO extends BaseDAO
         List<Order> ret = new ArrayList<Order>();
 
         Instant now = Instant.now();
-        List<Order> orders = list(contact.getId(), OrderStatus.PENDING);
+        List<Order> orders = list(contact.getId(), OrderStatus.DELIVERED);
         for(Order order : orders)
         {
-            // Add the pending invoices more than "days" old
+            // Add the DELIVERED invoices more than "days" old
             if(ChronoUnit.DAYS.between(order.getCreatedDate(), now) > days)
             {
                 ret.add(order);

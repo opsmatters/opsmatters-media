@@ -27,19 +27,20 @@ import java.util.ArrayList;
 public enum OrderStatus
 {
     NEW("New", "glyphicon-unchecked", ""),
-    APPROVED("Approved", "glyphicon-ok-circle", "status-info"),
     PENDING("Pending", "glyphicon-log-in", "status-warn"),
+    DELIVERED("Delivered", "glyphicon-log-out", "status-warn"),
     COMPLETED("Completed", "glyphicon-ok-circle", "status-success"),
     CANCELLED("Cancelled", "glyphicon-trash", "status-error"),
     ARCHIVED("Archived", "glyphicon-trash", "status-error"),
-    ALL("All", "", ""); // Pseudo status
+    IN_PROGRESS("In Progress"), // Pseudo status
+    ALL("All"); // Pseudo status
 
-    private String value;
-    private String icon;
-    private String css;
+    private String value = "";
+    private String icon = "";
+    private String css = "";
 
     /**
-     * Constructor that takes the status value.
+     * Constructor that takes the status value, icon and css.
      * @param value The value for the status
      * @param icon The glyphicon for the status
      * @param css The css class for the status
@@ -49,6 +50,15 @@ public enum OrderStatus
         this.value = value;
         this.icon = icon;
         this.css = css;
+    }
+
+    /**
+     * Constructor that takes the status value.
+     * @param value The value for the status
+     */
+    OrderStatus(String value)
+    {
+        this.value = value;
     }
 
     /**
@@ -88,6 +98,16 @@ public enum OrderStatus
     }
 
     /**
+     * Returns <CODE>true</CODE> if this status is IN_PROGRESS.
+     */
+    public boolean inProgress()
+    {
+        return this == NEW
+            || this == PENDING
+            || this == DELIVERED;
+    }
+
+    /**
      * Returns the type for the given value.
      * @param value The type value
      * @return The type for the given value
@@ -122,6 +142,7 @@ public enum OrderStatus
 
         ret.add(NEW);
         ret.add(PENDING);
+        ret.add(DELIVERED);
         ret.add(COMPLETED);
         ret.add(CANCELLED);
         ret.add(ARCHIVED);
