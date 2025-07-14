@@ -34,11 +34,6 @@ public enum ContactRating
     UNDEFINED("Undefined", 0),
     OCCASIONAL("Occasional", 1),
     REGULAR("Regular", 10),
-//GERALD: are these needed?
-//    GOOD("Good"), // Pseudo status
-//    VERY_GOOD("Very Good"), // Pseudo status
-//    BAD("Bad"), // Pseudo status
-//    VERY_BAD("Very Bad"), // Pseudo status
     ALL("All"); // Pseudo status
 
     private String value;

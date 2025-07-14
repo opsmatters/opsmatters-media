@@ -671,12 +671,11 @@ public class Post extends Article<PostDetails>
      */
     public void setAttribution()
     {
-        if(!hasAttribution())
-        {
-            ImageProvider provider = ImageProviders.getByFilename(getImage());
-            if(provider != null && provider.getType() == ImageProviderType.ATTRIBUTED)
-                setAttribution(provider.getAttribution());
-        }
+        String attribution = "";
+        ImageProvider provider = ImageProviders.getByFilename(getImage());
+        if(provider != null && provider.getType() == ImageProviderType.ATTRIBUTED)
+            attribution = provider.getAttribution();
+        setAttribution(attribution);
     }
 
     /**
