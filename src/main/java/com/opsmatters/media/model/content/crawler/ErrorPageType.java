@@ -29,7 +29,8 @@ public enum ErrorPageType
     UNKNOWN("Unknown"),
     CLOUDFLARE("Cloudflare"),
     ERROR_403("403 Error"),
-    ERROR_404("404 Error");
+    ERROR_404("404 Error"),
+    ERROR_406("406 Error");
 
     private String value;
 
@@ -81,6 +82,7 @@ public enum ErrorPageType
         ret.add(CLOUDFLARE);
         ret.add(ERROR_403);
         ret.add(ERROR_404);
+        ret.add(ERROR_406);
 
         return ret;
     }

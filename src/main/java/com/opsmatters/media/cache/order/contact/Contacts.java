@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.order.contact.Contact;
 import com.opsmatters.media.model.order.contact.ContactPerson;
+import com.opsmatters.media.model.order.contact.ContactProduct;
 
 /**
  * Class representing the list of contacts.
@@ -40,6 +41,8 @@ public class Contacts implements java.io.Serializable
     private static Map<String,ContactPerson> personNameMap = new TreeMap<String,ContactPerson>();
     private static Map<String,ContactPerson> personEmailMap = new TreeMap<String,ContactPerson>();
     private static Map<String,Map<String,ContactPerson>> personContactMap = new LinkedHashMap<String,Map<String,ContactPerson>>();
+    private static Map<String,ContactProduct> productIdMap = new TreeMap<String,ContactProduct>();
+    private static Map<String,Map<String,ContactProduct>> productContactMap = new LinkedHashMap<String,Map<String,ContactProduct>>();
 
     private static boolean initialised = false;
 
@@ -59,9 +62,9 @@ public class Contacts implements java.io.Serializable
     }
 
     /**
-     * Loads the set of contacts and persons.
+     * Loads the set of contacts, persons and products.
      */
-    public static void load(List<Contact> contacts, List<ContactPerson> persons)
+    public static void load(List<Contact> contacts, List<ContactPerson> persons, List<ContactProduct> products)
     {
         initialised = false;
 
@@ -78,7 +81,14 @@ public class Contacts implements java.io.Serializable
             add(person);
         }
 
-        logger.info("Loaded "+personNameMap.size()+" contact persons");
+        logger.info("Loaded "+personIdMap.size()+" contact persons");
+
+        for(ContactProduct product : products)
+        {
+            add(product);
+        }
+
+        logger.info("Loaded "+productIdMap.size()+" contact products");
 
         initialised = true;
     }
@@ -95,6 +105,8 @@ public class Contacts implements java.io.Serializable
         personNameMap.clear();
         personEmailMap.clear();
         personContactMap.clear();
+        productIdMap.clear();
+        productContactMap.clear();
     }
 
     /**
@@ -154,6 +166,14 @@ public class Contacts implements java.io.Serializable
     }
 
     /**
+     * Returns the contact product with the given id.
+     */
+    public static ContactProduct getProductById(String id)
+    {
+        return id != null ? productIdMap.get(id) : null;
+    }
+
+    /**
      * Adds the given contact.
      */
     public static void add(Contact contact)
@@ -194,6 +214,27 @@ public class Contacts implements java.io.Serializable
     }
 
     /**
+     * Adds the given contact product.
+     */
+    public static void add(ContactProduct product)
+    {
+        ContactProduct existing = getProductById(product.getId());
+        if(existing != null)
+            remove(existing);
+
+        productIdMap.put(product.getId(), product);
+
+        Map<String,ContactProduct> products = productContactMap.get(product.getContactId());
+        if(products == null)
+        {
+            products = new LinkedHashMap<String,ContactProduct>();
+            productContactMap.put(product.getContactId(), products);
+        }
+
+        products.put(product.getId(), product);
+    }
+
+    /**
      * Removes the given contact.
      */
     public static void remove(Contact contact)
@@ -212,6 +253,15 @@ public class Contacts implements java.io.Serializable
         personNameMap.remove(person.getName());
         personEmailMap.remove(person.getEmail());
         personContactMap.get(person.getContactId()).remove(person.getId());
+    }
+
+    /**
+     * Removes the given contact product.
+     */
+    public static void remove(ContactProduct product)
+    {
+        productIdMap.remove(product.getId());
+        productContactMap.get(product.getContactId()).remove(product.getId());
     }
 
     /**
@@ -327,6 +377,65 @@ public class Contacts implements java.io.Serializable
                 {
                     if(person.isEnabled()
                         && person.getName().toLowerCase().indexOf(name) != -1)
+                    {
+                        ret = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the list of contact products.
+     */
+    public static List<ContactProduct> listProducts()
+    {
+        List<ContactProduct> ret = new ArrayList<ContactProduct>();
+        for(ContactProduct product : productIdMap.values())
+        {
+            ret.add(product);
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the list of contact products for the given contact.
+     */
+    public static List<ContactProduct> listProducts(Contact contact)
+    {
+        List<ContactProduct> ret = new ArrayList<ContactProduct>();
+        Map<String,ContactProduct> products = productContactMap.get(contact.getId());
+        if(products != null)
+        {
+            for(ContactProduct product : products.values())
+            {
+                ret.add(product);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the contact or any of its products have a delivery email.
+     */
+    public static boolean hasDeliveryEmail(Contact contact)
+    {
+        boolean ret = false;
+        if(contact != null)
+        {
+            ret = contact.hasDeliveryEmail();
+
+            if(!ret)
+            {
+                List<ContactProduct> products = listProducts(contact);
+                for(ContactProduct product : products)
+                {
+                    if(product.hasDeliveryEmail())
                     {
                         ret = true;
                         break;

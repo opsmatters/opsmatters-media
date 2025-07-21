@@ -314,7 +314,7 @@ public class OrderItem extends BaseEntity
      */
     public String getDescriptionUrl()
     {
-        String ret = description;
+        String ret = description != null ? description : "";
         int pos = ret.indexOf("\r");
         if(pos != -1)
             ret = ret.substring(0, pos);

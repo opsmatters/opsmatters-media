@@ -36,6 +36,7 @@ public class ContactProduct extends BaseEntity
     private String siteId = "";
     private int price = 0;
     private Currency currency = Currency.UNDEFINED;
+    private boolean deliveryEmail = false;
 
     /**
      * Default constructor.
@@ -76,6 +77,7 @@ public class ContactProduct extends BaseEntity
             setSiteId(obj.getSiteId());
             setPrice(obj.getPrice());
             setCurrency(obj.getCurrency());
+            setDeliveryEmail(obj.hasDeliveryEmail());
         }
     }
 
@@ -177,5 +179,37 @@ public class ContactProduct extends BaseEntity
     public void setCurrency(Currency currency)
     {
         this.currency = currency;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this product requires a delivery email.
+     */
+    public boolean hasDeliveryEmail()
+    {
+        return deliveryEmail;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this product requires a delivery email.
+     */
+    public Boolean getDeliveryEmailObject()
+    {
+        return Boolean.valueOf(deliveryEmail);
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this product requires a delivery email.
+     */
+    public void setDeliveryEmail(boolean deliveryEmail)
+    {
+        this.deliveryEmail = deliveryEmail;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this product requires a delivery email.
+     */
+    public void setDeliveryEmailObject(Boolean deliveryEmail)
+    {
+        setDeliveryEmail(deliveryEmail != null && deliveryEmail.booleanValue());
     }
 }

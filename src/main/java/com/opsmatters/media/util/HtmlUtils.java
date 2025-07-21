@@ -441,6 +441,28 @@ public class HtmlUtils
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given string contains a "&lt;hr&gt;" tag.
+     * @param str The string to search
+     * @return <CODE>true</CODE> if the given string contains a "&lt;hr&gt;" tag.
+     */
+    public static boolean hasHR(String str)
+    {
+        return HtmlDocument.hasHR(str);
+    }
+
+    /**
+     * Removes "&lt;hr&gt;" tags in the given string.
+     * @param str The string to amend
+     * @return The amended string.
+     */
+    public static String removeHRs(String str)
+    {
+        return HtmlDocument.builder(str)
+            .removeHRs()
+            .get();
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the given string contains a &lt;h1&gt; tag.
      * @param str The string to search
      * @return <CODE>true</CODE> if the given string contains a &lt;h1&gt; tag.

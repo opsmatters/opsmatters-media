@@ -72,6 +72,7 @@ public class HtmlDocument
     private static Pattern DIV_CONTENT_PATTERN = Pattern.compile("<div>(.+?)</div>", Pattern.DOTALL);
     private static Pattern SECTION_CONTENT_PATTERN = Pattern.compile("<section>(.+?)</section>", Pattern.DOTALL);
     private static Pattern UNDERLINE_CONTENT_PATTERN = Pattern.compile("<u>(.*?<a.*?>.*?</a>.*?)</u>", Pattern.DOTALL);
+    private static Pattern HR_CONTENT_PATTERN = Pattern.compile("<hr.*?>", Pattern.DOTALL);
     private static Pattern H1_CONTENT_PATTERN = Pattern.compile("<h1.*?>(.+?)</h1>", Pattern.DOTALL);
     private static Pattern OL_ATTR_CONTENT_PATTERN = Pattern.compile("<ol(.*?)>(.*?)</ol>", Pattern.DOTALL);
     private static Pattern LI_PATTERN = Pattern.compile("<li>", Pattern.DOTALL);
@@ -738,6 +739,24 @@ public class HtmlDocument
     private void removeUnderlines()
     {
         doc = UNDERLINE_CONTENT_PATTERN.matcher(doc).replaceAll("$1");
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the HTML document contains a "&lt;hr&gt;" tag.
+     * @param doc The HTML document to search
+     * @return <CODE>true</CODE> if the HTML document contains a "&lt;hr&gt;" tag.
+     */
+    public static boolean hasHR(String doc)
+    {
+        return HR_CONTENT_PATTERN.matcher(doc).find();
+    }
+
+    /**
+     * Removes "&lt;hr&gt;" tags in the HTML document.
+     */
+    private void removeHRs()
+    {
+        doc = HR_CONTENT_PATTERN.matcher(doc).replaceAll("");
     }
 
     /**
@@ -1712,6 +1731,16 @@ public class HtmlDocument
         public Builder removeUnderlines()
         {
             ret.removeUnderlines();
+            return this;
+        }
+
+        /**
+         * Removes "&lt;hr&gt;" tags in the HTML document.
+         * @return This object
+         */
+        public Builder removeHRs()
+        {
+            ret.removeHRs();
             return this;
         }
 

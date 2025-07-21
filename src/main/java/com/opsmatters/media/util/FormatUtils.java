@@ -269,9 +269,31 @@ public class FormatUtils
 
         if(name != null && name.length() > 0)
         {
+            boolean found = false;
             int idx = name.indexOf(" ");
             if(idx != -1)
+            {
                 name = name.substring(0, idx);
+                found = true;
+            }
+            else
+            {
+                idx = name.indexOf("@"); // email address
+                if(idx != -1)
+                {
+                    name = name.substring(0, idx);
+                    found = true;
+                }
+            }
+
+            // Make sure the first character is upper case
+            if(found && name.length() > 1)
+            {
+                char c = name.charAt(0);
+                if(Character.isLowerCase(c))
+                    name = name.substring(0, 1).toUpperCase()+name.substring(1);
+            }
+
             ret = String.format("Hi %s", name);
         }
 
