@@ -15,8 +15,9 @@
  */
 package com.opsmatters.media.model.social;
 
-import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.model.BaseEntity;
+import com.opsmatters.media.model.MessageFormat;
+import com.opsmatters.media.util.FormatUtils;
 
 /**
  * Class representing a social media post.
@@ -86,12 +87,7 @@ public abstract class SocialPost extends BaseEntity
      */
     public String getMessage(MessageFormat format)
     {
-        if(format == MessageFormat.ENCODED)
-            return EmojiParser.parseToAliases(getMessage());
-        else if(format == MessageFormat.DECODED)
-            return EmojiParser.parseToUnicode(getMessage());
-        else
-            return getMessage();
+        return FormatUtils.getConvertedMessage(getMessage(), format);
     }
 
     /**

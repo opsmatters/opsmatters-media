@@ -19,6 +19,8 @@ package com.opsmatters.media.util;
 import java.text.DecimalFormat;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import com.vdurmont.emoji.EmojiParser;
+import com.opsmatters.media.model.MessageFormat;
 
 /**
  * A set of utility methods to perform miscellaneous tasks related to formatting.
@@ -296,6 +298,20 @@ public class FormatUtils
 
             ret = String.format("Hi %s", name);
         }
+
+        return ret;
+    }
+
+    /**
+     * Returns the given message, with encoded emojis if required.
+     */
+    public static String getConvertedMessage(String message, MessageFormat format)
+    {
+        String ret = message;
+        if(format == MessageFormat.ENCODED)
+            ret = EmojiParser.parseToAliases(ret);
+        else if(format == MessageFormat.DECODED)
+            ret = EmojiParser.parseToUnicode(ret);
 
         return ret;
     }

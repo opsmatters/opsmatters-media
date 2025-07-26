@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.social;
+package com.opsmatters.media.model;
 
 import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Represents the status of a post template.
+ * Represents the status of a template.
  * 
  * @author Gerald Curley (opsmatters)
  */

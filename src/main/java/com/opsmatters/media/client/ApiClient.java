@@ -120,6 +120,14 @@ public class ApiClient extends Client
         if(debug())
             logger.info("Created API client successfully: "+getUrl());
 
+        return isConnected();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the client is connected.
+     */
+    public boolean isConnected() 
+    {
         return client != null;
     }
 

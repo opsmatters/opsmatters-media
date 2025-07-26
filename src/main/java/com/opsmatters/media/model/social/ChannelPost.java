@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.cache.social.SocialChannels;
 import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.model.DeliveryStatus;
+import com.opsmatters.media.model.MessageFormat;
 import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailBody;
 import com.opsmatters.media.model.content.FieldName;

@@ -25,11 +25,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
+import com.opsmatters.media.model.MessageFormat;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.social.SocialTemplate;
 import com.opsmatters.media.model.social.SocialTemplateItem;
-import com.opsmatters.media.model.social.MessageFormat;
 import com.opsmatters.media.db.dao.BaseDAO;
 
 /**

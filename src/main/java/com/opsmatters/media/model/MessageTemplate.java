@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Gerald Curley
+ * Copyright 2025 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,34 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.provider;
+package com.opsmatters.media.model;
 
 import java.time.Instant;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.util.StringUtils;
 
 /**
- * Class that represents an external provider.
+ * Class that represents a message template.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public abstract class ExternalProvider extends BaseEntity
+public abstract class MessageTemplate extends BaseEntity
 {
+    public static final String DEFAULT = "New Template";
+
     private String code = "";
     private String name = "";
-    private ProviderStatus status = ProviderStatus.ACTIVE;
+    private String message = "";
+    private TemplateStatus status = TemplateStatus.NEW;
 
     /**
      * Default constructor.
      */
-    public ExternalProvider()
+    public MessageTemplate()
     {
     }
 
     /**
      * Constructor that takes a name.
      */
-    public ExternalProvider(String name)
+    public MessageTemplate(String name)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
@@ -50,7 +53,7 @@ public abstract class ExternalProvider extends BaseEntity
     /**
      * Copy constructor.
      */
-    public ExternalProvider(ExternalProvider obj)
+    public MessageTemplate(MessageTemplate obj)
     {
         copyAttributes(obj);
     }
@@ -58,19 +61,20 @@ public abstract class ExternalProvider extends BaseEntity
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ExternalProvider obj)
+    public void copyAttributes(MessageTemplate obj)
     {
         if(obj != null)
         {
             super.copyAttributes(obj);
             setCode(obj.getCode());
             setName(obj.getName());
+            setMessage(obj.getMessage());
             setStatus(obj.getStatus());
         }
     }
 
     /**
-     * Returns the provider name.
+     * Returns the template name.
      */
     public String toString()
     {
@@ -78,7 +82,7 @@ public abstract class ExternalProvider extends BaseEntity
     }
 
     /**
-     * Returns the code for the provider.
+     * Returns the code for the template.
      */
     public String getCode()
     {
@@ -86,7 +90,7 @@ public abstract class ExternalProvider extends BaseEntity
     }
 
     /**
-     * Sets the code for the provider.
+     * Sets the code for the template.
      */
     public void setCode(String code)
     {
@@ -94,7 +98,7 @@ public abstract class ExternalProvider extends BaseEntity
     }
 
     /**
-     * Returns <CODE>true</CODE> if the code for the provider has been set.
+     * Returns <CODE>true</CODE> if the code for the template has been set.
      */
     public boolean hasCode()
     {
@@ -102,7 +106,7 @@ public abstract class ExternalProvider extends BaseEntity
     }
 
     /**
-     * Returns the name for the provider.
+     * Returns the name for the template.
      */
     public String getName()
     {
@@ -110,7 +114,7 @@ public abstract class ExternalProvider extends BaseEntity
     }
 
     /**
-     * Sets the name for the provider.
+     * Sets the name for the template.
      */
     public void setName(String name)
     {
@@ -118,34 +122,58 @@ public abstract class ExternalProvider extends BaseEntity
     }
 
     /**
-     * Returns the provider status.
+     * Returns the template message.
      */
-    public ProviderStatus getStatus()
+    public String getMessage()
+    {
+        return message;
+    }
+
+    /**
+     * Sets the template message.
+     */
+    public void setMessage(String message)
+    {
+        this.message = message;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the template message has been set.
+     */
+    public boolean hasMessage()
+    {
+        return message != null && message.length() > 0;
+    }
+
+    /**
+     * Returns the template status.
+     */
+    public TemplateStatus getStatus()
     {
         return status;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the provider status is ACTIVE.
+     * Returns <CODE>true</CODE> if the template status is ACTIVE.
      */
     public boolean isActive()
     {
-        return status == ProviderStatus.ACTIVE;
+        return status == TemplateStatus.ACTIVE;
     }
 
     /**
-     * Sets the provider status.
+     * Sets the template status.
      */
-    public void setStatus(ProviderStatus status)
+    public void setStatus(TemplateStatus status)
     {
         this.status = status;
     }
 
     /**
-     * Sets the provider status.
+     * Sets the template status.
      */
     public void setStatus(String status)
     {
-        setStatus(ProviderStatus.valueOf(status));
+        setStatus(TemplateStatus.valueOf(status));
     }
 }

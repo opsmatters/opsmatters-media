@@ -15,6 +15,8 @@
  */
 package com.opsmatters.media.model.social;
 
+import com.opsmatters.media.model.MessageTemplateItem;
+import com.opsmatters.media.model.TemplateStatus;
 import com.opsmatters.media.model.content.ContentType;
 
 /**
@@ -22,7 +24,7 @@ import com.opsmatters.media.model.content.ContentType;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialTemplateItem extends SocialPostItem<SocialTemplate>
+public class SocialTemplateItem extends MessageTemplateItem<SocialTemplate>
 {
     private SocialTemplate content = new SocialTemplate();
 
@@ -91,6 +93,30 @@ public class SocialTemplateItem extends SocialPostItem<SocialTemplate>
     public void setName(String name)
     {
         content.setName(name);
+    }
+
+    /**
+     * Returns the template site.
+     */
+    public String getSiteId()
+    {
+        return content.getSiteId();
+    }
+
+    /**
+     * Sets the template site.
+     */
+    public void setSiteId(String siteId)
+    {
+        content.setSiteId(siteId);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the site has been set.
+     */
+    public boolean hasSiteId()
+    {
+        return content.hasSiteId();
     }
 
     /**

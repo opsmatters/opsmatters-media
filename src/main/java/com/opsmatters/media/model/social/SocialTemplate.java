@@ -16,23 +16,23 @@
 package com.opsmatters.media.model.social;
 
 import java.util.List;
-import java.time.Instant;
 import org.json.JSONObject;
+import com.opsmatters.media.model.MessageTemplate;
+import com.opsmatters.media.model.MessageFormat;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.util.StringUtils;
+import com.opsmatters.media.util.FormatUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 
 /**
- * Class representing a social media template.
+ * Class representing a social post template.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialTemplate extends SocialPost
+public class SocialTemplate extends MessageTemplate
 {
-    public static final String DEFAULT = "New Template";
-
-    private String name = "";
+    private String siteId = "";
     private ContentType contentType;
     private String postType = "";
     private String videoType = "";
@@ -42,7 +42,6 @@ public class SocialTemplate extends SocialPost
     private boolean sponsored = false;
     private String tags = "";
     private boolean shortenUrl = false;
-    private TemplateStatus status;
 
     /**
      * Default constructor.
@@ -56,10 +55,7 @@ public class SocialTemplate extends SocialPost
      */
     public SocialTemplate(String name)
     {
-        setId(StringUtils.getUUID(null));
-        setCreatedDate(Instant.now());
-        setName(name);
-        setStatus(TemplateStatus.NEW);
+        super(name);
     }
 
     /**
@@ -78,7 +74,7 @@ public class SocialTemplate extends SocialPost
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setName(obj.getName());
+            setSiteId(obj.getSiteId());
             setContentType(obj.getContentType());
             setPostType(obj.getPostType());
             setVideoType(obj.getVideoType());
@@ -88,7 +84,6 @@ public class SocialTemplate extends SocialPost
             setSponsored(obj.isSponsored());
             setTags(obj.getTags());
             setShortenUrl(obj.isShortenUrl());
-            setStatus(obj.getStatus());
         }
     }
 
@@ -123,27 +118,27 @@ public class SocialTemplate extends SocialPost
     }
 
     /**
-     * Returns the template name.
+     * Returns the site id.
      */
-    public String toString()
+    public String getSiteId()
     {
-        return getName();
+        return siteId;
     }
 
     /**
-     * Returns the template name.
+     * Sets the site id.
      */
-    public String getName()
+    public void setSiteId(String siteId)
     {
-        return name;
+        this.siteId = siteId;
     }
 
     /**
-     * Sets the template name.
+     * Returns <CODE>true</CODE> if the site has been set.
      */
-    public void setName(String name)
+    public boolean hasSiteId()
     {
-        this.name = name;
+        return siteId != null && siteId.length() > 0;
     }
 
     /**
@@ -394,26 +389,10 @@ public class SocialTemplate extends SocialPost
     }
 
     /**
-     * Returns the status.
+     * Returns the post message, with encoded emojis if required.
      */
-    public TemplateStatus getStatus()
+    public String getMessage(MessageFormat format)
     {
-        return status;
-    }
-
-    /**
-     * Sets the status.
-     */
-    public void setStatus(String status)
-    {
-        setStatus(TemplateStatus.valueOf(status));
-    }
-
-    /**
-     * Sets the status.
-     */
-    public void setStatus(TemplateStatus status)
-    {
-        this.status = status;
+        return FormatUtils.getConvertedMessage(getMessage(), format);
     }
 }

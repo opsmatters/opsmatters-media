@@ -35,6 +35,7 @@ public class AdminDAOFactory extends DAOFactory
 
         getUserDAO();
         getEmailDAO();
+        getEmailTemplateDAO();
         getNotificationDAO();
         getParameterDAO();
         getTableTaskDAO();
@@ -59,6 +60,16 @@ public class AdminDAOFactory extends DAOFactory
         if(emailDAO == null)
             emailDAO = new EmailDAO(this);
         return emailDAO;
+    }
+
+    /**
+     * Returns the email template DAO.
+     */
+    public EmailTemplateDAO getEmailTemplateDAO()
+    {
+        if(emailTemplateDAO == null)
+            emailTemplateDAO = new EmailTemplateDAO(this);
+        return emailTemplateDAO;
     }
 
     /**
@@ -110,6 +121,7 @@ public class AdminDAOFactory extends DAOFactory
         super.close();
         userDAO = null;
         emailDAO = null;
+        emailTemplateDAO = null;
         notificationDAO = null;
         parameterDAO = null;
         tableTaskDAO = null;
@@ -118,6 +130,7 @@ public class AdminDAOFactory extends DAOFactory
 
     private UserDAO userDAO;
     private EmailDAO emailDAO;
+    private EmailTemplateDAO emailTemplateDAO;
     private NotificationDAO notificationDAO;
     private ParameterDAO parameterDAO;
     private TableTaskDAO tableTaskDAO;

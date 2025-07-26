@@ -421,25 +421,20 @@ public class Contacts implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if the contact or any of its products have a delivery email.
+     * Returns the contact product for the given contact and product code.
      */
-    public static boolean hasDeliveryEmail(Contact contact)
+    public static ContactProduct getProduct(Contact contact, String productCode)
     {
-        boolean ret = false;
-        if(contact != null)
+        ContactProduct ret = null;
+        Map<String,ContactProduct> products = productContactMap.get(contact.getId());
+        if(products != null)
         {
-            ret = contact.hasDeliveryEmail();
-
-            if(!ret)
+            for(ContactProduct product : products.values())
             {
-                List<ContactProduct> products = listProducts(contact);
-                for(ContactProduct product : products)
+                if(product.getProductCode().equals(productCode))
                 {
-                    if(product.hasDeliveryEmail())
-                    {
-                        ret = true;
-                        break;
-                    }
+                    ret = product;
+                    break;
                 }
             }
         }

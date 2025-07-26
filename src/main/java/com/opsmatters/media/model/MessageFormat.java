@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.social;
+package com.opsmatters.media.model;
 
 /**
- * Represents a social post message format.
+ * Represents a post message format.
  * 
  * @author Gerald Curley (opsmatters)
  */

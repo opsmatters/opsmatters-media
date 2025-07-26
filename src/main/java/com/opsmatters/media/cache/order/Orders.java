@@ -20,9 +20,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import com.opsmatters.media.cache.order.contact.Contacts;
 import com.opsmatters.media.model.order.Order;
 import com.opsmatters.media.model.order.OrderItem;
 import com.opsmatters.media.model.order.contact.Contact;
+import com.opsmatters.media.model.order.contact.ContactProduct;
 import com.opsmatters.media.model.order.product.Product;
 
 /**
@@ -236,5 +238,40 @@ public class Orders implements java.io.Serializable
     public static List<Order> list(Contact contact)
     {
         return contactMap.get(contact.getId());
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the contact for the order or any of its products have a delivery email.
+     */
+    public static boolean hasDeliveryEmail(Order order)
+    {
+        boolean ret = false;
+        if(order != null)
+        {
+            Contact contact = Contacts.getById(order.getContactId());
+            if(contact != null)
+            {
+                ret = contact.hasDeliveryEmail();
+
+                if(!ret)
+                {
+                    List<OrderItem> items = listItems(order);
+                    if(items != null)
+                    {
+                        for(OrderItem item : items)
+                        {
+                            ContactProduct product = Contacts.getProduct(contact, item.getProductCode());
+                            if(product != null && product.hasDeliveryEmail())
+                            {
+                                ret = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return ret;
     }
 }
