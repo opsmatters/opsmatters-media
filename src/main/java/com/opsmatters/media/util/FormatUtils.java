@@ -267,8 +267,7 @@ public class FormatUtils
      */
     public static String getSalutation(String name)
     {
-        String ret = "Hello";
-
+        String ret = "";
         if(name != null && name.length() > 0)
         {
             boolean found = false;
@@ -298,6 +297,9 @@ public class FormatUtils
 
             ret = String.format("Hi %s", name);
         }
+
+        if(ret.length() == 0)
+            ret = "Hello";
 
         return ret;
     }

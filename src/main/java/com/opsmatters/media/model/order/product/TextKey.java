@@ -28,8 +28,12 @@ public enum TextKey
 {
     NONE("None"),
     INVOICE_ITEM("Invoice Item"),
-    EMAIL_SINGLE("Email Single"),
-    EMAIL_MULTIPLE("Email Multiple"),
+    DELIVERY_S("Delivery/Single"),
+    DELIVERY_M("Delivery/Multiple"),
+    REMOVAL_S("Removal/Single"),
+    REMOVAL_M("Removal/Multiple"),
+    CANCEL_S("Cancel/Single"),
+    CANCEL_M("Cancel/Multiple"),
     ALL("All"); // Pseudo status
 
     private String value;
@@ -96,8 +100,12 @@ public enum TextKey
 
         ret.add(NONE);
         ret.add(INVOICE_ITEM);
-        ret.add(EMAIL_SINGLE);
-        ret.add(EMAIL_MULTIPLE);
+        ret.add(DELIVERY_S);
+        ret.add(DELIVERY_M);
+        ret.add(REMOVAL_S);
+        ret.add(REMOVAL_M);
+        ret.add(CANCEL_S);
+        ret.add(CANCEL_M);
  
         return ret;
     }

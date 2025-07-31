@@ -18,6 +18,7 @@ package com.opsmatters.media.cache.admin;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.samskivert.mustache.Template;
 import com.opsmatters.media.model.admin.EmailTemplate;
@@ -32,7 +33,9 @@ public class EmailTemplates implements java.io.Serializable
 {
     private static final Logger logger = Logger.getLogger(EmailTemplates.class.getName());
 
-    private static Map<String,EmailTemplate> templateMap = new LinkedHashMap<String,EmailTemplate>();
+    private static Map<String,EmailTemplate> idMap = new LinkedHashMap<String,EmailTemplate>();
+    private static Map<String,EmailTemplate> codeMap = new LinkedHashMap<String,EmailTemplate>();
+    private static Map<String,EmailTemplate> nameMap = new LinkedHashMap<String,EmailTemplate>();
 
     private static boolean initialised = false;
 
@@ -74,7 +77,9 @@ public class EmailTemplates implements java.io.Serializable
      */
     public static void clear()
     {
-        templateMap.clear();
+        idMap.clear();
+        codeMap.clear();
+        nameMap.clear();
     }
 
     /**
@@ -82,7 +87,7 @@ public class EmailTemplates implements java.io.Serializable
      */
     public static EmailTemplate get(String code)
     {
-        return templateMap.get(code);
+        return codeMap.get(code);
     }
 
     /**
@@ -90,7 +95,15 @@ public class EmailTemplates implements java.io.Serializable
      */
     public static EmailTemplate get(EmailTemplateId id)
     {
-        return templateMap.get(id.code());
+        return id != null ? codeMap.get(id.code()) : null;
+    }
+
+    /**
+     * Returns the email template with the given name.
+     */
+    public static EmailTemplate getByName(String name)
+    {
+        return nameMap.get(name);
     }
 
     /**
@@ -98,7 +111,16 @@ public class EmailTemplates implements java.io.Serializable
      */
     public static void add(EmailTemplate template)
     {
-        templateMap.put(template.getCode(), template);
+        EmailTemplate existing = idMap.get(template.getId());
+        if(existing != null)
+        {
+            codeMap.remove(template.getCode());
+            nameMap.remove(template.getName());
+        }
+
+        idMap.put(template.getId(), template);
+        codeMap.put(template.getCode(), template);
+        nameMap.put(template.getName(), template);
     }
 
     /**
@@ -106,7 +128,24 @@ public class EmailTemplates implements java.io.Serializable
      */
     public static void remove(EmailTemplate template)
     {
-        templateMap.remove(template.getCode());
+        idMap.remove(template.getId());
+        codeMap.remove(template.getCode());
+        nameMap.remove(template.getName());
+    }
+
+    /**
+     * Returns the list of email templates.
+     */
+    public static List<EmailTemplate> list()
+    {
+        List<EmailTemplate> ret = new ArrayList<EmailTemplate>();
+        for(EmailTemplate template : idMap.values())
+        {
+            if(template.isActive())
+                ret.add(template);
+        }
+
+        return ret;
     }
 
     /**
@@ -114,17 +153,16 @@ public class EmailTemplates implements java.io.Serializable
      */
     public static int size()
     {
-        return templateMap.size();
+        return idMap.size();
     }
 
     /**
-     * Generates an email using the given template code and properties.
+     * Generates an email using the given template and properties.
      */
-    public static String generate(String code, Map<String,Object> properties)
+    public static String generate(EmailTemplate template, Map<String,Object> properties)
         throws RuntimeException
     {
         String ret = null;
-        EmailTemplate template = get(code);
         if(template != null && template.isActive())
         {
             Template mustache = template.getMustacheTemplate();
@@ -136,11 +174,20 @@ public class EmailTemplates implements java.io.Serializable
     }
 
     /**
+     * Generates an email using the given template code and properties.
+     */
+    public static String generate(String code, Map<String,Object> properties)
+        throws RuntimeException
+    {
+        return generate(get(code), properties);
+    }
+
+    /**
      * Generates an email using the given template id and properties.
      */
     public static String generate(EmailTemplateId id, Map<String,Object> properties)
         throws RuntimeException
     {
-        return generate(id.code(), properties);
+        return generate(get(id.code()), properties);
     }
 }

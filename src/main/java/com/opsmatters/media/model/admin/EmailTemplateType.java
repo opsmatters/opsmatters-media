@@ -27,9 +27,9 @@ import java.util.ArrayList;
 public enum EmailTemplateType
 {
     NONE("None"),
-    ARTICLE("Article"),
-    SPONSOR("Sponsor"),
-    ORDER("Order");
+    CONTENT("Content"),
+    ORDER("Order"),
+    ALL("All"); // Pseudo status
 
     private String value;
 
@@ -94,8 +94,7 @@ public enum EmailTemplateType
         List<EmailTemplateType> ret = new ArrayList<EmailTemplateType>();
 
         ret.add(NONE);
-        ret.add(ARTICLE);
-        ret.add(SPONSOR);
+        ret.add(CONTENT);
         ret.add(ORDER);
 
         return ret;

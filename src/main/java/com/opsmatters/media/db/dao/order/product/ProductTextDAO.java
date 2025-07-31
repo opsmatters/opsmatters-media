@@ -105,7 +105,7 @@ public class ProductTextDAO extends BaseDAO
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("PRODUCT_ID", Types.VARCHAR, 36, true);
         table.addColumn("\"KEY\"", Types.VARCHAR, 15, true);
-        table.addColumn("VALUE", Types.VARCHAR, 50, false);
+        table.addColumn("VALUE", Types.VARCHAR, 128, false);
         table.setPrimaryKey("PRODUCT_TEXTS_PK", new String[] {"ID"});
         table.setInitialised(true);
     }

@@ -26,7 +26,13 @@ import java.util.ArrayList;
  */
 public enum EmailTemplateId
 {
-    ORDER_DELIVERY("order-delivery");
+    PRESS_RELEASE("CON-PR"),
+    BYLINE("CON-BYL"),
+    SUGGESTED("CON-SUG"),
+    PUBLISHED("CON-PUB"),
+    DELIVERY("ORD-DEL"),
+    UNPAID("ORD-UNP"),
+    CANCELLED("ORD-CAN");
 
     private String code;
 
@@ -91,7 +97,13 @@ public enum EmailTemplateId
     {
         List<EmailTemplateId> ret = new ArrayList<EmailTemplateId>();
 
-        ret.add(ORDER_DELIVERY);
+        ret.add(PRESS_RELEASE);
+        ret.add(BYLINE);
+        ret.add(SUGGESTED);
+        ret.add(PUBLISHED);
+        ret.add(DELIVERY);
+        ret.add(UNPAID);
+        ret.add(CANCELLED);
 
         return ret;
     }

@@ -94,7 +94,7 @@ public class EmailTemplateDAO extends BaseDAO
         table.addColumn("ID", Types.VARCHAR, 36, true);
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
-        table.addColumn("CODE", Types.VARCHAR, 15, true);
+        table.addColumn("CODE", Types.VARCHAR, 15, false);
         table.addColumn("NAME", Types.VARCHAR, 30, true);
         table.addColumn("TYPE", Types.VARCHAR, 15, true);
         table.addColumn("MESSAGE", Types.LONGVARCHAR, true);
