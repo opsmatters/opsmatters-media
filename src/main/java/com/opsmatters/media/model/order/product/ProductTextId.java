@@ -20,64 +20,62 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Represents the text key.
+ * Represents the id of a product text.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum TextKey
+public enum ProductTextId
 {
-    NONE("None"),
-    INVOICE_ITEM("Invoice Item"),
-    DELIVERY_S("Delivery/Single"),
-    DELIVERY_M("Delivery/Multiple"),
-    REMOVAL_S("Removal/Single"),
-    REMOVAL_M("Removal/Multiple"),
-    CANCEL_S("Cancel/Single"),
-    CANCEL_M("Cancel/Multiple"),
+    INVOICE_ITEM("INV-ITM"),
+    DELIVERED("EML-DEL"),
+    SUSPECT("EML-SUS"),
+    UNPAID("EML-UNP"),
+    CANCELLED("EML-CAN"),
     ALL("All"); // Pseudo status
 
-    private String value;
+    private String code;
 
     /**
-     * Constructor that takes the type value.
-     * @param value The value for the type
+     * Constructor that takes the type code.
+     * @param code The code for the type
      */
-    TextKey(String value)
+    ProductTextId(String code)
     {
-        this.value = value;
+        this.code = code;
     }
 
     /**
-     * Returns the value of the type.
-     * @return The value of the type.
+     * Returns the code of the type.
+     * @return The code of the type.
      */
     public String toString()
     {
-        return value();
+        return code();
     }
 
     /**
-     * Returns the value of the type.
-     * @return The value of the type.
+     * Returns the code of the type.
+     * @return The code of the type.
      */
-    public String value()
+    public String code()
     {
-        return value;
+        return code;
     }
 
     /**
-     * Returns the type for the given value.
-     * @param value The type value
-     * @return The type for the given value
+     * Returns the type for the given code.
+     * @param code The type code
+     * @return The type for the given code
      */
-    public static TextKey fromValue(String value)
+    public static ProductTextId fromCode(String code)
     {
-        TextKey[] types = values();
-        for(TextKey type : types)
+        ProductTextId[] types = values();
+        for(ProductTextId type : types)
         {
-            if(type.value().equals(value))
+            if(type.code().equals(code))
                 return type;
         }
+
         return null;
     }
 
@@ -94,18 +92,15 @@ public enum TextKey
     /**
      * Returns a list of the text keys.
      */
-    public static List<TextKey> toList()
+    public static List<ProductTextId> toList()
     {
-        List<TextKey> ret = new ArrayList<TextKey>();
+        List<ProductTextId> ret = new ArrayList<ProductTextId>();
 
-        ret.add(NONE);
         ret.add(INVOICE_ITEM);
-        ret.add(DELIVERY_S);
-        ret.add(DELIVERY_M);
-        ret.add(REMOVAL_S);
-        ret.add(REMOVAL_M);
-        ret.add(CANCEL_S);
-        ret.add(CANCEL_M);
+        ret.add(DELIVERED);
+        ret.add(SUSPECT);
+        ret.add(UNPAID);
+        ret.add(CANCELLED);
  
         return ret;
     }

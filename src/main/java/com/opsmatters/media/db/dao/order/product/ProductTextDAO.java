@@ -41,7 +41,7 @@ public class ProductTextDAO extends BaseDAO
      * The query to use to select a person from the PRODUCT_TEXTS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, PRODUCT_ID, \"KEY\", VALUE "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, PRODUCT_ID, CODE, VALUE, VARIATION "
       + "FROM PRODUCT_TEXTS WHERE ID=?";
 
     /**
@@ -49,29 +49,29 @@ public class ProductTextDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO PRODUCT_TEXTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, PRODUCT_ID, \"KEY\", VALUE )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, PRODUCT_ID, CODE, VALUE, VARIATION )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a person in the PRODUCT_TEXTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE PRODUCT_TEXTS SET UPDATED_DATE=?, \"KEY\"=?, VALUE=? "
+      "UPDATE PRODUCT_TEXTS SET UPDATED_DATE=?, CODE=?, VALUE=?, VARIATION=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the persons from the PRODUCT_TEXTS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, PRODUCT_ID, \"KEY\", VALUE "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, PRODUCT_ID, CODE, VALUE, VARIATION "
       + "FROM PRODUCT_TEXTS ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the persons from the PRODUCT_TEXTS table by product.
      */
     private static final String LIST_BY_PRODUCT_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, PRODUCT_ID, \"KEY\", VALUE "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, PRODUCT_ID, CODE, VALUE, VARIATION "
       + "FROM PRODUCT_TEXTS WHERE PRODUCT_ID=? ORDER BY CREATED_DATE";
 
     /**
@@ -104,8 +104,9 @@ public class ProductTextDAO extends BaseDAO
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("PRODUCT_ID", Types.VARCHAR, 36, true);
-        table.addColumn("\"KEY\"", Types.VARCHAR, 15, true);
+        table.addColumn("CODE", Types.VARCHAR, 15, true);
         table.addColumn("VALUE", Types.VARCHAR, 128, false);
+        table.addColumn("VARIATION", Types.VARCHAR, 128, false);
         table.setPrimaryKey("PRODUCT_TEXTS_PK", new String[] {"ID"});
         table.setInitialised(true);
     }
@@ -139,8 +140,9 @@ public class ProductTextDAO extends BaseDAO
                 text.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 text.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 text.setProductId(rs.getString(4));
-                text.setKey(rs.getString(5));
+                text.setCode(rs.getString(5));
                 text.setValue(rs.getString(6));
+                text.setVariation(rs.getString(7));
                 ret = text;
             }
         }
@@ -179,8 +181,9 @@ public class ProductTextDAO extends BaseDAO
             insertStmt.setTimestamp(2, new Timestamp(text.getCreatedDateMillis()), UTC);
             insertStmt.setTimestamp(3, new Timestamp(text.getUpdatedDateMillis()), UTC);
             insertStmt.setString(4, text.getProductId());
-            insertStmt.setString(5, text.getKey().name());
+            insertStmt.setString(5, text.getCode());
             insertStmt.setString(6, text.getValue());
+            insertStmt.setString(7, text.getVariation());
             insertStmt.executeUpdate();
 
             logger.info("Created product text '"+text.getId()+"' in PRODUCT_TEXTS");
@@ -213,9 +216,10 @@ public class ProductTextDAO extends BaseDAO
         clearParameters(updateStmt);
 
         updateStmt.setTimestamp(1, new Timestamp(text.getUpdatedDateMillis()), UTC);
-        updateStmt.setString(2, text.getKey().name());
+        updateStmt.setString(2, text.getCode());
         updateStmt.setString(3, text.getValue());
-        updateStmt.setString(4, text.getId());
+        updateStmt.setString(4, text.getVariation());
+        updateStmt.setString(5, text.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated product text '"+text.getId()+"' in PRODUCT_TEXTS");
@@ -271,8 +275,9 @@ public class ProductTextDAO extends BaseDAO
                 text.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 text.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 text.setProductId(rs.getString(4));
-                text.setKey(rs.getString(5));
+                text.setCode(rs.getString(5));
                 text.setValue(rs.getString(6));
+                text.setVariation(rs.getString(7));
                 ret.add(text);
             }
         }
@@ -323,8 +328,9 @@ public class ProductTextDAO extends BaseDAO
                 text.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 text.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 text.setProductId(rs.getString(4));
-                text.setKey(rs.getString(5));
+                text.setCode(rs.getString(5));
                 text.setValue(rs.getString(6));
+                text.setVariation(rs.getString(7));
                 ret.add(text);
             }
         }

@@ -27,8 +27,10 @@ import com.opsmatters.media.util.StringUtils;
 public class ProductText extends BaseEntity
 {
     private String productId = "";
-    private TextKey key = TextKey.NONE;
+    private String code = "";
+    private ProductTextId textId;
     private String value = "";
+    private String variation = "";
 
     /**
      * Default constructor.
@@ -64,17 +66,43 @@ public class ProductText extends BaseEntity
         {
             super.copyAttributes(obj);
             setProductId(obj.getProductId());
-            setKey(obj.getKey());
+            setCode(obj.getCode());
             setValue(obj.getValue());
+            setVariation(obj.getVariation());
         }
     }
 
     /**
-     * Returns the text key.
+     * Returns the text code.
      */
     public String toString()
     {
-        return getKey().name();
+        return getCode();
+    }
+
+    /**
+     * Returns the code for the text.
+     */
+    public String getCode()
+    {
+        return code;
+    }
+
+    /**
+     * Sets the code for the text.
+     */
+    public void setCode(String code)
+    {
+        this.code = code;
+        setTextId(code);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the code for the text has been set.
+     */
+    public boolean hasCode()
+    {
+        return getCode() != null && getCode().length() > 0;
     }
 
     /**
@@ -94,27 +122,27 @@ public class ProductText extends BaseEntity
     }
 
     /**
-     * Returns the text key.
+     * Returns the text id.
      */
-    public TextKey getKey()
+    public ProductTextId getTextId()
     {
-        return key;
+        return textId;
     }
 
     /**
-     * Sets the text key.
+     * Sets the text id.
      */
-    public void setKey(String key)
+    private void setTextId(ProductTextId textId)
     {
-        setKey(TextKey.valueOf(key));
+        this.textId = textId;
     }
 
     /**
-     * Sets the text key.
+     * Sets the text id.
      */
-    public void setKey(TextKey key)
+    private void setTextId(String code)
     {
-        this.key = key;
+        setTextId(ProductTextId.fromCode(code));
     }
 
     /**
@@ -131,5 +159,37 @@ public class ProductText extends BaseEntity
     public void setValue(String value)
     {
         this.value = value;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the value for the text has been set.
+     */
+    public boolean hasValue()
+    {
+        return getValue() != null && getValue().length() > 0;
+    }
+
+    /**
+     * Returns the text variation.
+     */
+    public String getVariation()
+    {
+        return variation;
+    }
+
+    /**
+     * Sets the text variation.
+     */
+    public void setVariation(String variation)
+    {
+        this.variation = variation;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the variation for the text has been set.
+     */
+    public boolean hasVariation()
+    {
+        return getVariation() != null && getVariation().length() > 0;
     }
 }

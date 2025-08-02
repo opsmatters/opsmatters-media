@@ -27,7 +27,7 @@ import com.opsmatters.media.model.order.product.Product;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.SessionId;
 
-import static com.opsmatters.media.model.order.product.TextKey.*;
+import static com.opsmatters.media.model.order.product.ProductTextId.*;
 
 /**
  * Class representing an order item.

@@ -30,7 +30,7 @@ public enum EmailTemplateId
     BYLINE("CON-BYL"),
     SUGGESTED("CON-SUG"),
     PUBLISHED("CON-PUB"),
-    DELIVERY("ORD-DEL"),
+    DELIVERED("ORD-DEL"),
     UNPAID("ORD-UNP"),
     CANCELLED("ORD-CAN");
 
@@ -101,7 +101,7 @@ public enum EmailTemplateId
         ret.add(BYLINE);
         ret.add(SUGGESTED);
         ret.add(PUBLISHED);
-        ret.add(DELIVERY);
+        ret.add(DELIVERED);
         ret.add(UNPAID);
         ret.add(CANCELLED);
 
