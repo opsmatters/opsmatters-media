@@ -293,7 +293,7 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
             {
                 // Add the path to the organisation thumbnail
                 ContentImage thumbnail = ContentImages.get(ImageType.THUMBNAIL, content.getCode());
-                if(thumbnail.isActive())
+                if(thumbnail != null && thumbnail.isActive())
                 {
                     fields.put(THUMBNAIL, String.format("%s%s/%s",
                         images.getUrl(), thumbnail.getType().path(), thumbnail.getFilename()));

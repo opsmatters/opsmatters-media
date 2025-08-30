@@ -38,7 +38,7 @@ public class Orders implements java.io.Serializable
 
     private static Map<String,Order> orderMap = new LinkedHashMap<String,Order>();
     private static Map<String,Map<String,OrderItem>> itemMap = new LinkedHashMap<String,Map<String,OrderItem>>();
-    private static Map<String,List<Order>> contactMap = new LinkedHashMap<String,List<Order>>();
+    private static Map<String,Map<String,Order>> contactMap = new LinkedHashMap<String,Map<String,Order>>();
 
     private static boolean initialised = false;
 
@@ -178,16 +178,25 @@ public class Orders implements java.io.Serializable
         if(order.isArchived())
             return;
 
-        orderMap.put(order.getId(), order);
-
-        List<Order> list = contactMap.get(order.getContactId());
-        if(list == null)
+        Order existing = getById(order.getId());
+        if(existing != null)
         {
-            list = new ArrayList<Order>();
-            contactMap.put(order.getContactId(), list);
+            Map<String,OrderItem> items = itemMap(order);
+            remove(existing);
+            if(items != null)
+                itemMap.put(order.getId(), items);
         }
 
-        list.add(order);
+        orderMap.put(order.getId(), order);
+
+        Map<String,Order> contactOrderMap = contactMap.get(order.getContactId());
+        if(contactOrderMap == null)
+        {
+            contactOrderMap = new LinkedHashMap<String,Order>();
+            contactMap.put(order.getContactId(), contactOrderMap);
+        }
+
+        contactOrderMap.put(order.getId(), order);
     }
 
     /**
@@ -212,6 +221,12 @@ public class Orders implements java.io.Serializable
     {
         orderMap.remove(order.getId());
         itemMap.remove(order.getId());
+
+        Map<String,Order> contactOrderMap = contactMap.get(order.getContactId());
+        if(contactOrderMap != null)
+        {
+            contactOrderMap.remove(order.getId());
+        }
     }
 
     /**
@@ -237,7 +252,11 @@ public class Orders implements java.io.Serializable
      */
     public static List<Order> list(Contact contact)
     {
-        return contactMap.get(contact.getId());
+        List<Order> ret = new ArrayList<Order>();
+        Map<String,Order> contactOrderMap = contactMap.get(contact.getId());
+        if(contactOrderMap != null)
+            ret.addAll(contactOrderMap.values());
+        return ret;
     }
 
     /**
