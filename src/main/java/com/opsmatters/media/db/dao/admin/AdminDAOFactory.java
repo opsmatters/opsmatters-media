@@ -40,6 +40,7 @@ public class AdminDAOFactory extends DAOFactory
         getParameterDAO();
         getTableTaskDAO();
         getTaskExecutionDAO();
+        getShortcutDAO();
     }
 
     /**
@@ -93,7 +94,7 @@ public class AdminDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the tasks DAO.
+     * Returns the task DAO.
      */
     public TableTaskDAO getTableTaskDAO()
     {
@@ -103,13 +104,23 @@ public class AdminDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the task executions DAO.
+     * Returns the task execution DAO.
      */
     public TaskExecutionDAO getTaskExecutionDAO()
     {
         if(taskExecutionDAO == null)
             taskExecutionDAO = new TaskExecutionDAO(this);
         return taskExecutionDAO;
+    }
+
+    /**
+     * Returns the shortcut DAO.
+     */
+    public ShortcutDAO getShortcutDAO()
+    {
+        if(shortcutDAO == null)
+            shortcutDAO = new ShortcutDAO(this);
+        return shortcutDAO;
     }
 
     /**
@@ -126,6 +137,7 @@ public class AdminDAOFactory extends DAOFactory
         parameterDAO = null;
         tableTaskDAO = null;
         taskExecutionDAO = null;
+        shortcutDAO = null;
     }
 
     private UserDAO userDAO;
@@ -135,4 +147,5 @@ public class AdminDAOFactory extends DAOFactory
     private ParameterDAO parameterDAO;
     private TableTaskDAO tableTaskDAO;
     private TaskExecutionDAO taskExecutionDAO;
+    private ShortcutDAO shortcutDAO;
 }

@@ -107,7 +107,7 @@ public class EmailTemplates implements java.io.Serializable
     }
 
     /**
-     * Adds the email template with the given code.
+     * Adds the given email template.
      */
     public static void add(EmailTemplate template)
     {
@@ -124,7 +124,7 @@ public class EmailTemplates implements java.io.Serializable
     }
 
     /**
-     * Removes the email template with the given code.
+     * Removes the given email template.
      */
     public static void remove(EmailTemplate template)
     {
