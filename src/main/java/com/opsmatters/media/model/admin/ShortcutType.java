@@ -26,19 +26,22 @@ import java.util.ArrayList;
  */
 public enum ShortcutType
 {
-    INTERNAL("Internal"),
-    EXTERNAL("External"),
-    ALL("All"); // Pseudo status
+    MENU("Menu", "menu"),
+    LINK("Link", "link"),
+    ALL("All", ""); // Pseudo status
 
     private String value;
+    private String tag;
 
     /**
      * Constructor that takes the type value.
      * @param value The value for the type
+     * @param value The tag for the type
      */
-    ShortcutType(String value)
+    ShortcutType(String value, String tag)
     {
         this.value = value;
+        this.tag = tag;
     }
 
     /**
@@ -57,6 +60,15 @@ public enum ShortcutType
     public String value()
     {
         return value;
+    }
+
+    /**
+     * Returns the tag of the type.
+     * @return The tag of the type.
+     */
+    public String tag()
+    {
+        return tag;
     }
 
     /**
@@ -93,8 +105,8 @@ public enum ShortcutType
     {
         List<ShortcutType> ret = new ArrayList<ShortcutType>();
 
-        ret.add(INTERNAL);
-        ret.add(EXTERNAL);
+        ret.add(MENU);
+        ret.add(LINK);
 
         return ret;
     }

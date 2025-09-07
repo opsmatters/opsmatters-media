@@ -53,7 +53,7 @@ public class Shortcut extends BaseEntity
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setName(name);
-        setType(ShortcutType.INTERNAL);
+        setType(ShortcutType.MENU);
         setStatus(ShortcutStatus.ACTIVE);
     }
 
@@ -94,12 +94,12 @@ public class Shortcut extends BaseEntity
 
         if(ret)
         {
-            if(getType() == ShortcutType.INTERNAL)
+            if(getType() == ShortcutType.MENU)
             {
                 if(!hasMenu())
                     ret = false;
             }
-            else if(getType() == ShortcutType.EXTERNAL)
+            else if(getType() == ShortcutType.LINK)
             {
                 if(!hasUrl())
                     ret = false;
