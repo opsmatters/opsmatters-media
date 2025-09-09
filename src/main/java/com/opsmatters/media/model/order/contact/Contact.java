@@ -36,7 +36,7 @@ import static com.opsmatters.media.model.admin.ParameterName.*;
 public class Contact extends BaseEntity
 {
     private String name = "";
-    private ContactType type = ContactType.INDIVIDUAL;
+    private ContactType type = ContactType.BUYER;
     private String contactEmail = "";
     private String billingEmail = "";
     private String companyId = "";

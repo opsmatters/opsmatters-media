@@ -166,6 +166,14 @@ public class Shortcut extends BaseEntity
     }
 
     /**
+     * Returns the menu item formatted as a URL context.
+     */
+    public String getContext()
+    {
+        return hasMenu() ? getMenu().toLowerCase().replaceAll(" ", "-") : "";
+    }
+
+    /**
      * Sets the menu item.
      */
     public void setMenu(String menu)

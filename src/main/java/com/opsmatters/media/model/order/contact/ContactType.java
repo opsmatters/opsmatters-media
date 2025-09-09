@@ -26,8 +26,7 @@ import java.util.ArrayList;
  */
 public enum ContactType
 {
-    INDIVIDUAL("Individual"),
-    ASSOCIATE("Associate"),
+    BUYER("Buyer"),
     AGENCY("Agency"),
     PLATFORM("Platform"),
     ALL("All"); // Pseudo status
@@ -59,6 +58,16 @@ public enum ContactType
     public String value()
     {
         return value;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the type has a billing email.
+     * @return <CODE>true</CODE> if the type has a billing email.
+     */
+    public boolean hasBillingEmail(Company company)
+    {
+        return this != PLATFORM
+            && (company == null || !company.hasBillingEmail());
     }
 
     /**
@@ -94,8 +103,7 @@ public enum ContactType
     {
         List<ContactType> ret = new ArrayList<ContactType>();
 
-        ret.add(INDIVIDUAL);
-        ret.add(ASSOCIATE);
+        ret.add(BUYER);
         ret.add(AGENCY);
         ret.add(PLATFORM);
  
