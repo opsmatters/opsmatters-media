@@ -36,7 +36,8 @@ import static com.opsmatters.media.model.admin.ParameterName.*;
 public class Contact extends BaseEntity
 {
     private String name = "";
-    private ContactType type = ContactType.BUYER;
+    private ContactType type;
+    private String code = "";
     private String contactEmail = "";
     private String billingEmail = "";
     private String companyId = "";
@@ -68,6 +69,7 @@ public class Contact extends BaseEntity
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
+        setType(ContactType.BUYER);
         setName(name);
         setSalutation();
 
@@ -98,6 +100,7 @@ public class Contact extends BaseEntity
             super.copyAttributes(obj);
             setName(obj.getName());
             setType(obj.getType());
+            setCode(obj.getCode());
             setContactEmail(obj.getContactEmail());
             setBillingEmail(obj.getBillingEmail());
             setCompanyId(obj.getCompanyId());
@@ -195,6 +198,22 @@ public class Contact extends BaseEntity
     public void setType(ContactType type)
     {
         this.type = type;
+    }
+
+    /**
+     * Returns the contact organisation.
+     */
+    public String getCode()
+    {
+        return code;
+    }
+
+    /**
+     * Sets the contact organisation.
+     */
+    public void setCode(String code)
+    {
+        this.code = code;
     }
 
     /**

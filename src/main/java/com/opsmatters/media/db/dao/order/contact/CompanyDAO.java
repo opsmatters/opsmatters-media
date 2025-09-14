@@ -108,7 +108,7 @@ public class CompanyDAO extends BaseDAO
         table.addColumn("COUNTRY_CODE", Types.VARCHAR, 5, false);
         table.addColumn("PHONE_CODE", Types.VARCHAR, 5, false);
         table.addColumn("PHONE_NUMBER", Types.VARCHAR, 20, false);
-        table.addColumn("ADDITIONAL_INFO", Types.VARCHAR, 80, false);
+        table.addColumn("ADDITIONAL_INFO", Types.VARCHAR, 128, false);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.setPrimaryKey("COMPANIES_PK", new String[] {"ID"});

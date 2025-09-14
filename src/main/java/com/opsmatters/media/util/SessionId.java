@@ -17,6 +17,8 @@
 package com.opsmatters.media.util;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.LocalDate;
 
 import static java.time.temporal.ChronoUnit.*;
 
@@ -34,11 +36,19 @@ public class SessionId
     private int id, yesterday = -1;
 
     /**
-     * Private constructor as this class shouldn't be instantiated.
+     * Constructor that takes a date.
+     */
+    private SessionId(Instant dt)
+    {
+        setId(adjust(dt));
+    }
+
+    /**
+     * Default constructor that uses the current system date.
      */
     private SessionId()
     {
-        setId(now());
+        this(Instant.now());
     }
 
     /**
@@ -62,8 +72,8 @@ public class SessionId
      */
     private void setId(Instant dt)
     {
-        setId(Integer.parseInt(TimeUtils.toStringUTC(dt, Formats.SESSION_FORMAT)));
-        setYesterday(Integer.parseInt(TimeUtils.toStringUTC(dt.minus(1, DAYS), Formats.SESSION_FORMAT)));
+        setId(toId(dt));
+        setYesterday(toId(dt.minus(1, DAYS)));
     }
 
     /**
@@ -83,11 +93,11 @@ public class SessionId
     }
 
     /**
-     * Sets the current session id.
+     * Returns yesterday's session id.
      */
-    public static void set(int id)
+    public static int yesterday()
     {
-        _session.setId(toInstant(id));
+        return _session.getYesterday();
     }
 
     /**
@@ -99,11 +109,19 @@ public class SessionId
     }
 
     /**
-     * Returns yesterday's session id.
+     * Sets the current session id.
      */
-    public static int yesterday()
+    public static void set(int id)
     {
-        return _session.getYesterday();
+        _session.setId(toInstant(id));
+    }
+
+    /**
+     * Returns the session id for the given date.
+     */
+    public static int get(Instant dt)
+    {
+        return new SessionId(dt).getId();
     }
 
     /**
@@ -111,15 +129,23 @@ public class SessionId
      */
     public static int id()
     {
-        return new SessionId().getId();
+        return get(Instant.now());
     }
 
     /**
-     * Returns the date for the current session.
+     * Returns the session date for the current system date.
      */
     public static Instant now()
     {
-        Instant ret = Instant.now();
+        return adjust(Instant.now());
+    }
+
+    /**
+     * Returns the adjusted session date for the given date.
+     */
+    private static Instant adjust(Instant dt)
+    {
+        Instant ret = dt;
         int hour = TimeUtils.toDateTimeUTC(ret).getHour();
         if(hour < START_HOUR)
             ret = ret.minus(1, DAYS); // Go back to yesterday if before session start hour
@@ -142,5 +168,21 @@ public class SessionId
     private static Instant toInstant(int id)
     {
         return id > 0 ? TimeUtils.toInstantUTC(Integer.toString(id), Formats.SESSION_FORMAT) : null;
+    }
+
+    /**
+     * Returns the given instant as an id.
+     */
+    private static int toId(Instant dt)
+    {
+        return Integer.parseInt(TimeUtils.toStringUTC(dt, Formats.SESSION_FORMAT));
+    }
+
+    /**
+     * Returns the given date as an adjusted local date.
+     */
+    public static LocalDate toLocalDate(Instant dt)
+    {
+        return adjust(dt).atZone(ZoneId.of("UTC")).toLocalDate();
     }
 }

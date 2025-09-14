@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import com.opsmatters.media.model.order.product.Product;
 import com.opsmatters.media.model.order.product.ProductText;
 import com.opsmatters.media.model.order.product.ProductTextId;
+import com.opsmatters.media.model.order.product.ProductCategory;
 
 /**
  * Class representing the list of products.
@@ -147,18 +148,29 @@ public class Products implements java.io.Serializable
     }
 
     /**
-     * Returns the list of products.
+     * Returns the list of products by category.
      */
-    public static List<Product> list()
+    public static List<Product> list(ProductCategory category)
     {
         List<Product> ret = new ArrayList<Product>();
         for(Product product : codeMap.values())
         {
+            if(category != null && product.getCategory() != category)
+                continue;
+
             if(product.isActive())
                 ret.add(product);
         }
 
         return ret;
+    }
+
+    /**
+     * Returns the list of products.
+     */
+    public static List<Product> list()
+    {
+        return list(null);
     }
 
     /**

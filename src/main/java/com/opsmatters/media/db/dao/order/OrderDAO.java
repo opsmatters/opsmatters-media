@@ -60,7 +60,7 @@ public class OrderDAO extends BaseDAO
      * The query to use to update an order in the ORDERS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE ORDERS SET UPDATED_DATE=?, COMPANY_ID=?, WEEK=?, MONTH=?, YEAR=?, PAYMENT_METHOD=?, PAYMENT_MODE=?, PAYMENT_TERM=?, CURRENCY_CODE=?, STATUS=?, REASON=?, INVOICE_ID=?, INVOICE_NUMBER=?, INVOICE_EMAIL=?, INVOICE_URL=?, INVOICE_NOTE=?, INVOICE_STATUS=?, CREATED_BY=? "
+      "UPDATE ORDERS SET CREATED_DATE=?, UPDATED_DATE=?, COMPANY_ID=?, WEEK=?, MONTH=?, YEAR=?, PAYMENT_METHOD=?, PAYMENT_MODE=?, PAYMENT_TERM=?, CURRENCY_CODE=?, STATUS=?, REASON=?, INVOICE_ID=?, INVOICE_NUMBER=?, INVOICE_EMAIL=?, INVOICE_URL=?, INVOICE_NOTE=?, INVOICE_STATUS=?, CREATED_BY=?, SESSION_ID=? "
       + "WHERE ID=?";
 
     /**
@@ -282,25 +282,27 @@ public class OrderDAO extends BaseDAO
             updateStmt = prepareStatement(getConnection(), UPDATE_SQL);
         clearParameters(updateStmt);
 
-        updateStmt.setTimestamp(1, new Timestamp(order.getUpdatedDateMillis()), UTC);
-        updateStmt.setString(2, order.getCompanyId());
-        updateStmt.setInt(3, order.getWeek());
-        updateStmt.setInt(4, order.getMonth());
-        updateStmt.setInt(5, order.getYear());
-        updateStmt.setString(6, order.getPaymentMethod().name());
-        updateStmt.setString(7, order.getPaymentMode().name());
-        updateStmt.setString(8, order.getPaymentTerm().name());
-        updateStmt.setString(9, order.getCurrency().code());
-        updateStmt.setString(10, order.getStatus().name());
-        updateStmt.setString(11, order.getReason().name());
-        updateStmt.setString(12, order.getInvoice().getId());
-        updateStmt.setString(13, order.getInvoice().getNumber());
-        updateStmt.setString(14, order.getInvoice().getEmail());
-        updateStmt.setString(15, order.getInvoice().getUrl());
-        updateStmt.setString(16, order.getInvoice().getNote());
-        updateStmt.setString(17, order.getInvoice().getStatus().name());
-        updateStmt.setString(18, order.getCreatedBy());
-        updateStmt.setString(19, order.getId());
+        updateStmt.setTimestamp(1, new Timestamp(order.getCreatedDateMillis()), UTC);
+        updateStmt.setTimestamp(2, new Timestamp(order.getUpdatedDateMillis()), UTC);
+        updateStmt.setString(3, order.getCompanyId());
+        updateStmt.setInt(4, order.getWeek());
+        updateStmt.setInt(5, order.getMonth());
+        updateStmt.setInt(6, order.getYear());
+        updateStmt.setString(7, order.getPaymentMethod().name());
+        updateStmt.setString(8, order.getPaymentMode().name());
+        updateStmt.setString(9, order.getPaymentTerm().name());
+        updateStmt.setString(10, order.getCurrency().code());
+        updateStmt.setString(11, order.getStatus().name());
+        updateStmt.setString(12, order.getReason().name());
+        updateStmt.setString(13, order.getInvoice().getId());
+        updateStmt.setString(14, order.getInvoice().getNumber());
+        updateStmt.setString(15, order.getInvoice().getEmail());
+        updateStmt.setString(16, order.getInvoice().getUrl());
+        updateStmt.setString(17, order.getInvoice().getNote());
+        updateStmt.setString(18, order.getInvoice().getStatus().name());
+        updateStmt.setString(19, order.getCreatedBy());
+        updateStmt.setInt(20, SessionId.get(order.getCreatedDate()));
+        updateStmt.setString(21, order.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated order '"+order.getId()+"' in ORDERS");

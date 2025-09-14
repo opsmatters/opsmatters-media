@@ -28,6 +28,7 @@ public class Product extends BaseEntity
 {
     private String code = "";
     private String name = "";
+    private ProductCategory category = ProductCategory.UNDEFINED;
     private ProductStatus status = ProductStatus.NEW;
 
     /**
@@ -65,6 +66,7 @@ public class Product extends BaseEntity
             super.copyAttributes(obj);
             setCode(obj.getCode());
             setName(obj.getName());
+            setCategory(obj.getCategory());
             setStatus(obj.getStatus());
         }
     }
@@ -107,6 +109,30 @@ public class Product extends BaseEntity
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    /**
+     * Returns the product category.
+     */
+    public ProductCategory getCategory()
+    {
+        return category;
+    }
+
+    /**
+     * Sets the product category.
+     */
+    public void setCategory(String category)
+    {
+        setCategory(ProductCategory.valueOf(category));
+    }
+
+    /**
+     * Sets the product category.
+     */
+    public void setCategory(ProductCategory category)
+    {
+        this.category = category;
     }
 
     /**

@@ -279,8 +279,10 @@ public class Orders implements java.io.Serializable
                     {
                         for(OrderItem item : items)
                         {
-                            ContactProduct product = Contacts.getProduct(contact, item.getProductCode());
-                            if(product != null && product.hasDeliveryEmail())
+                            ContactProduct product = Contacts.getProduct(contact,
+                                item.getProductCode());
+                            if(product != null && product.isEnabled()
+                                && product.hasDeliveryEmail())
                             {
                                 ret = true;
                                 break;

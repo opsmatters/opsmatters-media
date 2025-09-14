@@ -16,12 +16,17 @@
 package com.opsmatters.media.model.order.contact;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import com.opsmatters.media.cache.order.product.Products;
 import com.opsmatters.media.cache.system.Sites;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.order.Currency;
+import com.opsmatters.media.model.order.Frequency;
 import com.opsmatters.media.model.order.product.Product;
+import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -36,7 +41,10 @@ public class ContactProduct extends BaseEntity
     private String siteId = "";
     private int price = 0;
     private Currency currency = Currency.UNDEFINED;
+    private Instant startDate;
+    private Frequency frequency = Frequency.NONE;
     private boolean deliveryEmail = false;
+    private boolean enabled = true;
 
     /**
      * Default constructor.
@@ -77,7 +85,10 @@ public class ContactProduct extends BaseEntity
             setSiteId(obj.getSiteId());
             setPrice(obj.getPrice());
             setCurrency(obj.getCurrency());
+            setStartDate(obj.getStartDate());
+            setFrequency(obj.getFrequency());
             setDeliveryEmail(obj.hasDeliveryEmail());
+            setEnabled(obj.isEnabled());
         }
     }
 
@@ -182,6 +193,112 @@ public class ContactProduct extends BaseEntity
     }
 
     /**
+     * Returns the start date.
+     */
+    public Instant getStartDate()
+    {
+        return startDate;
+    }
+
+    /**
+     * Returns the start date.
+     */
+    public long getStartDateMillis()
+    {
+        return getStartDate() != null ? getStartDate().toEpochMilli() : 0L;
+    }
+
+    /**
+     * Returns the start date.
+     */
+    public LocalDateTime getStartDateUTC()
+    {
+        return TimeUtils.toDateTimeUTC(getStartDate());
+    }
+
+    /**
+     * Returns the start date.
+     */
+    public String getStartDateAsString()
+    {
+        return getStartDateAsString(Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Returns the start date.
+     */
+    public String getStartDateAsString(String pattern)
+    {
+        return TimeUtils.toStringUTC(getStartDate(), pattern);
+    }
+
+    /**
+     * Sets the start date.
+     */
+    public void setStartDate(Instant startDate)
+    {
+        this.startDate = startDate;
+    }
+
+    /**
+     * Sets the start date.
+     */
+    public void setStartDateMillis(long millis)
+    {
+        if(millis > 0L)
+            setStartDate(Instant.ofEpochMilli(millis));
+    }
+
+    /**
+     * Sets the start date.
+     */
+    public void setStartDateAsString(String str, String pattern) throws DateTimeParseException
+    {
+        setStartDate(TimeUtils.toInstantUTC(str, pattern));
+    }
+
+    /**
+     * Sets the start date.
+     */
+    public void setStartDateAsString(String str) throws DateTimeParseException
+    {
+        setStartDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Sets the start date.
+     */
+    public void setStartDateUTC(LocalDateTime startDate)
+    {
+        if(startDate != null)
+            setStartDate(TimeUtils.toInstantUTC(startDate));
+    }
+
+    /**
+     * Returns the frequency.
+     */
+    public Frequency getFrequency()
+    {
+        return frequency;
+    }
+
+    /**
+     * Sets the frequency.
+     */
+    public void setFrequency(String frequency)
+    {
+        setFrequency(Frequency.valueOf(frequency));
+    }
+
+    /**
+     * Sets the frequency.
+     */
+    public void setFrequency(Frequency frequency)
+    {
+        this.frequency = frequency;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if this product requires a delivery email.
      */
     public boolean hasDeliveryEmail()
@@ -211,5 +328,37 @@ public class ContactProduct extends BaseEntity
     public void setDeliveryEmailObject(Boolean deliveryEmail)
     {
         setDeliveryEmail(deliveryEmail != null && deliveryEmail.booleanValue());
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the person is enabled.
+     */
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if this person is enabled.
+     */
+    public Boolean getEnabledObject()
+    {
+        return Boolean.valueOf(isEnabled());
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the person is enabled.
+     */
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if this person is enabled.
+     */
+    public void setEnabledObject(Boolean enabled)
+    {
+        setEnabled(enabled != null && enabled.booleanValue());
     }
 }

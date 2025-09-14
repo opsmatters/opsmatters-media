@@ -75,15 +75,10 @@ public class Order extends BaseEntity
         setPaymentTerm(contact.getPaymentTerm());
         setCurrency(contact.getCurrency());
 
-        LocalDate dt = SessionId.now().atZone(ZoneId.of("UTC")).toLocalDate();
-        setWeek(dt.get(WeekFields.ISO.weekOfWeekBasedYear()));
-        setYear(dt.get(WeekFields.ISO.weekBasedYear()));
-
-        // Allow for partial week at end of year
-        int month = dt.getMonth().getValue();
-        if(month == 12 && dt.get(WeekFields.ISO.weekBasedYear()) > dt.getYear())
-            month = 1;
-        setMonth(month);
+        LocalDate dt = SessionId.toLocalDate(Instant.now());
+        setWeek(dt);
+        setMonth(dt);
+        setYear(dt);
 
         // Set the email and additional info for an invoice
         if(getPaymentMode() == PaymentMode.INVOICE)
@@ -253,6 +248,22 @@ public class Order extends BaseEntity
     }
 
     /**
+     * Sets the week number from a local date.
+     */
+    public void setWeek(LocalDate dt)
+    {
+        setWeek(getWeek(dt));
+    }
+
+    /**
+     * Returns the week number from a local date.
+     */
+    public static int getWeek(LocalDate dt)
+    {
+        return dt.get(WeekFields.ISO.weekOfWeekBasedYear());
+    }
+
+    /**
      * Returns the month number.
      */
     public int getMonth()
@@ -269,6 +280,26 @@ public class Order extends BaseEntity
     }
 
     /**
+     * Sets the month number from a local date.
+     */
+    public void setMonth(LocalDate dt)
+    {
+        setMonth(getMonth(dt));
+    }
+
+    /**
+     * Returns the month number from a local date.
+     */
+    public static int getMonth(LocalDate dt)
+    {
+        // Allow for partial week at end of year
+        int month = dt.getMonth().getValue();
+        if(month == 12 && dt.get(WeekFields.ISO.weekBasedYear()) > dt.getYear())
+            month = 1;
+        return month;
+    }
+
+    /**
      * Returns the year number.
      */
     public int getYear()
@@ -282,6 +313,22 @@ public class Order extends BaseEntity
     public void setYear(int year)
     {
         this.year = year;
+    }
+
+    /**
+     * Sets the year number from a local date.
+     */
+    public void setYear(LocalDate dt)
+    {
+        setYear(getYear(dt));
+    }
+
+    /**
+     * Returns the year number from a local date.
+     */
+    public static int getYear(LocalDate dt)
+    {
+        return dt.get(WeekFields.ISO.weekBasedYear());
     }
 
     /**

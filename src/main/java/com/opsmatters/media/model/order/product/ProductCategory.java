@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Gerald Curley
+ * Copyright 2025 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,41 +14,37 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.order.contact;
+package com.opsmatters.media.model.order.product;
 
 import java.util.List;
 import java.util.ArrayList;
-import com.opsmatters.media.model.order.product.ProductCategory;
-
-import static com.opsmatters.media.model.order.product.ProductCategory.*;
 
 /**
- * Represents the contact type.
+ * Represents the category of a product.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ContactType
+public enum ProductCategory
 {
-    SPONSOR("Sponsor"),
-    BUYER("Buyer"),
-    AGENCY("Agency"),
-    PLATFORM("Platform"),
+    UNDEFINED("Undefined"),
+    PUBLISHING("Publishing"),
+    SPONSORSHIP("Sponsorship"),
     ALL("All"); // Pseudo status
 
     private String value;
 
     /**
-     * Constructor that takes the type value.
-     * @param value The value for the type
+     * Constructor that takes the category value.
+     * @param value The value for the category
      */
-    ContactType(String value)
+    ProductCategory(String value)
     {
         this.value = value;
     }
 
     /**
-     * Returns the value of the type.
-     * @return The value of the type.
+     * Returns the value of the category.
+     * @return The value of the category.
      */
     public String toString()
     {
@@ -56,8 +52,8 @@ public enum ContactType
     }
 
     /**
-     * Returns the value of the type.
-     * @return The value of the type.
+     * Returns the value of the category.
+     * @return The value of the category.
      */
     public String value()
     {
@@ -65,37 +61,19 @@ public enum ContactType
     }
 
     /**
-     * Returns <CODE>true</CODE> if the type has a billing email.
-     * @return <CODE>true</CODE> if the type has a billing email.
-     */
-    public boolean hasBillingEmail(Company company)
-    {
-        return this != PLATFORM
-            && (company == null || !company.hasBillingEmail());
-    }
-
-    /**
-     * Returns the product category for the type.
-     * @return The product category for the type.
-     */
-    public ProductCategory category()
-    {
-        return this == SPONSOR ? SPONSORSHIP : PUBLISHING;
-    }
-
-    /**
      * Returns the type for the given value.
      * @param value The type value
      * @return The type for the given value
      */
-    public static ContactType fromValue(String value)
+    public static ProductCategory fromValue(String value)
     {
-        ContactType[] types = values();
-        for(ContactType type : types)
+        ProductCategory[] types = values();
+        for(ProductCategory type : types)
         {
             if(type.value().equals(value))
                 return type;
         }
+
         return null;
     }
 
@@ -110,17 +88,16 @@ public enum ContactType
     }
 
     /**
-     * Returns a list of the contact types.
+     * Returns a list of the product categories.
      */
-    public static List<ContactType> toList()
+    public static List<ProductCategory> toList()
     {
-        List<ContactType> ret = new ArrayList<ContactType>();
+        List<ProductCategory> ret = new ArrayList<ProductCategory>();
 
-        ret.add(SPONSOR);
-        ret.add(BUYER);
-        ret.add(AGENCY);
-        ret.add(PLATFORM);
- 
+        ret.add(UNDEFINED);
+        ret.add(PUBLISHING);
+        ret.add(SPONSORSHIP);
+
         return ret;
     }
 }

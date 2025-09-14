@@ -97,6 +97,7 @@ public enum ProductStatus
             if(type.value().equals(value))
                 return type;
         }
+
         return null;
     }
 
