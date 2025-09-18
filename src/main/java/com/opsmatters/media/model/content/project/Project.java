@@ -187,7 +187,8 @@ public class Project extends Resource<ProjectDetails>
         project.setSiteId(organisationSite.getSiteId());
         project.setTitle("New Project");
         project.setDescription(StringUtils.EMPTY);
-        project.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.now(), config.getField(PUBLISHED_DATE)));
+        project.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.date(),
+            config.getField(PUBLISHED_DATE)));
         project.setFounded(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
 
         return project;

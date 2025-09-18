@@ -25,7 +25,6 @@ import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.order.contact.ContactProduct;
 import com.opsmatters.media.model.order.product.Product;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.SessionId;
 
 import static com.opsmatters.media.model.order.product.ProductTextId.*;
 
@@ -260,9 +259,9 @@ public class OrderItem extends BaseEntity
     }
 
     /**
-     * Sets the product information using the given contact product.
+     * Sets the product information using the given contact product and date.
      */
-    public void setContactProduct(ContactProduct contactProduct)
+    public void setContactProduct(ContactProduct contactProduct, Instant dt)
     {
         if(contactProduct != null)
         {
@@ -276,7 +275,7 @@ public class OrderItem extends BaseEntity
             if(product != null)
             {
                 OrderItemProperties properties = new OrderItemProperties();
-                properties.setDate(SessionId.now());
+                properties.setDate(dt);
                 properties.setDomain(Sites.get(getSiteId()));
                 String template = Products.getText(product, INVOICE_ITEM);
                 if(template != null)

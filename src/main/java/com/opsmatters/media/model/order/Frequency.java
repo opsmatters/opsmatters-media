@@ -10,7 +10,8 @@ public enum Frequency
 {
     NONE("None", 0),
     MONTHLY("Monthly", 1),
-    ANNUALLY("Annualy", 12);
+    QUARTERLY("Quarterly", 3),
+    ANNUALLY("Annually", 12);
 
     private String value;
     private int months;

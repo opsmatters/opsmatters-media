@@ -250,7 +250,7 @@ public class OrderDAO extends BaseDAO
             insertStmt.setString(20, order.getInvoice().getNote());
             insertStmt.setString(21, order.getInvoice().getStatus().name());
             insertStmt.setString(22, order.getCreatedBy());
-            insertStmt.setInt(23, SessionId.get());
+            insertStmt.setInt(23, SessionId.id(order.getCreatedDate()));
             insertStmt.executeUpdate();
 
             logger.info("Created order '"+order.getId()+"' in ORDERS");
@@ -301,7 +301,7 @@ public class OrderDAO extends BaseDAO
         updateStmt.setString(17, order.getInvoice().getNote());
         updateStmt.setString(18, order.getInvoice().getStatus().name());
         updateStmt.setString(19, order.getCreatedBy());
-        updateStmt.setInt(20, SessionId.get(order.getCreatedDate()));
+        updateStmt.setInt(20, SessionId.id(order.getCreatedDate()));
         updateStmt.setString(21, order.getId());
         updateStmt.executeUpdate();
 

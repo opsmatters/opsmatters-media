@@ -217,7 +217,8 @@ public class OrganisationListing extends Content
         listing.setSiteId(organisationSite.getSiteId());
         listing.setCode(organisation.getCode());
         listing.setTitle(organisation.getName());
-        listing.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.now(), config.getField(PUBLISHED_DATE)));
+        listing.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.date(),
+            config.getField(PUBLISHED_DATE)));
         listing.setFounded(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
         listing.setFeedProviderId(SocialProviderId.TWITTER);
 

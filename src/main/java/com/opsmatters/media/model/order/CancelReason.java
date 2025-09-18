@@ -34,6 +34,7 @@ public enum CancelReason
     CHANGED_MIND("Changed Mind"),
     NO_RESPONSE("No Response"),
     INVOICE_REFUSED("Refused To Pay"),
+    DECLINED("Payment Declined"),
     ALL("All"); // Pseudo status
 
     private String value;
@@ -106,6 +107,7 @@ public enum CancelReason
         ret.add(CHANGED_MIND);
         ret.add(NO_RESPONSE);
         ret.add(INVOICE_REFUSED);
+        ret.add(DECLINED);
 
         return ret;
     }

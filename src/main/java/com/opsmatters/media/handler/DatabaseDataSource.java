@@ -115,7 +115,7 @@ public class DatabaseDataSource<E extends Serializable> implements DataSource<E>
                                 if(str == CURRENT_SESSION.name())
                                     str = Integer.toString(SessionId.get());
 
-                                LocalDate dt = SessionId.now().atZone(ZoneId.of("UTC")).toLocalDate();
+                                LocalDate dt = SessionId.toLocalDate();
 
                                 // Replace the yesterday default with the session week
                                 if(str == CURRENT_YESTERDAY.name())

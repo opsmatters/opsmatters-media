@@ -29,6 +29,7 @@ public enum EmailTemplateType
     NONE("None"),
     CONTENT("Content"),
     ORDER("Order"),
+    SPONSORSHIP("Sponsorship"),
     ALL("All"); // Pseudo status
 
     private String value;
@@ -96,6 +97,7 @@ public enum EmailTemplateType
         ret.add(NONE);
         ret.add(CONTENT);
         ret.add(ORDER);
+        ret.add(SPONSORSHIP);
 
         return ret;
     }

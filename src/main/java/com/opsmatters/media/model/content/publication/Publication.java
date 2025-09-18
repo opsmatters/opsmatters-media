@@ -210,7 +210,8 @@ public class Publication extends Resource<PublicationDetails>
         publication.setSiteId(site.getId());
         publication.setTitle("New Publication");
         publication.setDescription(StringUtils.EMPTY);
-        publication.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.now(), config.getField(PUBLISHED_DATE)));
+        publication.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.date(),
+            config.getField(PUBLISHED_DATE)));
 
         return publication;
     }

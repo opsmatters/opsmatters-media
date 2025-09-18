@@ -16,7 +16,12 @@
 package com.opsmatters.media.model.order.contact;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.DateTimeException;
+import java.time.temporal.TemporalAdjusters;
 import java.time.format.DateTimeParseException;
 import com.opsmatters.media.cache.order.product.Products;
 import com.opsmatters.media.cache.system.Sites;
@@ -42,6 +47,8 @@ public class ContactProduct extends BaseEntity
     private int price = 0;
     private Currency currency = Currency.UNDEFINED;
     private Instant startDate;
+    private Instant endDate;
+    private Instant lastDate;
     private Frequency frequency = Frequency.NONE;
     private boolean deliveryEmail = false;
     private boolean enabled = true;
@@ -86,6 +93,8 @@ public class ContactProduct extends BaseEntity
             setPrice(obj.getPrice());
             setCurrency(obj.getCurrency());
             setStartDate(obj.getStartDate());
+            setEndDate(obj.getEndDate());
+            setLastDate(obj.getLastDate());
             setFrequency(obj.getFrequency());
             setDeliveryEmail(obj.hasDeliveryEmail());
             setEnabled(obj.isEnabled());
@@ -272,6 +281,204 @@ public class ContactProduct extends BaseEntity
     {
         if(startDate != null)
             setStartDate(TimeUtils.toInstantUTC(startDate));
+    }
+
+    /**
+     * Returns the end date.
+     */
+    public Instant getEndDate()
+    {
+        return endDate;
+    }
+
+    /**
+     * Returns the end date.
+     */
+    public long getEndDateMillis()
+    {
+        return getEndDate() != null ? getEndDate().toEpochMilli() : 0L;
+    }
+
+    /**
+     * Returns the end date.
+     */
+    public LocalDateTime getEndDateUTC()
+    {
+        return TimeUtils.toDateTimeUTC(getEndDate());
+    }
+
+    /**
+     * Returns the end date.
+     */
+    public String getEndDateAsString()
+    {
+        return getEndDateAsString(Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Returns the end date.
+     */
+    public String getEndDateAsString(String pattern)
+    {
+        return TimeUtils.toStringUTC(getEndDate(), pattern);
+    }
+
+    /**
+     * Sets the end date.
+     */
+    public void setEndDate(Instant endDate)
+    {
+        this.endDate = endDate;
+    }
+
+    /**
+     * Sets the end date.
+     */
+    public void setEndDateMillis(long millis)
+    {
+        if(millis > 0L)
+            setEndDate(Instant.ofEpochMilli(millis));
+    }
+
+    /**
+     * Sets the end date.
+     */
+    public void setEndDateAsString(String str, String pattern) throws DateTimeParseException
+    {
+        setEndDate(TimeUtils.toInstantUTC(str, pattern));
+    }
+
+    /**
+     * Sets the end date.
+     */
+    public void setEndDateAsString(String str) throws DateTimeParseException
+    {
+        setEndDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Sets the end date.
+     */
+    public void setEndDateUTC(LocalDateTime endDate)
+    {
+        if(endDate != null)
+            setEndDate(TimeUtils.toInstantUTC(endDate));
+    }
+
+    /**
+     * Returns the last date.
+     */
+    public Instant getLastDate()
+    {
+        return lastDate;
+    }
+
+    /**
+     * Returns the last date.
+     */
+    public long getLastDateMillis()
+    {
+        return getLastDate() != null ? getLastDate().toEpochMilli() : 0L;
+    }
+
+    /**
+     * Returns the last date.
+     */
+    public LocalDateTime getLastDateUTC()
+    {
+        return TimeUtils.toDateTimeUTC(getLastDate());
+    }
+
+    /**
+     * Returns the last date.
+     */
+    public String getLastDateAsString()
+    {
+        return getLastDateAsString(Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Returns the last date.
+     */
+    public String getLastDateAsString(String pattern)
+    {
+        return TimeUtils.toStringUTC(getLastDate(), pattern);
+    }
+
+    /**
+     * Sets the last date.
+     */
+    public void setLastDate(Instant lastDate)
+    {
+        this.lastDate = lastDate;
+    }
+
+    /**
+     * Sets the last date.
+     */
+    public void setLastDateMillis(long millis)
+    {
+        if(millis > 0L)
+            setLastDate(Instant.ofEpochMilli(millis));
+    }
+
+    /**
+     * Sets the last date.
+     */
+    public void setLastDateAsString(String str, String pattern) throws DateTimeParseException
+    {
+        setLastDate(TimeUtils.toInstantUTC(str, pattern));
+    }
+
+    /**
+     * Sets the last date.
+     */
+    public void setLastDateAsString(String str) throws DateTimeParseException
+    {
+        setLastDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+    }
+
+    /**
+     * Sets the last date.
+     */
+    public void setLastDateUTC(LocalDateTime lastDate)
+    {
+        if(lastDate != null)
+            setLastDate(TimeUtils.toInstantUTC(lastDate));
+    }
+
+    public Instant getNextDate()
+    {
+        ZoneId zone = ZoneId.of("UTC");
+        LocalDate nextDt = LocalDate.ofInstant(getStartDate(), zone);
+
+        if(getLastDate() != null)
+        {
+            LocalDate lastDt = LocalDate.ofInstant(lastDate, zone);
+
+            int month = lastDt.getMonthValue();
+            int year = lastDt.getYear();
+  
+            for(int i = getFrequency().months(); i > 0; i--)
+            {
+                if(++month > 12)
+                {
+                    year++;
+                    month = 1;
+                }
+            }
+
+            try
+            {
+                nextDt = LocalDate.of(year, month, nextDt.getDayOfMonth());
+            }
+            catch(DateTimeException e) // Invalid date (eg. 31/02) changed to last day of month
+            {
+                nextDt = LocalDate.of(year, month, 1).with(TemporalAdjusters.lastDayOfMonth());
+            }
+        }
+
+        return nextDt.atStartOfDay().toInstant(ZoneOffset.UTC);
     }
 
     /**

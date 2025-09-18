@@ -119,7 +119,7 @@ public class SessionId
     /**
      * Returns the session id for the given date.
      */
-    public static int get(Instant dt)
+    public static int id(Instant dt)
     {
         return new SessionId(dt).getId();
     }
@@ -129,15 +129,23 @@ public class SessionId
      */
     public static int id()
     {
-        return get(Instant.now());
+        return id(Instant.now());
+    }
+
+    /**
+     * Returns the session date for the given date.
+     */
+    public static Instant date(Instant dt)
+    {
+        return adjust(dt);
     }
 
     /**
      * Returns the session date for the current system date.
      */
-    public static Instant now()
+    public static Instant date()
     {
-        return adjust(Instant.now());
+        return date(Instant.now());
     }
 
     /**
@@ -183,6 +191,14 @@ public class SessionId
      */
     public static LocalDate toLocalDate(Instant dt)
     {
-        return adjust(dt).atZone(ZoneId.of("UTC")).toLocalDate();
+        return date(dt).atZone(ZoneId.of("UTC")).toLocalDate();
+    }
+
+    /**
+     * Returns the current system date as an adjusted local date.
+     */
+    public static LocalDate toLocalDate()
+    {
+        return toLocalDate(Instant.now());
     }
 }

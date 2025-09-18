@@ -253,7 +253,8 @@ public class Post extends Article<PostDetails>
 
         post.init();
         post.setSiteId(organisationSite.getSiteId());
-        post.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.now(), config.getField(PUBLISHED_DATE)));
+        post.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.date(),
+            config.getField(PUBLISHED_DATE)));
 
         return post;
     }

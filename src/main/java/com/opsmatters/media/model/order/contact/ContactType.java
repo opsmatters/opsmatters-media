@@ -29,6 +29,7 @@ import static com.opsmatters.media.model.order.product.ProductCategory.*;
  */
 public enum ContactType
 {
+    UNDEFINED("Undefined"),
     SPONSOR("Sponsor"),
     BUYER("Buyer"),
     AGENCY("Agency"),

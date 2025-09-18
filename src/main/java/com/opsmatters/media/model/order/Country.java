@@ -36,6 +36,7 @@ public enum Country
     CYPRUS("CY", "Cyprus"),
     CZECH_REPUBLIC("CZ", "Czech Republic"),
     ESTONIA("EE", "Estonia"),
+    FRANCE("FR", "France"),
     GEORGIA("GE", "Georgia"),
     GERMANY("DE", "Germany"),
     GIBRALTAR("GI", "Gibraltar"),

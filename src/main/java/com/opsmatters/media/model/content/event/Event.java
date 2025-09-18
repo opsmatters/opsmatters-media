@@ -193,7 +193,8 @@ public class Event extends Resource<EventDetails>
         event.init();
         event.setSiteId(site.getId());
         event.setTitle("New Event");
-        event.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.now(), config.getField(PUBLISHED_DATE)));
+        event.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.date(),
+            config.getField(PUBLISHED_DATE)));
         event.setStartDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
         event.addStartTime(config);
 

@@ -221,7 +221,8 @@ public class Video extends Article<VideoDetails>
         video.init();
         video.setSiteId(site.getId());
         video.setTitle("New Video");
-        video.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.now(), config.getField(PUBLISHED_DATE)));
+        video.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.date(),
+            config.getField(PUBLISHED_DATE)));
 
         return video;
     }

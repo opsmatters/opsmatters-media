@@ -41,7 +41,7 @@ public class ContactProductDAO extends BaseDAO
      * The query to use to select a product from the CONTACT_PRODUCTS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, PRODUCT_CODE, SITE_ID, PRICE, CURRENCY_CODE, START_DATE, FREQUENCY, DELIVERY_EMAIL, ENABLED  "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, PRODUCT_CODE, SITE_ID, PRICE, CURRENCY_CODE, START_DATE, END_DATE, LAST_DATE, FREQUENCY, DELIVERY_EMAIL, ENABLED  "
       + "FROM CONTACT_PRODUCTS WHERE ID=?";
 
     /**
@@ -49,29 +49,29 @@ public class ContactProductDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTACT_PRODUCTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, PRODUCT_CODE, SITE_ID, PRICE, CURRENCY_CODE, START_DATE, FREQUENCY, DELIVERY_EMAIL, ENABLED )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, PRODUCT_CODE, SITE_ID, PRICE, CURRENCY_CODE, START_DATE, END_DATE, LAST_DATE, FREQUENCY, DELIVERY_EMAIL, ENABLED )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a product in the CONTACT_PRODUCTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTACT_PRODUCTS SET UPDATED_DATE=?, PRODUCT_CODE=?, SITE_ID=?, PRICE=?, CURRENCY_CODE=?, START_DATE=?, FREQUENCY=?, DELIVERY_EMAIL=?, ENABLED=? "
+      "UPDATE CONTACT_PRODUCTS SET UPDATED_DATE=?, PRODUCT_CODE=?, SITE_ID=?, PRICE=?, CURRENCY_CODE=?, START_DATE=?, END_DATE=?, LAST_DATE=?, FREQUENCY=?, DELIVERY_EMAIL=?, ENABLED=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the products from the CONTACT_PRODUCTS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, PRODUCT_CODE, SITE_ID, PRICE, CURRENCY_CODE, START_DATE, FREQUENCY, DELIVERY_EMAIL, ENABLED  "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, PRODUCT_CODE, SITE_ID, PRICE, CURRENCY_CODE, START_DATE, END_DATE, LAST_DATE, FREQUENCY, DELIVERY_EMAIL, ENABLED  "
       + "FROM CONTACT_PRODUCTS ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the products from the CONTACT_PRODUCTS table by contact.
      */
     private static final String LIST_BY_CONTACT_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, PRODUCT_CODE, SITE_ID, PRICE, CURRENCY_CODE, START_DATE, FREQUENCY, DELIVERY_EMAIL, ENABLED  "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, PRODUCT_CODE, SITE_ID, PRICE, CURRENCY_CODE, START_DATE, END_DATE, LAST_DATE, FREQUENCY, DELIVERY_EMAIL, ENABLED  "
       + "FROM CONTACT_PRODUCTS WHERE CONTACT_ID=? ORDER BY CREATED_DATE";
 
     /**
@@ -109,6 +109,8 @@ public class ContactProductDAO extends BaseDAO
         table.addColumn("PRICE", Types.INTEGER, true);
         table.addColumn("CURRENCY_CODE", Types.VARCHAR, 5, true);
         table.addColumn("START_DATE", Types.TIMESTAMP, false);
+        table.addColumn("END_DATE", Types.TIMESTAMP, false);
+        table.addColumn("LAST_DATE", Types.TIMESTAMP, false);
         table.addColumn("FREQUENCY", Types.VARCHAR, 15, true);
         table.addColumn("DELIVERY_EMAIL", Types.BOOLEAN, true);
         table.addColumn("ENABLED", Types.BOOLEAN, true);
@@ -151,9 +153,11 @@ public class ContactProductDAO extends BaseDAO
                 product.setPrice(rs.getInt(7));
                 product.setCurrency(rs.getString(8));
                 product.setStartDateMillis(rs.getTimestamp(9, UTC) != null ? rs.getTimestamp(9, UTC).getTime() : 0L);
-                product.setFrequency(rs.getString(10));
-                product.setDeliveryEmail(rs.getBoolean(11));
-                product.setEnabled(rs.getBoolean(12));
+                product.setEndDateMillis(rs.getTimestamp(10, UTC) != null ? rs.getTimestamp(10, UTC).getTime() : 0L);
+                product.setLastDateMillis(rs.getTimestamp(11, UTC) != null ? rs.getTimestamp(11, UTC).getTime() : 0L);
+                product.setFrequency(rs.getString(12));
+                product.setDeliveryEmail(rs.getBoolean(13));
+                product.setEnabled(rs.getBoolean(14));
                 ret = product;
             }
         }
@@ -197,9 +201,11 @@ public class ContactProductDAO extends BaseDAO
             insertStmt.setInt(7, product.getPrice());
             insertStmt.setString(8, product.getCurrency().code());
             insertStmt.setTimestamp(9, new Timestamp(product.getStartDateMillis()), UTC);
-            insertStmt.setString(10, product.getFrequency().name());
-            insertStmt.setBoolean(11, product.hasDeliveryEmail());
-            insertStmt.setBoolean(12, product.isEnabled());
+            insertStmt.setTimestamp(10, new Timestamp(product.getEndDateMillis()), UTC);
+            insertStmt.setTimestamp(11, new Timestamp(product.getLastDateMillis()), UTC);
+            insertStmt.setString(12, product.getFrequency().name());
+            insertStmt.setBoolean(13, product.hasDeliveryEmail());
+            insertStmt.setBoolean(14, product.isEnabled());
             insertStmt.executeUpdate();
 
             logger.info("Created contact product '"+product.getId()+"' in CONTACT_PRODUCTS");
@@ -237,10 +243,12 @@ public class ContactProductDAO extends BaseDAO
         updateStmt.setInt(4, product.getPrice());
         updateStmt.setString(5, product.getCurrency().code());
         updateStmt.setTimestamp(6, new Timestamp(product.getStartDateMillis()), UTC);
-        updateStmt.setString(7, product.getFrequency().name());
-        updateStmt.setBoolean(8, product.hasDeliveryEmail());
-        updateStmt.setBoolean(9, product.isEnabled());
-        updateStmt.setString(10, product.getId());
+        updateStmt.setTimestamp(7, new Timestamp(product.getEndDateMillis()), UTC);
+        updateStmt.setTimestamp(8, new Timestamp(product.getLastDateMillis()), UTC);
+        updateStmt.setString(9, product.getFrequency().name());
+        updateStmt.setBoolean(10, product.hasDeliveryEmail());
+        updateStmt.setBoolean(11, product.isEnabled());
+        updateStmt.setString(12, product.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated contact product '"+product.getId()+"' in CONTACT_PRODUCTS");
@@ -301,9 +309,11 @@ public class ContactProductDAO extends BaseDAO
                 product.setPrice(rs.getInt(7));
                 product.setCurrency(rs.getString(8));
                 product.setStartDateMillis(rs.getTimestamp(9, UTC) != null ? rs.getTimestamp(9, UTC).getTime() : 0L);
-                product.setFrequency(rs.getString(10));
-                product.setDeliveryEmail(rs.getBoolean(11));
-                product.setEnabled(rs.getBoolean(12));
+                product.setEndDateMillis(rs.getTimestamp(10, UTC) != null ? rs.getTimestamp(10, UTC).getTime() : 0L);
+                product.setLastDateMillis(rs.getTimestamp(11, UTC) != null ? rs.getTimestamp(11, UTC).getTime() : 0L);
+                product.setFrequency(rs.getString(12));
+                product.setDeliveryEmail(rs.getBoolean(13));
+                product.setEnabled(rs.getBoolean(14));
                 ret.add(product);
             }
         }
@@ -359,9 +369,11 @@ public class ContactProductDAO extends BaseDAO
                 product.setPrice(rs.getInt(7));
                 product.setCurrency(rs.getString(8));
                 product.setStartDateMillis(rs.getTimestamp(9, UTC) != null ? rs.getTimestamp(9, UTC).getTime() : 0L);
-                product.setFrequency(rs.getString(10));
-                product.setDeliveryEmail(rs.getBoolean(11));
-                product.setEnabled(rs.getBoolean(12));
+                product.setEndDateMillis(rs.getTimestamp(10, UTC) != null ? rs.getTimestamp(10, UTC).getTime() : 0L);
+                product.setLastDateMillis(rs.getTimestamp(11, UTC) != null ? rs.getTimestamp(11, UTC).getTime() : 0L);
+                product.setFrequency(rs.getString(12));
+                product.setDeliveryEmail(rs.getBoolean(13));
+                product.setEnabled(rs.getBoolean(14));
                 ret.add(product);
             }
         }

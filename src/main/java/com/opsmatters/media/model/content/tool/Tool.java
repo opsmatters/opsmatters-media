@@ -185,7 +185,8 @@ public class Tool extends Resource<ToolDetails>
         tool.setSiteId(organisationSite.getSiteId());
         tool.setTitle("New Tool");
         tool.setDescription(StringUtils.EMPTY);
-        tool.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.now(), config.getField(PUBLISHED_DATE)));
+        tool.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.date(),
+            config.getField(PUBLISHED_DATE)));
 
         return tool;
     }

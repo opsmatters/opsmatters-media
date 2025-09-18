@@ -75,11 +75,6 @@ public class Order extends BaseEntity
         setPaymentTerm(contact.getPaymentTerm());
         setCurrency(contact.getCurrency());
 
-        LocalDate dt = SessionId.toLocalDate(Instant.now());
-        setWeek(dt);
-        setMonth(dt);
-        setYear(dt);
-
         // Set the email and additional info for an invoice
         if(getPaymentMode() == PaymentMode.INVOICE)
         {
@@ -229,6 +224,23 @@ public class Order extends BaseEntity
     public boolean hasCompanyId()
     {
         return getCompanyId() != null && getCompanyId().length() > 0;
+    }
+
+    /**
+     * Sets the date the order was created.
+     */
+    @Override
+    public void setCreatedDate(Instant createdDate)
+    {
+        super.setCreatedDate(createdDate);
+
+        if(createdDate != null)
+        {
+            LocalDate dt = SessionId.toLocalDate(createdDate);
+            setWeek(dt);
+            setMonth(dt);
+            setYear(dt);
+        }
     }
 
     /**

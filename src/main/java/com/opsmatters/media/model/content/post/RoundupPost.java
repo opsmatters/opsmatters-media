@@ -210,7 +210,8 @@ public class RoundupPost extends Article<RoundupPostDetails> implements LinkedCo
         post.init();
         post.setSiteId(organisationSite.getSiteId());
         post.setTitle("New Roundup");
-        post.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.now(), config.getPublishedDateField(organisationSite.isSponsor())));
+        post.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.date(),
+            config.getPublishedDateField(organisationSite.isSponsor())));
 
         return post;
     }
