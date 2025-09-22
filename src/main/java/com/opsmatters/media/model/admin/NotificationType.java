@@ -41,6 +41,7 @@ public enum NotificationType
     TASK_PENDING,
     TASK_UPDATED,
     TASK_DELETED,
+    ORDER_CREATED,
     EMAIL_ERROR_COUNT,
     THREAD_STALLED,
     SETTINGS_ERROR,

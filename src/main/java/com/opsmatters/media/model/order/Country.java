@@ -53,6 +53,7 @@ public enum Country
     PHILIPPINES("PH", "The Philippines"),
     POLAND("PL", "Poland"),
     ROMANIA("RO", "Romania"),
+    SERBIA("RS", "Serbia"),
     SINGAPORE("SG", "Singapore"),
     SPAIN("ES", "Spain"),
     ST_VINCENT("VC", "Saint Vincent"),

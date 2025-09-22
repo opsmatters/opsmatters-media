@@ -71,7 +71,7 @@ public class HtmlDocument
     private static Pattern SPAN_PATTERN = Pattern.compile(OPEN_SPAN, Pattern.DOTALL);
     private static Pattern DIV_CONTENT_PATTERN = Pattern.compile("<div>(.+?)</div>", Pattern.DOTALL);
     private static Pattern SECTION_CONTENT_PATTERN = Pattern.compile("<section>(.+?)</section>", Pattern.DOTALL);
-    private static Pattern UNDERLINE_CONTENT_PATTERN = Pattern.compile("<u>(.*?<a.*?>.*?</a>.*?)</u>", Pattern.DOTALL);
+    private static Pattern UNDERLINE_CONTENT_PATTERN = Pattern.compile("<u>(.*?)</u>", Pattern.DOTALL);
     private static Pattern HR_CONTENT_PATTERN = Pattern.compile("<hr.*?>", Pattern.DOTALL);
     private static Pattern H1_CONTENT_PATTERN = Pattern.compile("<h1.*?>(.+?)</h1>", Pattern.DOTALL);
     private static Pattern OL_ATTR_CONTENT_PATTERN = Pattern.compile("<ol(.*?)>(.*?)</ol>", Pattern.DOTALL);
@@ -730,7 +730,23 @@ public class HtmlDocument
      */
     public static boolean hasUnderline(String doc)
     {
-        return UNDERLINE_CONTENT_PATTERN.matcher(doc).find();
+        boolean ret = false;
+
+        Matcher m = UNDERLINE_CONTENT_PATTERN.matcher(doc);
+
+        while (m.find() && !ret)
+        {
+            String content = m.group(1);
+
+            Matcher textMatcher = ANCHOR_TEXT_PATTERN.matcher(content);
+
+            if(textMatcher.find())
+            {
+                ret = true;
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -738,7 +754,20 @@ public class HtmlDocument
      */
     private void removeUnderlines()
     {
-        doc = UNDERLINE_CONTENT_PATTERN.matcher(doc).replaceAll("$1");
+        Matcher m = UNDERLINE_CONTENT_PATTERN.matcher(doc);
+
+        while(m.find())
+        {
+            String whole = m.group(0);
+            String content = m.group(1);
+
+            Matcher textMatcher = ANCHOR_TEXT_PATTERN.matcher(content);
+
+            if(textMatcher.find())
+            {
+                doc = doc.replace(whole, content);
+            }
+        }
     }
 
     /**

@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
+import com.opsmatters.media.cache.order.Orders;
 import com.opsmatters.media.model.order.Order;
 import com.opsmatters.media.model.order.OrderItem;
 import com.opsmatters.media.model.content.Content;
@@ -417,6 +418,19 @@ public class OrderItemDAO extends BaseDAO
     {
         OrderItem ret = null;
         List<OrderItem> items = list(order);
+
+        // Set the description if it is empty
+        if(items.size() == 1)
+        {
+            OrderItem item = items.get(0);
+            if(!item.hasDescription())
+            {
+                item.setDescription(content.getTitle());
+                update(item);
+                Orders.add(item);
+            }
+        }
+
         for(OrderItem item : items)
         {
             if(item.getDescription().equals(content.getTitle()))

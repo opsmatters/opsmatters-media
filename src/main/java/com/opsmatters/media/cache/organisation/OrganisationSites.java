@@ -279,6 +279,25 @@ public class OrganisationSites
     }
 
     /**
+     * Returns <CODE>true</CODE> if there is an active organisation for the given code.
+     */
+    public static boolean isActive(String code)
+    {
+        boolean ret = false;
+        List<OrganisationSite> organisations = OrganisationSites.list(code);
+        for(OrganisationSite organisation : organisations)
+        {
+            if(organisation.isActive())
+            {
+                ret = true;
+                break;
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * Removes the given organisation site.
      */
     public static void remove(OrganisationSite organisation)

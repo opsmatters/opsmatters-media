@@ -753,4 +753,24 @@ public class TimeUtils
 
         return ret;
     }
+
+    /**
+     * Returns the given date at the start of the day.
+     * @param dt The date to be converted
+     * @return The given date at the start of the day
+     */
+    public static Instant atStartOfDay(LocalDate dt)
+    {
+        return dt != null ? dt.atStartOfDay().toInstant(ZoneOffset.UTC) : null;
+    }
+
+    /**
+     * Returns the given date at the start of the day.
+     * @param dt The date to be converted
+     * @return The given date at the start of the day
+     */
+    public static Instant atStartOfDay(Instant dt)
+    {
+        return dt != null ? atStartOfDay(LocalDate.ofInstant(dt, ZoneId.of("UTC"))) : null;
+    }
 }

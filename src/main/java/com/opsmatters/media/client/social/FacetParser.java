@@ -45,7 +45,7 @@ public class FacetParser
                 int len = 1;
                 char ch = chars[i-1];
                 int cp = (int)ch;
-                if(cp > 255)
+                if(cp >= 128)
                 {
                     // Special cases for some high byte multi-byte (non-emoji) characters
                     if(cp == 0xff0d) // "－"

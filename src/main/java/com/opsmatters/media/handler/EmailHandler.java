@@ -90,6 +90,15 @@ public abstract class EmailHandler
     }
 
     /**
+     * Enqueue an information email.
+     */
+    public void info(Email email) throws SQLException
+    {
+        email.setType(EmailType.INFO);
+        create(email);
+    }
+
+    /**
      * Create and enqueue an email notification.
      */
     private void create(Email email) throws SQLException

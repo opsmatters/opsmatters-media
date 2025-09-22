@@ -408,12 +408,15 @@ public class Contacts implements java.io.Serializable
     public static List<ContactProduct> listProducts(Contact contact)
     {
         List<ContactProduct> ret = new ArrayList<ContactProduct>();
-        Map<String,ContactProduct> products = productContactMap.get(contact.getId());
-        if(products != null)
+        if(contact != null)
         {
-            for(ContactProduct product : products.values())
+            Map<String,ContactProduct> products = productContactMap.get(contact.getId());
+            if(products != null)
             {
-                ret.add(product);
+                for(ContactProduct product : products.values())
+                {
+                    ret.add(product);
+                }
             }
         }
 

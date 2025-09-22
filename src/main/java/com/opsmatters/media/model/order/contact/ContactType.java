@@ -30,10 +30,10 @@ import static com.opsmatters.media.model.order.product.ProductCategory.*;
 public enum ContactType
 {
     UNDEFINED("Undefined"),
-    SPONSOR("Sponsor"),
     BUYER("Buyer"),
     AGENCY("Agency"),
     PLATFORM("Platform"),
+    SPONSOR("Sponsor"),
     ALL("All"); // Pseudo status
 
     private String value;
@@ -97,6 +97,7 @@ public enum ContactType
             if(type.value().equals(value))
                 return type;
         }
+
         return null;
     }
 
@@ -117,10 +118,10 @@ public enum ContactType
     {
         List<ContactType> ret = new ArrayList<ContactType>();
 
-        ret.add(SPONSOR);
         ret.add(BUYER);
         ret.add(AGENCY);
         ret.add(PLATFORM);
+        ret.add(SPONSOR);
  
         return ret;
     }

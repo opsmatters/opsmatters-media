@@ -69,6 +69,8 @@ public class ContactProduct extends BaseEntity
         setCreatedDate(Instant.now());
         setContactId(contact.getId());
         setCurrency(contact.getCurrency());
+        if(contact.getType() == ContactType.SPONSOR)
+            setStartDate(Instant.now());
     }
 
     /**
@@ -246,7 +248,7 @@ public class ContactProduct extends BaseEntity
      */
     public void setStartDate(Instant startDate)
     {
-        this.startDate = startDate;
+        this.startDate = TimeUtils.atStartOfDay(startDate);
     }
 
     /**
@@ -328,7 +330,7 @@ public class ContactProduct extends BaseEntity
      */
     public void setEndDate(Instant endDate)
     {
-        this.endDate = endDate;
+        this.endDate = TimeUtils.atStartOfDay(endDate);
     }
 
     /**
@@ -410,7 +412,7 @@ public class ContactProduct extends BaseEntity
      */
     public void setLastDate(Instant lastDate)
     {
-        this.lastDate = lastDate;
+        this.lastDate = TimeUtils.atStartOfDay(lastDate);
     }
 
     /**
@@ -478,7 +480,7 @@ public class ContactProduct extends BaseEntity
             }
         }
 
-        return nextDt.atStartOfDay().toInstant(ZoneOffset.UTC);
+        return TimeUtils.atStartOfDay(nextDt);
     }
 
     /**
