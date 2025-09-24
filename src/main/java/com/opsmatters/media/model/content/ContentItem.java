@@ -90,6 +90,14 @@ public abstract class ContentItem<T extends Content> implements java.io.Serializ
     }
 
     /**
+     * Returns <CODE>true</CODE> if the content uuid has been set.
+     */
+    public boolean hasUuid()
+    {
+        return getUuid() != null && getUuid().length() > 0;
+    }
+
+    /**
      * Returns the site id.
      */
     public String getSiteId()
