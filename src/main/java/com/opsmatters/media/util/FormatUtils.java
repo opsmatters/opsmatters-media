@@ -94,6 +94,17 @@ public class FormatUtils
     }
 
     /**
+     * Returns the given amount formatted as "0.00".
+     * @param t The amount to be formatted
+     * @return The given amount formatted as "0.00"
+     */
+    public static String getFormattedAmount(int i)
+    {
+        DecimalFormat f = new DecimalFormat("0.00");
+        return f.format(i);
+    }
+
+    /**
      * Returns the given image filename formatted for a roundup post.
      * @param image The image name to be formatted
      * @return The formatted image
