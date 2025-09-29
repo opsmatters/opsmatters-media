@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.Instant;
+import java.util.logging.Logger;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
@@ -31,6 +32,8 @@ import com.opsmatters.media.model.content.util.ImageType;
  */
 public class ContentImages
 {
+    private static final Logger logger = Logger.getLogger(ContentImages.class.getName());
+
     private static Map<ImageType,Map<String,ContentImage>> types = new LinkedHashMap<ImageType,Map<String,ContentImage>>();
 
     private static boolean initialised = false;
@@ -70,6 +73,8 @@ public class ContentImages
                 add(image);
             }
         }
+
+        logger.info("Loaded "+size()+" content images");
 
         initialised = true;
     }
@@ -171,5 +176,16 @@ public class ContentImages
         Map<String,ContentImage> map = types.get(image.getType());
         if(map != null)
             map.remove(image.getCode());
+    }
+
+    /**
+     * Returns the count of contacts.
+     */
+    public static int size()
+    {
+        int count = 0;
+        for(Map<String,ContentImage> map : types.values())
+            count += map.size();
+        return count;
     }
 }
