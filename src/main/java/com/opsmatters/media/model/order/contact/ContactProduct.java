@@ -51,7 +51,7 @@ public class ContactProduct extends BaseEntity
     private Instant lastDate;
     private Frequency frequency = Frequency.NONE;
     private boolean deliveryEmail = false;
-    private boolean enabled = true;
+    private boolean enabled = false;
 
     /**
      * Default constructor.
@@ -61,7 +61,7 @@ public class ContactProduct extends BaseEntity
     }
 
     /**
-     * Constructor that takes a contact.
+     * Constructor that takes a contact and profile.
      */
     public ContactProduct(Contact contact)
     {
@@ -71,6 +71,7 @@ public class ContactProduct extends BaseEntity
         setCurrency(contact.getCurrency());
         if(contact.getType() == ContactType.SPONSOR)
             setStartDate(Instant.now());
+        setEnabled(true);
     }
 
     /**

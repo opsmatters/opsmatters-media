@@ -34,6 +34,10 @@ public enum ContactRating
     UNDEFINED("Undefined", 0),
     OCCASIONAL("Occasional", 1),
     REGULAR("Regular", 10),
+    BAD("Bad"), // Pseudo status
+    VERY_BAD("Very Bad"), // Pseudo status
+    GOOD("Good"), // Pseudo status
+    VERY_GOOD("Very Good"), // Pseudo status
     ALL("All"); // Pseudo status
 
     private String value;
@@ -123,6 +127,31 @@ public enum ContactRating
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given rating is included by this rating.
+     * @return <CODE>true</CODE> if the given rating is included by this rating
+     */
+    public boolean selects(ContactRating rating)
+    {
+        boolean ret = false;
+
+        if(rating != null)
+        {
+            if(this == VERY_BAD)
+                ret = rating.veryBad();
+            else if(this == BAD)
+                ret = rating.bad();
+            else if(this == VERY_GOOD)
+                ret = rating.veryGood();
+            else if(this == GOOD)
+                ret = rating.good();
+            else
+                ret = this == rating;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the CSS class for the rating.
      * @return the CSS class for the rating
      */
@@ -171,9 +200,17 @@ public enum ContactRating
     /**
      * Returns a list of the contact ratings.
      */
-    public static List<ContactRating> toList()
+    public static List<ContactRating> toList(boolean extended)
     {
         List<ContactRating> ret = new ArrayList<ContactRating>();
+
+        if(extended)
+        {
+            ret.add(VERY_BAD);
+            ret.add(BAD);
+            ret.add(GOOD);
+            ret.add(VERY_GOOD);
+        }
 
         ret.add(UNDEFINED);
         ret.add(NON_PAYER);
@@ -183,7 +220,7 @@ public enum ContactRating
         ret.add(NEUTRAL);
         ret.add(OCCASIONAL);
         ret.add(REGULAR);
- 
+
         return ret;
     }
 }

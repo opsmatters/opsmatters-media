@@ -19,9 +19,6 @@ import java.time.Instant;
 import com.opsmatters.media.cache.admin.Parameters;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.order.Currency;
-import com.opsmatters.media.model.order.PaymentMethod;
-import com.opsmatters.media.model.order.PaymentMode;
-import com.opsmatters.media.model.order.PaymentTerm;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.FormatUtils;
 
@@ -38,20 +35,14 @@ public class Contact extends BaseEntity
     private String name = "";
     private ContactType type = ContactType.UNDEFINED;
     private String code = "";
-    private String contactEmail = "";
-    private String billingEmail = "";
-    private String companyId = "";
+    private String email = ""; // Only for search
     private String website = "";
     private String salutation = "";
     private String notes = "";
-    private PaymentMethod method = PaymentMethod.UNDEFINED;
-    private PaymentMode mode = PaymentMode.UNDEFINED;
-    private PaymentTerm term = PaymentTerm.UNDEFINED;
     private Currency currency = Currency.UNDEFINED;
     private ContactStatus status = ContactStatus.NEW;
     private SuspendReason reason = SuspendReason.NONE;
     private ContactRating rating = ContactRating.UNDEFINED;
-    private boolean prePayment = false;
     private boolean deliveryEmail = false;
     private boolean completionEmail = false;
 
@@ -72,10 +63,6 @@ public class Contact extends BaseEntity
         setType(ContactType.BUYER);
         setName(name);
         setSalutation();
-
-        setPaymentMethod(Parameters.get(ORDER, PAYMENT_METHOD).getValue());
-        setPaymentMode(Parameters.get(ORDER, PAYMENT_MODE).getValue());
-        setPaymentTerm(Parameters.get(ORDER, PAYMENT_TERM).getValue());
         setCurrency(Parameters.get(ORDER, CURRENCY).getValue());
         setRating(ContactRating.NEUTRAL);
         setDeliveryEmail(true);
@@ -101,20 +88,13 @@ public class Contact extends BaseEntity
             setName(obj.getName());
             setType(obj.getType());
             setCode(obj.getCode());
-            setContactEmail(obj.getContactEmail());
-            setBillingEmail(obj.getBillingEmail());
-            setCompanyId(obj.getCompanyId());
             setWebsite(obj.getWebsite());
             setSalutation(obj.getSalutation());
             setNotes(obj.getNotes());
-            setPaymentMethod(obj.getPaymentMethod());
-            setPaymentMode(obj.getPaymentMode());
-            setPaymentTerm(obj.getPaymentTerm());
             setCurrency(obj.getCurrency());
             setStatus(obj.getStatus());
             setReason(obj.getReason());
             setRating(obj.getRating());
-            setPrePayment(obj.hasPrePayment());
             setDeliveryEmail(obj.hasDeliveryEmail());
             setCompletionEmail(obj.hasCompletionEmail());
         }
@@ -219,73 +199,17 @@ public class Contact extends BaseEntity
     /**
      * Returns the contact email.
      */
-    public String getContactEmail()
+    public String getEmail()
     {
-        return contactEmail;
+        return email;
     }
 
     /**
      * Sets the contact email.
      */
-    public void setContactEmail(String contactEmail)
+    public void setEmail(String email)
     {
-        this.contactEmail = contactEmail;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the contact email has been set.
-     */
-    public boolean hasContactEmail()
-    {
-        return getContactEmail() != null && getContactEmail().length() > 0;
-    }
-
-    /**
-     * Returns the billing email.
-     */
-    public String getBillingEmail()
-    {
-        return billingEmail;
-    }
-
-    /**
-     * Sets the billing email.
-     */
-    public void setBillingEmail(String billingEmail)
-    {
-        this.billingEmail = billingEmail;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the billing email has been set.
-     */
-    public boolean hasBillingEmail()
-    {
-        return getBillingEmail() != null && getBillingEmail().length() > 0;
-    }
-
-    /**
-     * Returns the company id.
-     */
-    public String getCompanyId()
-    {
-        return companyId;
-    }
-
-    /**
-     * Sets the company id.
-     */
-    public void setCompanyId(String companyId)
-    {
-        this.companyId = companyId;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the company id has been set.
-     */
-    public boolean hasCompanyId()
-    {
-        return getCompanyId() != null && getCompanyId().length() > 0;
+        this.email = email;
     }
 
     /**
@@ -340,78 +264,6 @@ public class Contact extends BaseEntity
             notes += "\n";
         notes += note;
         setNotes(notes);
-    }
-
-    /**
-     * Returns the payment method.
-     */
-    public PaymentMethod getPaymentMethod()
-    {
-        return method;
-    }
-
-    /**
-     * Sets the payment method.
-     */
-    public void setPaymentMethod(String method)
-    {
-        setPaymentMethod(PaymentMethod.valueOf(method));
-    }
-
-    /**
-     * Sets the payment method.
-     */
-    public void setPaymentMethod(PaymentMethod method)
-    {
-        this.method = method;
-    }
-
-    /**
-     * Returns the payment mode.
-     */
-    public PaymentMode getPaymentMode()
-    {
-        return mode;
-    }
-
-    /**
-     * Sets the payment mode.
-     */
-    public void setPaymentMode(String mode)
-    {
-        setPaymentMode(PaymentMode.valueOf(mode));
-    }
-
-    /**
-     * Sets the payment mode.
-     */
-    public void setPaymentMode(PaymentMode mode)
-    {
-        this.mode = mode;
-    }
-
-    /**
-     * Returns the payment term.
-     */
-    public PaymentTerm getPaymentTerm()
-    {
-        return term;
-    }
-
-    /**
-     * Sets the payment term.
-     */
-    public void setPaymentTerm(String term)
-    {
-        setPaymentTerm(PaymentTerm.valueOf(term));
-    }
-
-    /**
-     * Sets the payment term.
-     */
-    public void setPaymentTerm(PaymentTerm term)
-    {
-        this.term = term;
     }
 
     /**
@@ -524,38 +376,6 @@ public class Contact extends BaseEntity
     public void setRating(ContactRating rating)
     {
         this.rating = rating;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if pre-payment is enabled for orders for this contact.
-     */
-    public boolean hasPrePayment()
-    {
-        return prePayment;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if pre-payment is enabled for orders for this contact.
-     */
-    public Boolean getPrePaymentObject()
-    {
-        return Boolean.valueOf(hasPrePayment());
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if pre-payment is enabled for orders for this contact.
-     */
-    public void setPrePayment(boolean prePayment)
-    {
-        this.prePayment = prePayment;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if pre-payment is enabled for orders for this contact.
-     */
-    public void setPrePaymentObject(Boolean prePayment)
-    {
-        setPrePayment(prePayment != null && prePayment.booleanValue());
     }
 
     /**

@@ -20,10 +20,11 @@ import com.opsmatters.media.db.JDBCDatabaseConnection;
 import com.opsmatters.media.db.dao.DAOFactory;
 import com.opsmatters.media.db.dao.order.product.ProductDAO;
 import com.opsmatters.media.db.dao.order.product.ProductTextDAO;
-import com.opsmatters.media.db.dao.order.contact.CompanyDAO;
 import com.opsmatters.media.db.dao.order.contact.ContactDAO;
+import com.opsmatters.media.db.dao.order.contact.ContactProfileDAO;
 import com.opsmatters.media.db.dao.order.contact.ContactProductDAO;
 import com.opsmatters.media.db.dao.order.contact.ContactPersonDAO;
+import com.opsmatters.media.db.dao.order.contact.CompanyDAO;
 
 /**
  * The class for all order management data access object factories.
@@ -41,12 +42,13 @@ public class OrderDAOFactory extends DAOFactory
 
         getProductDAO();
         getProductTextDAO();
-        getCompanyDAO();
         getContactDAO();
+        getContactProfileDAO();
         getContactProductDAO();
         getContactPersonDAO();
         getOrderDAO();
         getOrderItemDAO();
+        getCompanyDAO();
     }
 
     /**
@@ -70,16 +72,6 @@ public class OrderDAOFactory extends DAOFactory
     }
 
     /**
-     * Returns the company DAO.
-     */
-    public CompanyDAO getCompanyDAO()
-    {
-        if(companyDAO == null)
-            companyDAO = new CompanyDAO(this);
-        return companyDAO;
-    }
-
-    /**
      * Returns the contact DAO.
      */
     public ContactDAO getContactDAO()
@@ -87,6 +79,16 @@ public class OrderDAOFactory extends DAOFactory
         if(contactDAO == null)
             contactDAO = new ContactDAO(this);
         return contactDAO;
+    }
+
+    /**
+     * Returns the contact profile DAO.
+     */
+    public ContactProfileDAO getContactProfileDAO()
+    {
+        if(contactProfileDAO == null)
+            contactProfileDAO = new ContactProfileDAO(this);
+        return contactProfileDAO;
     }
 
     /**
@@ -107,6 +109,16 @@ public class OrderDAOFactory extends DAOFactory
         if(contactPersonDAO == null)
             contactPersonDAO = new ContactPersonDAO(this);
         return contactPersonDAO;
+    }
+
+    /**
+     * Returns the company DAO.
+     */
+    public CompanyDAO getCompanyDAO()
+    {
+        if(companyDAO == null)
+            companyDAO = new CompanyDAO(this);
+        return companyDAO;
     }
 
     /**
@@ -138,20 +150,22 @@ public class OrderDAOFactory extends DAOFactory
         super.close();
         productDAO = null;
         productTextDAO = null;
-        companyDAO = null;
         contactDAO = null;
+        contactProfileDAO = null;
         contactProductDAO = null;
         contactPersonDAO = null;
+        companyDAO = null;
         orderDAO = null;
         orderItemDAO = null;
     }
 
     private ProductDAO productDAO;
     private ProductTextDAO productTextDAO;
-    private CompanyDAO companyDAO;
     private ContactDAO contactDAO;
+    private ContactProfileDAO contactProfileDAO;
     private ContactProductDAO contactProductDAO;
     private ContactPersonDAO contactPersonDAO;
+    private CompanyDAO companyDAO;
     private OrderDAO orderDAO;
     private OrderItemDAO orderItemDAO;
 }

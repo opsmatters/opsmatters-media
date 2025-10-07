@@ -44,7 +44,7 @@ public class OrderDAO extends BaseDAO
      * The query to use to select an order from the ORDERS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, CONTACT_PERSON_ID, COMPANY_ID, WEEK, MONTH, YEAR, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, INVOICE_ID, INVOICE_NUMBER, INVOICE_EMAIL, INVOICE_URL, INVOICE_NOTE, INVOICE_STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, CONTACT_PERSON_ID, COMPANY_ID, WEEK, MONTH, YEAR, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, PRE_PAYMENT, INVOICE_ID, INVOICE_NUMBER, INVOICE_EMAIL, INVOICE_URL, INVOICE_NOTE, INVOICE_STATUS, CREATED_BY "
       + "FROM ORDERS WHERE ID=?";
 
     /**
@@ -52,43 +52,43 @@ public class OrderDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO ORDERS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, CONTACT_PERSON_ID, COMPANY_ID, WEEK, MONTH, YEAR, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, INVOICE_ID, INVOICE_NUMBER, INVOICE_EMAIL, INVOICE_URL, INVOICE_NOTE, INVOICE_STATUS, CREATED_BY, SESSION_ID )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, CONTACT_PERSON_ID, COMPANY_ID, WEEK, MONTH, YEAR, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, PRE_PAYMENT, INVOICE_ID, INVOICE_NUMBER, INVOICE_EMAIL, INVOICE_URL, INVOICE_NOTE, INVOICE_STATUS, CREATED_BY, SESSION_ID )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update an order in the ORDERS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE ORDERS SET CREATED_DATE=?, UPDATED_DATE=?, COMPANY_ID=?, WEEK=?, MONTH=?, YEAR=?, PAYMENT_METHOD=?, PAYMENT_MODE=?, PAYMENT_TERM=?, CURRENCY_CODE=?, STATUS=?, REASON=?, INVOICE_ID=?, INVOICE_NUMBER=?, INVOICE_EMAIL=?, INVOICE_URL=?, INVOICE_NOTE=?, INVOICE_STATUS=?, CREATED_BY=?, SESSION_ID=? "
+      "UPDATE ORDERS SET CREATED_DATE=?, UPDATED_DATE=?, COMPANY_ID=?, WEEK=?, MONTH=?, YEAR=?, PAYMENT_METHOD=?, PAYMENT_MODE=?, PAYMENT_TERM=?, CURRENCY_CODE=?, STATUS=?, REASON=?, PRE_PAYMENT=?, INVOICE_ID=?, INVOICE_NUMBER=?, INVOICE_EMAIL=?, INVOICE_URL=?, INVOICE_NOTE=?, INVOICE_STATUS=?, CREATED_BY=?, SESSION_ID=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the orders from the ORDERS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, CONTACT_PERSON_ID, COMPANY_ID, WEEK, MONTH, YEAR, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, INVOICE_ID, INVOICE_NUMBER, INVOICE_EMAIL, INVOICE_URL, INVOICE_NOTE, INVOICE_STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, CONTACT_PERSON_ID, COMPANY_ID, WEEK, MONTH, YEAR, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, PRE_PAYMENT, INVOICE_ID, INVOICE_NUMBER, INVOICE_EMAIL, INVOICE_URL, INVOICE_NOTE, INVOICE_STATUS, CREATED_BY "
       + "FROM ORDERS ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the orders from the ORDERS table by status.
      */
     private static final String LIST_BY_STATUS_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, CONTACT_PERSON_ID, COMPANY_ID, WEEK, MONTH, YEAR, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, INVOICE_ID, INVOICE_NUMBER, INVOICE_EMAIL, INVOICE_URL, INVOICE_NOTE, INVOICE_STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, CONTACT_PERSON_ID, COMPANY_ID, WEEK, MONTH, YEAR, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, PRE_PAYMENT, INVOICE_ID, INVOICE_NUMBER, INVOICE_EMAIL, INVOICE_URL, INVOICE_NOTE, INVOICE_STATUS, CREATED_BY "
       + "FROM ORDERS WHERE STATUS=? ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the orders from the ORDERS table by contact.
      */
     private static final String LIST_BY_CONTACT_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, CONTACT_PERSON_ID, COMPANY_ID, WEEK, MONTH, YEAR, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, INVOICE_ID, INVOICE_NUMBER, INVOICE_EMAIL, INVOICE_URL, INVOICE_NOTE, INVOICE_STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, CONTACT_PERSON_ID, COMPANY_ID, WEEK, MONTH, YEAR, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, PRE_PAYMENT, INVOICE_ID, INVOICE_NUMBER, INVOICE_EMAIL, INVOICE_URL, INVOICE_NOTE, INVOICE_STATUS, CREATED_BY "
       + "FROM ORDERS WHERE CONTACT_ID=? ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the orders from the ORDERS table by contact and status.
      */
     private static final String LIST_BY_CONTACT_STATUS_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, CONTACT_PERSON_ID, COMPANY_ID, WEEK, MONTH, YEAR, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, INVOICE_ID, INVOICE_NUMBER, INVOICE_EMAIL, INVOICE_URL, INVOICE_NOTE, INVOICE_STATUS, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, CONTACT_PERSON_ID, COMPANY_ID, WEEK, MONTH, YEAR, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, STATUS, REASON, PRE_PAYMENT, INVOICE_ID, INVOICE_NUMBER, INVOICE_EMAIL, INVOICE_URL, INVOICE_NOTE, INVOICE_STATUS, CREATED_BY "
       + "FROM ORDERS WHERE CONTACT_ID=? AND STATUS=? ORDER BY CREATED_DATE";
 
     /**
@@ -132,6 +132,7 @@ public class OrderDAO extends BaseDAO
         table.addColumn("CURRENCY_CODE", Types.VARCHAR, 5, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("REASON", Types.VARCHAR, 15, false);
+        table.addColumn("PRE_PAYMENT", Types.BOOLEAN, true);
         table.addColumn("INVOICE_ID", Types.VARCHAR, 30, false);
         table.addColumn("INVOICE_NUMBER", Types.VARCHAR, 30, false);
         table.addColumn("INVOICE_EMAIL", Types.VARCHAR, 50, false);
@@ -187,12 +188,13 @@ public class OrderDAO extends BaseDAO
                 order.setCurrency(rs.getString(13));
                 order.setStatus(rs.getString(14));
                 order.setReason(rs.getString(15));
-                order.getInvoice().setId(rs.getString(16));
-                order.getInvoice().setNumber(rs.getString(17));
-                order.getInvoice().setEmail(rs.getString(18));
-                order.getInvoice().setUrl(rs.getString(19));
-                order.getInvoice().setNote(rs.getString(20));
-                order.getInvoice().setStatus(rs.getString(21));
+                order.setPrePayment(rs.getBoolean(16));
+                order.getInvoice().setId(rs.getString(17));
+                order.getInvoice().setNumber(rs.getString(18));
+                order.getInvoice().setEmail(rs.getString(19));
+                order.getInvoice().setUrl(rs.getString(20));
+                order.getInvoice().setNote(rs.getString(21));
+                order.getInvoice().setStatus(rs.getString(22));
                 order.setCreatedBy(rs.getString(22));
                 ret = order;
             }
@@ -243,14 +245,15 @@ public class OrderDAO extends BaseDAO
             insertStmt.setString(13, order.getCurrency().code());
             insertStmt.setString(14, order.getStatus().name());
             insertStmt.setString(15, order.getReason().name());
-            insertStmt.setString(16, order.getInvoice().getId());
-            insertStmt.setString(17, order.getInvoice().getNumber());
-            insertStmt.setString(18, order.getInvoice().getEmail());
-            insertStmt.setString(19, order.getInvoice().getUrl());
-            insertStmt.setString(20, order.getInvoice().getNote());
-            insertStmt.setString(21, order.getInvoice().getStatus().name());
-            insertStmt.setString(22, order.getCreatedBy());
-            insertStmt.setInt(23, SessionId.id(order.getCreatedDate()));
+            insertStmt.setBoolean(16, order.hasPrePayment());
+            insertStmt.setString(17, order.getInvoice().getId());
+            insertStmt.setString(18, order.getInvoice().getNumber());
+            insertStmt.setString(19, order.getInvoice().getEmail());
+            insertStmt.setString(20, order.getInvoice().getUrl());
+            insertStmt.setString(21, order.getInvoice().getNote());
+            insertStmt.setString(22, order.getInvoice().getStatus().name());
+            insertStmt.setString(23, order.getCreatedBy());
+            insertStmt.setInt(24, SessionId.id(order.getCreatedDate()));
             insertStmt.executeUpdate();
 
             logger.info("Created order '"+order.getId()+"' in ORDERS");
@@ -294,15 +297,16 @@ public class OrderDAO extends BaseDAO
         updateStmt.setString(10, order.getCurrency().code());
         updateStmt.setString(11, order.getStatus().name());
         updateStmt.setString(12, order.getReason().name());
-        updateStmt.setString(13, order.getInvoice().getId());
-        updateStmt.setString(14, order.getInvoice().getNumber());
-        updateStmt.setString(15, order.getInvoice().getEmail());
-        updateStmt.setString(16, order.getInvoice().getUrl());
-        updateStmt.setString(17, order.getInvoice().getNote());
-        updateStmt.setString(18, order.getInvoice().getStatus().name());
-        updateStmt.setString(19, order.getCreatedBy());
-        updateStmt.setInt(20, SessionId.id(order.getCreatedDate()));
-        updateStmt.setString(21, order.getId());
+        updateStmt.setBoolean(13, order.hasPrePayment());
+        updateStmt.setString(14, order.getInvoice().getId());
+        updateStmt.setString(15, order.getInvoice().getNumber());
+        updateStmt.setString(16, order.getInvoice().getEmail());
+        updateStmt.setString(17, order.getInvoice().getUrl());
+        updateStmt.setString(18, order.getInvoice().getNote());
+        updateStmt.setString(19, order.getInvoice().getStatus().name());
+        updateStmt.setString(20, order.getCreatedBy());
+        updateStmt.setInt(21, SessionId.id(order.getCreatedDate()));
+        updateStmt.setString(22, order.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated order '"+order.getId()+"' in ORDERS");
@@ -369,12 +373,13 @@ public class OrderDAO extends BaseDAO
                 order.setCurrency(rs.getString(13));
                 order.setStatus(rs.getString(14));
                 order.setReason(rs.getString(15));
-                order.getInvoice().setId(rs.getString(16));
-                order.getInvoice().setNumber(rs.getString(17));
-                order.getInvoice().setEmail(rs.getString(18));
-                order.getInvoice().setUrl(rs.getString(19));
-                order.getInvoice().setNote(rs.getString(20));
-                order.getInvoice().setStatus(rs.getString(21));
+                order.setPrePayment(rs.getBoolean(16));
+                order.getInvoice().setId(rs.getString(17));
+                order.getInvoice().setNumber(rs.getString(18));
+                order.getInvoice().setEmail(rs.getString(19));
+                order.getInvoice().setUrl(rs.getString(20));
+                order.getInvoice().setNote(rs.getString(21));
+                order.getInvoice().setStatus(rs.getString(22));
                 order.setCreatedBy(rs.getString(22));
                 ret.add(order);
             }
@@ -437,12 +442,13 @@ public class OrderDAO extends BaseDAO
                 order.setCurrency(rs.getString(13));
                 order.setStatus(rs.getString(14));
                 order.setReason(rs.getString(15));
-                order.getInvoice().setId(rs.getString(16));
-                order.getInvoice().setNumber(rs.getString(17));
-                order.getInvoice().setEmail(rs.getString(18));
-                order.getInvoice().setUrl(rs.getString(19));
-                order.getInvoice().setNote(rs.getString(20));
-                order.getInvoice().setStatus(rs.getString(21));
+                order.setPrePayment(rs.getBoolean(16));
+                order.getInvoice().setId(rs.getString(17));
+                order.getInvoice().setNumber(rs.getString(18));
+                order.getInvoice().setEmail(rs.getString(19));
+                order.getInvoice().setUrl(rs.getString(20));
+                order.getInvoice().setNote(rs.getString(21));
+                order.getInvoice().setStatus(rs.getString(22));
                 order.setCreatedBy(rs.getString(22));
                 ret.add(order);
             }
@@ -505,12 +511,13 @@ public class OrderDAO extends BaseDAO
                 order.setCurrency(rs.getString(13));
                 order.setStatus(rs.getString(14));
                 order.setReason(rs.getString(15));
-                order.getInvoice().setId(rs.getString(16));
-                order.getInvoice().setNumber(rs.getString(17));
-                order.getInvoice().setEmail(rs.getString(18));
-                order.getInvoice().setUrl(rs.getString(19));
-                order.getInvoice().setNote(rs.getString(20));
-                order.getInvoice().setStatus(rs.getString(21));
+                order.setPrePayment(rs.getBoolean(16));
+                order.getInvoice().setId(rs.getString(17));
+                order.getInvoice().setNumber(rs.getString(18));
+                order.getInvoice().setEmail(rs.getString(19));
+                order.getInvoice().setUrl(rs.getString(20));
+                order.getInvoice().setNote(rs.getString(21));
+                order.getInvoice().setStatus(rs.getString(22));
                 order.setCreatedBy(rs.getString(22));
                 ret.add(order);
             }
@@ -574,12 +581,13 @@ public class OrderDAO extends BaseDAO
                 order.setCurrency(rs.getString(13));
                 order.setStatus(rs.getString(14));
                 order.setReason(rs.getString(15));
-                order.getInvoice().setId(rs.getString(16));
-                order.getInvoice().setNumber(rs.getString(17));
-                order.getInvoice().setEmail(rs.getString(18));
-                order.getInvoice().setUrl(rs.getString(19));
-                order.getInvoice().setNote(rs.getString(20));
-                order.getInvoice().setStatus(rs.getString(21));
+                order.setPrePayment(rs.getBoolean(16));
+                order.getInvoice().setId(rs.getString(17));
+                order.getInvoice().setNumber(rs.getString(18));
+                order.getInvoice().setEmail(rs.getString(19));
+                order.getInvoice().setUrl(rs.getString(20));
+                order.getInvoice().setNote(rs.getString(21));
+                order.getInvoice().setStatus(rs.getString(22));
                 order.setCreatedBy(rs.getString(22));
                 ret.add(order);
             }

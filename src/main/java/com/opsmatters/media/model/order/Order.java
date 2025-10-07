@@ -24,6 +24,7 @@ import com.opsmatters.media.cache.order.contact.Contacts;
 import com.opsmatters.media.cache.order.contact.Companies;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.order.contact.Contact;
+import com.opsmatters.media.model.order.contact.ContactProfile;
 import com.opsmatters.media.model.order.contact.ContactPerson;
 import com.opsmatters.media.model.order.contact.Company;
 import com.opsmatters.media.util.StringUtils;
@@ -50,6 +51,7 @@ public class Order extends BaseEntity
     private Currency currency = Currency.UNDEFINED;
     private OrderStatus status = OrderStatus.NEW;
     private CancelReason reason = CancelReason.NONE;
+    private boolean prePayment = false;
     private Invoice invoice = new Invoice();
 
     /**
@@ -60,30 +62,31 @@ public class Order extends BaseEntity
     }
 
     /**
-     * Constructor that takes a contact and optional person.
+     * Constructor that takes a contact, profile and optional person.
      */
-    public Order(Contact contact, ContactPerson person)
+    public Order(Contact contact, ContactProfile profile, ContactPerson person)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setContactId(contact.getId());
         if(person != null)
             setContactPersonId(person.getId());
-        setCompanyId(contact.getCompanyId());
-        setPaymentMethod(contact.getPaymentMethod());
-        setPaymentMode(contact.getPaymentMode());
-        setPaymentTerm(contact.getPaymentTerm());
-        setCurrency(contact.getCurrency());
+        setCompanyId(profile.getCompanyId());
+        setPaymentMethod(profile.getPaymentMethod());
+        setPaymentMode(profile.getPaymentMode());
+        setPaymentTerm(profile.getPaymentTerm());
+        setCurrency(profile.getCurrency());
+        setPrePayment(profile.hasPrePayment());
 
         // Set the email and additional info for an invoice
         if(getPaymentMode() == PaymentMode.INVOICE)
         {
-            String email = contact.getBillingEmail();
+            String email = profile.getBillingEmail();
             String note = Parameters.get(ORDER, INVOICE_NOTE).getValue();
 
-            if(contact.hasCompanyId())
+            if(profile.hasCompanyId())
             {
-                Company company = Companies.getById(contact.getCompanyId());
+                Company company = profile.getCompany();
                 if(company != null)
                 {
                     if(company.hasAdditionalInfo())
@@ -138,6 +141,7 @@ public class Order extends BaseEntity
             setWeek(obj.getWeek());
             setMonth(obj.getMonth());
             setYear(obj.getYear());
+            setPrePayment(obj.hasPrePayment());
             getInvoice().copyAttributes(obj.getInvoice());
         }
     }
@@ -493,6 +497,38 @@ public class Order extends BaseEntity
     public void setReason(CancelReason reason)
     {
         this.reason = reason;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if pre-payment is enabled for orders for this order.
+     */
+    public boolean hasPrePayment()
+    {
+        return prePayment;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if pre-payment is enabled for orders for this order.
+     */
+    public Boolean getPrePaymentObject()
+    {
+        return Boolean.valueOf(hasPrePayment());
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if pre-payment is enabled for orders for this order.
+     */
+    public void setPrePayment(boolean prePayment)
+    {
+        this.prePayment = prePayment;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if pre-payment is enabled for orders for this order.
+     */
+    public void setPrePaymentObject(Boolean prePayment)
+    {
+        setPrePayment(prePayment != null && prePayment.booleanValue());
     }
 
     /**

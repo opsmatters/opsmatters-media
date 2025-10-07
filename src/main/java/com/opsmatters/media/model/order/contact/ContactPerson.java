@@ -31,7 +31,7 @@ public class ContactPerson extends BaseEntity
     private String name = "";
     private String email = "";
     private String salutation = "";
-    private boolean enabled = true;
+    private boolean enabled = false;
 
     /**
      * Default constructor.
@@ -48,6 +48,7 @@ public class ContactPerson extends BaseEntity
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setContactId(contact.getId());
+        setEnabled(true);
     }
 
     /**

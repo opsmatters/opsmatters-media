@@ -22,8 +22,10 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.order.contact.Contact;
+import com.opsmatters.media.model.order.contact.ContactProfile;
 import com.opsmatters.media.model.order.contact.ContactPerson;
 import com.opsmatters.media.model.order.contact.ContactProduct;
+import com.opsmatters.media.model.order.contact.Company;
 
 /**
  * Class representing the list of contacts.
@@ -36,7 +38,9 @@ public class Contacts implements java.io.Serializable
 
     private static Map<String,Contact> idMap = new LinkedHashMap<String,Contact>();
     private static Map<String,Contact> nameMap = new TreeMap<String,Contact>();
-    private static Map<String,Contact> emailMap = new LinkedHashMap<String,Contact>();
+    private static Map<String,ContactProfile> profileIdMap = new TreeMap<String,ContactProfile>();
+    private static Map<String,ContactProfile> profileEmailMap = new LinkedHashMap<String,ContactProfile>();
+    private static Map<String,Map<String,ContactProfile>> profileContactMap = new LinkedHashMap<String,Map<String,ContactProfile>>();
     private static Map<String,ContactPerson> personIdMap = new TreeMap<String,ContactPerson>();
     private static Map<String,ContactPerson> personNameMap = new TreeMap<String,ContactPerson>();
     private static Map<String,ContactPerson> personEmailMap = new TreeMap<String,ContactPerson>();
@@ -62,9 +66,10 @@ public class Contacts implements java.io.Serializable
     }
 
     /**
-     * Loads the set of contacts, persons and products.
+     * Loads the set of contacts, profiles, persons and products.
      */
-    public static void load(List<Contact> contacts, List<ContactPerson> persons, List<ContactProduct> products)
+    public static void load(List<Contact> contacts, List<ContactProfile> profiles,
+        List<ContactPerson> persons, List<ContactProduct> products)
     {
         initialised = false;
 
@@ -75,6 +80,13 @@ public class Contacts implements java.io.Serializable
         }
 
         logger.info("Loaded "+size()+" contacts");
+
+        for(ContactProfile profile : profiles)
+        {
+            add(profile);
+        }
+
+        logger.info("Loaded "+profileIdMap.size()+" contact profiles");
 
         for(ContactPerson person : persons)
         {
@@ -100,7 +112,9 @@ public class Contacts implements java.io.Serializable
     {
         idMap.clear();
         nameMap.clear();
-        emailMap.clear();
+        profileIdMap.clear();
+        profileEmailMap.clear();
+        profileContactMap.clear();
         personIdMap.clear();
         personNameMap.clear();
         personEmailMap.clear();
@@ -130,7 +144,24 @@ public class Contacts implements java.io.Serializable
      */
     public static Contact getByEmail(String email)
     {
-        return email != null ? emailMap.get(email) : null;
+        ContactProfile profile = getProfileByEmail(email);
+        return profile != null ? getById(profile.getContactId()) : null;
+    }
+
+    /**
+     * Returns the contact profile with the given id.
+     */
+    public static ContactProfile getProfileById(String id)
+    {
+        return id != null ? profileIdMap.get(id) : null;
+    }
+
+    /**
+     * Returns the contact profile with the given email.
+     */
+    public static ContactProfile getProfileByEmail(String email)
+    {
+        return email != null ? profileEmailMap.get(email) : null;
     }
 
     /**
@@ -187,7 +218,28 @@ public class Contacts implements java.io.Serializable
 
         idMap.put(contact.getId(), contact);
         nameMap.put(contact.getName(), contact);
-        emailMap.put(contact.getBillingEmail(), contact);
+    }
+
+    /**
+     * Adds the given contact profile.
+     */
+    public static void add(ContactProfile profile)
+    {
+        ContactProfile existing = getProfileById(profile.getId());
+        if(existing != null)
+            remove(existing);
+
+        profileIdMap.put(profile.getId(), profile);
+        profileEmailMap.put(profile.getBillingEmail(), profile);
+
+        Map<String,ContactProfile> profiles = profileContactMap.get(profile.getContactId());
+        if(profiles == null)
+        {
+            profiles = new LinkedHashMap<String,ContactProfile>();
+            profileContactMap.put(profile.getContactId(), profiles);
+        }
+
+        profiles.put(profile.getId(), profile);
     }
 
     /**
@@ -241,7 +293,16 @@ public class Contacts implements java.io.Serializable
     {
         idMap.remove(contact.getId());
         nameMap.remove(contact.getName());
-        emailMap.remove(contact.getBillingEmail());
+    }
+
+    /**
+     * Removes the given contact profile.
+     */
+    public static void remove(ContactProfile profile)
+    {
+        profileIdMap.remove(profile.getId());
+        profileEmailMap.remove(profile.getBillingEmail());
+        profileContactMap.get(profile.getContactId()).remove(profile.getId());
     }
 
     /**
@@ -288,6 +349,90 @@ public class Contacts implements java.io.Serializable
     }
 
     /**
+     * Returns the list of contact profiles.
+     */
+    public static List<ContactProfile> listProfiles()
+    {
+        List<ContactProfile> ret = new ArrayList<ContactProfile>();
+        for(ContactProfile profile : profileIdMap.values())
+        {
+            ret.add(profile);
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the list of contact profiles for the given contact.
+     */
+    public static List<ContactProfile> listProfiles(Contact contact)
+    {
+        List<ContactProfile> ret = new ArrayList<ContactProfile>();
+        if(contact != null)
+        {
+            Map<String,ContactProfile> profiles = profileContactMap.get(contact.getId());
+            if(profiles != null)
+            {
+                for(ContactProfile profile : profiles.values())
+                {
+                    ret.add(profile);
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given contact uses the given company.
+     */
+    public static boolean hasCompany(Contact contact, Company company)
+    {
+        boolean ret = false;
+
+        if(company != null)
+        {
+            List<ContactProfile> profiles = listProfiles(contact);
+            for(ContactProfile profile : profiles)
+            {
+                if(profile.hasCompanyId()
+                    && profile.getCompanyId().equals(company.getId()))
+                {
+                    ret = true;
+                    break;
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given contact uses the given email.
+     */
+    public static boolean hasEmail(Contact contact, String email)
+    {
+        boolean ret = false;
+
+        if(email != null && email.length() > 0)
+        {
+            List<ContactProfile> profiles = listProfiles(contact);
+            for(ContactProfile profile : profiles)
+            {
+                if((profile.hasContactEmail() && profile.getContactEmail().toLowerCase().indexOf(email) != -1)
+                    || (profile.hasBillingEmail() && profile.getBillingEmail().toLowerCase().indexOf(email) != -1)
+                    || Contacts.matchesEmail(contact, profile, email))
+                {
+                    ret = true;
+                    break;
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the list of contact persons.
      */
     public static List<ContactPerson> listPersons()
@@ -322,16 +467,16 @@ public class Contacts implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given email matches the given contact or its list of persons.
+     * Returns <CODE>true</CODE> if the given email matches the given contact's profile or the list of persons.
      */
-    public static boolean matchesEmail(Contact contact, String email)
+    public static boolean matchesEmail(Contact contact, ContactProfile profile, String email)
     {
         boolean ret = false;
 
         email = email.toLowerCase();
 
-        if((contact.hasContactEmail() && contact.getContactEmail().toLowerCase().indexOf(email) != -1)
-            || (contact.hasBillingEmail() && contact.getBillingEmail().toLowerCase().indexOf(email) != -1))
+        if((profile.hasContactEmail() && profile.getContactEmail().toLowerCase().indexOf(email) != -1)
+            || (profile.hasBillingEmail() && profile.getBillingEmail().toLowerCase().indexOf(email) != -1))
         {
             ret = true;
         }
