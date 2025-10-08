@@ -51,9 +51,9 @@ public class FeedsFeedDAO extends BaseDAO
       + "FROM feeds_feed WHERE STATUS=1";
 
     /**
-     * The query to use to select a feeds items from the FEEDS tables using the item GUID and type.
+     * The query to use to select a feeds item with a path alias from the FEEDS tables using the item GUID and type.
      */
-    private static final String GET_ITEM_SQL =  
+    private static final String GET_ALIAS_ITEM_SQL =  
       "SELECT FF.FID, NFI.FEEDS_ITEM_GUID, NFI.ENTITY_ID, NFI.FEEDS_ITEM_IMPORTED, NFI.BUNDLE, PA.PATH, PA.ALIAS "
       + "FROM feeds_feed FF, node__feeds_item NFI, path_alias PA "
       + "WHERE NFI.FEEDS_ITEM_TARGET_ID=FF.FID "
@@ -62,6 +62,16 @@ public class FeedsFeedDAO extends BaseDAO
       + "AND PA.PATH=CONCAT('/node/',NFI.ENTITY_ID) "
       + "AND PA.LANGCODE='en' "
       + "AND PA.STATUS=1";
+
+    /**
+     * The query to use to select a feeds item without a path alias from the FEEDS tables using the item GUID and type.
+     */
+    private static final String GET_NODE_ITEM_SQL =  
+      "SELECT FF.FID, NFI.FEEDS_ITEM_GUID, NFI.ENTITY_ID, NFI.FEEDS_ITEM_IMPORTED, NFI.BUNDLE, '', '' "
+      + "FROM feeds_feed FF, node__feeds_item NFI "
+      + "WHERE NFI.FEEDS_ITEM_TARGET_ID=FF.FID "
+      + "AND FF.TITLE=CONCAT(?,' Feed') "
+      + "AND NFI.FEEDS_ITEM_GUID=? ";
 
     /**
      * The query to use to get the count of feeds from the FEEDS_FEED table.
@@ -133,7 +143,7 @@ public class FeedsFeedDAO extends BaseDAO
     /**
      * Returns a feeds item from the FEEDS tables by the item GUID and types.
      */
-    public synchronized FeedsItem getItem(String type, String guid) throws SQLException
+    public synchronized FeedsItem getItem(String type, String guid, boolean hasAlias) throws SQLException
     {
         FeedsItem ret = null;
 
@@ -142,7 +152,11 @@ public class FeedsFeedDAO extends BaseDAO
 
         preQuery();
         if(getItemStmt == null)
-            getItemStmt = prepareStatement(getConnection(), GET_ITEM_SQL);
+        {
+            getItemStmt = prepareStatement(getConnection(),
+                hasAlias ? GET_ALIAS_ITEM_SQL : GET_NODE_ITEM_SQL);
+        }
+
         clearParameters(getItemStmt);
 
         ResultSet rs = null;
