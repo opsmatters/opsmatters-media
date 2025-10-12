@@ -133,9 +133,12 @@ public class Orders implements java.io.Serializable
         {
             for(OrderItem item : items.values())
             {
-                if(product == null || item.getProductCode().equals(product.getCode()))
+                if(item.isEnabled())
                 {
-                    ret.add(item);
+                    if(product == null || item.getProductCode().equals(product.getCode()))
+                    {
+                        ret.add(item);
+                    }
                 }
             }
         }
