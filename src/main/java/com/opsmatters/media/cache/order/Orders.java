@@ -107,7 +107,7 @@ public class Orders implements java.io.Serializable
      */
     public static Map<String,OrderItem> itemMap(Order order)
     {
-        return itemMap.get(order.getId());
+        return order != null ? itemMap.get(order.getId()) : null;
     }
 
     /**
