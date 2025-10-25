@@ -25,6 +25,7 @@ public enum ParameterType
 {
     SYSTEM("system"),
     UI("ui"),
+    LOGGING("logging"),
     ORDER("order"),
     MONITOR_MANAGER("monitor-manager"),
     SOCIAL_MANAGER("social-manager"),

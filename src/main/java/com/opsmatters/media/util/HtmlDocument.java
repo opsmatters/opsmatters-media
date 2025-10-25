@@ -1618,6 +1618,40 @@ public class HtmlDocument
     }
 
     /**
+     * Returns the list of suspect word messages for the HTML document.
+     * @return The list of suspect word messages for the HTML document
+     */
+    public static List<String> getSuspectWordMessages(String doc, List<SuspectWord> suspectWords)
+    {
+        List<String> ret = new ArrayList<String>();
+        Map<String,SuspectWord> map = new HashMap<String,SuspectWord>();
+
+        Matcher m = ANCHOR_ATTR_CONTENT_PATTERN.matcher(doc.toLowerCase());
+
+        while(m.find())
+        {
+            String whole = m.group(0);
+            String attr = m.group(1);
+            String anchor = m.group(2);
+
+            for(SuspectWord suspectWord : suspectWords)
+            {
+                if(!map.containsKey(suspectWord.getText()))
+                {
+                    if(suspectWord.getPattern().matcher(attr).find()
+                        || suspectWord.getPattern().matcher(anchor).find())
+                    {
+                        ret.add(String.format("suspect word: %s", suspectWord));
+                        map.put(suspectWord.getText(), suspectWord);
+                    }
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns a builder for the HTML document.
      * @param doc The HTML document
      * @return The builder instance.

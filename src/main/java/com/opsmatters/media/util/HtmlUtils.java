@@ -17,6 +17,7 @@
 package com.opsmatters.media.util;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /**
@@ -30,12 +31,32 @@ public class HtmlUtils
 
     public static final String CONTENT_WRAPPER_CLASS = HtmlDocument.POST_FULL_CONTENT_CLASS;
 
+    private static final List<SuspectWord> suspectWords = new ArrayList<SuspectWord>();
+
     /**
      * Private constructor as this class shouldn't be instantiated.
      */
     private HtmlUtils()
     {
-    }    
+    }
+
+    /**
+     * Returns the list of suspect words to be checked.
+     */
+    public static List<SuspectWord> getSuspectWords()
+    {
+        return suspectWords;
+    }
+
+    /**
+     * Sets the list of suspect words to be checked.
+     */
+    public static void setSuspectWords(List<String> suspectWords)
+    {
+        HtmlUtils.suspectWords.clear();
+        for(String suspectWord : suspectWords)
+            HtmlUtils.suspectWords.add(new SuspectWord(suspectWord));
+    }
 
     /**
      * Returns <CODE>true</CODE> if the given string contains the post-full-content class.
@@ -593,5 +614,20 @@ public class HtmlUtils
         return HtmlDocument.builder(str)
             .fixBadProtocolLinks()
             .get();
+    }
+
+    /**
+     * Returns the list of suspect word messages for the given string.
+     * @param str The string to search
+     * @return the list of suspect word messages for the given string
+     */
+    public static List<String> getSuspectWords(String str)
+    {
+        List<String> messages = HtmlDocument.getSuspectWordMessages(str, suspectWords);
+
+        for(String message : messages)
+            logger.warning("Found "+message);
+
+        return messages;
     }
 }
