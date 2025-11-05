@@ -32,7 +32,8 @@ public enum EmailTemplateId
     PUBLISHED("CON-PUB"),
     DELIVERED("ORD-DEL"),
     UNPAID("ORD-UNP"),
-    CANCELLED("ORD-CAN");
+    CANCELLED("ORD-CAN"),
+    NEW_INVOICE("ORD-NEW");
 
     private String code;
 
@@ -104,6 +105,7 @@ public enum EmailTemplateId
         ret.add(DELIVERED);
         ret.add(UNPAID);
         ret.add(CANCELLED);
+        ret.add(NEW_INVOICE);
 
         return ret;
     }

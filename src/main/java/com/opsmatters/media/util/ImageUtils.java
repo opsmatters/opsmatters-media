@@ -35,7 +35,16 @@ import javax.swing.ImageIcon;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.ImageReadParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.IIOImage;
+import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.IIOException;
 import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.ImageOutputStream;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.metadata.IIOMetadataNode;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGSVGElement;
 import net.coobird.thumbnailator.Thumbnails;
@@ -56,6 +65,8 @@ import static com.opsmatters.media.util.ImageAlignment.*;
 public class ImageUtils
 {
     private static final Logger logger = Logger.getLogger(ImageUtils.class.getName());
+
+    private static final String JAVAX_IMAGEIO_JPEG_IMAGE_1_0 = "javax_imageio_jpeg_image_1.0";
 
     /**
      * Number of mm in a pixel.
@@ -414,11 +425,15 @@ public class ImageUtils
      * Write the given image file to a file in the specified suffix.
      * @param image The image bytes
      * @param file The output image file
+     * @param metadata The image metadata
      * @throws IOException
      */
-    public static void writeImage(BufferedImage image, File file)
+    public static boolean writeImage(BufferedImage image, File file, IIOMetadata metadata)
         throws IOException
     {
+        if(file == null)
+            throw new IllegalArgumentException("file == null!");
+
         FileFormat format = FileFormat.fromFilename(file.getName());
 
         // Remove the alpha channel when converting JPEGs otherwise
@@ -437,8 +452,66 @@ public class ImageUtils
             image = fixImageType(image);
         }
 
-        ImageIO.write(image, format.value(), file);
-        image.flush();
+        ImageWriter writer = getWriter(image, format.value());
+        if(writer == null)
+            return false;
+
+        file.delete();
+        ImageOutputStream stream = ImageIO.createImageOutputStream(file);
+        if(stream == null)
+            throw new IIOException("Can't create an ImageOutputStream!");
+
+        try
+        {
+            writer.setOutput(stream);
+            ImageWriteParam param = writer.getDefaultWriteParam();
+            IIOImage iimg = new IIOImage(image, null, null);
+
+            // Get the EXIF nodes from the old metadata
+            IIOMetadataNode oldMarkerSequence = null;
+            if(metadata != null)
+            {
+                IIOMetadataNode	root = (IIOMetadataNode)metadata.getAsTree(JAVAX_IMAGEIO_JPEG_IMAGE_1_0);
+                if(root != null)
+                    oldMarkerSequence = (IIOMetadataNode)root.getElementsByTagName("markerSequence").item(0);
+            }
+
+            IIOMetadata newMetadata = writer.getDefaultImageMetadata(ImageTypeSpecifier.createFromRenderedImage(image), param);
+
+            // If there were EXIF nodes, add them to the new metadata
+            IIOMetadataNode	root = (IIOMetadataNode)newMetadata.getAsTree(JAVAX_IMAGEIO_JPEG_IMAGE_1_0);
+            if(root != null && oldMarkerSequence != null)
+            {
+                IIOMetadataNode markerSequence = (IIOMetadataNode)root.getElementsByTagName("markerSequence").item(0);
+                NodeList unknowns = oldMarkerSequence.getElementsByTagName("unknown");
+                for(int i = 0; i < unknowns.getLength(); i++)
+                    markerSequence.appendChild(unknowns.item(i));
+                newMetadata.setFromTree(JAVAX_IMAGEIO_JPEG_IMAGE_1_0, root);
+            }
+
+            iimg.setMetadata(newMetadata);
+            writer.write(null, iimg, param);
+        }
+        finally
+        {
+            writer.dispose();
+            stream.flush();
+            stream.close();
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns the image writer for the given image format.
+     * @param image The image bytes
+     * @param format The image format
+     */
+    private static ImageWriter getWriter(BufferedImage image, String format)
+    {
+        ImageTypeSpecifier type = ImageTypeSpecifier.createFromRenderedImage(image);
+        Iterator<ImageWriter> it = ImageIO.getImageWriters(type, format);
+        return it.hasNext() ? it.next() : null;
     }
 
     /**
@@ -478,6 +551,38 @@ public class ImageUtils
             ret = new BufferedImage(image.getWidth(),
                 image.getHeight(), getImageType(image));
             image.flush();
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the image metadata from the given file.
+     */
+    public static IIOMetadata getMetadata(File file) throws IOException, FileNotFoundException
+    {
+        IIOMetadata ret = null;
+
+        ImageInputStream stream = ImageIO.createImageInputStream(file);
+        if(stream == null)
+            throw new IllegalArgumentException("Image stream null");
+
+        Iterator<ImageReader> readers = ImageIO.getImageReaders(stream);
+        if(!readers.hasNext())
+            throw new IllegalArgumentException("No readers found for image format");
+
+        ImageReader reader = readers.next();
+
+        try
+        {
+            reader.setInput(stream);
+            IIOImage image = reader.readAll(0, null);
+            ret = image.getMetadata();
+        }
+        finally
+        {
+            reader.dispose();
+            stream.close();
         }
 
         return ret;
