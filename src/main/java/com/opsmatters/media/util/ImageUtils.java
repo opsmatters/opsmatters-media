@@ -469,7 +469,7 @@ public class ImageUtils
 
             // Get the EXIF nodes from the old metadata
             IIOMetadataNode oldMarkerSequence = null;
-            if(metadata != null)
+            if(hasMetadataFormat(metadata, JAVAX_IMAGEIO_JPEG_IMAGE_1_0))
             {
                 IIOMetadataNode	root = (IIOMetadataNode)metadata.getAsTree(JAVAX_IMAGEIO_JPEG_IMAGE_1_0);
                 if(root != null)
@@ -479,14 +479,17 @@ public class ImageUtils
             IIOMetadata newMetadata = writer.getDefaultImageMetadata(ImageTypeSpecifier.createFromRenderedImage(image), param);
 
             // If there were EXIF nodes, add them to the new metadata
-            IIOMetadataNode	root = (IIOMetadataNode)newMetadata.getAsTree(JAVAX_IMAGEIO_JPEG_IMAGE_1_0);
-            if(root != null && oldMarkerSequence != null)
+            if(hasMetadataFormat(newMetadata, JAVAX_IMAGEIO_JPEG_IMAGE_1_0))
             {
-                IIOMetadataNode markerSequence = (IIOMetadataNode)root.getElementsByTagName("markerSequence").item(0);
-                NodeList unknowns = oldMarkerSequence.getElementsByTagName("unknown");
-                for(int i = 0; i < unknowns.getLength(); i++)
-                    markerSequence.appendChild(unknowns.item(i));
-                newMetadata.setFromTree(JAVAX_IMAGEIO_JPEG_IMAGE_1_0, root);
+                IIOMetadataNode	root = (IIOMetadataNode)newMetadata.getAsTree(JAVAX_IMAGEIO_JPEG_IMAGE_1_0);
+                if(root != null && oldMarkerSequence != null)
+                {
+                    IIOMetadataNode markerSequence = (IIOMetadataNode)root.getElementsByTagName("markerSequence").item(0);
+                    NodeList unknowns = oldMarkerSequence.getElementsByTagName("unknown");
+                    for(int i = 0; i < unknowns.getLength(); i++)
+                        markerSequence.appendChild(unknowns.item(i));
+                    newMetadata.setFromTree(JAVAX_IMAGEIO_JPEG_IMAGE_1_0, root);
+                }
             }
 
             iimg.setMetadata(newMetadata);
@@ -500,6 +503,30 @@ public class ImageUtils
         }
 
         return true;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given format is one of the format names in the metadata.
+     * @param metadata The image metadata
+     * @param formatName The format to check
+     * @return <CODE>true</CODE> if the given format is one of the format names in the metadata
+     */
+    private static boolean hasMetadataFormat(IIOMetadata metadata, String formatName)
+    {
+        boolean ret = false;
+        if(metadata != null)
+        {
+            for(String format : metadata.getMetadataFormatNames())
+            {
+                if(format.equals(formatName))
+                {
+                    ret = true;
+                    break;
+                }
+            }
+        }
+
+        return ret;
     }
 
     /**

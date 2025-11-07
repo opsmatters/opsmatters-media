@@ -21,6 +21,8 @@ import java.util.TreeMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import com.opsmatters.media.model.order.PaymentMethod;
+import com.opsmatters.media.model.order.PaymentMode;
 import com.opsmatters.media.model.order.contact.Contact;
 import com.opsmatters.media.model.order.contact.ContactProfile;
 import com.opsmatters.media.model.order.contact.ContactPerson;
@@ -422,6 +424,52 @@ public class Contacts implements java.io.Serializable
                 if((profile.hasContactEmail() && profile.getContactEmail().toLowerCase().indexOf(email) != -1)
                     || (profile.hasBillingEmail() && profile.getBillingEmail().toLowerCase().indexOf(email) != -1)
                     || Contacts.matchesEmail(contact, profile, email))
+                {
+                    ret = true;
+                    break;
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given contact uses the given payment method.
+     */
+    public static boolean hasPaymentMethod(Contact contact, PaymentMethod method)
+    {
+        boolean ret = false;
+
+        if(method != null)
+        {
+            List<ContactProfile> profiles = listProfiles(contact);
+            for(ContactProfile profile : profiles)
+            {
+                if(profile.getPaymentMethod() == method)
+                {
+                    ret = true;
+                    break;
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given contact uses the given payment mode.
+     */
+    public static boolean hasPaymentMode(Contact contact, PaymentMode mode)
+    {
+        boolean ret = false;
+
+        if(mode != null)
+        {
+            List<ContactProfile> profiles = listProfiles(contact);
+            for(ContactProfile profile : profiles)
+            {
+                if(profile.getPaymentMode() == mode)
                 {
                     ret = true;
                     break;
