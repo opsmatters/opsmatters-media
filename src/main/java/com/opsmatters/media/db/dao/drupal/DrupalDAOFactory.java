@@ -35,6 +35,7 @@ public class DrupalDAOFactory extends DAOFactory
 
         getFeedsFeedDAO();
         getDrupalTaxonomyTermDAO();
+        getLogMessageDAO();
     }
 
     /**
@@ -58,6 +59,16 @@ public class DrupalDAOFactory extends DAOFactory
     }
 
     /**
+     * Returns the log message DAO.
+     */
+    public LogMessageDAO getLogMessageDAO()
+    {
+        if(logMessageDAO == null)
+            logMessageDAO = new LogMessageDAO(this);
+        return logMessageDAO;
+    }
+
+    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
@@ -66,8 +77,10 @@ public class DrupalDAOFactory extends DAOFactory
         super.close();
         feedsFeedDAO = null;
         drupalTaxonomyTermDAO = null;
+        logMessageDAO = null;
     }
 
     private FeedsFeedDAO feedsFeedDAO;
     private DrupalTaxonomyTermDAO drupalTaxonomyTermDAO;
+    private LogMessageDAO logMessageDAO;
 }

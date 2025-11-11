@@ -166,7 +166,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
             log.add(log.error(E_MISSING_SOURCE, category)
                 .message(String.format("Unable to get %s page source for %s",
                     getFormat().value(), root))
-                .location(this)
+                .location(getClass())
                 .entity(config, page)
                 .exception(e));
         }
@@ -346,7 +346,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
 
             log.add(log.error(getErrorCode(), category)
                 .message(message)
-                .location(this)
+                .location(getClass())
                 .entity(config, page));
         }
         else
@@ -484,7 +484,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
 
                 log.add(log.warn(E_MISSING_MORE, category)
                     .message(String.format("More link not found: %s", selector))
-                    .location(this)
+                    .location(getClass())
                     .entity(config, page));
             }
         }
@@ -577,7 +577,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
 
                     log.add(log.error(E_MISSING_MOVE, category)
                         .message(String.format("Unable to find move to element: %s", moveTo))
-                        .location(this)
+                        .location(getClass())
                         .entity(config, page));
                 }
             }
@@ -870,7 +870,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
             log.add(log.warn(E_MISSING_ELEM, category)
                 .message(String.format("Elements not found for %s field: %s",
                     category.tag(), field.getName()))
-                .location(this)
+                .location(getClass())
                 .entity(config, page));
         }
 
@@ -1060,7 +1060,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
             log.add(log.warn(E_MISSING_ANCHOR, category)
                 .message(String.format("Anchor not found for %s field: %s",
                     category.tag(), field.getName()))
-                .location(this)
+                .location(getClass())
                 .entity(config, page));
         }
 
@@ -1162,7 +1162,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
             log.add(log.warn(E_MISSING_SUMMARY, category)
                 .message(String.format("Body summary not found for %s field: %s",
                     category.tag(), field.getName()))
-                .location(this)
+                .location(getClass())
                 .entity(config, page));
         }
 
@@ -1256,7 +1256,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
             log.add(log.warn(E_MISSING_BODY, category)
                 .message(String.format("Body not found for %s field: %s",
                     category.tag(), field.getName()))
-                .location(this)
+                .location(getClass())
                 .entity(config, page));
         }
 
@@ -1314,7 +1314,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
 
                                         log.add(log.warn(E_MISSING_URL, category)
                                             .message(String.format("No url found for background image: %s", image))
-                                            .location(this)
+                                            .location(getClass())
                                             .entity(config, page));
                                     }
                                 }
@@ -1450,7 +1450,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
             log.add(log.warn(E_MISSING_IMAGE, category)
                 .message(String.format("Image not found for %s field: %s",
                     category.tag(), field.getName()))
-                .location(this)
+                .location(getClass())
                 .entity(config, page));
         }
 

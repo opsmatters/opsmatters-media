@@ -573,21 +573,17 @@ public class ContentFeedDAO extends BaseDAO
     }
 
     /**
-     * Returns the feeds from the CONTENT_FEEDS table by environment and external id.
+     * Returns the feed from the CONTENT_FEEDS table in the given environment and type.
      */
-    public List<ContentFeed> list(Site site, EnvironmentId environment, String id) throws SQLException
+    public ContentFeed getByContentType(Site site, EnvironmentId env, ContentType type) throws SQLException
     {
-        List<ContentFeed> ret = new ArrayList<ContentFeed>();
-        List<ContentFeed> feeds = list(site);
-        if(feeds != null)
+        ContentFeed ret = null;
+        for(ContentFeed feed : list(site, env))
         {
-            for(ContentFeed feed : feeds)
+            if(feed.getContentType() == type)
             {
-                if(feed.getEnvironment() == environment
-                  && feed.getExternalId().equals(id))
-                {
-                    ret.add(feed);
-                }
+                ret = feed;
+                break;
             }
         }
 
@@ -595,15 +591,18 @@ public class ContentFeedDAO extends BaseDAO
     }
 
     /**
-     * Returns the feed from the CONTENT_FEEDS table in the given environment.
+     * Returns the feed from the CONTENT_FEEDS table by environment and external id.
      */
-    public ContentFeed getByEnvironment(Site site, ContentType type, EnvironmentId environment) throws SQLException
+    public ContentFeed getByExternalId(Site site, EnvironmentId env, String externalId) throws SQLException
     {
         ContentFeed ret = null;
-        for(ContentFeed feed : list(site, type))
+        for(ContentFeed feed : list(site, env))
         {
-            if(feed.getEnvironment() == environment)
+            if(feed.getExternalId().equals(externalId))
+            {
                 ret = feed;
+                break;
+            }
         }
 
         return ret;

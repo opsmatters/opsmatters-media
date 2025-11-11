@@ -266,7 +266,28 @@ public class LogErrorDAO extends BaseDAO
         boolean ret = false;
         boolean found = false;
 
-        if(checkDuplicate && error.hasEntityCode())
+        if(checkDuplicate)
+        {
+            found = exists(error);
+        }
+
+        if(!found)
+        {
+            add(error);
+            ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if there exists a NEW error in the LOG_ERRORS table with the same error code and entity.
+     */
+    public boolean exists(LogError error) throws SQLException
+    {
+        boolean ret = false;
+
+        if(error.hasEntityCode())
         {
             List<LogError> errors = list(error.getCode());
             for(LogError existing : errors)
@@ -276,16 +297,10 @@ public class LogErrorDAO extends BaseDAO
                     && existing.getEntityType().equals(error.getEntityType())
                     && existing.getEntityName().equals(error.getEntityName()))
                 {
-                    found = true;
+                    ret = true;
                     break;
                 }
             }
-        }
-
-        if(!found)
-        {
-            add(error);
-            ret = true;
         }
 
         return ret;

@@ -28,7 +28,8 @@ public enum LogEventType
 {
     UI("UI", "UI", "ui"),
     CRAWLER("CR", "Crawler", "crawler"),
-    MONITOR("MN", "Monitor", "monitor");
+    MONITOR("MN", "Monitor", "monitor"),
+    FEED("FD", "Feed", "feed");
 
     private String code;
     private String value;

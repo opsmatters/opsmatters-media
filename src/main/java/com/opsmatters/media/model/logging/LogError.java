@@ -24,6 +24,9 @@ import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.crawler.CrawlerTarget;
 import com.opsmatters.media.model.monitor.ContentMonitor;
+import com.opsmatters.media.model.feed.ContentFeed;
+import com.opsmatters.media.model.drupal.LogMessage;
+import com.opsmatters.media.model.drupal.Severity;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.logging.LogErrorProperty.*;
@@ -55,7 +58,7 @@ public class LogError extends LogEvent
     }
 
     /**
-     * Constructor that takes a code, type and category.
+     * Constructor that takes a code, type, category and level.
      * @param code The code of the error
      * @param type The type of the error
      * @param category The category of the error
@@ -439,6 +442,18 @@ public class LogError extends LogEvent
     }
 
     /**
+     * Returns a builder for the error.
+     * @param code The code of the error
+     * @param type The type of the error
+     * @param category The category of the error
+     * @return The builder instance.
+     */
+    public static Builder builder(ErrorCode code, LogEventType type, LogEventCategory category)
+    {
+        return new Builder(code, type, category);
+    }
+
+    /**
      * Builder to make error construction easier.
      */
     public static class Builder
@@ -455,6 +470,39 @@ public class LogError extends LogEvent
         public Builder(ErrorCode code, LogEventType type, LogEventCategory category, LogEventLevel level)
         {
             error = new LogError(code, type, category, level);
+        }
+
+        /**
+         * Constructor that takes a code, type and category.
+         * @param code The code of the error
+         * @param type The type of the error
+         * @param category The category of the error
+         */
+        public Builder(ErrorCode code, LogEventType type, LogEventCategory category)
+        {
+            error = new LogError(code, type, category, LogEventLevel.INFO);
+        }
+
+        /**
+         * Sets the level for the error.
+         * @param level The level for the error
+         * @return This object
+         */
+        public Builder level(LogEventLevel level)
+        {
+            error.setLevel(level);
+            return this;
+        }
+
+        /**
+         * Sets the level for the error.
+         * @param severity The severity for the error
+         * @return This object
+         */
+        public Builder level(Severity severity)
+        {
+            level(LogEventLevel.from(severity));
+            return this;
         }
 
         /**
@@ -481,12 +529,23 @@ public class LogError extends LogEvent
 
         /**
          * Sets the location of the error.
-         * @param obj The object with the error
+         * @param obj The location
          * @return This object
          */
-        public Builder location(Object obj)
+        public Builder location(String location)
         {
-            error.setLocation(obj.getClass());
+            error.setLocation(location);
+            return this;
+        }
+
+        /**
+         * Sets the location of the error.
+         * @param obj The class of the object with the error
+         * @return This object
+         */
+        public Builder location(Class cl)
+        {
+            error.setLocation(cl.getName());
             return this;
         }
 
@@ -525,6 +584,29 @@ public class LogError extends LogEvent
         public Builder entity(ContentConfig config, CrawlerTarget target)
         {
             entity(config.getCode(), config.getType().name(), target.getName());
+            return this;
+        }
+
+        /**
+         * Sets the content feed and feed log message for the error.
+         * @param feed The content feed
+         * @param message The drupal log message
+         * @return This object
+         */
+        public Builder withFeedMessage(ContentFeed feed, LogMessage message)
+        {
+            // Trucate the message if necessary
+            String text = message.getMessage();
+            int pos = text.indexOf("response:");
+            if(pos != -1)
+                text = text.substring(0, pos-1);
+            message(text);
+
+            level(message.getSeverity());
+            location(message.getLocation());
+            entity(feed.getSiteId(), feed.getEnvironment().name(),
+                Long.toString(message.getWid()));
+
             return this;
         }
 

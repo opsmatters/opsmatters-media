@@ -27,7 +27,6 @@ import java.time.Instant;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.system.Site;
-import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.model.content.post.Post;
 import com.opsmatters.media.model.content.post.PostItem;
 import com.opsmatters.media.db.dao.content.ContentDAO;

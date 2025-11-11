@@ -213,7 +213,7 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     /**
      * Populate a content handler using content items from the database.
      */
-    public ContentHandler getContentHandler(Site site, List<C> items, EnvironmentId env)
+    public ContentHandler getContentHandler(Site site, EnvironmentId env, List<C> items)
         throws IOException, SQLException
     {
         ContentHandler handler = ContentHandler.builder()
@@ -230,7 +230,6 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
             if(content.isSkipped())
                 continue;
 
-            ContentStatus status = content.getStatus();
             FieldMap fields = content.toFields().add(this);
 
             Organisation organisation = Organisations.get(content.getCode());
@@ -320,25 +319,7 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
             }
 
             fields.add(organisation, organisationSite);
-
-            if(env != null)
-            {
-                if(content.getStatus() != ContentStatus.DEPLOYED)
-                {
-                    if(env == EnvironmentId.STAGE)
-                        content.setStatus(ContentStatus.STAGED);
-                    else if(content.getStatus() == ContentStatus.STAGED)
-                        content.setStatus(ContentStatus.DEPLOYED);
-                }
-
-                // Only add the rows that have changed
-                if(content.getStatus() != status)
-                    handler.appendLine(handler.getValues(fields));
-            }
-            else // Otherwise add all rows
-            {
-                handler.appendLine(handler.getValues(fields));
-            }
+            handler.appendLine(handler.getValues(fields));
         }
 
         return handler;
@@ -350,7 +331,7 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     public ContentHandler getContentHandler(Site site, List<C> items)
         throws IOException, SQLException
     {
-        return getContentHandler(site, items, null);
+        return getContentHandler(site, null, items);
     }
 
     /**

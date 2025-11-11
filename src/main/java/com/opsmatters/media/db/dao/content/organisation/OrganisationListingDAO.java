@@ -27,7 +27,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.system.Site;
-import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.model.content.organisation.OrganisationListing;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;

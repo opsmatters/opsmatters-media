@@ -27,6 +27,7 @@ public enum ContentStatus
     PENDING("Pending", "glyphicon-check", "status-warn"),
     STAGED("Staged", "glyphicon-adjust", "status-warn"),
     DEPLOYED("Deployed", "glyphicon-ok-circle", "status-success"),
+    ERROR("Error", "glyphicon-exclamation-sign", "status-error"),
     SKIPPED("Skipped", "glyphicon-remove-circle", "status-info"),
     ARCHIVED("Archived", "glyphicon-trash", "status-error");
 

@@ -18,6 +18,7 @@ package com.opsmatters.media.model.logging;
 
 import java.util.List;
 import java.util.ArrayList;
+import com.opsmatters.media.model.drupal.Severity;
 
 /**
  * Represents the level of a log event.
@@ -106,6 +107,22 @@ public enum LogEventLevel
     public String css()
     {
         return css;
+    }
+
+    /**
+     * Returns the level for the given severity.
+     * @param severity The severity
+     * @return The level for the given severity
+     */
+    public static LogEventLevel from(Severity severity)
+    {
+        LogEventLevel ret = INFO;
+        if(severity == Severity.ERROR)
+            ret = ERROR;
+        else if(severity == Severity.WARNING)
+            ret = WARN;
+
+        return ret;
     }
 
     /**

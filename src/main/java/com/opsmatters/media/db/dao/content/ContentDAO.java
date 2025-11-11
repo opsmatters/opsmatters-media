@@ -84,7 +84,7 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
      */
     private static final String LIST_PENDING_BY_CODE_SQL =  
       "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, ATTRIBUTES, STATUS, CREATED_BY "
-      + "FROM %s WHERE SITE_ID=? AND CODE=? AND STATUS IN ('PENDING','STAGED') ORDER BY ID";
+      + "FROM %s WHERE SITE_ID=? AND CODE=? AND STATUS IN ('PENDING','STAGED','ERROR') ORDER BY ID";
 
     /**
      * The query to use to select the content from the table by organisation code and interval.
