@@ -76,16 +76,19 @@ public class Parameters extends LinkedHashMap<ParameterType,Map>
     /**
      * Adds the given parameter.
      */
-    private static void add(Parameter parameter)
+    public static void add(Parameter parameter)
     {
-        Map<ParameterName,Parameter> map = types.get(parameter.getType());
-        if(map == null)
+        if(parameter != null)
         {
-            map = new LinkedHashMap<ParameterName,Parameter>();
-            types.put(parameter.getType(), map);
-        }
+            Map<ParameterName,Parameter> map = types.get(parameter.getType());
+            if(map == null)
+            {
+                map = new LinkedHashMap<ParameterName,Parameter>();
+                types.put(parameter.getType(), map);
+            }
 
-        map.put(parameter.getName(), parameter);
+            map.put(parameter.getName(), parameter);
+        }
     }
 
     /**
@@ -107,7 +110,7 @@ public class Parameters extends LinkedHashMap<ParameterType,Map>
     {
         Parameter parameter = get(type, name);
         if(parameter == null)
-            throw new IllegalStateException("parameter does not exist");
+            throw new IllegalArgumentException("parameter does not exist");
         parameter.setUpdatedDate(Instant.now());
         parameter.setValue(value);
     }
@@ -118,6 +121,14 @@ public class Parameters extends LinkedHashMap<ParameterType,Map>
     public static void put(ParameterType type, ParameterName name, int value)
     {
         put(type, name, Integer.toString(value));
+    }
+
+    /**
+     * Sets the parameter with the given type and name to the given value.
+     */
+    public static void put(ParameterType type, ParameterName name, long value)
+    {
+        put(type, name, Long.toString(value));
     }
 
     /**

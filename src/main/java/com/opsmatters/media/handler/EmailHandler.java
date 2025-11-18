@@ -101,7 +101,7 @@ public abstract class EmailHandler
     /**
      * Create and enqueue an email notification.
      */
-    private void create(Email email) throws SQLException
+    public void create(Email email) throws SQLException
     {
         email.setFrom(getFrom());
 
