@@ -17,6 +17,7 @@ package com.opsmatters.media.model.order.contact;
 
 import java.time.Instant;
 import com.opsmatters.media.cache.admin.Parameters;
+import com.opsmatters.media.cache.order.Currencies;
 import com.opsmatters.media.cache.order.contact.Companies;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.order.Currency;
@@ -45,7 +46,7 @@ public class ContactProfile extends BaseEntity
     private PaymentMethod method = PaymentMethod.UNDEFINED;
     private PaymentMode mode = PaymentMode.UNDEFINED;
     private PaymentTerm term = PaymentTerm.UNDEFINED;
-    private Currency currency = Currency.UNDEFINED;
+    private Currency currency = null;
     private boolean prePayment = false;
     private boolean enabled = false;
 
@@ -336,7 +337,7 @@ public class ContactProfile extends BaseEntity
      */
     public void setCurrency(String currency)
     {
-        setCurrency(Currency.fromCode(currency));
+        setCurrency(Currencies.get(currency));
     }
 
     /**

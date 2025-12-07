@@ -1203,6 +1203,92 @@ public class HtmlDocument
     }
 
     /**
+     * Returns <CODE>true</CODE> if the HTML document contains a title prefix.
+     * @return <CODE>true</CODE> if the HTML document contains a title prefix.
+     */
+    public boolean hasTitlePrefix()
+    {
+        boolean ret = false;
+
+        if(tags != null)
+        {
+            for(String tag : tags)
+            {
+                if(ret = hasTitlePrefix(tag))
+                    break;
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the HTML document contains a title prefix.
+     * @param tag The tag to look for in the document
+     * @return <CODE>true</CODE> if the HTML document contains a title prefix.
+     */
+    private boolean hasTitlePrefix(String tag)
+    {
+        boolean ret = false;
+
+        // Search for the upper case prefix first
+        Pattern pattern = Pattern.compile(String.format("%s[\\: ](.+?)", tag.toUpperCase()), Pattern.DOTALL);
+        ret = pattern.matcher(doc).find();
+
+        if(!ret)
+        {
+            // Next, search for the lower case prefix
+            pattern = Pattern.compile(String.format("%s[\\: ](.+?)", tag), Pattern.DOTALL);
+            ret = pattern.matcher(doc).find();
+        }
+
+        return ret;
+    }
+
+    /**
+     * Remove the title prefixes from the HTML document.
+     */
+    public void removeTitlePrefixes()
+    {
+        if(tags != null)
+        {
+            for(String tag : tags)
+                removeTitlePrefixes(tag);
+        }
+    }
+
+    /**
+     * Remove the title prefixes from the HTML document.
+     * @param tag The tag to look for
+     */
+    private void removeTitlePrefixes(String tag)
+    {
+        // Remove the upper case prefixes first
+        Pattern pattern = Pattern.compile(String.format("%s[\\: ](.+?)", tag.toUpperCase()), Pattern.DOTALL);
+        Matcher m = pattern.matcher(doc);
+
+        while(m.find())
+        {
+            String whole = m.group(0);
+            String content = m.group(1);
+
+            doc = doc.replace(whole, content.trim());
+        }
+
+        // Next, remove the lower case prefixes
+        Pattern pattern2 = Pattern.compile(String.format("%s[\\: ](.+?)", tag), Pattern.DOTALL);
+        Matcher m2 = pattern2.matcher(doc);
+
+        while(m2.find())
+        {
+            String whole = m2.group(0);
+            String content = m2.group(1);
+
+            doc = doc.replace(whole, content.trim());
+        }
+    }
+
+    /**
      * Returns the list of duplicate link messages for the HTML document.
      * @param doc The HTML document to search
      * @return The list of duplicate link messages for the HTML document
@@ -1874,6 +1960,16 @@ public class HtmlDocument
         public Builder reduceHeadings()
         {
             ret.reduceHeadings();
+            return this;
+        }
+
+        /**
+         * Remove the title prefixes from the HTML document.
+         * @return This object
+         */
+        public Builder removeTitlePrefixes()
+        {
+            ret.removeTitlePrefixes();
             return this;
         }
 

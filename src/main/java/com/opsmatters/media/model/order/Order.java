@@ -20,6 +20,7 @@ import java.time.ZoneId;
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
 import com.opsmatters.media.cache.admin.Parameters;
+import com.opsmatters.media.cache.order.Currencies;
 import com.opsmatters.media.cache.order.contact.Contacts;
 import com.opsmatters.media.cache.order.contact.Companies;
 import com.opsmatters.media.model.BaseEntity;
@@ -48,7 +49,7 @@ public class Order extends BaseEntity
     private PaymentMethod method = PaymentMethod.UNDEFINED;
     private PaymentMode mode = PaymentMode.UNDEFINED;
     private PaymentTerm term = PaymentTerm.UNDEFINED;
-    private Currency currency = Currency.UNDEFINED;
+    private Currency currency = null;
     private OrderStatus status = OrderStatus.NEW;
     private CancelReason reason = CancelReason.NONE;
     private boolean prePayment = false;
@@ -432,7 +433,7 @@ public class Order extends BaseEntity
      */
     public void setCurrency(String currency)
     {
-        setCurrency(Currency.fromCode(currency));
+        setCurrency(Currencies.get(currency));
     }
 
     /**

@@ -197,7 +197,7 @@ public class ContactDAO extends BaseDAO
             insertStmt.setString(7, contact.getWebsite());
             insertStmt.setString(8, contact.getSalutation());
             insertStmt.setString(9, contact.getNotes());
-            insertStmt.setString(10, contact.getCurrency().code());
+            insertStmt.setString(10, contact.getCurrency() != null ? contact.getCurrency().getCode() : null);
             insertStmt.setString(11, contact.getStatus().name());
             insertStmt.setString(12, contact.getReason().name());
             insertStmt.setString(13, contact.getRating().name());
@@ -242,7 +242,7 @@ public class ContactDAO extends BaseDAO
         updateStmt.setString(5, contact.getWebsite());
         updateStmt.setString(6, contact.getSalutation());
         updateStmt.setString(7, contact.getNotes());
-        updateStmt.setString(8, contact.getCurrency().code());
+        updateStmt.setString(8, contact.getCurrency() != null ? contact.getCurrency().getCode() : null);
         updateStmt.setString(9, contact.getStatus().name());
         updateStmt.setString(10, contact.getReason().name());
         updateStmt.setString(11, contact.getRating().name());

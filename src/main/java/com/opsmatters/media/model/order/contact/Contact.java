@@ -17,6 +17,7 @@ package com.opsmatters.media.model.order.contact;
 
 import java.time.Instant;
 import com.opsmatters.media.cache.admin.Parameters;
+import com.opsmatters.media.cache.order.Currencies;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.order.Currency;
 import com.opsmatters.media.util.StringUtils;
@@ -39,7 +40,7 @@ public class Contact extends BaseEntity
     private String website = "";
     private String salutation = "";
     private String notes = "";
-    private Currency currency = Currency.UNDEFINED;
+    private Currency currency = null;
     private ContactStatus status = ContactStatus.NEW;
     private SuspendReason reason = SuspendReason.NONE;
     private ContactRating rating = ContactRating.UNDEFINED;
@@ -279,7 +280,7 @@ public class Contact extends BaseEntity
      */
     public void setCurrency(String currency)
     {
-        setCurrency(Currency.fromCode(currency));
+        setCurrency(Currencies.get(currency));
     }
 
     /**

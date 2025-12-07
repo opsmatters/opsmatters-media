@@ -39,13 +39,13 @@ public class Product extends BaseEntity
     }
 
     /**
-     * Constructor that takes a code.
+     * Constructor that takes a name.
      */
-    public Product(String code)
+    public Product(String name)
     {
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
-        setName(code);
+        setName(name);
     }
 
     /**

@@ -199,7 +199,7 @@ public class ContactProductDAO extends BaseDAO
             insertStmt.setString(5, product.getProductCode());
             insertStmt.setString(6, product.getSiteId());
             insertStmt.setInt(7, product.getPrice());
-            insertStmt.setString(8, product.getCurrency().code());
+            insertStmt.setString(8, product.getCurrency() != null ? product.getCurrency().getCode() : null);
             insertStmt.setTimestamp(9, new Timestamp(product.getStartDateMillis()), UTC);
             insertStmt.setTimestamp(10, new Timestamp(product.getEndDateMillis()), UTC);
             insertStmt.setTimestamp(11, new Timestamp(product.getLastDateMillis()), UTC);
@@ -241,7 +241,7 @@ public class ContactProductDAO extends BaseDAO
         updateStmt.setString(2, product.getProductCode());
         updateStmt.setString(3, product.getSiteId());
         updateStmt.setInt(4, product.getPrice());
-        updateStmt.setString(5, product.getCurrency().code());
+        updateStmt.setString(5, product.getCurrency() != null ? product.getCurrency().getCode() : null);
         updateStmt.setTimestamp(6, new Timestamp(product.getStartDateMillis()), UTC);
         updateStmt.setTimestamp(7, new Timestamp(product.getEndDateMillis()), UTC);
         updateStmt.setTimestamp(8, new Timestamp(product.getLastDateMillis()), UTC);

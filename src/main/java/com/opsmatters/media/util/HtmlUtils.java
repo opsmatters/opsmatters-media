@@ -506,6 +506,32 @@ public class HtmlUtils
     }
 
     /**
+     * Returns <CODE>true</CODE> if the given string contains a title prefix.
+     * @param str The string to search
+     * @return <CODE>true</CODE> if the given string contains a title prefix.
+     */
+    public static boolean hasTitlePrefix(String str)
+    {
+        return HtmlDocument.builder(str)
+            .withTags("h1", "h2", "h3", "h4", "h5")
+            .build()
+            .hasTitlePrefix();
+    }
+
+    /**
+     * Remove title prefixes from the given string.
+     * @param str The string to amend
+     * @return The amended string.
+     */
+    public static String removeTitlePrefixes(String str)
+    {
+        return HtmlDocument.builder(str)
+            .withTags("h1", "h2", "h3", "h4", "h5")
+            .removeTitlePrefixes()
+            .get();
+    }
+
+    /**
      * Returns the list of image source messages for the given string.
      * @param str The string to search
      * @return the list of image source messages for the given string

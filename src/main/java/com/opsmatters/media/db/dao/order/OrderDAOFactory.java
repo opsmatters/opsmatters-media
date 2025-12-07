@@ -49,6 +49,8 @@ public class OrderDAOFactory extends DAOFactory
         getOrderDAO();
         getOrderItemDAO();
         getCompanyDAO();
+        getCountryDAO();
+        getCurrencyDAO();
     }
 
     /**
@@ -142,6 +144,26 @@ public class OrderDAOFactory extends DAOFactory
     }
 
     /**
+     * Returns the country DAO.
+     */
+    public CountryDAO getCountryDAO()
+    {
+        if(countryDAO == null)
+            countryDAO = new CountryDAO(this);
+        return countryDAO;
+    }
+
+    /**
+     * Returns the currency DAO.
+     */
+    public CurrencyDAO getCurrencyDAO()
+    {
+        if(currencyDAO == null)
+            currencyDAO = new CurrencyDAO(this);
+        return currencyDAO;
+    }
+
+    /**
      * Close any resources associated with this DAO factory.
      */
     @Override
@@ -157,6 +179,8 @@ public class OrderDAOFactory extends DAOFactory
         companyDAO = null;
         orderDAO = null;
         orderItemDAO = null;
+        countryDAO = null;
+        currencyDAO = null;
     }
 
     private ProductDAO productDAO;
@@ -168,4 +192,6 @@ public class OrderDAOFactory extends DAOFactory
     private CompanyDAO companyDAO;
     private OrderDAO orderDAO;
     private OrderItemDAO orderItemDAO;
+    private CountryDAO countryDAO;
+    private CurrencyDAO currencyDAO;
 }

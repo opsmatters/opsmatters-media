@@ -7,7 +7,6 @@ import com.opsmatters.media.model.order.Order;
 import com.opsmatters.media.model.order.OrderItem;
 import com.opsmatters.media.model.order.Sender;
 import com.opsmatters.media.model.order.Invoice;
-import com.opsmatters.media.model.order.Country;
 import com.opsmatters.media.model.order.contact.Contact;
 import com.opsmatters.media.model.order.contact.Company;
 
@@ -56,8 +55,8 @@ public class PayPalInvoice extends JSONObject implements java.io.Serializable
         invoicer.getAddress().setAdminArea1(sender.getAddressArea1());
         invoicer.getAddress().setAdminArea2(sender.getAddressArea2());
         invoicer.getAddress().setPostalCode(sender.getPostalCode());
-        if(sender.getCountry() != Country.UNDEFINED)
-            invoicer.getAddress().setCountryCode(sender.getCountry().code());
+        if(sender.getCountry() != null)
+            invoicer.getAddress().setCountryCode(sender.getCountry().getCode());
         invoicer.setWebsite(sender.getWebsite());
         invoicer.setLogoUrl(sender.getLogoUrl());
         invoicer.setTaxId(sender.getTaxId());
@@ -87,8 +86,8 @@ public class PayPalInvoice extends JSONObject implements java.io.Serializable
             billingInfo.getAddress().setAdminArea1(company.getAddressArea1());
             billingInfo.getAddress().setAdminArea2(company.getAddressArea2());
             billingInfo.getAddress().setPostalCode(company.getPostalCode());
-            if(company.getCountry() != Country.UNDEFINED)
-                billingInfo.getAddress().setCountryCode(company.getCountry().code());
+            if(company.getCountry() != null)
+                billingInfo.getAddress().setCountryCode(company.getCountry().getCode());
 
             if(company.hasPhoneCode())
             {
@@ -103,7 +102,8 @@ public class PayPalInvoice extends JSONObject implements java.io.Serializable
         getPrimaryRecipients().put(recipient);
 
         Detail detail = new Detail();
-        detail.setCurrencyCode(order.getCurrency().code());
+        if(order.getCurrency() != null)
+            detail.setCurrencyCode(order.getCurrency().getCode());
         detail.getPaymentTerm().setTermType(order.getPaymentTerm().code());
         detail.setNote(invoice.getNote());
         detail.setTermsAndConditions(sender.getCompanyNotes());
@@ -118,7 +118,8 @@ public class PayPalInvoice extends JSONObject implements java.io.Serializable
                 item.setDescription(orderItem.getDescription());
                 item.setQuantity(Integer.toString(orderItem.getQuantity()));
                 UnitAmount amount = new UnitAmount();
-                amount.setCurrencyCode(orderItem.getCurrency().code());
+                if(orderItem.getCurrency() != null)
+                    amount.setCurrencyCode(orderItem.getCurrency().getCode());
                 amount.setValue(String.format("%d.00", orderItem.getPrice()));
                 item.setUnitAmount(amount);
                 item.setUnitOfMeasure("AMOUNT");
@@ -129,7 +130,8 @@ public class PayPalInvoice extends JSONObject implements java.io.Serializable
         Amount amount = new Amount();
         Shipping shipping = new Shipping();
         shipping.getAmount().setValue(String.format("%d.00", 0));
-        shipping.getAmount().setCurrencyCode(order.getCurrency().code());
+        if(order.getCurrency() != null)
+            shipping.getAmount().setCurrencyCode(order.getCurrency().getCode());
         amount.getBreakdown().setShipping(shipping);
         setAmount(amount);
     }

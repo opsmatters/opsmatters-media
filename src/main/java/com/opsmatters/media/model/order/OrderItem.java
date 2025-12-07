@@ -18,6 +18,7 @@ package com.opsmatters.media.model.order;
 import java.time.Instant;
 import org.apache.commons.text.StringSubstitutor;
 import com.opsmatters.media.cache.system.Sites;
+import com.opsmatters.media.cache.order.Currencies;
 import com.opsmatters.media.cache.order.product.Products;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.content.Content;
@@ -42,7 +43,7 @@ public class OrderItem extends BaseEntity
     private ContentType contentType;
     private int quantity = 1;
     private int price = 0;
-    private Currency currency = Currency.UNDEFINED;
+    private Currency currency = null;
     private String name = "";
     private String description = "";
     private boolean enabled = true;
@@ -247,7 +248,7 @@ public class OrderItem extends BaseEntity
      */
     public void setCurrency(String currency)
     {
-        setCurrency(Currency.fromCode(currency));
+        setCurrency(Currencies.get(currency));
     }
 
     /**

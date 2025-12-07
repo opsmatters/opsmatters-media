@@ -123,7 +123,7 @@ public class Products implements java.io.Serializable
     }
 
     /**
-     * Removes the product with the given code.
+     * Removes the given product.
      */
     public static void remove(Product product)
     {

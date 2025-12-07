@@ -211,7 +211,7 @@ public class OrderItemDAO extends BaseDAO
             insertStmt.setString(8, item.getContentType() != null ? item.getContentType().name() : null);
             insertStmt.setInt(9, item.getQuantity());
             insertStmt.setInt(10, item.getPrice());
-            insertStmt.setString(11, item.getCurrency().code());
+            insertStmt.setString(11, item.getCurrency() != null ? item.getCurrency().getCode() : null);
             insertStmt.setString(12, item.getName());
             insertStmt.setString(13, item.getDescription());
             insertStmt.setBoolean(14, item.isEnabled());
@@ -253,7 +253,7 @@ public class OrderItemDAO extends BaseDAO
         updateStmt.setString(5, item.getContentType() != null ? item.getContentType().name() : null);
         updateStmt.setInt(6, item.getQuantity());
         updateStmt.setInt(7, item.getPrice());
-        updateStmt.setString(8, item.getCurrency().code());
+        updateStmt.setString(8, item.getCurrency() != null ? item.getCurrency().getCode() : null);
         updateStmt.setString(9, item.getName());
         updateStmt.setString(10, item.getDescription());
         updateStmt.setBoolean(11, item.isEnabled());

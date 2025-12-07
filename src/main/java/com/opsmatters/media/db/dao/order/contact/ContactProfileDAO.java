@@ -201,7 +201,7 @@ public class ContactProfileDAO extends BaseDAO
             insertStmt.setString(9, profile.getPaymentMethod().name());
             insertStmt.setString(10, profile.getPaymentMode().name());
             insertStmt.setString(11, profile.getPaymentTerm().name());
-            insertStmt.setString(12, profile.getCurrency().code());
+            insertStmt.setString(12, profile.getCurrency() != null ? profile.getCurrency().getCode() : null);
             insertStmt.setBoolean(13, profile.hasPrePayment());
             insertStmt.setBoolean(14, profile.isEnabled());
             insertStmt.executeUpdate();
@@ -243,7 +243,7 @@ public class ContactProfileDAO extends BaseDAO
         updateStmt.setString(6, profile.getPaymentMethod().name());
         updateStmt.setString(7, profile.getPaymentMode().name());
         updateStmt.setString(8, profile.getPaymentTerm().name());
-        updateStmt.setString(9, profile.getCurrency().code());
+        updateStmt.setString(9, profile.getCurrency() != null ? profile.getCurrency().getCode() : null);
         updateStmt.setBoolean(10, profile.hasPrePayment());
         updateStmt.setBoolean(11, profile.isEnabled());
         updateStmt.setString(12, profile.getId());

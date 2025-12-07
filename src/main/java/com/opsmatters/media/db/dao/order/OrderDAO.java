@@ -242,7 +242,7 @@ public class OrderDAO extends BaseDAO
             insertStmt.setString(10, order.getPaymentMethod().name());
             insertStmt.setString(11, order.getPaymentMode().name());
             insertStmt.setString(12, order.getPaymentTerm().name());
-            insertStmt.setString(13, order.getCurrency().code());
+            insertStmt.setString(13, order.getCurrency() != null ? order.getCurrency().getCode() : null);
             insertStmt.setString(14, order.getStatus().name());
             insertStmt.setString(15, order.getReason().name());
             insertStmt.setBoolean(16, order.hasPrePayment());
@@ -294,7 +294,7 @@ public class OrderDAO extends BaseDAO
         updateStmt.setString(7, order.getPaymentMethod().name());
         updateStmt.setString(8, order.getPaymentMode().name());
         updateStmt.setString(9, order.getPaymentTerm().name());
-        updateStmt.setString(10, order.getCurrency().code());
+        updateStmt.setString(10, order.getCurrency() != null ? order.getCurrency().getCode() : null);
         updateStmt.setString(11, order.getStatus().name());
         updateStmt.setString(12, order.getReason().name());
         updateStmt.setBoolean(13, order.hasPrePayment());

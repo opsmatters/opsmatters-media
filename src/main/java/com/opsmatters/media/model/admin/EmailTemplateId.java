@@ -30,6 +30,7 @@ public enum EmailTemplateId
     BYLINE("CON-BYL"),
     SUGGESTED("CON-SUG"),
     PUBLISHED("CON-PUB"),
+    PREPAYMENT("ORD-PRE"),
     DELIVERED("ORD-DEL"),
     UNPAID("ORD-UNP"),
     CANCELLED("ORD-CAN"),

@@ -16,6 +16,7 @@
 package com.opsmatters.media.model.order.contact;
 
 import java.time.Instant;
+import com.opsmatters.media.cache.order.Countries;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.order.Country;
 import com.opsmatters.media.util.StringUtils;
@@ -37,7 +38,7 @@ public class Company extends BaseEntity
     private String addressArea1 = "";
     private String addressArea2 = "";
     private String postalCode = "";
-    private Country country = Country.UNDEFINED;
+    private Country country = null;
     private String phoneCode = "";
     private String phoneNumber = "";
     private String additionalInfo = "";
@@ -330,7 +331,7 @@ public class Company extends BaseEntity
      */
     public void setCountry(String country)
     {
-        setCountry(Country.fromCode(country));
+        setCountry(Countries.get(country));
     }
 
     /**

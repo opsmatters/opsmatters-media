@@ -16,6 +16,7 @@
 package com.opsmatters.media.model.order;
 
 import java.util.Map;
+import com.opsmatters.media.cache.order.Countries;
 import com.opsmatters.media.cache.admin.Parameters;
 import com.opsmatters.media.model.admin.Parameter;
 import com.opsmatters.media.model.admin.ParameterName;
@@ -41,7 +42,7 @@ public class Sender
     private String addressArea1 = "";
     private String addressArea2 = "";
     private String postalCode = "";
-    private Country country = Country.UNDEFINED;
+    private Country country = null;
     private String phoneCode = "";
     private String phoneNumber = "";
     private String website = "";
@@ -343,7 +344,7 @@ public class Sender
      */
     public void setCountry(String country)
     {
-        setCountry(Country.fromCode(country));
+        setCountry(Countries.get(country));
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Gerald Curley
+ * Copyright 2025 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,121 +13,132 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.opsmatters.media.model.order;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.time.Instant;
+import com.opsmatters.media.model.BaseEntity;
+import com.opsmatters.media.util.StringUtils;
 
 /**
- * Represents the corrency for an order.
+ * Class representing a currency.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum Currency
+public class Currency extends BaseEntity
 {
-    UNDEFINED("???", "Undefined"),
-    US_DOLLAR("USD", "United States dollar"),
-    UK_POUND("GBP", "Pound sterling"),
-    EURO("EUR", "Euro"),
-    ALL("", "All"); // Pseudo status
-
-    private String code;
-    private String value;
+    private String code = "";
+    private String name = "";
+    private boolean enabled = false;
 
     /**
-     * Constructor that takes the currency code and value.
-     * @param code The code for the currency
-     * @param value The value for the currency
+     * Default constructor.
      */
-    Currency(String code, String value)
+    public Currency()
     {
-        this.code = code;
-        this.value = value;
     }
 
     /**
-     * Returns the value of the currency.
-     * @return The value of the currency.
+     * Constructor that takes a name.
+     */
+    public Currency(String name)
+    {
+        setId(StringUtils.getUUID(null));
+        setCreatedDate(Instant.now());
+        setName(name);
+        setEnabled(true);
+    }
+
+    /**
+     * Copy constructor.
+     */
+    public Currency(Currency obj)
+    {
+        copyAttributes(obj);
+    }
+
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(Currency obj)
+    {
+        if(obj != null)
+        {
+            super.copyAttributes(obj);
+            setCode(obj.getCode());
+            setName(obj.getName());
+            setEnabled(obj.isEnabled());
+        }
+    }
+
+    /**
+     * Returns the currency name.
      */
     public String toString()
     {
-        return value();
+        return getName();
     }
 
     /**
-     * Returns the code of the currency.
-     * @return The code of the currency.
+     * Returns the currency code.
      */
-    public String code()
+    public String getCode()
     {
         return code;
     }
 
     /**
-     * Returns the value of the currency.
-     * @return The value of the currency.
+     * Sets the currency code.
      */
-    public String value()
+    public void setCode(String code)
     {
-        return value;
+        this.code = code;
     }
 
     /**
-     * Returns the type for the given value.
-     * @param value The type value
-     * @return The type for the given value
+     * Returns the currency name.
      */
-    public static Currency fromValue(String value)
+    public String getName()
     {
-        Currency[] types = values();
-        for(Currency type : types)
-        {
-            if(type.value().equals(value))
-                return type;
-        }
-        return null;
+        return name;
     }
 
     /**
-     * Returns the type for the given code.
-     * @param code The type code
-     * @return The type for the given code
+     * Sets the currency name.
      */
-    public static Currency fromCode(String code)
+    public void setName(String name)
     {
-        Currency[] types = values();
-        for(Currency type : types)
-        {
-            if(type.code().equals(code))
-                return type;
-        }
-        return null;
+        this.name = name;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given value is contained in the list of types.
-     * @param value The type value
-     * @return <CODE>true</CODE> if the given value is contained in the list of types
+     * Returns <CODE>true</CODE> if the currency is enabled.
      */
-    public static boolean contains(String value)
+    public boolean isEnabled()
     {
-        return valueOf(value) != null;
+        return enabled;
     }
 
     /**
-     * Returns a list of the currencies.
+     * Returns <CODE>true</CODE> if this currency is enabled.
      */
-    public static List<Currency> toList()
+    public Boolean getEnabledObject()
     {
-        List<Currency> ret = new ArrayList<Currency>();
+        return Boolean.valueOf(isEnabled());
+    }
 
-        for(Currency currency : values())
-        {
-            if(currency.code().length() > 0)
-                ret.add(currency);
-        }
+    /**
+     * Set to <CODE>true</CODE> if the currency is enabled.
+     */
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+    }
 
-        return ret;
+    /**
+     * Set to <CODE>true</CODE> if this currency is enabled.
+     */
+    public void setEnabledObject(Boolean enabled)
+    {
+        setEnabled(enabled != null && enabled.booleanValue());
     }
 }

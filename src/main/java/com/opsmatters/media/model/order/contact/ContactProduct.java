@@ -23,6 +23,7 @@ import java.time.ZoneOffset;
 import java.time.DateTimeException;
 import java.time.temporal.TemporalAdjusters;
 import java.time.format.DateTimeParseException;
+import com.opsmatters.media.cache.order.Currencies;
 import com.opsmatters.media.cache.order.product.Products;
 import com.opsmatters.media.cache.system.Sites;
 import com.opsmatters.media.model.BaseEntity;
@@ -45,7 +46,7 @@ public class ContactProduct extends BaseEntity
     private String productCode = "";
     private String siteId = "";
     private int price = 0;
-    private Currency currency = Currency.UNDEFINED;
+    private Currency currency = null;
     private Instant startDate;
     private Instant endDate;
     private Instant lastDate;
@@ -193,7 +194,7 @@ public class ContactProduct extends BaseEntity
      */
     public void setCurrency(String currency)
     {
-        setCurrency(Currency.fromCode(currency));
+        setCurrency(Currencies.get(currency));
     }
 
     /**

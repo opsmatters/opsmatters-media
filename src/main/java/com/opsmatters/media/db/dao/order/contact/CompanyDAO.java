@@ -206,7 +206,7 @@ public class CompanyDAO extends BaseDAO
             insertStmt.setString(11, company.getAddressArea1());
             insertStmt.setString(12, company.getAddressArea2());
             insertStmt.setString(13, company.getPostalCode());
-            insertStmt.setString(14, company.getCountry().code());
+            insertStmt.setString(14, company.getCountry() != null ? company.getCountry().getCode() : null);
             insertStmt.setString(15, company.getPhoneCode());
             insertStmt.setString(16, company.getPhoneNumber());
             insertStmt.setString(17, company.getAdditionalInfo());
@@ -254,7 +254,7 @@ public class CompanyDAO extends BaseDAO
         updateStmt.setString(9, company.getAddressArea1());
         updateStmt.setString(10, company.getAddressArea2());
         updateStmt.setString(11, company.getPostalCode());
-        updateStmt.setString(12, company.getCountry().code());
+        updateStmt.setString(12, company.getCountry() != null ? company.getCountry().getCode() : null);
         updateStmt.setString(13, company.getPhoneCode());
         updateStmt.setString(14, company.getPhoneNumber());
         updateStmt.setString(15, company.getAdditionalInfo());

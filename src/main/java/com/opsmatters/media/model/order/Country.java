@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Gerald Curley
+ * Copyright 2025 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,155 +13,132 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.opsmatters.media.model.order;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.time.Instant;
+import com.opsmatters.media.model.BaseEntity;
+import com.opsmatters.media.util.StringUtils;
 
 /**
- * Represents the country for an order.
+ * Class representing a country.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum Country
+public class Country extends BaseEntity
 {
-    UNDEFINED("??", "Undefined"),
-    ARMENIA("AM", "Armenia"),
-    AUSTRALIA("AU", "Australia"),
-    AUSTRIA("AT", "Austria"),
-    BULGARIA("BG", "Bulgaria"),
-    CANADA("CA", "Canada"),
-    CHINA("CN", "China"),
-    CYPRUS("CY", "Cyprus"),
-    CZECH_REPUBLIC("CZ", "Czech Republic"),
-    ESTONIA("EE", "Estonia"),
-    FRANCE("FR", "France"),
-    GEORGIA("GE", "Georgia"),
-    GERMANY("DE", "Germany"),
-    GIBRALTAR("GI", "Gibraltar"),
-    HONG_KONG("HK", "Hong Kong"),
-    HUNGARY("HU", "Hungary"),
-    INDIA("IN", "India"),
-    IRELAND("IE", "Ireland"),
-    ISRAEL("IL", "Israel"),
-    LITHUANIA("LT", "Lithuania"),
-    MALTA("MT", "Malta"),
-    MONTENEGRO("ME", "Montenegro"),
-    NETHERLANDS("NL", "Netherlands"),
-    PANAMA("PA", "Panama"),
-    PHILIPPINES("PH", "The Philippines"),
-    POLAND("PL", "Poland"),
-    ROMANIA("RO", "Romania"),
-    SERBIA("RS", "Serbia"),
-    SINGAPORE("SG", "Singapore"),
-    SPAIN("ES", "Spain"),
-    ST_VINCENT("VC", "Saint Vincent"),
-    SWEDEN("SE", "Sweden"),
-    SWITZERLAND("CH", "Switzerland"),
-    UAE("AE", "United Arab Emirates"),
-    UK("GB", "United Kingdom"),
-    UKRAINE("UA", "Ukraine"),
-    USA("US", "United States"),
-    VIETNAM("VN", "Vietnam"),
-    ALL("", "All"); // Pseudo status
-
-    private String code;
-    private String value;
+    private String code = "";
+    private String name = "";
+    private boolean enabled = false;
 
     /**
-     * Constructor that takes the country code and value.
-     * @param code The code for the country
-     * @param value The value for the country
+     * Default constructor.
      */
-    Country(String code, String value)
+    public Country()
     {
-        this.code = code;
-        this.value = value;
     }
 
     /**
-     * Returns the value of the country.
-     * @return The value of the country.
+     * Constructor that takes a name.
+     */
+    public Country(String name)
+    {
+        setId(StringUtils.getUUID(null));
+        setCreatedDate(Instant.now());
+        setName(name);
+        setEnabled(true);
+    }
+
+    /**
+     * Copy constructor.
+     */
+    public Country(Country obj)
+    {
+        copyAttributes(obj);
+    }
+
+    /**
+     * Copies the attributes of the given object.
+     */
+    public void copyAttributes(Country obj)
+    {
+        if(obj != null)
+        {
+            super.copyAttributes(obj);
+            setCode(obj.getCode());
+            setName(obj.getName());
+            setEnabled(obj.isEnabled());
+        }
+    }
+
+    /**
+     * Returns the country name.
      */
     public String toString()
     {
-        return value();
+        return getName();
     }
 
     /**
-     * Returns the code of the country.
-     * @return The code of the country.
+     * Returns the country code.
      */
-    public String code()
+    public String getCode()
     {
         return code;
     }
 
     /**
-     * Returns the value of the country.
-     * @return The value of the country.
+     * Sets the country code.
      */
-    public String value()
+    public void setCode(String code)
     {
-        return value;
+        this.code = code;
     }
 
     /**
-     * Returns the type for the given value.
-     * @param value The type value
-     * @return The type for the given value
+     * Returns the country name.
      */
-    public static Country fromValue(String value)
+    public String getName()
     {
-        Country[] types = values();
-        for(Country type : types)
-        {
-            if(type.value().equals(value))
-                return type;
-        }
-        return null;
+        return name;
     }
 
     /**
-     * Returns the type for the given code.
-     * @param code The type code
-     * @return The type for the given code
+     * Sets the country name.
      */
-    public static Country fromCode(String code)
+    public void setName(String name)
     {
-        Country[] types = values();
-        for(Country type : types)
-        {
-            if(type.code().equals(code))
-                return type;
-        }
-        return null;
+        this.name = name;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the given value is contained in the list of types.
-     * @param value The type value
-     * @return <CODE>true</CODE> if the given value is contained in the list of types
+     * Returns <CODE>true</CODE> if the country is enabled.
      */
-    public static boolean contains(String value)
+    public boolean isEnabled()
     {
-        return valueOf(value) != null;
+        return enabled;
     }
 
     /**
-     * Returns a list of the countries.
+     * Returns <CODE>true</CODE> if this country is enabled.
      */
-    public static List<Country> toList()
+    public Boolean getEnabledObject()
     {
-        List<Country> ret = new ArrayList<Country>();
+        return Boolean.valueOf(isEnabled());
+    }
 
-        for(Country country : values())
-        {
-            if(country.code().length() > 0)
-                ret.add(country);
-        }
+    /**
+     * Set to <CODE>true</CODE> if the country is enabled.
+     */
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+    }
 
-        return ret;
+    /**
+     * Set to <CODE>true</CODE> if this country is enabled.
+     */
+    public void setEnabledObject(Boolean enabled)
+    {
+        setEnabled(enabled != null && enabled.booleanValue());
     }
 }
