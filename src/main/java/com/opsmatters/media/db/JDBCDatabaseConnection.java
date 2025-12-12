@@ -320,7 +320,8 @@ public class JDBCDatabaseConnection
 
         if(log && getStatus() == CONNECTED)
         {
-            logger.info("Connected to database '"+getName()+"' successfully");
+            if(connectException == null)
+                logger.info("Connected to database '"+getName()+"' successfully");
         }
     }
 
