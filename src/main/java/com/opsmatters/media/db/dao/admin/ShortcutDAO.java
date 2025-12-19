@@ -100,7 +100,7 @@ public class ShortcutDAO extends BaseDAO
         table.addColumn("SITE_ID", Types.VARCHAR, 5, false);
         table.addColumn("SELECTION", Types.VARCHAR, 30, false);
         table.addColumn("URL", Types.VARCHAR, 128, false);
-        table.addColumn("ICON", Types.VARCHAR, 20, true);
+        table.addColumn("ICON", Types.VARCHAR, 30, true);
         table.addColumn("POSITION", Types.INTEGER, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.setPrimaryKey("SHORTCUTS_PK", new String[] {"ID"});
