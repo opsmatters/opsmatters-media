@@ -1553,6 +1553,9 @@ public class HtmlDocument
             String whole = m.group(0);
             String content = m.group(1).trim();
 
+            // Remove any leading line breaks
+            content = content.replaceAll("<br[ ]*/>", "");
+
             // If the content contains a link, remove it
             Matcher anchorMatcher = ANCHOR_ATTR_CONTENT_PATTERN.matcher(content);
             if(anchorMatcher.find())
@@ -1614,6 +1617,9 @@ public class HtmlDocument
             String whole = m.group(0);
             String content = m.group(1).trim();
 
+            // Remove any leading line breaks
+            content = content.replaceAll("<br[ ]*/>", "");
+
             // If the content contains a link, remove it
             Matcher anchorMatcher = ANCHOR_ATTR_CONTENT_PATTERN.matcher(content);
             if(anchorMatcher.find())
@@ -1669,6 +1675,9 @@ public class HtmlDocument
         {
             String whole = m.group(0);
             String content = m.group(1).trim();
+
+            // Remove any leading line breaks
+            content = content.replaceAll("<br[ ]*/>", "");
 
             // If the content contains a link, remove it
             Matcher anchorMatcher = ANCHOR_ATTR_CONTENT_PATTERN.matcher(content);
