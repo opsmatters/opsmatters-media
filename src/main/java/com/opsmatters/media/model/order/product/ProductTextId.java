@@ -30,6 +30,7 @@ public enum ProductTextId
     DELIVERED("EML-DEL"),
     SUSPECT("EML-SUS"),
     UNPAID("EML-UNP"),
+    UNPAID7("EML-UNP7"),
     CANCELLED("EML-CAN"),
     ALL("All"); // Pseudo status
 

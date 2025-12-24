@@ -39,7 +39,7 @@ public class ShortcutDAO extends BaseDAO
      * The query to use to select a shortcut from the SHORTCUTS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, MENU, SITE_ID, SELECTION, URL, ICON, POSITION, STATUS "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, `GROUP`, TYPE, MENU, SITE_ID, SELECTION, URL, ICON, POSITION, STATUS "
       + "FROM SHORTCUTS WHERE ID=?";
 
     /**
@@ -47,22 +47,22 @@ public class ShortcutDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO SHORTCUTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, MENU, SITE_ID, SELECTION, URL, ICON, POSITION, STATUS )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, `GROUP`, TYPE, MENU, SITE_ID, SELECTION, URL, ICON, POSITION, STATUS )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a shortcut in the SHORTCUTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE SHORTCUTS SET UPDATED_DATE=?, NAME=?, TYPE=?, MENU=?, SITE_ID=?, SELECTION=?, URL=?, ICON=?, POSITION=?, STATUS=? "
+      "UPDATE SHORTCUTS SET UPDATED_DATE=?, NAME=?, `GROUP`=?, TYPE=?, MENU=?, SITE_ID=?, SELECTION=?, URL=?, ICON=?, POSITION=?, STATUS=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the shortcuts from the SHORTCUTS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, MENU, SITE_ID, SELECTION, URL, ICON, POSITION, STATUS "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, `GROUP`, TYPE, MENU, SITE_ID, SELECTION, URL, ICON, POSITION, STATUS "
       + "FROM SHORTCUTS ORDER BY CREATED_DATE";
 
     /**
@@ -95,6 +95,7 @@ public class ShortcutDAO extends BaseDAO
         table.addColumn("CREATED_DATE", Types.TIMESTAMP, true);
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("NAME", Types.VARCHAR, 30, true);
+        table.addColumn("GROUP", Types.VARCHAR, 15, true);
         table.addColumn("TYPE", Types.VARCHAR, 15, true);
         table.addColumn("MENU", Types.VARCHAR, 15, false);
         table.addColumn("SITE_ID", Types.VARCHAR, 5, false);
@@ -136,14 +137,15 @@ public class ShortcutDAO extends BaseDAO
                 shortcut.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 shortcut.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 shortcut.setName(rs.getString(4));
-                shortcut.setType(rs.getString(5));
-                shortcut.setMenu(rs.getString(6));
-                shortcut.setSiteId(rs.getString(7));
-                shortcut.setSelection(rs.getString(8));
-                shortcut.setUrl(rs.getString(9));
-                shortcut.setIcon(rs.getString(10));
-                shortcut.setPosition(rs.getInt(11));
-                shortcut.setStatus(rs.getString(12));
+                shortcut.setGroup(rs.getString(5));
+                shortcut.setType(rs.getString(6));
+                shortcut.setMenu(rs.getString(7));
+                shortcut.setSiteId(rs.getString(8));
+                shortcut.setSelection(rs.getString(9));
+                shortcut.setUrl(rs.getString(10));
+                shortcut.setIcon(rs.getString(11));
+                shortcut.setPosition(rs.getInt(12));
+                shortcut.setStatus(rs.getString(13));
                 ret = shortcut;
             }
         }
@@ -182,14 +184,15 @@ public class ShortcutDAO extends BaseDAO
             insertStmt.setTimestamp(2, new Timestamp(shortcut.getCreatedDateMillis()), UTC);
             insertStmt.setTimestamp(3, new Timestamp(shortcut.getUpdatedDateMillis()), UTC);
             insertStmt.setString(4, shortcut.getName());
-            insertStmt.setString(5, shortcut.getType().name());
-            insertStmt.setString(6, shortcut.getMenu());
-            insertStmt.setString(7, shortcut.getSiteId());
-            insertStmt.setString(8, shortcut.getSelection());
-            insertStmt.setString(9, shortcut.getUrl());
-            insertStmt.setString(10, shortcut.getIcon());
-            insertStmt.setInt(11, shortcut.getPosition());
-            insertStmt.setString(12, shortcut.getStatus().name());
+            insertStmt.setString(5, shortcut.getGroup().name());
+            insertStmt.setString(6, shortcut.getType().name());
+            insertStmt.setString(7, shortcut.getMenu());
+            insertStmt.setString(8, shortcut.getSiteId());
+            insertStmt.setString(9, shortcut.getSelection());
+            insertStmt.setString(10, shortcut.getUrl());
+            insertStmt.setString(11, shortcut.getIcon());
+            insertStmt.setInt(12, shortcut.getPosition());
+            insertStmt.setString(13, shortcut.getStatus().name());
             insertStmt.executeUpdate();
 
             logger.info("Created shortcut '"+shortcut.getId()+"' in SHORTCUTS");
@@ -223,15 +226,16 @@ public class ShortcutDAO extends BaseDAO
 
         updateStmt.setTimestamp(1, new Timestamp(shortcut.getUpdatedDateMillis()), UTC);
         updateStmt.setString(2, shortcut.getName());
-        updateStmt.setString(3, shortcut.getType().name());
-        updateStmt.setString(4, shortcut.getMenu());
-        updateStmt.setString(5, shortcut.getSiteId());
-        updateStmt.setString(6, shortcut.getSelection());
-        updateStmt.setString(7, shortcut.getUrl());
-        updateStmt.setString(8, shortcut.getIcon());
-        updateStmt.setInt(9, shortcut.getPosition());
-        updateStmt.setString(10, shortcut.getStatus().name());
-        updateStmt.setString(11, shortcut.getId());
+        updateStmt.setString(3, shortcut.getGroup().name());
+        updateStmt.setString(4, shortcut.getType().name());
+        updateStmt.setString(5, shortcut.getMenu());
+        updateStmt.setString(6, shortcut.getSiteId());
+        updateStmt.setString(7, shortcut.getSelection());
+        updateStmt.setString(8, shortcut.getUrl());
+        updateStmt.setString(9, shortcut.getIcon());
+        updateStmt.setInt(10, shortcut.getPosition());
+        updateStmt.setString(11, shortcut.getStatus().name());
+        updateStmt.setString(12, shortcut.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated shortcut '"+shortcut.getId()+"' in SHORTCUTS");
@@ -287,14 +291,15 @@ public class ShortcutDAO extends BaseDAO
                 shortcut.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 shortcut.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 shortcut.setName(rs.getString(4));
-                shortcut.setType(rs.getString(5));
-                shortcut.setMenu(rs.getString(6));
-                shortcut.setSiteId(rs.getString(7));
-                shortcut.setSelection(rs.getString(8));
-                shortcut.setUrl(rs.getString(9));
-                shortcut.setIcon(rs.getString(10));
-                shortcut.setPosition(rs.getInt(11));
-                shortcut.setStatus(rs.getString(12));
+                shortcut.setGroup(rs.getString(5));
+                shortcut.setType(rs.getString(6));
+                shortcut.setMenu(rs.getString(7));
+                shortcut.setSiteId(rs.getString(8));
+                shortcut.setSelection(rs.getString(9));
+                shortcut.setUrl(rs.getString(10));
+                shortcut.setIcon(rs.getString(11));
+                shortcut.setPosition(rs.getInt(12));
+                shortcut.setStatus(rs.getString(13));
                 ret.add(shortcut);
             }
         }

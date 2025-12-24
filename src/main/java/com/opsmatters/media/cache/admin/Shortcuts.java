@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.admin.Shortcut;
+import com.opsmatters.media.model.admin.ShortcutGroup;
 
 /**
  * Class representing the list of shortcuts.
@@ -110,11 +111,16 @@ public class Shortcuts implements java.io.Serializable
     }
 
     /**
-     * Returns the list of shortcuts.
+     * Returns the list of shortcuts for the given group.
      */
-    public static List<Shortcut> list()
+    public static List<Shortcut> list(ShortcutGroup group)
     {
-        List<Shortcut> ret = new ArrayList<Shortcut>(idMap.values());
+        List<Shortcut> ret = new ArrayList<Shortcut>();
+        for(Shortcut shortcut : idMap.values())
+        {
+            if(group == null || group == shortcut.getGroup())
+                ret.add(shortcut);
+        }
 
         // Sort shortcuts by position
         Collections.sort(ret, comparator);

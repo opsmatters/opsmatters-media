@@ -26,14 +26,14 @@ import java.util.ArrayList;
  */
 public enum ContentType
 {
-    ROUNDUP("RP", "Roundup", "roundups", "glyphicon-file"),
+    ROUNDUP("RP", "Roundup", "roundups", "glyphicon-th-list"),
     VIDEO("VD", "Video", "videos", "glyphicon-film"),
     POST("PO", "Post", "posts", "glyphicon-file"),
     EVENT("EV", "Event", "events", "glyphicon-calendar"),
     PUBLICATION("PB", "Publication", "publications", "glyphicon-book"),
     PROJECT("PR", "Project", "projects", "glyphicon-tasks"),
     TOOL("TL", "Tool", "tools", "glyphicon-wrench"),
-    ORGANISATION("ORG", "Organisation", "organisations", "glyphicon-th-list"),
+    ORGANISATION("ORG", "Organisation", "organisations", "glyphicon-record"),
     ARTICLE("", "Article"); // pseudo type
 
     private String code;

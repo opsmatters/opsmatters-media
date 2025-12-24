@@ -201,16 +201,17 @@ public class OrganisationSites
     /**
      * Returns the content settings for the given organisation site and content type.
      */
+    public static ContentSiteSettings getSettings(OrganisationSite organisationSite, ContentType type)
+    {
+        return organisationSite != null ? organisationSite.getSettings(type) : null;
+    }
+
+    /**
+     * Returns the content settings for the given organisation site and content type.
+     */
     public static ContentSiteSettings getSettings(String siteId, String code, ContentType type)
     {
-        ContentSiteSettings ret = null;
-        OrganisationSite organisation = OrganisationSites.get(siteId, code);
-        if(organisation != null)
-        {
-            ret = organisation.getSettings(type);
-        }
-
-        return ret;
+        return getSettings(OrganisationSites.get(siteId, code), type);
     }
 
     /**
@@ -227,6 +228,30 @@ public class OrganisationSites
     public static ContentSiteSettings getSettings(Site site, ContentConfig config)
     {
         return getSettings(site.getId(), config);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content settings for the given organisation site and content type exist.
+     */
+    public static boolean hasSettings(OrganisationSite organisationSite, ContentType type)
+    {
+        return getSettings(organisationSite, type) != null;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content settings for the given organisation site and content type exist.
+     */
+    public static boolean hasSettings(String siteId, String code, ContentType type)
+    {
+        return hasSettings(OrganisationSites.get(siteId, code), type);
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content settings for the given organisation site and content type exist.
+     */
+    public static boolean hasSettings(Site site, String code, ContentType type)
+    {
+        return hasSettings(site.getId(), code, type);
     }
 
     /**

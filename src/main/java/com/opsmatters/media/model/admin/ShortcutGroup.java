@@ -20,14 +20,13 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Represents the type of a shortcut.
+ * Represents the group of a shortcut.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ShortcutType
+public enum ShortcutGroup
 {
-    MENU("Menu", "menu"),
-    LINK("Link", "link"),
+    GENERAL("General", "general"),
     CONTENT("Content", "content"),
     ALL("All", ""); // Pseudo status
 
@@ -39,7 +38,7 @@ public enum ShortcutType
      * @param value The value for the type
      * @param value The tag for the type
      */
-    ShortcutType(String value, String tag)
+    ShortcutGroup(String value, String tag)
     {
         this.value = value;
         this.tag = tag;
@@ -77,10 +76,10 @@ public enum ShortcutType
      * @param value The type value
      * @return The type for the given value
      */
-    public static ShortcutType fromValue(String value)
+    public static ShortcutGroup fromValue(String value)
     {
-        ShortcutType[] types = values();
-        for(ShortcutType type : types)
+        ShortcutGroup[] types = values();
+        for(ShortcutGroup type : types)
         {
             if(type.value().equals(value))
                 return type;
@@ -100,14 +99,13 @@ public enum ShortcutType
     }
 
     /**
-     * Returns a list of the shortcut types.
+     * Returns a list of the shortcut groups.
      */
-    public static List<ShortcutType> toList()
+    public static List<ShortcutGroup> toList()
     {
-        List<ShortcutType> ret = new ArrayList<ShortcutType>();
+        List<ShortcutGroup> ret = new ArrayList<ShortcutGroup>();
 
-        ret.add(MENU);
-        ret.add(LINK);
+        ret.add(GENERAL);
         ret.add(CONTENT);
 
         return ret;

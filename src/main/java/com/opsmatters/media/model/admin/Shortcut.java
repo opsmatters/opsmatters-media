@@ -29,6 +29,7 @@ public class Shortcut extends BaseEntity
     public static final String DEFAULT = "New Shortcut";
 
     private String name = "";
+    private ShortcutGroup group;
     private ShortcutType type;
     private String menu = "";
     private String siteId = "";
@@ -53,6 +54,7 @@ public class Shortcut extends BaseEntity
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setName(name);
+        setGroup(ShortcutGroup.GENERAL);
         setType(ShortcutType.MENU);
         setStatus(ShortcutStatus.ACTIVE);
     }
@@ -66,6 +68,7 @@ public class Shortcut extends BaseEntity
         {
             super.copyAttributes(obj);
             setName(obj.getName());
+            setGroup(obj.getGroup());
             setType(obj.getType());
             setMenu(obj.getMenu());
             setSiteId(obj.getSiteId());
@@ -94,7 +97,7 @@ public class Shortcut extends BaseEntity
 
         if(ret)
         {
-            if(getType() == ShortcutType.MENU)
+            if(getType() == ShortcutType.MENU || getType() == ShortcutType.CONTENT)
             {
                 if(!hasMenu())
                     ret = false;
@@ -131,6 +134,30 @@ public class Shortcut extends BaseEntity
     public boolean hasName()
     {
         return name != null && name.length() > 0;
+    }
+
+    /**
+     * Returns the group.
+     */
+    public ShortcutGroup getGroup()
+    {
+        return group;
+    }
+
+    /**
+     * Sets the group.
+     */
+    public void setGroup(ShortcutGroup group)
+    {
+        this.group = group;
+    }
+
+    /**
+     * Sets the group.
+     */
+    public void setGroup(String group)
+    {
+        setGroup(ShortcutGroup.valueOf(group));
     }
 
     /**
