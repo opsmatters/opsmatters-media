@@ -41,6 +41,7 @@ import com.opsmatters.media.model.chart.ChartParameter;
 import com.opsmatters.media.model.chart.ChartParameters;
 import com.opsmatters.media.model.chart.ChartParameterType;
 import com.opsmatters.media.util.SessionId;
+import com.opsmatters.media.util.SessionDate;
 
 import static com.opsmatters.media.model.chart.ChartParameterType.*;
 import static com.opsmatters.media.model.chart.ChartParameterValue.*;
@@ -115,7 +116,7 @@ public class DatabaseDataSource<E extends Serializable> implements DataSource<E>
                                 if(str == CURRENT_SESSION.name())
                                     str = Integer.toString(SessionId.get());
 
-                                LocalDate dt = SessionId.toLocalDate();
+                                LocalDate dt = new SessionDate().toLocalDate();
 
                                 // Replace the yesterday default with the session week
                                 if(str == CURRENT_YESTERDAY.name())

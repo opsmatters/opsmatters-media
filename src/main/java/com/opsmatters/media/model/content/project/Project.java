@@ -29,7 +29,7 @@ import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.SessionId;
+import com.opsmatters.media.util.SessionDate;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 
@@ -187,7 +187,7 @@ public class Project extends Resource<ProjectDetails>
         project.setSiteId(organisationSite.getSiteId());
         project.setTitle("New Project");
         project.setDescription(StringUtils.EMPTY);
-        project.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.date(),
+        project.setPublishedDateAsString(TimeUtils.toStringUTC(SessionDate.get(),
             config.getField(PUBLISHED_DATE)));
         project.setFounded(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
 

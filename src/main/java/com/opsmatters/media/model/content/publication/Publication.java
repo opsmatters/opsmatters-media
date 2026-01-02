@@ -32,7 +32,7 @@ import com.opsmatters.media.model.content.crawler.field.FieldFilter;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.SessionId;
+import com.opsmatters.media.util.SessionDate;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 
@@ -210,7 +210,7 @@ public class Publication extends Resource<PublicationDetails>
         publication.setSiteId(site.getId());
         publication.setTitle("New Publication");
         publication.setDescription(StringUtils.EMPTY);
-        publication.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.date(),
+        publication.setPublishedDateAsString(TimeUtils.toStringUTC(SessionDate.get(),
             config.getField(PUBLISHED_DATE)));
 
         return publication;

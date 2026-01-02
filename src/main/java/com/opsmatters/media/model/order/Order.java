@@ -29,7 +29,7 @@ import com.opsmatters.media.model.order.contact.ContactProfile;
 import com.opsmatters.media.model.order.contact.ContactPerson;
 import com.opsmatters.media.model.order.contact.Company;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.SessionId;
+import com.opsmatters.media.util.SessionDate;
 
 import static com.opsmatters.media.model.admin.ParameterType.*;
 import static com.opsmatters.media.model.admin.ParameterName.*;
@@ -45,7 +45,7 @@ public class Order extends BaseEntity
     private String contactName = ""; // Used as a filter
     private String contactPersonId = "";
     private String companyId = "";
-    private int week, month, year = -1;
+    private int week, month, year, weekYear = -1;
     private PaymentMethod method = PaymentMethod.UNDEFINED;
     private PaymentMode mode = PaymentMode.UNDEFINED;
     private PaymentTerm term = PaymentTerm.UNDEFINED;
@@ -142,6 +142,7 @@ public class Order extends BaseEntity
             setWeek(obj.getWeek());
             setMonth(obj.getMonth());
             setYear(obj.getYear());
+            setWeekYear(obj.getWeekYear());
             setPrePayment(obj.hasPrePayment());
             getInvoice().copyAttributes(obj.getInvoice());
         }
@@ -241,10 +242,11 @@ public class Order extends BaseEntity
 
         if(createdDate != null)
         {
-            LocalDate dt = SessionId.toLocalDate(createdDate);
+            LocalDate dt = new SessionDate(createdDate).toLocalDate();
             setWeek(dt);
             setMonth(dt);
             setYear(dt);
+            setWeekYear(dt);
         }
     }
 
@@ -273,14 +275,6 @@ public class Order extends BaseEntity
     }
 
     /**
-     * Returns the week number from a local date.
-     */
-    public static int getWeek(LocalDate dt)
-    {
-        return dt.get(WeekFields.ISO.weekOfWeekBasedYear());
-    }
-
-    /**
      * Returns the month number.
      */
     public int getMonth()
@@ -302,18 +296,6 @@ public class Order extends BaseEntity
     public void setMonth(LocalDate dt)
     {
         setMonth(getMonth(dt));
-    }
-
-    /**
-     * Returns the month number from a local date.
-     */
-    public static int getMonth(LocalDate dt)
-    {
-        // Allow for partial week at end of year
-        int month = dt.getMonth().getValue();
-        if(month == 12 && dt.get(WeekFields.ISO.weekBasedYear()) > dt.getYear())
-            month = 1;
-        return month;
     }
 
     /**
@@ -341,9 +323,57 @@ public class Order extends BaseEntity
     }
 
     /**
+     * Returns the year number for the week.
+     */
+    public int getWeekYear()
+    {
+        return weekYear;
+    }
+
+    /**
+     * Sets the year number for the week.
+     */
+    public void setWeekYear(int weekYear)
+    {
+        this.weekYear = weekYear;
+    }
+
+    /**
+     * Sets the year number for the week from a local date.
+     */
+    public void setWeekYear(LocalDate dt)
+    {
+        setWeekYear(getWeekYear(dt));
+    }
+
+    /**
+     * Returns the week number from a local date.
+     */
+    public static int getWeek(LocalDate dt)
+    {
+        return dt.get(WeekFields.ISO.weekOfWeekBasedYear());
+    }
+
+    /**
+     * Returns the month number from a local date.
+     */
+    public static int getMonth(LocalDate dt)
+    {
+        return dt.getMonth().getValue();
+    }
+
+    /**
      * Returns the year number from a local date.
      */
     public static int getYear(LocalDate dt)
+    {
+        return dt.getYear();
+    }
+
+    /**
+     * Returns the year number for the week from a local date.
+     */
+    public static int getWeekYear(LocalDate dt)
     {
         return dt.get(WeekFields.ISO.weekBasedYear());
     }

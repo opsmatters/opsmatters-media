@@ -35,7 +35,7 @@ import com.opsmatters.media.model.content.util.ImageType;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.util.TimeUtils;
-import com.opsmatters.media.util.SessionId;
+import com.opsmatters.media.util.SessionDate;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 import static com.opsmatters.media.model.content.post.PostType.*;
@@ -253,7 +253,7 @@ public class Post extends Article<PostDetails>
 
         post.init();
         post.setSiteId(organisationSite.getSiteId());
-        post.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.date(),
+        post.setPublishedDateAsString(TimeUtils.toStringUTC(SessionDate.get(),
             config.getField(PUBLISHED_DATE)));
 
         return post;

@@ -17,8 +17,6 @@
 package com.opsmatters.media.util;
 
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.LocalDate;
 
 import static java.time.temporal.ChronoUnit.*;
 
@@ -29,18 +27,16 @@ import static java.time.temporal.ChronoUnit.*;
  */
 public class SessionId
 {
-    private static final int START_HOUR = 8;
+    private int id, yesterday = -1;
 
     private static SessionId _session = new SessionId();
-
-    private int id, yesterday = -1;
 
     /**
      * Constructor that takes a date.
      */
     private SessionId(Instant dt)
     {
-        setId(adjust(dt));
+        setId(SessionDate.get(dt));
     }
 
     /**
@@ -133,44 +129,6 @@ public class SessionId
     }
 
     /**
-     * Returns the session date for the given date.
-     */
-    public static Instant date(Instant dt)
-    {
-        return adjust(dt);
-    }
-
-    /**
-     * Returns the session date for the current system date.
-     */
-    public static Instant date()
-    {
-        return date(Instant.now());
-    }
-
-    /**
-     * Returns the adjusted session date for the given date.
-     */
-    private static Instant adjust(Instant dt)
-    {
-        Instant ret = dt;
-        int hour = TimeUtils.toDateTimeUTC(ret).getHour();
-        if(hour < START_HOUR)
-            ret = ret.minus(1, DAYS); // Go back to yesterday if before session start hour
-        return ret;
-    }
-
-    /**
-     * Returns the number of days difference between the two given ids.
-     */
-    public static long diff(int id1, int id2)
-    {
-        Instant dt1 = toInstant(id1);
-        Instant dt2 = toInstant(id2);
-        return dt1 != null && dt2 != null ? DAYS.between(dt1, dt2) : 0L;
-    }
-
-    /**
      * Returns the given id as an instant.
      */
     private static Instant toInstant(int id)
@@ -187,18 +145,12 @@ public class SessionId
     }
 
     /**
-     * Returns the given date as an adjusted local date.
+     * Returns the number of days difference between the two given ids.
      */
-    public static LocalDate toLocalDate(Instant dt)
+    public static long diff(int id1, int id2)
     {
-        return date(dt).atZone(ZoneId.of("UTC")).toLocalDate();
-    }
-
-    /**
-     * Returns the current system date as an adjusted local date.
-     */
-    public static LocalDate toLocalDate()
-    {
-        return toLocalDate(Instant.now());
+        Instant dt1 = toInstant(id1);
+        Instant dt2 = toInstant(id2);
+        return dt1 != null && dt2 != null ? DAYS.between(dt1, dt2) : 0L;
     }
 }

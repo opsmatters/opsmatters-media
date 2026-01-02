@@ -32,7 +32,7 @@ import com.opsmatters.media.model.content.crawler.field.FieldFilter;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
-import com.opsmatters.media.util.SessionId;
+import com.opsmatters.media.util.SessionDate;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 
@@ -193,7 +193,7 @@ public class Event extends Resource<EventDetails>
         event.init();
         event.setSiteId(site.getId());
         event.setTitle("New Event");
-        event.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.date(),
+        event.setPublishedDateAsString(TimeUtils.toStringUTC(SessionDate.get(),
             config.getField(PUBLISHED_DATE)));
         event.setStartDateAsString(TimeUtils.toStringUTC(config.getField(PUBLISHED_DATE)));
         event.addStartTime(config);

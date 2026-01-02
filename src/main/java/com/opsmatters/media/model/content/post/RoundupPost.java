@@ -33,7 +33,7 @@ import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.SessionId;
+import com.opsmatters.media.util.SessionDate;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 
@@ -210,7 +210,7 @@ public class RoundupPost extends Article<RoundupPostDetails> implements LinkedCo
         post.init();
         post.setSiteId(organisationSite.getSiteId());
         post.setTitle("New Roundup");
-        post.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.date(),
+        post.setPublishedDateAsString(TimeUtils.toStringUTC(SessionDate.get(),
             config.getPublishedDateField(organisationSite.isSponsor())));
 
         return post;

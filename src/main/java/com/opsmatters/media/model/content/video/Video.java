@@ -35,7 +35,7 @@ import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
 import com.opsmatters.media.model.content.crawler.field.FieldFilter;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
-import com.opsmatters.media.util.SessionId;
+import com.opsmatters.media.util.SessionDate;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 import static com.opsmatters.media.model.content.video.VideoType.*;
@@ -221,7 +221,7 @@ public class Video extends Article<VideoDetails>
         video.init();
         video.setSiteId(site.getId());
         video.setTitle("New Video");
-        video.setPublishedDateAsString(TimeUtils.toStringUTC(SessionId.date(),
+        video.setPublishedDateAsString(TimeUtils.toStringUTC(SessionDate.get(),
             config.getField(PUBLISHED_DATE)));
 
         return video;
