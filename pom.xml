@@ -752,7 +752,7 @@ media.built.on=${TODAY}
   <dependency>
     <groupId>com.echobox</groupId>
     <artifactId>ebx-linkedin-sdk</artifactId>
-    <version>4.5.0</version>
+    <version>8.1.1</version>
     <exclusions>
       <exclusion>
         <groupId>ch.qos.logback</groupId>
