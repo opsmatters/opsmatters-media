@@ -140,7 +140,8 @@ public class HtmlDocument
     {
         boolean ret = false;
 
-        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>", tag), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>",
+            tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find() && !ret)
@@ -173,7 +174,8 @@ public class HtmlDocument
      */
     private void removeUnnecessaryAttributes(String tag)
     {
-        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>", tag), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>",
+            tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find())
@@ -234,7 +236,8 @@ public class HtmlDocument
     {
         boolean ret = false;
 
-        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>",
+            tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find() && !ret)
@@ -268,7 +271,8 @@ public class HtmlDocument
      */
     private void removeUnnecessarySpacing(String tag)
     {
-        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>",
+            tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find())
@@ -312,7 +316,8 @@ public class HtmlDocument
 
             if(changed)
             {
-                doc = doc.replace(whole, String.format("<%s%s>%s</%s>", tag, attr, content, tag));
+                doc = doc.replace(whole,
+                    String.format("<%s%s>%s</%s>", tag, attr, content, tag));
             }
         }
     }
@@ -346,7 +351,8 @@ public class HtmlDocument
     {
         boolean ret = false;
 
-        Pattern pattern = Pattern.compile(String.format("<%s.*?>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("<%s.*?>(.+?)</%s>",
+            tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find() && !ret)
@@ -412,7 +418,8 @@ public class HtmlDocument
      */
     private void fixBadExternalSpacingLinks(String tag)
     {
-        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>",
+            tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find())
@@ -451,7 +458,8 @@ public class HtmlDocument
                         addAfter ? " " : "",
                         after);
 
-                    doc = doc.replace(String.format(">%s<", content), String.format(">%s<", newContent));
+                    doc = doc.replace(String.format(">%s<", content),
+                        String.format(">%s<", newContent));
                 }
 
                 fixBadExternalSpacingLinksFromContent(after);
@@ -575,7 +583,8 @@ public class HtmlDocument
 
             if(anchor.startsWith(" ") || anchor.endsWith(" "))
             {
-                doc = doc.replace(whole, String.format("<a%s>%s</a>", attr, anchor.trim()));
+                doc = doc.replace(whole,
+                    String.format("<a%s>%s</a>", attr, anchor.trim()));
             }
         }
     }
@@ -901,7 +910,8 @@ public class HtmlDocument
     {
         boolean ret = false;
 
-        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>",
+            tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find() && !ret)
@@ -932,7 +942,8 @@ public class HtmlDocument
      */
     private void replaceExtraLineBreaks(String tag)
     {
-        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>",
+            tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find())
@@ -945,7 +956,8 @@ public class HtmlDocument
             {
                 // Replace multiple line breaks with new paragraph
                 content = content.replaceAll(LINE_BREAKS, NEW_PARAGRAPH);
-                doc = doc.replace(whole, String.format("<%s%s>%s</%s>", tag, attr, content, tag));
+                doc = doc.replace(whole,
+                    String.format("<%s%s>%s</%s>", tag, attr, content, tag));
             }
         }
     }
@@ -968,7 +980,8 @@ public class HtmlDocument
      */
     private void removeExtraLineBreaks(String tag)
     {
-        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>",
+            tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find())
@@ -981,7 +994,8 @@ public class HtmlDocument
             {
                 // Remove multiple line breaks
                 content = content.replaceAll(LINE_BREAKS, "");
-                doc = doc.replace(whole, String.format("<%s%s>%s</%s>", tag, attr, content, tag));
+                doc = doc.replace(whole,
+                    String.format("<%s%s>%s</%s>", tag, attr, content, tag));
             }
         }
     }
@@ -1015,7 +1029,8 @@ public class HtmlDocument
     {
         boolean ret = false;
 
-        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>",
+            tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find() && !ret)
@@ -1056,7 +1071,8 @@ public class HtmlDocument
      */
     private void addImageWrapperClass(String tag)
     {
-        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>",
+            tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find())
@@ -1075,7 +1091,8 @@ public class HtmlDocument
                     attr = String.format("%s class=\"%s\"", attr, IMAGE_WRAPPER_CLASS);
                     if(attr.indexOf(STYLE_ATTR) == -1)
                         attr = String.format("%s style=\"%s\"", attr, IMAGE_STYLE);
-                    doc = doc.replace(whole, String.format("<%s%s>%s</%s>", tag, attr, content, tag));
+                    doc = doc.replace(whole,
+                        String.format("<%s%s>%s</%s>", tag, attr, content, tag));
                 }
             }
         }
@@ -1110,7 +1127,8 @@ public class HtmlDocument
     {
         boolean ret = false;
 
-        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>",
+            tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find() && !ret)
@@ -1150,7 +1168,8 @@ public class HtmlDocument
      */
     private void addImageLegendClass(String tag)
     {
-        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>",
+            tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find())
@@ -1165,7 +1184,8 @@ public class HtmlDocument
                 if(attr.indexOf(IMAGE_LEGEND_CLASS) == -1)
                 {
                     attr = String.format("%s class=\"%s\"", attr, IMAGE_LEGEND_CLASS);
-                    doc = doc.replace(whole, String.format("<figcaption%s>%s</figcaption>", attr, content));
+                    doc = doc.replace(whole,
+                        String.format("<figcaption%s>%s</figcaption>", attr, content));
                 }
             }
         }
@@ -1231,15 +1251,26 @@ public class HtmlDocument
     {
         boolean ret = false;
 
-        // Search for the upper case prefix first
-        Pattern pattern = Pattern.compile(String.format("%s[\\: ](.+?)", tag.toUpperCase()), Pattern.DOTALL);
-        ret = pattern.matcher(doc).find();
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>",
+            tag, tag), Pattern.DOTALL);
+        Matcher m = pattern.matcher(doc);
 
-        if(!ret)
+        Pattern upperPattern = Pattern.compile(String.format("%s[\\: ](.+?)",
+            tag.toUpperCase()), Pattern.DOTALL);
+        Pattern lowerPattern = Pattern.compile(String.format("%s[\\: ](.+?)",
+            tag), Pattern.DOTALL);
+
+        while(m.find() && !ret)
         {
-            // Next, search for the lower case prefix
-            pattern = Pattern.compile(String.format("%s[\\: ](.+?)", tag), Pattern.DOTALL);
-            ret = pattern.matcher(doc).find();
+            String anchor = m.group(2);
+
+            ret = upperPattern.matcher(anchor).find();
+
+            if(!ret)
+            {
+                // Also look for lower case prefix
+                ret = lowerPattern.matcher(anchor).find();
+            }
         }
 
         return ret;
@@ -1263,28 +1294,35 @@ public class HtmlDocument
      */
     private void removeTitlePrefixes(String tag)
     {
-        // Remove the upper case prefixes first
-        Pattern pattern = Pattern.compile(String.format("%s[\\: ](.+?)", tag.toUpperCase()), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.+?)</%s>",
+            tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
+
+        Pattern upperPattern = Pattern.compile(String.format("%s[\\: ](.+?)",
+            tag.toUpperCase()), Pattern.DOTALL);
+        Pattern lowerPattern = Pattern.compile(String.format("%s[\\: ](.+?)",
+            tag), Pattern.DOTALL);
 
         while(m.find())
         {
-            String whole = m.group(0);
-            String content = m.group(1);
+            String anchor = m.group(2);
 
-            doc = doc.replace(whole, content.trim());
-        }
+            Matcher upperMatcher = upperPattern.matcher(anchor);
+            Matcher lowerMatcher = lowerPattern.matcher(anchor);
 
-        // Next, remove the lower case prefixes
-        Pattern pattern2 = Pattern.compile(String.format("%s[\\: ](.+?)", tag), Pattern.DOTALL);
-        Matcher m2 = pattern2.matcher(doc);
-
-        while(m2.find())
-        {
-            String whole = m2.group(0);
-            String content = m2.group(1);
-
-            doc = doc.replace(whole, content.trim());
+            if(upperMatcher.find())
+            {
+                String whole = upperMatcher.group(0);
+                String content = upperMatcher.group(1);
+                doc = doc.replace(whole, content.trim());
+            }
+            else if(lowerMatcher.find())
+            {
+                // Also look for lower case prefix
+                String whole = lowerMatcher.group(0);
+                String content = lowerMatcher.group(1);
+                doc = doc.replace(whole, content.trim());
+            }
         }
     }
 
@@ -1416,7 +1454,8 @@ public class HtmlDocument
      */
     private void addBadExternalSpacingLinkMessages(String tag, List<String> messages)
     {
-        Pattern pattern = Pattern.compile(String.format("<%s.*?>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("<%s.*?>(.+?)</%s>",
+            tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find())
@@ -1479,7 +1518,8 @@ public class HtmlDocument
      */
     private void addSplitLinkMessages(String tag, List<String> messages)
     {
-        Pattern pattern = Pattern.compile(String.format("<%s.*?>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("<%s.*?>(.+?)</%s>",
+            tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find())
@@ -1545,7 +1585,8 @@ public class HtmlDocument
      */
     private void addImageSourceMessages(String tag, List<String> messages)
     {
-        Pattern pattern = Pattern.compile(String.format("<%s>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("<%s>(.+?)</%s>",
+            tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find())
@@ -1609,7 +1650,8 @@ public class HtmlDocument
     {
         boolean ret = false;
 
-        Pattern pattern = Pattern.compile(String.format("<%s>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("<%s>(.+?)</%s>",
+            tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find() && !ret)
@@ -1668,7 +1710,8 @@ public class HtmlDocument
      */
     private void removeImageSources(String tag)
     {
-        Pattern pattern = Pattern.compile(String.format("\\s*<%s>(.+?)</%s>", tag, tag), Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(String.format("\\s*<%s>(.+?)</%s>",
+            tag, tag), Pattern.DOTALL);
         Matcher m = pattern.matcher(doc);
 
         while(m.find())
