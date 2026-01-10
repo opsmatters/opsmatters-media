@@ -28,8 +28,7 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
-import com.echobox.api.linkedin.client.VersionedLinkedInClient;
-import com.echobox.api.linkedin.client.DefaultVersionedLinkedInClient;
+import com.echobox.api.linkedin.client.DefaultLinkedInClient;
 import com.echobox.api.linkedin.version.Version;
 import com.echobox.api.linkedin.types.urn.URN;
 import com.echobox.api.linkedin.types.urn.URNEntityType;
@@ -38,9 +37,9 @@ import com.echobox.api.linkedin.types.posts.Post;
 import com.echobox.api.linkedin.types.posts.Distribution;
 import com.echobox.api.linkedin.types.posts.ViewContext;
 import com.echobox.api.linkedin.types.images.InitializeUploadRequestBody;
-import com.echobox.api.linkedin.connection.versioned.VersionedOrganizationConnection;
-import com.echobox.api.linkedin.connection.versioned.VersionedPostConnection;
-import com.echobox.api.linkedin.connection.versioned.VersionedImageConnection;
+import com.echobox.api.linkedin.connection.OrganizationConnection;
+import com.echobox.api.linkedin.connection.PostConnection;
+import com.echobox.api.linkedin.connection.ImageConnection;
 import com.echobox.api.linkedin.exception.LinkedInAPIException;
 import com.echobox.api.linkedin.exception.LinkedInQueryParseException;
 import com.echobox.api.linkedin.exception.LinkedInResourceNotFoundException;
@@ -69,11 +68,11 @@ public class LinkedInClient extends Client implements SocialClient
     private static final int CONNECT_TIMEOUT = 5000;
 
     private Organization organization;
-    private VersionedOrganizationConnection organizationConnection;
+    private OrganizationConnection organizationConnection;
     private String organizationId;
     private URN organizationURN;
-    private VersionedPostConnection postConnection;
-    private VersionedImageConnection imageConnection;
+    private PostConnection postConnection;
+    private ImageConnection imageConnection;
     private String appId = "";
     private String appSecret = "";
     private String redirectUri = "";
@@ -160,7 +159,7 @@ public class LinkedInClient extends Client implements SocialClient
         if(getAppId() != null && getAppId().length() > 0
             && (getAccessToken() == null || getAccessToken().length() == 0))
         {
-            VersionedLinkedInClient client = new DefaultVersionedLinkedInClient(Version.DEFAULT_VERSION);
+            com.echobox.api.linkedin.client.LinkedInClient client = new DefaultLinkedInClient(Version.DEFAULT_VERSION);
             com.echobox.api.linkedin.client.LinkedInClient.AccessToken token = client.obtainUserAccessToken(getAppId(),
                 getAppSecret(), getRedirectUri(), getVerificationCode());
             setAccessToken(token.getAccessToken());
@@ -183,10 +182,10 @@ public class LinkedInClient extends Client implements SocialClient
             logger.info("Creating linkedin client: "+channel.getCode());
 
         // Create the client and connections
-        VersionedLinkedInClient linkedin = new DefaultVersionedLinkedInClient(getAccessToken(), Version.DEFAULT_VERSION);
-        organizationConnection = new VersionedOrganizationConnection(linkedin);
-        postConnection = new VersionedPostConnection(linkedin);
-        imageConnection = new VersionedImageConnection(linkedin);
+        com.echobox.api.linkedin.client.LinkedInClient linkedin = new DefaultLinkedInClient(getAccessToken(), Version.DEFAULT_VERSION);
+        organizationConnection = new OrganizationConnection(linkedin);
+        postConnection = new PostConnection(linkedin);
+        imageConnection = new ImageConnection(linkedin);
 
         // Issue command to test connectivity
         organizationURN = new URN(URNEntityType.ORGANIZATION, organizationId);
