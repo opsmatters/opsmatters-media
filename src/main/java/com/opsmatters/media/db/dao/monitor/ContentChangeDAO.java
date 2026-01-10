@@ -96,6 +96,14 @@ public class ContentChangeDAO extends BaseDAO
       + "WHERE STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -7 DAY) OR STATUS='NEW') ORDER BY CREATED_DATE";
 
     /**
+     * The query to use to select the change items from the CONTENT_CHANGES table by session.
+     */
+    private static final String LIST_ITEMS_BY_SESSION_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, STATUS, MONITOR_ID, SITES "
+      + "FROM CONTENT_CHANGES "
+      + "WHERE SESSION_ID=? ORDER BY CREATED_DATE";
+
+    /**
      * The query to use to get the count of changes from the CONTENT_CHANGES table.
      */
     private static final String COUNT_SQL =  
@@ -530,6 +538,67 @@ public class ContentChangeDAO extends BaseDAO
     }
 
     /**
+     * Returns the change items from the CONTENT_CHANGES table by session.
+     */
+    public synchronized List<ContentChangeItem> listItemsBySession(int sessionId) throws SQLException
+    {
+        List<ContentChangeItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listItemsBySessionStmt == null)
+            listItemsBySessionStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_SESSION_SQL);
+        clearParameters(listItemsBySessionStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listItemsBySessionStmt.setInt(1, sessionId);
+            listItemsBySessionStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listItemsBySessionStmt.executeQuery();
+            ret = new ArrayList<ContentChangeItem>();
+            while(rs.next())
+            {
+                ContentChangeItem change = new ContentChangeItem();
+                change.setId(rs.getString(1));
+                change.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                change.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                change.setCode(rs.getString(4));
+                change.setStatus(rs.getString(5));
+                change.setMonitorId(rs.getString(6));
+                change.setSites(rs.getString(7));
+                ret.add(change);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the change items from the CONTENT_CHANGES table for the current session.
+     */
+    public List<ContentChangeItem> listItemsBySession() throws SQLException
+    {
+        return listItemsBySession(SessionId.get());
+    }
+
+    /**
      * Returns the count of changes from the table.
      */
     public int count() throws SQLException
@@ -585,6 +654,8 @@ public class ContentChangeDAO extends BaseDAO
         listByCodeStmt = null;
         closeStatement(listItemsByStatusStmt);
         listItemsByStatusStmt = null;
+        closeStatement(listItemsBySessionStmt);
+        listItemsBySessionStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -598,6 +669,7 @@ public class ContentChangeDAO extends BaseDAO
     private PreparedStatement listItemsStmt;
     private PreparedStatement listByCodeStmt;
     private PreparedStatement listItemsByStatusStmt;
+    private PreparedStatement listItemsBySessionStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }

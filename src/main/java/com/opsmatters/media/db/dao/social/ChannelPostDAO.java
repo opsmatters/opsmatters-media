@@ -140,6 +140,13 @@ public class ChannelPostDAO extends BaseDAO
       + "FROM CHANNEL_POSTS WHERE CHANNEL=? AND STATUS=? AND SESSION_ID=?";
 
     /**
+     * The query to use to select the post items from the CHANNEL_POSTS table by session.
+     */
+    private static final String LIST_ITEMS_BY_SESSION_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, CHANNEL, CODE, TITLE, STATUS "
+      + "FROM CHANNEL_POSTS WHERE SESSION_ID=? ORDER BY CREATED_DATE";
+
+    /**
      * The query to use to get the count of posts from the CHANNEL_POSTS table.
      */
     private static final String COUNT_SQL =  
@@ -870,6 +877,69 @@ public class ChannelPostDAO extends BaseDAO
     }
 
     /**
+     * Returns the post items from the CHANNEL_POSTS table by session.
+     */
+    public synchronized List<ChannelPostItem> listItemsBySession(int sessionId) throws SQLException
+    {
+        List<ChannelPostItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listItemsBySessionStmt == null)
+            listItemsBySessionStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_SESSION_SQL);
+        clearParameters(listItemsBySessionStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listItemsBySessionStmt.setInt(1, sessionId);
+            listItemsBySessionStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listItemsBySessionStmt.executeQuery();
+            ret = new ArrayList<ChannelPostItem>();
+            while(rs.next())
+            {
+                ChannelPostItem post = new ChannelPostItem();
+                post.setId(rs.getString(1));
+                post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
+                post.setType(rs.getString(4));
+                post.setSiteId(rs.getString(5));
+                post.setChannel(rs.getString(6));
+                post.setCode(rs.getString(7));
+                post.setTitle(rs.getString(8));
+                post.setStatus(rs.getString(9));
+                ret.add(post);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the post items from the CHANNEL_POSTS table for the current session.
+     */
+    public List<ChannelPostItem> listItemsBySession() throws SQLException
+    {
+        return listItemsBySession(SessionId.get());
+    }
+
+    /**
      * Returns the count of posts from the table.
      */
     public int count() throws SQLException
@@ -935,6 +1005,8 @@ public class ChannelPostDAO extends BaseDAO
         listByDraftStmt = null;
         closeStatement(listByChannelStmt);
         listByChannelStmt = null;
+        closeStatement(listItemsBySessionStmt);
+        listItemsBySessionStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -953,6 +1025,7 @@ public class ChannelPostDAO extends BaseDAO
     private PreparedStatement listByCodeStmt;
     private PreparedStatement listByDraftStmt;
     private PreparedStatement listByChannelStmt;
+    private PreparedStatement listItemsBySessionStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }
