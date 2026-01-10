@@ -26,7 +26,6 @@ import java.util.Map;
 public class SiteEnvironment extends Environment
 {
     private Site site;
-    private boolean stopInstanceWhenIdle = false;
 
     /**
      * Constructor that takes a site and id.
@@ -87,22 +86,6 @@ public class SiteEnvironment extends Environment
     public String getKey()
     {
         return String.format("%s-%s", getSite().getId().toLowerCase(), getId().code());
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the instance for this environment should stop when feeds complete.
-     */
-    public boolean stopInstanceWhenIdle()
-    {
-        return stopInstanceWhenIdle;
-    }
-
-    /**
-     * Set to <CODE>true</CODE> if the instance for this environment should stop when feeds complete.
-     */
-    public void setStopInstanceWhenIdle(boolean stopInstanceWhenIdle)
-    {
-        this.stopInstanceWhenIdle = stopInstanceWhenIdle;
     }
 
     /**

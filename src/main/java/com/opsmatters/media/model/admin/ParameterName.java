@@ -59,6 +59,7 @@ public enum ParameterName
     LAST_ACTIVITY("last-activity"),
     AUTO_SHUTDOWN("auto-shutdown"),
     SHUTDOWN("shutdown"),
+    AUTO_STOP("auto-stop"),
     PAYMENT_METHOD("payment-method"),
     PAYMENT_MODE("payment-mode"),
     PAYMENT_TERM("payment-term"),
