@@ -586,7 +586,7 @@ public class ChannelPost extends SocialPost
                 setErrorMessage("");
             }
         }
-        catch(SocketTimeoutException e)
+        catch(SocketTimeoutException | RuntimeException e)
         {
             setErrorMessage(e.getMessage());
 
