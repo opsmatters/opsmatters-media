@@ -98,6 +98,28 @@ public class Companies implements java.io.Serializable
     }
 
     /**
+     * Returns the company with the given billing name.
+     */
+    public static Company getByBillingName(String billingName)
+    {
+        Company ret = null;
+        if(billingName != null && billingName.length() > 0)
+        {
+            for(Company company : idMap.values())
+            {
+                if(company.hasBillingName()
+                    && company.getBillingName().equals(billingName))
+                {
+                    ret = company;
+                    break;
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the company with the given email.
      */
     public static Company getByEmail(String email)
