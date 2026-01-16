@@ -48,6 +48,7 @@ public class ContactProfile extends BaseEntity
     private PaymentTerm term = PaymentTerm.UNDEFINED;
     private Currency currency = null;
     private boolean prePayment = false;
+    private boolean includeUrl = true;
     private boolean enabled = false;
 
     /**
@@ -100,6 +101,7 @@ public class ContactProfile extends BaseEntity
             setPaymentTerm(obj.getPaymentTerm());
             setCurrency(obj.getCurrency());
             setPrePayment(obj.hasPrePayment());
+            setIncludeUrl(obj.includeUrl());
             setEnabled(obj.isEnabled());
         }
     }
@@ -378,6 +380,38 @@ public class ContactProfile extends BaseEntity
     public void setPrePaymentObject(Boolean prePayment)
     {
         setPrePayment(prePayment != null && prePayment.booleanValue());
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content URL should be added to order items for this profile.
+     */
+    public boolean includeUrl()
+    {
+        return includeUrl;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content URL should be added to order items for this profile.
+     */
+    public Boolean getIncludeUrlObject()
+    {
+        return Boolean.valueOf(includeUrl());
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the content URL should be added to order items for this profile.
+     */
+    public void setIncludeUrl(boolean includeUrl)
+    {
+        this.includeUrl = includeUrl;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the content URL should be added to order items for this profile.
+     */
+    public void setIncludeUrlObject(Boolean includeUrl)
+    {
+        setIncludeUrl(includeUrl != null && includeUrl.booleanValue());
     }
 
     /**

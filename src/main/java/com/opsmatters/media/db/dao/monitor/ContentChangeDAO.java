@@ -88,6 +88,14 @@ public class ContentChangeDAO extends BaseDAO
       + "WHERE CODE=? ORDER BY CREATED_DATE";
 
     /**
+     * The query to use to select the changes from the CONTENT_CHANGES table by status.
+     */
+    private static final String LIST_BY_STATUS_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, SNAPSHOT_DIFF, STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, SITES, CREATED_BY "
+      + "FROM CONTENT_CHANGES "
+      + "WHERE STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -7 DAY) OR STATUS='NEW') ORDER BY CREATED_DATE";
+
+    /**
      * The query to use to select the change items from the CONTENT_CHANGES table by status.
      */
     private static final String LIST_ITEMS_BY_STATUS_SQL =  
@@ -96,10 +104,10 @@ public class ContentChangeDAO extends BaseDAO
       + "WHERE STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -7 DAY) OR STATUS='NEW') ORDER BY CREATED_DATE";
 
     /**
-     * The query to use to select the change items from the CONTENT_CHANGES table by session.
+     * The query to use to select the changes from the CONTENT_CHANGES table by session.
      */
-    private static final String LIST_ITEMS_BY_SESSION_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, STATUS, MONITOR_ID, SITES "
+    private static final String LIST_BY_SESSION_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, SNAPSHOT_BEFORE, SNAPSHOT_AFTER, SNAPSHOT_DIFF, STATUS, MONITOR_ID, EXECUTION_TIME, DIFFERENCE, SITES, CREATED_BY "
       + "FROM CONTENT_CHANGES "
       + "WHERE SESSION_ID=? ORDER BY CREATED_DATE";
 
@@ -485,6 +493,65 @@ public class ContentChangeDAO extends BaseDAO
     }
 
     /**
+     * Returns the changes from the CONTENT_CHANGES table by status.
+     */
+    public synchronized List<ContentChange> list(ChangeStatus status) throws SQLException
+    {
+        List<ContentChange> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByStatusStmt == null)
+            listByStatusStmt = prepareStatement(getConnection(), LIST_BY_STATUS_SQL);
+        clearParameters(listByStatusStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByStatusStmt.setString(1, status.name());
+            listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByStatusStmt.executeQuery();
+            ret = new ArrayList<ContentChange>();
+            while(rs.next())
+            {
+                ContentChange change = new ContentChange();
+                change.setId(rs.getString(1));
+                change.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                change.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                change.setCode(rs.getString(4));
+                change.setSnapshotBefore(getClob(rs, 5));
+                change.setSnapshotAfter(getClob(rs, 6));
+                change.setSnapshotDiff(getClob(rs, 7));
+                change.setStatus(rs.getString(8));
+                change.setMonitorId(rs.getString(9));
+                change.setExecutionTime(rs.getLong(10));
+                change.setDifference(rs.getInt(11));
+                change.setSites(rs.getString(12));
+                change.setCreatedBy(rs.getString(13));
+                ret.add(change);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the change items from the CONTENT_CHANGES table by status.
      */
     public synchronized List<ContentChangeItem> listItems(ChangeStatus status) throws SQLException
@@ -538,38 +605,44 @@ public class ContentChangeDAO extends BaseDAO
     }
 
     /**
-     * Returns the change items from the CONTENT_CHANGES table by session.
+     * Returns the changes from the CONTENT_CHANGES table by session.
      */
-    public synchronized List<ContentChangeItem> listItemsBySession(int sessionId) throws SQLException
+    public synchronized List<ContentChange> listBySession(int sessionId) throws SQLException
     {
-        List<ContentChangeItem> ret = null;
+        List<ContentChange> ret = null;
 
         if(!hasConnection())
             return ret;
 
         preQuery();
-        if(listItemsBySessionStmt == null)
-            listItemsBySessionStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_SESSION_SQL);
-        clearParameters(listItemsBySessionStmt);
+        if(listBySessionStmt == null)
+            listBySessionStmt = prepareStatement(getConnection(), LIST_BY_SESSION_SQL);
+        clearParameters(listBySessionStmt);
 
         ResultSet rs = null;
 
         try
         {
-            listItemsBySessionStmt.setInt(1, sessionId);
-            listItemsBySessionStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = listItemsBySessionStmt.executeQuery();
-            ret = new ArrayList<ContentChangeItem>();
+            listBySessionStmt.setInt(1, sessionId);
+            listBySessionStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listBySessionStmt.executeQuery();
+            ret = new ArrayList<ContentChange>();
             while(rs.next())
             {
-                ContentChangeItem change = new ContentChangeItem();
+                ContentChange change = new ContentChange();
                 change.setId(rs.getString(1));
                 change.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 change.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
                 change.setCode(rs.getString(4));
-                change.setStatus(rs.getString(5));
-                change.setMonitorId(rs.getString(6));
-                change.setSites(rs.getString(7));
+                change.setSnapshotBefore(getClob(rs, 5));
+                change.setSnapshotAfter(getClob(rs, 6));
+                change.setSnapshotDiff(getClob(rs, 7));
+                change.setStatus(rs.getString(8));
+                change.setMonitorId(rs.getString(9));
+                change.setExecutionTime(rs.getLong(10));
+                change.setDifference(rs.getInt(11));
+                change.setSites(rs.getString(12));
+                change.setCreatedBy(rs.getString(13));
                 ret.add(change);
             }
         }
@@ -593,9 +666,9 @@ public class ContentChangeDAO extends BaseDAO
     /**
      * Returns the change items from the CONTENT_CHANGES table for the current session.
      */
-    public List<ContentChangeItem> listItemsBySession() throws SQLException
+    public List<ContentChange> listBySession() throws SQLException
     {
-        return listItemsBySession(SessionId.get());
+        return listBySession(SessionId.get());
     }
 
     /**
@@ -652,10 +725,12 @@ public class ContentChangeDAO extends BaseDAO
         listItemsStmt = null;
         closeStatement(listByCodeStmt);
         listByCodeStmt = null;
+        closeStatement(listByStatusStmt);
+        listByStatusStmt = null;
         closeStatement(listItemsByStatusStmt);
         listItemsByStatusStmt = null;
-        closeStatement(listItemsBySessionStmt);
-        listItemsBySessionStmt = null;
+        closeStatement(listBySessionStmt);
+        listBySessionStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -668,8 +743,9 @@ public class ContentChangeDAO extends BaseDAO
     private PreparedStatement listStmt;
     private PreparedStatement listItemsStmt;
     private PreparedStatement listByCodeStmt;
+    private PreparedStatement listByStatusStmt;
     private PreparedStatement listItemsByStatusStmt;
-    private PreparedStatement listItemsBySessionStmt;
+    private PreparedStatement listBySessionStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }

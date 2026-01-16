@@ -41,6 +41,7 @@ public class OrderItem extends BaseEntity
     private String siteId = "";
     private String contentId = "";
     private ContentType contentType;
+    private String contentUrl = "";
     private int quantity = 1;
     private int price = 0;
     private Currency currency = null;
@@ -86,6 +87,7 @@ public class OrderItem extends BaseEntity
             setSiteId(obj.getSiteId());
             setContentId(obj.getContentId());
             setContentType(obj.getContentType());
+            setContentUrl(obj.getContentUrl());
             setQuantity(obj.getQuantity());
             setPrice(obj.getPrice());
             setCurrency(obj.getCurrency());
@@ -192,15 +194,59 @@ public class OrderItem extends BaseEntity
     }
 
     /**
-     * Sets the content id and type using the given content.
+     * Returns the content url.
      */
-    public void setContent(Content content)
+    public String getContentUrl()
+    {
+        return contentUrl;
+    }
+
+    /**
+     * Sets the content url.
+     */
+    public void setContentUrl(String contentUrl)
+    {
+        this.contentUrl = contentUrl;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the content url has been set.
+     */
+    public boolean hasContentUrl()
+    {
+        return getContentUrl() != null && getContentUrl().length() > 0;
+    }
+
+    /**
+     * Sets the content id, type and URL using the given content.
+     */
+    public void setContent(Content content, String url)
     {
         if(content != null)
         {
             setContentId(content.getUuid());
             setContentType(content.getType());
+            setContentUrl(url);
         }
+    }
+
+    /**
+     * Sets the item description using the content URL and the given notes.
+     */
+    public void setContentDescription(boolean includeUrl, String notes)
+    {
+        StringBuilder buff = new StringBuilder();
+        if(includeUrl)
+            buff.append(getContentUrl());
+
+        if(notes != null && notes.length() > 0)
+        {
+            if(buff.length() > 0)
+                buff.append("\r\n");
+            buff.append(notes);
+        }
+
+        setDescription(buff.toString());
     }
 
     /**
@@ -307,18 +353,6 @@ public class OrderItem extends BaseEntity
     public String getDescription()
     {
         return description;
-    }
-
-    /**
-     * Returns the URL from the item description.
-     */
-    public String getDescriptionUrl()
-    {
-        String ret = description != null ? description : "";
-        int pos = ret.indexOf("\r");
-        if(pos != -1)
-            ret = ret.substring(0, pos);
-        return ret;
     }
 
     /**

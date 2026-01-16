@@ -140,10 +140,11 @@ public class ChannelPostDAO extends BaseDAO
       + "FROM CHANNEL_POSTS WHERE CHANNEL=? AND STATUS=? AND SESSION_ID=?";
 
     /**
-     * The query to use to select the post items from the CHANNEL_POSTS table by session.
+     * The query to use to select the posts from the CHANNEL_POSTS table by session.
      */
-    private static final String LIST_ITEMS_BY_SESSION_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, CHANNEL, CODE, TITLE, STATUS "
+    private static final String LIST_BY_SESSION_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, TYPE, SITE_ID, DRAFT_ID, CHANNEL, "
+      + "CODE, CONTENT_TYPE, TITLE, MESSAGE, ATTRIBUTES, STATUS, CREATED_BY "
       + "FROM CHANNEL_POSTS WHERE SESSION_ID=? ORDER BY CREATED_DATE";
 
     /**
@@ -877,40 +878,45 @@ public class ChannelPostDAO extends BaseDAO
     }
 
     /**
-     * Returns the post items from the CHANNEL_POSTS table by session.
+     * Returns the posts from the CHANNEL_POSTS table by session.
      */
-    public synchronized List<ChannelPostItem> listItemsBySession(int sessionId) throws SQLException
+    public synchronized List<ChannelPost> listBySession(int sessionId) throws SQLException
     {
-        List<ChannelPostItem> ret = null;
+        List<ChannelPost> ret = null;
 
         if(!hasConnection())
             return ret;
 
         preQuery();
-        if(listItemsBySessionStmt == null)
-            listItemsBySessionStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_SESSION_SQL);
-        clearParameters(listItemsBySessionStmt);
+        if(listBySessionStmt == null)
+            listBySessionStmt = prepareStatement(getConnection(), LIST_BY_SESSION_SQL);
+        clearParameters(listBySessionStmt);
 
         ResultSet rs = null;
 
         try
         {
-            listItemsBySessionStmt.setInt(1, sessionId);
-            listItemsBySessionStmt.setQueryTimeout(QUERY_TIMEOUT);
-            rs = listItemsBySessionStmt.executeQuery();
-            ret = new ArrayList<ChannelPostItem>();
+            listBySessionStmt.setInt(1, sessionId);
+            listBySessionStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listBySessionStmt.executeQuery();
+            ret = new ArrayList<ChannelPost>();
             while(rs.next())
             {
-                ChannelPostItem post = new ChannelPostItem();
+                ChannelPost post = new ChannelPost();
                 post.setId(rs.getString(1));
                 post.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
                 post.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 post.setType(rs.getString(4));
                 post.setSiteId(rs.getString(5));
-                post.setChannel(rs.getString(6));
-                post.setCode(rs.getString(7));
-                post.setTitle(rs.getString(8));
-                post.setStatus(rs.getString(9));
+                post.setDraftId(rs.getString(6));
+                post.setChannel(rs.getString(7));
+                post.setCode(rs.getString(8));
+                post.setContentType(rs.getString(9));
+                post.setTitle(rs.getString(10));
+                post.setMessage(rs.getString(11));
+                post.setAttributes(new JSONObject(getClob(rs, 12)));
+                post.setStatus(rs.getString(13));
+                post.setCreatedBy(rs.getString(14));
                 ret.add(post);
             }
         }
@@ -932,11 +938,11 @@ public class ChannelPostDAO extends BaseDAO
     }
 
     /**
-     * Returns the post items from the CHANNEL_POSTS table for the current session.
+     * Returns the posts from the CHANNEL_POSTS table for the current session.
      */
-    public List<ChannelPostItem> listItemsBySession() throws SQLException
+    public List<ChannelPost> listBySession() throws SQLException
     {
-        return listItemsBySession(SessionId.get());
+        return listBySession(SessionId.get());
     }
 
     /**
@@ -1005,8 +1011,8 @@ public class ChannelPostDAO extends BaseDAO
         listByDraftStmt = null;
         closeStatement(listByChannelStmt);
         listByChannelStmt = null;
-        closeStatement(listItemsBySessionStmt);
-        listItemsBySessionStmt = null;
+        closeStatement(listBySessionStmt);
+        listBySessionStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -1025,7 +1031,7 @@ public class ChannelPostDAO extends BaseDAO
     private PreparedStatement listByCodeStmt;
     private PreparedStatement listByDraftStmt;
     private PreparedStatement listByChannelStmt;
-    private PreparedStatement listItemsBySessionStmt;
+    private PreparedStatement listBySessionStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }

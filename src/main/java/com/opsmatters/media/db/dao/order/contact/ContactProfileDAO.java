@@ -40,7 +40,7 @@ public class ContactProfileDAO extends BaseDAO
      * The query to use to select a profile from the CONTACT_PROFILES table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, PRE_PAYMENT, ENABLED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, PRE_PAYMENT, INCLUDE_URL, ENABLED "
       + "FROM CONTACT_PROFILES WHERE ID=?";
 
     /**
@@ -48,29 +48,29 @@ public class ContactProfileDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTACT_PROFILES"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, PRE_PAYMENT, ENABLED )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, PRE_PAYMENT, INCLUDE_URL, ENABLED )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a profile in the CONTACT_PROFILES table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTACT_PROFILES SET UPDATED_DATE=?, NAME=?, CONTACT_EMAIL=?, BILLING_EMAIL=?, COMPANY_ID=?, PAYMENT_METHOD=?, PAYMENT_MODE=?, PAYMENT_TERM=?, CURRENCY_CODE=?, PRE_PAYMENT=?, ENABLED=? "
+      "UPDATE CONTACT_PROFILES SET UPDATED_DATE=?, NAME=?, CONTACT_EMAIL=?, BILLING_EMAIL=?, COMPANY_ID=?, PAYMENT_METHOD=?, PAYMENT_MODE=?, PAYMENT_TERM=?, CURRENCY_CODE=?, PRE_PAYMENT=?, INCLUDE_URL=?, ENABLED=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the profiles from the CONTACT_PROFILES table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, PRE_PAYMENT, ENABLED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, PRE_PAYMENT, INCLUDE_URL, ENABLED "
       + "FROM CONTACT_PROFILES ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the profiles from the CONTACT_PROFILES table by contact.
      */
     private static final String LIST_BY_CONTACT_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, PRE_PAYMENT, ENABLED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, PRE_PAYMENT, INCLUDE_URL, ENABLED "
       + "FROM CONTACT_PROFILES WHERE CONTACT_ID=? ORDER BY CREATED_DATE";
 
     /**
@@ -112,6 +112,7 @@ public class ContactProfileDAO extends BaseDAO
         table.addColumn("PAYMENT_TERM", Types.VARCHAR, 15, true);
         table.addColumn("CURRENCY_CODE", Types.VARCHAR, 5, true);
         table.addColumn("PRE_PAYMENT", Types.BOOLEAN, true);
+        table.addColumn("INCLUDE_URL", Types.BOOLEAN, true);
         table.addColumn("ENABLED", Types.BOOLEAN, true);
         table.setPrimaryKey("CONTACT_PROFILES_PK", new String[] {"ID"});
         table.setInitialised(true);
@@ -155,7 +156,8 @@ public class ContactProfileDAO extends BaseDAO
                 profile.setPaymentTerm(rs.getString(11));
                 profile.setCurrency(rs.getString(12));
                 profile.setPrePayment(rs.getBoolean(13));
-                profile.setEnabled(rs.getBoolean(14));
+                profile.setIncludeUrl(rs.getBoolean(14));
+                profile.setEnabled(rs.getBoolean(15));
                 ret = profile;
             }
         }
@@ -203,7 +205,8 @@ public class ContactProfileDAO extends BaseDAO
             insertStmt.setString(11, profile.getPaymentTerm().name());
             insertStmt.setString(12, profile.getCurrency() != null ? profile.getCurrency().getCode() : null);
             insertStmt.setBoolean(13, profile.hasPrePayment());
-            insertStmt.setBoolean(14, profile.isEnabled());
+            insertStmt.setBoolean(14, profile.includeUrl());
+            insertStmt.setBoolean(15, profile.isEnabled());
             insertStmt.executeUpdate();
 
             logger.info("Created profile '"+profile.getId()+"' in CONTACT_PROFILES");
@@ -245,8 +248,9 @@ public class ContactProfileDAO extends BaseDAO
         updateStmt.setString(8, profile.getPaymentTerm().name());
         updateStmt.setString(9, profile.getCurrency() != null ? profile.getCurrency().getCode() : null);
         updateStmt.setBoolean(10, profile.hasPrePayment());
-        updateStmt.setBoolean(11, profile.isEnabled());
-        updateStmt.setString(12, profile.getId());
+        updateStmt.setBoolean(11, profile.includeUrl());
+        updateStmt.setBoolean(12, profile.isEnabled());
+        updateStmt.setString(13, profile.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated profile '"+profile.getId()+"' in CONTACT_PROFILES");
@@ -311,7 +315,8 @@ public class ContactProfileDAO extends BaseDAO
                 profile.setPaymentTerm(rs.getString(11));
                 profile.setCurrency(rs.getString(12));
                 profile.setPrePayment(rs.getBoolean(13));
-                profile.setEnabled(rs.getBoolean(14));
+                profile.setIncludeUrl(rs.getBoolean(14));
+                profile.setEnabled(rs.getBoolean(15));
                 ret.add(profile);
             }
         }
@@ -371,7 +376,8 @@ public class ContactProfileDAO extends BaseDAO
                 profile.setPaymentTerm(rs.getString(11));
                 profile.setCurrency(rs.getString(12));
                 profile.setPrePayment(rs.getBoolean(13));
-                profile.setEnabled(rs.getBoolean(14));
+                profile.setIncludeUrl(rs.getBoolean(14));
+                profile.setEnabled(rs.getBoolean(15));
                 ret.add(profile);
             }
         }
