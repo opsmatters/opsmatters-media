@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
+import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.model.provider.ImageProvider;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
@@ -355,6 +356,15 @@ public abstract class Content<D extends ContentDetails>
     public void setCode(String code)
     {
         this.code = code;
+    }
+
+    /**
+     * Returns the organisation name.
+     */
+    public String getOrganisation()
+    {
+        Organisation organisation = Organisations.get(code);
+        return organisation != null ? organisation.getName() : "";
     }
 
     /**

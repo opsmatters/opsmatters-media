@@ -101,11 +101,18 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
       + "FROM %s WHERE SITE_ID=? AND PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
 
     /**
+     * The query to use to select the content from the table by site and status.
+     */
+    private static final String LIST_BY_SITE_STATUS_SQL =  
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, ATTRIBUTES, STATUS, CREATED_BY "
+      + "FROM %s WHERE SITE_ID=? AND STATUS=? ORDER BY CODE";
+
+    /**
      * The query to use to select the content from the table by status.
      */
     private static final String LIST_BY_STATUS_SQL =  
       "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, ATTRIBUTES, STATUS, CREATED_BY "
-      + "FROM %s WHERE SITE_ID=? AND STATUS=? ORDER BY CODE";
+      + "FROM %s WHERE STATUS=? ORDER BY CODE";
 
     /**
      * The query to use to select the content from the table by site.
@@ -615,9 +622,68 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
     }
 
     /**
-     * Returns the content items from the table by status.
+     * Returns the content items from the table by site and status.
      */
     public synchronized List<T> list(Site site, ContentStatus status) throws SQLException
+    {
+        List<T> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listBySiteStatusStmt == null)
+            listBySiteStatusStmt = prepareStatement(getConnection(), String.format(LIST_BY_SITE_STATUS_SQL, getTableName()));
+        clearParameters(listBySiteStatusStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listBySiteStatusStmt.setString(1, site.getId());
+            listBySiteStatusStmt.setString(2, status.name());
+            listBySiteStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listBySiteStatusStmt.executeQuery();
+            ret = new ArrayList<T>();
+            while(rs.next())
+            {
+                T content = newContentInstance(new Class[0], new Object[0]);
+                content.setUuid(rs.getString(1));
+                content.setSiteId(rs.getString(2));
+                content.setCode(rs.getString(3));
+                content.setId(rs.getInt(4));
+                content.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                content.setAttributes(new JSONObject(getClob(rs, 6)));
+                content.setStatus(rs.getString(7));
+                content.setCreatedBy(rs.getString(8));
+                ret.add(content);
+            }
+        }
+        catch(IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
+        {
+            logger.severe(StringUtils.serialize(e));
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the content items from the table by status.
+     */
+    public synchronized List<T> list(ContentStatus status) throws SQLException
     {
         List<T> ret = null;
 
@@ -633,8 +699,7 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
 
         try
         {
-            listByStatusStmt.setString(1, site.getId());
-            listByStatusStmt.setString(2, status.name());
+            listByStatusStmt.setString(1, status.name());
             listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByStatusStmt.executeQuery();
             ret = new ArrayList<T>();
@@ -1008,6 +1073,8 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
         listByCodeIntervalStmt = null;
         closeStatement(listByDateStmt);
         listByDateStmt = null;
+        closeStatement(listBySiteStatusStmt);
+        listBySiteStatusStmt = null;
         closeStatement(listByStatusStmt);
         listByStatusStmt = null;
         closeStatement(listBySiteStmt);
@@ -1034,6 +1101,7 @@ public abstract class ContentDAO<T extends Content> extends BaseDAO
     private PreparedStatement listPendingByCodeStmt;
     private PreparedStatement listByCodeIntervalStmt;
     private PreparedStatement listByDateStmt;
+    private PreparedStatement listBySiteStatusStmt;
     private PreparedStatement listByStatusStmt;
     private PreparedStatement listBySiteStmt;
     private PreparedStatement listByTitleStmt;

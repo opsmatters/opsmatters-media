@@ -17,7 +17,6 @@ package com.opsmatters.media.model.content;
 
 import java.util.List;
 import org.json.JSONObject;
-import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.ContentSiteSettings;
@@ -32,7 +31,6 @@ import static com.opsmatters.media.model.content.FieldName.*;
  */
 public abstract class Article<D extends ArticleDetails> extends Content<D>
 {
-    private String organisation = "";
     private String revisedTitle = "";
     private String tags = "";
     private String authorEmail = "";
@@ -55,7 +53,6 @@ public abstract class Article<D extends ArticleDetails> extends Content<D>
     {
         super.copyAttributes(obj);
 
-        setOrganisation(new String(obj.getOrganisation() != null ? obj.getOrganisation() : ""));
         setRevisedTitle(new String(obj.getRevisedTitle() != null ? obj.getRevisedTitle() : ""));
         setTags(new String(obj.getTags() != null ? obj.getTags() : ""));
         setAuthorEmail(new String(obj.getAuthorEmail() != null ? obj.getAuthorEmail() : ""));
@@ -152,42 +149,6 @@ public abstract class Article<D extends ArticleDetails> extends Content<D>
     public void setContentDetails(D obj)
     {
         super.setContentDetails(obj);
-    }
-
-    /**
-     * Returns the organisation name.
-     */
-    public String getOrganisation()
-    {
-        return organisation;
-    }
-
-    /**
-     * Sets the organisation name.
-     */
-    public void setOrganisation(String organisation)
-    {
-        this.organisation = organisation;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the organisation name has been set.
-     */
-    public boolean hasOrganisation()
-    {
-        return organisation != null && organisation.length() > 0;
-    }
-
-    /**
-     * Sets the monitor organisation.
-     */
-    @Override
-    public void setCode(String code)
-    {
-        super.setCode(code);
-
-        Organisation organisation = Organisations.get(code);
-        setOrganisation(organisation != null ? organisation.getName() : "");
     }
 
     /**

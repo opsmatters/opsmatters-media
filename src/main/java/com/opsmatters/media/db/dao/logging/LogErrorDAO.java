@@ -99,6 +99,13 @@ public class LogErrorDAO extends BaseDAO
       + "FROM LOG_ERRORS WHERE ENTITY_CODE=? ORDER BY CREATED_DATE";
 
     /**
+     * The query to use to select the errors from the LOG_ERRORS table by status.
+     */
+    private static final String LIST_BY_STATUS_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, CATEGORY, LEVEL, ENTITY_CODE, ENTITY_TYPE, ENTITY_NAME, ATTRIBUTES, STATUS "
+      + "FROM LOG_ERRORS WHERE STATUS=? ORDER BY CREATED_DATE";
+
+    /**
      * The query to use to get the count of errors from the LOG_ERRORS table.
      */
     private static final String COUNT_SQL =  
@@ -632,6 +639,64 @@ public class LogErrorDAO extends BaseDAO
     }
 
     /**
+     * Returns the errors from the LOG_ERRORS table by status.
+     */
+    public synchronized List<LogError> list(ErrorStatus status) throws SQLException
+    {
+        List<LogError> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByStatusStmt == null)
+            listByStatusStmt = prepareStatement(getConnection(), LIST_BY_STATUS_SQL);
+        clearParameters(listByStatusStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByStatusStmt.setString(1, status.name());
+            listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByStatusStmt.executeQuery();
+            ret = new ArrayList<LogError>();
+            while(rs.next())
+            {
+                LogError error = new LogError();
+                error.setId(rs.getString(1));
+                error.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                error.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                error.setCode(rs.getString(4));
+                error.setType(rs.getString(5));
+                error.setCategory(rs.getString(6));
+                error.setLevel(rs.getString(7));
+                error.setEntityCode(rs.getString(8));
+                error.setEntityType(rs.getString(9));
+                error.setEntityName(rs.getString(10));
+                error.setAttributes(new JSONObject(getClob(rs, 11)));
+                error.setStatus(rs.getString(12));
+                ret.add(error);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the count of errors from the LOG_ERRORS table.
      */
     public int count() throws SQLException
@@ -688,6 +753,8 @@ public class LogErrorDAO extends BaseDAO
         listByCodeStmt = null;
         closeStatement(listItemsByEntityCodeStmt);
         listItemsByEntityCodeStmt = null;
+        closeStatement(listByStatusStmt);
+        listByStatusStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -701,6 +768,7 @@ public class LogErrorDAO extends BaseDAO
     private PreparedStatement listItemsStmt;
     private PreparedStatement listByCodeStmt;
     private PreparedStatement listItemsByEntityCodeStmt;
+    private PreparedStatement listByStatusStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }
