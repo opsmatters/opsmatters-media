@@ -24,13 +24,14 @@ import java.util.logging.Logger;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.monitor.ContentMonitor;
 import com.opsmatters.media.model.monitor.video.VideoMonitor;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the set of content monitors.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentMonitors
+public class ContentMonitors extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(ContentMonitors.class.getName());
 
@@ -38,8 +39,6 @@ public class ContentMonitors
     private static Map<String,ContentMonitor> monitorMap = new HashMap<String,ContentMonitor>();
     private static Map<String,ContentMonitor> guidMap = new HashMap<String,ContentMonitor>();
     private static Map<ContentType,Map<String,ContentMonitor>> monitorTypeMap = new HashMap<ContentType,Map<String,ContentMonitor>>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -49,19 +48,11 @@ public class ContentMonitors
     }
 
     /**
-     * Returns <CODE>true</CODE> if monitors have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of monitors.
      */
     public static void load(List<ContentMonitor> monitors)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
         for(ContentMonitor monitor : monitors)
@@ -69,7 +60,7 @@ public class ContentMonitors
 
         logger.info(String.format("Loaded %d monitors", size()));
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

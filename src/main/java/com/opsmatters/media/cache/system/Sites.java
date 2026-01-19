@@ -22,21 +22,20 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.system.SiteConfig;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the set of sites.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Sites
+public class Sites extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(Sites.class.getName());
 
     private static Map<String,Site> siteMap = new LinkedHashMap<String,Site>();
     private static List<Site> siteList = new ArrayList<Site>();
     private static List<String> idList = new ArrayList<String>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -46,19 +45,11 @@ public class Sites
     }
 
     /**
-     * Returns <CODE>true</CODE> if sites have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of sites.
      */
     public static void load(List<Site> sites)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
         for(Site site : sites)
@@ -68,7 +59,7 @@ public class Sites
 
         logger.info("Loaded "+size()+" sites");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

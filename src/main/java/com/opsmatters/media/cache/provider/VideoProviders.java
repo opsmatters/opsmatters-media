@@ -22,19 +22,18 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.provider.VideoProvider;
 import com.opsmatters.media.model.provider.VideoProviderId;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the list of video providers.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class VideoProviders implements java.io.Serializable
+public class VideoProviders extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(VideoProviders.class.getName());
 
     private static Map<String,VideoProvider> providerMap = new LinkedHashMap<String,VideoProvider>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -44,19 +43,11 @@ public class VideoProviders implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if providers have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of providers.
      */
     public static void load(List<VideoProvider> providers)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
         for(VideoProvider provider : providers)
@@ -66,7 +57,7 @@ public class VideoProviders implements java.io.Serializable
 
         logger.info("Loaded "+size()+" video providers");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

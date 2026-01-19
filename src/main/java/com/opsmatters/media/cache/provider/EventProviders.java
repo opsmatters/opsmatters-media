@@ -21,19 +21,18 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.provider.EventProvider;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the list of event providers.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EventProviders implements java.io.Serializable
+public class EventProviders extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(EventProviders.class.getName());
 
     private static Map<String,EventProvider> providerMap = new LinkedHashMap<String,EventProvider>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -43,19 +42,11 @@ public class EventProviders implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if providers have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of providers.
      */
     public static void load(List<EventProvider> providers)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
         for(EventProvider provider : providers)
@@ -65,7 +56,7 @@ public class EventProviders implements java.io.Serializable
 
         logger.info("Loaded "+size()+" event providers");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

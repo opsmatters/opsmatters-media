@@ -21,20 +21,19 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.chart.Chart;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the cache of charts.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Charts
+public class Charts extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(Charts.class.getName());
 
     private static Map<String,Chart> chartMap = new HashMap<String,Chart>();
     private static List<Chart> chartList = new ArrayList<Chart>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -44,19 +43,11 @@ public class Charts
     }
 
     /**
-     * Returns <CODE>true</CODE> if charts have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of charts.
      */
     public static void load(List<Chart> charts)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
 
@@ -65,7 +56,7 @@ public class Charts
 
         logger.info("Loaded "+size()+" charts");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

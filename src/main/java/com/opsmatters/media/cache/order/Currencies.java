@@ -22,20 +22,19 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.order.Currency;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the list of currencies.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Currencies implements java.io.Serializable
+public class Currencies extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(Currencies.class.getName());
 
     private static Map<String,Currency> codeMap = new LinkedHashMap<String,Currency>();
     private static Map<String,Currency> nameMap = new TreeMap<String,Currency>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -45,19 +44,11 @@ public class Currencies implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if currencies have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of currencies.
      */
     public static void load(List<Currency> currencies)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
         for(Currency currency : currencies)
@@ -67,7 +58,7 @@ public class Currencies implements java.io.Serializable
 
         logger.info("Loaded "+size()+" currencies");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

@@ -26,21 +26,20 @@ import com.opsmatters.media.model.order.OrderItem;
 import com.opsmatters.media.model.order.contact.Contact;
 import com.opsmatters.media.model.order.contact.ContactProduct;
 import com.opsmatters.media.model.order.product.Product;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the list of orders.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Orders implements java.io.Serializable
+public class Orders extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(Orders.class.getName());
 
     private static Map<String,Order> orderMap = new LinkedHashMap<String,Order>();
     private static Map<String,Map<String,OrderItem>> itemMap = new LinkedHashMap<String,Map<String,OrderItem>>();
     private static Map<String,Map<String,Order>> contactMap = new LinkedHashMap<String,Map<String,Order>>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -50,19 +49,11 @@ public class Orders implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if orders have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of orders.
      */
     public static void load(List<Order> orders, List<OrderItem> items)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
         for(Order order : orders)
@@ -81,7 +72,7 @@ public class Orders implements java.io.Serializable
 
         logger.info("Loaded "+count+" order items");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

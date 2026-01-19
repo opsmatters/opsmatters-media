@@ -28,21 +28,20 @@ import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.ContentSiteSettings;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the set of organisation sites.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OrganisationSites
+public class OrganisationSites extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(OrganisationSites.class.getName());
 
     private static Map<String,List<OrganisationSite>> organisationList = new HashMap<String,List<OrganisationSite>>();
     private static Map<String,Map<String,OrganisationSite>> organisationMap = new HashMap<String,Map<String,OrganisationSite>>();
     private static List<ContentSiteSettings> settings = new ArrayList<ContentSiteSettings>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -52,19 +51,11 @@ public class OrganisationSites
     }
 
     /**
-     * Returns <CODE>true</CODE> if organisation sites have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of organisation sites.
      */
     public static void load(List<OrganisationSite> organisations)
     {
-        initialised = false;
+        setInitialised(false);
 
         for(Site site : Sites.list())
         {
@@ -95,7 +86,7 @@ public class OrganisationSites
             }
         }
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

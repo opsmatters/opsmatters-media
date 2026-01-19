@@ -22,20 +22,19 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.order.Country;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the list of countries.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Countries implements java.io.Serializable
+public class Countries extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(Countries.class.getName());
 
     private static Map<String,Country> codeMap = new LinkedHashMap<String,Country>();
     private static Map<String,Country> nameMap = new TreeMap<String,Country>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -45,19 +44,11 @@ public class Countries implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if countries have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of countries.
      */
     public static void load(List<Country> countries)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
         for(Country country : countries)
@@ -67,7 +58,7 @@ public class Countries implements java.io.Serializable
 
         logger.info("Loaded "+size()+" countries");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

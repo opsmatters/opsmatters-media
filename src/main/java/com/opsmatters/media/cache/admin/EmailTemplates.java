@@ -23,21 +23,20 @@ import java.util.logging.Logger;
 import com.samskivert.mustache.Template;
 import com.opsmatters.media.model.admin.EmailTemplate;
 import com.opsmatters.media.model.admin.EmailTemplateId;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the list of email templates.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class EmailTemplates implements java.io.Serializable
+public class EmailTemplates extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(EmailTemplates.class.getName());
 
     private static Map<String,EmailTemplate> idMap = new LinkedHashMap<String,EmailTemplate>();
     private static Map<String,EmailTemplate> codeMap = new LinkedHashMap<String,EmailTemplate>();
     private static Map<String,EmailTemplate> nameMap = new LinkedHashMap<String,EmailTemplate>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -47,19 +46,11 @@ public class EmailTemplates implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if templates have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of templates.
      */
     public static void load(List<EmailTemplate> templates)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
         for(EmailTemplate template : templates)
@@ -69,7 +60,7 @@ public class EmailTemplates implements java.io.Serializable
 
         logger.info("Loaded "+size()+" email templates");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

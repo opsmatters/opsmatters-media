@@ -25,13 +25,14 @@ import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.ContentSettings;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the set of organisations.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Organisations
+public class Organisations extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(Organisations.class.getName());
 
@@ -39,8 +40,6 @@ public class Organisations
     private static Map<String,Organisation> organisationMap = new HashMap<String,Organisation>();
     private static Map<ContentType,Map<String,Organisation>> typeMap = new HashMap<ContentType,Map<String,Organisation>>();
     private static List<ContentSettings> settingsList = new ArrayList<ContentSettings>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -50,26 +49,18 @@ public class Organisations
     }
 
     /**
-     * Returns <CODE>true</CODE> if organisations have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of organisations.
      */
     public static void load(List<Organisation> organisations)
     {
-        initialised = false;
+        setInitialised(false);
 
         for(Organisation organisation : organisations)
             add(organisation);
 
         logger.info(String.format("Loaded %d organisations", size()));
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

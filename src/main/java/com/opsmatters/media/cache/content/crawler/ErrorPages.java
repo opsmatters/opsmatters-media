@@ -21,19 +21,18 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.crawler.ErrorPage;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the list of error pages.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ErrorPages implements java.io.Serializable
+public class ErrorPages extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(ErrorPages.class.getName());
 
     private static Map<String,ErrorPage> pageMap = new LinkedHashMap<String,ErrorPage>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -43,19 +42,11 @@ public class ErrorPages implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if error pages have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of error pages.
      */
     public static void load(List<ErrorPage> pages)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
         for(ErrorPage page : pages)
@@ -65,7 +56,7 @@ public class ErrorPages implements java.io.Serializable
 
         logger.info("Loaded "+size()+" error pages");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

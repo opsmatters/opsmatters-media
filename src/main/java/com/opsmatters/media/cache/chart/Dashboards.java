@@ -25,20 +25,19 @@ import com.opsmatters.media.model.admin.ParameterType;
 import com.opsmatters.media.model.admin.ParameterName;
 import com.opsmatters.media.model.chart.Dashboard;
 import com.opsmatters.media.model.chart.DashboardId;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the cache of dashboards.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Dashboards
+public class Dashboards extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(Dashboards.class.getName());
 
     private static Map<DashboardId,Dashboard> dashboardMap = new HashMap<DashboardId,Dashboard>();
     private static List<Dashboard> dashboardList = new ArrayList<Dashboard>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -48,19 +47,11 @@ public class Dashboards
     }
 
     /**
-     * Returns <CODE>true</CODE> if dashboards have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of dashboards.
      */
     public static void load(List<Dashboard> dashboards)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
 
@@ -69,7 +60,7 @@ public class Dashboards
 
         logger.info("Loaded "+size()+" dashboards");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

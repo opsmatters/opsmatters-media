@@ -24,20 +24,19 @@ import java.util.logging.Logger;
 import com.opsmatters.media.cache.system.Sites;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.social.Hashtag;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the list of social media hashtags.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Hashtags implements java.io.Serializable
+public class Hashtags extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(Hashtags.class.getName());
 
     private static List<Hashtag> hashtagList = new ArrayList<Hashtag>();
     private static Map<String,List<Hashtag>> hashtagMap = new LinkedHashMap<String,List<Hashtag>>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -47,19 +46,11 @@ public class Hashtags implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if hashtags have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of hashtags for each site.
      */
     public static void load(List<Hashtag> hashtags)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
 
@@ -77,7 +68,7 @@ public class Hashtags implements java.io.Serializable
 
         logger.info(String.format("Loaded %d hashtags", size()));
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

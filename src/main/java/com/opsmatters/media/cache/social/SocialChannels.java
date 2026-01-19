@@ -23,19 +23,18 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.social.SocialChannel;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the list of social media channels.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialChannels implements java.io.Serializable
+public class SocialChannels extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(SocialChannels.class.getName());
 
     private static Map<String,SocialChannel> channelMap = new LinkedHashMap<String,SocialChannel>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -45,19 +44,11 @@ public class SocialChannels implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if channels have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of channels.
      */
     public static void load(List<SocialChannel> channels)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
         for(SocialChannel channel : channels)
@@ -67,7 +58,7 @@ public class SocialChannels implements java.io.Serializable
 
         logger.info("Loaded "+size()+" social channels");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

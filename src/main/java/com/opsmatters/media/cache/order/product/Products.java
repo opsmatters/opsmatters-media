@@ -24,21 +24,20 @@ import com.opsmatters.media.model.order.product.Product;
 import com.opsmatters.media.model.order.product.ProductText;
 import com.opsmatters.media.model.order.product.ProductTextId;
 import com.opsmatters.media.model.order.product.ProductCategory;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the list of products.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Products implements java.io.Serializable
+public class Products extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(Products.class.getName());
 
     private static Map<String,Product> codeMap = new LinkedHashMap<String,Product>();
     private static Map<String,ProductText> textMap = new LinkedHashMap<String,ProductText>();
     private static Map<String,Map<String,ProductText>> productTextMap = new LinkedHashMap<String,Map<String,ProductText>>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -48,19 +47,11 @@ public class Products implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if products have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of products and texts.
      */
     public static void load(List<Product> products, List<ProductText> texts)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
         for(Product product : products)
@@ -77,7 +68,7 @@ public class Products implements java.io.Serializable
 
         logger.info("Loaded "+textMap.size()+" product texts");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

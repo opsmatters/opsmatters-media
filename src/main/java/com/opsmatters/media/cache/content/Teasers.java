@@ -26,13 +26,14 @@ import com.opsmatters.media.model.content.ContentDetails;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.logging.LogEvent;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the cache of teasers.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Teasers
+public class Teasers extends StaticCache
 {
     private static Map<String,TeaserList> teaserMap = Collections.synchronizedMap(new HashMap<String,TeaserList>());
 

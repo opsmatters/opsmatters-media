@@ -22,21 +22,20 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.order.contact.Company;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the list of companies.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Companies implements java.io.Serializable
+public class Companies extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(Companies.class.getName());
 
     private static Map<String,Company> idMap = new LinkedHashMap<String,Company>();
     private static Map<String,Company> nameMap = new TreeMap<String,Company>();
     private static Map<String,Company> emailMap = new LinkedHashMap<String,Company>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -46,19 +45,11 @@ public class Companies implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if companies have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of companies.
      */
     public static void load(List<Company> companies)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
         for(Company company : companies)
@@ -68,7 +59,7 @@ public class Companies implements java.io.Serializable
 
         logger.info("Loaded "+size()+" companies");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

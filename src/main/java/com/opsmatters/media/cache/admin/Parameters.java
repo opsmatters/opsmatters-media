@@ -23,17 +23,16 @@ import java.time.Instant;
 import com.opsmatters.media.model.admin.Parameter;
 import com.opsmatters.media.model.admin.ParameterType;
 import com.opsmatters.media.model.admin.ParameterName;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the cache of application parameters.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Parameters extends LinkedHashMap<ParameterType,Map>
+public class Parameters extends StaticCache
 {
     private static Map<ParameterType,Map<ParameterName,Parameter>> types = new LinkedHashMap<ParameterType,Map<ParameterName,Parameter>>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -43,25 +42,13 @@ public class Parameters extends LinkedHashMap<ParameterType,Map>
     }
 
     /**
-     * Returns <CODE>true</CODE> if parameters have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of parameters.
      */
     public static void load(List<Parameter> parameters)
     {
-        initialised = false;
-
         types.clear();
         for(Parameter parameter : parameters)
             add(parameter);
-
-        initialised = true;
     }
 
     /**

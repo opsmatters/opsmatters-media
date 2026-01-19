@@ -21,19 +21,18 @@ import java.util.List;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.OutputColumn;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the set of content output columns.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class OutputColumns
+public class OutputColumns extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(OutputColumns.class.getName());
 
     private static Map<ContentType,Map<String,OutputColumn>> columnMap = new LinkedHashMap<ContentType,Map<String,OutputColumn>>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -43,19 +42,11 @@ public class OutputColumns
     }
 
     /**
-     * Returns <CODE>true</CODE> if columns have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of columns.
      */
     public static void load(List<OutputColumn> columns)
     {
-        initialised = false;
+        setInitialised(false);
 
         columnMap.clear();
 
@@ -68,7 +59,7 @@ public class OutputColumns
 
         logger.info(String.format("Loaded %d output columns", count));
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

@@ -24,13 +24,14 @@ import java.util.Comparator;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.admin.Shortcut;
 import com.opsmatters.media.model.admin.ShortcutGroup;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the list of shortcuts.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Shortcuts implements java.io.Serializable
+public class Shortcuts extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(Shortcuts.class.getName());
 
@@ -51,8 +52,6 @@ public class Shortcuts implements java.io.Serializable
           }
       };
 
-    private static boolean initialised = false;
-
     /**
      * Private constructor.
      */
@@ -61,19 +60,11 @@ public class Shortcuts implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if shortcuts have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of shortcuts.
      */
     public static void load(List<Shortcut> shortcuts)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
         for(Shortcut shortcut : shortcuts)
@@ -83,7 +74,7 @@ public class Shortcuts implements java.io.Serializable
 
         logger.info("Loaded "+size()+" shortcuts");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

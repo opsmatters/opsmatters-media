@@ -22,21 +22,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.content.util.ContentProxy;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the set of content proxies.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentProxies
+public class ContentProxies extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(ContentProxies.class.getName());
 
     private static Map<String,ContentProxy> proxyMap = new LinkedHashMap<String,ContentProxy>();
     private static List<ContentProxy> proxyList = new ArrayList<ContentProxy>();
     private static Iterator<ContentProxy> iterator = null;
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -46,19 +45,11 @@ public class ContentProxies
     }
 
     /**
-     * Returns <CODE>true</CODE> if proxies have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of proxies.
      */
     public static void load(List<ContentProxy> proxies)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
         for(ContentProxy proxy : proxies)
@@ -73,7 +64,7 @@ public class ContentProxies
 
         logger.info("Loaded "+size()+" content proxies");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

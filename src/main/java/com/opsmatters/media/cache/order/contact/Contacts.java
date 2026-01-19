@@ -28,13 +28,14 @@ import com.opsmatters.media.model.order.contact.ContactProfile;
 import com.opsmatters.media.model.order.contact.ContactPerson;
 import com.opsmatters.media.model.order.contact.ContactProduct;
 import com.opsmatters.media.model.order.contact.Company;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the list of contacts.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Contacts implements java.io.Serializable
+public class Contacts extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(Contacts.class.getName());
 
@@ -50,8 +51,6 @@ public class Contacts implements java.io.Serializable
     private static Map<String,ContactProduct> productIdMap = new TreeMap<String,ContactProduct>();
     private static Map<String,Map<String,ContactProduct>> productContactMap = new LinkedHashMap<String,Map<String,ContactProduct>>();
 
-    private static boolean initialised = false;
-
     /**
      * Private constructor.
      */
@@ -60,20 +59,12 @@ public class Contacts implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if contacts and persons have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of contacts, profiles, persons and products.
      */
     public static void load(List<Contact> contacts, List<ContactProfile> profiles,
         List<ContactPerson> persons, List<ContactProduct> products)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
         for(Contact contact : contacts)
@@ -104,7 +95,7 @@ public class Contacts implements java.io.Serializable
 
         logger.info("Loaded "+productIdMap.size()+" contact products");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

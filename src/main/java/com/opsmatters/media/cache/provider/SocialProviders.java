@@ -22,19 +22,18 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.provider.SocialProvider;
 import com.opsmatters.media.model.provider.SocialProviderId;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the list of social media providers.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SocialProviders implements java.io.Serializable
+public class SocialProviders extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(SocialProviders.class.getName());
 
     private static Map<String,SocialProvider> providerMap = new LinkedHashMap<String,SocialProvider>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -44,19 +43,11 @@ public class SocialProviders implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if providers have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of providers.
      */
     public static void load(List<SocialProvider> providers)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
         for(SocialProvider provider : providers)
@@ -66,7 +57,7 @@ public class SocialProviders implements java.io.Serializable
 
         logger.info("Loaded "+size()+" social providers");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

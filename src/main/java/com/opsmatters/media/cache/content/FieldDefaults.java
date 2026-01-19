@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.FieldDefault;
 import com.opsmatters.media.model.content.FieldMap;
+import com.opsmatters.media.cache.StaticCache;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 
@@ -30,13 +31,11 @@ import static com.opsmatters.media.model.content.FieldName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class FieldDefaults
+public class FieldDefaults extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(FieldDefaults.class.getName());
 
     private static Map<ContentType,Map<String,FieldDefault>> defaultMap = new LinkedHashMap<ContentType,Map<String,FieldDefault>>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -46,19 +45,11 @@ public class FieldDefaults
     }
 
     /**
-     * Returns <CODE>true</CODE> if defaults have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of defaults.
      */
     public static void load(List<FieldDefault> defaults)
     {
-        initialised = false;
+        setInitialised(false);
 
         defaultMap.clear();
 
@@ -71,7 +62,7 @@ public class FieldDefaults
 
         logger.info(String.format("Loaded %d field defaults", count));
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

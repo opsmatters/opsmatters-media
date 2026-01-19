@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.system.Environment;
 import com.opsmatters.media.model.system.EnvironmentId;
+import com.opsmatters.media.cache.StaticCache;
 
 import static com.opsmatters.media.model.system.EnvironmentId.*;
 
@@ -31,13 +32,11 @@ import static com.opsmatters.media.model.system.EnvironmentId.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Environments
+public class Environments extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(Environments.class.getName());
 
     private static Map<EnvironmentId,Environment> environmentMap = new HashMap<EnvironmentId,Environment>();
-
-    private static boolean initialised = false;
 
     /**
      * Private constructor.
@@ -47,19 +46,11 @@ public class Environments
     }
 
     /**
-     * Returns <CODE>true</CODE> if environments have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of environments.
      */
     public static void load(List<Environment> environments)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
         for(Environment environment : environments)
@@ -69,7 +60,7 @@ public class Environments
 
         logger.info("Loaded "+size()+" environments");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

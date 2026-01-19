@@ -24,19 +24,18 @@ import java.util.Comparator;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.provider.ImageProvider;
 import com.opsmatters.media.model.provider.ImageProviderType;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the list of image providers.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ImageProviders implements java.io.Serializable
+public class ImageProviders extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(ImageProviders.class.getName());
 
     private static Map<String,ImageProvider> providerMap = new LinkedHashMap<String,ImageProvider>();
-
-    private static boolean initialised = false;
 
     private static Comparator comparator = new Comparator<ImageProvider>()
     {
@@ -54,19 +53,11 @@ public class ImageProviders implements java.io.Serializable
     }
 
     /**
-     * Returns <CODE>true</CODE> if providers have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of providers.
      */
     public static void load(List<ImageProvider> providers)
     {
-        initialised = false;
+        setInitialised(false);
 
         clear();
         for(ImageProvider provider : providers)
@@ -76,7 +67,7 @@ public class ImageProviders implements java.io.Serializable
 
         logger.info("Loaded "+size()+" image providers");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**

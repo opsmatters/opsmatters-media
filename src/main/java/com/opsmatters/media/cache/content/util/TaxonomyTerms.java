@@ -26,13 +26,14 @@ import java.util.logging.Logger;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.content.util.TaxonomyTerm;
 import com.opsmatters.media.model.content.util.TaxonomyType;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing a handler for taxonomy terms.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class TaxonomyTerms
+public class TaxonomyTerms extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(TaxonomyTerms.class.getName());
 
@@ -66,6 +67,8 @@ public class TaxonomyTerms
 
             logger.info(String.format("Loaded %d taxonomy terms for site %s",
                 terms.size(), site.getName()));
+
+            setInitialised(true);
         }
     }
 

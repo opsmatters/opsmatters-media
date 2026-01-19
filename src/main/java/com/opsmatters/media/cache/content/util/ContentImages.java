@@ -24,19 +24,18 @@ import java.util.logging.Logger;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
+import com.opsmatters.media.cache.StaticCache;
 
 /**
  * Class representing the set of content images.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContentImages
+public class ContentImages extends StaticCache
 {
     private static final Logger logger = Logger.getLogger(ContentImages.class.getName());
 
     private static Map<ImageType,Map<String,ContentImage>> types = new LinkedHashMap<ImageType,Map<String,ContentImage>>();
-
-    private static boolean initialised = false;
 
     // Static image files
     public static String PLACEHOLDER_IMAGE = "placeholder-image.jpg";
@@ -51,19 +50,11 @@ public class ContentImages
     }
 
     /**
-     * Returns <CODE>true</CODE> if images have been initialised.
-     */
-    public static boolean isInitialised()
-    {
-        return initialised;
-    }
-
-    /**
      * Loads the set of images.
      */
     public static void load(List<ContentImage> images)
     {
-        initialised = false;
+        setInitialised(false);
 
         types.clear();
         for(ContentImage image : images)
@@ -76,7 +67,7 @@ public class ContentImages
 
         logger.info("Loaded "+size()+" content images");
 
-        initialised = true;
+        setInitialised(true);
     }
 
     /**
