@@ -88,12 +88,28 @@ public class ContentAlertDAO extends BaseDAO
       + "WHERE CODE=? ORDER BY CREATED_DATE";
 
     /**
+     * The query to use to select the alerts from the CONTENT_ALERTS table by status.
+     */
+    private static final String LIST_BY_STATUS_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, START_DATE, CODE, REASON, ATTRIBUTES, STATUS, MONITOR_ID, CREATED_BY "
+      + "FROM CONTENT_ALERTS "
+      + "WHERE STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -30 DAY) OR STATUS='NEW') ORDER BY CREATED_DATE";
+
+    /**
      * The query to use to select the alert items from the CONTENT_ALERTS table by status.
      */
     private static final String LIST_ITEMS_BY_STATUS_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, REASON, STATUS, MONITOR_ID "
       + "FROM CONTENT_ALERTS "
       + "WHERE STATUS=? AND (CREATED_DATE >= (NOW() + INTERVAL -30 DAY) OR STATUS='NEW') ORDER BY CREATED_DATE";
+
+    /**
+     * The query to use to select the alerts from the CONTENT_ALERTS table by session.
+     */
+    private static final String LIST_BY_SESSION_SQL =  
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, START_DATE, CODE, REASON, ATTRIBUTES, STATUS, MONITOR_ID, CREATED_BY "
+      + "FROM CONTENT_ALERTS "
+      + "WHERE SESSION_ID=? ORDER BY CREATED_DATE";
 
     /**
      * The query to use to get the count of alerts from the CONTENT_ALERTS table.
@@ -468,6 +484,62 @@ public class ContentAlertDAO extends BaseDAO
     }
 
     /**
+     * Returns the alerts from the CONTENT_ALERTS table by status.
+     */
+    public synchronized List<ContentAlert> list(AlertStatus status) throws SQLException
+    {
+        List<ContentAlert> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByStatusStmt == null)
+            listByStatusStmt = prepareStatement(getConnection(), LIST_BY_STATUS_SQL);
+        clearParameters(listByStatusStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByStatusStmt.setString(1, status.name());
+            listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByStatusStmt.executeQuery();
+            ret = new ArrayList<ContentAlert>();
+            while(rs.next())
+            {
+                ContentAlert alert = new ContentAlert();
+                alert.setId(rs.getString(1));
+                alert.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                alert.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                alert.setStartDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                alert.setCode(rs.getString(5));
+                alert.setReason(rs.getString(6));
+                alert.setAttributes(new JSONObject(getClob(rs, 7)));
+                alert.setStatus(rs.getString(8));
+                alert.setMonitorId(rs.getString(9));
+                alert.setCreatedBy(rs.getString(10));
+                ret.add(alert);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Returns the alert items from the CONTENT_ALERTS table by status.
      */
     public synchronized List<ContentAlertItem> listItems(AlertStatus status) throws SQLException
@@ -518,6 +590,70 @@ public class ContentAlertDAO extends BaseDAO
         postQuery();
 
         return ret;
+    }
+
+    /**
+     * Returns the alerts from the CONTENT_ALERTS table by session.
+     */
+    public synchronized List<ContentAlert> listBySession(int sessionId) throws SQLException
+    {
+        List<ContentAlert> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listBySessionStmt == null)
+            listBySessionStmt = prepareStatement(getConnection(), LIST_BY_SESSION_SQL);
+        clearParameters(listBySessionStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listBySessionStmt.setInt(1, sessionId);
+            listBySessionStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listBySessionStmt.executeQuery();
+            ret = new ArrayList<ContentAlert>();
+            while(rs.next())
+            {
+                ContentAlert alert = new ContentAlert();
+                alert.setId(rs.getString(1));
+                alert.setCreatedDateMillis(rs.getTimestamp(2, UTC).getTime());
+                alert.setUpdatedDateMillis(rs.getTimestamp(3, UTC) != null ? rs.getTimestamp(3, UTC).getTime() : 0L);
+                alert.setStartDateMillis(rs.getTimestamp(4, UTC) != null ? rs.getTimestamp(4, UTC).getTime() : 0L);
+                alert.setCode(rs.getString(5));
+                alert.setReason(rs.getString(6));
+                alert.setAttributes(new JSONObject(getClob(rs, 7)));
+                alert.setStatus(rs.getString(8));
+                alert.setMonitorId(rs.getString(9));
+                alert.setCreatedBy(rs.getString(10));
+                ret.add(alert);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the alert items from the CONTENT_ALERTS table for the current session.
+     */
+    public List<ContentAlert> listBySession() throws SQLException
+    {
+        return listBySession(SessionId.get());
     }
 
     /**
@@ -574,8 +710,12 @@ public class ContentAlertDAO extends BaseDAO
         listItemsStmt = null;
         closeStatement(listByCodeStmt);
         listByCodeStmt = null;
+        closeStatement(listByStatusStmt);
+        listByStatusStmt = null;
         closeStatement(listItemsByStatusStmt);
         listItemsByStatusStmt = null;
+        closeStatement(listBySessionStmt);
+        listBySessionStmt = null;
         closeStatement(countStmt);
         countStmt = null;
         closeStatement(deleteStmt);
@@ -588,7 +728,9 @@ public class ContentAlertDAO extends BaseDAO
     private PreparedStatement listStmt;
     private PreparedStatement listItemsStmt;
     private PreparedStatement listByCodeStmt;
+    private PreparedStatement listByStatusStmt;
     private PreparedStatement listItemsByStatusStmt;
+    private PreparedStatement listBySessionStmt;
     private PreparedStatement countStmt;
     private PreparedStatement deleteStmt;
 }

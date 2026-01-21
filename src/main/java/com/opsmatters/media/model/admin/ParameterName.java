@@ -57,7 +57,6 @@ public enum ParameterName
     MIN_WEBINAR_DURATION("min-webinar-duration"),
     SUSPECT_WORDS("suspect-words"),
     LAST_ACTIVITY("last-activity"),
-    AUTO_SHUTDOWN("auto-shutdown"),
     SHUTDOWN("shutdown"),
     AUTO_STOP("auto-stop"),
     PAYMENT_METHOD("payment-method"),

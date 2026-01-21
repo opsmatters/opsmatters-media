@@ -333,6 +333,16 @@ public abstract class Task extends BaseEntity
     }
 
     /**
+     * Restarts the task eg. after hanging.
+     */
+    public void restart()
+    {
+        setStatus(TaskStatus.NEW);
+        setUpdatedDate(Instant.now());
+        setExecutedDate(null);
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the task is not currently processing.
      */
     public boolean isIdle()
