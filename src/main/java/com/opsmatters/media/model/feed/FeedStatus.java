@@ -62,6 +62,16 @@ public enum FeedStatus
     }
 
     /**
+     * Returns <CODE>true<CODE> if the feed is waiting.
+     * @return <CODE>true<CODE> if the feed is waiting.
+     */
+    public boolean waiting()
+    {
+        return this == WAITING
+            || this == ERROR;
+    }
+
+    /**
      * Returns <CODE>true<CODE> if this is a feed processing status.
      * @return <CODE>true<CODE> if this is a feed processing status.
      */
