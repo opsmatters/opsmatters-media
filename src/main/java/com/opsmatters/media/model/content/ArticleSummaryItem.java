@@ -20,18 +20,18 @@ import com.opsmatters.media.model.content.post.Post;
 import com.opsmatters.media.model.content.post.RoundupPost;
 
 /**
- * Class representing searched content containing an article.
+ * Class representing a content summary containing an article.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ArticleResultItem extends ArticleItem<Article>
+public class ArticleSummaryItem extends ArticleItem<Article>
 {
     private Article content;
 
     /**
      * Default constructor.
      */
-    public ArticleResultItem()
+    public ArticleSummaryItem()
     {
         content = new Post();
         super.set(content);
@@ -40,7 +40,7 @@ public class ArticleResultItem extends ArticleItem<Article>
     /**
      * Constructor that takes an article.
      */
-    public ArticleResultItem(ArticleItem content)
+    public ArticleSummaryItem(ArticleItem content)
     {
         Article article = content.get();
         this.content = article;
@@ -50,7 +50,7 @@ public class ArticleResultItem extends ArticleItem<Article>
     /**
      * Constructor that takes an article.
      */
-    public ArticleResultItem(Article content)
+    public ArticleSummaryItem(Article content)
     {
         this.content = content;
         super.set(content);
@@ -59,7 +59,7 @@ public class ArticleResultItem extends ArticleItem<Article>
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(ArticleResultItem obj)
+    public void copyAttributes(ArticleSummaryItem obj)
     {
         copyAttributes(obj.get());
     }
