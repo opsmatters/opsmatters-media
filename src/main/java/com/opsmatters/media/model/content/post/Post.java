@@ -220,11 +220,12 @@ public class Post extends Article<PostDetails>
         ret.put(DESCRIPTION, EmojiParser.parseToHtmlDecimal(getDescription()));
         ret.put(AUTHOR, getAuthor());
         ret.put(AUTHOR_URL, getAuthorUrl());
-        ret.put(URL, getUrlAlias());
         ret.put(IMAGE, getImage());
         ret.put(IMAGE_TEXT, getImageText());
         ret.put(METATAGS, getMetatags());
         ret.put(ATTRIBUTION, getAttribution());
+        ret.put(URL_ALIAS, getUrlAlias());
+        ret.put(URL_ALIAS_STATE, hasUrlAlias() ? "0" : "1"); // 0=SKIP, 1=CREATE
 
         return ret;
     }

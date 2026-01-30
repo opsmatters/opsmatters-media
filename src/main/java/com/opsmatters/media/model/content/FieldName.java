@@ -43,6 +43,8 @@ public enum FieldName
     TIMEZONE("timezone"),
     LOCATION("location"),
     URL("url"),
+    URL_ALIAS("url-alias"),
+    URL_ALIAS_STATE("url-alias-state"),
     LAST_URL("last-url"),
     UUID("uuid"),
     DURATION("duration"),
