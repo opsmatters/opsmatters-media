@@ -29,6 +29,7 @@ public class Counter
     private long length = -1L;
     private long wordCount = -1L;
     private long linkCount = -1L;
+    private long imageCount = -1L;
 
     /**
      * Default constructor.
@@ -62,10 +63,20 @@ public class Counter
     }
 
     /**
+     * Returns the image count.
+     */
+    public long getImageCount()
+    {
+        return imageCount;
+    }
+
+    /**
      * Parses a HTML document.
      */
     public void parseHtml(String html)
     {
+        linkCount = imageCount = 0;
+
         if(html != null)
         {
             if(html.startsWith("<"))
@@ -73,11 +84,11 @@ public class Counter
                 Document doc = Jsoup.parse(html);
                 String text = doc.body().text();
                 linkCount = doc.select("a").size();
+                imageCount = doc.select("img").size();
                 parseText(text);
             }
             else // html is actually plain text
             {
-                linkCount = 0;
                 parseText(html);
             }
         }
