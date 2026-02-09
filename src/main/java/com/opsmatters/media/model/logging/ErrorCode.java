@@ -40,6 +40,7 @@ public enum ErrorCode
     E_MISSING_IMAGE(false),
     E_MISSING_MORE(true),
     E_MISSING_MOVE(true),
+    E_INVALID_AUTHOR(false),
     E_SUBSCRIBE_FAIL(true),
     E_FEED_FAIL(true);
 

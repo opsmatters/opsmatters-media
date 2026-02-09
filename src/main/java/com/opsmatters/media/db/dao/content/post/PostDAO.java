@@ -115,7 +115,7 @@ public class PostDAO extends ContentDAO<Post>
         table.addColumn("NEWSLETTER", Types.BOOLEAN, true);
         table.addColumn("FEATURED", Types.BOOLEAN, true);
         table.addColumn("SPONSORED", Types.BOOLEAN, true);
-        table.addColumn("AUTHOR", Types.VARCHAR, 30, true);
+        table.addColumn("AUTHOR", Types.VARCHAR, 100, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
