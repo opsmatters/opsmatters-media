@@ -146,6 +146,14 @@ public abstract class ContentItem<T extends Content> implements java.io.Serializ
     }
 
     /**
+     * Returns the organisation name.
+     */
+    public String getOrganisation()
+    {
+        return content.getOrganisation();
+    }
+
+    /**
      * Returns the content title.
      */
     public String getTitle()

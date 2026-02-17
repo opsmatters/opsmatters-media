@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.system.Site;
@@ -64,6 +65,13 @@ public class ToolDAO extends ContentDAO<Tool>
     private static final String LIST_ITEMS_BY_CODE_SQL =
       "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, PRICING, PUBLISHED, PROMOTE, STATUS "
       + "FROM TOOLS WHERE SITE_ID=? AND CODE=? ORDER BY ID";
+
+    /**
+     * The query to use to select the tool items from the table by published date.
+     */
+    private static final String LIST_ITEMS_BY_DATE_SQL =  
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, PRICING, PUBLISHED, PROMOTE, STATUS "
+      + "FROM TOOLS WHERE PUBLISHED=1 AND PUBLISHED_DATE>? ORDER BY ID";
 
     /**
      * Constructor that takes a DAO factory.
@@ -260,6 +268,62 @@ public class ToolDAO extends ContentDAO<Tool>
     }
 
     /**
+     * Returns the tool items from the table by published date.
+     */
+    public synchronized List<ToolItem> listItems(Instant date) throws SQLException
+    {
+        List<ToolItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByDateStmt == null)
+            listByDateStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_DATE_SQL);
+        clearParameters(listByDateStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByDateStmt.setTimestamp(1, new Timestamp(date.toEpochMilli()), UTC);
+            listByDateStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByDateStmt.executeQuery();
+            ret = new ArrayList<ToolItem>();
+            while(rs.next())
+            {
+                ToolItem tool = new ToolItem();
+                tool.setUuid(rs.getString(1));
+                tool.setSiteId(rs.getString(2));
+                tool.setCode(rs.getString(3));
+                tool.setId(rs.getInt(4));
+                tool.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                tool.setTitle(rs.getString(6));
+                tool.setPricing(rs.getString(7));
+                tool.setPublished(rs.getBoolean(8));
+                tool.setPromoted(rs.getBoolean(9));
+                tool.setStatus(rs.getString(10));
+                ret.add(tool);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Close any tools associated with this DAO.
      */
     @Override
@@ -271,9 +335,12 @@ public class ToolDAO extends ContentDAO<Tool>
         updateStmt = null;
         closeStatement(listByCodeStmt);
         listByCodeStmt = null;
+        closeStatement(listByDateStmt);
+        listByDateStmt = null;
     }
 
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listByCodeStmt;
+    private PreparedStatement listByDateStmt;
 }

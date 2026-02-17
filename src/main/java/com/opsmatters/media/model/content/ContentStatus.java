@@ -16,6 +16,9 @@
 
 package com.opsmatters.media.model.content;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * Represents the status of a content item.
  * 
@@ -108,5 +111,18 @@ public enum ContentStatus
     public static boolean contains(String value)
     {
         return valueOf(value) != null;
+    }
+
+    /**
+     * Returns a list of the statuses.
+     */
+    public static List<ContentStatus> toList()
+    {
+        List<ContentStatus> ret = new ArrayList<ContentStatus>();
+
+        for(ContentStatus status : ContentStatus.values())
+            ret.add(status);
+
+        return ret;
     }
 }

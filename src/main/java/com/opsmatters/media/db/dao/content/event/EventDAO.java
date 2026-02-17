@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 import org.json.JSONObject;
@@ -72,6 +73,13 @@ public class EventDAO extends ContentDAO<Event>
     private static final String LIST_ITEMS_BY_CODE_SQL =
       "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, START_DATE, TITLE, URL, EVENT_TYPE, TIMEZONE, PUBLISHED, PROMOTE, STATUS "
       + "FROM EVENTS WHERE SITE_ID=? AND CODE=? ORDER BY ID";
+
+    /**
+     * The query to use to select the event items from the table by published date.
+     */
+    private static final String LIST_ITEMS_BY_DATE_SQL =  
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, START_DATE, TITLE, URL, EVENT_TYPE, TIMEZONE, PUBLISHED, PROMOTE, STATUS "
+      + "FROM EVENTS WHERE PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
 
     /**
      * Constructor that takes a DAO factory.
@@ -344,6 +352,65 @@ public class EventDAO extends ContentDAO<Event>
     }
 
     /**
+     * Returns the event items from the table by published date.
+     */
+    public synchronized List<EventItem> listItems(Instant date) throws SQLException
+    {
+        List<EventItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByDateStmt == null)
+            listByDateStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_DATE_SQL);
+        clearParameters(listByDateStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByDateStmt.setTimestamp(1, new Timestamp(date.toEpochMilli()), UTC);
+            listByDateStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByDateStmt.executeQuery();
+            ret = new ArrayList<EventItem>();
+            while(rs.next())
+            {
+                EventItem event = new EventItem();
+                event.setUuid(rs.getString(1));
+                event.setSiteId(rs.getString(2));
+                event.setCode(rs.getString(3));
+                event.setId(rs.getInt(4));
+                event.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                event.setStartDateMillis(rs.getTimestamp(6, UTC).getTime());
+                event.setTitle(rs.getString(7));
+                event.setUrl(rs.getString(8));
+                event.setEventType(rs.getString(9));
+                event.setTimeZone(rs.getString(10));
+                event.setPublished(rs.getBoolean(11));
+                event.setPromoted(rs.getBoolean(12));
+                event.setStatus(rs.getString(13));
+                ret.add(event);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Close any resources associated with this DAO.
      */
     @Override
@@ -357,10 +424,13 @@ public class EventDAO extends ContentDAO<Event>
         updateStmt = null;
         closeStatement(listByCodeStmt);
         listByCodeStmt = null;
+        closeStatement(listByDateStmt);
+        listByDateStmt = null;
     }
 
     private PreparedStatement listByUrlStmt;
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listByCodeStmt;
+    private PreparedStatement listByDateStmt;
 }

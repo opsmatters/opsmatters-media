@@ -19,6 +19,7 @@ package com.opsmatters.media.util;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static java.time.temporal.ChronoUnit.*;
 
@@ -91,5 +92,13 @@ public class SessionDate
     public LocalDate toLocalDate()
     {
         return dt.atZone(ZoneId.of("UTC")).toLocalDate();
+    }
+
+    /**
+     * Returns the session date converted to a local date time.
+     */
+    public LocalDateTime toLocalDateTime()
+    {
+        return dt.atZone(ZoneId.of("UTC")).toLocalDateTime();
     }
 }

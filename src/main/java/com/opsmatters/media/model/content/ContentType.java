@@ -34,7 +34,8 @@ public enum ContentType
     PROJECT("PR", "Project", "projects", "glyphicon-tasks"),
     TOOL("TL", "Tool", "tools", "glyphicon-wrench"),
     ORGANISATION("ORG", "Organisation", "organisations", "glyphicon-record"),
-    ARTICLE("", "Article"); // pseudo type
+    ARTICLE("", "Article"), // pseudo type
+    CONTENT("", "Content"); // pseudo type
 
     private String code;
     private String value;

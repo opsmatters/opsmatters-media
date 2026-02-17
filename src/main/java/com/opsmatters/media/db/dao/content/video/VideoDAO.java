@@ -84,11 +84,18 @@ public class VideoDAO extends ContentDAO<Video>
       + "FROM VIDEOS WHERE SITE_ID=? AND CODE=? ORDER BY ID";
 
     /**
+     * The query to use to select the video items from the table by site and published date.
+     */
+    private static final String LIST_ITEMS_BY_SITE_DATE_SQL =  
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, VIDEO_ID, VIDEO_TYPE, DURATION, PUBLISHED, PROMOTE, NEWSLETTER, STATUS "
+      + "FROM VIDEOS WHERE SITE_ID=? AND PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
+
+    /**
      * The query to use to select the video items from the table by published date.
      */
     private static final String LIST_ITEMS_BY_DATE_SQL =  
       "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, VIDEO_ID, VIDEO_TYPE, DURATION, PUBLISHED, PROMOTE, NEWSLETTER, STATUS "
-      + "FROM VIDEOS WHERE SITE_ID=? AND PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
+      + "FROM VIDEOS WHERE PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
 
     /**
      * Constructor that takes a DAO factory.
@@ -438,9 +445,69 @@ public class VideoDAO extends ContentDAO<Video>
     }
 
     /**
-     * Returns the video items from the table by published date.
+     * Returns the video items from the table by site and published date.
      */
     public synchronized List<VideoItem> listItems(Site site, Instant date) throws SQLException
+    {
+        List<VideoItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listBySiteDateStmt == null)
+            listBySiteDateStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_SITE_DATE_SQL);
+        clearParameters(listBySiteDateStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listBySiteDateStmt.setString(1, site.getId());
+            listBySiteDateStmt.setTimestamp(2, new Timestamp(date.toEpochMilli()), UTC);
+            listBySiteDateStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listBySiteDateStmt.executeQuery();
+            ret = new ArrayList<VideoItem>();
+            while(rs.next())
+            {
+                VideoItem video = new VideoItem();
+                video.setUuid(rs.getString(1));
+                video.setSiteId(rs.getString(2));
+                video.setCode(rs.getString(3));
+                video.setId(rs.getInt(4));
+                video.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                video.setTitle(rs.getString(6));
+                video.setVideoId(rs.getString(7));
+                video.setVideoType(rs.getString(8));
+                video.setDuration(rs.getLong(9));
+                video.setPublished(rs.getBoolean(10));
+                video.setPromoted(rs.getBoolean(11));
+                video.setNewsletter(rs.getBoolean(12));
+                video.setStatus(rs.getString(13));
+                ret.add(video);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the video items from the table by published date.
+     */
+    public synchronized List<VideoItem> listItems(Instant date) throws SQLException
     {
         List<VideoItem> ret = null;
 
@@ -456,8 +523,7 @@ public class VideoDAO extends ContentDAO<Video>
 
         try
         {
-            listByDateStmt.setString(1, site.getId());
-            listByDateStmt.setTimestamp(2, new Timestamp(date.toEpochMilli()), UTC);
+            listByDateStmt.setTimestamp(1, new Timestamp(date.toEpochMilli()), UTC);
             listByDateStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByDateStmt.executeQuery();
             ret = new ArrayList<VideoItem>();
@@ -515,6 +581,8 @@ public class VideoDAO extends ContentDAO<Video>
         listByCodeStmt = null;
         closeStatement(listByDateStmt);
         listByDateStmt = null;
+        closeStatement(listBySiteDateStmt);
+        listBySiteDateStmt = null;
     }
 
     private PreparedStatement getByVideoIdStmt;
@@ -523,4 +591,5 @@ public class VideoDAO extends ContentDAO<Video>
     private PreparedStatement updateStmt;
     private PreparedStatement listByCodeStmt;
     private PreparedStatement listByDateStmt;
+    private PreparedStatement listBySiteDateStmt;
 }

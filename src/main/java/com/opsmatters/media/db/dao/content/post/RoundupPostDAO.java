@@ -84,11 +84,18 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
       + "FROM ROUNDUPS WHERE SITE_ID=? AND CODE=? ORDER BY ID";
 
     /**
+     * The query to use to select the roundup items from the table by site and published date.
+     */
+    private static final String LIST_ITEMS_BY_SITE_DATE_SQL =  
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
+      + "FROM ROUNDUPS WHERE SITE_ID=? AND PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
+
+    /**
      * The query to use to select the roundup items from the table by published date.
      */
     private static final String LIST_ITEMS_BY_DATE_SQL =  
       "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
-      + "FROM ROUNDUPS WHERE SITE_ID=? AND PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
+      + "FROM ROUNDUPS WHERE PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
 
     /**
      * Constructor that takes a DAO factory.
@@ -441,9 +448,70 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
     }
 
     /**
-     * Returns the roundup items from the table by published date.
+     * Returns the roundup items from the table by site and published date.
      */
     public synchronized List<RoundupPostItem> listItems(Site site, Instant date) throws SQLException
+    {
+        List<RoundupPostItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listBySiteDateStmt == null)
+            listBySiteDateStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_SITE_DATE_SQL);
+        clearParameters(listBySiteDateStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listBySiteDateStmt.setString(1, site.getId());
+            listBySiteDateStmt.setTimestamp(2, new Timestamp(date.toEpochMilli()), UTC);
+            listBySiteDateStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listBySiteDateStmt.executeQuery();
+            ret = new ArrayList<RoundupPostItem>();
+            while(rs.next())
+            {
+                RoundupPostItem post = new RoundupPostItem();
+                post.setUuid(rs.getString(1));
+                post.setSiteId(rs.getString(2));
+                post.setCode(rs.getString(3));
+                post.setId(rs.getInt(4));
+                post.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                post.setTitle(rs.getString(6));
+                post.setUrl(rs.getString(7));
+                post.setPublished(rs.getBoolean(8));
+                post.setPromoted(rs.getBoolean(9));
+                post.setNewsletter(rs.getBoolean(10));
+                post.setFeatured(rs.getBoolean(11));
+                post.setSponsored(rs.getBoolean(12));
+                post.setAuthor(rs.getString(13));
+                post.setStatus(rs.getString(14));
+                ret.add(post);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
+     * Returns the roundup items from the table by published date.
+     */
+    public synchronized List<RoundupPostItem> listItems(Instant date) throws SQLException
     {
         List<RoundupPostItem> ret = null;
 
@@ -459,8 +527,7 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
 
         try
         {
-            listByDateStmt.setString(1, site.getId());
-            listByDateStmt.setTimestamp(2, new Timestamp(date.toEpochMilli()), UTC);
+            listByDateStmt.setTimestamp(1, new Timestamp(date.toEpochMilli()), UTC);
             listByDateStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = listByDateStmt.executeQuery();
             ret = new ArrayList<RoundupPostItem>();
@@ -519,6 +586,8 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
         listByCodeStmt = null;
         closeStatement(listByDateStmt);
         listByDateStmt = null;
+        closeStatement(listBySiteDateStmt);
+        listBySiteDateStmt = null;
     }
 
     private PreparedStatement getByUrlStmt;
@@ -527,4 +596,5 @@ public class RoundupPostDAO extends ContentDAO<RoundupPost>
     private PreparedStatement updateStmt;
     private PreparedStatement listByCodeStmt;
     private PreparedStatement listByDateStmt;
+    private PreparedStatement listBySiteDateStmt;
 }
