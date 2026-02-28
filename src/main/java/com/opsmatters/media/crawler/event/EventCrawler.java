@@ -131,6 +131,8 @@ public class EventCrawler extends WebPageCrawler<EventDetails>
         if(trace(getDriver()))
             logger.info("article-page="+getPageSource(ARTICLE));
 
+        content.setPublishedDate(TimeUtils.truncateTimeUTC());
+
         if(getErrorCode() != E_ERROR_PAGE)
         {
             Element root = null;
@@ -164,8 +166,6 @@ public class EventCrawler extends WebPageCrawler<EventDetails>
                 // Trace to see the article root node
                 if(trace(root))
                     logger.info("event-node="+root.html());
-
-                content.setPublishedDate(TimeUtils.truncateTimeUTC());
 
                 boolean hasTime = false;
                 if(content.getStartDate() != null)

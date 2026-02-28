@@ -31,7 +31,8 @@ public enum FileFormat
     PNG("png"),
     GIF("gif"),
     WEBP("webp"),
-    SVG("svg");
+    SVG("svg"),
+    AVIF("avif");
 
     private String value;
     private String ext;
@@ -97,7 +98,7 @@ public enum FileFormat
      */
     public boolean isSupportedImage()
     {
-        return this == PNG || this.isJPEG() || this == GIF || this == WEBP || this == SVG;
+        return this == PNG || this.isJPEG() || this == GIF || this == WEBP || this == SVG || this == AVIF;
     }
 
     /**
