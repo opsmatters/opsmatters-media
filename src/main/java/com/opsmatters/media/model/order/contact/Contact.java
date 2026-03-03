@@ -43,7 +43,7 @@ public class Contact extends BaseEntity
     private Currency currency = null;
     private ContactStatus status = ContactStatus.NEW;
     private SuspendReason reason = SuspendReason.NONE;
-    private ContactRating rating = ContactRating.UNDEFINED;
+    private RiskRating riskRating = RiskRating.UNDEFINED;
     private boolean deliveryEmail = false;
     private boolean completionEmail = false;
 
@@ -65,7 +65,7 @@ public class Contact extends BaseEntity
         setName(name);
         setSalutation();
         setCurrency(Parameters.get(ORDER, CURRENCY).getValue());
-        setRating(ContactRating.NEUTRAL);
+        setRiskRating(RiskRating.MEDIUM);
         setDeliveryEmail(true);
         setCompletionEmail(true);
     }
@@ -95,7 +95,7 @@ public class Contact extends BaseEntity
             setCurrency(obj.getCurrency());
             setStatus(obj.getStatus());
             setReason(obj.getReason());
-            setRating(obj.getRating());
+            setRiskRating(obj.getRiskRating());
             setDeliveryEmail(obj.hasDeliveryEmail());
             setCompletionEmail(obj.hasCompletionEmail());
         }
@@ -356,27 +356,27 @@ public class Contact extends BaseEntity
     }
 
     /**
-     * Returns the rating.
+     * Returns the risk rating.
      */
-    public ContactRating getRating()
+    public RiskRating getRiskRating()
     {
-        return rating;
+        return riskRating;
     }
 
     /**
-     * Sets the rating.
+     * Sets the risk rating.
      */
-    public void setRating(String rating)
+    public void setRiskRating(int score)
     {
-        setRating(ContactRating.valueOf(rating));
+        setRiskRating(RiskRating.fromScore(score));
     }
 
     /**
-     * Sets the rating.
+     * Sets the risk rating.
      */
-    public void setRating(ContactRating rating)
+    public void setRiskRating(RiskRating riskRating)
     {
-        this.rating = rating;
+        this.riskRating = riskRating;
     }
 
     /**

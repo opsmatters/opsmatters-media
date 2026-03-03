@@ -31,7 +31,7 @@ public enum ContactNote
     REMINDER("Reminder Sent", "Sent email reminder for unpaid invoice"),
     SUSPENDED("Suspended", "Suspended due to non-payment"),
     REACTIVATED("Reactivated", "Reactivated after suspension"),
-    RATING_CHANGE("Rating Change", "Rating changed to '%s'");
+    RISK_CHANGE("Risk Change", "Risk changed to '%s'");
 
     private String value;
     private String text;
