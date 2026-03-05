@@ -322,4 +322,12 @@ public abstract class BaseEntity implements java.io.Serializable
     {
         this.createdBy = createdBy;
     }
+
+    /**
+     * Returns the css class for this object.
+     */
+    public String getCssClass()
+    {
+        return "";
+    }
 }

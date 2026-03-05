@@ -16,21 +16,17 @@
 package com.opsmatters.media.model.order.contact;
 
 import java.time.Instant;
-import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.FormatUtils;
 
 /**
- * Class representing a contact email.
+ * Class representing a person associated with a contact.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class ContactPerson extends BaseEntity
+public class ContactPerson extends Person
 {
     private String contactId = "";
-    private String name = "";
     private String email = "";
-    private String salutation = "";
     private boolean enabled = false;
 
     /**
@@ -68,9 +64,7 @@ public class ContactPerson extends BaseEntity
         {
             super.copyAttributes(obj);
             setContactId(obj.getContactId());
-            setName(obj.getName());
             setEmail(obj.getEmail());
-            setSalutation(obj.getSalutation());
             setEnabled(obj.isEnabled());
         }
     }
@@ -92,22 +86,6 @@ public class ContactPerson extends BaseEntity
     }
 
     /**
-     * Returns the name.
-     */
-    public String getName()
-    {
-        return name;
-    }
-
-    /**
-     * Sets the name.
-     */
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    /**
      * Returns the email.
      */
     public String getEmail()
@@ -121,38 +99,6 @@ public class ContactPerson extends BaseEntity
     public void setEmail(String email)
     {
         this.email = email;
-    }
-
-    /**
-     * Returns the salutation.
-     */
-    public String getSalutation()
-    {
-        return salutation;
-    }
-
-    /**
-     * Sets the salutation.
-     */
-    public void setSalutation(String salutation)
-    {
-        this.salutation = salutation;
-    }
-
-    /**
-     * Sets the default salutation.
-     */
-    public void setSalutation()
-    {
-        setSalutation(FormatUtils.getSalutation(getName()));
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the salutation has been set.
-     */
-    public boolean hasSalutation()
-    {
-        return getSalutation() != null && getSalutation().length() > 0;
     }
 
     /**

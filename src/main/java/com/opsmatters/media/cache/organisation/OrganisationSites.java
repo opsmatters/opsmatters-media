@@ -25,6 +25,7 @@ import com.opsmatters.media.cache.system.Sites;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
+import com.opsmatters.media.model.organisation.OrganisationStatus;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.ContentSiteSettings;
@@ -300,7 +301,7 @@ public class OrganisationSites extends StaticCache
     public static boolean isActive(String code)
     {
         boolean ret = false;
-        List<OrganisationSite> organisations = OrganisationSites.list(code);
+        List<OrganisationSite> organisations = list(code);
         for(OrganisationSite organisation : organisations)
         {
             if(organisation.isActive())
@@ -308,6 +309,22 @@ public class OrganisationSites extends StaticCache
                 ret = true;
                 break;
             }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the status of the organisation with the given code.
+     */
+    public static OrganisationStatus getStatus(String code)
+    {
+        OrganisationStatus ret = null;
+        List<OrganisationSite> organisations = list(code, true);
+        for(OrganisationSite organisation : organisations)
+        {
+            if(ret == null || organisation.isActive())
+                ret = organisation.getStatus();
         }
 
         return ret;

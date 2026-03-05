@@ -18,10 +18,8 @@ package com.opsmatters.media.model.order.contact;
 import java.time.Instant;
 import com.opsmatters.media.cache.admin.Parameters;
 import com.opsmatters.media.cache.order.Currencies;
-import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.order.Currency;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.FormatUtils;
 
 import static com.opsmatters.media.model.admin.ParameterType.*;
 import static com.opsmatters.media.model.admin.ParameterName.*;
@@ -31,14 +29,12 @@ import static com.opsmatters.media.model.admin.ParameterName.*;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Contact extends BaseEntity
+public class Contact extends Person
 {
-    private String name = "";
     private ContactType type = ContactType.UNDEFINED;
     private String code = "";
     private String email = ""; // Only for search
     private String website = "";
-    private String salutation = "";
     private String notes = "";
     private Currency currency = null;
     private ContactStatus status = ContactStatus.NEW;
@@ -86,11 +82,9 @@ public class Contact extends BaseEntity
         if(obj != null)
         {
             super.copyAttributes(obj);
-            setName(obj.getName());
             setType(obj.getType());
             setCode(obj.getCode());
             setWebsite(obj.getWebsite());
-            setSalutation(obj.getSalutation());
             setNotes(obj.getNotes());
             setCurrency(obj.getCurrency());
             setStatus(obj.getStatus());
@@ -99,62 +93,6 @@ public class Contact extends BaseEntity
             setDeliveryEmail(obj.hasDeliveryEmail());
             setCompletionEmail(obj.hasCompletionEmail());
         }
-    }
-
-    /**
-     * Returns the contact name.
-     */
-    public String toString()
-    {
-        return getName();
-    }
-
-    /**
-     * Returns the contact name.
-     */
-    public String getName()
-    {
-        return name;
-    }
-
-    /**
-     * Sets the contact name.
-     */
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    /**
-     * Returns the contact salutation.
-     */
-    public String getSalutation()
-    {
-        return salutation;
-    }
-
-    /**
-     * Sets the contact salutation.
-     */
-    public void setSalutation(String salutation)
-    {
-        this.salutation = salutation;
-    }
-
-    /**
-     * Sets the default contact salutation.
-     */
-    public void setSalutation()
-    {
-        setSalutation(FormatUtils.getSalutation(getName()));
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the contact salutation has been set.
-     */
-    public boolean hasSalutation()
-    {
-        return getSalutation() != null && getSalutation().length() > 0;
     }
 
     /**
@@ -441,5 +379,14 @@ public class Contact extends BaseEntity
     public void setCompletionEmailObject(Boolean completionEmail)
     {
         setCompletionEmail(completionEmail != null && completionEmail.booleanValue());
+    }
+
+    /**
+     * Returns the css class for the contact.
+     */
+    @Override
+    public String getCssClass()
+    {
+        return getStatus().css();
     }
 }

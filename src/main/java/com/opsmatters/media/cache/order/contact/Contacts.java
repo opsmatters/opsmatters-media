@@ -480,7 +480,11 @@ public class Contacts extends StaticCache
         for(ContactPerson person : personNameMap.values())
         {
             if(person.isEnabled())
-                ret.add(person);
+            {
+                Contact contact = getById(person.getContactId());
+                if(contact != null && contact.isActive())
+                    ret.add(person);
+            }
         }
 
         return ret;

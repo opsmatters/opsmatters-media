@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.time.Instant;
 import org.json.JSONObject;
+import com.opsmatters.media.cache.organisation.OrganisationSites;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.content.FieldMap;
 import com.opsmatters.media.model.content.FieldName;
@@ -34,6 +35,7 @@ import com.opsmatters.media.model.content.post.PostConfig;
 import com.opsmatters.media.model.content.post.RoundupPostConfig;
 import com.opsmatters.media.model.content.project.ProjectConfig;
 import com.opsmatters.media.model.content.tool.ToolConfig;
+import com.opsmatters.media.model.organisation.OrganisationStatus;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;
@@ -607,5 +609,15 @@ public class Organisation extends BaseEntity implements FieldSource
     public ToolConfig getToolConfig()
     {
         return hasToolConfig() ? getSettings(TOOL).getToolConfig() : null;
+    }
+
+    /**
+     * Returns the css class for the organisation.
+     */
+    @Override
+    public String getCssClass()
+    {
+        OrganisationStatus status = OrganisationSites.getStatus(code);
+        return status != null ? status.css() : "";
     }
 }
