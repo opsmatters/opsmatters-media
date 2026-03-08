@@ -29,7 +29,7 @@ public enum SuspendReason
     NONE("None"),
     UNPAID_INVOICE("Unpaid Invoice"),
     REFUSED_INVOICE("Refused Invoice"),
-    REFUSED_RATE("Refused Rate"),
+    QUERIED_PRICE("Queried Price"),
     ALL("All"); // Pseudo status
 
     private String value;
@@ -97,7 +97,7 @@ public enum SuspendReason
         ret.add(NONE);
         ret.add(UNPAID_INVOICE);
         ret.add(REFUSED_INVOICE);
-        ret.add(REFUSED_RATE);
+        ret.add(QUERIED_PRICE);
 
         return ret;
     }
