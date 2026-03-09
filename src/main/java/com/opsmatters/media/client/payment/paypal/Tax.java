@@ -1,0 +1,78 @@
+/*
+ * Copyright 2024 Gerald Curley
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.opsmatters.media.client.payment.paypal;
+
+import org.json.JSONObject;
+
+/**
+ * Represents the tax object for a PayPal invoice.
+ */
+public class Tax extends JSONObject
+{
+    private static final String NAME = "name";
+    private static final String PERCENT = "percent";
+
+    /**
+     * Default constructor.
+     */
+    public Tax() 
+    {
+    }
+
+    /**
+     * Constructor that takes a JSONObject.
+     */
+    public Tax(JSONObject obj) 
+    {
+        if(obj.has(NAME))
+            setName(obj.optString(NAME));
+        if(obj.has(PERCENT))
+            setPercent(obj.optString(PERCENT));
+    }
+
+    /**
+     * Returns the name.
+     */
+    public String getName() 
+    {
+        return optString(NAME);
+    }
+
+    /**
+     * Sets the name.
+     */
+    public void setName(String name) 
+    {
+        put(NAME, name);
+    }
+
+    /**
+     * Returns the percent.
+     */
+    public String getPercent() 
+    {
+        return optString(PERCENT);
+    }
+
+    /**
+     * Sets the percent.
+     */
+    public void setPercent(String percent) 
+    {
+        put(PERCENT, percent);
+    }
+}

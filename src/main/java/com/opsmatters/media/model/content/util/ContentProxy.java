@@ -16,7 +16,7 @@
 package com.opsmatters.media.model.content.util;
 
 import com.opsmatters.media.model.BaseEntity;
-import com.opsmatters.media.client.proxy.WebshareProxy;
+import com.opsmatters.media.client.proxy.webshare.WebshareProxy;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.Formats;
 

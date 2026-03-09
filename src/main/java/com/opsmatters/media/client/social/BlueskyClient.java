@@ -36,18 +36,21 @@ import org.jsoup.nodes.Document;
 import com.opsmatters.media.model.provider.SocialProviderId;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.ChannelPost;
-import com.opsmatters.media.client.ApiClient;
+import com.opsmatters.media.client.RestClient;
+import com.opsmatters.media.client.social.bluesky.BlueskyException;
+import com.opsmatters.media.client.social.bluesky.Facet;
+import com.opsmatters.media.client.social.bluesky.FacetParser;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.Match;
 
 /**
- * Class that represents a connection to Bluesky for social media posts.
+ * Executes Bluesky API calls using a REST client.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class BlueskyClient extends ApiClient implements SocialClient
+public class BlueskyClient extends RestClient implements SocialClient
 {
     private static final Logger logger = Logger.getLogger(BlueskyClient.class.getName());
 
