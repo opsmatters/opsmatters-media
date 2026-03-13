@@ -137,7 +137,7 @@ public class OrderDAO extends BaseDAO
         table.addColumn("INVOICE_ID", Types.VARCHAR, 30, false);
         table.addColumn("INVOICE_NUMBER", Types.VARCHAR, 30, false);
         table.addColumn("INVOICE_EMAIL", Types.VARCHAR, 50, false);
-        table.addColumn("INVOICE_URL", Types.VARCHAR, 128, false);
+        table.addColumn("INVOICE_URL", Types.VARCHAR, 256, false);
         table.addColumn("INVOICE_NOTE", Types.LONGVARCHAR, false);
         table.addColumn("INVOICE_STATUS", Types.VARCHAR, 15, true);
         table.addColumn("CREATED_BY", Types.VARCHAR, 15, true);

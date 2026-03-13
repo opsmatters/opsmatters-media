@@ -19,6 +19,8 @@ package com.opsmatters.media.model.order;
 import java.util.List;
 import java.util.ArrayList;
 
+import static com.opsmatters.media.model.order.PaymentMethod.*;
+
 /**
  * Represents the status of an invoice.
  * 
@@ -30,10 +32,12 @@ public enum InvoiceStatus
     NEW("New", "glyphicon-unchecked", ""),
     DRAFT("Draft", "glyphicon-edit", ""),
     SENT("Sent", "glyphicon-send", "status-warn"),
+    OPEN("Open", "glyphicon-send", "status-warn"),
     PAYMENT_PENDING("Pending", "glyphicon-hourglass", "status-warn"),
     PAID("Paid", "glyphicon-ok-circle", "status-success"),
     MARKED_AS_PAID("Marked As Paid", "glyphicon-ok-sign", "status-success"),
     CANCELLED("Cancelled", "glyphicon-trash", "status-error"),
+    VOID("Void", "glyphicon-trash", "status-error"),
     REFUNDED("Refunded", "glyphicon-log-out", "status-info"),
     ALL("All", "", ""); // Pseudo status
 
@@ -117,21 +121,32 @@ public enum InvoiceStatus
     }
 
     /**
-     * Returns a list of the invoice statuses.
+     * Returns a list of the invoice statuses for the given payment method.
      */
-    public static List<InvoiceStatus> toList()
+    public static List<InvoiceStatus> toList(PaymentMethod method)
     {
         List<InvoiceStatus> ret = new ArrayList<InvoiceStatus>();
 
         ret.add(NONE);
         ret.add(NEW);
-        ret.add(DRAFT);
-        ret.add(SENT);
-        ret.add(PAYMENT_PENDING);
-        ret.add(PAID);
-        ret.add(MARKED_AS_PAID);
-        ret.add(CANCELLED);
-        ret.add(REFUNDED);
+
+        if(method == PAYPAL)
+        {
+            ret.add(DRAFT);
+            ret.add(SENT);
+            ret.add(PAYMENT_PENDING);
+            ret.add(PAID);
+            ret.add(MARKED_AS_PAID);
+            ret.add(CANCELLED);
+            ret.add(REFUNDED);
+        }
+        else if(method == STRIPE)
+        {
+            ret.add(DRAFT);
+            ret.add(OPEN);
+            ret.add(PAID);
+            ret.add(VOID);
+        }
 
         return ret;
     }

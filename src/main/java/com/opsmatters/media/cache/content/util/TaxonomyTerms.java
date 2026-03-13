@@ -73,6 +73,16 @@ public class TaxonomyTerms extends StaticCache
     }
 
     /**
+     * Clears the terms.
+     */
+    public static void clear()
+    {
+        setInitialised(false);
+        terms.clear();
+        names.clear();
+    }
+
+    /**
      * Adds the taxonomy term.
      */
     public static void add(TaxonomyTerm term, boolean sort)

@@ -53,7 +53,7 @@ public class Order extends BaseEntity
     private OrderStatus status = OrderStatus.NEW;
     private CancelReason reason = CancelReason.NONE;
     private boolean prePayment = false;
-    private Invoice invoice = new Invoice();
+    private OrderInvoice invoice = new OrderInvoice();
 
     /**
      * Default constructor.
@@ -565,7 +565,7 @@ public class Order extends BaseEntity
     /**
      * Returns the invoice.
      */
-    public Invoice getInvoice()
+    public OrderInvoice getInvoice()
     {
         return invoice;
     }

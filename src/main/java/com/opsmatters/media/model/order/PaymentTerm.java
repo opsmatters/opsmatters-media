@@ -26,24 +26,38 @@ import java.util.ArrayList;
  */
 public enum PaymentTerm
 {
-    UNDEFINED("", "Undefined"),
-    ON_RECEIPT("DUE_ON_RECEIPT", "On Receipt"),
-    NET10("NET_10", "NET 10"),
-    NET30("NET_30", "NET 30"),
-    ALL("", "All"); // Pseudo status
+    UNDEFINED("Undefined"),
+    ON_RECEIPT("DUE_ON_RECEIPT", "On Receipt", 0),
+    NET10("NET_10", "NET 10", 10),
+    NET30("NET_30", "NET 30", 30),
+    ALL("All"); // Pseudo status
 
     private String code;
     private String value;
+    private int days;
 
     /**
-     * Constructor that takes the term value.
+     * Constructor that takes the term code, value and days.
      * @param code The value for the term
      * @param value The value for the term
+     * @param days The days for the term
      */
-    PaymentTerm(String code, String value)
+    PaymentTerm(String code, String value, int days)
     {
         this.code = code;
         this.value = value;
+        this.days = days;
+    }
+
+    /**
+     * Constructor that takes the term value.
+     * @param value The value for the term
+     */
+    PaymentTerm(String value)
+    {
+        this.code = "";
+        this.value = value;
+        this.days = 0;
     }
 
     /**
@@ -71,6 +85,15 @@ public enum PaymentTerm
     public String value()
     {
         return value;
+    }
+
+    /**
+     * Returns the days of the term.
+     * @return The days of the term.
+     */
+    public int days()
+    {
+        return days;
     }
 
     /**

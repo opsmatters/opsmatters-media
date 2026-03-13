@@ -22,7 +22,7 @@ import com.opsmatters.media.cache.order.contact.Contacts;
 import com.opsmatters.media.model.order.Order;
 import com.opsmatters.media.model.order.OrderItem;
 import com.opsmatters.media.model.order.Sender;
-import com.opsmatters.media.model.order.Invoice;
+import com.opsmatters.media.model.order.OrderInvoice;
 import com.opsmatters.media.model.order.contact.Contact;
 import com.opsmatters.media.model.order.contact.Company;
 
@@ -59,7 +59,7 @@ public class PayPalInvoice extends JSONObject implements java.io.Serializable
      */
     public PayPalInvoice(Sender sender, Order order, List<OrderItem> orderItems, Company company) 
     {
-        Invoice invoice = order.getInvoice();
+        OrderInvoice invoice = order.getInvoice();
 
         Invoicer invoicer = new Invoicer();
         invoicer.setBusinessName(sender.getBillingName());

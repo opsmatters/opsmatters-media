@@ -83,6 +83,8 @@ public class Site extends BaseEntity
             setNewsletterHour(obj.getNewsletterHour());
             setEnabled(obj.isEnabled());
             setS3Config(new S3Config(obj.getS3Config()));
+
+            clearEnvironments();
             for(SiteEnvironment environment : obj.getEnvironments().values())
                 addEnvironment(new SiteEnvironment(environment));
         }
@@ -296,11 +298,19 @@ public class Site extends BaseEntity
     }
 
     /**
+     * Clears the environments for the site.
+     */
+    public void clearEnvironments()
+    {
+        this.environments.clear();
+    }
+
+    /**
      * Sets the environments for the site.
      */
     public void setEnvironments(Map<EnvironmentId,SiteEnvironment> environments)
     {
-        this.environments.clear();
+        clearEnvironments();
         this.environments.putAll(environments);
     }
 }

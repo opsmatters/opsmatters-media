@@ -226,7 +226,7 @@ public class Company extends BaseEntity
     /**
      * Returns the given name and surname.
      */
-    public String getFullName()
+    public String getIndividualName()
     {
         StringBuffer ret = new StringBuffer();
         if(hasGivenName())

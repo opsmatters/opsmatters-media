@@ -20,7 +20,7 @@ package com.opsmatters.media.model.order;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Invoice
+public class OrderInvoice
 {
     private String id = "";
     private String number = "";
@@ -32,14 +32,14 @@ public class Invoice
     /**
      * Default constructor.
      */
-    public Invoice()
+    public OrderInvoice()
     {
     }
 
     /**
      * Copy constructor.
      */
-    public Invoice(Invoice obj)
+    public OrderInvoice(OrderInvoice obj)
     {
         copyAttributes(obj);
     }
@@ -47,7 +47,7 @@ public class Invoice
     /**
      * Copies the attributes of the given object.
      */
-    public void copyAttributes(Invoice obj)
+    public void copyAttributes(OrderInvoice obj)
     {
         if(obj != null)
         {
