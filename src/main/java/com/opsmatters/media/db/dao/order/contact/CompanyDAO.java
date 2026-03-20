@@ -100,10 +100,10 @@ public class CompanyDAO extends BaseDAO
         table.addColumn("BILLING_EMAIL", Types.VARCHAR, 50, false);
         table.addColumn("GIVEN_NAME", Types.VARCHAR, 30, false);
         table.addColumn("SURNAME", Types.VARCHAR, 30, false);
-        table.addColumn("ADDRESS_LINE_1", Types.VARCHAR, 50, false);
-        table.addColumn("ADDRESS_LINE_2", Types.VARCHAR, 50, false);
-        table.addColumn("ADDRESS_AREA_1", Types.VARCHAR, 20, false);
-        table.addColumn("ADDRESS_AREA_2", Types.VARCHAR, 20, false);
+        table.addColumn("ADDRESS_LINE_1", Types.VARCHAR, 80, false);
+        table.addColumn("ADDRESS_LINE_2", Types.VARCHAR, 80, false);
+        table.addColumn("ADDRESS_AREA_1", Types.VARCHAR, 30, false);
+        table.addColumn("ADDRESS_AREA_2", Types.VARCHAR, 30, false);
         table.addColumn("POSTAL_CODE", Types.VARCHAR, 20, false);
         table.addColumn("COUNTRY_CODE", Types.VARCHAR, 5, false);
         table.addColumn("PHONE_CODE", Types.VARCHAR, 5, false);

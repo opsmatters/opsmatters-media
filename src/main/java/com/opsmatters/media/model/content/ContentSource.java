@@ -25,7 +25,8 @@ public enum ContentSource
 {
     CHANNEL("channel", "Channel"),
     PAGE("page", "Page"),
-    STORE("store", "Store"); 
+    RECENT("recent", "Recent"),
+    ARCHIVE("archive", "Archive"); 
 
     private String code;
     private String value;
@@ -69,12 +70,12 @@ public enum ContentSource
     }
 
     /**
-     * Returns <CODE>true</code> if this is the STORE source.
-     * @return <CODE>true</code> if this is the STORE source.
+     * Returns <CODE>true</code> if this is the ARCHIVE source.
+     * @return <CODE>true</code> if this is the ARCHIVE source.
      */
-    public boolean isStore()
+    public boolean isArchive()
     {
-        return this == STORE;
+        return this == ARCHIVE;
     }
 
     /**
@@ -93,6 +94,15 @@ public enum ContentSource
     public boolean isPage()
     {
         return this == PAGE;
+    }
+
+    /**
+     * Returns <CODE>true</code> if this is the RECENT source.
+     * @return <CODE>true</code> if this is the RECENT source.
+     */
+    public boolean isRecent()
+    {
+        return this == RECENT;
     }
 
     /**

@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.opsmatters.media.client.payment;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.logging.Logger;
+import java.time.Instant;
 import org.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import com.stripe.Stripe;
@@ -33,6 +34,7 @@ import com.stripe.param.InvoiceCreateParams;
 import com.stripe.param.InvoiceUpdateParams;
 import com.stripe.param.InvoiceItemCreateParams;
 import com.stripe.param.InvoiceItemListParams;
+import com.stripe.param.InvoiceSearchParams;
 import com.stripe.exception.StripeException;
 import com.stripe.exception.InvalidRequestException;
 import com.opsmatters.media.model.order.Order;
@@ -150,16 +152,21 @@ public class StripeClient extends Client
      */
     public Customer getCustomer(Contact contact, String email) throws StripeException
     {
-        CustomerSearchParams params = CustomerSearchParams.builder()
-            .setQuery(String.format("name: '%s'", contact.getName()))
-            .build();
+        List<Customer> customers = new ArrayList<Customer>();
 
-        List<Customer> customers = Customer.search(params).getData();
+        if(contact != null)
+        {
+            CustomerSearchParams params = CustomerSearchParams.builder()
+                .setQuery(String.format("name: '%s'", contact.getName()))
+                .build();
+
+            customers.addAll(Customer.search(params).getData());
+        }
 
         // If no customer found, search by email instead
         if(customers.size() == 0)
         {
-            params = CustomerSearchParams.builder()
+            CustomerSearchParams params = CustomerSearchParams.builder()
                 .setQuery(String.format("email: '%s'", email))
                 .build();
 
@@ -340,6 +347,47 @@ public class StripeClient extends Client
         {
             logger.severe("Invoice does not exist: "+invoiceId);
             throw e;
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the invoices for the given email address.
+     */
+    public List<Invoice> getInvoices(String email) throws StripeException
+    {
+        List<Invoice> invoices = new ArrayList<Invoice>();
+
+        Customer customer = getCustomer(null, email);
+        if(customer != null)
+        {
+            InvoiceSearchParams params = InvoiceSearchParams.builder()
+                .setQuery(String.format("customer: '%s'", customer.getId()))
+                .build();
+
+            invoices.addAll(Invoice.search(params).getData());
+        }
+
+        return invoices;
+    }
+
+    /**
+     * Returns the next invoice for the subscription for the given email address.
+     */
+    public Invoice getNextInvoice(String email, Instant nextDate) throws StripeException
+    {
+        Invoice ret = null;
+        List<Invoice> invoices = getInvoices(email);
+        for(Invoice invoice : invoices)
+        {
+            Instant created = Instant.ofEpochSecond(invoice.getCreated());
+            if(created.isAfter(nextDate)
+                && invoice.getStatus().equals("paid"))
+            {
+                ret = invoice;
+                break;
+            }
         }
 
         return ret;

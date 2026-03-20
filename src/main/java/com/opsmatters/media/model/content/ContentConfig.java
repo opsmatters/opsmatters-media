@@ -94,6 +94,14 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
     }
 
     /**
+     * Returns the code of the organisation.
+     */
+    public String toString()
+    {
+        return getCode();
+    }
+
+    /**
      * Returns the name of the organisation for this config.
      */
     public String getName()

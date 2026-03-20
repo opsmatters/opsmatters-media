@@ -773,4 +773,14 @@ public class TimeUtils
     {
         return dt != null ? atStartOfDay(LocalDate.ofInstant(dt, ZoneId.of("UTC"))) : null;
     }
+
+    /**
+     * Returns the given date at the start of the minute.
+     * @param dt The date to be converted
+     * @return The given date at the start of the day
+     */
+    public static Instant atStartOfMinute(Instant dt)
+    {
+        return dt != null ? dt.truncatedTo(ChronoUnit.MINUTES) : null;
+    }
 }

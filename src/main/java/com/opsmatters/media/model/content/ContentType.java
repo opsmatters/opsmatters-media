@@ -289,7 +289,7 @@ public enum ContentType
     }
 
     /**
-     * Returns the content source for the type.
+     * Returns the default content source for the type.
      */
     public ContentSource source()
     {
@@ -297,7 +297,7 @@ public enum ContentType
             return ContentSource.PAGE;
         else if(this == VIDEO)
             return ContentSource.CHANNEL;
-        return ContentSource.STORE;
+        return ContentSource.ARCHIVE;
     }
 
     /**

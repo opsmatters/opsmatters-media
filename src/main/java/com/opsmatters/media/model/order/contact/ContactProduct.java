@@ -16,12 +16,12 @@
 package com.opsmatters.media.model.order.contact;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.DateTimeException;
 import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.ChronoUnit;
 import java.time.format.DateTimeParseException;
 import com.opsmatters.media.cache.order.Currencies;
 import com.opsmatters.media.cache.order.product.Products;
@@ -414,7 +414,7 @@ public class ContactProduct extends BaseEntity
      */
     public void setLastDate(Instant lastDate)
     {
-        this.lastDate = TimeUtils.atStartOfDay(lastDate);
+        this.lastDate = TimeUtils.atStartOfMinute(lastDate);
     }
 
     /**
@@ -454,11 +454,11 @@ public class ContactProduct extends BaseEntity
     public Instant getNextDate()
     {
         ZoneId zone = ZoneId.of("UTC");
-        LocalDate nextDt = LocalDate.ofInstant(getStartDate(), zone);
+        LocalDateTime nextDt = LocalDateTime.ofInstant(getStartDate(), zone);
 
         if(getLastDate() != null)
         {
-            LocalDate lastDt = LocalDate.ofInstant(lastDate, zone);
+            LocalDateTime lastDt = LocalDateTime.ofInstant(getLastDate(), zone);
 
             int month = lastDt.getMonthValue();
             int year = lastDt.getYear();
@@ -474,15 +474,17 @@ public class ContactProduct extends BaseEntity
 
             try
             {
-                nextDt = LocalDate.of(year, month, nextDt.getDayOfMonth());
+                nextDt = LocalDateTime.of(year, month, nextDt.getDayOfMonth(),
+                    lastDt.getHour(), lastDt.getMinute(), 0);
             }
             catch(DateTimeException e) // Invalid date (eg. 31/02) changed to last day of month
             {
-                nextDt = LocalDate.of(year, month, 1).with(TemporalAdjusters.lastDayOfMonth());
+                nextDt = LocalDateTime.of(year, month, 1, lastDt.getHour(), lastDt.getMinute(), 0)
+                    .with(TemporalAdjusters.lastDayOfMonth());
             }
         }
 
-        return TimeUtils.atStartOfDay(nextDt);
+        return nextDt.atZone(zone).toInstant();
     }
 
     /**

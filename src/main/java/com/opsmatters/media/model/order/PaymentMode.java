@@ -28,8 +28,9 @@ public enum PaymentMode
 {
     UNDEFINED("Undefined"),
     INVOICE("Invoice"),
-    AUTOMATIC("Automatic"),
-    MANUAL("Manual"),
+    PAYOUT("Payout"),
+    WITHDRAWAL("Withdrawal"),
+    SUBSCRIPTION("Subscription"),
     ALL("All"); // Pseudo status
 
     private String value;
@@ -96,8 +97,9 @@ public enum PaymentMode
 
         ret.add(UNDEFINED);
         ret.add(INVOICE);
-        ret.add(AUTOMATIC);
-        ret.add(MANUAL);
+        ret.add(PAYOUT);
+        ret.add(WITHDRAWAL);
+        ret.add(SUBSCRIPTION);
 
         return ret;
     }
