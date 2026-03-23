@@ -23,18 +23,21 @@ package com.opsmatters.media.model.monitor;
  */
 public enum ContentEventType
 {
-    CHANGE("Change"),
-    ALERT("Alert"),
-    FAILURE("Failure");
+    CHANGE("CH", "Change"),
+    ALERT("AL", "Alert"),
+    FAILURE("FL", "Failure");
 
+    private String code;
     private String value;
 
     /**
      * Constructor that takes the event value.
+     * @param code The code for the event
      * @param value The value for the event
      */
-    ContentEventType(String value)
+    ContentEventType(String code, String value)
     {
+        this.code = code;
         this.value = value;
     }
 
@@ -45,6 +48,15 @@ public enum ContentEventType
     public String toString()
     {
         return value();
+    }
+
+    /**
+     * Returns the code of the event.
+     * @return The code of the event.
+     */
+    public String code()
+    {
+        return code;
     }
 
     /**

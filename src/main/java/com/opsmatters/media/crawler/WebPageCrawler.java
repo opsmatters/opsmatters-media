@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.concurrent.TimeUnit;
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.time.format.DateTimeParseException;
 import org.apache.commons.logging.LogFactory;
 import com.google.common.net.UrlEscapers;
@@ -331,7 +332,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         if(request.hasTrailingSlash())
             url += "/";
 
-        getDriver().manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+        getDriver().manage().timeouts().pageLoadTimeout(Duration.of(30, ChronoUnit.SECONDS));
 
         logger.info("Loading page: "+url);
         getDriver().get(url);
@@ -498,7 +499,7 @@ public abstract class WebPageCrawler<D extends ContentDetails> extends ContentCr
         long wait = loading.getWait();
         if(debug())
             logger.info("Set implicit wait: "+wait);
-        getDriver().manage().timeouts().implicitlyWait(wait, TimeUnit.MILLISECONDS);
+        getDriver().manage().timeouts().implicitlyWait(Duration.of(wait, ChronoUnit.MILLIS));
     }
 
     protected void configureExplicitWait(ContentLoading loading)

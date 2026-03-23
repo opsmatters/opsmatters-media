@@ -113,6 +113,22 @@ public class ContentSettings extends BaseEntity
     }
 
     /**
+     * Returns the settings GUID.
+     */
+    public String toString()
+    {
+        return getGuid();
+    }
+
+    /**
+     * Returns the settings GUID.
+     */
+    public String getGuid()
+    {
+        return String.format("%s-%s", type.code(), code);
+    }
+
+    /**
      * Returns the organisation code.
      */
     public String getCode()

@@ -60,6 +60,22 @@ public abstract class ContentEvent extends BaseEntity
     }
 
     /**
+     * Returns the event GUID.
+     */
+    public String toString()
+    {
+        return getGuid();
+    }
+
+    /**
+     * Returns the event GUID.
+     */
+    public String getGuid()
+    {
+        return String.format("%s-%s", getType().code(), code);
+    }
+
+    /**
      * Returns the type of the event.
      */
     public abstract ContentEventType getType();

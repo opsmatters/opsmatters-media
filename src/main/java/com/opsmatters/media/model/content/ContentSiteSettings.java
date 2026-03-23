@@ -162,6 +162,22 @@ public class ContentSiteSettings extends BaseEntity
     }
 
     /**
+     * Returns the settings GUID.
+     */
+    public String toString()
+    {
+        return getGuid();
+    }
+
+    /**
+     * Returns the settings GUID.
+     */
+    public String getGuid()
+    {
+        return String.format("%s-%s-%s", type.code(), siteId, code);
+    }
+
+    /**
      * Returns the site id.
      */
     public String getSiteId()

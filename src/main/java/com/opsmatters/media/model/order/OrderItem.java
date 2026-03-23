@@ -18,6 +18,7 @@ package com.opsmatters.media.model.order;
 import java.time.Instant;
 import org.apache.commons.text.StringSubstitutor;
 import com.opsmatters.media.cache.system.Sites;
+import com.opsmatters.media.cache.order.Orders;
 import com.opsmatters.media.cache.order.Currencies;
 import com.opsmatters.media.cache.order.product.Products;
 import com.opsmatters.media.model.BaseEntity;
@@ -111,6 +112,15 @@ public class OrderItem extends BaseEntity
     public void setOrderId(String orderId)
     {
         this.orderId = orderId;
+    }
+
+    /**
+     * Returns the contact name.
+     */
+    public String getContactName()
+    {
+        Order order = Orders.getById(orderId);
+        return order != null ? order.getContactName() : "";
     }
 
     /**

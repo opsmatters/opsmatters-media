@@ -371,8 +371,14 @@ public class DraftContentPost extends DraftPost
     public String getGuid()
     {
         String ret = null;
-        if(hasCode() && contentId > 0 && contentType != null)
-            ret = String.format("%s-%s-%05d", contentType.code(), code, contentId);
+        if(hasCode() && contentType != null)
+        {
+            if(contentId > 0)
+                ret = String.format("%s-%s-%05d", contentType.code(), code, contentId);
+            else
+                ret = String.format("%s-%s", contentType.code(), code);
+        }
+
         return ret;
     }
 
