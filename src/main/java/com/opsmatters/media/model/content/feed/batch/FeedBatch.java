@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.feed.batch;
+package com.opsmatters.media.model.content.feed.batch;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.HashMap;
 import com.opsmatters.media.cache.system.Sites;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.feed.ContentFeed;
+import com.opsmatters.media.model.content.feed.ContentFeed;
 import com.opsmatters.media.model.system.Site;
 
 /**

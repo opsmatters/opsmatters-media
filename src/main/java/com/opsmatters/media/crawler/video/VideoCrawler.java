@@ -36,7 +36,6 @@ import com.opsmatters.media.model.content.crawler.field.FieldSelector;
 import com.opsmatters.media.model.content.crawler.field.FieldFilter;
 import com.opsmatters.media.model.content.crawler.field.FilterScope;
 import com.opsmatters.media.model.content.crawler.field.FilterResult;
-import com.opsmatters.media.model.content.crawler.CrawlerVideoChannel;
 import com.opsmatters.media.crawler.ContentCrawler;
 import com.opsmatters.media.client.video.VideoClient;
 import com.opsmatters.media.client.video.VideoClientFactory;

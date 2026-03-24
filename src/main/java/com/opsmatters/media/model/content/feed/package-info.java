@@ -1,4 +1,4 @@
 /**
  * The feed model classes used by opsmatters.
  */
-package com.opsmatters.media.model.feed; 
+package com.opsmatters.media.model.content.feed;

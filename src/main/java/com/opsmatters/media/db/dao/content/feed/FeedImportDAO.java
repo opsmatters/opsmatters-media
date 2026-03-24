@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.db.dao.feed;
+package com.opsmatters.media.db.dao.content.feed;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
-import com.opsmatters.media.model.feed.FeedImport;
+import com.opsmatters.media.model.content.feed.FeedImport;
 import com.opsmatters.media.db.dao.BaseDAO;
 
 /**

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.feed;
+package com.opsmatters.media.model.content.feed;
 
 import java.time.Instant;
 import com.opsmatters.media.model.BaseEntity;

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.feed.video;
+package com.opsmatters.media.model.content.feed.video;
 
-import com.opsmatters.media.model.feed.atom.AtomFeed;
+import com.opsmatters.media.model.content.feed.atom.AtomFeed;
 
 /**
  * Class for an Atom feed item from YouTube.

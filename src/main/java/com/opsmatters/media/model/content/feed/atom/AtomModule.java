@@ -13,41 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.feed.video;
-
-import com.opsmatters.media.model.feed.atom.AtomEntry;
+package com.opsmatters.media.model.content.feed.atom;
 
 /**
- * Class representing an Atom feed entry from YouTube.
+ * Class for modules of an Atom feed item.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class YouTubeEntry extends AtomEntry
+public class AtomModule implements java.io.Serializable
 {
-    private String videoId;
-    private String channelId;
+    private String uri;
 
-    YouTubeEntry()
+    AtomModule()
     {
     }
 
-    public String getVideoId()
+    public String toString()
     {
-        return videoId;
+        return uri;
     }
 
-    public void setVideoId(String videoId)
+    public String getUri()
     {
-        this.videoId = videoId;
-    }
-
-    public String getChannelId()
-    {
-        return channelId;
-    }
-
-    public void setChannelId(String channelId)
-    {
-        this.channelId = channelId;
+        return uri;
     }
 }

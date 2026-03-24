@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.model.feed.batch;
+package com.opsmatters.media.model.content.feed.batch;
 
 import java.util.List;
 import java.util.ArrayList;

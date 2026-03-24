@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.client.feed;
+package com.opsmatters.media.client;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.apache.commons.io.FileUtils;
-import com.opsmatters.media.client.RestClient;
 
 /**
  * Executes Feeds API calls using a REST client.

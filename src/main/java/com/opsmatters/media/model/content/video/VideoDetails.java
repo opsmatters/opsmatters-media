@@ -18,8 +18,8 @@ package com.opsmatters.media.model.content.video;
 import com.opsmatters.media.cache.provider.VideoProviders;
 import com.opsmatters.media.model.provider.VideoProviderId;
 import com.opsmatters.media.model.provider.VideoProvider;
-import com.opsmatters.media.model.feed.video.YouTubeEntry;
 import com.opsmatters.media.model.content.ArticleDetails;
+import com.opsmatters.media.model.content.feed.video.YouTubeEntry;
 import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
