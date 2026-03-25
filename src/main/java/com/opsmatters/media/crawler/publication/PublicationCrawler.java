@@ -32,13 +32,13 @@ import com.opsmatters.media.model.content.crawler.ContentLoading;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.model.content.crawler.field.Fields;
-import com.opsmatters.media.model.logging.LogEventCategory;
-import com.opsmatters.media.model.logging.LogError;
+import com.opsmatters.media.model.system.logging.LogEventCategory;
+import com.opsmatters.media.model.system.logging.LogError;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 
-import static com.opsmatters.media.model.logging.LogEventCategory.*;
-import static com.opsmatters.media.model.logging.ErrorCode.*;
+import static com.opsmatters.media.model.system.logging.LogEventCategory.*;
+import static com.opsmatters.media.model.system.logging.ErrorCode.*;
 
 /**
  * Class representing a crawler for publications.

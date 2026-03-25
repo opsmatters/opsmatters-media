@@ -20,7 +20,7 @@ import com.opsmatters.media.model.admin.EmailBody;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.system.EnvironmentId;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.drupal.FeedsFeed;
+import com.opsmatters.media.model.content.drupal.FeedsFeed;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.Formats;
 

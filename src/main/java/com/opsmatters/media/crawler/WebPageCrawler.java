@@ -64,18 +64,18 @@ import com.opsmatters.media.model.content.crawler.field.FieldCondition;
 import com.opsmatters.media.model.content.ContentDetails;
 import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.crawler.parser.ElementType;
-import com.opsmatters.media.model.logging.LogEvent;
-import com.opsmatters.media.model.logging.LogError;
-import com.opsmatters.media.model.logging.LogEventCategory;
+import com.opsmatters.media.model.system.logging.LogEvent;
+import com.opsmatters.media.model.system.logging.LogError;
+import com.opsmatters.media.model.system.logging.LogEventCategory;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.crawler.CrawlerStatus.*;
 import static com.opsmatters.media.model.content.crawler.DocumentFormat.*;
 import static com.opsmatters.media.model.content.crawler.field.FieldProtocol.*;
-import static com.opsmatters.media.model.logging.LogEventType.*;
-import static com.opsmatters.media.model.logging.LogEventCategory.*;
-import static com.opsmatters.media.model.logging.ErrorCode.*;
+import static com.opsmatters.media.model.system.logging.LogEventType.*;
+import static com.opsmatters.media.model.system.logging.LogEventCategory.*;
+import static com.opsmatters.media.model.system.logging.ErrorCode.*;
 
 /**
  * Class representing a crawler for content items from a web page.

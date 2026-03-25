@@ -18,7 +18,7 @@ package com.opsmatters.media.model.content.util;
 import java.time.Instant;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.system.Site;
-import com.opsmatters.media.model.drupal.DrupalTaxonomyTerm;
+import com.opsmatters.media.model.content.drupal.DrupalTaxonomyTerm;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.content.util.TermStatus.*;

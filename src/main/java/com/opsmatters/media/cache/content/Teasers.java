@@ -25,7 +25,7 @@ import java.util.Iterator;
 import com.opsmatters.media.model.content.ContentDetails;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.model.logging.LogEvent;
+import com.opsmatters.media.model.system.logging.LogEvent;
 import com.opsmatters.media.cache.StaticCache;
 
 /**

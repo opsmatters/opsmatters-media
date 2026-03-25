@@ -41,15 +41,15 @@ import com.opsmatters.media.model.content.crawler.field.Fields;
 import com.opsmatters.media.model.content.crawler.field.FieldMatch;
 import com.opsmatters.media.model.content.crawler.field.FieldCase;
 import com.opsmatters.media.model.content.crawler.field.FieldExtractor;
-import com.opsmatters.media.model.logging.Log;
-import com.opsmatters.media.model.logging.LogEvent;
-import com.opsmatters.media.model.logging.LogEventCategory;
-import com.opsmatters.media.model.logging.ErrorCode;
+import com.opsmatters.media.model.system.logging.Log;
+import com.opsmatters.media.model.system.logging.LogEvent;
+import com.opsmatters.media.model.system.logging.LogEventCategory;
+import com.opsmatters.media.model.system.logging.ErrorCode;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 import static com.opsmatters.media.model.content.crawler.CrawlerStatus.*;
-import static com.opsmatters.media.model.logging.LogEventType.*;
-import static com.opsmatters.media.model.logging.ErrorCode.*;
+import static com.opsmatters.media.model.system.logging.LogEventType.*;
+import static com.opsmatters.media.model.system.logging.ErrorCode.*;
 
 /**
  * Class representing a crawler for content items with fields.

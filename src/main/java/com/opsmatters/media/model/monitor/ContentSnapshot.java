@@ -35,7 +35,7 @@ import com.opsmatters.media.model.content.video.Video;
 import com.opsmatters.media.model.content.event.EventDetails;
 import com.opsmatters.media.model.content.publication.PublicationDetails;
 import com.opsmatters.media.model.content.LinkedContent;
-import com.opsmatters.media.model.logging.Log;
+import com.opsmatters.media.model.system.logging.Log;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 
