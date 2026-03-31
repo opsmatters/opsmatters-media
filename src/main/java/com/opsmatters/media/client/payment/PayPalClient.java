@@ -26,10 +26,13 @@ import org.apache.commons.io.FileUtils;
 import com.opsmatters.media.client.RestClient;
 import com.opsmatters.media.model.order.InvoiceStatus;
 import com.opsmatters.media.client.payment.paypal.PayPalInvoice;
+import com.opsmatters.media.client.payment.paypal.PayPalInvoiceStatus;
 import com.opsmatters.media.client.payment.paypal.PayPalPayment;
 
 /**
  * Executes PayPal API calls using a REST client.
+ * 
+ * @author Gerald Curley (opsmatters)
  */
 public class PayPalClient extends RestClient
 {
@@ -275,8 +278,16 @@ public class PayPalClient extends RestClient
      */
     public InvoiceStatus getInvoiceStatus(String invoiceId) throws IOException
     {
-        InvoiceStatus ret = InvoiceStatus.NONE;
-        PayPalInvoice invoice = getInvoiceDetails(invoiceId);
+        return getInvoiceStatus(getInvoiceDetails(invoiceId));
+    }
+
+    /**
+     * Returns the invoice status for the given invoice id.
+     */
+    public InvoiceStatus getInvoiceStatus(PayPalInvoice invoice) throws IOException
+    {
+        InvoiceStatus ret = InvoiceStatus.UNKNOWN;
+
         if(invoice != null)
         {
             String status = invoice.getStatus();
@@ -284,11 +295,15 @@ public class PayPalClient extends RestClient
             try
             {
                 if(status != null)
-                    ret = InvoiceStatus.valueOf(status);
+                {
+                    ret = PayPalInvoiceStatus.fromValue(status).status();
+                    if(ret == InvoiceStatus.UNKNOWN)
+                        logger.warning(String.format("Unsupported paypal invoice status: "+status));
+                }
             }
             catch(IllegalArgumentException e)
             {
-                logger.severe("Invalid invoice status: "+status);
+                logger.severe("Invalid paypal invoice status: "+status);
             }
         }
 

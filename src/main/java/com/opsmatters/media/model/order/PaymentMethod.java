@@ -18,6 +18,9 @@ package com.opsmatters.media.model.order;
 
 import java.util.List;
 import java.util.ArrayList;
+import com.opsmatters.media.client.payment.paypal.PayPalInvoiceStatus;
+import com.opsmatters.media.client.payment.stripe.StripeInvoiceStatus;
+import com.opsmatters.media.client.payment.payoneer.PayoneerPaymentStatus;
 
 /**
  * Represents the payment method.
@@ -61,6 +64,25 @@ public enum PaymentMethod
     public String value()
     {
         return value;
+    }
+
+    /**
+     * Returns the list of invoice statuses for the method.
+     * @return The list of invoice statuses for the method.
+     */
+    public List<InvoiceStatus> statuses()
+    {
+        switch(this)
+        {
+            case PAYPAL:
+                return PayPalInvoiceStatus.toList();
+            case STRIPE:
+                return StripeInvoiceStatus.toList();
+            case PAYONEER:
+                return PayoneerPaymentStatus.toList();
+            default:
+                return new ArrayList<InvoiceStatus>();
+        }
     }
 
     /**

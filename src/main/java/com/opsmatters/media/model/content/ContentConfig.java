@@ -235,7 +235,7 @@ public abstract class ContentConfig<C extends Content> implements FieldSource, C
 
         for(C content : items)
         {
-            if(content.isSkipped())
+            if(content.isSkipped() || content.isUndeployed())
                 continue;
 
             FieldMap fields = content.toFields().add(this);

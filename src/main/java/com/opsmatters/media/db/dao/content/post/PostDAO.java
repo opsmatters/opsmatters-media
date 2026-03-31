@@ -86,7 +86,7 @@ public class PostDAO extends ContentDAO<Post>
      */
     private static final String LIST_ITEMS_BY_SITE_DATE_SQL =  
       "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, POST_TYPE, PUBLISHED, PROMOTE, NEWSLETTER, FEATURED, SPONSORED, AUTHOR, STATUS "
-      + "FROM POSTS WHERE SITE_ID=? AND PUBLISHED=1 AND PUBLISHED_DATE>? ORDER BY ID";
+      + "FROM POSTS WHERE SITE_ID=? AND PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'UNDEPLOYED' ORDER BY ID";
 
     /**
      * The query to use to select the post items from the table by site, code and published date.

@@ -568,7 +568,7 @@ public class ContentSiteSettings extends BaseEntity
         boolean deployed = true;
         for(Content content : items)
         {
-            if(content.isSkipped())
+            if(content.isSkipped() || content.isUndeployed())
                 continue;
 
             setType(content.getType());

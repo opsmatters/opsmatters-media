@@ -32,6 +32,7 @@ public enum ContentStatus
     DEPLOYED("Deployed", "glyphicon-ok-circle", "status-success"),
     ERROR("Error", "glyphicon-exclamation-sign", "status-error"),
     SKIPPED("Skipped", "glyphicon-remove-circle", "status-info"),
+    UNDEPLOYED("Undeployed", "glyphicon-trash", "status-error"),
     ARCHIVED("Archived", "glyphicon-trash", "status-error");
 
     private String value;

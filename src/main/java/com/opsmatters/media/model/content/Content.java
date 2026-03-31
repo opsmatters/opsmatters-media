@@ -886,6 +886,14 @@ public abstract class Content<D extends ContentDetails>
     }
 
     /**
+     * Returns <CODE>true</CODE> if this content has been undeployed.
+     */
+    public boolean isUndeployed()
+    {
+        return getStatus() == UNDEPLOYED;
+    }
+
+    /**
      * Returns the other site ids.
      */
     public String getOtherSites()

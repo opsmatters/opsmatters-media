@@ -44,6 +44,7 @@ import com.opsmatters.media.model.order.InvoiceStatus;
 import com.opsmatters.media.model.order.contact.Contact;
 import com.opsmatters.media.model.order.contact.Company;
 import com.opsmatters.media.client.Client;
+import com.opsmatters.media.client.payment.stripe.StripeInvoiceStatus;
 
 /**
  * Executes Stripe API calls.
@@ -250,8 +251,16 @@ public class StripeClient extends Client
      */
     public InvoiceStatus getInvoiceStatus(String invoiceId) throws StripeException
     {
-        InvoiceStatus ret = InvoiceStatus.NONE;
-        Invoice invoice = retrieveInvoice(invoiceId);
+        return getInvoiceStatus(retrieveInvoice(invoiceId));
+    }
+
+    /**
+     * Returns the invoice status for the given invoice.
+     */
+    public InvoiceStatus getInvoiceStatus(Invoice invoice) throws StripeException
+    {
+        InvoiceStatus ret = InvoiceStatus.UNKNOWN;
+
         if(invoice != null)
         {
             String status = invoice.getStatus();
@@ -259,11 +268,15 @@ public class StripeClient extends Client
             try
             {
                 if(status != null)
-                    ret = InvoiceStatus.valueOf(status.toUpperCase());
+                {
+                    ret = StripeInvoiceStatus.fromValue(status).status();
+                    if(ret == InvoiceStatus.UNKNOWN)
+                        logger.warning(String.format("Unsupported stripe invoice status: "+status));
+                }
             }
             catch(IllegalArgumentException e)
             {
-                logger.severe("Invalid invoice status: "+status);
+                logger.severe("Invalid stripe invoice status: "+status);
             }
         }
 

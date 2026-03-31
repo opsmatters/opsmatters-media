@@ -32,13 +32,17 @@ public enum InvoiceStatus
     NEW("New", "glyphicon-unchecked", ""),
     DRAFT("Draft", "glyphicon-edit", ""),
     SENT("Sent", "glyphicon-send", "status-warn"),
-    OPEN("Open", "glyphicon-send", "status-warn"),
-    PAYMENT_PENDING("Pending", "glyphicon-hourglass", "status-warn"),
+    PENDING("Pending", "glyphicon-hourglass", "status-warn"),
     PAID("Paid", "glyphicon-ok-circle", "status-success"),
     MARKED_AS_PAID("Marked As Paid", "glyphicon-ok-sign", "status-success"),
+    SCHEDULED("Scheduled", "glyphicon-hourglass", "status-warn"),
     CANCELLED("Cancelled", "glyphicon-trash", "status-error"),
-    VOID("Void", "glyphicon-trash", "status-error"),
-    REFUNDED("Refunded", "glyphicon-log-out", "status-info"),
+    REFUNDED("Refunded", "glyphicon-exclamation-sign", "status-info"),
+    DECLINED("Declined", "glyphicon-trash", "status-error"),
+    DISMISSED("Dismissed", "glyphicon-trash", "status-error"),
+    UNPAID("Unpaid", "glyphicon-trash", "status-error"),
+    ERROR("Error", "glyphicon-exclamation-sign", "status-error"),
+    UNKNOWN("Unknown", "glyphicon-question-sign", "status-error"),
     ALL("All", "", ""); // Pseudo status
 
     private String value;
@@ -46,7 +50,7 @@ public enum InvoiceStatus
     private String css;
 
     /**
-     * Constructor that takes the status value.
+     * Constructor that takes the status value, icon and css.
      * @param value The value for the status
      * @param icon The glyphicon for the status
      * @param css The css class for the status
@@ -107,6 +111,7 @@ public enum InvoiceStatus
             if(type.value().equals(value))
                 return type;
         }
+
         return null;
     }
 
@@ -127,25 +132,12 @@ public enum InvoiceStatus
     {
         List<InvoiceStatus> ret = new ArrayList<InvoiceStatus>();
 
-        ret.add(NONE);
         ret.add(NEW);
 
-        if(method == PAYPAL)
+        for(InvoiceStatus status : method.statuses())
         {
-            ret.add(DRAFT);
-            ret.add(SENT);
-            ret.add(PAYMENT_PENDING);
-            ret.add(PAID);
-            ret.add(MARKED_AS_PAID);
-            ret.add(CANCELLED);
-            ret.add(REFUNDED);
-        }
-        else if(method == STRIPE)
-        {
-            ret.add(DRAFT);
-            ret.add(OPEN);
-            ret.add(PAID);
-            ret.add(VOID);
+            if(!ret.contains(status))
+                ret.add(status);
         }
 
         return ret;
