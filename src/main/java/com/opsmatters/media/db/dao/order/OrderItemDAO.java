@@ -418,32 +418,17 @@ public class OrderItemDAO extends BaseDAO
     }
 
     /**
-     * Returns the item from the ORDER_ITEMS table for the given content item.
+     * Returns the items from the ORDER_ITEMS table with a blank description.
      */
-    public OrderItem getByTitle(Order order, Content content) throws SQLException
+    public List<OrderItem> listBlanks(Order order) throws SQLException
     {
-        OrderItem ret = null;
+        List<OrderItem> ret = new ArrayList<OrderItem>();
+
         List<OrderItem> items = list(order);
-
-        // Set the description if it is empty
-        if(items.size() == 1)
-        {
-            OrderItem item = items.get(0);
-            if(!item.hasDescription())
-            {
-                item.setDescription(content.getTitle());
-                update(item);
-                Orders.add(item);
-            }
-        }
-
         for(OrderItem item : items)
         {
-            if(item.getDescription().equals(content.getTitle()))
-            {
-                ret = item;
-                break;
-            }
+            if(!item.hasDescription())
+                ret.add(item);
         }
 
         return ret;
