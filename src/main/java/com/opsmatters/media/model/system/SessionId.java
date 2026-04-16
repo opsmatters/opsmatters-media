@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.util;
+package com.opsmatters.media.model.system;
 
 import java.time.Instant;
+import com.opsmatters.media.model.Formats;
+import com.opsmatters.media.util.TimeUtils;
 
 import static java.time.temporal.ChronoUnit.*;
 
@@ -133,7 +135,7 @@ public class SessionId
      */
     private static Instant toInstant(int id)
     {
-        return id > 0 ? TimeUtils.toInstantUTC(Integer.toString(id), Formats.SESSION_FORMAT) : null;
+        return id > 0 ? TimeUtils.toInstantUTC(Integer.toString(id), Formats.SESSION_ID) : null;
     }
 
     /**
@@ -141,7 +143,7 @@ public class SessionId
      */
     private static int toId(Instant dt)
     {
-        return Integer.parseInt(TimeUtils.toStringUTC(dt, Formats.SESSION_FORMAT));
+        return Integer.parseInt(TimeUtils.toStringUTC(dt, Formats.SESSION_ID));
     }
 
     /**

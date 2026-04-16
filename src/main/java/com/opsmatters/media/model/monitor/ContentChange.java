@@ -20,7 +20,6 @@ import java.time.Instant;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.SnapshotDiff;
 
 /**
  * Class representing a content monitor change.

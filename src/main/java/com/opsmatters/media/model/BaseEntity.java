@@ -18,7 +18,7 @@ package com.opsmatters.media.model;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
@@ -124,7 +124,7 @@ public abstract class BaseEntity implements java.io.Serializable
      */
     public String getCreatedDateAsString()
     {
-        return getCreatedDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getCreatedDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -157,7 +157,7 @@ public abstract class BaseEntity implements java.io.Serializable
      */
     public void setCreatedDateAsString(String str) throws DateTimeParseException
     {
-        setCreatedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setCreatedDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -214,7 +214,7 @@ public abstract class BaseEntity implements java.io.Serializable
      */
     public String getUpdatedDateAsString()
     {
-        return getUpdatedDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getUpdatedDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -247,7 +247,7 @@ public abstract class BaseEntity implements java.io.Serializable
      */
     public void setUpdatedDateAsString(String str) throws DateTimeParseException
     {
-        setUpdatedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setUpdatedDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -304,7 +304,7 @@ public abstract class BaseEntity implements java.io.Serializable
      */
     public String getDateAsString()
     {
-        return getDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**

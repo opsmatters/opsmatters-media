@@ -18,7 +18,7 @@ package com.opsmatters.media.model.content;
 import java.time.Instant;
 import java.util.List;
 import java.time.format.DateTimeParseException;
-import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.FormatUtils;
 
@@ -198,7 +198,7 @@ public abstract class ContentDetails implements java.io.Serializable
      */
     public String getPublishedDateAsString()
     {
-        return getPublishedDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getPublishedDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -231,7 +231,7 @@ public abstract class ContentDetails implements java.io.Serializable
      */
     public void setPublishedDateAsString(String str) throws DateTimeParseException
     {
-        setPublishedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setPublishedDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**

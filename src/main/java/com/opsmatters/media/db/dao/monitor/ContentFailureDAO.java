@@ -25,12 +25,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
+import com.opsmatters.media.model.system.SessionId;
 import com.opsmatters.media.model.monitor.ContentFailure;
 import com.opsmatters.media.model.monitor.ContentFailureItem;
 import com.opsmatters.media.model.monitor.FailureStatus;
 import com.opsmatters.media.model.monitor.ContentMonitor;
 import com.opsmatters.media.db.dao.BaseDAO;
-import com.opsmatters.media.util.SessionId;
 
 /**
  * DAO that provides operations on the CONTENT_FAILURES table in the database.

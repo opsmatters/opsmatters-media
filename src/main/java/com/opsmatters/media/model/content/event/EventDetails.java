@@ -20,8 +20,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.model.content.ResourceDetails;
-import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
@@ -114,7 +114,7 @@ public class EventDetails extends ResourceDetails
      */
     public String getStartDateAsString()
     {
-        return getStartDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getStartDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -147,7 +147,7 @@ public class EventDetails extends ResourceDetails
      */
     public void setStartDateAsString(String str) throws DateTimeParseException
     {
-        setStartDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setStartDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -179,7 +179,7 @@ public class EventDetails extends ResourceDetails
      */
     public String getEndDateAsString()
     {
-        return getEndDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getEndDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -212,7 +212,7 @@ public class EventDetails extends ResourceDetails
      */
     public void setEndDateAsString(String str) throws DateTimeParseException
     {
-        setEndDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setEndDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**

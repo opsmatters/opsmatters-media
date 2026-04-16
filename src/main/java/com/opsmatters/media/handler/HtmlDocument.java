@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.util;
+package com.opsmatters.media.handler;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -23,15 +23,15 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import com.opsmatters.media.cache.provider.ImageProviders;
+import com.opsmatters.media.util.StringUtils;
 
 /**
- * A set of utility methods to perform miscellaneous tasks related to HTML links.
+ * Methods to perform checks on a HTML document and fix problems.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class HtmlDocument
+class HtmlDocument
 {
-
     private static final String START_ATTR = " start=";
     private static final String STYLE_ATTR = " style=";
 

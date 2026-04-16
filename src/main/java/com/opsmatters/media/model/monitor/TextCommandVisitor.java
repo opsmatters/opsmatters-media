@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.util;
+package com.opsmatters.media.model.monitor;
 
 import org.apache.commons.text.diff.CommandVisitor;
 

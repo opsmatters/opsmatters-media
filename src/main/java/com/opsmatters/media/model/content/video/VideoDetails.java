@@ -16,11 +16,11 @@
 package com.opsmatters.media.model.content.video;
 
 import com.opsmatters.media.cache.provider.VideoProviders;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.model.provider.VideoProviderId;
 import com.opsmatters.media.model.provider.VideoProvider;
 import com.opsmatters.media.model.content.ArticleDetails;
 import com.opsmatters.media.model.content.feed.video.YouTubeEntry;
-import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
@@ -201,7 +201,7 @@ public class VideoDetails extends ArticleDetails
      */
     public String getFormattedDuration(boolean replaceZero)
     {
-        String ret = TimeUtils.toStringUTC(duration*1000L, Formats.TIME_FORMAT);
+        String ret = TimeUtils.toStringUTC(duration*1000L, Formats.TIME);
         if(replaceZero)
         {
             if(duration == 0L)

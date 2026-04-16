@@ -19,7 +19,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import com.opsmatters.media.model.BaseEntity;
-import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
@@ -203,7 +203,7 @@ public abstract class Feed extends BaseEntity
      */
     public String getExecutedDateAsString()
     {
-        return getExecutedDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getExecutedDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -236,7 +236,7 @@ public abstract class Feed extends BaseEntity
      */
     public void setExecutedDateAsString(String str) throws DateTimeParseException
     {
-        setExecutedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setExecutedDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**

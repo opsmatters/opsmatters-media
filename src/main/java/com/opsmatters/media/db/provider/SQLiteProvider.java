@@ -16,7 +16,6 @@
 package com.opsmatters.media.db.provider;
 
 import java.sql.Types;
-import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.FormatUtils;
 
 /**

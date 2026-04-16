@@ -24,6 +24,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import com.opsmatters.media.crawler.WebPageCrawler;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.cache.content.Teasers;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.event.EventDetails;
@@ -34,7 +35,6 @@ import com.opsmatters.media.model.content.crawler.field.Field;
 import com.opsmatters.media.model.content.crawler.field.Fields;
 import com.opsmatters.media.model.system.logging.LogEventCategory;
 import com.opsmatters.media.model.system.logging.LogError;
-import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 
@@ -222,7 +222,7 @@ public class EventCrawler extends WebPageCrawler<EventDetails>
                 if(!hasTime && starttm == 0L && config.getFields().containsKey(START_TIME))
                 {
                     String start = config.getFields().get(START_TIME);
-                    starttm = TimeUtils.toMillisTime(start, Formats.SHORT_TIME_FORMAT);
+                    starttm = TimeUtils.toMillisTime(start, Formats.SHORT_TIME);
                     if(debug())
                         logger.info("Found default start time: "+starttm);
                 }

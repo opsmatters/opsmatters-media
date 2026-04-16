@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.file;
+package com.opsmatters.media.model;
 
 /**
  * Represents the set of file formats.

@@ -25,11 +25,11 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
+import com.opsmatters.media.model.system.SessionId;
 import com.opsmatters.media.model.order.contact.Contact;
 import com.opsmatters.media.model.order.Order;
 import com.opsmatters.media.model.order.OrderStatus;
 import com.opsmatters.media.db.dao.BaseDAO;
-import com.opsmatters.media.util.SessionId;
 
 /**
  * DAO that provides operations on the ORDERS table in the database.

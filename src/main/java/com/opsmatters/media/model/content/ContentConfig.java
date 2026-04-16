@@ -39,7 +39,7 @@ import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
 import com.opsmatters.media.handler.ContentHandler;
 
-import static com.opsmatters.media.file.FileFormat.*;
+import static com.opsmatters.media.model.FileFormat.*;
 import static com.opsmatters.media.model.content.FieldName.*;
 
 /**

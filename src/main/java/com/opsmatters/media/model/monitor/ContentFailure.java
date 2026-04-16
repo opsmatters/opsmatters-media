@@ -19,7 +19,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
-import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
 
@@ -156,7 +156,7 @@ public class ContentFailure extends ContentEvent
      */
     public String getReviewDateAsString()
     {
-        return getReviewDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getReviewDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -189,7 +189,7 @@ public class ContentFailure extends ContentEvent
      */
     public void setReviewDateAsString(String str) throws DateTimeParseException
     {
-        setReviewDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setReviewDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**

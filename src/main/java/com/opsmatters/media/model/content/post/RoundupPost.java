@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.OrganisationSites;
 import com.opsmatters.media.cache.content.util.ContentImages;
 import com.opsmatters.media.model.system.Site;
+import com.opsmatters.media.model.system.SessionDate;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.FieldMap;
@@ -33,7 +34,6 @@ import com.opsmatters.media.model.content.util.ContentImage;
 import com.opsmatters.media.model.content.util.ImageType;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.SessionDate;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 

@@ -18,7 +18,7 @@ package com.opsmatters.media.client.social.bluesky;
 import java.util.List;
 import java.util.ArrayList;
 import java.nio.charset.StandardCharsets;
-import com.opsmatters.media.util.Match;
+import com.opsmatters.media.model.StringMatch;
 
 /**
  * Class that parses a Bluesky post to create facets.
@@ -74,7 +74,7 @@ public class FacetParser
         return facets;
     }
 
-    private Facet create(FacetType type, Match match)
+    private Facet create(FacetType type, StringMatch match)
     {
         Facet ret = new Facet(type);
         ret.setStart(indices[match.getStart()]);
@@ -83,18 +83,18 @@ public class FacetParser
         return ret;
     }
 
-    private void addMatches(FacetType type, List<Match> matches)
+    private void addMatches(FacetType type, List<StringMatch> matches)
     {
-        for(Match match : matches)
+        for(StringMatch match : matches)
             facets.add(create(type, match));
     }
 
-    public void addLinks(List<Match> matches)
+    public void addLinks(List<StringMatch> matches)
     {
         addMatches(FacetType.LINK, matches);
     }
 
-    public void addHashtags(List<Match> matches)
+    public void addHashtags(List<StringMatch> matches)
     {
         addMatches(FacetType.HASHTAG, matches);
     }

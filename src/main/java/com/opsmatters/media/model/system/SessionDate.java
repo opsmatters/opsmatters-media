@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.util;
+package com.opsmatters.media.model.system;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import com.opsmatters.media.util.TimeUtils;
 
 import static java.time.temporal.ChronoUnit.*;
 

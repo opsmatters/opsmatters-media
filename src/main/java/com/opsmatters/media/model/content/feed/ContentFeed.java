@@ -15,6 +15,7 @@
  */
 package com.opsmatters.media.model.content.feed;
 
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailBody;
 import com.opsmatters.media.model.system.Site;
@@ -22,7 +23,6 @@ import com.opsmatters.media.model.system.EnvironmentId;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.drupal.FeedsFeed;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.Formats;
 
 /**
  * Class representing a content feed.
@@ -162,7 +162,7 @@ public class ContentFeed extends Feed
                 {"Site", site.getId()},
                 {"Environment", getEnvironment().name()},
                 {"Status", getStatus().name()},
-                {"Executed", getExecutedDateAsString(Formats.CONTENT_DATE_FORMAT)},
+                {"Executed", getExecutedDateAsString(Formats.CONTENT_DATETIME)},
                 {"Description", description},
             });
         return new Email(subject, body);

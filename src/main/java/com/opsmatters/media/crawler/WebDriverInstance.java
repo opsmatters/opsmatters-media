@@ -35,6 +35,7 @@ import com.opsmatters.media.model.content.crawler.CrawlerBrowser;
 import com.opsmatters.media.model.content.crawler.ContentRequest;
 import com.opsmatters.media.model.content.util.ContentProxy;
 
+import static com.opsmatters.media.model.HttpConstants.*;
 import static com.opsmatters.media.model.content.crawler.CrawlerBrowser.*;
 
 /**
@@ -45,10 +46,6 @@ import static com.opsmatters.media.model.content.crawler.CrawlerBrowser.*;
 public class WebDriverInstance
 {
     private static final Logger logger = Logger.getLogger(WebDriverInstance.class.getName());
-
-    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36";
-
-    private static final int MAX_USES = 10;
 
     private CrawlerBrowser browser;
     private WebDriver driver;
@@ -191,7 +188,7 @@ public class WebDriverInstance
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-blink-features=AutomationControlled"); // prevents some 403 errors
             options.addArguments("--disable-extensions");
-            options.addArguments("--user-agent="+USER_AGENT);
+            options.addArguments("--user-agent="+DEFAULT_USER_AGENT);
             options.addArguments("--disable-dev-shm-usage");
             options.addArguments("--remote-debugging-pipe");
             options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"}); 
@@ -236,7 +233,7 @@ public class WebDriverInstance
         FirefoxOptions options = new FirefoxOptions();
         options.setPageLoadStrategy(PageLoadStrategy.EAGER);
         options.addArguments("--window-size=1920,1080");
-        options.addArguments("--user-agent="+USER_AGENT);
+        options.addArguments("--user-agent="+DEFAULT_USER_AGENT);
 
         if(headless)
             options.addArguments("--headless");

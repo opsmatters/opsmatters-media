@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.LinkedHashMap;
-import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
@@ -149,7 +149,7 @@ public class EmailBody
         for(String paragraph : paragraphs)
             ret.append(paragraph);
         ret.append(String.format("<br><p><em>Generated at %s</em></p>",
-            TimeUtils.toStringUTC(Formats.CONTENT_DATE_FORMAT)));
+            TimeUtils.toStringUTC(Formats.CONTENT_DATETIME)));
         return ret.toString();
     }
 }

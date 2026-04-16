@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.file;
+package com.opsmatters.media.model.system.excel;
 
 import java.util.Date;
 import java.util.Map;
@@ -27,7 +27,7 @@ import java.text.ParseException;
 import jxl.write.NumberFormats;
 import jxl.write.WritableCellFormat;
 import java.util.logging.Logger;
-import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
@@ -702,7 +702,7 @@ public class FileColumn
     private String convertDateTime(long dt, String pattern)
     {
         if(pattern.length() == 0)
-            pattern = Formats.DATETIME_FORMAT;
+            pattern = Formats.DATETIME;
         return TimeUtils.toStringUTC(dt, pattern);
     }
 

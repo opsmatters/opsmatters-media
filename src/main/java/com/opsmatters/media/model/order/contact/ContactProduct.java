@@ -27,11 +27,11 @@ import com.opsmatters.media.cache.order.Currencies;
 import com.opsmatters.media.cache.order.product.Products;
 import com.opsmatters.media.cache.system.Sites;
 import com.opsmatters.media.model.BaseEntity;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.order.Currency;
 import com.opsmatters.media.model.order.Frequency;
 import com.opsmatters.media.model.order.product.Product;
-import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
 
@@ -234,7 +234,7 @@ public class ContactProduct extends BaseEntity
      */
     public String getStartDateAsString()
     {
-        return getStartDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getStartDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -275,7 +275,7 @@ public class ContactProduct extends BaseEntity
      */
     public void setStartDateAsString(String str) throws DateTimeParseException
     {
-        setStartDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setStartDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -316,7 +316,7 @@ public class ContactProduct extends BaseEntity
      */
     public String getEndDateAsString()
     {
-        return getEndDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getEndDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -357,7 +357,7 @@ public class ContactProduct extends BaseEntity
      */
     public void setEndDateAsString(String str) throws DateTimeParseException
     {
-        setEndDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setEndDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -398,7 +398,7 @@ public class ContactProduct extends BaseEntity
      */
     public String getLastDateAsString()
     {
-        return getLastDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getLastDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -439,7 +439,7 @@ public class ContactProduct extends BaseEntity
      */
     public void setLastDateAsString(String str) throws DateTimeParseException
     {
-        setLastDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setLastDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**

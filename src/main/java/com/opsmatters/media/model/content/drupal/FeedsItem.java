@@ -17,7 +17,7 @@ package com.opsmatters.media.model.content.drupal;
 
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
-import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
@@ -152,7 +152,7 @@ public class FeedsItem implements java.io.Serializable
      */
     public String getImportedDateAsString()
     {
-        return getImportedDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getImportedDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -185,7 +185,7 @@ public class FeedsItem implements java.io.Serializable
      */
     public void setImportedDateAsString(String str) throws DateTimeParseException
     {
-        setImportedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setImportedDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**

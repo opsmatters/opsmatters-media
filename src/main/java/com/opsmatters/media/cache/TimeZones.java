@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.cache.util;
+package com.opsmatters.media.cache;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.TimeZone;
 import java.util.Comparator;
 import java.util.Collections;
-import com.opsmatters.media.util.NamedTimeZone;
+import com.opsmatters.media.model.NamedTimeZone;
 
 /**
  * Lists of timezones that can be searched by various keys.

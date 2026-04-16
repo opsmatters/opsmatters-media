@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.file;
+package com.opsmatters.media.handler;
 
 import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.io.IOException;
 import java.util.List;
-import com.opencsv.CSVWriter;
 import java.util.logging.Logger;
+import com.opencsv.CSVWriter;
+import com.opsmatters.media.model.FileFormat;
+import com.opsmatters.media.model.FileDelimiter;
+import com.opsmatters.media.model.system.excel.Workbook;
+import com.opsmatters.media.model.system.excel.FileColumn;
 
-import static com.opsmatters.media.file.FileFormat.*;
-import static com.opsmatters.media.file.FileDelimiter.*;
+import static com.opsmatters.media.model.FileFormat.*;
+import static com.opsmatters.media.model.FileDelimiter.*;
 
 /**
  * Object that encapsulates an output file in XLS, XLSX or CSV format.

@@ -28,12 +28,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.system.Site;
+import com.opsmatters.media.model.system.SessionId;
 import com.opsmatters.media.model.content.ContentLookup;
 import com.opsmatters.media.model.content.publication.Publication;
 import com.opsmatters.media.model.content.publication.PublicationItem;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
-import com.opsmatters.media.util.SessionId;
 
 /**
  * DAO that provides operations on the PUBLICATIONS table in the database.

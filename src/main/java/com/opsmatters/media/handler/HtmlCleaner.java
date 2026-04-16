@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.util;
+package com.opsmatters.media.handler;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /**
- * A set of utility methods to perform miscellaneous tasks related to HTML documents.
+ * Methods to perform checks on a HTML document and fix problems.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class HtmlUtils
+public class HtmlCleaner
 {
-    private static final Logger logger = Logger.getLogger(HtmlUtils.class.getName());
+    private static final Logger logger = Logger.getLogger(HtmlCleaner.class.getName());
 
     public static final String CONTENT_WRAPPER_CLASS = HtmlDocument.POST_FULL_CONTENT_CLASS;
 
@@ -36,7 +36,7 @@ public class HtmlUtils
     /**
      * Private constructor as this class shouldn't be instantiated.
      */
-    private HtmlUtils()
+    private HtmlCleaner()
     {
     }
 
@@ -53,9 +53,9 @@ public class HtmlUtils
      */
     public static void setSuspectWords(List<String> suspectWords)
     {
-        HtmlUtils.suspectWords.clear();
+        HtmlCleaner.suspectWords.clear();
         for(String suspectWord : suspectWords)
-            HtmlUtils.suspectWords.add(new SuspectWord(suspectWord));
+            HtmlCleaner.suspectWords.add(new SuspectWord(suspectWord));
     }
 
     /**

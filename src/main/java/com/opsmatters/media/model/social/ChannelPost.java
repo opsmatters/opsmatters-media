@@ -25,6 +25,7 @@ import com.opsmatters.media.cache.social.SocialChannels;
 import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.model.DeliveryStatus;
 import com.opsmatters.media.model.MessageFormat;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailBody;
 import com.opsmatters.media.model.content.FieldName;
@@ -33,7 +34,6 @@ import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.client.social.SocialClient;
 import com.opsmatters.media.client.social.SocialClientFactory;
 import com.opsmatters.media.client.social.SocialTimeoutException;
-import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
 
@@ -479,7 +479,7 @@ public class ChannelPost extends SocialPost
      */
     public String getScheduledDateAsString()
     {
-        return getScheduledDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getScheduledDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -512,7 +512,7 @@ public class ChannelPost extends SocialPost
      */
     public void setScheduledDateAsString(String str) throws DateTimeParseException
     {
-        setScheduledDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setScheduledDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -656,7 +656,7 @@ public class ChannelPost extends SocialPost
                 {"Channel", getChannel()},
                 {"Title", getTitle()},
                 {"Status", getStatus().name()},
-                {"Updated", getUpdatedDateAsString(Formats.CONTENT_DATE_FORMAT)},
+                {"Updated", getUpdatedDateAsString(Formats.CONTENT_DATETIME)},
                 {"Error Code", Integer.toString(getErrorCode())},
                 {"Error Message", getErrorMessage()},
             });

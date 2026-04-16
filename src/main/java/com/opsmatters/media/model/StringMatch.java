@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Gerald Curley
+ * Copyright 2025 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,36 +14,38 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.file;
+package com.opsmatters.media.model;
 
 /**
- * Represents the set of file delimiters.
+ * Defines a result of a regex string match.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum FileDelimiter
+public class StringMatch
 {
-    COMMA("Comma", ","),
-    PIPE("Pipe", "|"),
-    SPACE("Space", " "),
-    TAB("Tab", "	");
+    private int start = -1;
+    private int end = -1;
+    private String text;
 
-    FileDelimiter(String value, String separator)
+    public StringMatch(int start, int end, String text)
     {
-        this.value = value;
-        this.separator = separator;
+        this.start = start;
+        this.end = end;
+        this.text = text;
     }
 
-    public String value()
+    public int getStart()
     {
-        return value;
+        return start;
     }
 
-    public String separator()
+    public int getEnd()
     {
-        return separator;
+        return end;
     }
 
-    private String value;
-    private String separator;
+    public String getText()
+    {
+        return text;
+    }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.util;
+package com.opsmatters.media.model.content;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

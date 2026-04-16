@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Gerald Curley
+ * Copyright 2019 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,38 +14,46 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.util;
+package com.opsmatters.media.model.system.excel;
 
 /**
- * Defines a result of a regex string match.
+ * Represents a shared formula in a spreadsheet.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class Match
+public class SharedFormula
 {
-    private int start = -1;
-    private int end = -1;
-    private String text;
+    private String ref;
+    private String value;
 
-    Match(int start, int end, String text)
+    public SharedFormula(String ref, String value)
     {
-        this.start = start;
-        this.end = end;
-        this.text = text;
+        setRef(ref);
+        setValue(value);
     }
 
-    public int getStart()
+    public String getRef()
     {
-        return start;
+        return ref;
     }
 
-    public int getEnd()
+    public void setRef(String ref)
     {
-        return end;
+        this.ref = ref;
     }
 
-    public String getText()
+    public String getValue()
     {
-        return text;
+        return value;
+    }
+
+    public void setValue(String value)
+    {
+        this.value = value;
+    }
+
+    public String toString()
+    {
+        return getValue();
     }
 }

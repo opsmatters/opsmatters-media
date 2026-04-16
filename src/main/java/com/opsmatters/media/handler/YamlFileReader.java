@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.file;
+package com.opsmatters.media.handler;
 
 import java.io.File;
 import java.io.FileReader;

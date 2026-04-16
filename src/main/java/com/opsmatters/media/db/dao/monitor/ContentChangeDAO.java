@@ -25,11 +25,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
+import com.opsmatters.media.model.system.SessionId;
 import com.opsmatters.media.model.monitor.ContentChange;
 import com.opsmatters.media.model.monitor.ContentChangeItem;
 import com.opsmatters.media.model.monitor.ChangeStatus;
 import com.opsmatters.media.db.dao.BaseDAO;
-import com.opsmatters.media.util.SessionId;
 
 /**
  * DAO that provides operations on the CONTENT_CHANGES table in the database.

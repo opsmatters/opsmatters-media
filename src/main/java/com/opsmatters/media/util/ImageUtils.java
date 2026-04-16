@@ -53,9 +53,11 @@ import org.apache.batik.bridge.ViewBox;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
-import com.opsmatters.media.file.FileFormat;
+import com.opsmatters.media.model.content.ImageAlignment;
+import com.opsmatters.media.model.FileFormat;
 
-import static com.opsmatters.media.util.ImageAlignment.*;
+import static com.opsmatters.media.model.HttpConstants.*;
+import static com.opsmatters.media.model.content.ImageAlignment.*;
 
 /**
  * A set of utility methods to perform miscellaneous tasks related to images.
@@ -72,17 +74,6 @@ public class ImageUtils
      * Number of mm in a pixel.
      */
     private static final double MM_TO_PX = 3.7795275591d;
-
-    /**
-     * The user agent to use with URLConnections to avoid 403 rejection errors
-     */
-    private static final String USER_AGENT = "Mozilla/5.0";
-
-    /**
-     * The timeout for a HTTP connection
-     */
-    private static final int READ_TIMEOUT = 10000;
-    private static final int CONNECT_TIMEOUT = 5000;
 
     static
     {
@@ -110,9 +101,9 @@ public class ImageUtils
         try
         {
             conn = (HttpURLConnection)url.openConnection();
-            conn.setRequestProperty("User-Agent", USER_AGENT);
-            conn.setReadTimeout(READ_TIMEOUT);
-            conn.setConnectTimeout(CONNECT_TIMEOUT);
+            conn.setRequestProperty(USER_AGENT, DEFAULT_USER_AGENT);
+            conn.setReadTimeout(DEFAULT_READ_TIMEOUT);
+            conn.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT);
             TrustAnyTrustManager.setTrustManager(conn);
 
             stream = conn.getInputStream();

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.util;
+package com.opsmatters.media.handler;
 
 import java.util.regex.Pattern;
 
@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SuspectWord
+class SuspectWord
 {
     private String text;
     private String expr;
@@ -32,7 +32,7 @@ public class SuspectWord
     /**
      * Constructor that takes a word.
      */
-    public SuspectWord(String text)
+    SuspectWord(String text)
     {
         this.text = text;
         this.expr = String.format("\\b%s\\b", text.toLowerCase());

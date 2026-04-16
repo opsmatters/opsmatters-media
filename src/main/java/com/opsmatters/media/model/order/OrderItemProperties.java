@@ -18,9 +18,9 @@ package com.opsmatters.media.model.order;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.time.Instant;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.util.TimeUtils;
-import com.opsmatters.media.util.Formats;
 
 import static com.opsmatters.media.model.order.OrderItemProperty.*;
 
@@ -83,7 +83,7 @@ public class OrderItemProperties extends LinkedHashMap<String,String>
      */
     public void setDate(Instant dt)
     {
-        put(DATE, TimeUtils.toStringUTC(dt, Formats.ORDER_DATE_FORMAT).toUpperCase());
+        put(DATE, TimeUtils.toStringUTC(dt, Formats.ORDER_DATE).toUpperCase());
     }
 
     /**

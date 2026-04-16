@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.util;
+package com.opsmatters.media.model;
 
 import java.io.File;
 import java.io.Reader;

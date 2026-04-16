@@ -31,14 +31,12 @@ import org.apache.commons.text.StringSubstitutor;
 import com.google.common.io.Files;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
+import com.opsmatters.media.model.Formats;
+import com.opsmatters.media.model.FileFormat;
 import com.opsmatters.media.model.system.Environment;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.client.system.SshClient;
 import com.opsmatters.media.client.system.aws.AwsS3Client;
-import com.opsmatters.media.file.InputFileReader;
-import com.opsmatters.media.file.OutputFileWriter;
-import com.opsmatters.media.file.FileFormat;
-import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.FileUtils;
 
@@ -64,7 +62,7 @@ public class ContentHandler
     private List<String[]> lines;
     private Map<String,String> output;
     private String workingDir = "";
-    private String dateFormat = Formats.CONTENT_DATE_FORMAT;
+    private String dateFormat = Formats.CONTENT_DATETIME;
     private File file;
     private String region;
 

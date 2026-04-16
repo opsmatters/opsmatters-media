@@ -23,17 +23,17 @@ import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
 import com.vdurmont.emoji.EmojiParser;
 import com.opsmatters.media.cache.organisation.Organisations;
+import com.opsmatters.media.model.Formats;
+import com.opsmatters.media.model.FileFormat;
 import com.opsmatters.media.model.provider.ImageProvider;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.ContentSiteSettings;
-import com.opsmatters.media.util.Formats;
-import com.opsmatters.media.file.FileFormat;
 import com.opsmatters.media.util.FileUtils;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
 
-import static com.opsmatters.media.file.FileFormat.*;
+import static com.opsmatters.media.model.FileFormat.*;
 import static com.opsmatters.media.model.content.ContentStatus.*;
 
 /**
@@ -428,7 +428,7 @@ public abstract class Content<D extends ContentDetails>
      */
     public String getPublishedDateAsString()
     {
-        return getPublishedDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getPublishedDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -461,7 +461,7 @@ public abstract class Content<D extends ContentDetails>
      */
     public void setPublishedDateAsString(String str) throws DateTimeParseException
     {
-        setPublishedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setPublishedDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**

@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.ContentConfig;
 
-import static com.opsmatters.media.file.FileFormat.*;
+import static com.opsmatters.media.model.FileFormat.*;
 
 /**
  * Class that represents the configuration for an organisation's listing.

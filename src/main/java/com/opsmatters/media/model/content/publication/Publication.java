@@ -18,8 +18,8 @@ package com.opsmatters.media.model.content.publication;
 import java.util.List;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
-import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.model.system.Site;
+import com.opsmatters.media.model.system.SessionDate;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.FieldMap;
@@ -29,10 +29,10 @@ import com.opsmatters.media.model.content.LinkText;
 import com.opsmatters.media.model.content.ContentSiteSettings;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.field.FieldFilter;
+import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.SessionDate;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 

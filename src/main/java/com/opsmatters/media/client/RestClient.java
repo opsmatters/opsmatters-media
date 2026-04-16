@@ -51,8 +51,12 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.util.EntityUtils;
 
+import static com.opsmatters.media.model.HttpConstants.*;
+
 /**
  * Executes REST API calls using methods on a HTTP client.
+ * 
+ * @author Gerald Curley (opsmatters)
  */
 public class RestClient extends Client
 {
@@ -259,7 +263,7 @@ public class RestClient extends Client
         }
 
         if(token != null)
-            request.addHeader("Authorization", String.format("%s %s", getTokenName(), token));
+            request.addHeader(AUTHORIZATION, String.format("%s %s", getTokenName(), token));
 
         return execute(request, true);
     }
@@ -271,7 +275,7 @@ public class RestClient extends Client
     {
         HttpGet request = new HttpGet(url);
         if(token != null)
-            request.addHeader("Authorization", String.format("%s %s", getTokenName(), token));
+            request.addHeader(AUTHORIZATION, String.format("%s %s", getTokenName(), token));
         return execute(request, true);
     }
 
@@ -286,8 +290,8 @@ public class RestClient extends Client
 
         HttpPost request = new HttpPost(url);
         if(token != null)
-            request.addHeader("Authorization", String.format("%s %s", getTokenName(), token));
-        request.addHeader("Content-Type", "application/x-www-form-urlencoded");
+            request.addHeader(AUTHORIZATION, String.format("%s %s", getTokenName(), token));
+        request.addHeader(CONTENT_TYPE, "application/x-www-form-urlencoded");
         request.setEntity(new UrlEncodedFormEntity(paramList));
         return execute(request, hasResponseEntity);
     }
@@ -307,9 +311,9 @@ public class RestClient extends Client
     {
         HttpPost request = new HttpPost(url);
         if(token != null)
-            request.addHeader("Authorization", String.format("%s %s", getTokenName(), token));
+            request.addHeader(AUTHORIZATION, String.format("%s %s", getTokenName(), token));
         if(contentType != null)
-            request.addHeader("Content-Type", contentType);
+            request.addHeader(CONTENT_TYPE, contentType);
         if(body != null)
             request.setEntity(new StringEntity(body));
         return execute(request, hasResponseEntity);
@@ -346,9 +350,9 @@ public class RestClient extends Client
     {
         HttpPost request = new HttpPost(url);
         if(token != null)
-            request.addHeader("Authorization", String.format("%s %s", getTokenName(), token));
+            request.addHeader("AUTHORIZATION", String.format("%s %s", getTokenName(), token));
         if(contentType != null)
-            request.addHeader("Content-Type", contentType);
+            request.addHeader("CONTENT_TYPE", contentType);
         if(bytes != null)
             request.setEntity(new ByteArrayEntity(bytes));
         return execute(request, hasResponseEntity);
@@ -369,9 +373,9 @@ public class RestClient extends Client
     {
         HttpPut request = new HttpPut(url);
         if(token != null)
-            request.addHeader("Authorization", String.format("%s %s", getTokenName(), token));
+            request.addHeader("AUTHORIZATION", String.format("%s %s", getTokenName(), token));
         if(contentType != null)
-            request.addHeader("Content-Type", contentType);
+            request.addHeader(CONTENT_TYPE, contentType);
         if(body != null)
             request.setEntity(new StringEntity(body));
         return execute(request, hasResponseEntity);
@@ -392,9 +396,9 @@ public class RestClient extends Client
     {
         HttpPut request = new HttpPut(url);
         if(token != null)
-            request.addHeader("Authorization", String.format("%s %s", getTokenName(), token));
+            request.addHeader(AUTHORIZATION, String.format("%s %s", getTokenName(), token));
         if(contentType != null)
-            request.addHeader("Content-Type", contentType);
+            request.addHeader(CONTENT_TYPE, contentType);
         if(bytes != null)
             request.setEntity(new ByteArrayEntity(bytes));
         return execute(request, hasResponseEntity);

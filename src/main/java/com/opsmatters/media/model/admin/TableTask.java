@@ -16,8 +16,8 @@
 package com.opsmatters.media.model.admin;
 
 import java.time.Instant;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.Formats;
 
 /**
  * Class representing a database table task to be executed.
@@ -131,7 +131,7 @@ public class TableTask extends Task
                 {"ID", getId()},
                 {"Name", getName()},
                 {"Status", getStatus().name()},
-                {"Executed", getExecutedDateAsString(Formats.CONTENT_DATE_FORMAT)},
+                {"Executed", getExecutedDateAsString(Formats.CONTENT_DATETIME)},
                 {"Description", description},
             });
         return new Email(subject, body);

@@ -35,7 +35,6 @@ import com.opsmatters.media.model.chart.ListChart;
 import com.opsmatters.media.model.chart.ListConfig;
 import com.opsmatters.media.model.chart.ChartColumn;
 
-
 /**
  * Handler to create chart config for charts.
  *

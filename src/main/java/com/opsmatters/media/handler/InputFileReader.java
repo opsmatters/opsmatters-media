@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.file;
+package com.opsmatters.media.handler;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -27,9 +27,12 @@ import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 import java.text.SimpleDateFormat;
 import com.opencsv.CSVReader;
-import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.model.FileFormat;
+import com.opsmatters.media.model.FileDelimiter;
+import com.opsmatters.media.model.system.excel.Workbook;
+import com.opsmatters.media.model.system.excel.Worksheet;
 
-import static com.opsmatters.media.file.FileFormat.*;
+import static com.opsmatters.media.model.FileFormat.*;
 
 /**
  * Defines the methods to parse and reference an input file in a CSV, XLS or XLSX format.

@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.cache.organisation.Organisations;
 import com.opsmatters.media.cache.organisation.OrganisationSites;
 import com.opsmatters.media.model.BaseEntity;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailBody;
@@ -38,10 +39,8 @@ import com.opsmatters.media.model.content.ContentDetails;
 import com.opsmatters.media.model.content.ContentConfig;
 import com.opsmatters.media.model.content.ContentLookup;
 import com.opsmatters.media.model.content.crawler.CrawlerTarget;
-import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.SnapshotDiff;
 
 /**
  * Class representing a content monitor.
@@ -535,7 +534,7 @@ public class ContentMonitor<T extends ContentDetails> extends BaseEntity
      */
     public String getExecutedDateAsString()
     {
-        return getExecutedDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getExecutedDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -568,7 +567,7 @@ public class ContentMonitor<T extends ContentDetails> extends BaseEntity
      */
     public void setExecutedDateAsString(String str) throws DateTimeParseException
     {
-        setExecutedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setExecutedDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -625,7 +624,7 @@ public class ContentMonitor<T extends ContentDetails> extends BaseEntity
      */
     public String getSuccessDateAsString()
     {
-        return getSuccessDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getSuccessDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -658,7 +657,7 @@ public class ContentMonitor<T extends ContentDetails> extends BaseEntity
      */
     public void setSuccessDateAsString(String str) throws DateTimeParseException
     {
-        setSuccessDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setSuccessDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -910,7 +909,7 @@ public class ContentMonitor<T extends ContentDetails> extends BaseEntity
      */
     public String getSubscribedDateAsString()
     {
-        return getSubscribedDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getSubscribedDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -943,7 +942,7 @@ public class ContentMonitor<T extends ContentDetails> extends BaseEntity
      */
     public void setSubscribedDateAsString(String str) throws DateTimeParseException
     {
-        setSubscribedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setSubscribedDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -1088,7 +1087,7 @@ public class ContentMonitor<T extends ContentDetails> extends BaseEntity
                 {"Organisation", getOrganisation()},
                 {"Status", getStatus().name()},
                 {"Reason", reason.value()},
-                {"Updated", getUpdatedDateAsString(Formats.CONTENT_DATE_FORMAT)},
+                {"Updated", getUpdatedDateAsString(Formats.CONTENT_DATETIME)},
             });
         return new Email(subject, body);
     }

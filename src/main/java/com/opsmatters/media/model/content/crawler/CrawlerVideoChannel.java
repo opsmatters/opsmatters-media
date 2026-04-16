@@ -17,10 +17,10 @@ package com.opsmatters.media.model.content.crawler;
 
 import java.util.Map;
 import com.opsmatters.media.cache.provider.VideoProviders;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.model.provider.VideoProvider;
 import com.opsmatters.media.model.content.crawler.field.Fields;
 import com.opsmatters.media.model.content.crawler.field.Field;
-import com.opsmatters.media.util.Formats;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 
@@ -231,7 +231,7 @@ public class CrawlerVideoChannel extends CrawlerTarget
         {
             return Field.builder(Fields.Builder.PUBLISHED_DATE)
                 .expr(PUBLISHED_DATE.value())
-                .datePattern(Formats.LONG_ISO8601_FORMAT)
+                .datePattern(Formats.LONG_ISO8601)
                 .build();
         }
 

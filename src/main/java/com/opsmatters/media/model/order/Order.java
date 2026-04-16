@@ -24,12 +24,12 @@ import com.opsmatters.media.cache.order.Currencies;
 import com.opsmatters.media.cache.order.contact.Contacts;
 import com.opsmatters.media.cache.order.contact.Companies;
 import com.opsmatters.media.model.BaseEntity;
+import com.opsmatters.media.model.system.SessionDate;
 import com.opsmatters.media.model.order.contact.Contact;
 import com.opsmatters.media.model.order.contact.ContactProfile;
 import com.opsmatters.media.model.order.contact.ContactPerson;
 import com.opsmatters.media.model.order.contact.Company;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.util.SessionDate;
 
 import static com.opsmatters.media.model.admin.ParameterType.*;
 import static com.opsmatters.media.model.admin.ParameterName.*;

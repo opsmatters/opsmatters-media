@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.file;
+package com.opsmatters.media.model.system.excel;
 
 import java.util.Date;
 import java.io.File;

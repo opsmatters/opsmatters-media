@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.util;
+package com.opsmatters.media.model;
 
 import java.util.TimeZone;
 import java.util.SimpleTimeZone;

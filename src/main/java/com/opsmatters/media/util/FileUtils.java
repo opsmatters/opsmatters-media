@@ -38,7 +38,7 @@ import com.google.common.io.Files;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashCode;
 
-import static com.google.common.net.HttpHeaders.*;
+import static com.opsmatters.media.model.HttpConstants.*;
 
 /**
  * A set of utility methods to perform miscellaneous tasks related to files.
@@ -50,17 +50,6 @@ public class FileUtils
     private static final Logger logger = Logger.getLogger(FileUtils.class.getName());
 
     private static final String SUCCESS_RESPONSE = "HTTP\\/1\\.1 20\\d .*";
-
-    /**
-     * The default user agent to use with URLConnections to avoid 403 rejection errors
-     */
-    private static final String DEFAULT_USER_AGENT = "Mozilla/5.0";
-
-    /**
-     * The timeout for a HTTP connection
-     */
-    private static final int READ_TIMEOUT = 10000;
-    private static final int CONNECT_TIMEOUT = 5000;
 
     private static Map<URL,FileResponse> responses = new Hashtable<>();
 
@@ -218,8 +207,8 @@ public class FileUtils
                 conn = (HttpURLConnection) url.openConnection();
                 for(Map.Entry<String,String> entry : headers.entrySet())
                     conn.setRequestProperty(entry.getKey(), entry.getValue());
-                conn.setReadTimeout(READ_TIMEOUT);
-                conn.setConnectTimeout(CONNECT_TIMEOUT);
+                conn.setReadTimeout(DEFAULT_READ_TIMEOUT);
+                conn.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT);
                 TrustAnyTrustManager.setTrustManager(conn);
                 org.apache.commons.io.FileUtils.copyToFile(conn.getInputStream(), file);
             }
@@ -443,8 +432,8 @@ public class FileUtils
                 for(Map.Entry<String,String> entry : headers.entrySet())
                     httpConn.setRequestProperty(entry.getKey(), entry.getValue());
                 httpConn.setRequestMethod("HEAD");
-                httpConn.setReadTimeout(READ_TIMEOUT);
-                httpConn.setConnectTimeout(CONNECT_TIMEOUT);
+                httpConn.setReadTimeout(DEFAULT_READ_TIMEOUT);
+                httpConn.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT);
                 TrustAnyTrustManager.setTrustManager(httpConn);
             }
 
@@ -518,14 +507,14 @@ public class FileUtils
             conn.setRequestMethod(method);
             for(Map.Entry<String,String> entry : headers.entrySet())
                 conn.setRequestProperty(entry.getKey(), entry.getValue());
-            conn.setReadTimeout(READ_TIMEOUT);
-            conn.setConnectTimeout(CONNECT_TIMEOUT);
+            conn.setReadTimeout(DEFAULT_READ_TIMEOUT);
+            conn.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT);
 
             if(message != null && message.length() > 0) // POST
             {
                 byte[] bytes = message.getBytes("UTF-8");
-                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                conn.setRequestProperty("Content-Length", String.valueOf(bytes.length));
+                conn.setRequestProperty(CONTENT_TYPE, "application/x-www-form-urlencoded");
+                conn.setRequestProperty(CONTENT_LENGTH, String.valueOf(bytes.length));
                 conn.setDoOutput(true);
                 conn.getOutputStream().write(bytes);
             }

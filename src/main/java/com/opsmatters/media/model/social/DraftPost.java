@@ -19,8 +19,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.model.content.FieldName;
-import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
 import static com.opsmatters.media.model.social.SocialPostProperty.*;
@@ -323,7 +323,7 @@ public abstract class DraftPost extends PropertyPost
      */
     public String getScheduledDateAsString()
     {
-        return getScheduledDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getScheduledDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -356,7 +356,7 @@ public abstract class DraftPost extends PropertyPost
      */
     public void setScheduledDateAsString(String str) throws DateTimeParseException
     {
-        setScheduledDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setScheduledDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**

@@ -39,7 +39,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import org.apache.commons.lang3.LocaleUtils;
-import com.opsmatters.media.cache.util.TimeZones;
+import com.opsmatters.media.cache.TimeZones;
+import com.opsmatters.media.model.Formats;
 
 /**
  * A set of utility methods to perform miscellaneous tasks related to dates and calendars.
@@ -599,7 +600,7 @@ public class TimeUtils
      */
     public static String toStringUTC(long millis)
     {
-        return toStringUTC(Instant.ofEpochMilli(millis), Formats.DATETIME_FORMAT);
+        return toStringUTC(Instant.ofEpochMilli(millis), Formats.DATETIME);
     }
 
     /**
@@ -659,7 +660,7 @@ public class TimeUtils
     {
         DateTimeFormatter formatter = null;
 
-        if(pattern.startsWith(Formats.ISO8601_FORMAT))
+        if(pattern.startsWith(Formats.ISO8601))
         {
             formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
         }

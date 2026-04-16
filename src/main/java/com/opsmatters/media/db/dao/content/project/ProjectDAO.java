@@ -27,11 +27,11 @@ import java.time.Instant;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.system.Site;
+import com.opsmatters.media.model.system.SessionId;
 import com.opsmatters.media.model.content.project.Project;
 import com.opsmatters.media.model.content.project.ProjectItem;
 import com.opsmatters.media.db.dao.content.ContentDAO;
 import com.opsmatters.media.db.dao.content.ContentDAOFactory;
-import com.opsmatters.media.util.SessionId;
 
 /**
  * DAO that provides operations on the PROJECTS table in the database.

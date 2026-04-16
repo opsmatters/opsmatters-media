@@ -19,7 +19,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import com.opsmatters.media.model.BaseEntity;
-import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
 /**

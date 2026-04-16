@@ -18,8 +18,8 @@ package com.opsmatters.media.model.social;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.model.content.ContentType;
-import com.opsmatters.media.util.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
 import static com.opsmatters.media.model.social.SocialPostProperty.*;
@@ -210,7 +210,7 @@ public abstract class SavedPost extends PropertyPost
      */
     public String getPostedDateAsString()
     {
-        return getPostedDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getPostedDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -243,7 +243,7 @@ public abstract class SavedPost extends PropertyPost
      */
     public void setPostedDateAsString(String str) throws DateTimeParseException
     {
-        setPostedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setPostedDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**

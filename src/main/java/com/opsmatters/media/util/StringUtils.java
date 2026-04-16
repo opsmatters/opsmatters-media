@@ -30,7 +30,7 @@ import java.net.URLEncoder;
 import org.apache.commons.codec.binary.Base64;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
-
+import com.opsmatters.media.model.StringMatch;
 /**
  * A set of utility methods to perform miscellaneous tasks related to strings.
  * 
@@ -88,10 +88,6 @@ public class StringUtils
      * The maximum length for error messages.
      */
     public static final int MAX_ERROR_MESSAGE    = 140;
-
-    static
-    {
-    }
 
     /**
      * Private constructor as this class shouldn't be instantiated.
@@ -1032,24 +1028,24 @@ public class StringUtils
     /**
      * Returns the list of URLs extracted from the given text.
      */
-    public static List<Match> extractUrls(String text)
+    public static List<StringMatch> extractUrls(String text)
     {
-        List<Match> ret = new ArrayList<Match>();
+        List<StringMatch> ret = new ArrayList<StringMatch>();
         Matcher m = urlPattern.matcher(text);
         while(m.find())
-            ret.add(new Match(m.start(), m.end(), m.group()));
+            ret.add(new StringMatch(m.start(), m.end(), m.group()));
         return ret;
     }
 
     /**
      * Returns the list of hashtags extracted from the given text.
      */
-    public static List<Match> extractHashtags(String text)
+    public static List<StringMatch> extractHashtags(String text)
     {
-        List<Match> ret = new ArrayList<Match>();
+        List<StringMatch> ret = new ArrayList<StringMatch>();
         Matcher m = hashtagPattern.matcher(text);
         while(m.find())
-            ret.add(new Match(m.start(), m.end(), m.group()));
+            ret.add(new StringMatch(m.start(), m.end(), m.group()));
         return ret;
     }
 
@@ -1061,16 +1057,16 @@ public class StringUtils
         String ret = str;
 
         // Get a list of the URL matches
-        List<Match> matches = new ArrayList<Match>();
+        List<StringMatch> matches = new ArrayList<StringMatch>();
         Matcher m = urlPattern.matcher(str);
         while(m.find())
-            matches.add(new Match(m.start(), m.end(), m.group()));
+            matches.add(new StringMatch(m.start(), m.end(), m.group()));
 
         // Traverse in reverse order as we're changing the text
         Collections.reverse(matches);
 
         // Replace each URL match in the text with a hyperlink
-        for(Match match : matches)
+        for(StringMatch match : matches)
         {
             String text = match.getText();
             int pos = text.indexOf("?");

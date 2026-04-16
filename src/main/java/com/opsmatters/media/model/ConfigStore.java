@@ -17,7 +17,7 @@ package com.opsmatters.media.model;
 
 import java.io.File;
 import java.io.IOException;
-import com.opsmatters.media.file.YamlFileReader;
+import com.opsmatters.media.handler.YamlFileReader;
 
 /**
  * Base class for a configuration store file.

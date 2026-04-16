@@ -14,46 +14,36 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.file;
+package com.opsmatters.media.model;
 
 /**
- * Represents a shared formula in a spreadsheet.
+ * Represents the set of file delimiters.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class SharedFormula
+public enum FileDelimiter
 {
-    private String ref;
-    private String value;
+    COMMA("Comma", ","),
+    PIPE("Pipe", "|"),
+    SPACE("Space", " "),
+    TAB("Tab", "	");
 
-    public SharedFormula(String ref, String value)
+    FileDelimiter(String value, String separator)
     {
-        setRef(ref);
-        setValue(value);
+        this.value = value;
+        this.separator = separator;
     }
 
-    public String getRef()
-    {
-        return ref;
-    }
-
-    public void setRef(String ref)
-    {
-        this.ref = ref;
-    }
-
-    public String getValue()
+    public String value()
     {
         return value;
     }
 
-    public void setValue(String value)
+    public String separator()
     {
-        this.value = value;
+        return separator;
     }
 
-    public String toString()
-    {
-        return getValue();
-    }
+    private String value;
+    private String separator;
 }

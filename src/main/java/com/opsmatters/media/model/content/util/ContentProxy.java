@@ -16,9 +16,9 @@
 package com.opsmatters.media.model.content.util;
 
 import com.opsmatters.media.model.BaseEntity;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.client.proxy.webshare.WebshareProxy;
 import com.opsmatters.media.util.TimeUtils;
-import com.opsmatters.media.util.Formats;
 
 /**
  * Class representing a content proxy.
@@ -48,7 +48,7 @@ public class ContentProxy extends BaseEntity
     public ContentProxy(WebshareProxy proxy)
     {
         setId(proxy.getId());
-        setCreatedDate(TimeUtils.toInstantUTC(proxy.getCreatedAt(), Formats.LONG_ISO8601_FORMAT));
+        setCreatedDate(TimeUtils.toInstantUTC(proxy.getCreatedAt(), Formats.LONG_ISO8601));
         setHost(proxy.getProxyAddress());
         setPort(proxy.getPort());
         setUsername(proxy.getUsername());

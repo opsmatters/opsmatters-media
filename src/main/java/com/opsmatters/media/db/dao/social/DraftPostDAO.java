@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.system.Site;
+import com.opsmatters.media.model.system.SessionId;
 import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.organisation.Organisation;
@@ -40,7 +41,6 @@ import com.opsmatters.media.model.social.DraftContentPost;
 import com.opsmatters.media.model.social.DraftContentPostItem;
 import com.opsmatters.media.model.social.DraftStandardPostItem;
 import com.opsmatters.media.db.dao.BaseDAO;
-import com.opsmatters.media.util.SessionId;
 
 import static com.opsmatters.media.model.social.SocialPostType.*;
 

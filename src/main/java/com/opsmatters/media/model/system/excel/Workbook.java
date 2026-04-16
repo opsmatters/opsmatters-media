@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.file;
+package com.opsmatters.media.model.system.excel;
 
 import java.util.List;
 import java.util.TimeZone;
@@ -22,9 +22,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import com.opsmatters.media.model.FileFormat;
 import com.opsmatters.media.util.TimeUtils;
 
-import static com.opsmatters.media.file.FileFormat.*;
+import static com.opsmatters.media.model.FileFormat.*;
 
 /**
  * Base class for an Excel XLS or XLSX workbook.

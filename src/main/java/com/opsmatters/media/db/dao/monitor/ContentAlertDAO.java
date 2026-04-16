@@ -25,11 +25,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
+import com.opsmatters.media.model.system.SessionId;
 import com.opsmatters.media.model.monitor.ContentAlert;
 import com.opsmatters.media.model.monitor.ContentAlertItem;
 import com.opsmatters.media.model.monitor.AlertStatus;
 import com.opsmatters.media.db.dao.BaseDAO;
-import com.opsmatters.media.util.SessionId;
 
 /**
  * DAO that provides operations on the CONTENT_ALERTS table in the database.

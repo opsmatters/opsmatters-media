@@ -33,6 +33,8 @@ import org.json.JSONArray;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
+import com.opsmatters.media.model.Formats;
+import com.opsmatters.media.model.StringMatch;
 import com.opsmatters.media.model.provider.SocialProviderId;
 import com.opsmatters.media.model.social.SocialChannel;
 import com.opsmatters.media.model.social.ChannelPost;
@@ -42,8 +44,6 @@ import com.opsmatters.media.client.social.bluesky.Facet;
 import com.opsmatters.media.client.social.bluesky.FacetParser;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.TimeUtils;
-import com.opsmatters.media.util.Formats;
-import com.opsmatters.media.util.Match;
 
 /**
  * Executes Bluesky API calls using a REST client.
@@ -508,8 +508,8 @@ public class BlueskyClient extends RestClient implements SocialClient
 
         String cid = null;
 
-        List<Match> hashtags = StringUtils.extractHashtags(text);
-        List<Match> links = StringUtils.extractUrls(text);
+        List<StringMatch> hashtags = StringUtils.extractHashtags(text);
+        List<StringMatch> links = StringUtils.extractUrls(text);
 
         if(links.size() == 0)
             throw new IllegalArgumentException("missing url");
@@ -520,7 +520,7 @@ public class BlueskyClient extends RestClient implements SocialClient
         JSONObject record = new JSONObject();
         record.put("$type", "app.bsky.feed.post");
         record.put("text", text);
-        record.put("createdAt", TimeUtils.toStringUTC(Formats.ISO8601_FORMAT)+"Z");
+        record.put("createdAt", TimeUtils.toStringUTC(Formats.ISO8601)+"Z");
         if(facets != null)
             record.put("facets", facets);
         if(embed != null)
@@ -667,7 +667,7 @@ public class BlueskyClient extends RestClient implements SocialClient
      * @param links The list of links.
      * @return The facets array in JSON format.
      */
-    private JSONArray getFacets(String text, List<Match> hashtags, List<Match> links) throws IOException
+    private JSONArray getFacets(String text, List<StringMatch> hashtags, List<StringMatch> links) throws IOException
     {
         JSONArray ret = null;
 

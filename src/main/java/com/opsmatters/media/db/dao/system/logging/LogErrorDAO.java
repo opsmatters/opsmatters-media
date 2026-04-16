@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import org.json.JSONObject;
+import com.opsmatters.media.model.system.SessionId;
 import com.opsmatters.media.model.system.logging.Log;
 import com.opsmatters.media.model.system.logging.LogEvent;
 import com.opsmatters.media.model.system.logging.LogError;
@@ -32,7 +33,6 @@ import com.opsmatters.media.model.system.logging.LogErrorItem;
 import com.opsmatters.media.model.system.logging.ErrorCode;
 import com.opsmatters.media.model.system.logging.ErrorStatus;
 import com.opsmatters.media.db.dao.BaseDAO;
-import com.opsmatters.media.util.SessionId;
 
 import static com.opsmatters.media.model.content.ContentType.*;
 import static com.opsmatters.media.model.system.logging.LogEventType.*;

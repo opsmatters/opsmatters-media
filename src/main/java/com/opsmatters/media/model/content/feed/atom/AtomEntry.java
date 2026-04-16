@@ -18,7 +18,7 @@ package com.opsmatters.media.model.content.feed.atom;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.Instant;
-import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
@@ -112,7 +112,7 @@ public class AtomEntry implements java.io.Serializable
 
     public Instant getPublishedDate()
     {
-        return TimeUtils.toInstantUTC(published, Formats.ISO8601_FORMAT);
+        return TimeUtils.toInstantUTC(published, Formats.ISO8601);
     }
 
     public void setPublished(String published)
@@ -127,7 +127,7 @@ public class AtomEntry implements java.io.Serializable
 
     public Instant getUpdatedDate()
     {
-        return TimeUtils.toInstantUTC(updated, Formats.ISO8601_FORMAT);
+        return TimeUtils.toInstantUTC(updated, Formats.ISO8601);
     }
 
     public void setUpdated(String updated)

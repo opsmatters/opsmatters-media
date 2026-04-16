@@ -18,7 +18,7 @@ package com.opsmatters.media.model.order.contact;
 
 import java.util.List;
 import java.util.ArrayList;
-import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
@@ -81,7 +81,7 @@ public enum ContactNote
     public String format(String... params)
     {
         return String.format("%s: %s",
-            TimeUtils.toStringUTC(Formats.DATE_FORMAT),
+            TimeUtils.toStringUTC(Formats.DATE),
             String.format(text(), params));
     }
 

@@ -16,9 +16,9 @@
 package com.opsmatters.media.model.admin;
 
 import java.time.Instant;
+import com.opsmatters.media.cache.TimeZones;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.util.StringUtils;
-import com.opsmatters.media.cache.util.TimeZones;
 
 /**
  * Class representing a user.

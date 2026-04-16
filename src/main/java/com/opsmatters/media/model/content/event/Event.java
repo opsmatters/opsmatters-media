@@ -20,8 +20,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import org.json.JSONObject;
-import com.opsmatters.media.crawler.parser.BodyParser;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.model.system.Site;
+import com.opsmatters.media.model.system.SessionDate;
 import com.opsmatters.media.model.organisation.Organisation;
 import com.opsmatters.media.model.organisation.OrganisationSite;
 import com.opsmatters.media.model.content.FieldMap;
@@ -29,10 +30,9 @@ import com.opsmatters.media.model.content.Resource;
 import com.opsmatters.media.model.content.ContentType;
 import com.opsmatters.media.model.content.crawler.CrawlerWebPage;
 import com.opsmatters.media.model.content.crawler.field.FieldFilter;
-import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.crawler.parser.BodyParser;
 import com.opsmatters.media.util.FormatUtils;
 import com.opsmatters.media.util.TimeUtils;
-import com.opsmatters.media.util.SessionDate;
 
 import static com.opsmatters.media.model.content.FieldName.*;
 
@@ -209,7 +209,7 @@ public class Event extends Resource<EventDetails>
         if(config.getFields().containsKey(START_TIME))
         {
             String start = config.getFields().get(START_TIME);
-            addStartTime(TimeUtils.toMillisTime(start, Formats.SHORT_TIME_FORMAT));
+            addStartTime(TimeUtils.toMillisTime(start, Formats.SHORT_TIME));
         }
     }
 
@@ -366,7 +366,7 @@ public class Event extends Resource<EventDetails>
      */
     public String getStartDateAsString()
     {
-        return getStartDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getStartDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -407,7 +407,7 @@ public class Event extends Resource<EventDetails>
      */
     public void setStartDateAsString(String str) throws DateTimeParseException
     {
-        setStartDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setStartDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -448,7 +448,7 @@ public class Event extends Resource<EventDetails>
      */
     public String getEndDateAsString()
     {
-        return getEndDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getEndDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -489,7 +489,7 @@ public class Event extends Resource<EventDetails>
      */
     public void setEndDateAsString(String str) throws DateTimeParseException
     {
-        setEndDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setEndDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**

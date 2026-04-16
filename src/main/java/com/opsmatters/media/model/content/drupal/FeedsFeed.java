@@ -19,7 +19,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import com.opsmatters.media.model.BaseEntity;
-import com.opsmatters.media.util.Formats;
+import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.util.TimeUtils;
 
 /**
@@ -159,7 +159,7 @@ public class FeedsFeed extends BaseEntity
      */
     public String getImportedDateAsString()
     {
-        return getImportedDateAsString(Formats.CONTENT_DATE_FORMAT);
+        return getImportedDateAsString(Formats.CONTENT_DATETIME);
     }
 
     /**
@@ -192,7 +192,7 @@ public class FeedsFeed extends BaseEntity
      */
     public void setImportedDateAsString(String str) throws DateTimeParseException
     {
-        setImportedDateAsString(str, Formats.CONTENT_DATE_FORMAT);
+        setImportedDateAsString(str, Formats.CONTENT_DATETIME);
     }
 
     /**
