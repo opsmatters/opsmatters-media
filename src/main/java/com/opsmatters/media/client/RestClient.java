@@ -350,9 +350,9 @@ public class RestClient extends Client
     {
         HttpPost request = new HttpPost(url);
         if(token != null)
-            request.addHeader("AUTHORIZATION", String.format("%s %s", getTokenName(), token));
+            request.addHeader(AUTHORIZATION, String.format("%s %s", getTokenName(), token));
         if(contentType != null)
-            request.addHeader("CONTENT_TYPE", contentType);
+            request.addHeader(CONTENT_TYPE, contentType);
         if(bytes != null)
             request.setEntity(new ByteArrayEntity(bytes));
         return execute(request, hasResponseEntity);
@@ -373,7 +373,7 @@ public class RestClient extends Client
     {
         HttpPut request = new HttpPut(url);
         if(token != null)
-            request.addHeader("AUTHORIZATION", String.format("%s %s", getTokenName(), token));
+            request.addHeader(AUTHORIZATION, String.format("%s %s", getTokenName(), token));
         if(contentType != null)
             request.addHeader(CONTENT_TYPE, contentType);
         if(body != null)
