@@ -845,6 +845,12 @@ media.built.on=${TODAY}
     <version>31.4.1</version>
   </dependency>
 
+  <dependency>
+    <groupId>com.github.umjammer</groupId>
+    <artifactId>vavi-image-avif</artifactId>
+    <version>0.0.7</version>
+  </dependency>
+
 </dependencies>
 
 <repositories>
@@ -870,6 +876,12 @@ media.built.on=${TODAY}
     <url>http://jcenter.bintray.com</url>
   </repository>
 -->
+
+  <repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+  </repository>
+
 </repositories>
 
 </project>
