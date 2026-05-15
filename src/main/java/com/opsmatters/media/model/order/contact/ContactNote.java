@@ -30,6 +30,7 @@ public enum ContactNote
 {
     REMINDER("Reminder Sent", "Sent email reminder for unpaid invoice"),
     SUSPENDED("Suspended", "Suspended due to non-payment"),
+    STOPPED("Stopped", "Stopped sponsorship"),
     REACTIVATED("Reactivated", "Reactivated after suspension"),
     RISK_CHANGE("Risk Change", "Risk changed to '%s'");
 
@@ -121,6 +122,7 @@ public enum ContactNote
 
         ret.add(REMINDER);
         ret.add(SUSPENDED);
+        ret.add(STOPPED);
         ret.add(REACTIVATED);
  
         return ret;

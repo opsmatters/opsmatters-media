@@ -99,7 +99,7 @@ public class HtmlCleaner
     public static boolean hasUnnecessaryAttribute(String str)
     {
         return HtmlDocument.builder(str)
-            .withTags("p", "div", "h1", "h2", "h3", "h4", "h5")
+            .withTags("p", "div", "h1", "h2", "h3", "h4", "h5", "li")
             .build()
             .hasUnnecessaryAttribute();
     }
@@ -112,7 +112,7 @@ public class HtmlCleaner
     public static String removeUnnecessaryAttributes(String str)
     {
         return HtmlDocument.builder(str)
-            .withTags("p", "div", "h1", "h2", "h3", "h4", "h5")
+            .withTags("p", "div", "h1", "h2", "h3", "h4", "h5", "li")
             .removeUnnecessaryAttributes()
             .get();
     }
@@ -183,7 +183,7 @@ public class HtmlCleaner
     public static boolean hasExtraLineBreaks(String str)
     {
         return HtmlDocument.builder(str)
-            .withTags("p", "div", "li")
+            .withTags("p", "div", "h2", "h3", "h4", "li")
             .build()
             .hasExtraLineBreaks();
     }
@@ -196,10 +196,36 @@ public class HtmlCleaner
     public static String fixExtraLineBreaks(String str)
     {
         return HtmlDocument.builder(str)
-            .withTags("li")
+            .withTags("h2", "h3", "h4", "li")
             .removeExtraLineBreaks()
             .withTags("p", "div")
             .replaceExtraLineBreaks()
+            .get();
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the given string contains an empty paragraph.
+     * @param str The string to search
+     * @return <CODE>true</CODE> if the given string contains an empty paragraph
+     */
+    public static boolean hasEmptyParagraph(String str)
+    {
+        return HtmlDocument.builder(str)
+            .withTags("p", "div")
+            .build()
+            .hasEmptyParagraph();
+    }
+
+    /**
+     * Removes empty paragraphs in the given string.
+     * @param str The string to amend
+     * @return The amended string.
+     */
+    public static String removeEmptyParagraphs(String str)
+    {
+        return HtmlDocument.builder(str)
+            .withTags("p", "div")
+            .removeEmptyParagraphs()
             .get();
     }
 
@@ -211,7 +237,7 @@ public class HtmlCleaner
     public static boolean needsImageWrapperClass(String str)
     {
         return HtmlDocument.builder(str)
-            .withTags("figure", "div", "p")
+            .withTags("figure", "p", "div")
             .build()
             .needsImageWrapperClass();
     }
@@ -224,7 +250,7 @@ public class HtmlCleaner
     public static String addImageWrapperClass(String str)
     {
         return HtmlDocument.builder(str)
-            .withTags("figure", "div", "p")
+            .withTags("figure", "p", "div")
             .addImageWrapperClass()
             .get();
     }
@@ -263,7 +289,7 @@ public class HtmlCleaner
     public static List<String> getBadExternalSpacingLinks(String str)
     {
         List<String> messages = HtmlDocument.builder(str)
-            .withTags("p", "li", "div", "h1", "h2", "h3", "h4", "h5")
+            .withTags("p", "div", "h1", "h2", "h3", "h4", "h5", "li")
             .build()
             .getBadExternalSpacingLinkMessages();
 
@@ -281,7 +307,7 @@ public class HtmlCleaner
     public static boolean hasBadExternalSpacingLink(String str)
     {
         return HtmlDocument.builder(str)
-            .withTags("p", "li", "div", "h1", "h2", "h3", "h4", "h5")
+            .withTags("p", "div", "h1", "h2", "h3", "h4", "h5", "li")
             .build()
             .hasBadExternalSpacingLink();
     }
@@ -294,7 +320,7 @@ public class HtmlCleaner
     public static String fixBadExternalSpacingLinks(String str)
     {
         return HtmlDocument.builder(str)
-            .withTags("p", "li", "div", "h1", "h2", "h3", "h4", "h5")
+            .withTags("p", "div", "h1", "h2", "h3", "h4", "h5", "li")
             .fixBadExternalSpacingLinks()
             .get();
     }

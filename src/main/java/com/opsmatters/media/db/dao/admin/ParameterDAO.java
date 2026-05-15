@@ -326,8 +326,8 @@ public class ParameterDAO extends BaseDAO
         updateStmt.executeUpdate();
 
         if(log)
-          logger.info(String.format("Updated parameter %s/%s in PARAMETERS",
-              parameter.getType(), parameter.getName()));
+            logger.info(String.format("Updated parameter %s/%s in PARAMETERS",
+                parameter.getType(), parameter.getName()));
     }
 
     /**

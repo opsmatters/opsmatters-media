@@ -166,8 +166,15 @@ public class BodyParser
      */
     public void parseHtml(Node node)
     {
-        for(Node child : node.childNodes())
-            parseNode(child);
+        if(isLeafNode(node.nodeName()))
+        {
+            parseNode(node);
+        }
+        else
+        {
+            for(Node child : node.childNodes())
+                parseNode(child);
+        }
     }
 
     /**
@@ -200,7 +207,7 @@ public class BodyParser
         {
             boolean inline = true;
             String text = getText(node);
-            if(text != null) // eg. a comment
+            if(text != null)
                 text = text.trim();
             else // eg. a comment
                 return;

@@ -849,6 +849,12 @@ media.built.on=${TODAY}
     <groupId>com.github.umjammer</groupId>
     <artifactId>vavi-image-avif</artifactId>
     <version>0.0.7</version>
+    <exclusions>
+      <exclusion>
+        <groupId>com.github.umjammer.vavi-commons</groupId>
+        <artifactId>vavi-instrumentation</artifactId>
+      </exclusion>
+    </exclusions>
   </dependency>
 
 </dependencies>

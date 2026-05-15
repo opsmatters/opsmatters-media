@@ -42,13 +42,15 @@ class HtmlDocument
 
     private static final String NBSP_CHAR = "\u00a0";
     private static final String NBSP_ENTITY = "&nbsp;";
+    private static final String NNBSP_CHAR = "\u202f";
+    private static final String NNBSP_ENTITY = "&nnbsp;";
     private static final String LF_CHAR = "\n";
     private static final String CR_CHAR = "\r";
 
-    private static final String BEFORE_CHARS = " ('\"“"+NBSP_CHAR+CR_CHAR+LF_CHAR;
-    private static final String AFTER_CHARS = " !:;,.'’\"”?)®"+NBSP_CHAR+CR_CHAR+LF_CHAR;
-    private static final String BEFORE_ENTITIES = "&ldquo;"+NBSP_ENTITY;
-    private static final String AFTER_ENTITIES = "&rdquo;"+NBSP_ENTITY;
+    private static final String BEFORE_CHARS = " ('\"“"+NBSP_CHAR+NNBSP_CHAR+CR_CHAR+LF_CHAR;
+    private static final String AFTER_CHARS = " !:;,.'’\"”?)®"+NBSP_CHAR+NNBSP_CHAR+CR_CHAR+LF_CHAR;
+    private static final String BEFORE_ENTITIES = "&ldquo;"+NBSP_ENTITY+NNBSP_ENTITY;
+    private static final String AFTER_ENTITIES = "&rdquo;"+NBSP_ENTITY+NNBSP_ENTITY;
 
     private static final String HTTP_PROTOCOL = "http:";
     private static final String HTTPS_PROTOCOL = "https:";
@@ -247,7 +249,9 @@ class HtmlDocument
 
             ret = content.startsWith(" ") || content.endsWith(" ")
                 || content.startsWith(NBSP_CHAR) || content.endsWith(NBSP_CHAR)
-                || content.startsWith(NBSP_ENTITY) || content.endsWith(NBSP_ENTITY);
+                || content.startsWith(NNBSP_CHAR) || content.endsWith(NNBSP_CHAR)
+                || content.startsWith(NBSP_ENTITY) || content.endsWith(NBSP_ENTITY)
+                || content.startsWith(NNBSP_ENTITY) || content.endsWith(NNBSP_ENTITY);
         }
 
         return ret;
@@ -281,12 +285,17 @@ class HtmlDocument
             String attr = m.group(1);
             String content = m.group(2);
 
-
             boolean changed = false;
 
             while(content.startsWith(NBSP_CHAR))
             {
                 content = content.substring(NBSP_CHAR.length());
+                changed = true;
+            }
+
+            while(content.startsWith(NNBSP_CHAR))
+            {
+                content = content.substring(NNBSP_CHAR.length());
                 changed = true;
             }
 
@@ -296,15 +305,33 @@ class HtmlDocument
                 changed = true;
             }
 
+            while(content.endsWith(NNBSP_CHAR))
+            {
+                content = content.substring(0, content.length()-NNBSP_CHAR.length());
+                changed = true;
+            }
+
             while(content.startsWith(NBSP_ENTITY))
             {
                 content = content.substring(NBSP_ENTITY.length());
                 changed = true;
             }
 
+            while(content.startsWith(NNBSP_ENTITY))
+            {
+                content = content.substring(NNBSP_ENTITY.length());
+                changed = true;
+            }
+
             while(content.endsWith(NBSP_ENTITY))
             {
                 content = content.substring(0, content.length()-NBSP_ENTITY.length());
+                changed = true;
+            }
+
+            while(content.endsWith(NNBSP_ENTITY))
+            {
+                content = content.substring(0, content.length()-NNBSP_ENTITY.length());
                 changed = true;
             }
 
@@ -552,7 +579,9 @@ class HtmlDocument
 
             if(anchor.startsWith(" ") || anchor.endsWith(" ")
                 || anchor.startsWith(NBSP_CHAR) || anchor.endsWith(NBSP_CHAR)
-                || anchor.startsWith(NBSP_ENTITY) || anchor.endsWith(NBSP_ENTITY))
+                || anchor.startsWith(NNBSP_CHAR) || anchor.endsWith(NNBSP_CHAR)
+                || anchor.startsWith(NBSP_ENTITY) || anchor.endsWith(NBSP_ENTITY)
+                || anchor.startsWith(NNBSP_ENTITY) || anchor.endsWith(NNBSP_ENTITY))
             {
                 ret = true;
             }
@@ -576,7 +605,9 @@ class HtmlDocument
 
 
             if(anchor.startsWith(NBSP_CHAR) || anchor.endsWith(NBSP_CHAR)
-                || anchor.startsWith(NBSP_ENTITY) || anchor.endsWith(NBSP_ENTITY))
+                || anchor.startsWith(NNBSP_CHAR) || anchor.endsWith(NNBSP_CHAR)
+                || anchor.startsWith(NBSP_ENTITY) || anchor.endsWith(NBSP_ENTITY)
+                || anchor.startsWith(NNBSP_ENTITY) || anchor.endsWith(NNBSP_ENTITY))
             {
                 anchor = replaceNbsps(anchor);
             }
@@ -641,7 +672,8 @@ class HtmlDocument
      */
     public static boolean hasNbsp(String doc)
     {
-        return doc.indexOf(NBSP_CHAR) != -1 || doc.indexOf(NBSP_ENTITY) != -1;
+        return doc.indexOf(NBSP_CHAR) != -1 || doc.indexOf(NBSP_ENTITY) != -1
+            || doc.indexOf(NNBSP_CHAR) != -1 || doc.indexOf(NNBSP_ENTITY) != -1;
     }
 
     /**
@@ -660,6 +692,10 @@ class HtmlDocument
         // Replace nbsp with space
         str = str.replaceAll(NBSP_CHAR, " ");
         str = str.replaceAll(NBSP_ENTITY, " ");
+
+        // Replace nnbsp with space
+        str = str.replaceAll(NNBSP_CHAR, " ");
+        str = str.replaceAll(NNBSP_ENTITY, " ");
 
         return str;
     }
@@ -997,6 +1033,87 @@ class HtmlDocument
                 doc = doc.replace(whole,
                     String.format("<%s%s>%s</%s>", tag, attr, content, tag));
             }
+        }
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the HTML document contains an empty paragraph.
+     * @return <CODE>true</CODE> if the HTML document contains an empty paragraph.
+     */
+    public boolean hasEmptyParagraph()
+    {
+        boolean ret = false;
+
+        if(tags != null)
+        {
+            for(String tag : tags)
+            {
+                if(ret = hasEmptyParagraph(tag))
+                    break;
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the HTML document contains an empty paragraph.
+     * @param tag The tag to look for in the document
+     * @return <CODE>true</CODE> if the HTML document contains an empty paragraph.
+     */
+    private boolean hasEmptyParagraph(String tag)
+    {
+        boolean ret = false;
+
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.*?)</%s>",
+            tag, tag), Pattern.DOTALL);
+        Matcher m = pattern.matcher(doc);
+
+        while(m.find() && !ret)
+        {
+            String content = m.group(2);
+
+            content = content.replaceAll("<br.+?>", ""); // remove line breaks
+            content = content.trim();
+            if(content.length() == 0)
+                ret = true;
+        }
+
+        return ret;
+    }
+
+    /**
+     * Removes empty paragraphs from the HTML document.
+     */
+    private void removeEmptyParagraphs()
+    {
+        if(tags != null)
+        {
+            for(String tag : tags)
+                removeEmptyParagraphs(tag);
+        }
+    }
+
+    /**
+     * Removes empty paragraphs from the HTML document.
+     * @param tag The tag to look for
+     */
+    private void removeEmptyParagraphs(String tag)
+    {
+        Pattern pattern = Pattern.compile(String.format("<%s(.*?)>(.*?)</%s>",
+            tag, tag), Pattern.DOTALL);
+        Matcher m = pattern.matcher(doc);
+
+        while(m.find())
+        {
+            String whole = m.group(0);
+            String attr = m.group(1);
+            String content = m.group(2);
+
+            content = content.replaceAll("<br.+?>", ""); // remove line breaks
+            content = content.trim();
+            if(content.length() == 0)
+                doc = doc.replace(whole, "");
         }
     }
 
@@ -1373,11 +1490,19 @@ class HtmlDocument
             String content = m.group(2);
 
             if(attr.indexOf(HTTP_PROTOCOL) != -1)
+            {
                 ret.add(String.format("link with bad protocol: %s", StringUtils.normalise(whole)));
-            else if(content.startsWith(" ") || content.endsWith(" ") || content.startsWith(NBSP_ENTITY) || content.endsWith(NBSP_ENTITY))
+            }
+            else if(content.startsWith(" ") || content.endsWith(" ")
+                || content.startsWith(NBSP_ENTITY) || content.endsWith(NBSP_ENTITY)
+                || content.startsWith(NNBSP_ENTITY) || content.endsWith(NNBSP_ENTITY))
+            {
                 ret.add(String.format("link with anchor text with bad spacing: %s", StringUtils.normalise(whole)));
+            }
             else if(content.startsWith(",") || content.endsWith(","))
+            {
                 ret.add(String.format("link with anchor text with comma: %s", StringUtils.normalise(whole)));
+            }
 
             Matcher hrefMatcher = HREF_PATTERN.matcher(attr);
             if(hrefMatcher.find())
@@ -1972,6 +2097,16 @@ class HtmlDocument
         public Builder removeExtraLineBreaks()
         {
             ret.removeExtraLineBreaks();
+            return this;
+        }
+
+        /**
+         * Removes empty paragraphs from the HTML document.
+         * @return This object
+         */
+        public Builder removeEmptyParagraphs()
+        {
+            ret.removeEmptyParagraphs();
             return this;
         }
 
