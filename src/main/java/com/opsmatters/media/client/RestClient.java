@@ -415,9 +415,9 @@ public class RestClient extends Client
     /**
      * Executes a DELETE operation without a message body.
      */
-    public String delete(String url) throws IOException
+    public String delete(String url, boolean hasResponseEntity) throws IOException
     {
-        return execute(new HttpDelete(url), true);
+        return execute(new HttpDelete(url), hasResponseEntity);
     }
 
     /**

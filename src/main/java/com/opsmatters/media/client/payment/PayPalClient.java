@@ -325,6 +325,15 @@ public class PayPalClient extends RestClient
     }
 
     /**
+     * Deletes the draft invoice with the given id.
+     */
+    public boolean deleteDraftInvoice(String invoiceId) throws IOException
+    {
+        delete(String.format("%s/v2/invoicing/invoices/%s", BASE_URL, invoiceId), false);
+        return getStatusLine().getStatusCode() == 204;
+    }
+
+    /**
      * Records a payment against the given invoice.
      */
     public String recordInvoicePayment(String invoiceId, PayPalPayment payment) throws IOException

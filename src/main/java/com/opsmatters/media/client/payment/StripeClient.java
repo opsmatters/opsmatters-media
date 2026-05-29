@@ -366,6 +366,28 @@ public class StripeClient extends Client
     }
 
     /**
+     * Deletes the draft invoice with the given id.
+     */
+    public Invoice deleteDraftInvoice(String invoiceId) throws StripeException
+    {
+        Invoice ret = null;
+
+        try
+        {
+            Invoice invoice = retrieveInvoice(invoiceId);
+            if(invoice != null)
+                ret = invoice.delete();
+        }
+        catch(InvalidRequestException e)
+        {
+            logger.severe("Invoice does not exist: "+invoiceId);
+            throw e;
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns the invoices for the given email address.
      */
     public List<Invoice> getInvoices(String email) throws StripeException
