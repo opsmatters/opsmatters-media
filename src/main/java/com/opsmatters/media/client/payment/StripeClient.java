@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.time.Instant;
+import java.time.Duration;
 import org.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import com.stripe.Stripe;
@@ -416,8 +417,9 @@ public class StripeClient extends Client
         List<Invoice> invoices = getInvoices(email);
         for(Invoice invoice : invoices)
         {
+            // Check if the invoice was created within an hour of the next subscription date
             Instant created = Instant.ofEpochSecond(invoice.getCreated());
-            if(created.isAfter(nextDate)
+            if(Duration.between(created, nextDate).compareTo(Duration.ofHours(1)) < 0
                 && invoice.getStatus().equals("paid"))
             {
                 ret = invoice;

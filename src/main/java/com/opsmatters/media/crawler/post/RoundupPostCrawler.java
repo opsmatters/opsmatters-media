@@ -290,6 +290,7 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostDetails>
                     invalid = true;
                 }
                 else if(author.toLowerCase().startsWith("by ")
+                    || author.toLowerCase().indexOf("author") != -1
                     || author.indexOf(TimeUtils.toStringUTC("yyyy")) != -1) // field contains date
                 {
                     invalid = true;
