@@ -45,6 +45,7 @@ public class OrderItem extends BaseEntity
     private String contentUrl = "";
     private int quantity = 1;
     private int price = 0;
+    private int vat = 0;
     private Currency currency = null;
     private String name = "";
     private String description = "";
@@ -91,6 +92,7 @@ public class OrderItem extends BaseEntity
             setContentUrl(obj.getContentUrl());
             setQuantity(obj.getQuantity());
             setPrice(obj.getPrice());
+            setVat(obj.getVat());
             setCurrency(obj.getCurrency());
             setName(obj.getName());
             setDescription(obj.getDescription());
@@ -172,6 +174,14 @@ public class OrderItem extends BaseEntity
     }
 
     /**
+     * Returns <CODE>true</CODE> if the content id has been set.
+     */
+    public boolean hasContentId()
+    {
+        return getContentId() != null && getContentId().length() > 0;
+    }
+
+    /**
      * Returns the content type.
      */
     public ContentType getContentType()
@@ -249,6 +259,13 @@ public class OrderItem extends BaseEntity
         if(includeUrl)
             buff.append(getContentUrl());
 
+        if(hasDescription())
+        {
+            if(buff.length() > 0)
+                buff.append("\r\n");
+            buff.append(getDescription());
+        }
+
         if(notes != null && notes.length() > 0)
         {
             if(buff.length() > 0)
@@ -273,6 +290,7 @@ public class OrderItem extends BaseEntity
     public void setQuantity(int quantity)
     {
         this.quantity = quantity;
+        setVat();
     }
 
     /**
@@ -289,6 +307,48 @@ public class OrderItem extends BaseEntity
     public void setPrice(int price)
     {
         this.price = price;
+        setVat();
+    }
+
+    /**
+     * Returns the VAT.
+     */
+    public int getVat()
+    {
+        return vat;
+    }
+
+    /**
+     * Sets the VAT.
+     */
+    public void setVat(int vat)
+    {
+        this.vat = vat;
+    }
+
+    /**
+     * Sets the VAT from the price and the rate.
+     */
+    public void setVat()
+    {
+        setVat((getPrice()*getQuantity()*getVatRate())/100);
+    }
+
+    /**
+     * Returns the VAT rate.
+     */
+    public int getVatRate()
+    {
+        Order order = Orders.getById(orderId);
+        return order != null ? order.getVatRate() : 0;
+    }
+
+    /**
+     * Returns the total amount.
+     */
+    public int getTotalAmount()
+    {
+        return (getPrice()*getQuantity()) + getVat();
     }
 
     /**

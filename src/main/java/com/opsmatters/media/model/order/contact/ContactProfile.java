@@ -49,6 +49,7 @@ public class ContactProfile extends BaseEntity
     private Currency currency = null;
     private boolean prePayment = false;
     private boolean includeUrl = true;
+    private boolean includeVat = false;
     private boolean enabled = false;
 
     /**
@@ -102,6 +103,7 @@ public class ContactProfile extends BaseEntity
             setCurrency(obj.getCurrency());
             setPrePayment(obj.hasPrePayment());
             setIncludeUrl(obj.includeUrl());
+            setIncludeVat(obj.includeVat());
             setEnabled(obj.isEnabled());
         }
     }
@@ -412,6 +414,38 @@ public class ContactProfile extends BaseEntity
     public void setIncludeUrlObject(Boolean includeUrl)
     {
         setIncludeUrl(includeUrl != null && includeUrl.booleanValue());
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if VAT should be added to order items for this profile.
+     */
+    public boolean includeVat()
+    {
+        return includeVat;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if VAT should be added to order items for this profile.
+     */
+    public Boolean getIncludeVatObject()
+    {
+        return Boolean.valueOf(includeVat());
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if VAT should be added to order items for this profile.
+     */
+    public void setIncludeVat(boolean includeVat)
+    {
+        this.includeVat = includeVat;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if VAT should be added to order items for this profile.
+     */
+    public void setIncludeVatObject(Boolean includeVat)
+    {
+        setIncludeVat(includeVat != null && includeVat.booleanValue());
     }
 
     /**

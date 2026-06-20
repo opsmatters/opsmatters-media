@@ -43,6 +43,7 @@ public class Order extends BaseEntity
 {
     private String contactId = "";
     private String contactName = ""; // Used as a filter
+    private String contactProfileId = "";
     private String contactPersonId = "";
     private String companyId = "";
     private int week, month, year, weekYear = -1;
@@ -50,6 +51,7 @@ public class Order extends BaseEntity
     private PaymentMode mode = PaymentMode.UNDEFINED;
     private PaymentTerm term = PaymentTerm.UNDEFINED;
     private Currency currency = null;
+    private int vatRate = 0;
     private OrderStatus status = OrderStatus.NEW;
     private CancelReason reason = CancelReason.NONE;
     private boolean prePayment = false;
@@ -67,9 +69,12 @@ public class Order extends BaseEntity
      */
     public Order(Contact contact, ContactProfile profile, ContactPerson person)
     {
+        int vatRate = Parameters.get(ORDER, VAT_RATE).getValueAsInt();
+
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setContactId(contact.getId());
+        setContactProfileId(profile.getId());
         if(person != null)
             setContactPersonId(person.getId());
         setCompanyId(profile.getCompanyId());
@@ -78,6 +83,8 @@ public class Order extends BaseEntity
         setPaymentTerm(profile.getPaymentTerm());
         setCurrency(profile.getCurrency());
         setPrePayment(profile.hasPrePayment());
+        if(profile.includeVat())
+            setVatRate(vatRate);
 
         // Set the email and additional info for an invoice
         if(getPaymentMode() == PaymentMode.INVOICE)
@@ -131,12 +138,14 @@ public class Order extends BaseEntity
         {
             super.copyAttributes(obj);
             setContactId(obj.getContactId());
+            setContactProfileId(obj.getContactProfileId());
             setContactPersonId(obj.getContactPersonId());
             setCompanyId(obj.getCompanyId());
             setPaymentMethod(obj.getPaymentMethod());
             setPaymentMode(obj.getPaymentMode());
             setPaymentTerm(obj.getPaymentTerm());
             setCurrency(obj.getCurrency());
+            setVatRate(obj.getVatRate());
             setStatus(obj.getStatus());
             setReason(obj.getReason());
             setWeek(obj.getWeek());
@@ -182,6 +191,30 @@ public class Order extends BaseEntity
     public void setContactName(String contactName)
     {
         this.contactName = contactName;
+    }
+
+    /**
+     * Returns the contact profile id.
+     */
+    public String getContactProfileId()
+    {
+        return contactProfileId;
+    }
+
+    /**
+     * Sets the contact profile id.
+     */
+    public void setContactProfileId(String contactProfileId)
+    {
+        this.contactProfileId = contactProfileId;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the contact profile id has been set.
+     */
+    public boolean hasContactProfileId()
+    {
+        return getContactProfileId() != null && getContactProfileId().length() > 0;
     }
 
     /**
@@ -472,6 +505,22 @@ public class Order extends BaseEntity
     public void setCurrency(Currency currency)
     {
         this.currency = currency;
+    }
+
+    /**
+     * Returns the VAT rate.
+     */
+    public int getVatRate()
+    {
+        return vatRate;
+    }
+
+    /**
+     * Sets the VAT rate.
+     */
+    public void setVatRate(int vatRate)
+    {
+        this.vatRate = vatRate;
     }
 
     /**

@@ -157,7 +157,7 @@ public class Orders extends StaticCache
             for(OrderItem item : items.values())
             {
                 if(item.isEnabled())
-                    ret += (item.getPrice() * item.getQuantity());
+                    ret += item.getTotalAmount();
             }
         }
 

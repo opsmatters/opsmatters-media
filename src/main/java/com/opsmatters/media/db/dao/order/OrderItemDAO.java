@@ -42,7 +42,7 @@ public class OrderItemDAO extends BaseDAO
      * The query to use to select a item from the ORDER_ITEMS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORDER_ID, PRODUCT_CODE, SITE_ID, CONTENT_ID, CONTENT_TYPE, CONTENT_URL, QUANTITY, PRICE, CURRENCY_CODE, NAME, DESCRIPTION, ENABLED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORDER_ID, PRODUCT_CODE, SITE_ID, CONTENT_ID, CONTENT_TYPE, CONTENT_URL, QUANTITY, PRICE, VAT, CURRENCY_CODE, NAME, DESCRIPTION, ENABLED "
       + "FROM ORDER_ITEMS WHERE ID=?";
 
     /**
@@ -50,36 +50,36 @@ public class OrderItemDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO ORDER_ITEMS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, ORDER_ID, PRODUCT_CODE, SITE_ID, CONTENT_ID, CONTENT_TYPE, CONTENT_URL, QUANTITY, PRICE, CURRENCY_CODE, NAME, DESCRIPTION, ENABLED )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, ORDER_ID, PRODUCT_CODE, SITE_ID, CONTENT_ID, CONTENT_TYPE, CONTENT_URL, QUANTITY, PRICE, VAT, CURRENCY_CODE, NAME, DESCRIPTION, ENABLED )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a item in the ORDER_ITEMS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE ORDER_ITEMS SET UPDATED_DATE=?, PRODUCT_CODE=?, SITE_ID=?, CONTENT_ID=?, CONTENT_TYPE=?, CONTENT_URL=?, QUANTITY=?, PRICE=?, CURRENCY_CODE=?, NAME=?, DESCRIPTION=?, ENABLED=? "
+      "UPDATE ORDER_ITEMS SET UPDATED_DATE=?, PRODUCT_CODE=?, SITE_ID=?, CONTENT_ID=?, CONTENT_TYPE=?, CONTENT_URL=?, QUANTITY=?, PRICE=?, VAT=?, CURRENCY_CODE=?, NAME=?, DESCRIPTION=?, ENABLED=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the items from the ORDER_ITEMS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORDER_ID, PRODUCT_CODE, SITE_ID, CONTENT_ID, CONTENT_TYPE, CONTENT_URL, QUANTITY, PRICE, CURRENCY_CODE, NAME, DESCRIPTION, ENABLED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORDER_ID, PRODUCT_CODE, SITE_ID, CONTENT_ID, CONTENT_TYPE, CONTENT_URL, QUANTITY, PRICE, VAT, CURRENCY_CODE, NAME, DESCRIPTION, ENABLED "
       + "FROM ORDER_ITEMS ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the items from the ORDER_ITEMS table by order.
      */
     private static final String LIST_BY_ORDER_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORDER_ID, PRODUCT_CODE, SITE_ID, CONTENT_ID, CONTENT_TYPE, CONTENT_URL, QUANTITY, PRICE, CURRENCY_CODE, NAME, DESCRIPTION, ENABLED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORDER_ID, PRODUCT_CODE, SITE_ID, CONTENT_ID, CONTENT_TYPE, CONTENT_URL, QUANTITY, PRICE, VAT, CURRENCY_CODE, NAME, DESCRIPTION, ENABLED "
       + "FROM ORDER_ITEMS WHERE ORDER_ID=? ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the items from the ORDER_ITEMS table by content.
      */
     private static final String LIST_BY_CONTENT_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORDER_ID, PRODUCT_CODE, SITE_ID, CONTENT_ID, CONTENT_TYPE, CONTENT_URL, QUANTITY, PRICE, CURRENCY_CODE, NAME, DESCRIPTION, ENABLED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, ORDER_ID, PRODUCT_CODE, SITE_ID, CONTENT_ID, CONTENT_TYPE, CONTENT_URL, QUANTITY, PRICE, VAT, CURRENCY_CODE, NAME, DESCRIPTION, ENABLED "
       + "FROM ORDER_ITEMS WHERE CONTENT_ID=? ORDER BY CREATED_DATE";
 
     /**
@@ -119,6 +119,7 @@ public class OrderItemDAO extends BaseDAO
         table.addColumn("CONTENT_URL", Types.VARCHAR, 256, false);
         table.addColumn("QUANTITY", Types.INTEGER, true);
         table.addColumn("PRICE", Types.INTEGER, true);
+        table.addColumn("VAT", Types.INTEGER, true);
         table.addColumn("CURRENCY_CODE", Types.VARCHAR, 5, true);
         table.addColumn("NAME", Types.VARCHAR, 128, true);
         table.addColumn("DESCRIPTION", Types.VARCHAR, 328, false);
@@ -165,10 +166,11 @@ public class OrderItemDAO extends BaseDAO
                 item.setContentUrl(rs.getString(9));
                 item.setQuantity(rs.getInt(10));
                 item.setPrice(rs.getInt(11));
-                item.setCurrency(rs.getString(12));
-                item.setName(rs.getString(13));
-                item.setDescription(rs.getString(14));
-                item.setEnabled(rs.getBoolean(15));
+                item.setVat(rs.getInt(12));
+                item.setCurrency(rs.getString(13));
+                item.setName(rs.getString(14));
+                item.setDescription(rs.getString(15));
+                item.setEnabled(rs.getBoolean(16));
                 ret = item;
             }
         }
@@ -214,10 +216,11 @@ public class OrderItemDAO extends BaseDAO
             insertStmt.setString(9, item.getContentUrl());
             insertStmt.setInt(10, item.getQuantity());
             insertStmt.setInt(11, item.getPrice());
-            insertStmt.setString(12, item.getCurrency() != null ? item.getCurrency().getCode() : null);
-            insertStmt.setString(13, item.getName());
-            insertStmt.setString(14, item.getDescription());
-            insertStmt.setBoolean(15, item.isEnabled());
+            insertStmt.setInt(12, item.getVat());
+            insertStmt.setString(13, item.getCurrency() != null ? item.getCurrency().getCode() : null);
+            insertStmt.setString(14, item.getName());
+            insertStmt.setString(15, item.getDescription());
+            insertStmt.setBoolean(16, item.isEnabled());
             insertStmt.executeUpdate();
 
             logger.info("Created order item '"+item.getId()+"' in ORDER_ITEMS");
@@ -257,11 +260,12 @@ public class OrderItemDAO extends BaseDAO
         updateStmt.setString(6, item.getContentUrl());
         updateStmt.setInt(7, item.getQuantity());
         updateStmt.setInt(8, item.getPrice());
-        updateStmt.setString(9, item.getCurrency() != null ? item.getCurrency().getCode() : null);
-        updateStmt.setString(10, item.getName());
-        updateStmt.setString(11, item.getDescription());
-        updateStmt.setBoolean(12, item.isEnabled());
-        updateStmt.setString(13, item.getId());
+        updateStmt.setInt(9, item.getVat());
+        updateStmt.setString(10, item.getCurrency() != null ? item.getCurrency().getCode() : null);
+        updateStmt.setString(11, item.getName());
+        updateStmt.setString(12, item.getDescription());
+        updateStmt.setBoolean(13, item.isEnabled());
+        updateStmt.setString(14, item.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated order item '"+item.getId()+"' in ORDER_ITEMS");
@@ -324,10 +328,11 @@ public class OrderItemDAO extends BaseDAO
                 item.setContentUrl(rs.getString(9));
                 item.setQuantity(rs.getInt(10));
                 item.setPrice(rs.getInt(11));
-                item.setCurrency(rs.getString(12));
-                item.setName(rs.getString(13));
-                item.setDescription(rs.getString(14));
-                item.setEnabled(rs.getBoolean(15));
+                item.setVat(rs.getInt(12));
+                item.setCurrency(rs.getString(13));
+                item.setName(rs.getString(14));
+                item.setDescription(rs.getString(15));
+                item.setEnabled(rs.getBoolean(16));
                 ret.add(item);
             }
         }
@@ -385,10 +390,11 @@ public class OrderItemDAO extends BaseDAO
                 item.setContentUrl(rs.getString(9));
                 item.setQuantity(rs.getInt(10));
                 item.setPrice(rs.getInt(11));
-                item.setCurrency(rs.getString(12));
-                item.setName(rs.getString(13));
-                item.setDescription(rs.getString(14));
-                item.setEnabled(rs.getBoolean(15));
+                item.setVat(rs.getInt(12));
+                item.setCurrency(rs.getString(13));
+                item.setName(rs.getString(14));
+                item.setDescription(rs.getString(15));
+                item.setEnabled(rs.getBoolean(16));
                 ret.add(item);
             }
         }
@@ -427,7 +433,7 @@ public class OrderItemDAO extends BaseDAO
         List<OrderItem> items = list(order);
         for(OrderItem item : items)
         {
-            if(!item.hasDescription())
+            if(!item.hasContentId())
                 ret.add(item);
         }
 
@@ -471,10 +477,11 @@ public class OrderItemDAO extends BaseDAO
                 item.setContentUrl(rs.getString(9));
                 item.setQuantity(rs.getInt(10));
                 item.setPrice(rs.getInt(11));
-                item.setCurrency(rs.getString(12));
-                item.setName(rs.getString(13));
-                item.setDescription(rs.getString(14));
-                item.setEnabled(rs.getBoolean(15));
+                item.setVat(rs.getInt(12));
+                item.setCurrency(rs.getString(13));
+                item.setName(rs.getString(14));
+                item.setDescription(rs.getString(15));
+                item.setEnabled(rs.getBoolean(16));
                 ret.add(item);
             }
         }

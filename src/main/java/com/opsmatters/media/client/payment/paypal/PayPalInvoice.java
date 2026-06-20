@@ -139,6 +139,16 @@ public class PayPalInvoice extends JSONObject implements java.io.Serializable
                 amount.setValue(String.format("%d.00", orderItem.getPrice()));
                 item.setUnitAmount(amount);
                 item.setUnitOfMeasure("AMOUNT");
+
+                // Add the VAT
+                if(order.getVatRate() > 0)
+                {
+                    Tax tax = new Tax();
+                    tax.setName("VAT");
+                    tax.setPercent(Integer.toString(order.getVatRate()));
+                    item.setTax(tax);
+                }
+
                 getItems().put(item);
             }
         }
