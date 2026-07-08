@@ -72,7 +72,7 @@ public class OrganisationSite extends BaseEntity implements FieldSource
      */
     public String toString()
     {
-        return getCode();
+        return String.format("%s/%s", getSiteId(), getCode());
     }
 
     /**
