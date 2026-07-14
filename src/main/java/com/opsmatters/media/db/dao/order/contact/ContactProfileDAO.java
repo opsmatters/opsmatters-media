@@ -40,7 +40,7 @@ public class ContactProfileDAO extends BaseDAO
      * The query to use to select a profile from the CONTACT_PROFILES table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, PRE_PAYMENT, INCLUDE_URL, INCLUDE_VAT, ENABLED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, PRE_PAYMENT, INCLUDE_URL, INCLUDE_VAT, PROHIBIT_LINKS, ENABLED "
       + "FROM CONTACT_PROFILES WHERE ID=?";
 
     /**
@@ -48,29 +48,29 @@ public class ContactProfileDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTACT_PROFILES"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, PRE_PAYMENT, INCLUDE_URL, INCLUDE_VAT, ENABLED )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, PRE_PAYMENT, INCLUDE_URL, INCLUDE_VAT, PROHIBIT_LINKS, ENABLED )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a profile in the CONTACT_PROFILES table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTACT_PROFILES SET UPDATED_DATE=?, NAME=?, CONTACT_EMAIL=?, BILLING_EMAIL=?, COMPANY_ID=?, PAYMENT_METHOD=?, PAYMENT_MODE=?, PAYMENT_TERM=?, CURRENCY_CODE=?, PRE_PAYMENT=?, INCLUDE_URL=?, INCLUDE_VAT=?, ENABLED=? "
+      "UPDATE CONTACT_PROFILES SET UPDATED_DATE=?, NAME=?, CONTACT_EMAIL=?, BILLING_EMAIL=?, COMPANY_ID=?, PAYMENT_METHOD=?, PAYMENT_MODE=?, PAYMENT_TERM=?, CURRENCY_CODE=?, PRE_PAYMENT=?, INCLUDE_URL=?, INCLUDE_VAT=?, PROHIBIT_LINKS=?, ENABLED=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the profiles from the CONTACT_PROFILES table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, PRE_PAYMENT, INCLUDE_URL, INCLUDE_VAT, ENABLED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, PRE_PAYMENT, INCLUDE_URL, INCLUDE_VAT, PROHIBIT_LINKS, ENABLED "
       + "FROM CONTACT_PROFILES ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the profiles from the CONTACT_PROFILES table by contact.
      */
     private static final String LIST_BY_CONTACT_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, PRE_PAYMENT, INCLUDE_URL, INCLUDE_VAT, ENABLED "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CONTACT_ID, NAME, CONTACT_EMAIL, BILLING_EMAIL, COMPANY_ID, PAYMENT_METHOD, PAYMENT_MODE, PAYMENT_TERM, CURRENCY_CODE, PRE_PAYMENT, INCLUDE_URL, INCLUDE_VAT, PROHIBIT_LINKS, ENABLED "
       + "FROM CONTACT_PROFILES WHERE CONTACT_ID=? ORDER BY CREATED_DATE";
 
     /**
@@ -114,6 +114,7 @@ public class ContactProfileDAO extends BaseDAO
         table.addColumn("PRE_PAYMENT", Types.BOOLEAN, true);
         table.addColumn("INCLUDE_URL", Types.BOOLEAN, true);
         table.addColumn("INCLUDE_VAT", Types.BOOLEAN, true);
+        table.addColumn("PROHIBIT_LINKS", Types.BOOLEAN, true);
         table.addColumn("ENABLED", Types.BOOLEAN, true);
         table.setPrimaryKey("CONTACT_PROFILES_PK", new String[] {"ID"});
         table.setInitialised(true);
@@ -159,7 +160,8 @@ public class ContactProfileDAO extends BaseDAO
                 profile.setPrePayment(rs.getBoolean(13));
                 profile.setIncludeUrl(rs.getBoolean(14));
                 profile.setIncludeVat(rs.getBoolean(15));
-                profile.setEnabled(rs.getBoolean(16));
+                profile.setProhibitLinks(rs.getBoolean(16));
+                profile.setEnabled(rs.getBoolean(17));
                 ret = profile;
             }
         }
@@ -209,7 +211,8 @@ public class ContactProfileDAO extends BaseDAO
             insertStmt.setBoolean(13, profile.hasPrePayment());
             insertStmt.setBoolean(14, profile.includeUrl());
             insertStmt.setBoolean(15, profile.includeVat());
-            insertStmt.setBoolean(16, profile.isEnabled());
+            insertStmt.setBoolean(16, profile.prohibitLinks());
+            insertStmt.setBoolean(17, profile.isEnabled());
             insertStmt.executeUpdate();
 
             logger.info("Created profile '"+profile.getId()+"' in CONTACT_PROFILES");
@@ -253,8 +256,9 @@ public class ContactProfileDAO extends BaseDAO
         updateStmt.setBoolean(10, profile.hasPrePayment());
         updateStmt.setBoolean(11, profile.includeUrl());
         updateStmt.setBoolean(12, profile.includeVat());
-        updateStmt.setBoolean(13, profile.isEnabled());
-        updateStmt.setString(14, profile.getId());
+        updateStmt.setBoolean(13, profile.prohibitLinks());
+        updateStmt.setBoolean(14, profile.isEnabled());
+        updateStmt.setString(15, profile.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated profile '"+profile.getId()+"' in CONTACT_PROFILES");
@@ -321,7 +325,8 @@ public class ContactProfileDAO extends BaseDAO
                 profile.setPrePayment(rs.getBoolean(13));
                 profile.setIncludeUrl(rs.getBoolean(14));
                 profile.setIncludeVat(rs.getBoolean(15));
-                profile.setEnabled(rs.getBoolean(16));
+                profile.setProhibitLinks(rs.getBoolean(16));
+                profile.setEnabled(rs.getBoolean(17));
                 ret.add(profile);
             }
         }
@@ -383,7 +388,8 @@ public class ContactProfileDAO extends BaseDAO
                 profile.setPrePayment(rs.getBoolean(13));
                 profile.setIncludeUrl(rs.getBoolean(14));
                 profile.setIncludeVat(rs.getBoolean(15));
-                profile.setEnabled(rs.getBoolean(16));
+                profile.setProhibitLinks(rs.getBoolean(16));
+                profile.setEnabled(rs.getBoolean(17));
                 ret.add(profile);
             }
         }

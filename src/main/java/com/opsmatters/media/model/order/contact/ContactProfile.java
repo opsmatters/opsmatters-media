@@ -50,6 +50,7 @@ public class ContactProfile extends BaseEntity
     private boolean prePayment = false;
     private boolean includeUrl = true;
     private boolean includeVat = false;
+    private boolean prohibitLinks = false;
     private boolean enabled = false;
 
     /**
@@ -104,6 +105,7 @@ public class ContactProfile extends BaseEntity
             setPrePayment(obj.hasPrePayment());
             setIncludeUrl(obj.includeUrl());
             setIncludeVat(obj.includeVat());
+            setProhibitLinks(obj.prohibitLinks());
             setEnabled(obj.isEnabled());
         }
     }
@@ -446,6 +448,38 @@ public class ContactProfile extends BaseEntity
     public void setIncludeVatObject(Boolean includeVat)
     {
         setIncludeVat(includeVat != null && includeVat.booleanValue());
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if link insertions are prohibited in guest posts for this profile.
+     */
+    public boolean prohibitLinks()
+    {
+        return prohibitLinks;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if link insertions are prohibited in guest posts for this profile.
+     */
+    public Boolean getProhibitLinksObject()
+    {
+        return Boolean.valueOf(prohibitLinks());
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if link insertions are prohibited in guest posts for this profile.
+     */
+    public void setProhibitLinks(boolean prohibitLinks)
+    {
+        this.prohibitLinks = prohibitLinks;
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if link insertions are prohibited in guest posts for this profile.
+     */
+    public void setProhibitLinksObject(Boolean prohibitLinks)
+    {
+        setProhibitLinks(prohibitLinks != null && prohibitLinks.booleanValue());
     }
 
     /**
