@@ -33,7 +33,7 @@ public enum ContentStatus
     ERROR("Error", "glyphicon-exclamation-sign", "status-error"),
     SKIPPED("Skipped", "glyphicon-remove-circle", "status-info"),
     UNDEPLOYED("Undeployed", "glyphicon-trash", "status-error"),
-    ARCHIVED("Archived", "glyphicon-trash", "status-error");
+    ARCHIVED("Archived", "glyphicon-book", "status-error");
 
     private String value;
     private String icon;

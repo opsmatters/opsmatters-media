@@ -29,7 +29,7 @@ public enum SavedPostStatus
     NEW("New", "glyphicon-unchecked", "", -1),
     ACTIVE("Active", "glyphicon-ok-circle", "status-success", 1),
     DISABLED("Disabled", "glyphicon-ban-circle", "status-error", 0),
-    ARCHIVED("Archived", "glyphicon-trash", "status-error", 0),
+    ARCHIVED("Archived", "glyphicon-book", "status-error", 0),
     ALL("All", "", "", 0); // Pseudo status
 
     private String value;

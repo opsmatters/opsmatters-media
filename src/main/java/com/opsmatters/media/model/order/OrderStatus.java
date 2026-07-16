@@ -31,7 +31,7 @@ public enum OrderStatus
     DELIVERED("Delivered", "glyphicon-log-out", "status-warn"),
     COMPLETED("Completed", "glyphicon-ok-circle", "status-success"),
     CANCELLED("Cancelled", "glyphicon-trash", "status-error"),
-    ARCHIVED("Archived", "glyphicon-trash", "status-error"),
+    ARCHIVED("Archived", "glyphicon-book", "status-error"),
     IN_PROGRESS("In Progress"), // Pseudo status
     ALL("All"); // Pseudo status
 
