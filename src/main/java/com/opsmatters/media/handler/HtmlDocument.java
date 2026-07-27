@@ -769,25 +769,46 @@ class HtmlDocument
     }
 
     /**
-     * Returns <CODE>true</CODE> if the HTML document contains a "&lt;u&gt;" tag containing an anchor.
+     * Returns <CODE>true</CODE> if the HTML document contains an anchor with a "&lt;u&gt;" tag.
      * @param doc The HTML document to search
-     * @return <CODE>true</CODE> if the HTML document contains a "&lt;u&gt;" tag containing an anchor.
+     * @return <CODE>true</CODE> if the HTML document contains an anchor with a "&lt;u&gt;" tag.
      */
     public static boolean hasUnderline(String doc)
     {
         boolean ret = false;
 
-        Matcher m = UNDERLINE_CONTENT_PATTERN.matcher(doc);
-
-        while (m.find() && !ret)
+        // Check for an anchor inside an underline
         {
-            String content = m.group(1);
+            Matcher m = UNDERLINE_CONTENT_PATTERN.matcher(doc);
 
-            Matcher textMatcher = ANCHOR_TEXT_PATTERN.matcher(content);
-
-            if(textMatcher.find())
+            while(m.find() && !ret)
             {
-                ret = true;
+                String content = m.group(1);
+
+                Matcher textMatcher = ANCHOR_TEXT_PATTERN.matcher(content);
+
+                if(textMatcher.find())
+                {
+                    ret = true;
+                }
+            }
+        }
+
+        // Next check for an underline insde an anchor
+        if(!ret)
+        {
+            Matcher m = ANCHOR_ATTR_CONTENT_PATTERN.matcher(doc);
+
+            while(m.find() && !ret)
+            {
+                String content = m.group(2);
+
+                Matcher underlineMatcher = UNDERLINE_CONTENT_PATTERN.matcher(content);
+
+                if(underlineMatcher.find())
+                {
+                    ret = true;
+                }
             }
         }
 
@@ -795,22 +816,42 @@ class HtmlDocument
     }
 
     /**
-     * Removes "&lt;u&gt;" tags in the HTML document containing an anchor.
+     * Removes anchors with "&lt;u&gt;" tags in the HTML document.
      */
     private void removeUnderlines()
     {
-        Matcher m = UNDERLINE_CONTENT_PATTERN.matcher(doc);
-
-        while(m.find())
+        // Fix an anchor inside an underline
         {
-            String whole = m.group(0);
-            String content = m.group(1);
+            Matcher m = UNDERLINE_CONTENT_PATTERN.matcher(doc);
 
-            Matcher textMatcher = ANCHOR_TEXT_PATTERN.matcher(content);
-
-            if(textMatcher.find())
+            while(m.find())
             {
-                doc = doc.replace(whole, content);
+                String whole = m.group(0);
+                String content = m.group(1);
+
+                Matcher textMatcher = ANCHOR_TEXT_PATTERN.matcher(content);
+
+                if(textMatcher.find())
+                {
+                    doc = doc.replace(whole, content);
+                }
+            }
+        }
+
+        // Fix an underline inside an anchor
+        {
+            Matcher m = ANCHOR_ATTR_CONTENT_PATTERN.matcher(doc);
+
+            while(m.find())
+            {
+                String content = m.group(2);
+
+                Matcher underlineMatcher = UNDERLINE_CONTENT_PATTERN.matcher(content);
+
+                if(underlineMatcher.find())
+                {
+                    doc = doc.replace(content, underlineMatcher.group(1));
+                }
             }
         }
     }

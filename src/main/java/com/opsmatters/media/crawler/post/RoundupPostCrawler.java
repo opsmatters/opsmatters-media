@@ -37,7 +37,6 @@ import com.opsmatters.media.model.system.logging.LogEventCategory;
 import com.opsmatters.media.model.system.logging.LogError;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.FormatUtils;
-import com.opsmatters.media.util.TimeUtils;
 
 import static com.opsmatters.media.model.content.crawler.CrawlerStatus.*;
 import static com.opsmatters.media.model.content.crawler.DocumentFormat.*;
@@ -52,8 +51,6 @@ import static com.opsmatters.media.model.system.logging.ErrorCode.*;
 public class RoundupPostCrawler extends WebPageCrawler<RoundupPostDetails>
 {
     private static final Logger logger = Logger.getLogger(RoundupPostCrawler.class.getName());
-
-    private static final int MAX_AUTHOR_LEN = 100;
 
     private RoundupPostConfig config;
 
@@ -281,33 +278,6 @@ public class RoundupPostCrawler extends WebPageCrawler<RoundupPostDetails>
             String author = getElements(field, root, category);
             if(author != null && author.length() > 0)
             {
-                boolean invalid = false;
-
-                // Prevent db error
-                if(author.length() > MAX_AUTHOR_LEN)
-                {
-                    author = author.substring(0, MAX_AUTHOR_LEN-4)+"..."; // truncate
-                    invalid = true;
-                }
-                else if(author.toLowerCase().startsWith("by ")
-                    || author.toLowerCase().indexOf("author") != -1
-                    || author.indexOf(TimeUtils.toStringUTC("yyyy")) != -1) // field contains date
-                {
-                    invalid = true;
-                }
-
-                if(invalid)
-                {
-                    logger.severe(String.format("Invalid %s author: %s code=%s",
-                        category.tag(), author, config.getCode()));
-
-                    log.add(log.error(E_INVALID_AUTHOR, category)
-                        .message(String.format("Invalid %s author: %s",
-                            category.tag(), author))
-                        .location(getClass())
-                        .entity(config, getPage()));
-                }
-
                 teaser.setAuthor(author);
             }
         }

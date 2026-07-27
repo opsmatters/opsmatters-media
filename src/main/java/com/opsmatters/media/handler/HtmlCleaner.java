@@ -476,7 +476,7 @@ public class HtmlCleaner
     }
 
     /**
-     * Removes "&lt;u&gt;" tags in the given string containing an anchor.
+     * Removes anchors with "&lt;u&gt;" tags in the given string.
      * @param str The string to amend
      * @return The amended string.
      */

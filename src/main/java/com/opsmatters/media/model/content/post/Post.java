@@ -629,6 +629,14 @@ public class Post extends Article<PostDetails>
     }
 
     /**
+     * Returns <CODE>true</CODE> if the author has been set.
+     */
+    public boolean hasAuthor()
+    {
+        return getAuthor() != null && getAuthor().length() > 0;
+    }
+
+    /**
      * Returns the author URL of the post.
      */
     public String getAuthorUrl()
