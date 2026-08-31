@@ -35,6 +35,7 @@ public class ContentUtilDAOFactory extends DAOFactory
 
         getNoteDAO();
         getContentImageDAO();
+        getImageFileDAO();
         getTaxonomyTermDAO();
         getContentProxyDAO();
     }
@@ -57,6 +58,16 @@ public class ContentUtilDAOFactory extends DAOFactory
         if(contentImageDAO == null)
             contentImageDAO = new ContentImageDAO(this);
         return contentImageDAO;
+    }
+
+    /**
+     * Returns the image file DAO.
+     */
+    public ImageFileDAO getImageFileDAO()
+    {
+        if(imageFileDAO == null)
+            imageFileDAO = new ImageFileDAO(this);
+        return imageFileDAO;
     }
 
     /**
@@ -88,12 +99,14 @@ public class ContentUtilDAOFactory extends DAOFactory
         super.close();
         noteDAO = null;
         contentImageDAO = null;
+        imageFileDAO = null;
         taxonomyTermDAO = null;
         contentProxyDAO = null;
     }
 
     private NoteDAO noteDAO;
     private ContentImageDAO contentImageDAO;
+    private ImageFileDAO imageFileDAO;
     private TaxonomyTermDAO taxonomyTermDAO;
     private ContentProxyDAO contentProxyDAO;
 }

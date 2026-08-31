@@ -96,7 +96,7 @@ public class ImageProviderDAO extends BaseDAO
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("CODE", Types.VARCHAR, 15, true);
         table.addColumn("NAME", Types.VARCHAR, 30, true);
-        table.addColumn("TAG", Types.VARCHAR, 15, true);
+        table.addColumn("TAG", Types.VARCHAR, 16, true);
         table.addColumn("TYPE", Types.VARCHAR, 15, true);
         table.addColumn("ATTRIBUTION", Types.VARCHAR, 128, false);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);

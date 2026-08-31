@@ -30,6 +30,7 @@ public enum SuspendReason
     UNPAID_INVOICE("Unpaid Invoice"),
     REFUSED_INVOICE("Refused Invoice"),
     QUERIED_PRICE("Queried Price"),
+    DIFFICULT("Too Difficult"),
     ALL("All"); // Pseudo status
 
     private String value;
@@ -98,6 +99,7 @@ public enum SuspendReason
         ret.add(UNPAID_INVOICE);
         ret.add(REFUSED_INVOICE);
         ret.add(QUERIED_PRICE);
+        ret.add(DIFFICULT);
 
         return ret;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Gerald Curley
+ * Copyright 2026 Gerald Curley
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,22 @@
  * limitations under the License.
  */
 
-package com.opsmatters.media.model.content;
-
-import java.util.List;
-import java.util.ArrayList;
+package com.opsmatters.media.model.content.util;
 
 /**
- * Represents the status of a content item.
+ * Represents the status of an managed file.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public enum ContentStatus
+public enum FileStatus
 {
     NEW("New", "glyphicon-unchecked", ""),
-    PENDING("Pending", "glyphicon-check", "status-warn"),
-    STAGED("Staged", "glyphicon-adjust", "status-warn"),
-    DEPLOYED("Deployed", "glyphicon-ok-circle", "status-success"),
+    CREATED("Created", "glyphicon-ok-circle", "status-success"),
+    DELETED("Deleted", "glyphicon-remove-circle", "status-info"),
+    EXPIRED("Expired", "glyphicon-ban-circle", "status-warn"),
+    ARCHIVED("Archived", "glyphicon-book", "status-error"),
     ERROR("Error", "glyphicon-exclamation-sign", "status-error"),
-    SKIPPED("Skipped", "glyphicon-remove-circle", "status-info"),
-    UNDEPLOYED("Undeployed", "glyphicon-trash", "status-error"),
-    ARCHIVED("Archived", "glyphicon-book", "status-error");
+    ALL("All", "", ""); // Pseudo status
 
     private String value;
     private String icon;
@@ -45,7 +41,7 @@ public enum ContentStatus
      * @param icon The glyphicon for the status
      * @param css The css class for the status
      */
-    ContentStatus(String value, String icon, String css)
+    FileStatus(String value, String icon, String css)
     {
         this.value = value;
         this.icon = icon;
@@ -89,27 +85,19 @@ public enum ContentStatus
     }
 
     /**
-     * Returns <CODE>true</CODE> if this status should change to PENDING following an update.
-     */
-    public boolean canUpdate()
-    {
-        return this == NEW
-            || this == DEPLOYED;
-    }
-
-    /**
      * Returns the type for the given value.
      * @param value The type value
      * @return The type for the given value
      */
-    public static ContentStatus fromValue(String value)
+    public static FileStatus fromValue(String value)
     {
-        ContentStatus[] types = values();
-        for(ContentStatus type : types)
+        FileStatus[] types = values();
+        for(FileStatus type : types)
         {
             if(type.value().equals(value))
                 return type;
         }
+
         return null;
     }
 
@@ -121,18 +109,5 @@ public enum ContentStatus
     public static boolean contains(String value)
     {
         return valueOf(value) != null;
-    }
-
-    /**
-     * Returns a list of the statuses.
-     */
-    public static List<ContentStatus> toList()
-    {
-        List<ContentStatus> ret = new ArrayList<ContentStatus>();
-
-        for(ContentStatus status : ContentStatus.values())
-            ret.add(status);
-
-        return ret;
     }
 }

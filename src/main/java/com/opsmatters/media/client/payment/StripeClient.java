@@ -22,12 +22,14 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.time.Instant;
 import java.time.Duration;
+import java.math.BigDecimal;
 import org.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import com.stripe.Stripe;
 import com.stripe.model.Customer;
 import com.stripe.model.Invoice;
 import com.stripe.model.InvoiceItem;
+import com.stripe.model.TaxRate;
 import com.stripe.param.CustomerSearchParams;
 import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.CustomerUpdateParams;
@@ -36,6 +38,8 @@ import com.stripe.param.InvoiceUpdateParams;
 import com.stripe.param.InvoiceItemCreateParams;
 import com.stripe.param.InvoiceItemListParams;
 import com.stripe.param.InvoiceSearchParams;
+import com.stripe.param.TaxRateCreateParams;
+import com.stripe.param.TaxRateListParams;
 import com.stripe.exception.StripeException;
 import com.stripe.exception.InvalidRequestException;
 import com.opsmatters.media.model.order.Order;
@@ -433,14 +437,50 @@ public class StripeClient extends Client
     /**
      * Creates an invoice item for the given invoice using the given order item.
      */
-    public InvoiceItem createInvoiceItem(Invoice invoice, OrderItem orderItem) throws StripeException
+    public InvoiceItem createInvoiceItem(Invoice invoice, Order order, OrderItem orderItem) throws StripeException
     {
+        TaxRate taxRate = null;
+        List<String> taxRates = new ArrayList<String>();
+
+        // Add the VAT
+        if(order.getVatRate() > 0)
+        {
+            List<TaxRate> taxRateList = TaxRate.list(TaxRateListParams.builder().build()).getData();
+            for(TaxRate rate : taxRateList)
+            {
+                if(rate.getTaxType().equals("vat") && rate.getActive())
+                {
+                    taxRate = rate;
+                    break;
+                }
+            }
+
+            // If the VAT tax rate doesn't exist then create it
+            if(taxRate == null)
+            {
+                TaxRateCreateParams params = TaxRateCreateParams.builder()
+                    .setTaxType(TaxRateCreateParams.TaxType.VAT)
+                    .setDisplayName("VAT")
+                    .setDescription("UK VAT")
+                    .setPercentage(new BigDecimal(order.getVatRate()))
+                    .setJurisdiction("UK")
+                    .setInclusive(false)
+                    .build();
+
+                taxRate = TaxRate.create(params);
+            }
+        }
+
+        if(taxRate != null)
+            taxRates.add(taxRate.getId());
+
         InvoiceItemCreateParams params = InvoiceItemCreateParams.builder()
             .setCustomer(invoice.getCustomer())
             .setInvoice(invoice.getId())
             .setDescription(getDescription(orderItem))
             .setAmount(orderItem.getPrice()*orderItem.getQuantity()*100L)
             .setCurrency(orderItem.getCurrency().getCode())
+            .addAllTaxRate(taxRates)
             .build();
 
         return InvoiceItem.create(params);

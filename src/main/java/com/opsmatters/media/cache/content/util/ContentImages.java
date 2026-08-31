@@ -170,7 +170,7 @@ public class ContentImages extends StaticCache
     }
 
     /**
-     * Returns the count of contacts.
+     * Returns the count of images.
      */
     public static int size()
     {

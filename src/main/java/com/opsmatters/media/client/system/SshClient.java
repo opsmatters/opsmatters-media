@@ -299,6 +299,20 @@ public class SshClient extends Client
     }
 
     /**
+     * Returns the given file on the server.
+     */
+    public InputStream get(String filename) throws SftpException
+    {
+        InputStream ret = null;
+        if(channel != null && channel.isConnected())
+        {
+            ret = channel.get(filename);
+        }
+
+        return ret;
+    }
+
+    /**
      * Write the given file to the server.
      */
     public boolean put(InputStream stream, String filename) throws SftpException
