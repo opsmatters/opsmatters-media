@@ -514,7 +514,7 @@ public class AwsS3Client extends Client
     }
 
     /**
-     * Download the files from the given S3 bucket into the given directory.
+     * Download the files from the given S3 bucket into the given directory with the given extension.
      */
     public List<S3Object> downloadFiles(String bucket, String directory, String ext) throws IOException
     {
@@ -534,7 +534,7 @@ public class AwsS3Client extends Client
                     if(getFile(get(file.getName()), file))
                     {
                         ret.add(item);
-                        logger.info("Downloaded config file: "+file.getName());
+                        logger.info("Downloaded file from s3: "+file.getName());
                     }
                 }
             }

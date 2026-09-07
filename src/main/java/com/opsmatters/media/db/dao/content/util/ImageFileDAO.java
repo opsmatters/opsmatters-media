@@ -51,7 +51,7 @@ public class ImageFileDAO extends BaseDAO
      */
     private static final String GET_BY_FILENAME_SQL =  
       "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, FILENAME, STATUS, SESSION_ID "
-      + "FROM IMAGE_FILES WHERE CODE=? AND TYPE=? AND FILENAME=?";
+      + "FROM IMAGE_FILES WHERE FILENAME=?";
 
     /**
      * The query to use to insert an image into the IMAGE_FILES table.
@@ -178,7 +178,7 @@ public class ImageFileDAO extends BaseDAO
     /**
      * Returns a file from the IMAGE_FILES table by filename.
      */
-    public synchronized ImageFile getByFilename(String code, ImageType type, String filename) throws SQLException
+    public synchronized ImageFile getByFilename(String filename) throws SQLException
     {
         ImageFile ret = null;
 
@@ -194,9 +194,7 @@ public class ImageFileDAO extends BaseDAO
 
         try
         {
-            getByFilenameStmt.setString(1, code);
-            getByFilenameStmt.setString(2, type.name());
-            getByFilenameStmt.setString(3, filename);
+            getByFilenameStmt.setString(1, filename);
             getByFilenameStmt.setQueryTimeout(QUERY_TIMEOUT);
             rs = getByFilenameStmt.executeQuery();
             while(rs.next())

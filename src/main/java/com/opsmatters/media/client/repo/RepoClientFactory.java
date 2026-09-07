@@ -19,7 +19,6 @@ package com.opsmatters.media.client.repo;
 import java.io.IOException;
 import java.util.logging.Logger;
 import com.opsmatters.media.model.provider.RepoProviderId;
-import com.opsmatters.media.model.content.project.ProjectConfig;
 
 /**
  * Factory class to create a client for a repository provider.
@@ -40,13 +39,13 @@ public class RepoClientFactory
     /**
      * Returns a client for the given provider.
      */
-    public static RepoClient newClient(RepoProviderId providerId, ProjectConfig config)
+    public static RepoClient newClient(RepoProviderId providerId, String branch)
         throws IOException
     {
         switch(providerId)
         {
             case GITHUB:
-                return GitHubClient.newClient(config);
+                return GitHubClient.newClient(branch);
         }
 
         throw new IllegalArgumentException("Repository provider id not found: "+providerId);

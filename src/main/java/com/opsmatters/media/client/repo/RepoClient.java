@@ -33,6 +33,16 @@ public interface RepoClient
     public void close();
 
     /**
+     * Returns the current directory for the client.
+     */
+    public String getDirectory();
+
+    /**
+     * Sets the current directory for the client.
+     */
+    public void setDirectory(String directory);
+
+    /**
      * Returns <CODE>true</CODE> if debug is enabled.
      */
     public boolean debug();
