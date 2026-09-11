@@ -31,6 +31,7 @@ public class ImageFile extends BaseEntity
     private String code = "";
     private ImageType type;
     private String filename = "";
+    private String oldFilename = "";
     private FileStatus status = FileStatus.NEW;
     private int sessionId = 0;
 
@@ -88,6 +89,7 @@ public class ImageFile extends BaseEntity
             setCode(obj.getCode());
             setType(obj.getType());
             setFilename(obj.getFilename());
+            setOldFilename(obj.getOldFilename());
             setStatus(obj.getStatus());
             setSessionId(obj.getSessionId());
         }
@@ -115,6 +117,14 @@ public class ImageFile extends BaseEntity
     public void setCode(String code)
     {
         this.code = code;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the code has been set.
+     */
+    public boolean hasCode()
+    {
+        return code != null && code.length() > 0;
     }
 
     /**
@@ -171,6 +181,30 @@ public class ImageFile extends BaseEntity
     public boolean hasFilename()
     {
         return filename != null && filename.length() > 0;
+    }
+
+    /**
+     * Returns the original filename.
+     */
+    public String getOldFilename()
+    {
+        return oldFilename;
+    }
+
+    /**
+     * Sets the original filename.
+     */
+    public void setOldFilename(String oldFilename)
+    {
+        this.oldFilename = oldFilename;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the original filename has been set.
+     */
+    public boolean hasOldFilename()
+    {
+        return oldFilename != null && oldFilename.length() > 0;
     }
 
     /**

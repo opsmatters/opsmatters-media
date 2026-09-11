@@ -43,14 +43,14 @@ public class ImageFileDAO extends BaseDAO
      * The query to use to select an image from the IMAGE_FILES table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, FILENAME, STATUS, SESSION_ID "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, FILENAME, OLD_FILENAME, STATUS, SESSION_ID "
       + "FROM IMAGE_FILES WHERE ID=?";
 
     /**
      * The query to use to select an image from the IMAGE_FILES table by filename.
      */
     private static final String GET_BY_FILENAME_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, FILENAME, STATUS, SESSION_ID "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, FILENAME, OLD_FILENAME, STATUS, SESSION_ID "
       + "FROM IMAGE_FILES WHERE FILENAME=?";
 
     /**
@@ -58,29 +58,29 @@ public class ImageFileDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO IMAGE_FILES"
-      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, FILENAME, STATUS, SESSION_ID )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, FILENAME, OLD_FILENAME, STATUS, SESSION_ID )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update an image in the IMAGE_FILES table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE IMAGE_FILES SET UPDATED_DATE=?, FILENAME=?, STATUS=?, SESSION_ID=? "
+      "UPDATE IMAGE_FILES SET UPDATED_DATE=?, FILENAME=?, OLD_FILENAME=?, STATUS=?, SESSION_ID=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the images from the IMAGE_FILES table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, FILENAME, STATUS, SESSION_ID "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, FILENAME, OLD_FILENAME, STATUS, SESSION_ID "
       + "FROM IMAGE_FILES";
 
     /**
      * The query to use to select the images from the IMAGE_FILES table by status.
      */
     private static final String LIST_BY_STATUS_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, FILENAME, STATUS, SESSION_ID "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, CODE, TYPE, FILENAME, OLD_FILENAME, STATUS, SESSION_ID "
       + "FROM IMAGE_FILES WHERE STATUS=?";
 
     /**
@@ -115,6 +115,7 @@ public class ImageFileDAO extends BaseDAO
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("TYPE", Types.VARCHAR, 20, true);
         table.addColumn("FILENAME", Types.VARCHAR, 128, true);
+        table.addColumn("OLD_FILENAME", Types.VARCHAR, 128, false);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("SESSION_ID", Types.INTEGER, true);
         table.setPrimaryKey("IMAGE_FILES_PK", new String[] {"ID"});
@@ -153,8 +154,9 @@ public class ImageFileDAO extends BaseDAO
                 file.setCode(rs.getString(4));
                 file.setType(ImageType.valueOf(rs.getString(5)));
                 file.setFilename(rs.getString(6));
-                file.setStatus(rs.getString(7));
-                file.setSessionId(rs.getInt(8));
+                file.setOldFilename(rs.getString(7));
+                file.setStatus(rs.getString(8));
+                file.setSessionId(rs.getInt(9));
                 ret = file;
             }
         }
@@ -206,8 +208,9 @@ public class ImageFileDAO extends BaseDAO
                 file.setCode(rs.getString(4));
                 file.setType(ImageType.valueOf(rs.getString(5)));
                 file.setFilename(rs.getString(6));
-                file.setStatus(rs.getString(7));
-                file.setSessionId(rs.getInt(8));
+                file.setOldFilename(rs.getString(7));
+                file.setStatus(rs.getString(8));
+                file.setSessionId(rs.getInt(9));
                 ret = file;
             }
         }
@@ -248,8 +251,9 @@ public class ImageFileDAO extends BaseDAO
             insertStmt.setString(4, file.getCode());
             insertStmt.setString(5, file.getType().name());
             insertStmt.setString(6, file.getFilename());
-            insertStmt.setString(7, file.getStatus().name());
-            insertStmt.setInt(8, file.getSessionId());
+            insertStmt.setString(7, file.getOldFilename());
+            insertStmt.setString(8, file.getStatus().name());
+            insertStmt.setInt(9, file.getSessionId());
             insertStmt.executeUpdate();
 
             logger.info(String.format("Created file %s in IMAGE_FILES", file.getId()));
@@ -283,9 +287,10 @@ public class ImageFileDAO extends BaseDAO
 
         updateStmt.setTimestamp(1, new Timestamp(file.getUpdatedDateMillis()), UTC);
         updateStmt.setString(2, file.getFilename());
-        updateStmt.setString(3, file.getStatus().name());
-        updateStmt.setInt(4, file.getSessionId());
-        updateStmt.setString(5, file.getId());
+        updateStmt.setString(3, file.getOldFilename());
+        updateStmt.setString(4, file.getStatus().name());
+        updateStmt.setInt(5, file.getSessionId());
+        updateStmt.setString(6, file.getId());
         updateStmt.executeUpdate();
 
         logger.info(String.format("Updated file %s in IMAGE_FILES", file.getId()));
@@ -343,8 +348,9 @@ public class ImageFileDAO extends BaseDAO
                 file.setCode(rs.getString(4));
                 file.setType(ImageType.valueOf(rs.getString(5)));
                 file.setFilename(rs.getString(6));
-                file.setStatus(rs.getString(7));
-                file.setSessionId(rs.getInt(8));
+                file.setOldFilename(rs.getString(7));
+                file.setStatus(rs.getString(8));
+                file.setSessionId(rs.getInt(9));
                 ret.add(file);
             }
         }
@@ -397,8 +403,9 @@ public class ImageFileDAO extends BaseDAO
                 file.setCode(rs.getString(4));
                 file.setType(ImageType.valueOf(rs.getString(5)));
                 file.setFilename(rs.getString(6));
-                file.setStatus(rs.getString(7));
-                file.setSessionId(rs.getInt(8));
+                file.setOldFilename(rs.getString(7));
+                file.setStatus(rs.getString(8));
+                file.setSessionId(rs.getInt(9));
                 ret.add(file);
             }
         }
