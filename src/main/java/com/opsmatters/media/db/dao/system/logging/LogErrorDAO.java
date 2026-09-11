@@ -36,6 +36,7 @@ import com.opsmatters.media.db.dao.BaseDAO;
 
 import static com.opsmatters.media.model.content.ContentType.*;
 import static com.opsmatters.media.model.system.logging.LogEventType.*;
+import static com.opsmatters.media.model.system.logging.LogEventCategory.*;
 import static com.opsmatters.media.model.system.logging.ErrorStatus.*;
 
 /**
@@ -332,7 +333,8 @@ public class LogErrorDAO extends BaseDAO
                 LogError error = (LogError)event;
 
                 // Only include ROUNDUP errors
-                if(error.hasContentType() && error.getContentType() != ROUNDUP)
+                if(error.getCategory() != MANAGER
+                    && error.hasContentType() && error.getContentType() != ROUNDUP)
                     continue;
 
                 if(!error.isPersistent())

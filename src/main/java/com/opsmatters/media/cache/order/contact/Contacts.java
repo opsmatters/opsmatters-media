@@ -246,7 +246,8 @@ public class Contacts extends StaticCache
 
         personIdMap.put(person.getId(), person);
         personNameMap.put(person.getName(), person);
-        personEmailMap.put(person.getEmail(), person);
+        if(person.hasEmail())
+            personEmailMap.put(person.getEmail(), person);
 
         Map<String,ContactPerson> persons = personContactMap.get(person.getContactId());
         if(persons == null)

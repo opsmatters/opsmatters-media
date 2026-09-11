@@ -105,7 +105,7 @@ public class ContactPersonDAO extends BaseDAO
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("CONTACT_ID", Types.VARCHAR, 36, true);
         table.addColumn("NAME", Types.VARCHAR, 50, true);
-        table.addColumn("EMAIL", Types.VARCHAR, 50, true);
+        table.addColumn("EMAIL", Types.VARCHAR, 50, false);
         table.addColumn("SALUTATION", Types.VARCHAR, 30, false);
         table.addColumn("ENABLED", Types.BOOLEAN, true);
         table.setPrimaryKey("CONTACT_PERSONS_PK", new String[] {"ID"});

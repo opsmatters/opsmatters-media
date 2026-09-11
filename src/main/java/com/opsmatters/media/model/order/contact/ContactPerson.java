@@ -102,6 +102,14 @@ public class ContactPerson extends Person
     }
 
     /**
+     * Returns <CODE>true</CODE> if the email has been set.
+     */
+    public boolean hasEmail()
+    {
+        return getEmail() != null && getEmail().length() > 0;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the person is enabled.
      */
     public boolean isEnabled()

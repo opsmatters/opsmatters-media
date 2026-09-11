@@ -107,7 +107,7 @@ public class Order extends BaseEntity
             // Otherwise look for an email for the given person
             if(email == null || email.length() == 0)
             {
-                if(person != null)
+                if(person != null && person.hasEmail())
                     email = person.getEmail();
             }
 
