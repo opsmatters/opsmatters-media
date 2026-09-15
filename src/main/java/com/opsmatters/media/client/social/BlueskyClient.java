@@ -88,7 +88,7 @@ public class BlueskyClient extends RestClient implements SocialClient
         BlueskyClient ret = new BlueskyClient(channel);
         ret.setUrl(BASE_URL);
 
-        // Configure and create the linkedin client
+        // Configure and create the bluesky client
         ret.configure();
         if(!ret.create())
             logger.severe("Unable to create bluesky client: "+channel.getCode());

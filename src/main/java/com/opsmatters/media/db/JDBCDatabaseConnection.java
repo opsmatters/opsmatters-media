@@ -50,7 +50,7 @@ public class JDBCDatabaseConnection
     protected JDBCDatabaseDriver driver;
     private List<DAOFactory> factories = new ArrayList<DAOFactory>();
     private ConnectionStatus status = NOT_CONNECTED;
-    private Exception connectException;
+    private SQLException connectException;
     private boolean debug = false;
 
     /**
@@ -114,27 +114,32 @@ public class JDBCDatabaseConnection
      * @param verbose <CODE>true</CODE> if log entries should be written during the connection
      */
     public boolean connect(ConnectionProperties p, boolean verbose) 
-        throws Exception
+        throws SQLException
     {
-        boolean ret = true;
-        conn = null;
+        boolean ret = false;
 
+        conn = null;
         setStatus(NOT_CONNECTED);
+        boolean error = false;
 
         // Get the driver type
         driverType = p.getType();
         if(driverType == null || driverType.length() == 0)
         {
-            ret = false;
             logger.severe("JDBC driver class name not defined");
+            error = true;
         }
 
         // Get the driver
-        if(ret)
+        if(!error)
         {
             driver = JDBCDatabaseDriver.getDriver(driverType);
             if(driver == null)
-                throw new MissingParameterException("driver not found for driver type '"+driverType+"'");
+            {
+                logger.severe(String.format("Driver not found for driver type: %s",
+                    driverType));
+                error = true;
+            }
 
             try
             {
@@ -142,41 +147,36 @@ public class JDBCDatabaseConnection
             }
             catch(ClassNotFoundException ex)
             {
-                ret = false;
-                String msg = "Driver Class not found in classpath: "+driver.getClassName();
-                connectException = new MissingParameterException(msg);
-                logger.severe(msg);
+                logger.severe(String.format("Driver Class not found in classpath: %s",
+                    driver.getClassName()));
+                error = true;
             }
         }
 
         // Get the hostname
-        if(ret)
+        if(!error)
         {
             hostname = p.getHostname();
             if((hostname == null || hostname.length() == 0) && !driver.isEmbedded())
             {
-                ret = false;
-                String msg = "JDBC hostname name not defined";
-                connectException = new MissingParameterException(msg);
-                logger.severe(msg);
+                logger.severe("JDBC hostname name not defined");
+                error = true;
             }
         }
 
         // Get the port number
-        if(ret)
+        if(!error)
         {
             port = p.getPort();
             if(port == 0 && !driver.isEmbedded())
             {
-                ret = false;
-                String msg = "JDBC port not defined";
-                connectException = new MissingParameterException(msg);
-                logger.severe(msg);
+                logger.severe("JDBC port not defined");
+                error = true;
             }
         }
 
         // Get the database name
-        if(ret)
+        if(!error)
         {
             databaseName = p.getDatabaseName();
             if(databaseName != null && databaseName.length() > 0)
@@ -190,47 +190,41 @@ public class JDBCDatabaseConnection
             }
             else
             {
-                ret = false;
-                String msg = "JDBC database name not defined";
-                connectException = new MissingParameterException(msg);
-                logger.severe(msg);
+                logger.severe("JDBC database name not defined");
+                error = true;
             }
         }
 
         // Get the username
-        if(ret)
+        if(!error)
         {
             username = p.getUsername();
             if((username == null || username.length() == 0) && !driver.allowEmptyUsername())
             {
-                ret = false;
-                String msg = "JDBC username not defined";
-                connectException = new MissingParameterException(msg);
-                logger.severe(msg);
+                logger.severe("JDBC username not defined");
+                error = true;
             }
         }
 
         // Get the password
-        if(ret)
+        if(!error)
         {
             passwd = p.getPassword();
             if((passwd == null || passwd.length() == 0) && !driver.allowEmptyPassword())
             {
-                ret = false;
-                String msg = "JDBC password not defined";
-                connectException = new MissingParameterException(msg);
-                logger.severe(msg);
+                logger.severe("JDBC password not defined");
+                error = true;
             }
         }
 
         // Get the connect timeout
-        if(ret)
+        if(!error)
         {
             connectTimeout = p.getConnectTimeout();
         }
 
         // Connect to the database
-        if(ret)
+        if(!error)
         {
             // Get the other hostnames in the cluster
             otherHostnames = p.getOtherHostnames();
@@ -245,27 +239,26 @@ public class JDBCDatabaseConnection
                 {
                     String msg = "Reconnected to database '"+getName()+"' successfully";
                     logger.info(msg);
-                    connectException = null;
                 }
+
+                connectException = null;
+                ret = true;
             }
-            catch(Exception e)
+            catch(SQLException ex)
             {
                 if(connectException == null)
                 {
-                    String sqlsuffix = "";
-                    if(e instanceof SQLException)
+                    if(debug())
                     {
-                        SQLException sqle = (SQLException)e;
-                        sqlsuffix = " code="+sqle.getErrorCode()+" state="+sqle.getSQLState();
+                        logger.severe(String.format("Unable to connect to database %s: code=%s state=%s",
+                            getName(), ex.getErrorCode(), ex.getSQLState()));
                     }
 
-                    connectException = e;
-                    String msg = "Unable to connect to database '"
-                        +getName()+"': "+e.getClass().getName()+": "+e.getMessage()+sqlsuffix;
-                    logger.severe(msg);
-                    setStatus(ERROR);
+                    connectException = ex;
                 }
-                return false;
+
+                setStatus(ERROR);
+                throw ex;
             }
 
             // Show the banner with the version info
@@ -289,7 +282,7 @@ public class JDBCDatabaseConnection
     /**
      * Connect to the database.
      */
-    protected void connectInternal(boolean log) throws Exception
+    protected void connectInternal(boolean log) throws SQLException
     {
         // Build the connection string
         String url = JDBCDatabaseDriver.getConnectionString(driverType, hostname, 

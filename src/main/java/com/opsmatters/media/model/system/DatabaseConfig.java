@@ -145,6 +145,14 @@ public class DatabaseConfig implements ConfigElement
     }
 
     /**
+     * Returns <CODE>true</CODE> if the hostname has been set.
+     */
+    public boolean hasHostname()
+    {
+        return getHostname() != null && getHostname().length() > 0;
+    }
+
+    /**
      * Returns the port for the database configuration.
      */
     public int getPort()
@@ -158,6 +166,14 @@ public class DatabaseConfig implements ConfigElement
     public void setPort(int port)
     {
         this.port = port;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the port has been set.
+     */
+    public boolean hasPort()
+    {
+        return getPort() > 0;
     }
 
     /**
