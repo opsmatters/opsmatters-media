@@ -33,14 +33,14 @@ public interface RepoClient
     public void close();
 
     /**
-     * Returns the current directory for the client.
+     * Sets the current repository for the client using the username and repository name.
      */
-    public String getDirectory();
+    public void setRepository(String username, String name) throws IOException;
 
     /**
-     * Sets the current directory for the client.
+     * Sets the current repository for the client from a url.
      */
-    public void setDirectory(String directory);
+    public void setRepository(String url) throws IOException;
 
     /**
      * Returns <CODE>true</CODE> if debug is enabled.

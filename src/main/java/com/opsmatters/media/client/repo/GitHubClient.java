@@ -64,10 +64,10 @@ public class GitHubClient extends Client implements RepoClient
 
     public static final String SUFFIX = ".github";
 
-    private GitHub client;
+    private GitHub client = null;
     private String accessToken = "";
     private String branch = "";
-    private String directory = "";
+    private GHRepository repository = null;
 
     private Map<String,GHContent> contentMap = new HashMap<String,GHContent>();
 
@@ -77,7 +77,6 @@ public class GitHubClient extends Client implements RepoClient
     public static GitHubClient newClient(String branch) throws IOException
     {
         GitHubClient ret = new GitHubClient().builder()
-//            .branch(config.getBranch())
             .branch(branch)
             .build();
 
@@ -170,27 +169,65 @@ public class GitHubClient extends Client implements RepoClient
     }
 
     /**
-     * Returns the current directory for the client.
+     * Returns the current repository for the client.
      */
-    public String getDirectory()
+    public GHRepository getRepository()
     {
-        return directory;
+        return repository;
     }
 
     /**
-     * Sets the current directory for the client.
+     * Sets the current repository for the client.
      */
-    public void setDirectory(String directory)
+    public void setRepository(GHRepository repository)
     {
-        this.directory = directory;
+        this.repository = repository;
     }
 
     /**
-     * Returns <CODE>true</CODE> if the current directory has been set.
+     * Sets the current repository for the client using the username and repository name.
      */
-    public boolean hasDirectory() 
+    public void setRepository(String username, String name) throws IOException
     {
-        return directory != null && directory.length() > 0;
+        GHUser user = client.getUser(username);
+        if(user != null)
+        {
+            GHRepository repository = user.getRepository(name);
+            if(repository != null)
+            {
+                if(debug())
+                    logger.info("Found github repository: "+repository.getName());
+                setRepository(repository);
+            }
+            else
+            {
+                logger.severe("Unable to find github repository: "+name);
+            }
+        }
+        else
+        {
+            logger.severe("Unable to find github user: "+username);
+        }
+    }
+
+    /**
+     * Sets the current repository for the client from a url.
+     */
+    public void setRepository(String url) throws IOException
+    {
+        if(url == null || url.length() == 0)
+            throw new IllegalArgumentException("missing repository url");
+
+        RepoProviderId providerId = RepoProviderId.fromUrl(url);
+        setRepository(providerId.getRepoUser(url), providerId.getRepoName(url));
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the current repository has been set.
+     */
+    public boolean hasRepository() 
+    {
+        return repository != null;
     }
 
     /**
@@ -213,52 +250,13 @@ public class GitHubClient extends Client implements RepoClient
     }
 
     /**
-     * Returns the repository with the given repo url.
+     * Returns the contents of the README for the current repository.
      */
-    public GHRepository getRepository(String url) throws IOException
-    {
-        if(url == null || url.length() == 0)
-            throw new IllegalArgumentException("missing repo URL");
-        RepoProviderId providerId = RepoProviderId.fromUrl(url);
-        return getRepository(providerId.getRepoUser(url), providerId.getRepoName(url));
-    }
-
-    /**
-     * Returns the repository with the given name for the given user.
-     */
-    public GHRepository getRepository(String username, String name) throws IOException
-    {
-        GHRepository ret = null;
-        GHUser user = client.getUser(username);
-        if(user != null)
-        {
-            GHRepository repository = user.getRepository(name);
-            if(repository != null)
-            {
-                if(debug())
-                    logger.info("Found github repository: "+repository.getName());
-                ret = repository;
-            }
-            else
-            {
-                logger.severe("Unable to find github repository: "+name);
-            }
-        }
-        else
-        {
-            logger.severe("Unable to find github user: "+username);
-        }
-
-        return ret;
-    }
-
-    /**
-     * Returns the contents of the README for the given repository.
-     */
-    public String getReadme(GHRepository repository) throws IOException
+    public String getReadme() throws IOException
     {
         if(repository == null)
             throw new IllegalArgumentException("repository null");
+
         String ret = "";
         GHContent readme = repository.getReadme();
         if(readme != null)
@@ -269,10 +267,13 @@ public class GitHubClient extends Client implements RepoClient
     }
 
     /**
-     * Returns the founded year for the given repository.
+     * Returns the founded year for the current repository.
      */
-    public String getFounded(GHRepository repository) throws IOException
+    public String getFounded() throws IOException
     {
+        if(repository == null)
+            throw new IllegalArgumentException("repository null");
+
         Calendar calendar = Calendar.getInstance();
         GHContent readme = repository.getReadme();
         List<GHCommit> commits = repository.queryCommits().path(readme.getPath()).list().toList();
@@ -286,88 +287,80 @@ public class GitHubClient extends Client implements RepoClient
     }
 
     /**
-     * Returns the project for the given repo url.
+     * Returns the project for the current repository.
      */
     public ProjectDetails getProject(String url) throws IOException
     {
-        ProjectDetails project = null;
+        if(repository == null)
+            throw new IllegalArgumentException("repository null");
 
-        GHRepository repository = getRepository(url);
-        if(repository != null)
+        ProjectDetails project = new ProjectDetails();
+        project.setUrl(url, true);
+        project.setPublishedDate(Instant.now());
+        project.setTitle(repository.getName());
+        project.setSummary(repository.getDescription());
+        //GC: 29/09/2020 removed because it causes errors
+        //project.setDescription(StringUtils.markdownToHtml(getReadme(repository)));
+        project.setWebsite(repository.getHomepage());
+        project.setFounded(getFounded());
+
+        String repoUrl = String.format("%s/%s", getProviderId().url(), repository.getFullName());
+        project.setLinks(String.format(LINKS, repoUrl, branch));
+
+        GHLicense license = repository.getLicense();
+        if(license != null)
         {
-            project = new ProjectDetails();
-            project.setUrl(url, true);
-            project.setPublishedDate(Instant.now());
-            project.setTitle(repository.getName());
-            project.setSummary(repository.getDescription());
-            //GC: 29/09/2020 removed because it causes errors
-            //project.setDescription(StringUtils.markdownToHtml(getReadme(repository)));
-            project.setWebsite(repository.getHomepage());
-            project.setFounded(getFounded(repository));
-
-            String repoUrl = String.format("%s/%s", getProviderId().url(), repository.getFullName());
-            project.setLinks(String.format(LINKS, repoUrl, branch));
-
-            GHLicense license = repository.getLicense();
-            if(license != null)
-            {
-                OpenSourceLicense l = OpenSourceLicense.fromCode(license.getKey());
-                if(l != null)
-                    project.setLicense(l.value());
-                else
-                    logger.warning("Repository license not found for key: "+license.getKey());
-            }
+            OpenSourceLicense l = OpenSourceLicense.fromCode(license.getKey());
+            if(l != null)
+                project.setLicense(l.value());
+            else
+                logger.warning("Repository license not found for key: "+license.getKey());
         }
 
         return project;
     }
 
     /**
-     * Commit and push the files in the current directory for the given repository.
+     * Commit and push the files in the given directory and path.
      */
-    public GHCommit commit(GHRepository repository, String path, String message)
+    public GHCommit commit(String directory, String path, String message)
         throws IOException
     {
         if(repository == null)
             throw new IllegalArgumentException("repository null");
+        if(directory == null || directory.length() == 0)
+            throw new IllegalArgumentException("directory null");
 
         GHCommit ret = null;
         String branch = getBranch();
 
-        if(hasDirectory())
+        if(branch == null)
+            branch = repository.getDefaultBranch();
+        GHRef ref = repository.getRef(String.format("heads/%s", branch));
+        String sha = repository.getTreeRecursive(branch, 1).getSha();
+        GHTreeBuilder treeBuilder = repository.createTree().baseTree(sha);
+        File baseDirectory = new File(directory, path);
+        List<File> files = new ArrayList<File>();
+        addContent(path);
+        addFilesToTree(path, treeBuilder, baseDirectory, baseDirectory, files);
+
+        if(files.size() > 0)
         {
-            if(branch == null)
-                branch = repository.getDefaultBranch();
-            GHRef ref = repository.getRef(String.format("heads/%s", branch));
-            String sha = repository.getTreeRecursive(branch, 1).getSha();
-            GHTreeBuilder treeBuilder = repository.createTree().baseTree(sha);
-            File baseDirectory = new File(directory, path);
-            List<File> files = new ArrayList<File>();
-            addContent(repository, path);
-            addFilesToTree(repository, path, treeBuilder, baseDirectory, baseDirectory, files);
+            GHTree tree = treeBuilder.create();
+            GHCommit commit = repository.createCommit()
+                .message(message)
+                .tree(tree.getSha())
+                .parent(ref.getObject().getSha())
+                .create();
+            ref.updateTo(commit.getSHA1());
+            ret = commit;
 
-            if(files.size() > 0)
-            {
-                GHTree tree = treeBuilder.create();
-                GHCommit commit = repository.createCommit()
-                    .message(message)
-                    .tree(tree.getSha())
-                    .parent(ref.getObject().getSha())
-                    .create();
-                ref.updateTo(commit.getSHA1());
-                ret = commit;
+            if(debug())
+                logger.info(String.format("Created commit for directory %s: SHA=%s URL=%s",
+                    baseDirectory, commit.getSHA1(), commit.getHtmlUrl()));
 
-                if(debug())
-                    logger.info(String.format("Created commit for directory %s: SHA=%s URL=%s",
-                        baseDirectory, commit.getSHA1(), commit.getHtmlUrl()));
-
-                logger.info(String.format("Committed %d files for %s directory",
-                    files.size(), path));
-            }
-        }
-        else
-        {
-            logger.severe("No current directory");
+            logger.info(String.format("Committed %d files for %s directory",
+                files.size(), path));
         }
 
         contentMap.clear();
@@ -376,17 +369,17 @@ public class GitHubClient extends Client implements RepoClient
     }
 
     /**
-     * Commit and push the files in the current directory for the given repository.
+     * Commit and push the files in the given directory and path.
      */
-    public GHCommit commit(GHRepository repository, String path) throws IOException
+    public GHCommit commit(String directory, String path) throws IOException
     {
-        return commit(repository, path, "Updated "+path);
+        return commit(directory, path, "Updated "+path);
     }
 
     /**
      * Recurse through the files in the given directory to build the file tree for the commit.
      */
-    private void addFilesToTree(GHRepository repository, String path, GHTreeBuilder treeBuilder,
+    private void addFilesToTree(String path, GHTreeBuilder treeBuilder,
         File baseDirectory, File currentDirectory, List<File> files)
         throws IOException
     {
@@ -422,8 +415,8 @@ public class GitHubClient extends Client implements RepoClient
             }
             else
             {
-                addContent(repository, relativePath);
-                addFilesToTree(repository, path, treeBuilder, baseDirectory, file, files);
+                addContent(relativePath);
+                addFilesToTree(path, treeBuilder, baseDirectory, file, files);
             }
         }
     }
@@ -431,8 +424,7 @@ public class GitHubClient extends Client implements RepoClient
     /**
      * Add the content entries from the repository for the given path to the map.
      */
-    private void addContent(GHRepository repository, String path)
-        throws IOException
+    private void addContent(String path) throws IOException
     {
         List<GHContent> contentList = repository.getDirectoryContent(path);
         for(GHContent content : contentList)
@@ -463,17 +455,6 @@ public class GitHubClient extends Client implements RepoClient
         public Builder branch(String branch)
         {
             client.setBranch(branch);
-            return this;
-        }
-
-        /**
-         * Sets the default directory for the client.
-         * @param branch The default directory for the client
-         * @return This object
-         */
-        public Builder directory(String directory)
-        {
-            client.setDirectory(directory);
             return this;
         }
 

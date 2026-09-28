@@ -21,6 +21,8 @@ import java.io.FileOutputStream;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -47,6 +49,14 @@ import software.amazon.awssdk.services.s3.model.GetObjectAttributesResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.CreateMultipartUploadRequest;
+import software.amazon.awssdk.services.s3.model.CreateMultipartUploadResponse;
+import software.amazon.awssdk.services.s3.model.CompletedMultipartUpload;
+import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadRequest;
+import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadResponse;
+import software.amazon.awssdk.services.s3.model.UploadPartRequest;
+import software.amazon.awssdk.services.s3.model.UploadPartResponse;
+import software.amazon.awssdk.services.s3.model.CompletedPart;
 import software.amazon.awssdk.services.s3.model.S3Object;
 import com.opsmatters.media.client.Client;
 
@@ -60,6 +70,8 @@ public class AwsS3Client extends Client
     private static final Logger logger = Logger.getLogger(AwsS3Client.class.getName());
 
     public static final String SUFFIX = ".s3";
+
+    private static final int PART_SIZE = 5*1024*1024; // 5MB parts
 
     private S3Client client = null;
     private String region;
@@ -315,6 +327,7 @@ public class AwsS3Client extends Client
      * Write the given file to S3.
      */
     public boolean put(InputStream stream, String filename, long size)
+        throws IOException
     {
         return put(stream, filename, bucket, size);
     }
@@ -323,17 +336,82 @@ public class AwsS3Client extends Client
      * Write the given file to S3.
      */
     public boolean put(InputStream stream, String filename, String bucket, long size)
+        throws IOException
     {
         boolean ret = false;
 
         if(isConnected())
         {
-            PutObjectRequest request = PutObjectRequest.builder()
-                .bucket(bucket)
-                .key(filename)
-                .build();
-            PutObjectResponse response = client.putObject(request, RequestBody.fromInputStream(stream, size));
-            ret = response != null;
+            if(size > PART_SIZE)
+            {
+                List<CompletedPart> completedParts = new ArrayList<>();
+                int partNumber = 1;
+                ByteBuffer buffer = ByteBuffer.allocate(PART_SIZE);
+
+                CreateMultipartUploadRequest createRequest = CreateMultipartUploadRequest.builder()
+                    .bucket(bucket)
+                    .key(filename)
+                    .build();
+
+                CreateMultipartUploadResponse createResponse = client.createMultipartUpload(createRequest);
+
+                String uploadId = createResponse.uploadId();
+
+                try(RandomAccessFile file = new RandomAccessFile(filename, "r"))
+                {
+                    long fileSize = file.length();
+                    long position = 0;
+
+                    while (position < fileSize)
+                    {
+                        file.seek(position);
+                        int bytesRead = file.getChannel().read(buffer);
+
+                        buffer.flip();
+                        UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
+                            .bucket(bucket)
+                            .key(filename)
+                            .uploadId(uploadId)
+                            .partNumber(partNumber)
+                            .contentLength((long) bytesRead)
+                            .build();
+
+                        UploadPartResponse response = client.uploadPart(uploadPartRequest, RequestBody.fromByteBuffer(buffer));
+
+                        completedParts.add(CompletedPart.builder()
+                            .partNumber(partNumber)
+                            .eTag(response.eTag())
+                            .build());
+
+                        buffer.clear();
+                        position += bytesRead;
+                        partNumber++;
+                    }
+                }
+
+                CompletedMultipartUpload completedUpload = CompletedMultipartUpload.builder()
+                    .parts(completedParts)
+                    .build();
+
+                CompleteMultipartUploadRequest completeRequest = CompleteMultipartUploadRequest.builder()
+                    .bucket(bucket)
+                    .key(filename)
+                    .uploadId(uploadId)
+                    .multipartUpload(completedUpload)
+                    .build();
+
+                CompleteMultipartUploadResponse completeResponse = client.completeMultipartUpload(completeRequest);
+                ret = completeResponse != null;
+            }
+            else
+            {
+                PutObjectRequest request = PutObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(filename)
+                    .build();
+                PutObjectResponse response = client.putObject(request, RequestBody.fromInputStream(stream, size));
+                ret = response != null;
+            }
         }
 
         return ret;
@@ -343,6 +421,7 @@ public class AwsS3Client extends Client
      * Move the given file from the current bucket to the target bucket in S3.
      */
     public boolean move(String filename, String targetBucket)
+        throws IOException
     {
         boolean ret = put(get(filename), filename, targetBucket, getSize(filename));
         delete(filename);

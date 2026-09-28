@@ -28,6 +28,7 @@ public class S3Config extends AwsConfig
 {
     private String configBucket = "";
     private String contentBucket = "";
+    private String backupBucket = "";
 
     /**
      * Constructor that takes an id.
@@ -54,6 +55,7 @@ public class S3Config extends AwsConfig
         {
             setConfigBucket(obj.getConfigBucket());
             setContentBucket(obj.getContentBucket());
+            setBackupBucket(obj.getBackupBucket());
         }
     }
 
@@ -90,6 +92,22 @@ public class S3Config extends AwsConfig
     }
 
     /**
+     * Returns the backup bucket for the S3 configuration.
+     */
+    public String getBackupBucket()
+    {
+        return backupBucket;
+    }
+
+    /**
+     * Sets the backup bucket for the S3 configuration.
+     */
+    public void setBackupBucket(String backupBucket)
+    {
+        this.backupBucket = backupBucket;
+    }
+
+    /**
      * Returns a builder for the configuration.
      * @param id The id of the configuration
      * @return The builder instance.
@@ -108,6 +126,7 @@ public class S3Config extends AwsConfig
         private static final String REGION = "region";
         private static final String CONFIG_BUCKET = "config-bucket";
         private static final String CONTENT_BUCKET = "content-bucket";
+        private static final String BACKUP_BUCKET = "backup-bucket";
 
         private S3Config ret = null;
 
@@ -134,6 +153,8 @@ public class S3Config extends AwsConfig
                 ret.setConfigBucket((String)map.get(CONFIG_BUCKET));
             if(map.containsKey(CONTENT_BUCKET))
                 ret.setContentBucket((String)map.get(CONTENT_BUCKET));
+            if(map.containsKey(BACKUP_BUCKET))
+                ret.setBackupBucket((String)map.get(BACKUP_BUCKET));
 
             return this;
         }
