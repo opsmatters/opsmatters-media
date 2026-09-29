@@ -474,14 +474,17 @@ public class StripeClient extends Client
         if(taxRate != null)
             taxRates.add(taxRate.getId());
 
-        InvoiceItemCreateParams params = InvoiceItemCreateParams.builder()
+        InvoiceItemCreateParams.Builder builder = InvoiceItemCreateParams.builder()
             .setCustomer(invoice.getCustomer())
             .setInvoice(invoice.getId())
             .setDescription(getDescription(orderItem))
             .setAmount(orderItem.getPrice()*orderItem.getQuantity()*100L)
-            .setCurrency(orderItem.getCurrency().getCode())
-            .addAllTaxRate(taxRates)
-            .build();
+            .setCurrency(orderItem.getCurrency().getCode());
+
+        if(taxRates.size() > 0)
+            builder = builder.addAllTaxRate(taxRates);
+
+        InvoiceItemCreateParams params = builder.build();
 
         return InvoiceItem.create(params);
     }
