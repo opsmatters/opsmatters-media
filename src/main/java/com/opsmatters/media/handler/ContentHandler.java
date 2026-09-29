@@ -765,7 +765,6 @@ public class ContentHandler
             throw new IllegalArgumentException("target bucket missing");
 
         AwsS3Client client = null;
-        InputStream is = null;
         boolean ret = false;
 
         try
@@ -778,36 +777,14 @@ public class ContentHandler
                 s3client = client;
             }
 
-            client.changeBucket(bucket); 
-        }
-        catch(IOException e)
-        {
-            logger.severe(StringUtils.serialize(e));
-        }
-
-        try
-        {
             // Transfer the file to the bucket
-            File file = new File(workingDir, filename);
-            is = new FileInputStream(file);
-            ret = client.put(is, filename, file.length());
+            client.changeBucket(bucket); 
+            ret = client.put(new File(workingDir, filename));
             logger.info("Copied file "+filename+" to bucket: "+bucket);
         }
         catch(IOException e)
         {
             logger.severe(StringUtils.serialize(e));
-        }
-        finally
-        {
-            try
-            {
-                // Close the input stream
-                if(is != null)
-                    is.close();
-            }
-            catch(IOException e)
-            {
-            }
         }
 
         return ret;

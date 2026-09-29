@@ -1092,8 +1092,7 @@ public class XlsxWorkbook extends Workbook
         String converted = StringUtils.stripNonValidXMLCharacters(data);
         if(!data.equals(converted))
         {
-            logger.severe("Removed illegal characters from cell in sheet '"
-                +sheetName+"': "+data);
+            logger.severe("Removed illegal characters from cell in sheet '"+sheetName+"'");
             data = converted;
         }
 

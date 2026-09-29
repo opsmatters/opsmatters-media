@@ -324,18 +324,9 @@ public class AwsS3Client extends Client
     }
 
     /**
-     * Write the given file to S3.
+     * Create a file on S3 using the given file and filename.
      */
-    public boolean put(InputStream stream, String filename, long size)
-        throws IOException
-    {
-        return put(stream, filename, bucket, size);
-    }
-
-    /**
-     * Write the given file to S3.
-     */
-    public boolean put(InputStream stream, String filename, String bucket, long size)
+    public boolean put(File file, String filename, String bucket, long size)
         throws IOException
     {
         boolean ret = false;
@@ -357,15 +348,15 @@ public class AwsS3Client extends Client
 
                 String uploadId = createResponse.uploadId();
 
-                try(RandomAccessFile file = new RandomAccessFile(filename, "r"))
+                try(RandomAccessFile partfile = new RandomAccessFile(file, "r"))
                 {
-                    long fileSize = file.length();
+                    long fileSize = partfile.length();
                     long position = 0;
 
                     while (position < fileSize)
                     {
-                        file.seek(position);
-                        int bytesRead = file.getChannel().read(buffer);
+                        partfile.seek(position);
+                        int bytesRead = partfile.getChannel().read(buffer);
 
                         buffer.flip();
                         UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
@@ -373,7 +364,7 @@ public class AwsS3Client extends Client
                             .key(filename)
                             .uploadId(uploadId)
                             .partNumber(partNumber)
-                            .contentLength((long) bytesRead)
+                            .contentLength((long)bytesRead)
                             .build();
 
                         UploadPartResponse response = client.uploadPart(uploadPartRequest, RequestBody.fromByteBuffer(buffer));
@@ -409,7 +400,7 @@ public class AwsS3Client extends Client
                     .bucket(bucket)
                     .key(filename)
                     .build();
-                PutObjectResponse response = client.putObject(request, RequestBody.fromInputStream(stream, size));
+                PutObjectResponse response = client.putObject(request, RequestBody.fromFile(file));
                 ret = response != null;
             }
         }
@@ -418,12 +409,55 @@ public class AwsS3Client extends Client
     }
 
     /**
-     * Move the given file from the current bucket to the target bucket in S3.
+     * Create a file on S3 using the given file and filename.
      */
-    public boolean move(String filename, String targetBucket)
-        throws IOException
+    public boolean put(File file, String filename, long size) throws IOException
     {
-        boolean ret = put(get(filename), filename, targetBucket, getSize(filename));
+        return put(file, filename, bucket, size);
+    }
+
+    /**
+     * Create a file on S3 using the given file.
+     */
+    public boolean put(File file) throws IOException
+    {
+        return put(file, file.getName(), bucket, file.length());
+    }
+
+    /**
+     * Create a file on S3 using the given stream and filename.
+     */
+    public boolean put(InputStream stream, String filename, String bucket, long size)
+    {
+        boolean ret = false;
+
+        if(isConnected())
+        {
+            PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(filename)
+                .build();
+            PutObjectResponse response = client.putObject(request, RequestBody.fromInputStream(stream, size));
+            ret = response != null;
+        }
+
+        return ret;
+    }
+
+    /**
+     * Create a file on S3 using the given stream and filename.
+     */
+    public boolean put(InputStream stream, String filename, long size)
+    {
+        return put(stream, filename, bucket, size);
+    }
+
+    /**
+     * Move the given file on S3 from the current bucket to the given bucket.
+     */
+    public boolean move(String filename, String bucket)
+    {
+        boolean ret = put(get(filename), filename, bucket, getSize(filename));
         delete(filename);
         return ret;
     }
