@@ -31,6 +31,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import com.opsmatters.media.model.StringMatch;
+
 /**
  * A set of utility methods to perform miscellaneous tasks related to strings.
  * 
@@ -538,6 +539,16 @@ public class StringUtils
                 buff.append(c);
         }
         return buff.toString();
+    }
+
+    /**
+     * Returns the given string with all leading and trailing whitespace removed.
+     * @param s The string to have whitespace removed
+     * @return The given string with all whitespace removed
+     */
+    public static String stripWhitespace(String str)
+    {
+        return str != null ? org.apache.commons.lang3.StringUtils.strip(str) : "";
     }
 
     /**

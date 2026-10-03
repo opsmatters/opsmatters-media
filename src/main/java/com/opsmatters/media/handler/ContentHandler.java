@@ -41,6 +41,7 @@ import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.FileUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;
+import static com.opsmatters.media.client.system.SshClient.ChannelType.*;
 
 /**
  * Creates and writes a formatted set of fields representing content.
@@ -661,7 +662,7 @@ public class ContentHandler
             {
                 if(client != null)
                     client.close();
-                client = SshClient.newClient(environment.getKey(), environment.getSshConfig());
+                client = SshClient.newClient(environment.getKey(), environment.getSshConfig(), SFTP);
                 sshClients.put(environment.getKey(), client);
             }
 
@@ -712,7 +713,7 @@ public class ContentHandler
             {
                 if(client != null)
                     client.close();
-                client = SshClient.newClient(environment.getKey(), environment.getSshConfig());
+                client = SshClient.newClient(environment.getKey(), environment.getSshConfig(), SFTP);
                 sshClients.put(environment.getKey(), client);
             }
 

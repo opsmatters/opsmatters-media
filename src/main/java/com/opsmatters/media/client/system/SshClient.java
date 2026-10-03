@@ -18,12 +18,17 @@ package com.opsmatters.media.client.system;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
+import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
@@ -49,6 +54,25 @@ public class SshClient extends Client
     public static final String KEY = ".pk";
     public static final int DEFAULT_SSH_PORT = 22;
 
+    public enum ChannelType
+    {
+        SHELL("shell"),
+        EXEC("exec"),
+        SFTP("sftp");
+
+        private String value;
+
+        ChannelType(String value)
+        {
+            this.value = value;
+        }
+
+        public String value()
+        {
+            return value;
+        }
+    }
+
     private static JSch jsch = new JSch();
     private String env = "";
     private String hostname = "";
@@ -56,13 +80,14 @@ public class SshClient extends Client
     private String username = "";
     private String password = "";
     private String keyfile = "";
+    private ChannelType type = null;
     private Session session;
-    private ChannelSftp channel;
+    private Channel channel;
 
     /**
-     * Returns a new SSH connection using the given configuration.
+     * Returns a new SSH connection using the given configuration and type.
      */
-    static public SshClient newClient(String key, SshConfig config) 
+    public static SshClient newClient(String key, SshConfig config, ChannelType type)
         throws JSchException, SftpException
     {
         SshClient ret = SshClient.builder()
@@ -70,6 +95,7 @@ public class SshClient extends Client
             .hostname(config.getHostname())
             .port(config.getPort())
             .keyfile(key+KEY)
+            .type(type)
             .build();
 
         // Configure and create the SSH client
@@ -142,7 +168,7 @@ public class SshClient extends Client
             logger.info("Creating SSH channel: "+getHostname());
 
         session.connect();
-        channel = (ChannelSftp)session.openChannel("sftp");
+        channel = session.openChannel(type.value());
         channel.connect();
 
         if(debug())
@@ -248,6 +274,38 @@ public class SshClient extends Client
     }
 
     /**
+     * Returns the channel type for the client.
+     */
+    public ChannelType getType() 
+    {
+        return type;
+    }
+
+    /**
+     * Sets the channel type for the client.
+     */
+    public void setType(ChannelType type) 
+    {
+        this.type = type;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the channel type is SFTP.
+     */
+    private boolean isSftpType()
+    {
+        return channel instanceof ChannelSftp;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the channel type is SHELL.
+     */
+    private boolean isShellType()
+    {
+        return channel instanceof ChannelShell;
+    }
+
+    /**
      * Returns <CODE>true</CODE> if the channel is connected.
      */
     public boolean isConnected() 
@@ -261,10 +319,13 @@ public class SshClient extends Client
     public boolean cd(String workingDir) 
         throws JSchException, SftpException
     {
+        if(!isSftpType())
+            throw new IllegalArgumentException("wrong channel type: "+type);
+
         boolean ret = false;
         if(channel != null && channel.isConnected() && workingDir.length() > 0)
         {
-            channel.cd(workingDir);
+            ((ChannelSftp)channel).cd(workingDir);
             ret = true;
         }
 
@@ -276,7 +337,16 @@ public class SshClient extends Client
      */
     public String pwd() throws SftpException
     {
-        return channel != null ? channel.pwd() : null;
+        if(!isSftpType())
+            throw new IllegalArgumentException("wrong channel type: "+type);
+
+        String ret = null;
+        if(channel != null && channel.isConnected())
+        {
+            ret = ((ChannelSftp)channel).pwd();
+        }
+
+        return ret;
     }
 
     /**
@@ -284,12 +354,17 @@ public class SshClient extends Client
      */
     public boolean exists(String filename)
     {
+        if(!isSftpType())
+            throw new IllegalArgumentException("wrong channel type: "+type);
+
         boolean ret = false;
 
         try
         {
             if(channel != null && channel.isConnected())
-                ret = channel.lstat(filename) != null;
+            {
+                ret = ((ChannelSftp)channel).lstat(filename) != null;
+            }
         }
         catch(SftpException e)
         {
@@ -303,10 +378,13 @@ public class SshClient extends Client
      */
     public InputStream get(String filename) throws SftpException
     {
+        if(!isSftpType())
+            throw new IllegalArgumentException("wrong channel type: "+type);
+
         InputStream ret = null;
         if(channel != null && channel.isConnected())
         {
-            ret = channel.get(filename);
+            ret = ((ChannelSftp)channel).get(filename);
         }
 
         return ret;
@@ -317,11 +395,14 @@ public class SshClient extends Client
      */
     public boolean put(InputStream stream, String filename) throws SftpException
     {
+        if(!isSftpType())
+            throw new IllegalArgumentException("wrong channel type: "+type);
+
         boolean ret = false;
 
         if(channel != null && channel.isConnected())
         {
-            channel.put(stream, filename);
+            ((ChannelSftp)channel).put(stream, filename);
             ret = true;
         }
 
@@ -333,8 +414,13 @@ public class SshClient extends Client
      */
     public void rm(String filename) throws SftpException
     {
+        if(!isSftpType())
+            throw new IllegalArgumentException("wrong channel type: "+type);
+
         if(channel != null && channel.isConnected())
-            channel.rm(filename);
+        {
+            ((ChannelSftp)channel).rm(filename);
+        }
     }
 
     /**
@@ -342,13 +428,16 @@ public class SshClient extends Client
      */
     public long getSize(String filename)
     {
+        if(!isSftpType())
+            throw new IllegalArgumentException("wrong channel type: "+type);
+
         long ret = -1L;
 
         try
         {
             if(channel != null && channel.isConnected())
             {
-                SftpATTRS attrs = channel.lstat(filename);
+                SftpATTRS attrs = ((ChannelSftp)channel).lstat(filename);
                 if(attrs != null && !attrs.isDir())
                     ret = attrs.getSize();
             }
@@ -357,6 +446,30 @@ public class SshClient extends Client
         {
         }
 
+        return ret;
+    }
+
+    /**
+     * Execute the given shell commands using SSH.
+     */
+    public String commands(List<String> commands) throws IOException
+    {
+        if(!isShellType())
+            throw new IllegalArgumentException("wrong channel type: "+type);
+
+        PrintStream out = new PrintStream(channel.getOutputStream());
+        out.print("#!/bin/bash\n");
+        for(String command : commands)
+            out.print(command+'\n');
+        String exit = "exit";
+        out.print(exit+'\n');
+        out.flush();
+
+        // Capture the output, removing the input command
+        String ret = new String(channel.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        int endPos = ret.indexOf(exit);
+        if(endPos != -1)
+            ret = ret.substring(endPos+exit.length()+1);
         return ret;
     }
 
@@ -430,6 +543,17 @@ public class SshClient extends Client
         public Builder keyfile(String keyfile)
         {
             client.setKeyfile(keyfile);
+            return this;
+        }
+
+        /**
+         * Sets the type for the client.
+         * @param type The type for the client
+         * @return This object
+         */
+        public Builder type(ChannelType type)
+        {
+            client.setType(type);
             return this;
         }
 
