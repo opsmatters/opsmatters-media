@@ -32,7 +32,8 @@ public enum FileFormat
     GIF("gif"),
     WEBP("webp"),
     SVG("svg"),
-    AVIF("avif");
+    AVIF("avif"),
+    GZ("gz");
 
     private String value;
     private String ext;

@@ -250,7 +250,8 @@ public class RestClient extends Client
     /**
      * Executes a GET operation with a set of url-encoded parameters.
      */
-    public String get(String url, Map<String,String> params) throws IOException, URISyntaxException
+    public String get(String url, Map<String,String> params, boolean hasResponseEntity)
+        throws IOException, URISyntaxException
     {
         HttpGet request = new HttpGet(url);
 
@@ -265,7 +266,28 @@ public class RestClient extends Client
         if(token != null)
             request.addHeader(AUTHORIZATION, String.format("%s %s", getTokenName(), token));
 
-        return execute(request, true);
+        return execute(request, hasResponseEntity);
+    }
+
+    /**
+     * Executes a GET operation with a set of url-encoded parameters.
+     */
+    public String get(String url, Map<String,String> params)
+        throws IOException, URISyntaxException
+    {
+        return get(url, params, true);
+    }
+
+    /**
+     * Executes a GET operation.
+     */
+    public String get(String url, boolean hasResponseEntity)
+        throws IOException
+    {
+        HttpGet request = new HttpGet(url);
+        if(token != null)
+            request.addHeader(AUTHORIZATION, String.format("%s %s", getTokenName(), token));
+        return execute(request, hasResponseEntity);
     }
 
     /**
@@ -273,16 +295,14 @@ public class RestClient extends Client
      */
     public String get(String url) throws IOException
     {
-        HttpGet request = new HttpGet(url);
-        if(token != null)
-            request.addHeader(AUTHORIZATION, String.format("%s %s", getTokenName(), token));
-        return execute(request, true);
+        return get(url, true);
     }
 
     /**
      * Executes a POST operation with a set of url-encoded parameters.
      */
-    public String post(String url, Map<String,String> params, boolean hasResponseEntity) throws IOException
+    public String post(String url, Map<String,String> params, boolean hasResponseEntity)
+        throws IOException
     {
         List<NameValuePair> paramList = new ArrayList<NameValuePair>();
         for(Map.Entry<String,String> param : params.entrySet())
@@ -299,7 +319,8 @@ public class RestClient extends Client
     /**
      * Executes a POST operation with a set of url-encoded parameters.
      */
-    public String post(String url, Map<String,String> params) throws IOException
+    public String post(String url, Map<String,String> params)
+        throws IOException
     {
         return post(url, params, true);
     }
@@ -307,7 +328,8 @@ public class RestClient extends Client
     /**
      * Executes a POST operation with an optional content type and message body.
      */
-    public String post(String url, String contentType, String body, boolean hasResponseEntity) throws IOException
+    public String post(String url, String contentType, String body, boolean hasResponseEntity)
+        throws IOException
     {
         HttpPost request = new HttpPost(url);
         if(token != null)
@@ -322,7 +344,8 @@ public class RestClient extends Client
     /**
      * Executes a POST operation with an optional content type and message body.
      */
-    public String post(String url, String contentType, String body) throws IOException
+    public String post(String url, String contentType, String body)
+        throws IOException
     {
         return post(url, contentType, body, true);
     }
@@ -330,7 +353,8 @@ public class RestClient extends Client
     /**
      * Executes a POST operation with a content type.
      */
-    public String post(String url, String contentType) throws IOException
+    public String post(String url, String contentType)
+        throws IOException
     {
         return post(url, contentType, (String)null);
     }
@@ -346,7 +370,8 @@ public class RestClient extends Client
     /**
      * Executes a POST operation with an optional content type and byte array.
      */
-    public String post(String url, String contentType, byte[] bytes, boolean hasResponseEntity) throws IOException
+    public String post(String url, String contentType, byte[] bytes, boolean hasResponseEntity)
+        throws IOException
     {
         HttpPost request = new HttpPost(url);
         if(token != null)
@@ -361,7 +386,8 @@ public class RestClient extends Client
     /**
      * Executes a POST operation with an optional content type and byte array.
      */
-    public String post(String url, String contentType, byte[] bytes) throws IOException
+    public String post(String url, String contentType, byte[] bytes)
+        throws IOException
     {
         return post(url, contentType, bytes, true);
     }
@@ -369,7 +395,8 @@ public class RestClient extends Client
     /**
      * Executes a PUT operation with an optional content type and message body.
      */
-    public String put(String url, String contentType, String body, boolean hasResponseEntity) throws IOException
+    public String put(String url, String contentType, String body, boolean hasResponseEntity)
+        throws IOException
     {
         HttpPut request = new HttpPut(url);
         if(token != null)
@@ -384,7 +411,8 @@ public class RestClient extends Client
     /**
      * Executes a PUT operation with an optional content type and message body.
      */
-    public String put(String url, String contentType, String body) throws IOException
+    public String put(String url, String contentType, String body)
+        throws IOException
     {
         return put(url, contentType, body, true);
     }
@@ -392,7 +420,8 @@ public class RestClient extends Client
     /**
      * Executes a PUT operation with an optional content type and byte array.
      */
-    public String put(String url, String contentType, byte[] bytes, boolean hasResponseEntity) throws IOException
+    public String put(String url, String contentType, byte[] bytes, boolean hasResponseEntity)
+        throws IOException
     {
         HttpPut request = new HttpPut(url);
         if(token != null)
@@ -407,7 +436,8 @@ public class RestClient extends Client
     /**
      * Executes a PUT operation with an optional content type and byte array.
      */
-    public String put(String url, String contentType, byte[] bytes) throws IOException
+    public String put(String url, String contentType, byte[] bytes)
+        throws IOException
     {
         return put(url, contentType, bytes, true);
     }
@@ -415,7 +445,8 @@ public class RestClient extends Client
     /**
      * Executes a DELETE operation without a message body.
      */
-    public String delete(String url, boolean hasResponseEntity) throws IOException
+    public String delete(String url, boolean hasResponseEntity)
+        throws IOException
     {
         return execute(new HttpDelete(url), hasResponseEntity);
     }
@@ -423,7 +454,8 @@ public class RestClient extends Client
     /**
      * Executes a request operation.
      */
-    public String execute(HttpUriRequest request, boolean hasResponseEntity) throws IOException
+    public String execute(HttpUriRequest request, boolean hasResponseEntity)
+        throws IOException
     {
         String ret = null;
 

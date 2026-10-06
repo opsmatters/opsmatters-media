@@ -22,6 +22,8 @@ import java.io.Reader;
 import java.io.FileReader;
 import java.io.Writer;
 import java.io.OutputStreamWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.HttpURLConnection;
@@ -33,12 +35,16 @@ import java.util.StringTokenizer;
 import java.util.zip.Inflater;
 import java.util.zip.Deflater;
 import java.util.zip.DataFormatException;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import java.util.logging.Logger;
 import com.google.common.io.Files;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashCode;
+import org.apache.commons.io.IOUtils;
 
 import static com.opsmatters.media.model.HttpConstants.*;
+import static com.opsmatters.media.model.FileFormat.*;
 
 /**
  * A set of utility methods to perform miscellaneous tasks related to files.
@@ -51,6 +57,8 @@ public class FileUtils
 
     private static final String SUCCESS_RESPONSE = "HTTP\\/1\\.1 20\\d .*";
 
+    private static Map checksums = new Hashtable(10);
+    private static Map manifests = new Hashtable(10);
     private static Map<URL,FileResponse> responses = new Hashtable<>();
 
     static
@@ -752,6 +760,67 @@ public class FileUtils
         }
     }
 
-    private static Map checksums = new Hashtable(10);
-    private static Map manifests = new Hashtable(10);
+    /**
+     * Use gzip to compress the given file.
+     */
+    public static File compress(File file) throws IOException
+    {
+        File ret = file;
+
+        FileInputStream fis = null;
+        GZIPOutputStream gos = null;
+
+        try
+        {
+            File newFile = new File(file.getParent(), file.getName()+GZ.ext());
+
+            fis = new FileInputStream(file);
+            gos = new GZIPOutputStream(new FileOutputStream(newFile));
+            IOUtils.copy(fis, gos, 5096);
+            ret = newFile;
+        }
+        finally
+        {
+            if(fis != null)
+                fis.close();
+            if(gos != null)
+                gos.close();
+        }
+
+        return ret;
+    }
+
+    /**
+     * Use gzip to uncompress the given zipped file.
+     */
+    public static File uncompress(File file) throws IOException
+    {
+        File ret = file;
+
+        FileOutputStream fos = null;
+        GZIPInputStream gis = null;
+
+        try
+        {
+            // Remove the .gz extension
+            String filename = file.getName();
+            if(filename.endsWith(GZ.ext()))
+                filename = filename.substring(0, filename.lastIndexOf("."));
+            File newFile = new File(file.getParent(), filename);
+
+            gis = new GZIPInputStream(new FileInputStream(file));
+            fos = new FileOutputStream(newFile);
+            IOUtils.copy(gis, fos, 5096);
+            ret = newFile;
+        }
+        finally
+        {
+            if(fos != null)
+                fos.close();
+            if(gis != null)
+                gis.close();
+        }
+
+        return ret;
+    }
 }
