@@ -259,7 +259,7 @@ public class ContentMonitorDAO extends BaseDAO
     /**
      * Updates the given monitor in the CONTENT_MONITORS table.
      */
-    public synchronized void update(ContentMonitor monitor, boolean log) throws SQLException
+    public synchronized void update(ContentMonitor monitor, boolean verbose) throws SQLException
     {
         if(!hasConnection() || monitor == null)
             return;
@@ -288,7 +288,7 @@ public class ContentMonitorDAO extends BaseDAO
             updateStmt.setString(10, monitor.getId());
             updateStmt.executeUpdate();
 
-            if(log)
+            if(verbose)
               logger.info(String.format("Updated monitor %s/%s in CONTENT_MONITORS",
                   monitor.getCode(), monitor.getName()));
         }

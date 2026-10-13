@@ -114,8 +114,8 @@ public class ImageFileDAO extends BaseDAO
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("CODE", Types.VARCHAR, 5, true);
         table.addColumn("TYPE", Types.VARCHAR, 20, true);
-        table.addColumn("FILENAME", Types.VARCHAR, 128, true);
-        table.addColumn("OLD_FILENAME", Types.VARCHAR, 128, false);
+        table.addColumn("FILENAME", Types.VARCHAR, 256, true);
+        table.addColumn("OLD_FILENAME", Types.VARCHAR, 256, false);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("SESSION_ID", Types.INTEGER, true);
         table.setPrimaryKey("IMAGE_FILES_PK", new String[] {"ID"});
@@ -276,7 +276,7 @@ public class ImageFileDAO extends BaseDAO
     /**
      * Updates the given file in the IMAGE_FILES table.
      */
-    public synchronized void update(ImageFile file) throws SQLException
+    public synchronized void update(ImageFile file, boolean verbose) throws SQLException
     {
         if(!hasConnection() || file == null)
             return;
@@ -293,7 +293,16 @@ public class ImageFileDAO extends BaseDAO
         updateStmt.setString(6, file.getId());
         updateStmt.executeUpdate();
 
-        logger.info(String.format("Updated file %s in IMAGE_FILES", file.getId()));
+        if(verbose)
+            logger.info(String.format("Updated file %s in IMAGE_FILES", file.getId()));
+    }
+
+    /**
+     * Updates the given file in the IMAGE_FILES table.
+     */
+    public void update(ImageFile file) throws SQLException
+    {
+        update(file, true);
     }
 
     /**

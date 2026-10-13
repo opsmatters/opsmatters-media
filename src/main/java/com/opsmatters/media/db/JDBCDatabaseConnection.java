@@ -282,7 +282,7 @@ public class JDBCDatabaseConnection
     /**
      * Connect to the database.
      */
-    protected void connectInternal(boolean log) throws SQLException
+    protected void connectInternal(boolean verbose) throws SQLException
     {
         // Build the connection string
         String url = JDBCDatabaseDriver.getConnectionString(driverType, hostname, 
@@ -311,7 +311,7 @@ public class JDBCDatabaseConnection
         // Update the connection status
         setStatus(isConnected() ? CONNECTED : NOT_CONNECTED);
 
-        if(log && getStatus() == CONNECTED)
+        if(verbose && getStatus() == CONNECTED)
         {
             if(connectException == null)
                 logger.info("Connected to database '"+getName()+"' successfully");
@@ -387,11 +387,19 @@ public class JDBCDatabaseConnection
     }
 
     /**
-     * Returns the last exception raised during a failed connection attempt.
+     * Returns the last connection exception.
      */
     public Exception getConnectException()
     {
         return connectException;
+    }
+
+    /**
+     * Clears the last connection exception raised.
+     */
+    public void clearConnectException()
+    {
+        connectException = null;
     }
 
     /**
@@ -454,6 +462,7 @@ public class JDBCDatabaseConnection
                 closeDAOFactories();
                 if(conn != null)
                     conn.close();
+                clearConnectException();
                 if(isConnected && verbose)
                     logger.info("Disconnected from database '"+getName()+"' successfully");
             }

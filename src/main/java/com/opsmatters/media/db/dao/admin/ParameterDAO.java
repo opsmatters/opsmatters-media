@@ -309,7 +309,7 @@ public class ParameterDAO extends BaseDAO
     /**
      * Updates the given parameter in the PARAMETERS table.
      */
-    public synchronized void update(Parameter parameter, boolean log) throws SQLException
+    public synchronized void update(Parameter parameter, boolean verbose) throws SQLException
     {
         if(!hasConnection() || parameter == null)
             return;
@@ -325,7 +325,7 @@ public class ParameterDAO extends BaseDAO
         updateStmt.setString(5, parameter.getId());
         updateStmt.executeUpdate();
 
-        if(log)
+        if(verbose)
             logger.info(String.format("Updated parameter %s/%s in PARAMETERS",
                 parameter.getType(), parameter.getName()));
     }
