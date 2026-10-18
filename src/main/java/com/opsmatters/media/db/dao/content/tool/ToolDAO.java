@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.system.SessionId;
+import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.model.content.tool.Tool;
 import com.opsmatters.media.model.content.tool.ToolItem;
 import com.opsmatters.media.db.dao.content.ContentDAO;
@@ -72,6 +73,13 @@ public class ToolDAO extends ContentDAO<Tool>
     private static final String LIST_ITEMS_BY_DATE_SQL =  
       "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, PRICING, PUBLISHED, PROMOTE, STATUS "
       + "FROM TOOLS WHERE PUBLISHED=1 AND PUBLISHED_DATE>? ORDER BY ID";
+
+    /**
+     * The query to use to select the tool items from the table by status.
+     */
+    private static final String LIST_ITEMS_BY_STATUS_SQL =  
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, PRICING, PUBLISHED, PROMOTE, STATUS "
+      + "FROM TOOLS WHERE STATUS=? ORDER BY ID";
 
     /**
      * Constructor that takes a DAO factory.
@@ -324,6 +332,62 @@ public class ToolDAO extends ContentDAO<Tool>
     }
 
     /**
+     * Returns the tool items from the table by status.
+     */
+    public synchronized List<ToolItem> listItems(ContentStatus status) throws SQLException
+    {
+        List<ToolItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByStatusStmt == null)
+            listByStatusStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_STATUS_SQL);
+        clearParameters(listByStatusStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByStatusStmt.setString(1, status.name());
+            listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByStatusStmt.executeQuery();
+            ret = new ArrayList<ToolItem>();
+            while(rs.next())
+            {
+                ToolItem tool = new ToolItem();
+                tool.setUuid(rs.getString(1));
+                tool.setSiteId(rs.getString(2));
+                tool.setCode(rs.getString(3));
+                tool.setId(rs.getInt(4));
+                tool.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                tool.setTitle(rs.getString(6));
+                tool.setPricing(rs.getString(7));
+                tool.setPublished(rs.getBoolean(8));
+                tool.setPromoted(rs.getBoolean(9));
+                tool.setStatus(rs.getString(10));
+                ret.add(tool);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Close any tools associated with this DAO.
      */
     @Override
@@ -337,10 +401,13 @@ public class ToolDAO extends ContentDAO<Tool>
         listByCodeStmt = null;
         closeStatement(listByDateStmt);
         listByDateStmt = null;
+        closeStatement(listByStatusStmt);
+        listByStatusStmt = null;
     }
 
     private PreparedStatement insertStmt;
     private PreparedStatement updateStmt;
     private PreparedStatement listByCodeStmt;
     private PreparedStatement listByDateStmt;
+    private PreparedStatement listByStatusStmt;
 }

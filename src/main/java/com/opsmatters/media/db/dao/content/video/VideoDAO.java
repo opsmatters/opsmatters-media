@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.system.SessionId;
 import com.opsmatters.media.model.content.ContentLookup;
+import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.model.content.video.Video;
 import com.opsmatters.media.model.content.video.VideoItem;
 import com.opsmatters.media.db.dao.content.ContentDAO;
@@ -96,6 +97,13 @@ public class VideoDAO extends ContentDAO<Video>
     private static final String LIST_ITEMS_BY_DATE_SQL =  
       "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, VIDEO_ID, VIDEO_TYPE, DURATION, PUBLISHED, PROMOTE, NEWSLETTER, STATUS "
       + "FROM VIDEOS WHERE PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
+
+    /**
+     * The query to use to select the video items from the table by status.
+     */
+    private static final String LIST_ITEMS_BY_STATUS_SQL =  
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, VIDEO_ID, VIDEO_TYPE, DURATION, PUBLISHED, PROMOTE, NEWSLETTER, STATUS "
+      + "FROM VIDEOS WHERE STATUS=? ORDER BY ID";
 
     /**
      * Constructor that takes a DAO factory.
@@ -564,6 +572,65 @@ public class VideoDAO extends ContentDAO<Video>
     }
 
     /**
+     * Returns the video items from the table by status.
+     */
+    public synchronized List<VideoItem> listItems(ContentStatus status) throws SQLException
+    {
+        List<VideoItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByStatusStmt == null)
+            listByStatusStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_STATUS_SQL);
+        clearParameters(listByStatusStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByStatusStmt.setString(1, status.name());
+            listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByStatusStmt.executeQuery();
+            ret = new ArrayList<VideoItem>();
+            while(rs.next())
+            {
+                VideoItem video = new VideoItem();
+                video.setUuid(rs.getString(1));
+                video.setSiteId(rs.getString(2));
+                video.setCode(rs.getString(3));
+                video.setId(rs.getInt(4));
+                video.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                video.setTitle(rs.getString(6));
+                video.setVideoId(rs.getString(7));
+                video.setVideoType(rs.getString(8));
+                video.setDuration(rs.getLong(9));
+                video.setPublished(rs.getBoolean(10));
+                video.setPromoted(rs.getBoolean(11));
+                video.setNewsletter(rs.getBoolean(12));
+                video.setStatus(rs.getString(13));
+                ret.add(video);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Close any resources associated with this DAO.
      */
     @Override
@@ -583,6 +650,8 @@ public class VideoDAO extends ContentDAO<Video>
         listByDateStmt = null;
         closeStatement(listBySiteDateStmt);
         listBySiteDateStmt = null;
+        closeStatement(listByStatusStmt);
+        listByStatusStmt = null;
     }
 
     private PreparedStatement getByVideoIdStmt;
@@ -592,4 +661,5 @@ public class VideoDAO extends ContentDAO<Video>
     private PreparedStatement listByCodeStmt;
     private PreparedStatement listByDateStmt;
     private PreparedStatement listBySiteDateStmt;
+    private PreparedStatement listByStatusStmt;
 }

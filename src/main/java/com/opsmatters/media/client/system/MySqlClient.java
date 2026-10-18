@@ -17,8 +17,6 @@ package com.opsmatters.media.client.system;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.apache.commons.io.FileUtils;
@@ -26,7 +24,7 @@ import com.opsmatters.media.model.system.Environment;
 import com.opsmatters.media.model.system.DatabaseConfig;
 import com.opsmatters.media.model.system.SessionId;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.util.TimeUtils;
+import com.opsmatters.media.util.CommandLine;
 
 /**
  * Client to backup and restore from a mysql database.
@@ -204,46 +202,30 @@ public class MySqlClient extends Client
     public boolean backup(String filename) throws IOException, InterruptedException
     {
         boolean ret = false;
-        Process process = null;
+        String name = config.getName();
+        File file = new File(filename);
 
-        try
+        logger.info(String.format("Starting database backup: %s", name));
+
+        CommandLine command = CommandLine.builder()
+            .argument("mysqldump")
+            .argument("--column-statistics=0")
+            .arguments("--host", config.getHostname())
+            .arguments("--port", Integer.toString(config.getPort()))
+            .arguments("--user", getUsername())
+            .arguments("--password="+getPassword())
+            .argument(name)
+            .arguments("--result-file", file.getPath())
+            .build();
+        int exitCode = command.execute();
+        if(exitCode == 0)
         {
-            String name = config.getName();
-            File file = new File(filename);
-
-            logger.info(String.format("Starting database backup: %s", name));
-
-            ProcessBuilder pb = new ProcessBuilder("mysqldump",
-                "--column-statistics=0",
-                "--host", config.getHostname(),
-                "--port", Integer.toString(config.getPort()),
-                "--user", getUsername(),
-                "--password="+getPassword(),
-                name,
-                "--result-file", file.getPath());
-            pb.redirectErrorStream(true);
-            process = pb.start();
-            logger.info(new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
-            int exitCode = process.waitFor();
-            if(exitCode == 0)
-            {
-                ret = true;
-                logger.info("Backup completed successfully: "+filename);
-            }
-            else
-            {
-                logger.severe("Backup failed: "+exitCode);
-            }
+            ret = true;
+            logger.info("Backup completed successfully: "+filename);
         }
-        finally
+        else
         {
-            if(process != null)
-            {
-                process.getOutputStream().close();
-                process.getInputStream().close();
-                process.getErrorStream().close();
-                process.destroy();
-            }
+            logger.severe("Backup failed: "+exitCode);
         }
 
         return ret;
@@ -266,45 +248,28 @@ public class MySqlClient extends Client
             throw new IllegalArgumentException("missing backup file");
 
         boolean ret = false;
-        Process process = null;
+        String name = config.getName();
 
-        try
+        logger.info(String.format("Starting database restore: %s", name));
+
+        CommandLine command = CommandLine.builder()
+            .argument("mysql")
+            .arguments("--host", config.getHostname())
+            .arguments("--port", Integer.toString(config.getPort()))
+            .arguments("--user", getUsername())
+            .arguments("--password="+getPassword())
+            .argument(name)
+            .withInput(file)
+            .build();
+        int exitCode = command.execute();
+        if(exitCode == 0)
         {
-            String name = config.getName();
-
-            logger.info(String.format("Starting database restore: %s", name));
-
-            ProcessBuilder pb = new ProcessBuilder("mysql",
-                "--host", config.getHostname(),
-                "--port", Integer.toString(config.getPort()),
-                "--user", getUsername(),
-                "--password="+getPassword(),
-                name);
-            pb.redirectErrorStream(true);
-            pb.redirectInput(ProcessBuilder.Redirect.PIPE.from(file));
-            process = pb.start();
-
-            logger.info(new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
-            int exitCode = process.waitFor();
-            if(exitCode == 0)
-            {
-                logger.info("Restore completed successfully");
-                ret = true;
-            }
-            else
-            {
-                logger.severe("Restore failed: "+exitCode);
-            }
+            logger.info("Restore completed successfully");
+            ret = true;
         }
-        finally
+        else
         {
-            if(process != null)
-            {
-                process.getOutputStream().close();
-                process.getInputStream().close();
-                process.getErrorStream().close();
-                process.destroy();
-            }
+            logger.severe("Restore failed: "+exitCode);
         }
 
         return ret;

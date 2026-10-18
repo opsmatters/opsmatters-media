@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.system.SessionId;
+import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.model.content.event.Event;
 import com.opsmatters.media.model.content.event.EventItem;
 import com.opsmatters.media.db.dao.content.ContentDAO;
@@ -80,6 +81,13 @@ public class EventDAO extends ContentDAO<Event>
     private static final String LIST_ITEMS_BY_DATE_SQL =  
       "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, START_DATE, TITLE, URL, EVENT_TYPE, TIMEZONE, PUBLISHED, PROMOTE, STATUS "
       + "FROM EVENTS WHERE PUBLISHED=1 AND PUBLISHED_DATE>? AND STATUS != 'SKIPPED' ORDER BY ID";
+
+    /**
+     * The query to use to select the event items from the table by status.
+     */
+    private static final String LIST_ITEMS_BY_STATUS_SQL =  
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, START_DATE, TITLE, URL, EVENT_TYPE, TIMEZONE, PUBLISHED, PROMOTE, STATUS "
+      + "FROM EVENTS WHERE STATUS=? ORDER BY ID";
 
     /**
      * Constructor that takes a DAO factory.
@@ -411,6 +419,65 @@ public class EventDAO extends ContentDAO<Event>
     }
 
     /**
+     * Returns the event items from the table by status.
+     */
+    public synchronized List<EventItem> listItems(ContentStatus status) throws SQLException
+    {
+        List<EventItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByStatusStmt == null)
+            listByStatusStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_STATUS_SQL);
+        clearParameters(listByStatusStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByStatusStmt.setString(1, status.name());
+            listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByStatusStmt.executeQuery();
+            ret = new ArrayList<EventItem>();
+            while(rs.next())
+            {
+                EventItem event = new EventItem();
+                event.setUuid(rs.getString(1));
+                event.setSiteId(rs.getString(2));
+                event.setCode(rs.getString(3));
+                event.setId(rs.getInt(4));
+                event.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                event.setStartDateMillis(rs.getTimestamp(6, UTC).getTime());
+                event.setTitle(rs.getString(7));
+                event.setUrl(rs.getString(8));
+                event.setEventType(rs.getString(9));
+                event.setTimeZone(rs.getString(10));
+                event.setPublished(rs.getBoolean(11));
+                event.setPromoted(rs.getBoolean(12));
+                event.setStatus(rs.getString(13));
+                ret.add(event);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Close any resources associated with this DAO.
      */
     @Override
@@ -426,6 +493,8 @@ public class EventDAO extends ContentDAO<Event>
         listByCodeStmt = null;
         closeStatement(listByDateStmt);
         listByDateStmt = null;
+        closeStatement(listByStatusStmt);
+        listByStatusStmt = null;
     }
 
     private PreparedStatement listByUrlStmt;
@@ -433,4 +502,5 @@ public class EventDAO extends ContentDAO<Event>
     private PreparedStatement updateStmt;
     private PreparedStatement listByCodeStmt;
     private PreparedStatement listByDateStmt;
+    private PreparedStatement listByStatusStmt;
 }

@@ -532,6 +532,7 @@ public class Contacts extends StaticCache
                 for(ContactPerson person : persons.values())
                 {
                     if(person.isEnabled()
+                        && person.hasEmail()
                         && person.getEmail().toLowerCase().indexOf(email) != -1)
                     {
                         ret = true;

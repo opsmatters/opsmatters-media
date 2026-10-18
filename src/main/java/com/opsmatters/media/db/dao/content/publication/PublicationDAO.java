@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.system.SessionId;
 import com.opsmatters.media.model.content.ContentLookup;
+import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.model.content.publication.Publication;
 import com.opsmatters.media.model.content.publication.PublicationItem;
 import com.opsmatters.media.db.dao.content.ContentDAO;
@@ -88,6 +89,13 @@ public class PublicationDAO extends ContentDAO<Publication>
     private static final String LIST_ITEMS_BY_DATE_SQL =  
       "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, PUBLICATION_TYPE, PUBLISHED, PROMOTE, STATUS "
       + "FROM PUBLICATIONS WHERE PUBLISHED=1 AND PUBLISHED_DATE>? ORDER BY ID";
+
+    /**
+     * The query to use to select the publication items from the table by status.
+     */
+    private static final String LIST_ITEMS_BY_STATUS_SQL =  
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, PUBLICATION_TYPE, PUBLISHED, PROMOTE, STATUS "
+      + "FROM PUBLICATIONS WHERE STATUS=? ORDER BY ID";
 
     /**
      * Constructor that takes a DAO factory.
@@ -482,6 +490,63 @@ public class PublicationDAO extends ContentDAO<Publication>
     }
 
     /**
+     * Returns the publication items from the table by status.
+     */
+    public synchronized List<PublicationItem> listItems(ContentStatus status) throws SQLException
+    {
+        List<PublicationItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByStatusStmt == null)
+            listByStatusStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_STATUS_SQL);
+        clearParameters(listByStatusStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByStatusStmt.setString(1, status.name());
+            listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByStatusStmt.executeQuery();
+            ret = new ArrayList<PublicationItem>();
+            while(rs.next())
+            {
+                PublicationItem publication = new PublicationItem();
+                publication.setUuid(rs.getString(1));
+                publication.setSiteId(rs.getString(2));
+                publication.setCode(rs.getString(3));
+                publication.setId(rs.getInt(4));
+                publication.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                publication.setTitle(rs.getString(6));
+                publication.setUrl(rs.getString(7));
+                publication.setPublicationType(rs.getString(8));
+                publication.setPublished(rs.getBoolean(9));
+                publication.setPromoted(rs.getBoolean(10));
+                publication.setStatus(rs.getString(11));
+                ret.add(publication);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Close any resources associated with this DAO.
      */
     @Override
@@ -499,6 +564,8 @@ public class PublicationDAO extends ContentDAO<Publication>
         listByCodeStmt = null;
         closeStatement(listByDateStmt);
         listByDateStmt = null;
+        closeStatement(listByStatusStmt);
+        listByStatusStmt = null;
     }
 
     private PreparedStatement getByUrlStmt;
@@ -507,4 +574,5 @@ public class PublicationDAO extends ContentDAO<Publication>
     private PreparedStatement updateStmt;
     private PreparedStatement listByCodeStmt;
     private PreparedStatement listByDateStmt;
+    private PreparedStatement listByStatusStmt;
 }

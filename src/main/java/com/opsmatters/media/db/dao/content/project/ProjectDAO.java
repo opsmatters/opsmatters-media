@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import com.opsmatters.media.model.system.Site;
 import com.opsmatters.media.model.system.SessionId;
+import com.opsmatters.media.model.content.ContentStatus;
 import com.opsmatters.media.model.content.project.Project;
 import com.opsmatters.media.model.content.project.ProjectItem;
 import com.opsmatters.media.db.dao.content.ContentDAO;
@@ -79,6 +80,13 @@ public class ProjectDAO extends ContentDAO<Project>
     private static final String LIST_ITEMS_BY_DATE_SQL =  
       "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, LICENSE, PUBLISHED, PROMOTE, STATUS "
       + "FROM PROJECTS WHERE PUBLISHED=1 AND PUBLISHED_DATE>? ORDER BY ID";
+
+    /**
+     * The query to use to select the project items from the table by status.
+     */
+    private static final String LIST_ITEMS_BY_STATUS_SQL =  
+      "SELECT UUID, SITE_ID, CODE, ID, PUBLISHED_DATE, TITLE, URL, LICENSE, PUBLISHED, PROMOTE, STATUS "
+      + "FROM PROJECTS WHERE STATUS=? ORDER BY ID";
 
     /** 
      * Constructor that takes a DAO factory.
@@ -392,6 +400,63 @@ public class ProjectDAO extends ContentDAO<Project>
     }
 
     /**
+     * Returns the project items from the table by status.
+     */
+    public synchronized List<ProjectItem> listItems(ContentStatus status) throws SQLException
+    {
+        List<ProjectItem> ret = null;
+
+        if(!hasConnection())
+            return ret;
+
+        preQuery();
+        if(listByStatusStmt == null)
+            listByStatusStmt = prepareStatement(getConnection(), LIST_ITEMS_BY_STATUS_SQL);
+        clearParameters(listByStatusStmt);
+
+        ResultSet rs = null;
+
+        try
+        {
+            listByStatusStmt.setString(1, status.name());
+            listByStatusStmt.setQueryTimeout(QUERY_TIMEOUT);
+            rs = listByStatusStmt.executeQuery();
+            ret = new ArrayList<ProjectItem>();
+            while(rs.next())
+            {
+                ProjectItem project = new ProjectItem();
+                project.setUuid(rs.getString(1));
+                project.setSiteId(rs.getString(2));
+                project.setCode(rs.getString(3));
+                project.setId(rs.getInt(4));
+                project.setPublishedDateMillis(rs.getTimestamp(5, UTC).getTime());
+                project.setTitle(rs.getString(6));
+                project.setUrl(rs.getString(7));
+                project.setLicense(rs.getString(8));
+                project.setPublished(rs.getBoolean(9));
+                project.setPromoted(rs.getBoolean(10));
+                project.setStatus(rs.getString(11));
+                ret.add(project);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(rs != null)
+                    rs.close();
+            }
+            catch (SQLException ex) 
+            {
+            } 
+        }
+
+        postQuery();
+
+        return ret;
+    }
+
+    /**
      * Close any resources associated with this DAO.
      */
     @Override
@@ -407,6 +472,8 @@ public class ProjectDAO extends ContentDAO<Project>
         listByCodeStmt = null;
         closeStatement(listByDateStmt);
         listByDateStmt = null;
+        closeStatement(listByStatusStmt);
+        listByStatusStmt = null;
     }
 
     private PreparedStatement getByUrlStmt;
@@ -414,4 +481,5 @@ public class ProjectDAO extends ContentDAO<Project>
     private PreparedStatement updateStmt;
     private PreparedStatement listByCodeStmt;
     private PreparedStatement listByDateStmt;
+    private PreparedStatement listByStatusStmt;
 }
