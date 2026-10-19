@@ -26,13 +26,13 @@ import java.util.logging.Logger;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Utility to create and execute a command line.
+ * Utility to create and execute local commands.
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class CommandLine
+public class CommandExecutor
 {
-    private static final Logger logger = Logger.getLogger(CommandLine.class.getName());
+    private static final Logger logger = Logger.getLogger(CommandExecutor.class.getName());
 
     private List<String> arguments = new ArrayList<String>();
     private File directory;
@@ -45,7 +45,7 @@ public class CommandLine
     /**
      * Default constructor.
      */
-    private CommandLine()
+    private CommandExecutor()
     {
     }
 
@@ -90,7 +90,7 @@ public class CommandLine
     }
 
     /**
-     * Returns the arguments for the command line.
+     * Returns the arguments for the command.
      */
     private List<String> getArguments()
     {
@@ -98,7 +98,7 @@ public class CommandLine
     }
 
     /**
-     * Returns the process used to execute the command line.
+     * Returns the process used to execute the command.
      */
     public Process getProcess()
     {
@@ -106,7 +106,7 @@ public class CommandLine
     }
 
     /**
-     * Returns the exit code from the execution of the command line.
+     * Returns the exit code from the execution of the command.
      */
     public int getExitCode()
     {
@@ -116,7 +116,7 @@ public class CommandLine
     /**
      * Creates the process builder using the list of arguments.
      */
-    private CommandLine create()
+    private CommandExecutor create()
     {
         builder = new ProcessBuilder(arguments);
         builder.redirectErrorStream(true);
@@ -156,7 +156,7 @@ public class CommandLine
     }
 
     /**
-     * Returns a builder for the handler.
+     * Returns a builder for the command executor.
      * @return The builder instance.
      */
     public static Builder builder()
@@ -165,11 +165,11 @@ public class CommandLine
     }
 
     /**
-     * Builder to make command line construction easier.
+     * Builder to make command executor construction easier.
      */
     public static class Builder
     {
-        private CommandLine commandline = new CommandLine();
+        private CommandExecutor executor = new CommandExecutor();
 
         /**
          * Sets the working directory for the command.
@@ -178,7 +178,7 @@ public class CommandLine
          */
         public Builder directory(String directory)
         {
-            commandline.setDirectory(directory);
+            executor.setDirectory(directory);
             return this;
         }
 
@@ -189,7 +189,7 @@ public class CommandLine
          */
         public Builder argument(String argument)
         {
-            commandline.getArguments().add(argument);
+            executor.getArguments().add(argument);
             return this;
         }
 
@@ -200,13 +200,13 @@ public class CommandLine
          */
         public Builder arguments(String... arguments)
         {
-            Collections.addAll(commandline.getArguments(), arguments);
+            Collections.addAll(executor.getArguments(), arguments);
             return this;
         }
 
         /**
-         * Splits the given command line into its constituent arguments.
-         * @param command The command line to split
+         * Splits the given command into its constituent arguments.
+         * @param command The command to split
          * @return The array of arguments
          */
         private String[] split(String command)
@@ -215,8 +215,8 @@ public class CommandLine
         }
 
         /**
-         * Adds the given command line to the list of arguments.
-         * @param command The command line to add
+         * Adds the given command to the list of arguments.
+         * @param command The command to add
          * @return This object
          */
         public Builder command(String command)
@@ -231,29 +231,29 @@ public class CommandLine
          */
         public Builder windows()
         {
-            commandline.getArguments().addAll(0,
+            executor.getArguments().addAll(0,
                 Arrays.asList(split("cmd.exe /c")));
             return this;
         }
 
         /**
-         * Sets the input file for the command line.
+         * Sets the input file for the command.
          * @param file The input file
          * @return This object
          */
         public Builder withInput(File file)
         {
-            commandline.setInput(file);
+            executor.setInput(file);
             return this;
         }
 
         /**
-         * Returns the configured handler instance
-         * @return The handler instance
+         * Returns the configured command executor instance
+         * @return The command executor instance
          */
-        public CommandLine build()
+        public CommandExecutor build()
         {
-            return commandline.create();
+            return executor.create();
         }
     }
 }

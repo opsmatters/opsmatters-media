@@ -24,7 +24,7 @@ import com.opsmatters.media.model.system.Environment;
 import com.opsmatters.media.model.system.DatabaseConfig;
 import com.opsmatters.media.model.system.SessionId;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.util.CommandLine;
+import com.opsmatters.media.util.CommandExecutor;
 
 /**
  * Client to backup and restore from a mysql database.
@@ -207,7 +207,7 @@ public class MySqlClient extends Client
 
         logger.info(String.format("Starting database backup: %s", name));
 
-        CommandLine command = CommandLine.builder()
+        CommandExecutor executor = CommandExecutor.builder()
             .argument("mysqldump")
             .argument("--column-statistics=0")
             .arguments("--host", config.getHostname())
@@ -217,7 +217,7 @@ public class MySqlClient extends Client
             .argument(name)
             .arguments("--result-file", file.getPath())
             .build();
-        int exitCode = command.execute();
+        int exitCode = executor.execute();
         if(exitCode == 0)
         {
             ret = true;
@@ -252,7 +252,7 @@ public class MySqlClient extends Client
 
         logger.info(String.format("Starting database restore: %s", name));
 
-        CommandLine command = CommandLine.builder()
+        CommandExecutor executor = CommandExecutor.builder()
             .argument("mysql")
             .arguments("--host", config.getHostname())
             .arguments("--port", Integer.toString(config.getPort()))
@@ -261,7 +261,7 @@ public class MySqlClient extends Client
             .argument(name)
             .withInput(file)
             .build();
-        int exitCode = command.execute();
+        int exitCode = executor.execute();
         if(exitCode == 0)
         {
             logger.info("Restore completed successfully");
