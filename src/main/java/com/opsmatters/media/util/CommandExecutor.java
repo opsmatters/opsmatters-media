@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Arrays;
 import java.util.logging.Logger;
 import java.nio.charset.StandardCharsets;
@@ -34,71 +33,27 @@ public class CommandExecutor
 {
     private static final Logger logger = Logger.getLogger(CommandExecutor.class.getName());
 
-    private List<String> arguments = new ArrayList<String>();
-    private File directory;
-    private File input;
-
-    private ProcessBuilder builder;
     private Process process;
-    private int exitCode = -1;
+    private File directory;
+    private boolean windows = false;
 
     /**
      * Default constructor.
      */
-    private CommandExecutor()
+    public CommandExecutor()
     {
     }
 
     /**
-     * Returns the working directory for the command.
+     * Constructor that takes the working directory.
      */
-    public File getDirectory()
+    public CommandExecutor(String directory)
     {
-        return directory;
+        setDirectory(directory);
     }
 
     /**
-     * Sets the working directory for the command.
-     */
-    public void setDirectory(File directory)
-    {
-        this.directory = directory;
-    }
-
-    /**
-     * Sets the working directory for the command.
-     */
-    public void setDirectory(String directory)
-    {
-        setDirectory(new File(directory));
-    }
-
-    /**
-     * Returns the input file for the command.
-     */
-    public File getInput()
-    {
-        return input;
-    }
-
-    /**
-     * Sets the input file for the command.
-     */
-    public void setInput(File input)
-    {
-        this.input = input;
-    }
-
-    /**
-     * Returns the arguments for the command.
-     */
-    private List<String> getArguments()
-    {
-        return arguments;
-    }
-
-    /**
-     * Returns the process used to execute the command.
+     * Returns the last process used to execute a command.
      */
     public Process getProcess()
     {
@@ -106,40 +61,69 @@ public class CommandExecutor
     }
 
     /**
-     * Returns the exit code from the execution of the command.
+     * Returns the working directory for the commands.
      */
-    public int getExitCode()
+    public File getDirectory()
     {
-        return exitCode;
+        return directory;
     }
 
     /**
-     * Creates the process builder using the list of arguments.
+     * Sets the working directory for the commands.
      */
-    private CommandExecutor create()
+    public void setDirectory(File directory)
     {
-        builder = new ProcessBuilder(arguments);
+        this.directory = directory;
+    }
+
+    /**
+     * Sets the working directory for the commands.
+     */
+    public void setDirectory(String directory)
+    {
+        setDirectory(new File(directory));
+    }
+
+    /**
+     * Set to <CODE>true</CODE> if the command needs to be executed using cmd.exe.
+     */
+    public void useWindowsShell(boolean windows)
+    {
+        this.windows = windows;
+    }
+
+    /**
+     * Execute the command using the list of arguments.
+     * @param file The input file to the command
+     * @param arguments The list of arguments that make up the command
+     * @return the exit code
+     */
+    private int execute(File input, List<String> arguments)
+        throws IOException, InterruptedException
+    {
+        int ret = -1;
+
+        List<String> argumentList = new ArrayList<String>();
+        if(windows)
+        {
+            argumentList.add("cmd.exe");
+            argumentList.add("/c");
+        }
+
+        argumentList.addAll(arguments);
+
+        ProcessBuilder builder = new ProcessBuilder(argumentList);
         builder.redirectErrorStream(true);
         if(directory != null)
             builder.directory(directory);
         if(input != null)
             builder.redirectInput(ProcessBuilder.Redirect.PIPE.from(input));
-        return this;
-    }
-
-    /**
-     * Execute the process, returning the exit code.
-     */
-    public int execute() throws IOException, InterruptedException
-    {
-        if(builder == null)
-            throw new IllegalArgumentException("builder null");
 
         try
         {
             process = builder.start();
             logger.info(new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
-            exitCode = process.waitFor();
+            ret = process.waitFor();
         }
         finally
         {
@@ -152,108 +136,40 @@ public class CommandExecutor
             }
         }
 
-        return exitCode;
+        return ret;
     }
 
     /**
-     * Returns a builder for the command executor.
-     * @return The builder instance.
+     * Execute the command.
+     * @param command The command to execute
+     * @return the exit code
      */
-    public static Builder builder()
+    public int execute(String command)
+        throws IOException, InterruptedException
     {
-        return new Builder();
+        return execute(null, Arrays.asList(command.split(" ")));
     }
 
     /**
-     * Builder to make command executor construction easier.
+     * Execute the command using the list of arguments.
+     * @param file The input file to the command
+     * @param arguments The list of arguments that make up the command
+     * @return the exit code
      */
-    public static class Builder
+    public static int execute(File input, String... arguments)
+        throws IOException, InterruptedException
     {
-        private CommandExecutor executor = new CommandExecutor();
+        return new CommandExecutor().execute(input, Arrays.asList(arguments));
+    }
 
-        /**
-         * Sets the working directory for the command.
-         * @param directory The directory to set
-         * @return This object
-         */
-        public Builder directory(String directory)
-        {
-            executor.setDirectory(directory);
-            return this;
-        }
-
-        /**
-         * Adds the given argument to the list of arguments.
-         * @param argument The argument to add
-         * @return This object
-         */
-        public Builder argument(String argument)
-        {
-            executor.getArguments().add(argument);
-            return this;
-        }
-
-        /**
-         * Adds the given arguments to the list of arguments.
-         * @param arguments The arguments to add
-         * @return This object
-         */
-        public Builder arguments(String... arguments)
-        {
-            Collections.addAll(executor.getArguments(), arguments);
-            return this;
-        }
-
-        /**
-         * Splits the given command into its constituent arguments.
-         * @param command The command to split
-         * @return The array of arguments
-         */
-        private String[] split(String command)
-        {
-            return command.split(" ");
-        }
-
-        /**
-         * Adds the given command to the list of arguments.
-         * @param command The command to add
-         * @return This object
-         */
-        public Builder command(String command)
-        {
-            arguments(split(command));
-            return this;
-        }
-
-        /**
-         * Adds cmd.exe to the start of the command.
-         * @return This object
-         */
-        public Builder windows()
-        {
-            executor.getArguments().addAll(0,
-                Arrays.asList(split("cmd.exe /c")));
-            return this;
-        }
-
-        /**
-         * Sets the input file for the command.
-         * @param file The input file
-         * @return This object
-         */
-        public Builder withInput(File file)
-        {
-            executor.setInput(file);
-            return this;
-        }
-
-        /**
-         * Returns the configured command executor instance
-         * @return The command executor instance
-         */
-        public CommandExecutor build()
-        {
-            return executor.create();
-        }
+    /**
+     * Execute the command using the list of arguments.
+     * @param arguments The list of arguments that make up the command
+     * @return the exit code
+     */
+    public static int execute(String... arguments)
+        throws IOException, InterruptedException
+    {
+        return new CommandExecutor().execute(null, Arrays.asList(arguments));
     }
 }

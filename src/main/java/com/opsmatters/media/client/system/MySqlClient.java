@@ -207,17 +207,15 @@ public class MySqlClient extends Client
 
         logger.info(String.format("Starting database backup: %s", name));
 
-        CommandExecutor executor = CommandExecutor.builder()
-            .argument("mysqldump")
-            .argument("--column-statistics=0")
-            .arguments("--host", config.getHostname())
-            .arguments("--port", Integer.toString(config.getPort()))
-            .arguments("--user", getUsername())
-            .arguments("--password="+getPassword())
-            .argument(name)
-            .arguments("--result-file", file.getPath())
-            .build();
-        int exitCode = executor.execute();
+        int exitCode = CommandExecutor.execute(
+            "mysqldump",
+            "--column-statistics=0",
+            "--host", config.getHostname(),
+            "--port", Integer.toString(config.getPort()),
+            "--user", getUsername(),
+            "--password="+getPassword(),
+            name,
+            "--result-file", file.getPath());
         if(exitCode == 0)
         {
             ret = true;
@@ -252,16 +250,13 @@ public class MySqlClient extends Client
 
         logger.info(String.format("Starting database restore: %s", name));
 
-        CommandExecutor executor = CommandExecutor.builder()
-            .argument("mysql")
-            .arguments("--host", config.getHostname())
-            .arguments("--port", Integer.toString(config.getPort()))
-            .arguments("--user", getUsername())
-            .arguments("--password="+getPassword())
-            .argument(name)
-            .withInput(file)
-            .build();
-        int exitCode = executor.execute();
+        int exitCode = CommandExecutor.execute(file,
+            "mysql",
+            "--host", config.getHostname(),
+            "--port", Integer.toString(config.getPort()),
+            "--user", getUsername(),
+            "--password="+getPassword(),
+            name);
         if(exitCode == 0)
         {
             logger.info("Restore completed successfully");
