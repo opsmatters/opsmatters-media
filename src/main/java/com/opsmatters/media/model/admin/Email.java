@@ -21,10 +21,6 @@ import java.time.Instant;
 import org.json.JSONObject;
 import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.model.DeliveryStatus;
-import com.opsmatters.media.model.system.aws.SesConfig;
-import com.opsmatters.media.model.provider.EmailProviderId;
-import com.opsmatters.media.client.email.EmailClient;
-import com.opsmatters.media.client.email.EmailClientFactory;
 import com.opsmatters.media.util.StringUtils;
 
 /**
@@ -44,7 +40,6 @@ public class Email extends BaseEntity
     private String subject = "";
     private String body = "";
     private List<String> recipients = new ArrayList<String>();
-    private EmailProviderId providerId;
     private DeliveryStatus status;
     private String messageId = "";
     private String errorMessage = "";
@@ -91,7 +86,6 @@ public class Email extends BaseEntity
             setSubject(obj.getSubject());
             setBody(obj.getBody());
             setRecipients(obj.getRecipients());
-            setProviderId(obj.getProviderId());
             setStatus(obj.getStatus());
             setMessageId(obj.getMessageId());
             setErrorMessage(obj.getErrorMessage());
@@ -242,38 +236,6 @@ public class Email extends BaseEntity
     }
 
     /**
-     * Returns the email provider.
-     */
-    public EmailProviderId getProviderId()
-    {
-        return providerId;
-    }
-
-    /**
-     * Sets the email's provider.
-     */
-    public void setProviderId(String providerId)
-    {
-        setProviderId(providerId != null ? EmailProviderId.valueOf(providerId) : null);
-    }
-
-    /**
-     * Sets the email provider.
-     */
-    public void setProviderId(EmailProviderId providerId)
-    {
-        this.providerId = providerId;
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the email provider has been set.
-     */
-    public boolean hasProviderId()
-    {
-        return providerId != null;
-    }
-
-    /**
      * Returns the email's status.
      */
     public DeliveryStatus getStatus()
@@ -375,32 +337,5 @@ public class Email extends BaseEntity
     public void setMessageId(String messageId)
     {
         this.messageId = messageId;
-    }
-
-    /**
-     * Send the email using a client.
-     */
-    public void send(EmailProviderId providerId, SesConfig config) throws Exception
-    {
-        EmailClient client = EmailClientFactory.newClient(providerId, config);
-        if(client == null)
-            throw new IllegalArgumentException("unknown email provider id: "+providerId);
-
-        try
-        {
-            setProviderId(providerId);
-            setStatus(DeliveryStatus.SENDING);
-            String messageId = client.sendEmail(this);
-            if(messageId != null)
-            {
-                setMessageId(messageId);
-                setStatus(DeliveryStatus.COMPLETED);
-            }
-        }
-        catch(Exception e)
-        {
-            setStatus(DeliveryStatus.ERROR);
-            setErrorMessage(e.getClass().getName()+": "+e.getMessage());
-        }
     }
 }

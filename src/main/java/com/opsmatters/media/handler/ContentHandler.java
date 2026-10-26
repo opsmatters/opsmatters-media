@@ -35,13 +35,13 @@ import com.opsmatters.media.model.Formats;
 import com.opsmatters.media.model.FileFormat;
 import com.opsmatters.media.model.system.Environment;
 import com.opsmatters.media.model.content.ContentConfig;
-import com.opsmatters.media.client.system.SshClient;
-import com.opsmatters.media.client.system.aws.AwsS3Client;
+import com.opsmatters.media.client.shell.SshClient;
+import com.opsmatters.media.client.aws.AwsS3Client;
 import com.opsmatters.media.util.StringUtils;
 import com.opsmatters.media.util.FileUtils;
 
 import static com.opsmatters.media.model.content.FieldName.*;
-import static com.opsmatters.media.client.system.SshClient.ChannelType.*;
+import static com.opsmatters.media.client.shell.SshClient.ChannelType.*;
 
 /**
  * Creates and writes a formatted set of fields representing content.

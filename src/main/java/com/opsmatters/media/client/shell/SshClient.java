@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.client.system;
+package com.opsmatters.media.client.shell;
 
 import java.io.File;
 import java.io.InputStream;
@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.apache.commons.io.FileUtils;
@@ -83,6 +84,8 @@ public class SshClient extends Client
     private ChannelType type = null;
     private Session session;
     private Channel channel;
+    private int exitStatus = -1;
+    private String output = null;
 
     /**
      * Returns a new SSH connection using the given configuration and type.
@@ -176,6 +179,22 @@ public class SshClient extends Client
 
         return channel.isConnected();
     }
+
+    /**
+     * Reset the channel.
+     * <p>
+     * Need to do this after executing a command or the client will hang.
+     */
+    public boolean reset() throws IOException, JSchException
+    {
+        if(channel != null && channel.isConnected())
+            channel.disconnect();
+
+        channel = session.openChannel(type.value());
+        channel.connect();
+
+        return channel.isConnected();
+   }
 
     /**
      * Returns the environment for the client.
@@ -311,6 +330,30 @@ public class SshClient extends Client
     public boolean isConnected() 
     {
         return channel != null && channel.isConnected();
+    }
+
+    /**
+     * Returns the exit status of the last command execution.
+     */
+    public int getExitStatus()
+    {
+        return exitStatus;
+    }
+
+    /**
+     * Returns the output of the last command.
+     */
+    public String getOutput()
+    {
+        return output;
+    }
+
+    /**
+     * Returns <CODE>true</CODE> if the last command had output.
+     */
+    public boolean hasOutput()
+    {
+        return output != null && output.length() > 0;
     }
 
     /**
@@ -452,10 +495,13 @@ public class SshClient extends Client
     /**
      * Execute the given shell commands using SSH.
      */
-    public String commands(List<String> commands) throws IOException
+    public boolean commands(List<String> commands) throws IOException, JSchException
     {
         if(!isShellType())
             throw new IllegalArgumentException("wrong channel type: "+type);
+
+        exitStatus = -1;
+        output = null;
 
         PrintStream out = new PrintStream(channel.getOutputStream());
         out.print("#!/bin/bash\n");
@@ -466,11 +512,37 @@ public class SshClient extends Client
         out.flush();
 
         // Capture the output, removing the input command
-        String ret = new String(channel.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-        int endPos = ret.indexOf(exit);
+        output = new String(channel.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();
+        int endPos = output.indexOf(exit);
         if(endPos != -1)
-            ret = ret.substring(endPos+exit.length()+1);
-        return ret;
+            output = output.substring(endPos+exit.length()+1).trim();
+
+        // Wait for the channel to close
+        while(!channel.isClosed())
+        {
+            try
+            {
+                Thread.sleep(10);
+            }
+            catch(InterruptedException e)
+            {
+            }
+        }
+
+        // exit status only set after channel disconnect
+        exitStatus = channel.getExitStatus();
+
+        return true;
+    }
+
+    /**
+     * Execute the given shell command using SSH.
+     */
+    public boolean command(String command) throws IOException, JSchException
+    {
+        List<String> commands = new ArrayList<String>();
+        commands.add(command);
+        return commands(commands);
     }
 
     /**

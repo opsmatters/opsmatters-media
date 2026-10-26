@@ -26,6 +26,7 @@ import com.opsmatters.media.model.order.OrderItem;
 import com.opsmatters.media.model.order.contact.Contact;
 import com.opsmatters.media.model.order.contact.ContactProduct;
 import com.opsmatters.media.model.order.product.Product;
+import com.opsmatters.media.model.content.Content;
 import com.opsmatters.media.cache.StaticCache;
 
 /**
@@ -158,6 +159,25 @@ public class Orders extends StaticCache
             {
                 if(item.isEnabled())
                     ret += item.getTotalAmount();
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns the first item for the given order and content.
+     */
+    public static OrderItem getItem(Order order, Content content)
+    {
+        OrderItem ret = null;
+        List<OrderItem> items = listItems(order);
+        for(OrderItem item : items)
+        {
+            if(item.getContentId().equals(content.getUuid()))
+            {
+                ret = item;
+                break;
             }
         }
 

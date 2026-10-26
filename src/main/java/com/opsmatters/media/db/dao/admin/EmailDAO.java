@@ -42,7 +42,7 @@ public class EmailDAO extends BaseDAO
      * The query to use to select an email from the EMAILS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, SUBJECT, ATTRIBUTES, PROVIDER, MESSAGE_ID, STATUS, TYPE, FORMAT "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SUBJECT, ATTRIBUTES, MESSAGE_ID, STATUS, TYPE, FORMAT "
       + "FROM EMAILS WHERE ID=?";
 
     /**
@@ -58,21 +58,21 @@ public class EmailDAO extends BaseDAO
      * The query to use to update a email in the EMAILS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE EMAILS SET UPDATED_DATE=?, SUBJECT=?, ATTRIBUTES=?, PROVIDER=?, MESSAGE_ID=?, STATUS=? "
+      "UPDATE EMAILS SET UPDATED_DATE=?, SUBJECT=?, ATTRIBUTES=?, MESSAGE_ID=?, STATUS=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the EMAILS from the EMAILS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, SUBJECT, ATTRIBUTES, PROVIDER, MESSAGE_ID, STATUS, TYPE, FORMAT "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SUBJECT, ATTRIBUTES, MESSAGE_ID, STATUS, TYPE, FORMAT "
       + "FROM EMAILS ORDER BY CREATED_DATE";
 
     /**
      * The query to use to select the EMAILS from the EMAILS table by status.
      */
     private static final String LIST_BY_STATUS_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, SUBJECT, ATTRIBUTES, PROVIDER, MESSAGE_ID, STATUS, TYPE, FORMAT "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, SUBJECT, ATTRIBUTES, MESSAGE_ID, STATUS, TYPE, FORMAT "
       + "FROM EMAILS WHERE STATUS=? ORDER BY CREATED_DATE";
 
     /**
@@ -106,7 +106,6 @@ public class EmailDAO extends BaseDAO
         table.addColumn("UPDATED_DATE", Types.TIMESTAMP, false);
         table.addColumn("SUBJECT", Types.VARCHAR, 128, true);
         table.addColumn("ATTRIBUTES", Types.LONGVARCHAR, true);
-        table.addColumn("PROVIDER", Types.VARCHAR, 15, false);
         table.addColumn("MESSAGE_ID", Types.VARCHAR, 60, false);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("TYPE", Types.VARCHAR, 10, true);
@@ -146,11 +145,10 @@ public class EmailDAO extends BaseDAO
                 email.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 email.setSubject(rs.getString(4));
                 email.setAttributes(new JSONObject(getClob(rs, 5)));
-                email.setProviderId(rs.getString(6));
-                email.setMessageId(rs.getString(7));
-                email.setStatus(rs.getString(8));
-                email.setType(rs.getString(9));
-                email.setFormat(rs.getString(10));
+                email.setMessageId(rs.getString(6));
+                email.setStatus(rs.getString(7));
+                email.setType(rs.getString(8));
+                email.setFormat(rs.getString(9));
                 ret = email;
             }
         }
@@ -242,10 +240,9 @@ public class EmailDAO extends BaseDAO
             String attributes = email.getAttributes().toString();
             reader = new StringReader(attributes);
             updateStmt.setCharacterStream(3, reader, attributes.length());
-            updateStmt.setString(4, email.getProviderId() != null ? email.getProviderId().code() : null);
-            updateStmt.setString(5, email.getMessageId());
-            updateStmt.setString(6, email.getStatus().name());
-            updateStmt.setString(7, email.getId());
+            updateStmt.setString(4, email.getMessageId());
+            updateStmt.setString(5, email.getStatus().name());
+            updateStmt.setString(6, email.getId());
             updateStmt.executeUpdate();
 
             logger.info("Updated email '"+email.getId()+"' in EMAILS");
@@ -287,11 +284,10 @@ public class EmailDAO extends BaseDAO
                 email.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 email.setSubject(rs.getString(4));
                 email.setAttributes(new JSONObject(getClob(rs, 5)));
-                email.setProviderId(rs.getString(6));
-                email.setMessageId(rs.getString(7));
-                email.setStatus(rs.getString(8));
-                email.setType(rs.getString(9));
-                email.setFormat(rs.getString(10));
+                email.setMessageId(rs.getString(6));
+                email.setStatus(rs.getString(7));
+                email.setType(rs.getString(8));
+                email.setFormat(rs.getString(9));
                 ret.add(email);
             }
         }
@@ -343,11 +339,10 @@ public class EmailDAO extends BaseDAO
                 email.setUpdatedDateMillis(rs.getTimestamp(3, UTC).getTime());
                 email.setSubject(rs.getString(4));
                 email.setAttributes(new JSONObject(getClob(rs, 5)));
-                email.setProviderId(rs.getString(6));
-                email.setMessageId(rs.getString(7));
-                email.setStatus(rs.getString(8));
-                email.setType(rs.getString(9));
-                email.setFormat(rs.getString(10));
+                email.setMessageId(rs.getString(6));
+                email.setStatus(rs.getString(7));
+                email.setType(rs.getString(8));
+                email.setFormat(rs.getString(9));
                 ret.add(email);
             }
         }

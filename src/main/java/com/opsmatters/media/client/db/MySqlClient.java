@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.client.system;
+package com.opsmatters.media.client.db;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +24,7 @@ import com.opsmatters.media.model.system.Environment;
 import com.opsmatters.media.model.system.DatabaseConfig;
 import com.opsmatters.media.model.system.SessionId;
 import com.opsmatters.media.client.Client;
-import com.opsmatters.media.util.CommandExecutor;
+import com.opsmatters.media.client.shell.ProcessClient;
 
 /**
  * Client to backup and restore from a mysql database.
@@ -207,23 +207,38 @@ public class MySqlClient extends Client
 
         logger.info(String.format("Starting database backup: %s", name));
 
-        int exitCode = CommandExecutor.execute(
-            "mysqldump",
-            "--column-statistics=0",
-            "--host", config.getHostname(),
-            "--port", Integer.toString(config.getPort()),
-            "--user", getUsername(),
-            "--password="+getPassword(),
-            name,
-            "--result-file", file.getPath());
-        if(exitCode == 0)
+        ProcessClient client = null;
+
+        try
         {
-            ret = true;
-            logger.info("Backup completed successfully: "+filename);
+            client = ProcessClient.newClient();
+            if(client.command(
+                "mysqldump",
+                "--column-statistics=0",
+                "--host", config.getHostname(),
+                "--port", Integer.toString(config.getPort()),
+                "--user", getUsername(),
+                "--password="+getPassword(),
+                name,
+                "--result-file", file.getPath()))
+            {
+                if(client.hasOutput())
+                    logger.info(client.getOutput());
+                if(client.getExitCode() == 0)
+                {
+                    logger.info("Backup completed successfully: "+file.getName());
+                    ret = true;
+                }
+                else
+                {
+                    logger.severe("Backup failed: "+client.getExitCode());
+                }
+            }
         }
-        else
+        finally
         {
-            logger.severe("Backup failed: "+exitCode);
+            if(client != null)
+                client.close();
         }
 
         return ret;
@@ -250,21 +265,36 @@ public class MySqlClient extends Client
 
         logger.info(String.format("Starting database restore: %s", name));
 
-        int exitCode = CommandExecutor.execute(file,
-            "mysql",
-            "--host", config.getHostname(),
-            "--port", Integer.toString(config.getPort()),
-            "--user", getUsername(),
-            "--password="+getPassword(),
-            name);
-        if(exitCode == 0)
+        ProcessClient client = null;
+
+        try
         {
-            logger.info("Restore completed successfully");
-            ret = true;
+            client = ProcessClient.newClient();
+            if(client.command(file,
+                "mysql",
+                "--host", config.getHostname(),
+                "--port", Integer.toString(config.getPort()),
+                "--user", getUsername(),
+                "--password="+getPassword(),
+                name))
+            {
+                if(client.hasOutput())
+                    logger.info(client.getOutput());
+                if(client.getExitCode() == 0)
+                {
+                    logger.info("Restore completed successfully: "+file.getName());
+                    ret = true;
+                }
+                else
+                {
+                    logger.severe("Restore failed: "+client.getExitCode());
+                }
+            }
         }
-        else
+        finally
         {
-            logger.severe("Restore failed: "+exitCode);
+            if(client != null)
+                client.close();
         }
 
         return ret;

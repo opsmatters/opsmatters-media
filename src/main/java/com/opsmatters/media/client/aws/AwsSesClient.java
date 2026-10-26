@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opsmatters.media.client.email;
+package com.opsmatters.media.client.aws;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import software.amazon.awssdk.services.ses.model.Destination;
 import software.amazon.awssdk.services.ses.model.Message;
 import software.amazon.awssdk.services.ses.model.Content;
 import software.amazon.awssdk.services.ses.model.Body;
-import com.opsmatters.media.model.provider.EmailProviderId;
+import com.opsmatters.media.model.DeliveryStatus;
 import com.opsmatters.media.model.admin.Email;
 import com.opsmatters.media.model.admin.EmailFormat;
 import com.opsmatters.media.model.system.aws.SesConfig;
@@ -44,7 +44,7 @@ import com.opsmatters.media.client.Client;
  * 
  * @author Gerald Curley (opsmatters)
  */
-public class AwsSesClient extends Client implements EmailClient
+public class AwsSesClient extends Client
 {
     private static final Logger logger = Logger.getLogger(AwsSesClient.class.getName());
 
@@ -70,14 +70,6 @@ public class AwsSesClient extends Client implements EmailClient
             logger.severe("Unable to create SES client");
 
         return ret;
-    }
-
-    /**
-     * Returns the provider for this client.
-     */
-    public EmailProviderId getProviderId()
-    {
-        return EmailProviderId.SES;
     }
 
     /**
@@ -204,7 +196,7 @@ public class AwsSesClient extends Client implements EmailClient
     /**
      * Sends the given email using SES.
      */
-    public String sendEmail(Email email) throws IOException
+    public String send(Email email) throws IOException
     {
         String ret = null;
 

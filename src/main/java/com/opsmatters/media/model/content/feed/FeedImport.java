@@ -20,7 +20,7 @@ import com.opsmatters.media.model.BaseEntity;
 import com.opsmatters.media.util.StringUtils;
 
 /**
- * Class representing a feed import.
+ * Class representing the result of a feed import.
  * 
  * @author Gerald Curley (opsmatters)
  */
@@ -156,7 +156,7 @@ public class FeedImport extends BaseEntity
     }
 
     /**
-     * Returns the monitor error message.
+     * Returns the import error message.
      */
     public String getErrorMessage()
     {
@@ -164,7 +164,7 @@ public class FeedImport extends BaseEntity
     }
 
     /**
-     * Sets the monitor error message.
+     * Sets the import error message.
      */
     public void setErrorMessage(String errorMessage)
     {
@@ -172,7 +172,7 @@ public class FeedImport extends BaseEntity
     }
 
     /**
-     * Returns <CODE>true</CODE> if the monitor error message has been set.
+     * Returns <CODE>true</CODE> if the import error message has been set.
      */
     public boolean hasErrorMessage()
     {
