@@ -18,7 +18,6 @@ package com.opsmatters.media.model.order.contact;
 import java.time.Instant;
 import com.opsmatters.media.cache.admin.Parameters;
 import com.opsmatters.media.cache.order.Currencies;
-import com.opsmatters.media.model.order.Currency;
 import com.opsmatters.media.util.StringUtils;
 
 import static com.opsmatters.media.model.admin.ParameterType.*;
@@ -36,7 +35,6 @@ public class Contact extends Person
     private String email = ""; // Only for search
     private String website = "";
     private String notes = "";
-    private Currency currency = null;
     private ContactStatus status = ContactStatus.NEW;
     private SuspendReason reason = SuspendReason.NONE;
     private RiskRating riskRating = RiskRating.UNDEFINED;
@@ -60,7 +58,6 @@ public class Contact extends Person
         setType(ContactType.BUYER);
         setName(name);
         setSalutation();
-        setCurrency(Parameters.get(ORDER, CURRENCY).getValue());
         setRiskRating(RiskRating.MEDIUM);
         setDeliveryEmail(true);
         setCompletionEmail(true);
@@ -86,7 +83,6 @@ public class Contact extends Person
             setCode(obj.getCode());
             setWebsite(obj.getWebsite());
             setNotes(obj.getNotes());
-            setCurrency(obj.getCurrency());
             setStatus(obj.getStatus());
             setReason(obj.getReason());
             setRiskRating(obj.getRiskRating());
@@ -203,30 +199,6 @@ public class Contact extends Person
             notes += "\n";
         notes += note;
         setNotes(notes);
-    }
-
-    /**
-     * Returns the payment currency.
-     */
-    public Currency getCurrency()
-    {
-        return currency;
-    }
-
-    /**
-     * Sets the payment currency.
-     */
-    public void setCurrency(String currency)
-    {
-        setCurrency(Currencies.get(currency));
-    }
-
-    /**
-     * Sets the payment currency.
-     */
-    public void setCurrency(Currency currency)
-    {
-        this.currency = currency;
     }
 
     /**

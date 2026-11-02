@@ -23,6 +23,7 @@ import java.time.DateTimeException;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.ChronoUnit;
 import java.time.format.DateTimeParseException;
+import com.opsmatters.media.cache.admin.Parameters;
 import com.opsmatters.media.cache.order.Currencies;
 import com.opsmatters.media.cache.order.product.Products;
 import com.opsmatters.media.cache.system.Sites;
@@ -34,6 +35,9 @@ import com.opsmatters.media.model.order.Frequency;
 import com.opsmatters.media.model.order.product.Product;
 import com.opsmatters.media.util.TimeUtils;
 import com.opsmatters.media.util.StringUtils;
+
+import static com.opsmatters.media.model.admin.ParameterType.*;
+import static com.opsmatters.media.model.admin.ParameterName.*;
 
 /**
  * Class representing a contact product.
@@ -69,7 +73,7 @@ public class ContactProduct extends BaseEntity
         setId(StringUtils.getUUID(null));
         setCreatedDate(Instant.now());
         setContactId(contact.getId());
-        setCurrency(contact.getCurrency());
+        setCurrency(Parameters.get(ORDER, CURRENCY).getValue());
         if(contact.getType() == ContactType.SPONSOR)
             setStartDate(Instant.now());
         setEnabled(true);

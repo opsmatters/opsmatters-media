@@ -49,6 +49,7 @@ public class FacebookClient extends Client implements SocialClient
 
     private Facebook client;
     private AccessToken accessToken;
+    private Long expires;
     private String appId = "";
     private String appSecret = "";
     private String token = "";
@@ -58,7 +59,7 @@ public class FacebookClient extends Client implements SocialClient
     /**
      * Private constructor.
      */
-    private FacebookClient(SocialChannel channel)
+    public FacebookClient(SocialChannel channel)
     {
         setChannel(channel);
     }
@@ -66,7 +67,7 @@ public class FacebookClient extends Client implements SocialClient
     /**
      * Returns a new facebook client using the given channel.
      */
-    static public FacebookClient newClient(SocialChannel channel) throws IOException, FacebookException
+    public static FacebookClient newClient(SocialChannel channel) throws IOException, FacebookException
     {
         FacebookClient ret = new FacebookClient(channel);
 
@@ -105,6 +106,7 @@ public class FacebookClient extends Client implements SocialClient
             setAppId(obj.optString("appId"));
             setAppSecret(obj.optString("appSecret"));
             setAccessToken(obj.optString("accessToken"));
+            setExpires(obj.optLong("expires"));
             setPermissions(obj.optString("permissions"));
         }
         catch(IOException e)
@@ -113,7 +115,7 @@ public class FacebookClient extends Client implements SocialClient
         }
 
         if(getAccessToken() != null && getAccessToken().length() > 0)
-            accessToken = new AccessToken(getAccessToken(), null);
+            accessToken = new AccessToken(getAccessToken(), getExpires());
 
         if(debug())
             logger.info("Configured facebook client successfully: "+channel.getCode());
@@ -132,6 +134,25 @@ public class FacebookClient extends Client implements SocialClient
 
         // Create the client
         Facebook facebook = factory.getInstance();
+
+//GERALD
+logger.info("FacebookClient.create:1: expires="+getExpires());
+        // If the access token is short-lived, try to extend it
+        if(getExpires() == null)
+        {
+            logger.info("Attempting to extend short-lived access token...");
+//GERALD
+logger.info("FacebookClient.create:2: accessToken="+getAccessToken().length()+" expires="+getExpires());
+            accessToken = facebook.extendTokenExpiration(getAccessToken());
+            setAccessToken(accessToken.getToken());
+            setExpires(accessToken.getExpires());
+//GERALD
+logger.info("FacebookClient.create:3: accessToken="+getAccessToken().length()+" expires="+getExpires());
+            if(getExpires() != null)
+                writeCredentials();
+        }
+
+        // Set the credentials
         facebook.setOAuthAppId(appId, appSecret);
         facebook.setOAuthAccessToken(accessToken);
         facebook.setOAuthPermissions(permissions);
@@ -145,6 +166,41 @@ public class FacebookClient extends Client implements SocialClient
             logger.info("Created facebook client successfully: "+channel.getCode());
 
         return id != null;
+    }
+
+    /**
+     * Write the auth file.
+     */
+    public boolean writeCredentials()
+    {
+        boolean ret = false;
+//GERALD
+logger.info("FacebookClient.writeCredentials:1");
+        String directory = System.getProperty("app.auth", ".");
+
+        File file = new File(directory, channel.getCode().toLowerCase()+SUFFIX);
+        try
+        {
+            // Write file to auth directory
+            JSONObject obj = new JSONObject();
+            obj.put("appId", getAppId());
+            obj.put("appSecret", getAppSecret());
+            obj.put("accessToken", getAccessToken());
+            obj.put("expires", getExpires());
+            obj.put("permissions", getPermissions());
+            FileUtils.writeStringToFile(file, obj.toString(2), "UTF-8");
+            ret = true;
+//GERALD
+logger.info("FacebookClient.writeCredentials:2:success");
+        }
+        catch(IOException e)
+        {
+            logger.severe("Unable to write facebook auth file: "
+                +e.getClass().getName()+": "+e.getMessage());
+        }
+//GERALD
+logger.info("FacebookClient.writeCredentials:3");
+        return ret;
     }
 
     /**
@@ -203,6 +259,30 @@ public class FacebookClient extends Client implements SocialClient
     public void setAccessToken(String accessToken) 
     {
         this.token = accessToken;
+    }
+
+    /**
+     * Returns the access token expiry for the client.
+     */
+    public Long getExpires() 
+    {
+        return expires;
+    }
+
+    /**
+     * Sets the acess token expiry for the client.
+     */
+    public void setExpires(Long expires) 
+    {
+        this.expires = expires;
+    }
+
+    /**
+     * Sets the acess token expiry for the client.
+     */
+    public void setExpires(long expires) 
+    {
+        setExpires(expires > 0L ? Long.valueOf(expires) : null);
     }
 
     /**

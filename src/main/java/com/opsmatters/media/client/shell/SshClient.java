@@ -507,15 +507,22 @@ public class SshClient extends Client
         out.print("#!/bin/bash\n");
         for(String command : commands)
             out.print(command+'\n');
-        String exit = "exit";
-        out.print(exit+'\n');
+        out.print("exit\n");
         out.flush();
 
-        // Capture the output, removing the input command
+        // Capture the output
         output = new String(channel.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();
-        int endPos = output.indexOf(exit);
+
+        // Remove the input command
+        int endPos = output.indexOf(getUsername()+"@");
         if(endPos != -1)
-            output = output.substring(endPos+exit.length()+1).trim();
+            output = output.substring(endPos).trim();
+
+        // Then remove the shell first line
+        String bash = "bash";
+        endPos = output.indexOf(bash);
+        if(endPos != -1)
+            output = output.substring(endPos+bash.length()+19).trim();
 
         // Wait for the channel to close
         while(!channel.isClosed())
@@ -529,7 +536,7 @@ public class SshClient extends Client
             }
         }
 
-        // exit status only set after channel disconnect
+        // exitstatus only set when channel disconnects
         exitStatus = channel.getExitStatus();
 
         return true;

@@ -40,7 +40,7 @@ public class ContactDAO extends BaseDAO
      * The query to use to select a contact from the CONTACTS table by id.
      */
     private static final String GET_BY_ID_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CODE, WEBSITE, SALUTATION, NOTES, CURRENCY_CODE, STATUS, REASON, RISK_RATING, DELIVERY_EMAIL, COMPLETION_EMAIL, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CODE, WEBSITE, SALUTATION, NOTES, STATUS, REASON, RISK_RATING, DELIVERY_EMAIL, COMPLETION_EMAIL, CREATED_BY "
       + "FROM CONTACTS WHERE ID=?";
 
     /**
@@ -48,22 +48,22 @@ public class ContactDAO extends BaseDAO
      */
     private static final String INSERT_SQL =  
       "INSERT INTO CONTACTS"
-      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CODE, WEBSITE, SALUTATION, NOTES, CURRENCY_CODE, STATUS, REASON, RISK_RATING, DELIVERY_EMAIL, COMPLETION_EMAIL, CREATED_BY )"
+      + "( ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CODE, WEBSITE, SALUTATION, NOTES, STATUS, REASON, RISK_RATING, DELIVERY_EMAIL, COMPLETION_EMAIL, CREATED_BY )"
       + "VALUES"
-      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     /**
      * The query to use to update a contact in the CONTACTS table.
      */
     private static final String UPDATE_SQL =  
-      "UPDATE CONTACTS SET UPDATED_DATE=?, NAME=?, TYPE=?, CODE=?, WEBSITE=?, SALUTATION=?, NOTES=?, CURRENCY_CODE=?, STATUS=?, REASON=?, RISK_RATING=?, DELIVERY_EMAIL=?, COMPLETION_EMAIL=?, CREATED_BY=? "
+      "UPDATE CONTACTS SET UPDATED_DATE=?, NAME=?, TYPE=?, CODE=?, WEBSITE=?, SALUTATION=?, NOTES=?, STATUS=?, REASON=?, RISK_RATING=?, DELIVERY_EMAIL=?, COMPLETION_EMAIL=?, CREATED_BY=? "
       + "WHERE ID=?";
 
     /**
      * The query to use to select the contacts from the CONTACTS table.
      */
     private static final String LIST_SQL =  
-      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CODE, WEBSITE, SALUTATION, NOTES, CURRENCY_CODE, STATUS, REASON, RISK_RATING, DELIVERY_EMAIL, COMPLETION_EMAIL, CREATED_BY "
+      "SELECT ID, CREATED_DATE, UPDATED_DATE, NAME, TYPE, CODE, WEBSITE, SALUTATION, NOTES, STATUS, REASON, RISK_RATING, DELIVERY_EMAIL, COMPLETION_EMAIL, CREATED_BY "
       + "FROM CONTACTS ORDER BY CREATED_DATE";
 
     /**
@@ -101,7 +101,6 @@ public class ContactDAO extends BaseDAO
         table.addColumn("WEBSITE", Types.VARCHAR, 128, false);
         table.addColumn("SALUTATION", Types.VARCHAR, 30, false);
         table.addColumn("NOTES", Types.LONGVARCHAR, false);
-        table.addColumn("CURRENCY_CODE", Types.VARCHAR, 5, true);
         table.addColumn("STATUS", Types.VARCHAR, 15, true);
         table.addColumn("REASON", Types.VARCHAR, 15, false);
         table.addColumn("RISK_RATING", Types.INTEGER, true);
@@ -147,13 +146,12 @@ public class ContactDAO extends BaseDAO
                 contact.setWebsite(rs.getString(7));
                 contact.setSalutation(rs.getString(8));
                 contact.setNotes(rs.getString(9));
-                contact.setCurrency(rs.getString(10));
-                contact.setStatus(rs.getString(11));
-                contact.setReason(rs.getString(12));
-                contact.setRiskRating(rs.getInt(13));
-                contact.setDeliveryEmail(rs.getBoolean(14));
-                contact.setCompletionEmail(rs.getBoolean(15));
-                contact.setCreatedBy(rs.getString(16));
+                contact.setStatus(rs.getString(10));
+                contact.setReason(rs.getString(11));
+                contact.setRiskRating(rs.getInt(12));
+                contact.setDeliveryEmail(rs.getBoolean(13));
+                contact.setCompletionEmail(rs.getBoolean(14));
+                contact.setCreatedBy(rs.getString(15));
                 ret = contact;
             }
         }
@@ -197,13 +195,12 @@ public class ContactDAO extends BaseDAO
             insertStmt.setString(7, contact.getWebsite());
             insertStmt.setString(8, contact.getSalutation());
             insertStmt.setString(9, contact.getNotes());
-            insertStmt.setString(10, contact.getCurrency() != null ? contact.getCurrency().getCode() : null);
-            insertStmt.setString(11, contact.getStatus().name());
-            insertStmt.setString(12, contact.getReason().name());
-            insertStmt.setInt(13, contact.getRiskRating().score());
-            insertStmt.setBoolean(14, contact.hasDeliveryEmail());
-            insertStmt.setBoolean(15, contact.hasCompletionEmail());
-            insertStmt.setString(16, contact.getCreatedBy());
+            insertStmt.setString(10, contact.getStatus().name());
+            insertStmt.setString(11, contact.getReason().name());
+            insertStmt.setInt(12, contact.getRiskRating().score());
+            insertStmt.setBoolean(13, contact.hasDeliveryEmail());
+            insertStmt.setBoolean(14, contact.hasCompletionEmail());
+            insertStmt.setString(15, contact.getCreatedBy());
             insertStmt.executeUpdate();
 
             logger.info("Created contact '"+contact.getId()+"' in CONTACTS");
@@ -242,14 +239,13 @@ public class ContactDAO extends BaseDAO
         updateStmt.setString(5, contact.getWebsite());
         updateStmt.setString(6, contact.getSalutation());
         updateStmt.setString(7, contact.getNotes());
-        updateStmt.setString(8, contact.getCurrency() != null ? contact.getCurrency().getCode() : null);
-        updateStmt.setString(9, contact.getStatus().name());
-        updateStmt.setString(10, contact.getReason().name());
-        updateStmt.setInt(11, contact.getRiskRating().score());
-        updateStmt.setBoolean(12, contact.hasDeliveryEmail());
-        updateStmt.setBoolean(13, contact.hasCompletionEmail());
-        updateStmt.setString(14, contact.getCreatedBy());
-        updateStmt.setString(15, contact.getId());
+        updateStmt.setString(8, contact.getStatus().name());
+        updateStmt.setString(9, contact.getReason().name());
+        updateStmt.setInt(10, contact.getRiskRating().score());
+        updateStmt.setBoolean(11, contact.hasDeliveryEmail());
+        updateStmt.setBoolean(12, contact.hasCompletionEmail());
+        updateStmt.setString(13, contact.getCreatedBy());
+        updateStmt.setString(14, contact.getId());
         updateStmt.executeUpdate();
 
         logger.info("Updated contact '"+contact.getId()+"' in CONTACTS");
@@ -310,13 +306,12 @@ public class ContactDAO extends BaseDAO
                 contact.setWebsite(rs.getString(7));
                 contact.setSalutation(rs.getString(8));
                 contact.setNotes(rs.getString(9));
-                contact.setCurrency(rs.getString(10));
-                contact.setStatus(rs.getString(11));
-                contact.setReason(rs.getString(12));
-                contact.setRiskRating(rs.getInt(13));
-                contact.setDeliveryEmail(rs.getBoolean(14));
-                contact.setCompletionEmail(rs.getBoolean(15));
-                contact.setCreatedBy(rs.getString(16));
+                contact.setStatus(rs.getString(10));
+                contact.setReason(rs.getString(11));
+                contact.setRiskRating(rs.getInt(12));
+                contact.setDeliveryEmail(rs.getBoolean(13));
+                contact.setCompletionEmail(rs.getBoolean(14));
+                contact.setCreatedBy(rs.getString(15));
                 ret.add(contact);
             }
         }

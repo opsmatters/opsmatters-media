@@ -196,7 +196,7 @@ public class BlueskyClient extends RestClient implements SocialClient
             obj.put("password", getPassword());
             obj.put("accessToken", getAccessToken());
             obj.put("refreshToken", getRefreshToken());
-            FileUtils.writeStringToFile(file, obj.toString(), "UTF-8");
+            FileUtils.writeStringToFile(file, obj.toString(2), "UTF-8");
         }
         catch(IOException e)
         {
