@@ -56,10 +56,10 @@ public class GitHubClient extends Client implements RepoClient
     private static final Logger logger = Logger.getLogger(GitHubClient.class.getName());
 
     private static final String LINKS = "<p>Download source code as "
-        +"<a href=\"%1$s/zipball/%2$s\">[.zip file]</a> "
-        +"<a href=\"%1$s/tarball/%2$s\">[.tar.gz file]</a>"
+        +"<a href=\"%1$s/zipball/%2$s\" rel=\"nofollow\">[.zip file]</a> "
+        +"<a href=\"%1$s/tarball/%2$s\" rel=\"nofollow\">[.tar.gz file]</a>"
         +"<br>Documentation: "
-        +"<a href=\"%1$s/blob/%2$s/README.md\">[README]</a>"
+        +"<a href=\"%1$s/blob/%2$s/README.md\" rel=\"nofollow\">[README]</a>"
         +"</p>";
 
     public static final String SUFFIX = ".github";

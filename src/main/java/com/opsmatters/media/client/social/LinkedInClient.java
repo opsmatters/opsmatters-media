@@ -81,7 +81,7 @@ public class LinkedInClient extends Client implements SocialClient
     private SocialChannel channel;
 
     /**
-     * Private constructor.
+     * Constructor that takes a channel.
      */
     public LinkedInClient(SocialChannel channel)
     {
@@ -167,24 +167,16 @@ public class LinkedInClient extends Client implements SocialClient
 
 //GERALD
 logger.info("LinkedInClient.create:1: verificationCode="+hasVerificationCode());
-        // If a verification code has been provided, use it to generate an access token
+        // If a verification code has been provided,
+        //   use it to generate an access token
         if(hasVerificationCode())
         {
-            logger.info("Found verification code, attempting refresh...");
-            com.echobox.api.linkedin.client.LinkedInClient client = new DefaultLinkedInClient(Version.DEFAULT_VERSION);
-            com.echobox.api.linkedin.client.LinkedInClient.AccessToken token = client.obtainUserAccessToken(getAppId(),
-                getAppSecret(), getRedirectUri(), getVerificationCode());
-//GERALD
-if(token.getAccessToken() != null)
-logger.info("LinkedInClient.rcreate:2: accessToken="+token.getAccessToken().length());
-else
-logger.info("LinkedInClient.create:2a: accessToken=null");
-            setAccessToken(token.getAccessToken());
-            setVerificationCode("");
-//GERALD
-logger.info("LinkedInClient.create:3: accessToken="+hasAccessToken());
-            if(hasAccessToken())
+            if(refreshAccessToken())
+            {
                 writeCredentials();
+            }
+//GERALD
+logger.info("LinkedInClient.create:2: accessToken="+hasAccessToken());
         }
 
         // Create the client and connections
@@ -204,38 +196,49 @@ logger.info("LinkedInClient.create:3: accessToken="+hasAccessToken());
     }
 
     /**
+     * Use the verification code to generate a new access token.
+     */
+    private boolean refreshAccessToken()
+    {
+        logger.info("Attempting to use verification code to refresh linkedin access token...");
+        com.echobox.api.linkedin.client.LinkedInClient client = new DefaultLinkedInClient(Version.DEFAULT_VERSION);
+        com.echobox.api.linkedin.client.LinkedInClient.AccessToken token = client.obtainUserAccessToken(getAppId(),
+            getAppSecret(), getRedirectUri(), getVerificationCode());
+//GERALD
+if(token.getAccessToken() != null)
+logger.info("LinkedInClient.refreshAccessToken:1: accessToken="+token.getAccessToken().length());
+else
+logger.info("LinkedInClient.refreshAccessToken:1a: accessToken=null");
+        setAccessToken(token.getAccessToken());
+        setVerificationCode("");
+
+        boolean ret = hasAccessToken();
+        if(ret)
+            logger.info("Refreshed linkedin access token successfully: "+channel.getCode());
+        return ret;
+    }
+
+    /**
      * Write the auth file.
      */
-    public boolean writeCredentials()
+    public void writeCredentials() throws IOException
     {
-        boolean ret = false;
 //GERALD
 logger.info("LinkedInClient.writeCredentials:1");
         String directory = System.getProperty("app.auth", ".");
 
         File file = new File(directory, OAUTH_SUFFIX);
-        try
-        {
-            // Write file to auth directory
-            JSONObject obj = new JSONObject();
-            obj.put("appId", getAppId());
-            obj.put("appSecret", getAppSecret());
-            obj.put("redirectUri", getRedirectUri());
-            obj.put("accessToken", getAccessToken());
-            obj.put("verificationCode", getVerificationCode());
-            FileUtils.writeStringToFile(file, obj.toString(2), "UTF-8");
-            ret = true;
+
+        // Write file to auth directory
+        JSONObject obj = new JSONObject();
+        obj.put("appId", getAppId());
+        obj.put("appSecret", getAppSecret());
+        obj.put("redirectUri", getRedirectUri());
+        obj.put("accessToken", getAccessToken());
+        obj.put("verificationCode", getVerificationCode());
+        FileUtils.writeStringToFile(file, obj.toString(2), "UTF-8");
 //GERALD
 logger.info("LinkedInClient.writeCredentials:2:success");
-        }
-        catch(IOException e)
-        {
-            logger.severe("Unable to write default linkedin auth file: "
-                +e.getClass().getName()+": "+e.getMessage());
-        }
-//GERALD
-logger.info("LinkedInClient.writeCredentials:3");
-        return ret;
     }
 
     /**

@@ -152,6 +152,8 @@ public class BlueskyClient extends RestClient implements SocialClient
 
         clearToken();
 
+        // If the access tokem has expired,
+        //   use the refresh token to geterate a new access token
         if(!hasAccessToken())
         {
             if(hasRefreshToken())
@@ -181,28 +183,21 @@ public class BlueskyClient extends RestClient implements SocialClient
     }
 
     /**
-     * Write the credentials when the tokens change.
+     * Write the auth file.
      */
-    private void writeCredentials()
+    private void writeCredentials() throws IOException
     {
         String directory = System.getProperty("app.auth", ".");
 
         File file = new File(directory, channel.getCode().toLowerCase()+SUFFIX);
-        try
-        {
-            // Write file to auth directory
-            JSONObject obj = new JSONObject();
-            obj.put("identifier", getIdentifier());
-            obj.put("password", getPassword());
-            obj.put("accessToken", getAccessToken());
-            obj.put("refreshToken", getRefreshToken());
-            FileUtils.writeStringToFile(file, obj.toString(2), "UTF-8");
-        }
-        catch(IOException e)
-        {
-            logger.severe("Unable to write bluesky auth file: "
-                +e.getClass().getName()+": "+e.getMessage());
-        }
+
+        // Write file to auth directory
+        JSONObject obj = new JSONObject();
+        obj.put("identifier", getIdentifier());
+        obj.put("password", getPassword());
+        obj.put("accessToken", getAccessToken());
+        obj.put("refreshToken", getRefreshToken());
+        FileUtils.writeStringToFile(file, obj.toString(2), "UTF-8");
     }
 
     /**
@@ -854,7 +849,7 @@ public class BlueskyClient extends RestClient implements SocialClient
      * Process an error response from the bluesky API.
      */
     private void processErrorResponse(int statusCode, JSONObject obj)
-        throws BlueskyException
+        throws BlueskyException, IOException
     {
         String error = obj.optString("error");
         if(error != null)
