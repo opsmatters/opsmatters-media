@@ -57,6 +57,8 @@ public class FileUtils
 
     private static final String SUCCESS_RESPONSE = "HTTP\\/1\\.1 20\\d .*";
 
+    public static final int DEFAULT_BUFFER_SIZE = 8192;
+
     private static Map checksums = new Hashtable(10);
     private static Map manifests = new Hashtable(10);
     private static Map<URL,FileResponse> responses = new Hashtable<>();
@@ -763,12 +765,15 @@ public class FileUtils
     /**
      * Use gzip to compress the given file.
      */
-    public static File compress(File file) throws IOException
+    public static File compress(File file, int bufferSize) throws IOException
     {
         File ret = file;
 
         FileInputStream fis = null;
         GZIPOutputStream gos = null;
+
+        if(bufferSize <= 0)
+            bufferSize = DEFAULT_BUFFER_SIZE;
 
         try
         {
@@ -776,7 +781,7 @@ public class FileUtils
 
             fis = new FileInputStream(file);
             gos = new GZIPOutputStream(new FileOutputStream(newFile));
-            IOUtils.copy(fis, gos, 5096);
+            IOUtils.copy(fis, gos, bufferSize);
             ret = newFile;
         }
         finally
@@ -791,14 +796,25 @@ public class FileUtils
     }
 
     /**
+     * Use gzip to compress the given file.
+     */
+    public static File compress(File file) throws IOException
+    {
+        return compress(file, -1);
+    }
+
+    /**
      * Use gzip to uncompress the given zipped file.
      */
-    public static File uncompress(File file) throws IOException
+    public static File uncompress(File file, int bufferSize) throws IOException
     {
         File ret = file;
 
         FileOutputStream fos = null;
         GZIPInputStream gis = null;
+
+        if(bufferSize <= 0)
+            bufferSize = DEFAULT_BUFFER_SIZE;
 
         try
         {
@@ -810,7 +826,7 @@ public class FileUtils
 
             gis = new GZIPInputStream(new FileInputStream(file));
             fos = new FileOutputStream(newFile);
-            IOUtils.copy(gis, fos, 5096);
+            IOUtils.copy(gis, fos, bufferSize);
             ret = newFile;
         }
         finally
@@ -822,5 +838,13 @@ public class FileUtils
         }
 
         return ret;
+    }
+
+    /**
+     * Use gzip to uncompress the given zipped file.
+     */
+    public static File uncompress(File file) throws IOException
+    {
+        return uncompress(file, -1);
     }
 }

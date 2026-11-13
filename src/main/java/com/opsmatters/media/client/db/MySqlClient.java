@@ -197,13 +197,12 @@ public class MySqlClient extends Client
     }
 
     /**
-     * Backup the current database to the given filename.
+     * Backup the current database to the given file.
      */
-    public boolean backup(String filename) throws IOException, InterruptedException
+    public boolean backup(File file) throws IOException, InterruptedException
     {
         boolean ret = false;
         String name = config.getName();
-        File file = new File(filename);
 
         logger.info(String.format("Starting database backup: %s", name));
 
@@ -212,7 +211,7 @@ public class MySqlClient extends Client
         try
         {
             client = ProcessClient.newClient();
-            if(client.command(
+            client.command(
                 "mysqldump",
                 "--column-statistics=0",
                 "--host", config.getHostname(),
@@ -220,19 +219,17 @@ public class MySqlClient extends Client
                 "--user", getUsername(),
                 "--password="+getPassword(),
                 name,
-                "--result-file", file.getPath()))
+                "--result-file", file.getPath());
+            if(client.hasOutput())
+                logger.info(client.getOutput());
+            if(client.getExitCode() == 0)
             {
-                if(client.hasOutput())
-                    logger.info(client.getOutput());
-                if(client.getExitCode() == 0)
-                {
-                    logger.info("Backup completed successfully: "+file.getName());
-                    ret = true;
-                }
-                else
-                {
-                    logger.severe("Backup failed: "+client.getExitCode());
-                }
+                logger.info("Backup completed successfully: "+file.getName());
+                ret = true;
+            }
+            else
+            {
+                logger.severe("Backup failed: "+client.getExitCode());
             }
         }
         finally
@@ -242,14 +239,6 @@ public class MySqlClient extends Client
         }
 
         return ret;
-    }
-
-    /**
-     * Backup the current database to the default filename.
-     */
-    public boolean backup() throws IOException, InterruptedException
-    {
-        return backup(getBackupName());
     }
 
     /**
@@ -270,25 +259,23 @@ public class MySqlClient extends Client
         try
         {
             client = ProcessClient.newClient();
-            if(client.command(file,
+            client.command(file,
                 "mysql",
                 "--host", config.getHostname(),
                 "--port", Integer.toString(config.getPort()),
                 "--user", getUsername(),
                 "--password="+getPassword(),
-                name))
+                name);
+            if(client.hasOutput())
+                logger.info(client.getOutput());
+            if(client.getExitCode() == 0)
             {
-                if(client.hasOutput())
-                    logger.info(client.getOutput());
-                if(client.getExitCode() == 0)
-                {
-                    logger.info("Restore completed successfully: "+file.getName());
-                    ret = true;
-                }
-                else
-                {
-                    logger.severe("Restore failed: "+client.getExitCode());
-                }
+                logger.info("Restore completed successfully: "+file.getName());
+                ret = true;
+            }
+            else
+            {
+                logger.severe("Restore failed: "+client.getExitCode());
             }
         }
         finally
