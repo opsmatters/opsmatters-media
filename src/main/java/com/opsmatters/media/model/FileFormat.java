@@ -28,6 +28,7 @@ public enum FileFormat
     XLSX("xlsx"),
     JPG("jpg"),
     JPEG("jpeg"),
+    JFIF("jfif"),
     PNG("png"),
     GIF("gif"),
     WEBP("webp"),
@@ -99,7 +100,7 @@ public enum FileFormat
      */
     public boolean isSupportedImage()
     {
-        return this == PNG || this.isJPEG() || this == GIF || this == WEBP || this == SVG || this == AVIF;
+        return this == PNG || this.isJPEG() || this == GIF || this == WEBP || this == SVG || this == AVIF || this == JFIF;
     }
 
     /**
